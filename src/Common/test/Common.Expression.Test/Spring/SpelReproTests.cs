@@ -11,6 +11,11 @@ using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Util;
 using Xunit;
 
+// ReSharper disable InconsistentNaming
+#pragma warning disable S100 // Methods and properties should be named in PascalCase
+#pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
+#pragma warning disable IDE1006 // Naming Styles
+
 namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class SpelReproTests : AbstractExpressionTests
@@ -1660,8 +1665,6 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-#pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
-#pragma warning disable IDE1006 // Naming Styles
     public class ValuesMethodResolver : IMethodResolver
     {
         public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
@@ -2479,7 +2482,4 @@ public class SpelReproTests : AbstractExpressionTests
     {
         public string Name => "foo";
     }
-
-#pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
-#pragma warning restore IDE1006 // Naming Styles
 }

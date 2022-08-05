@@ -110,7 +110,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     [Trait("Category", "Integration")]
     public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv_ReturnsExpectedDefaultData_AsInjectedOptions()
     {
-        string vcap_application = @" 
+        string vcapApplication = @" 
                 {
                     ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
                     ""application_name"": ""foo"",
@@ -134,7 +134,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                     ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
                 }";
 
-        string vcap_services = @"
+        string vcapServices = @"
                 {
                     ""p-config-server"": [{
                         ""credentials"": {
@@ -153,8 +153,8 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                     }]
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
 
         string appSettings = @"
                 {
@@ -199,7 +199,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     [Trait("Category", "Integration")]
     public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv()
     {
-        string vcap_application = @" 
+        string vcapApplication = @" 
                 {
                     ""limits"": {
                     ""mem"": 1024,
@@ -222,7 +222,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                     ""users"": null
                 }";
 
-        string vcap_services = @"
+        string vcapServices = @"
                 {
                     ""p-config-server"": [
                     {
@@ -243,8 +243,8 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                     ]
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
 
         string appSettings = @"
                 {

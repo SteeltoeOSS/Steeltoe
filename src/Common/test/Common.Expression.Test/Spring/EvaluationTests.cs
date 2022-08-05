@@ -10,6 +10,7 @@ using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Expression.Internal.Spring.TestResources;
 using Xunit;
 
+// ReSharper disable InconsistentNaming
 #pragma warning disable S3443 // Type should not be examined on "System.Type" instances
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -1357,8 +1358,6 @@ public class EvaluationTests : AbstractExpressionTests
         Assert.Equal(messageCode, ex.MessageCode);
     }
 
-#pragma warning disable IDE1006 // Naming Styles
-
     public class MyServiceResolver : IServiceResolver
     {
         public object Resolve(IEvaluationContext context, string serviceName)
@@ -1468,6 +1467,4 @@ public class EvaluationTests : AbstractExpressionTests
 
         public Foo Wibble2 { get; }
     }
-
-#pragma warning restore IDE1006 // Naming Styles
 }

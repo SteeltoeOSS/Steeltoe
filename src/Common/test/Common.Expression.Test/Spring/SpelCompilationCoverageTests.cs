@@ -12,6 +12,8 @@ using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Expression.Spring.TestData;
 using Xunit;
 
+// ReSharper disable InconsistentNaming
+
 namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class SpelCompilationCoverageTests : AbstractExpressionTests

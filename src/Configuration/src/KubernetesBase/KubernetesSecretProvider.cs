@@ -27,7 +27,7 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
         try
         {
             HttpOperationResponse<V1Secret> secretResponse =
-                K8sClient.ReadNamespacedSecretWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
+                KubernetesClient.ReadNamespacedSecretWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
 
             ProcessData(secretResponse.Body);
             EnableReloading();
@@ -55,8 +55,8 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
         SecretWatcher?.Dispose();
         SecretWatcher = null;
 
-        K8sClient?.Dispose();
-        K8sClient = null;
+        KubernetesClient?.Dispose();
+        KubernetesClient = null;
     }
 
     private static string NormalizeKey(string key)
@@ -89,7 +89,7 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
 
     private void EnableEventReloading()
     {
-        SecretWatcher = K8sClient.WatchNamespacedSecretAsync(Settings.Name, Settings.Namespace, onEvent: (eventType, item) =>
+        SecretWatcher = KubernetesClient.WatchNamespacedSecretAsync(Settings.Name, Settings.Namespace, onEvent: (eventType, item) =>
                 {
                     Logger?.LogInformation("Received {eventType} event for Secret {secretName} with {entries} values", eventType.ToString(), Settings.Name,
                         item?.Data?.Count);

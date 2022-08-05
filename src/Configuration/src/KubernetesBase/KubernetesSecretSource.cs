@@ -9,7 +9,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
 internal sealed class KubernetesSecretSource : IConfigurationSource
 {
-    private IKubernetes K8sClient { get; }
+    private IKubernetes KubernetesClient { get; }
 
     private KubernetesConfigSourceSettings ConfigSettings { get; }
 
@@ -17,13 +17,13 @@ internal sealed class KubernetesSecretSource : IConfigurationSource
 
     internal KubernetesSecretSource(IKubernetes kubernetesClient, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
     {
-        K8sClient = kubernetesClient;
+        KubernetesClient = kubernetesClient;
         ConfigSettings = settings;
         CancelToken = cancellationToken;
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        return new KubernetesSecretProvider(K8sClient, ConfigSettings, CancelToken);
+        return new KubernetesSecretProvider(KubernetesClient, ConfigSettings, CancelToken);
     }
 }

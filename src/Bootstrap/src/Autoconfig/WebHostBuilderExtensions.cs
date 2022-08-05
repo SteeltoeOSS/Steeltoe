@@ -300,5 +300,3 @@ public static class WebHostBuilderExtensions
             .Log(LogMessages.WireCloudFoundryContainerIdentity);
     }
 }
-
-#pragma warning restore 0436 // Type conflicts with imported type

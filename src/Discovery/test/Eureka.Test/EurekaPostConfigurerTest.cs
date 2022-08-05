@@ -265,7 +265,7 @@ public class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfiguration_WithVCAPEnvVariables_HostName_ConfiguresEurekaDiscovery_Correctly()
     {
-        string vcap_application = @"
+        string vcapApplication = @"
                 {
                     ""limits"": {
                         ""fds"": 16384,
@@ -289,7 +289,7 @@ public class EurekaPostConfigurerTest
                     ""instance_id"": ""instance_id""
                 }";
 
-        string vcap_services = @"
+        string vcapServices = @"
                 {
                     ""p-config-server"": [{
                         ""credentials"": {
@@ -389,8 +389,8 @@ public class EurekaPostConfigurerTest
                     }
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
         Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
         Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
 
@@ -481,7 +481,7 @@ public class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfiguration_WithVCAPEnvVariables_Route_ConfiguresEurekaDiscovery_Correctly()
     {
-        string vcap_application = @"
+        string vcapApplication = @"
                 {
                     ""limits"": {
                         ""fds"": 16384,
@@ -505,7 +505,7 @@ public class EurekaPostConfigurerTest
                     ""instance_id"": ""instance_id""
                 }";
 
-        string vcap_services = @"
+        string vcapServices = @"
                 {
                     ""p-config-server"": [{
                         ""credentials"": {
@@ -598,8 +598,8 @@ public class EurekaPostConfigurerTest
                     }
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
         Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
         Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
         using var sandbox = new Sandbox();
@@ -689,7 +689,7 @@ public class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfiguration_WithVCAPEnvVariables_AppName_Overrides_VCAPBinding()
     {
-        string vcap_application = @"
+        string vcapApplication = @"
                 {
                     ""limits"": {
                         ""fds"": 16384,
@@ -713,7 +713,7 @@ public class EurekaPostConfigurerTest
                     ""instance_id"": ""instance_id""
                 }";
 
-        string vcap_services = @"
+        string vcapServices = @"
                 {
                     ""p-config-server"": [{
                         ""credentials"": {
@@ -807,8 +807,8 @@ public class EurekaPostConfigurerTest
                     }
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
         Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
         Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
         using var sandbox = new Sandbox();

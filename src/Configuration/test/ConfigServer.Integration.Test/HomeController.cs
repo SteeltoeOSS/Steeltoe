@@ -39,14 +39,14 @@ public class HomeController : Controller
             HealthCheckResult health = _health.Health();
             health.Details.TryGetValue("propertySources", out object sourceList);
 
-            object nameList = ToCSV(sourceList as IList<string>);
+            object nameList = ToCsv(sourceList as IList<string>);
             return $"{health.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps)},{nameList}";
         }
 
         return string.Empty;
     }
 
-    private object ToCSV(IList<string> list)
+    private object ToCsv(IList<string> list)
     {
         string result = string.Empty;
 

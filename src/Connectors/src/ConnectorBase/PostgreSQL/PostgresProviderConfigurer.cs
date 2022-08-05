@@ -68,13 +68,13 @@ public class PostgresProviderConfigurer
     }
 
     // from https://stackoverflow.com/a/4405876/761468
-    private string FirstCharToUpper(string input) =>
-        input switch
+    private string FirstCharToUpper(string input)
+    {
+        return input switch
         {
             null => throw new ArgumentNullException(nameof(input)),
-#pragma warning disable SA1122 // Use string.Empty for empty strings
             "" => throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input)),
-#pragma warning restore SA1122 // Use string.Empty for empty strings
             _ => input.First().ToString().ToUpper() + input.Substring(1)
         };
+    }
 }

@@ -469,12 +469,10 @@ public class HystrixRollingPercentile
              * use compareAndSet to set in case multiple threads are attempting (which shouldn't be the case because since addLast will ONLY be called by a single thread at a time due to protection
              * provided in <code>getCurrentBucket</code>)
              */
-#pragma warning disable S3923 // All branches in a conditional structure should not have exactly the same implementation
             if (_state.CompareAndSet(currentState, newState))
             {
                 // we succeeded
             }
-#pragma warning restore S3923 // All branches in a conditional structure should not have exactly the same implementation
         }
 
         IEnumerator IEnumerable.GetEnumerator()

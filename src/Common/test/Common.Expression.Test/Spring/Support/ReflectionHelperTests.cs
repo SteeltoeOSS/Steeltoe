@@ -732,6 +732,8 @@ public class ReflectionHelperTests : AbstractExpressionTests
 
         // ReSharper disable InconsistentNaming
 #pragma warning disable SA1300 // Element should begin with upper-case letter
+#pragma warning disable S100 // Methods and properties should be named in PascalCase
+#pragma warning disable IDE1006 // Naming Styles
 
         public string iD { get; } = "iD";
 
@@ -745,7 +747,9 @@ public class ReflectionHelperTests : AbstractExpressionTests
 
         public string pEBS { get; set; } = "pEBS";
 
-        // ReSharper restore InconsistentNaming
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning restore S100 // Methods and properties should be named in PascalCase
 #pragma warning restore SA1300 // Element should begin with upper-case letter
+        // ReSharper restore InconsistentNaming
     }
 }

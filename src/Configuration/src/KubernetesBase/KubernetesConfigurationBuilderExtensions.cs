@@ -42,19 +42,19 @@ public static class KubernetesConfigurationBuilderExtensions
             string lowercaseAppName = appInfo.Name.ToLowerInvariant();
             string lowercaseAppEnvName = (appInfo.Name + appInfo.NameEnvironmentSeparator + appInfo.EnvironmentName).ToLowerInvariant();
 
-            IKubernetes k8sClient = KubernetesClientHelpers.GetKubernetesClient(appInfo, kubernetesClientConfiguration, logger);
+            IKubernetes kubernetesClient = KubernetesClientHelpers.GetKubernetesClient(appInfo, kubernetesClientConfiguration, logger);
 
             if (appInfo.Config.Enabled)
             {
                 configurationBuilder
-                    .Add(new KubernetesConfigMapSource(k8sClient,
+                    .Add(new KubernetesConfigMapSource(kubernetesClient,
                         new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppName, appInfo.Reload, loggerFactory))).Add(
-                        new KubernetesConfigMapSource(k8sClient,
+                        new KubernetesConfigMapSource(kubernetesClient,
                             new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppEnvName, appInfo.Reload, loggerFactory)));
 
                 foreach (NamespacedResource configMap in appInfo.Config.Sources)
                 {
-                    configurationBuilder.Add(new KubernetesConfigMapSource(k8sClient,
+                    configurationBuilder.Add(new KubernetesConfigMapSource(kubernetesClient,
                         new KubernetesConfigSourceSettings(configMap.Namespace, configMap.Name, appInfo.Reload, loggerFactory)));
                 }
             }
@@ -62,14 +62,14 @@ public static class KubernetesConfigurationBuilderExtensions
             if (appInfo.Secrets.Enabled)
             {
                 configurationBuilder
-                    .Add(new KubernetesSecretSource(k8sClient,
+                    .Add(new KubernetesSecretSource(kubernetesClient,
                         new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppName, appInfo.Reload, loggerFactory))).Add(
-                        new KubernetesSecretSource(k8sClient,
+                        new KubernetesSecretSource(kubernetesClient,
                             new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppEnvName, appInfo.Reload, loggerFactory)));
 
                 foreach (NamespacedResource secret in appInfo.Secrets.Sources)
                 {
-                    configurationBuilder.Add(new KubernetesSecretSource(k8sClient,
+                    configurationBuilder.Add(new KubernetesSecretSource(kubernetesClient,
                         new KubernetesConfigSourceSettings(secret.Namespace, secret.Name, appInfo.Reload, loggerFactory)));
                 }
             }

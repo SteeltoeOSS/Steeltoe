@@ -30,7 +30,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
         try
         {
             HttpOperationResponse<V1ConfigMap> configMapResponse =
-                K8sClient.ReadNamespacedConfigMapWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
+                KubernetesClient.ReadNamespacedConfigMapWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
 
             ProcessData(configMapResponse.Body);
             EnableReloading();
@@ -58,8 +58,8 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
         ConfigMapWatcher?.Dispose();
         ConfigMapWatcher = null;
 
-        K8sClient?.Dispose();
-        K8sClient = null;
+        KubernetesClient?.Dispose();
+        KubernetesClient = null;
     }
 
     private static IDictionary<string, string> ParseConfigMapFile(Stream jsonFileContents)
@@ -99,7 +99,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
 
     private void EnableEventReloading()
     {
-        ConfigMapWatcher = K8sClient.WatchNamespacedConfigMapAsync(Settings.Name, Settings.Namespace, onEvent: (eventType, item) =>
+        ConfigMapWatcher = KubernetesClient.WatchNamespacedConfigMapAsync(Settings.Name, Settings.Namespace, onEvent: (eventType, item) =>
                 {
                     Logger?.LogInformation("Received {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(),
                         Settings.Name,

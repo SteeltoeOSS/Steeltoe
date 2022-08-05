@@ -12,7 +12,7 @@ internal abstract class KubernetesProviderBase : ConfigurationProvider
 {
     internal bool Polling { get; private set; }
 
-    protected IKubernetes K8sClient { get; set; }
+    protected IKubernetes KubernetesClient { get; set; }
 
     protected KubernetesConfigSourceSettings Settings { get; set; }
 
@@ -22,7 +22,7 @@ internal abstract class KubernetesProviderBase : ConfigurationProvider
 
     protected KubernetesProviderBase(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken token = default)
     {
-        K8sClient = kubernetes ?? throw new ArgumentNullException(nameof(kubernetes));
+        KubernetesClient = kubernetes ?? throw new ArgumentNullException(nameof(kubernetes));
         Settings = settings ?? throw new ArgumentNullException(nameof(settings));
         CancellationToken = token;
     }

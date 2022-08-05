@@ -1683,8 +1683,8 @@ public class HystrixCollapserTest : HystrixTestBase
     private class TestRequestCollapser : HystrixCollapser<List<string>, string, string>
     {
         protected readonly string Value;
-        protected readonly ConcurrentQueue<HystrixCommand<List<string>>> commandsExecuted;
-        protected readonly ITestOutputHelper output;
+        protected readonly ConcurrentQueue<HystrixCommand<List<string>>> CommandsExecuted;
+        protected readonly ITestOutputHelper Output;
 
         public override string RequestArgument => Value;
 
@@ -1739,8 +1739,8 @@ public class HystrixCollapserTest : HystrixTestBase
                 GetOptions(CollapserKeyFromString(timer), defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds), CreateMetrics())
         {
             Value = value;
-            commandsExecuted = executionLog;
-            this.output = output;
+            CommandsExecuted = executionLog;
+            Output = output;
         }
 
         private static HystrixCollapserMetrics CreateMetrics()
@@ -1763,11 +1763,11 @@ public class HystrixCollapserTest : HystrixTestBase
         protected override HystrixCommand<List<string>> CreateCommand(ICollection<ICollapsedRequest<string, string>> requests)
         {
             /* return a mocked command */
-            HystrixCommand<List<string>> command = new TestCollapserCommand(output, requests);
+            HystrixCommand<List<string>> command = new TestCollapserCommand(Output, requests);
 
-            if (commandsExecuted != null)
+            if (CommandsExecuted != null)
             {
-                commandsExecuted.Enqueue(command);
+                CommandsExecuted.Enqueue(command);
             }
 
             return command;
@@ -1856,7 +1856,7 @@ public class HystrixCollapserTest : HystrixTestBase
         protected override HystrixCommand<List<string>> CreateCommand(ICollection<ICollapsedRequest<string, string>> requests)
         {
             // args don't matter as it's short-circuited
-            return new ShortCircuitedCommand(output);
+            return new ShortCircuitedCommand(Output);
         }
     }
 
