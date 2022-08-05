@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #pragma warning disable IDE1006 // Naming Styles
+// ReSharper disable InconsistentNaming
 
 namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
 
@@ -24,10 +25,8 @@ public class Inventor
     };
 
     public int Counter;
-    // ReSharper disable InconsistentNaming
     public string _name;
     public string _name_;
-    // ReSharper restore InconsistentNaming
     public string RandomField;
     public Dictionary<string, string> TestDictionary;
     public string PublicName;
@@ -205,4 +204,3 @@ public class Inventor
     {
     }
 }
-#pragma warning restore IDE1006 // Naming Styles

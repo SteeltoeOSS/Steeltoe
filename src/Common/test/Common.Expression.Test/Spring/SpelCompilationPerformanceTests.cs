@@ -6,8 +6,11 @@ using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
 #pragma warning disable xUnit1004 // Test methods should not be skipped
+// ReSharper disable InconsistentNaming
+
+namespace Steeltoe.Common.Expression.Internal.Spring;
+
 public class SpelCompilationPerformanceTests : AbstractExpressionTests
 {
     private static readonly bool NoisyTests = true;
@@ -885,9 +888,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.True(SpelCompiler.Compile(expression));
     }
 
-// ReSharper disable InconsistentNaming
-#pragma warning disable IDE1006 // Naming Styles
-
     public class HW
     {
         public string Hello()
@@ -949,5 +949,4 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     {
         public string Boo = "oranges";
     }
-#pragma warning restore IDE1006 // Naming Styles
 }

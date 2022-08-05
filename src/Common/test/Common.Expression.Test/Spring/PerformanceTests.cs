@@ -135,4 +135,3 @@ public class PerformanceTests
         }
     }
 }
-#pragma warning restore xUnit1004 // Test methods should not be skipped

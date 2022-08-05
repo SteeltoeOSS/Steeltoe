@@ -158,8 +158,6 @@ public class ConstructorInvocationTests : AbstractExpressionTests
         Evaluate("new String(3.0d)", "3.0", typeof(string));
     }
 
-#pragma warning disable IDE1006 // Naming Styles
-
     public class DummyConstructorResolver : IConstructorResolver
     {
         public IConstructorExecutor Resolve(IEvaluationContext context, string typeName, List<Type> argumentTypes)
@@ -207,5 +205,4 @@ public class ConstructorInvocationTests : AbstractExpressionTests
         {
         }
     }
-#pragma warning restore IDE1006 // Naming Styles
 }

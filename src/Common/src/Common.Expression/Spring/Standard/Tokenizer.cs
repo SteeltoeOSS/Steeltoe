@@ -688,4 +688,3 @@ internal sealed class Tokenizer
         throw new InternalParseException(new SpelParseException(_expressionString, start, msg, inserts));
     }
 }
-#pragma warning restore S125 // Sections of code should not be commented out
