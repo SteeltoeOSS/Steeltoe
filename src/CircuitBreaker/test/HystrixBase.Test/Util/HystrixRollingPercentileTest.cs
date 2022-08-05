@@ -13,9 +13,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
 public class HystrixRollingPercentileTest
 {
     private const bool Enabled = true;
-    private static readonly int TimeInMilliseconds = 60000;
-    private static readonly int NumberOfBuckets = 12; // 12 buckets at 5000ms each
-    private static readonly int BucketDataLength = 1000;
+    private const int TimeInMilliseconds = 60000;
+    private const int NumberOfBuckets = 12; // 12 buckets at 5000ms each
+    private const int BucketDataLength = 1000;
     private readonly ITestOutputHelper _output;
 
     public HystrixRollingPercentileTest(ITestOutputHelper output)

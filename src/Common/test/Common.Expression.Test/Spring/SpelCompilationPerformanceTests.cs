@@ -13,7 +13,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class SpelCompilationPerformanceTests : AbstractExpressionTests
 {
-    private static readonly bool NoisyTests = true;
+    private const bool NoisyTests = true;
 
     private readonly int _count = 50000; // number of evaluations that are timed in one run
 

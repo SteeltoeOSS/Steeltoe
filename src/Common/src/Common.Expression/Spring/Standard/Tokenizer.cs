@@ -23,11 +23,11 @@ internal sealed class Tokenizer
 
     private static readonly byte[] Flags = new byte[256];
 
-    private static readonly byte IsDigitFlag = 0x01;
+    private const byte IsDigitFlag = 0x01;
 
-    private static readonly byte IsHexDigitFlag = 0x02;
+    private const byte IsHexDigitFlag = 0x02;
 
-    private static readonly byte IsAlphaFlag = 0x04;
+    private const byte IsAlphaFlag = 0x04;
 
     private readonly int _max;
 
