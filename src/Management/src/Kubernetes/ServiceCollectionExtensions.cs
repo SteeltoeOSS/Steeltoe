@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 using Steeltoe.Extensions.Configuration.Kubernetes;
 using Steeltoe.Management.Endpoint;
@@ -24,10 +25,7 @@ public static class ServiceCollectionExtensions
     /// </param>
     public static IServiceCollection AddKubernetesInfoContributor(this IServiceCollection services, IPodUtilities podUtilities = null)
     {
-        if (services is null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         if (!services.Any(srv => srv.ServiceType.IsAssignableFrom(typeof(IPodUtilities))))
         {
@@ -64,10 +62,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddKubernetesActuators(this IServiceCollection services, IConfiguration config = null, IPodUtilities podUtilities = null,
         MediaTypeVersion version = MediaTypeVersion.V2)
     {
-        if (services is null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddKubernetesInfoContributor(podUtilities);
         services.AddAllActuators(config, version);

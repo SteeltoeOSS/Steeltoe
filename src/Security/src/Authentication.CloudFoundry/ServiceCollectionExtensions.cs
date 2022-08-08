@@ -120,10 +120,7 @@ public static class ServiceCollectionExtensions
     public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, string authenticationScheme,
         Action<MutualTlsAuthenticationOptions> configurer)
     {
-        if (services is null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddCloudFoundryContainerIdentity();
 

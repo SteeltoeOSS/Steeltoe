@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Connector;
 
@@ -12,10 +13,7 @@ public class ConnectionStringConfigurationSource : IConfigurationSource
 
     public ConnectionStringConfigurationSource(IList<IConfigurationSource> sources)
     {
-        if (sources is null)
-        {
-            throw new ArgumentNullException(nameof(sources));
-        }
+        ArgumentGuard.NotNull(sources);
 
         Sources = new List<IConfigurationSource>(sources);
     }

@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Trace;
+using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry.Trace;
 
 namespace Steeltoe.Management.Tracing;
@@ -40,10 +41,7 @@ public static class TracingCoreServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddDistributedTracingAspNetCore(this IServiceCollection services, Action<TracerProviderBuilder> action)
     {
-        if (services is null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         action += builder => builder.AddAspNetCoreInstrumentation();
 

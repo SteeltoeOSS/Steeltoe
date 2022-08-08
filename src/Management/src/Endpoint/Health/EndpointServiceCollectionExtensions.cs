@@ -53,10 +53,7 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddHealthActuator(this IServiceCollection services, IConfiguration config = null, params Type[] contributors)
     {
-        if (services is null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddHealthActuator(config, new HealthRegistrationsAggregator(), contributors);
     }

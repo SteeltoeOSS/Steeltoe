@@ -42,11 +42,7 @@ public class SpringBootAdminClientOptions
     public SpringBootAdminClientOptions(IConfiguration config, IApplicationInstanceInfo appInfo)
     {
         ArgumentGuard.NotNull(config);
-
-        if (appInfo is null)
-        {
-            throw new ArgumentNullException(nameof(appInfo));
-        }
+        ArgumentGuard.NotNull(appInfo);
 
         IConfigurationSection section = config.GetSection(Prefix);
 

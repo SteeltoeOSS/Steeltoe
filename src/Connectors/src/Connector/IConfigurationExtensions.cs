@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector;
@@ -172,10 +173,7 @@ public static class ConfigurationExtensions
     /// </returns>
     public static IConfigurationBuilder AddConnectionStrings(this IConfigurationBuilder builder)
     {
-        if (builder is null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         builder.Add(new ConnectionStringConfigurationSource(builder.Sources));
         return builder;
