@@ -5,6 +5,7 @@
 using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
@@ -32,13 +33,17 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
     public MessageListenerAdapter(IApplicationContext context, object @delegate, ILogger logger = null)
         : base(context, logger)
     {
-        Instance = @delegate ?? throw new ArgumentNullException(nameof(@delegate));
+        ArgumentGuard.NotNull(@delegate);
+
+        Instance = @delegate;
     }
 
     public MessageListenerAdapter(IApplicationContext context, object @delegate, ISmartMessageConverter messageConverter, ILogger logger = null)
         : base(context, logger)
     {
-        Instance = @delegate ?? throw new ArgumentNullException(nameof(@delegate));
+        ArgumentGuard.NotNull(@delegate);
+
+        Instance = @delegate;
         MessageConverter = messageConverter;
     }
 

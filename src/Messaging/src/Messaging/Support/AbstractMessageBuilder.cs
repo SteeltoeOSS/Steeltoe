@@ -29,16 +29,21 @@ public abstract class AbstractMessageBuilder
 
     protected AbstractMessageBuilder(MessageHeaderAccessor accessor)
     {
+        ArgumentGuard.NotNull(accessor);
+
         Payload = null;
         OriginalMessage = null;
-        headerAccessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+        headerAccessor = accessor;
     }
 
     protected AbstractMessageBuilder(object payload, MessageHeaderAccessor accessor)
     {
-        Payload = payload ?? throw new ArgumentNullException(nameof(payload));
+        ArgumentGuard.NotNull(payload);
+        ArgumentGuard.NotNull(accessor);
+
+        Payload = payload;
         OriginalMessage = null;
-        headerAccessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+        headerAccessor = accessor;
     }
 
     public abstract AbstractMessageBuilder SetHeaders(MessageHeaderAccessor accessor);

@@ -17,7 +17,9 @@ public class SpelExpressionParser : TemplateAwareExpressionParser
 
     public SpelExpressionParser(SpelParserOptions configuration)
     {
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        ArgumentGuard.NotNull(configuration);
+
+        _configuration = configuration;
     }
 
     public IExpression ParseRaw(string expressionString)

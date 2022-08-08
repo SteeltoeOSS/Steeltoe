@@ -17,7 +17,9 @@ public class StandardTypeConverter : ITypeConverter
 
     public StandardTypeConverter(IConversionService conversionService)
     {
-        ConversionService = conversionService ?? throw new ArgumentNullException(nameof(conversionService));
+        ArgumentGuard.NotNull(conversionService);
+
+        ConversionService = conversionService;
     }
 
     public bool CanConvert(Type sourceType, Type targetType)

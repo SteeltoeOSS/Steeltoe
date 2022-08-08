@@ -27,7 +27,9 @@ public class EventCounterListener : EventListener
 
     public EventCounterListener(IMetricsObserverOptions options, ILogger<EventCounterListener> logger = null)
     {
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        ArgumentGuard.NotNull(options);
+
+        _options = options;
         _logger = logger;
     }
 

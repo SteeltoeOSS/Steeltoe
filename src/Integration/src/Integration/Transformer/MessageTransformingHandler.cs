@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Handler;
@@ -31,7 +32,9 @@ public class MessageTransformingHandler : AbstractReplyProducingMessageHandler, 
     public MessageTransformingHandler(IApplicationContext context, ITransformer transformer)
         : base(context)
     {
-        Transformer = transformer ?? throw new ArgumentNullException(nameof(transformer));
+        ArgumentGuard.NotNull(transformer);
+
+        Transformer = transformer;
         RequiresReply = true;
     }
 

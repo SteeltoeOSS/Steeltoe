@@ -5,6 +5,7 @@
 using System.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Task;
@@ -63,7 +64,9 @@ public class DiscoveryClient : IEurekaClient
     public DiscoveryClient(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
         : this(ApplicationInfoManager.Instance, logFactory)
     {
-        ClientConfig = clientConfig ?? throw new ArgumentNullException(nameof(clientConfig));
+        ArgumentGuard.NotNull(clientConfig);
+
+        ClientConfig = clientConfig;
         this.httpClient = httpClient ?? new EurekaHttpClient(clientConfig, logFactory);
 
         Initialize();

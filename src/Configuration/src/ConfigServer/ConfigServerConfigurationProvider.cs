@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Logging;
@@ -103,7 +104,8 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// </param>
     public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, ILoggerFactory logFactory = null)
     {
-        _ = settings ?? throw new ArgumentNullException(nameof(settings));
+        ArgumentGuard.NotNull(settings);
+
         logFactory ??= BootstrapLoggerFactory.Instance;
         Initialize(settings, logFactory: logFactory);
     }
@@ -122,9 +124,11 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// </param>
     public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, ILoggerFactory logFactory = null)
     {
-        _ = settings ?? throw new ArgumentNullException(nameof(settings));
+        ArgumentGuard.NotNull(settings);
+        ArgumentGuard.NotNull(httpClient);
+
         logFactory ??= BootstrapLoggerFactory.Instance;
-        _ = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+
         Initialize(settings, httpClient: httpClient, logFactory: logFactory);
     }
 
@@ -151,7 +155,8 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// </param>
     public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source, HttpClient httpClient)
     {
-        _ = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        ArgumentGuard.NotNull(httpClient);
+
         Initialize(source, httpClient);
     }
 

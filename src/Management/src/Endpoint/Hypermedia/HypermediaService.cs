@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
@@ -14,9 +15,12 @@ public class HypermediaService
 
     public HypermediaService(IManagementOptions managementOptions, IEndpointOptions options, ILogger logger = null)
     {
+        ArgumentGuard.NotNull(managementOptions);
+        ArgumentGuard.NotNull(options);
+
         _logger = logger;
-        _managementOptions = managementOptions ?? throw new ArgumentNullException(nameof(managementOptions));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _managementOptions = managementOptions;
+        _options = options;
     }
 
     public Links Invoke(string baseUrl)

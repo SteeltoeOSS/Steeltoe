@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka;
@@ -39,17 +40,22 @@ public class DiscoveryManager
 
     public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
     {
+        ArgumentGuard.NotNull(clientConfig);
+
         logger = logFactory?.CreateLogger<DiscoveryManager>();
-        ClientConfig = clientConfig ?? throw new ArgumentNullException(nameof(clientConfig));
+        ClientConfig = clientConfig;
         Client = new DiscoveryClient(clientConfig, httpClient, logFactory);
     }
 
     public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, IEurekaHttpClient httpClient,
         ILoggerFactory logFactory = null)
     {
+        ArgumentGuard.NotNull(clientConfig);
+        ArgumentGuard.NotNull(instanceConfig);
+
         logger = logFactory?.CreateLogger<DiscoveryManager>();
-        ClientConfig = clientConfig ?? throw new ArgumentNullException(nameof(clientConfig));
-        InstanceConfig = instanceConfig ?? throw new ArgumentNullException(nameof(instanceConfig));
+        ClientConfig = clientConfig;
+        InstanceConfig = instanceConfig;
 
         if (ApplicationInfoManager.Instance.InstanceInfo == null)
         {

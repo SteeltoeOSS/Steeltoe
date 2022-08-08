@@ -12,7 +12,9 @@ public class ServiceFactoryResolver : IServiceResolver
 
     public ServiceFactoryResolver(IApplicationContext applicationContext)
     {
-        _applicationContext = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
+        ArgumentGuard.NotNull(applicationContext);
+
+        _applicationContext = applicationContext;
     }
 
     public static Type GetServiceNameAndType(IEvaluationContext context, string serviceName, out string name)

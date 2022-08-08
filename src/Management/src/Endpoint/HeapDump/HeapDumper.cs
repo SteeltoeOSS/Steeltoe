@@ -7,6 +7,7 @@ using Graphs;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.GCDump;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
@@ -18,7 +19,9 @@ public class HeapDumper : IHeapDumper
 
     public HeapDumper(IHeapDumpOptions options, string basePathOverride = null, ILogger<HeapDumper> logger = null)
     {
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        ArgumentGuard.NotNull(options);
+
+        _options = options;
         _logger = logger;
         _basePathOverride = basePathOverride;
     }

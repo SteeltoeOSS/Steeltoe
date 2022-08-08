@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client.Events;
+using Steeltoe.Common;
 using Steeltoe.Common.Net;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using RC = RabbitMQ.Client;
@@ -108,9 +109,11 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
     protected AbstractConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, AbstractConnectionFactory publisherConnectionFactory,
         ILoggerFactory loggerFactory = null)
     {
+        ArgumentGuard.NotNull(rabbitConnectionFactory);
+
         LoggerFactory = loggerFactory;
         Logger = LoggerFactory?.CreateLogger(GetType());
-        InnerRabbitConnectionFactory = rabbitConnectionFactory ?? throw new ArgumentNullException(nameof(rabbitConnectionFactory));
+        InnerRabbitConnectionFactory = rabbitConnectionFactory;
         _connectionListener = new CompositeConnectionListener(LoggerFactory?.CreateLogger<CompositeConnectionListener>());
         _channelListener = new CompositeChannelListener(LoggerFactory?.CreateLogger<CompositeConnectionListener>());
         PublisherConnectionFactory = publisherConnectionFactory;

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Connector.Hystrix;
 
 public class HystrixConnectionFactory
@@ -10,6 +12,8 @@ public class HystrixConnectionFactory
 
     public HystrixConnectionFactory(object realFactory)
     {
-        ConnectionFactory = realFactory ?? throw new ArgumentNullException(nameof(realFactory));
+        ArgumentGuard.NotNull(realFactory);
+
+        ConnectionFactory = realFactory;
     }
 }

@@ -15,7 +15,9 @@ public class ServiceExpressionContext : IServiceExpressionContext
 
     public ServiceExpressionContext(IApplicationContext applicationContext)
     {
-        ApplicationContext = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
+        ArgumentGuard.NotNull(applicationContext);
+
+        ApplicationContext = applicationContext;
     }
 
     public bool ContainsService(string serviceName, Type serviceType)

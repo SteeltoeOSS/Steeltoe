@@ -6,6 +6,7 @@ using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
+using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
@@ -18,9 +19,12 @@ public class StandardPodUtilities : IPodUtilities
 
     public StandardPodUtilities(KubernetesApplicationOptions kubernetesApplicationOptions, ILogger logger = null, IKubernetes kubernetes = null)
     {
-        _applicationOptions = kubernetesApplicationOptions ?? throw new ArgumentNullException(nameof(kubernetesApplicationOptions));
+        ArgumentGuard.NotNull(kubernetesApplicationOptions);
+        ArgumentGuard.NotNull(kubernetes);
+
+        _applicationOptions = kubernetesApplicationOptions;
         _logger = logger;
-        _kubernetes = kubernetes ?? throw new ArgumentNullException(nameof(kubernetes), "A Kubernetes client is required");
+        _kubernetes = kubernetes;
     }
 
     public async Task<V1Pod> GetCurrentPodAsync()

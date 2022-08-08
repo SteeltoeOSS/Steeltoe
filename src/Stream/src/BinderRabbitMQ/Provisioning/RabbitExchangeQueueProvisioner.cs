@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
@@ -729,7 +730,9 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
 
         public RabbitProducerDestination(RabbitConfig.IExchange exchange, RabbitConfig.IBinding binding)
         {
-            Exchange = exchange ?? throw new ArgumentNullException(nameof(exchange));
+            ArgumentGuard.NotNull(exchange);
+
+            Exchange = exchange;
             Binding = binding;
         }
 
@@ -752,7 +755,9 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
 
         public RabbitConsumerDestination(string queueName, RabbitConfig.IBinding binding)
         {
-            Name = queueName ?? throw new ArgumentNullException(nameof(queueName));
+            ArgumentGuard.NotNull(queueName);
+
+            Name = queueName;
             Binding = binding;
         }
 

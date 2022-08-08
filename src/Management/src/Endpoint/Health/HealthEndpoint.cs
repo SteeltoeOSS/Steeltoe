@@ -24,7 +24,9 @@ public class HealthEndpoint : AbstractEndpoint<HealthEndpointResponse, ISecurity
     {
         ArgumentGuard.NotNull(contributors);
 
-        _aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
+        ArgumentGuard.NotNull(aggregator);
+
+        _aggregator = aggregator;
         _contributors = contributors.ToList();
         _logger = logger;
     }

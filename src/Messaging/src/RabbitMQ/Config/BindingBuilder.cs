@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
@@ -123,7 +124,9 @@ public class BindingBuilder
 
             public HeadersExchangeSingleValueBindingCreator(HeadersExchangeMapConfigurer configurer, string key)
             {
-                _key = key ?? throw new ArgumentNullException(nameof(key));
+                ArgumentGuard.NotNull(key);
+
+                _key = key;
                 _configurer = configurer;
             }
 

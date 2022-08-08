@@ -22,12 +22,14 @@ public class TransactionSystemException : TransactionException
 
     public void InitApplicationException(Exception exception)
     {
+        ArgumentGuard.NotNull(exception);
+
         if (ApplicationException != null)
         {
             throw new InvalidOperationException($"Already holding an application exception: {ApplicationException}");
         }
 
-        ApplicationException = exception ?? throw new ArgumentNullException(nameof(exception));
+        ApplicationException = exception;
     }
 
     public bool Contains(Type exceptionType)

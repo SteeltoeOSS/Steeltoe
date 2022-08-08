@@ -53,8 +53,10 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> config, IHttpClientHandlerProvider handlerProvider = null, ILoggerFactory logFactory = null)
     {
+        ArgumentGuard.NotNull(config);
+
         this.config = null;
-        _configOptions = config ?? throw new ArgumentNullException(nameof(config));
+        _configOptions = config;
         this.handlerProvider = handlerProvider;
         Initialize(new Dictionary<string, string>(), logFactory);
     }
@@ -73,7 +75,9 @@ public class EurekaHttpClient : IEurekaHttpClient
     public EurekaHttpClient(IEurekaClientConfig config, IDictionary<string, string> headers, ILoggerFactory logFactory = null,
         IHttpClientHandlerProvider handlerProvider = null)
     {
-        this.config = config ?? throw new ArgumentNullException(nameof(config));
+        ArgumentGuard.NotNull(config);
+
+        this.config = config;
         this.handlerProvider = handlerProvider;
         Initialize(headers, logFactory);
     }
@@ -800,8 +804,10 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     protected void Initialize(IDictionary<string, string> headers, ILoggerFactory logFactory)
     {
+        ArgumentGuard.NotNull(headers);
+
         logger = logFactory?.CreateLogger<EurekaHttpClient>();
-        this.headers = headers ?? throw new ArgumentNullException(nameof(headers));
+        this.headers = headers;
         JsonSerializerOptions.Converters.Add(new JsonInstanceInfoConverter());
 
         // Validate serviceUrls

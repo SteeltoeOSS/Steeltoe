@@ -283,8 +283,10 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
         public ContentBasedHeaderMatcher(bool match, List<string> content)
         {
+            ArgumentGuard.NotNull(content);
+
             Match = match;
-            Content = content ?? throw new ArgumentNullException(nameof(content));
+            Content = content;
         }
 
         public bool MatchHeader(string headerName)

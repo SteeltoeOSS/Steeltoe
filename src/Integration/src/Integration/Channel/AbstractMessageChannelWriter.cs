@@ -4,6 +4,7 @@
 
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Messaging;
 
 namespace Steeltoe.Integration.Channel;
@@ -15,7 +16,9 @@ public abstract class AbstractMessageChannelWriter : ChannelWriter<IMessage>
 
     protected AbstractMessageChannelWriter(AbstractMessageChannel channel, ILogger logger = null)
     {
-        this.channel = channel ?? throw new ArgumentNullException(nameof(channel));
+        ArgumentGuard.NotNull(channel);
+
+        this.channel = channel;
         this.logger = logger;
     }
 

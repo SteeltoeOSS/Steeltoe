@@ -48,7 +48,9 @@ public class HandlerMethod
     {
         ArgumentGuard.NotNull(handlerMethod);
 
-        InnerHandler = handler ?? throw new ArgumentNullException(nameof(handler));
+        ArgumentGuard.NotNull(handler);
+
+        InnerHandler = handler;
         HandlerType = handler.GetType();
         Method = handlerMethod;
         InnerArgCount = Method.GetParameters().Length;
@@ -62,7 +64,9 @@ public class HandlerMethod
             throw new ArgumentNullException(nameof(handlerMethodName));
         }
 
-        InnerHandler = handler ?? throw new ArgumentNullException(nameof(handler));
+        ArgumentGuard.NotNull(handler);
+
+        InnerHandler = handler;
         HandlerType = handler.GetType();
         Method = HandlerType.GetMethod(handlerMethodName, parameterTypes);
         InnerArgCount = Method.GetParameters().Length;
@@ -83,8 +87,9 @@ public class HandlerMethod
     private HandlerMethod(HandlerMethod handlerMethod, object handler)
     {
         ArgumentGuard.NotNull(handlerMethod);
+        ArgumentGuard.NotNull(handler);
 
-        InnerHandler = handler ?? throw new ArgumentNullException(nameof(handler));
+        InnerHandler = handler;
         HandlerType = handlerMethod.HandlerType;
         Method = handlerMethod.Method;
         InnerInvoker = handlerMethod.HandlerInvoker;

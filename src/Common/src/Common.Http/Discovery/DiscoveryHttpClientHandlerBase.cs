@@ -16,7 +16,9 @@ public class DiscoveryHttpClientHandlerBase
 
     public DiscoveryHttpClientHandlerBase(IDiscoveryClient client, ILogger logger = null, ILoadBalancer loadBalancer = null)
     {
-        this.client = client ?? throw new ArgumentNullException(nameof(client));
+        ArgumentGuard.NotNull(client);
+
+        this.client = client;
         this.loadBalancer = loadBalancer ?? new RandomLoadBalancer(client);
         this.logger = logger;
     }

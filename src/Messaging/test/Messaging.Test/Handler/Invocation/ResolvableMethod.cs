@@ -268,7 +268,9 @@ internal sealed class ResolvableMethod
 
         public ArgResolver(ResolvableMethod resolvable, params IPredicate<ParameterInfo>[] filters)
         {
-            _resolvable = resolvable ?? throw new ArgumentNullException(nameof(resolvable));
+            ArgumentGuard.NotNull(resolvable);
+
+            _resolvable = resolvable;
             _filters.AddRange(filters);
         }
 
@@ -387,7 +389,9 @@ internal sealed class ResolvableMethod
 
             public FuncPredicate(Func<ParameterInfo, bool> func)
             {
-                _func = func ?? throw new ArgumentNullException(nameof(func));
+                ArgumentGuard.NotNull(func);
+
+                _func = func;
             }
 
             public bool Test(ParameterInfo t)

@@ -4,6 +4,7 @@
 
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Attributes;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
@@ -38,7 +39,9 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
 
     protected AbstractMethodAttributeProcessor(IApplicationContext applicationContext, ILogger logger)
     {
-        ApplicationContext = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
+        ArgumentGuard.NotNull(applicationContext);
+
+        ApplicationContext = applicationContext;
         _logger = logger;
         MessageHandlerProperties.Add(SendTimeoutPropertyName);
         ConversionService = ApplicationContext.GetService<IConversionService>() ?? DefaultConversionService.Singleton;

@@ -5,6 +5,7 @@
 using Consul;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
@@ -49,8 +50,11 @@ public class ConsulHealthContributor : IHealthContributor
     /// </param>
     public ConsulHealthContributor(IConsulClient client, ConsulDiscoveryOptions options, ILogger<ConsulHealthContributor> logger = null)
     {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        ArgumentGuard.NotNull(client);
+        ArgumentGuard.NotNull(options);
+
+        _client = client;
+        _options = options;
         _logger = logger;
     }
 
@@ -68,8 +72,11 @@ public class ConsulHealthContributor : IHealthContributor
     /// </param>
     public ConsulHealthContributor(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ILogger<ConsulHealthContributor> logger = null)
     {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-        _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
+        ArgumentGuard.NotNull(client);
+        ArgumentGuard.NotNull(optionsMonitor);
+
+        _client = client;
+        _optionsMonitor = optionsMonitor;
         _logger = logger;
     }
 

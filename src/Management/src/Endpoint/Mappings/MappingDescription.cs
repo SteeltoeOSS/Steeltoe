@@ -25,9 +25,10 @@ public class MappingDescription
     public MappingDescription(string routeHandler, IRouteDetails routeDetails)
     {
         ArgumentGuard.NotNull(routeDetails);
+        ArgumentGuard.NotNull(routeHandler);
 
         Predicate = CreatePredicateString(routeDetails);
-        Handler = routeHandler ?? throw new ArgumentNullException(nameof(routeHandler));
+        Handler = routeHandler;
     }
 
     public MappingDescription(MethodInfo routeHandler, IRouteDetails routeDetails)

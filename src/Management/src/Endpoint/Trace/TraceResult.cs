@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -16,7 +17,9 @@ public class TraceResult
 
     public TraceResult(long timestamp, Dictionary<string, object> info)
     {
+        ArgumentGuard.NotNull(info);
+
         TimeStamp = timestamp;
-        Info = info ?? throw new ArgumentNullException(nameof(info));
+        Info = info;
     }
 }

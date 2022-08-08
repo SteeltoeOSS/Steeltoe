@@ -18,7 +18,9 @@ public class PemConfigureCertificateOptions : IConfigureNamedOptions<Certificate
 
     public PemConfigureCertificateOptions(IConfiguration config)
     {
-        _config = config ?? throw new ArgumentNullException(nameof(config));
+        ArgumentGuard.NotNull(config);
+
+        _config = config;
     }
 
     public void Configure(string name, CertificateOptions options)

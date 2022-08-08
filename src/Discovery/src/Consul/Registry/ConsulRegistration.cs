@@ -68,8 +68,11 @@ public class ConsulRegistration : IConsulRegistration
     /// </param>
     public ConsulRegistration(AgentServiceRegistration agentServiceRegistration, ConsulDiscoveryOptions options)
     {
-        Service = agentServiceRegistration ?? throw new ArgumentNullException(nameof(agentServiceRegistration));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        ArgumentGuard.NotNull(agentServiceRegistration);
+        ArgumentGuard.NotNull(options);
+
+        Service = agentServiceRegistration;
+        _options = options;
 
         Initialize(agentServiceRegistration);
     }
@@ -85,8 +88,11 @@ public class ConsulRegistration : IConsulRegistration
     /// </param>
     public ConsulRegistration(AgentServiceRegistration agentServiceRegistration, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
     {
-        Service = agentServiceRegistration ?? throw new ArgumentNullException(nameof(agentServiceRegistration));
-        _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
+        ArgumentGuard.NotNull(agentServiceRegistration);
+        ArgumentGuard.NotNull(optionsMonitor);
+
+        Service = agentServiceRegistration;
+        _optionsMonitor = optionsMonitor;
 
         Initialize(agentServiceRegistration);
     }

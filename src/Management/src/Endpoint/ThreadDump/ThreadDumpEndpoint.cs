@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
@@ -16,7 +17,9 @@ public class ThreadDumpEndpoint : AbstractEndpoint<List<ThreadInfo>>, IThreadDum
     public ThreadDumpEndpoint(IThreadDumpOptions options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpoint> logger = null)
         : base(options)
     {
-        _threadDumper = threadDumper ?? throw new ArgumentNullException(nameof(threadDumper));
+        ArgumentGuard.NotNull(threadDumper);
+
+        _threadDumper = threadDumper;
         _logger = logger;
     }
 

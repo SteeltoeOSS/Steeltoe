@@ -15,7 +15,9 @@ public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOpt
 
     public ConfigureCertificateOptions(IConfiguration config)
     {
-        _config = config ?? throw new ArgumentNullException(nameof(config));
+        ArgumentGuard.NotNull(config);
+
+        _config = config;
     }
 
     public void Configure(string name, CertificateOptions options)

@@ -5,6 +5,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
 
@@ -19,8 +20,10 @@ public class EndpointMiddleware<TResult>
 
     public EndpointMiddleware(IManagementOptions managementOptions, ILogger logger = null)
     {
+        ArgumentGuard.NotNull(managementOptions);
+
         this.logger = logger;
-        this.managementOptions = managementOptions ?? throw new ArgumentNullException(nameof(managementOptions));
+        this.managementOptions = managementOptions;
 
         if (this.managementOptions is ManagementEndpointOptions options)
         {
@@ -31,7 +34,9 @@ public class EndpointMiddleware<TResult>
     public EndpointMiddleware(IEndpoint<TResult> endpoint, IManagementOptions managementOptions, ILogger logger = null)
         : this(managementOptions, logger)
     {
-        Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        ArgumentGuard.NotNull(endpoint);
+
+        Endpoint = endpoint;
     }
 
     public virtual string HandleRequest()
@@ -100,7 +105,9 @@ public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
     public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IManagementOptions managementOptions, ILogger logger = null)
         : base(managementOptions, logger)
     {
-        Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        ArgumentGuard.NotNull(endpoint);
+
+        Endpoint = endpoint;
     }
 
     public EndpointMiddleware(IManagementOptions managementOptions, ILogger logger = null)

@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Security;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
@@ -25,9 +26,13 @@ public class HealthEndpointCore : HealthEndpoint
         IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpoint> logger = null)
         : base(options, aggregator, contributors, logger)
     {
-        _aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
-        _serviceOptions = serviceOptions ?? throw new ArgumentNullException(nameof(serviceOptions));
-        _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+        ArgumentGuard.NotNull(aggregator);
+        ArgumentGuard.NotNull(serviceOptions);
+        ArgumentGuard.NotNull(provider);
+
+        _aggregator = aggregator;
+        _serviceOptions = serviceOptions;
+        _provider = provider;
         _contributors = contributors.ToList();
         _logger = logger;
     }

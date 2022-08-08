@@ -10,6 +10,7 @@ using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Etlx;
 using Microsoft.Diagnostics.Tracing.Stacks;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
@@ -37,7 +38,9 @@ public class ThreadDumperEp : IThreadDumper
 
     public ThreadDumperEp(IThreadDumpOptions options, ILogger<ThreadDumperEp> logger = null)
     {
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        ArgumentGuard.NotNull(options);
+
+        _options = options;
         _logger = logger;
     }
 

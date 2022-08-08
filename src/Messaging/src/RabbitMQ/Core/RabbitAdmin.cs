@@ -5,6 +5,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client.Exceptions;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
 using Steeltoe.Messaging.RabbitMQ.Config;
@@ -59,9 +60,11 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
     [ActivatorUtilitiesConstructor]
     public RabbitAdmin(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILogger logger = null)
     {
+        ArgumentGuard.NotNull(connectionFactory);
+
         _logger = logger;
         ApplicationContext = applicationContext;
-        ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+        ConnectionFactory = connectionFactory;
         RabbitTemplate = new RabbitTemplate(connectionFactory, logger);
         DoInitialize();
     }
@@ -73,8 +76,10 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
     public RabbitAdmin(RabbitTemplate template, ILogger logger = null)
     {
+        ArgumentGuard.NotNull(template);
+
         _logger = logger;
-        RabbitTemplate = template ?? throw new ArgumentNullException(nameof(template));
+        RabbitTemplate = template;
         ConnectionFactory = template.ConnectionFactory ?? throw new ArgumentNullException("RabbitTemplate's ConnectionFactory must not be null");
         DoInitialize();
     }

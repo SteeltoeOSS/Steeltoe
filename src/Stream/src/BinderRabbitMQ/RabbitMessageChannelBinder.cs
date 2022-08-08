@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Retry;
@@ -94,9 +95,12 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         IListenerContainerCustomizer containerCustomizer, IMessageSourceCustomizer sourceCustomizer)
         : base(context, Array.Empty<string>(), provisioningProvider, containerCustomizer, sourceCustomizer, logger)
     {
+        ArgumentGuard.NotNull(connectionFactory);
+        ArgumentGuard.NotNull(rabbitOptions);
+
         this.logger = logger;
-        ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-        RabbitConnectionOptions = rabbitOptions ?? throw new ArgumentNullException(nameof(rabbitOptions));
+        ConnectionFactory = connectionFactory;
+        RabbitConnectionOptions = rabbitOptions;
         BinderOptions = binderOptions?.CurrentValue;
         BindingsOptions = bindingsOptions?.CurrentValue;
         ServiceName = "rabbitBinder";

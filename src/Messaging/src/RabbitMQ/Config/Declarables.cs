@@ -16,17 +16,19 @@ public class Declarables : IServiceNameAware
     public Declarables(string name, params IDeclarable[] declarables)
     {
         ArgumentGuard.NotNull(declarables);
+        ArgumentGuard.NotNull(name);
 
         DeclarableList = new List<IDeclarable>(declarables);
-        ServiceName = name ?? throw new ArgumentNullException(nameof(name));
+        ServiceName = name;
     }
 
     public Declarables(string name, List<IDeclarable> declarables)
     {
         ArgumentGuard.NotNull(declarables);
+        ArgumentGuard.NotNull(name);
 
         DeclarableList = new List<IDeclarable>(declarables);
-        ServiceName = name ?? throw new ArgumentNullException(nameof(name));
+        ServiceName = name;
     }
 
     public IEnumerable<T> GetDeclarablesByType<T>()

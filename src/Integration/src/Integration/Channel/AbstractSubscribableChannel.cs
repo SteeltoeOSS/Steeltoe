@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Messaging;
@@ -35,7 +36,9 @@ public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISub
     protected AbstractSubscribableChannel(IApplicationContext context, IMessageDispatcher dispatcher, string name, ILogger logger = null)
         : base(context, name, logger)
     {
-        Dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+        ArgumentGuard.NotNull(dispatcher);
+
+        Dispatcher = dispatcher;
     }
 
     public virtual bool Subscribe(IMessageHandler handler)

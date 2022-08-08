@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Extensions.Configuration.Placeholder;
@@ -38,7 +39,9 @@ public class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// </param>
     public PlaceholderResolverProvider(IConfigurationRoot configuration, ILoggerFactory logFactory = null)
     {
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        ArgumentGuard.NotNull(configuration);
+
+        _configuration = configuration;
         Logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
     }
 
@@ -54,7 +57,9 @@ public class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// </param>
     public PlaceholderResolverProvider(IList<IConfigurationProvider> providers, ILoggerFactory logFactory = null)
     {
-        InnerProviders = providers ?? throw new ArgumentNullException(nameof(providers));
+        ArgumentGuard.NotNull(providers);
+
+        InnerProviders = providers;
         Logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
     }
 

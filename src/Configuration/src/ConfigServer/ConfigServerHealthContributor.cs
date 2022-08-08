@@ -26,7 +26,9 @@ public class ConfigServerHealthContributor : IHealthContributor
 
     public ConfigServerHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger = null)
     {
-        Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        ArgumentGuard.NotNull(configuration);
+
+        Configuration = configuration;
         Logger = logger;
         Provider = FindProvider(configuration);
     }

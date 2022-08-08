@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
+using Steeltoe.Common;
 
 namespace Steeltoe.Messaging.Core;
 
@@ -14,7 +15,9 @@ public class CachingDestinationResolverProxy<TDestination> : IDestinationResolve
 
     public CachingDestinationResolverProxy(IDestinationResolver<TDestination> targetDestinationResolver)
     {
-        _targetDestinationResolver = targetDestinationResolver ?? throw new ArgumentNullException(nameof(targetDestinationResolver));
+        ArgumentGuard.NotNull(targetDestinationResolver);
+
+        _targetDestinationResolver = targetDestinationResolver;
     }
 
     public TDestination ResolveDestination(string name)

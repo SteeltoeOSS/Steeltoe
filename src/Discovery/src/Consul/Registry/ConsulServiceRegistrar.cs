@@ -59,9 +59,13 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
     public ConsulServiceRegistrar(IConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulRegistration registration,
         ILogger<ConsulServiceRegistrar> logger = null)
     {
-        _registry = registry ?? throw new ArgumentNullException(nameof(registry));
-        _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
-        Registration = registration ?? throw new ArgumentNullException(nameof(registration));
+        ArgumentGuard.NotNull(registry);
+        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentGuard.NotNull(registration);
+
+        _registry = registry;
+        _optionsMonitor = optionsMonitor;
+        Registration = registration;
         _logger = logger;
     }
 
@@ -83,9 +87,13 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
     public ConsulServiceRegistrar(IConsulServiceRegistry registry, ConsulDiscoveryOptions options, IConsulRegistration registration,
         ILogger<ConsulServiceRegistrar> logger = null)
     {
-        _registry = registry ?? throw new ArgumentNullException(nameof(registry));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
-        Registration = registration ?? throw new ArgumentNullException(nameof(registration));
+        ArgumentGuard.NotNull(registry);
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(registration);
+
+        _registry = registry;
+        _options = options;
+        Registration = registration;
         _logger = logger;
     }
 

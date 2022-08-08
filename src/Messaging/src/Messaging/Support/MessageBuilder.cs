@@ -122,7 +122,9 @@ public class MessageBuilder<TPayload> : AbstractMessageBuilder
 
     public override AbstractMessageBuilder SetHeaders(MessageHeaderAccessor accessor)
     {
-        headerAccessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+        ArgumentGuard.NotNull(accessor);
+
+        headerAccessor = accessor;
         return this;
     }
 

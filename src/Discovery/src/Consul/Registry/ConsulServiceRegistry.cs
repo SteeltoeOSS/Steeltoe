@@ -56,8 +56,11 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     public ConsulServiceRegistry(IConsulClient client, ConsulDiscoveryOptions options, IScheduler scheduler = null,
         ILogger<ConsulServiceRegistry> logger = null)
     {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        ArgumentGuard.NotNull(client);
+        ArgumentGuard.NotNull(options);
+
+        _client = client;
+        _options = options;
         _scheduler = scheduler;
         _logger = logger;
     }
@@ -80,8 +83,11 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     public ConsulServiceRegistry(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IScheduler scheduler = null,
         ILogger<ConsulServiceRegistry> logger = null)
     {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-        _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
+        ArgumentGuard.NotNull(client);
+        ArgumentGuard.NotNull(optionsMonitor);
+
+        _client = client;
+        _optionsMonitor = optionsMonitor;
         _scheduler = scheduler;
         _logger = logger;
     }

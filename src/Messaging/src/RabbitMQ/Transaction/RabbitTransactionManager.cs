@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
@@ -23,7 +24,9 @@ public class RabbitTransactionManager : AbstractPlatformTransactionManager, IRes
     public RabbitTransactionManager(IConnectionFactory connectionFactory, ILogger logger = null)
         : base(logger)
     {
-        ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+        ArgumentGuard.NotNull(connectionFactory);
+
+        ConnectionFactory = connectionFactory;
     }
 
     protected override object DoGetTransaction()

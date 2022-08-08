@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
+using Steeltoe.Common;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
@@ -342,7 +343,9 @@ public class HystrixCommandOptionsTest
         internal JsonStreamConfigurationProvider(JsonConfigurationSource source, MemoryStream stream)
             : base(source)
         {
-            _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+            ArgumentGuard.NotNull(stream);
+
+            _stream = stream;
         }
 
         public override void Load()
@@ -357,7 +360,9 @@ public class HystrixCommandOptionsTest
 
         internal JsonStreamConfigurationSource(MemoryStream stream)
         {
-            _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+            ArgumentGuard.NotNull(stream);
+
+            _stream = stream;
         }
 
         public override IConfigurationProvider Build(IConfigurationBuilder builder)

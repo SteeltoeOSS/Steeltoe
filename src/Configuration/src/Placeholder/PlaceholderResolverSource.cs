@@ -40,7 +40,9 @@ public class PlaceholderResolverSource : IConfigurationSource
 
     public PlaceholderResolverSource(IConfigurationRoot configuration, ILoggerFactory loggerFactory = null)
     {
-        Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        ArgumentGuard.NotNull(configuration);
+
+        Configuration = configuration;
         LoggerFactory = loggerFactory ?? new NullLoggerFactory();
     }
 

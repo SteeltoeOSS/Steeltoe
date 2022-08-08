@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Acks;
@@ -46,9 +47,13 @@ public class RabbitMessageSource : AbstractMessageSource<object>
     public RabbitMessageSource(IApplicationContext context, IConnectionFactory connectionFactory, RabbitAckCallbackFactory ackCallbackFactory, string queueName)
         : base(context)
     {
-        ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-        AckCallbackFactory = ackCallbackFactory ?? throw new ArgumentNullException(nameof(ackCallbackFactory));
-        QueueName = queueName ?? throw new ArgumentNullException(nameof(queueName));
+        ArgumentGuard.NotNull(connectionFactory);
+        ArgumentGuard.NotNull(ackCallbackFactory);
+        ArgumentGuard.NotNull(queueName);
+
+        ConnectionFactory = connectionFactory;
+        AckCallbackFactory = ackCallbackFactory;
+        QueueName = queueName;
     }
 
     protected override object DoReceive()

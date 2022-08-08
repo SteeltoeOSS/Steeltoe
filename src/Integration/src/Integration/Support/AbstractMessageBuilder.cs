@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 
@@ -37,7 +38,9 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
     protected AbstractMessageBuilder(object payload, IMessage originalMessage)
     {
-        InnerPayload = payload ?? throw new ArgumentNullException(nameof(payload));
+        ArgumentGuard.NotNull(payload);
+
+        InnerPayload = payload;
         OriginalMessage = originalMessage;
         HeaderAccessor = new IntegrationMessageHeaderAccessor(originalMessage);
 

@@ -24,7 +24,9 @@ public class LoadBalancerHttpClientHandler : HttpClientHandler
     /// </param>
     public LoadBalancerHttpClientHandler(ILoadBalancer loadBalancer)
     {
-        _loadBalancer = loadBalancer ?? throw new ArgumentNullException(nameof(loadBalancer));
+        ArgumentGuard.NotNull(loadBalancer);
+
+        _loadBalancer = loadBalancer;
     }
 
     /// <summary>
@@ -41,7 +43,9 @@ public class LoadBalancerHttpClientHandler : HttpClientHandler
     [Obsolete("Please remove ILogger parameter")]
     public LoadBalancerHttpClientHandler(ILoadBalancer loadBalancer, ILogger logger)
     {
-        _loadBalancer = loadBalancer ?? throw new ArgumentNullException(nameof(loadBalancer));
+        ArgumentGuard.NotNull(loadBalancer);
+
+        _loadBalancer = loadBalancer;
     }
 
     /// <inheritdoc />

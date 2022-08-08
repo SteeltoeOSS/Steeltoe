@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
@@ -32,10 +33,13 @@ public class BinderAwareChannelResolver : DefaultMessageChannelDestinationResolv
         INewDestinationBindingCallback callback)
         : base(context)
     {
+        ArgumentGuard.NotNull(bindingService);
+        ArgumentGuard.NotNull(bindingTargetFactory);
+
         _dynamicDestinationsBindable = dynamicDestinationsBindable;
         _optionsMonitor = optionsMonitor;
-        _bindingService = bindingService ?? throw new ArgumentNullException(nameof(bindingService));
-        _bindingTargetFactory = bindingTargetFactory ?? throw new ArgumentNullException(nameof(bindingTargetFactory));
+        _bindingService = bindingService;
+        _bindingTargetFactory = bindingTargetFactory;
         _newBindingCallback = callback;
     }
 
