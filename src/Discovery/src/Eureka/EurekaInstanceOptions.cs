@@ -79,7 +79,7 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
         get => GetHostName(false);
         set
         {
-            if (!value.Equals(thisHostName))
+            if (!value.Equals(base.HostName))
             {
                 _hostName = value;
             }
@@ -103,12 +103,12 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
             return _hostName;
         }
 
-        if (refresh || string.IsNullOrEmpty(thisHostName))
+        if (refresh || string.IsNullOrEmpty(base.HostName))
         {
-            thisHostName = DnsTools.ResolveHostName();
+            base.HostName = DnsTools.ResolveHostName();
         }
 
-        return thisHostName;
+        return base.HostName;
     }
 
     public void ApplyConfigUrls(List<Uri> addresses, string wildcardHostname)

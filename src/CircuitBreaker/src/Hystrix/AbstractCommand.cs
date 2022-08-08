@@ -47,7 +47,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     protected HystrixCompletionSource tcs;
 
-    protected bool isFallbackUserDefined;
     protected internal long CommandStartTimestamp = -1L;
     protected internal long ThreadStartTimestamp = -1L;
     protected internal volatile bool InnerIsResponseFromCache;
@@ -139,12 +138,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     public string PublicCacheKey => CacheKey;
 
-    public virtual bool IsFallbackUserDefined
-    {
-        get => isFallbackUserDefined;
-
-        set => isFallbackUserDefined = value;
-    }
+    public virtual bool IsFallbackUserDefined { get; set; }
 
     public Exception ExecutionException => ExecutionResult.ExecutionException;
 

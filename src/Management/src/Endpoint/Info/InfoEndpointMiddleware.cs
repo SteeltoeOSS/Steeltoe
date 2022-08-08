@@ -24,7 +24,7 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
     {
         logger.LogDebug("Info middleware InvokeAsync({0})", context.Request.Path.Value);
 
-        if (endpoint.ShouldInvoke(managementOptions, logger))
+        if (Endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleInfoRequestAsync(context);
         }

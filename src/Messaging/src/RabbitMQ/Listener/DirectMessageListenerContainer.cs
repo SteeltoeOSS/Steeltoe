@@ -32,7 +32,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     protected internal readonly List<SimpleConsumer> ConsumersToRestart = new();
 
     private int _consumersPerQueue = 1;
-    private long _monitorInterval = DefaultMonitorInterval;
     private volatile bool _started;
     private volatile bool _aborted;
     private volatile bool _hasStopped;
@@ -71,11 +70,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         }
     }
 
-    public virtual long MonitorInterval
-    {
-        get => _monitorInterval;
-        set => _monitorInterval = value;
-    }
+    public virtual long MonitorInterval { get; set; } = DefaultMonitorInterval;
 
     public virtual int MessagesPerAck { get; set; }
 
@@ -198,14 +193,14 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         string[] queueNames = GetQueueNames();
         CheckMissingQueues(queueNames);
 
-        if (IdleEventInterval > 0 && _monitorInterval > IdleEventInterval)
+        if (IdleEventInterval > 0 && MonitorInterval > IdleEventInterval)
         {
-            _monitorInterval = IdleEventInterval / 2;
+            MonitorInterval = IdleEventInterval / 2;
         }
 
         if (FailedDeclarationRetryInterval < MonitorInterval)
         {
-            _monitorInterval = FailedDeclarationRetryInterval;
+            MonitorInterval = FailedDeclarationRetryInterval;
         }
 
         Dictionary<string, IQueue> namesToQueues = GetQueueNamesToQueues();

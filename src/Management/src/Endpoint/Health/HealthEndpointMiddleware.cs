@@ -23,9 +23,9 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
 
     public Task InvokeAsync(HttpContext context, HealthEndpointCore endpoint)
     {
-        this.endpoint = endpoint;
+        Endpoint = endpoint;
 
-        if (this.endpoint.ShouldInvoke(managementOptions))
+        if (Endpoint.ShouldInvoke(managementOptions))
         {
             return HandleHealthRequestAsync(context);
         }
@@ -44,11 +44,11 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
 
     protected internal string DoRequest(HttpContext context)
     {
-        HealthEndpointResponse result = endpoint.Invoke(new CoreSecurityContext(context));
+        HealthEndpointResponse result = Endpoint.Invoke(new CoreSecurityContext(context));
 
         if (managementOptions.UseStatusCodeFromResponse)
         {
-            context.Response.StatusCode = ((HealthEndpoint)endpoint).GetStatusCode(result);
+            context.Response.StatusCode = ((HealthEndpoint)Endpoint).GetStatusCode(result);
         }
 
         return Serialize(result);

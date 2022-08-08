@@ -27,9 +27,9 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
     {
         logger?.LogDebug("InvokeAsync({0} {1})", context.Request.Method, context.Request.Path.Value);
 
-        if (endpoint.ShouldInvoke(managementOptions, logger))
+        if (Endpoint.ShouldInvoke(managementOptions, logger))
         {
-            string serialInfo = HandleRequest(endpoint, GetRequestUri(context.Request), logger);
+            string serialInfo = HandleRequest(Endpoint, GetRequestUri(context.Request), logger);
             logger?.LogDebug("Returning: {0}", serialInfo);
 
             context.HandleContentNegotiation(logger);

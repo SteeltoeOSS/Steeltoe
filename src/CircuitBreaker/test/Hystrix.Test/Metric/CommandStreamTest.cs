@@ -44,7 +44,7 @@ public abstract class CommandStreamTest : HystrixTestBase
             _fallbackExecutionResult = fallbackExecutionResult;
             _fallbackExecutionLatency = fallbackExecutionLatency;
             CacheKey = arg;
-            isFallbackUserDefined = true;
+            IsFallbackUserDefined = true;
         }
 
         public static Command From(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, HystrixEventType desiredEventType)

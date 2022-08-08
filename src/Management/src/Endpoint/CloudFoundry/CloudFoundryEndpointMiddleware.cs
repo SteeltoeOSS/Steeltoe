@@ -32,7 +32,7 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
     {
         logger?.LogDebug("InvokeAsync({0} {1})", context.Request.Method, context.Request.Path.Value);
 
-        if (endpoint.ShouldInvoke(managementOptions, logger))
+        if (Endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleCloudFoundryRequestAsync(context);
         }

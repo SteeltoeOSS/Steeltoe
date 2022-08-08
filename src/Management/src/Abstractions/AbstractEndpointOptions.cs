@@ -8,18 +8,11 @@ namespace Steeltoe.Management;
 
 public abstract class AbstractEndpointOptions : IEndpointOptions
 {
-    protected bool? enabled;
-
     protected bool? sensitive;
 
     protected string path;
 
-    public virtual bool? Enabled
-    {
-        get => enabled;
-
-        set => enabled = value;
-    }
+    public virtual bool? Enabled { get; set; }
 
     public virtual string Id { get; set; }
 

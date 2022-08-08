@@ -11,19 +11,13 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 {
     private readonly List<MimeType> _supportedMimeTypes;
 
-    private IContentTypeResolver _contentTypeResolver = new DefaultContentTypeResolver();
-
     private bool _strictContentTypeMatch;
 
     private Type _serializedPayloadClass = typeof(byte[]);
 
     public virtual ICollection<MimeType> SupportedMimeTypes => new List<MimeType>(_supportedMimeTypes);
 
-    public virtual IContentTypeResolver ContentTypeResolver
-    {
-        get => _contentTypeResolver;
-        set => _contentTypeResolver = value;
-    }
+    public virtual IContentTypeResolver ContentTypeResolver { get; set; } = new DefaultContentTypeResolver();
 
     public virtual bool StrictContentTypeMatch
     {
@@ -209,7 +203,7 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 
     protected virtual MimeType GetMimeType(IMessageHeaders headers)
     {
-        return headers != null && _contentTypeResolver != null ? _contentTypeResolver.Resolve(headers) : null;
+        return headers != null && ContentTypeResolver != null ? ContentTypeResolver.Resolve(headers) : null;
     }
 
     protected abstract bool Supports(Type clazz);

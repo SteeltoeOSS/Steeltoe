@@ -22,7 +22,7 @@ public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
 
     public Task InvokeAsync(HttpContext context)
     {
-        if (endpoint.ShouldInvoke(managementOptions))
+        if (Endpoint.ShouldInvoke(managementOptions))
         {
             return HandleTraceRequestAsync(context);
         }
