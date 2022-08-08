@@ -51,7 +51,7 @@ public class EventCounterListenerTest : BaseTest
         using MeterProvider metrics = GetTestMetrics(null, exporter, null);
         Task.Delay(2000).Wait();
 
-        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
+        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollectAsync().Result;
 
         foreach (string metric in _metrics)
         {
@@ -81,7 +81,7 @@ public class EventCounterListenerTest : BaseTest
         using MeterProvider metrics = GetTestMetrics(null, exporter, null);
         Task.Delay(2000).Wait();
 
-        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
+        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollectAsync().Result;
 
         foreach (string metric in _metrics)
         {

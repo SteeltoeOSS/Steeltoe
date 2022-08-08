@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="Steeltoe Debug" Description="Code quality rules for Steeltoe debug builds" ToolsVersion="17.0">
   <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
     <Rule Id="S100" Action="Warning" />
@@ -52,6 +52,7 @@
     <Rule Id="S4211" Action="None" />
     <Rule Id="S4225" Action="Warning" />
     <Rule Id="S4260" Action="None" />
+    <Rule Id="S4261" Action="Warning" />
     <Rule Id="S4277" Action="None" />
     <Rule Id="S4428" Action="None" />
     <Rule Id="S4433" Action="None" />

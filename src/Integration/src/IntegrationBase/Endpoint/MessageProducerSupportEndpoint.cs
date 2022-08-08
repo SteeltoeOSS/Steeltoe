@@ -152,12 +152,12 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
         }
     }
 
-    protected override Task DoStart()
+    protected override Task DoStartAsync()
     {
         return Task.CompletedTask;
     }
 
-    protected override Task DoStop()
+    protected override Task DoStopAsync()
     {
         return Task.CompletedTask;
     }

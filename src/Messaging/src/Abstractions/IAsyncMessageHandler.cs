@@ -21,5 +21,5 @@ public interface IAsyncMessageHandler
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task HandleMessage(IMessage message, CancellationToken cancellationToken = default);
+    Task HandleMessageAsync(IMessage message, CancellationToken cancellationToken = default);
 }

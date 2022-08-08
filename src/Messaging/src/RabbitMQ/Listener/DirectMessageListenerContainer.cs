@@ -741,7 +741,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                             _aborted = true;
                             Shutdown();
                             Logger?.LogError(e, "Failed to start container - fatal error or backOffs exhausted");
-                            Task.Run(Stop);
+                            Task.Run(StopAsync);
 
                             // this.taskScheduler.schedule(this::stop, new Date());
                             break;

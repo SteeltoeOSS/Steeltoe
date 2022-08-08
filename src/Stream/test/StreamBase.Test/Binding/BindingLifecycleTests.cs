@@ -24,11 +24,11 @@ public class BindingLifecycleTests
         bindables.Add("three", bindableWithThree);
 
         var lifecycle = new InputBindingLifecycle(new Mock<IBindingService>().Object, bindables.Values);
-        await lifecycle.Start();
+        await lifecycle.StartAsync();
 
         Assert.Equal(5, lifecycle.InputBindings.Count);
 
-        await lifecycle.Stop();
+        await lifecycle.StopAsync();
     }
 
     [Fact]
@@ -45,11 +45,11 @@ public class BindingLifecycleTests
         bindables.Add("three", bindableWithThree);
 
         var lifecycle = new OutputBindingLifecycle(new Mock<IBindingService>().Object, bindables.Values);
-        await lifecycle.Start();
+        await lifecycle.StartAsync();
 
         Assert.Equal(5, lifecycle.OutputBindings.Count);
 
-        await lifecycle.Stop();
+        await lifecycle.StopAsync();
     }
 
     private sealed class TestBindable : IBindable

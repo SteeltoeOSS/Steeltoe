@@ -20,7 +20,7 @@ public class LifecycleBinderTest : AbstractTest
 
         ServiceProvider provider = container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var lifecycle = provider.GetService<ILifecycle>();
         Assert.False(lifecycle.IsRunning);
@@ -30,13 +30,13 @@ public class LifecycleBinderTest : AbstractTest
     {
         public bool IsRunning { get; private set; }
 
-        public Task Start()
+        public Task StartAsync()
         {
             IsRunning = true;
             return Task.CompletedTask;
         }
 
-        public Task Stop()
+        public Task StopAsync()
         {
             IsRunning = false;
             return Task.CompletedTask;

@@ -89,10 +89,10 @@ public class EurekaHttpClient : IEurekaHttpClient
             throw new ArgumentNullException(nameof(info));
         }
 
-        return RegisterAsyncInternal(info);
+        return RegisterInternalAsync(info);
     }
 
-    private async Task<EurekaHttpResponse> RegisterAsyncInternal(InstanceInfo info)
+    private async Task<EurekaHttpResponse> RegisterInternalAsync(InstanceInfo info)
     {
         if ((Platform.IsContainerized || Platform.IsCloudHosted) && info.HostName?.Equals("localhost", StringComparison.InvariantCultureIgnoreCase) == true)
         {
@@ -175,10 +175,10 @@ public class EurekaHttpClient : IEurekaHttpClient
             throw new ArgumentException(nameof(id));
         }
 
-        return SendHeartBeatAsyncInternal(appName, id, info, overriddenStatus);
+        return SendHeartBeatInternalAsync(appName, id, info, overriddenStatus);
     }
 
-    private async Task<EurekaHttpResponse<InstanceInfo>> SendHeartBeatAsyncInternal(string appName, string id, InstanceInfo info,
+    private async Task<EurekaHttpResponse<InstanceInfo>> SendHeartBeatInternalAsync(string appName, string id, InstanceInfo info,
         InstanceStatus overriddenStatus)
     {
         var queryArgs = new Dictionary<string, string>
@@ -288,10 +288,10 @@ public class EurekaHttpClient : IEurekaHttpClient
             throw new ArgumentException(nameof(vipAddress));
         }
 
-        return GetVipAsyncInternal(vipAddress, regions);
+        return GetVipInternalAsync(vipAddress, regions);
     }
 
-    private Task<EurekaHttpResponse<Applications>> GetVipAsyncInternal(string vipAddress, ISet<string> regions)
+    private Task<EurekaHttpResponse<Applications>> GetVipInternalAsync(string vipAddress, ISet<string> regions)
     {
         return DoGetApplicationsAsync($"vips/{vipAddress}", regions);
     }
@@ -303,10 +303,10 @@ public class EurekaHttpClient : IEurekaHttpClient
             throw new ArgumentException(nameof(secureVipAddress));
         }
 
-        return GetSecureVipAsyncInternal(secureVipAddress, regions);
+        return GetSecureVipInternalAsync(secureVipAddress, regions);
     }
 
-    private Task<EurekaHttpResponse<Applications>> GetSecureVipAsyncInternal(string secureVipAddress, ISet<string> regions = null)
+    private Task<EurekaHttpResponse<Applications>> GetSecureVipInternalAsync(string secureVipAddress, ISet<string> regions = null)
     {
         return DoGetApplicationsAsync($"vips/{secureVipAddress}", regions);
     }
@@ -318,10 +318,10 @@ public class EurekaHttpClient : IEurekaHttpClient
             throw new ArgumentException(nameof(appName));
         }
 
-        return GetApplicationAsyncInternal(appName);
+        return GetApplicationInternalAsync(appName);
     }
 
-    private async Task<EurekaHttpResponse<Application>> GetApplicationAsyncInternal(string appName)
+    private async Task<EurekaHttpResponse<Application>> GetApplicationInternalAsync(string appName)
     {
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
@@ -392,7 +392,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             throw new ArgumentException(nameof(id));
         }
 
-        return GetInstanceAsyncInternal(id);
+        return GetInstanceInternalAsync(id);
     }
 
     public virtual Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsync(string appName, string id)
@@ -407,15 +407,15 @@ public class EurekaHttpClient : IEurekaHttpClient
             throw new ArgumentException(nameof(id));
         }
 
-        return GetInstanceAsyncInternal(appName, id);
+        return GetInstanceInternalAsync(appName, id);
     }
 
-    private Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsyncInternal(string id)
+    private Task<EurekaHttpResponse<InstanceInfo>> GetInstanceInternalAsync(string id)
     {
         return DoGetInstanceAsync($"instances/{id}");
     }
 
-    private Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsyncInternal(string appName, string id)
+    private Task<EurekaHttpResponse<InstanceInfo>> GetInstanceInternalAsync(string appName, string id)
     {
         return DoGetInstanceAsync($"apps/{appName}/{id}");
     }
@@ -432,10 +432,10 @@ public class EurekaHttpClient : IEurekaHttpClient
             throw new ArgumentException(nameof(id));
         }
 
-        return CancelAsyncInternal(appName, id);
+        return CancelInternalAsync(appName, id);
     }
 
-    private async Task<EurekaHttpResponse> CancelAsyncInternal(string appName, string id)
+    private async Task<EurekaHttpResponse> CancelInternalAsync(string appName, string id)
     {
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
@@ -499,10 +499,10 @@ public class EurekaHttpClient : IEurekaHttpClient
             throw new ArgumentNullException(nameof(info));
         }
 
-        return DeleteStatusOverrideAsyncInternal(appName, id, info);
+        return DeleteStatusOverrideInternalAsync(appName, id, info);
     }
 
-    private async Task<EurekaHttpResponse> DeleteStatusOverrideAsyncInternal(string appName, string id, InstanceInfo info)
+    private async Task<EurekaHttpResponse> DeleteStatusOverrideInternalAsync(string appName, string id, InstanceInfo info)
     {
         var queryArgs = new Dictionary<string, string>
         {
@@ -579,10 +579,10 @@ public class EurekaHttpClient : IEurekaHttpClient
             throw new ArgumentNullException(nameof(info));
         }
 
-        return StatusUpdateAsyncInternal(appName, id, newStatus, info);
+        return StatusUpdateInternalAsync(appName, id, newStatus, info);
     }
 
-    private async Task<EurekaHttpResponse> StatusUpdateAsyncInternal(string appName, string id, InstanceStatus newStatus, InstanceInfo info)
+    private async Task<EurekaHttpResponse> StatusUpdateInternalAsync(string appName, string id, InstanceStatus newStatus, InstanceInfo info)
     {
         var queryArgs = new Dictionary<string, string>
         {
@@ -651,7 +651,7 @@ public class EurekaHttpClient : IEurekaHttpClient
     {
         return Config is not EurekaClientOptions config || string.IsNullOrEmpty(config.AccessTokenUri)
             ? null
-            : HttpClientHelper.GetAccessToken(
+            : HttpClientHelper.GetAccessTokenAsync(
                     config.AccessTokenUri, config.ClientId, config.ClientSecret, DefaultGetAccessTokenTimeout, config.ValidateCertificates).GetAwaiter()
                 .GetResult();
     }

@@ -37,7 +37,7 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
         _apiDescriptionProviders = apiDescriptionProviders;
     }
 
-    public Task Invoke(HttpContext context)
+    public Task InvokeAsync(HttpContext context)
     {
         if (endpoint.ShouldInvoke(managementOptions, logger))
         {

@@ -22,7 +22,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         _next = next;
     }
 
-    public Task Invoke(HttpContext context)
+    public Task InvokeAsync(HttpContext context)
     {
         if (endpoint.ShouldInvoke(managementOptions, logger))
         {

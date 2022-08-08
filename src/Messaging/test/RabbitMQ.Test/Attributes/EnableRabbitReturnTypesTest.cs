@@ -45,7 +45,7 @@ public class EnableRabbitReturnTypesTest
 
         try
         {
-            provider = await CreateAndStartServices(null, queues, typeof(Listener));
+            provider = await CreateAndStartServicesAsync(null, queues, typeof(Listener));
             RabbitTemplate template = provider.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<Three>("EnableRabbitReturnTypesTests.1", "3");
             Assert.NotNull(reply);
@@ -78,7 +78,7 @@ public class EnableRabbitReturnTypesTest
 
         try
         {
-            provider = await CreateAndStartServices(null, queues, typeof(Listener));
+            provider = await CreateAndStartServicesAsync(null, queues, typeof(Listener));
             RabbitTemplate template = provider.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<Three>("EnableRabbitReturnTypesTests.2", "3");
             Assert.NotNull(reply);
@@ -111,7 +111,7 @@ public class EnableRabbitReturnTypesTest
 
         try
         {
-            provider = await CreateAndStartServices(null, queues, typeof(Listener));
+            provider = await CreateAndStartServicesAsync(null, queues, typeof(Listener));
             RabbitTemplate template = provider.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<List<Three>>("EnableRabbitReturnTypesTests.3", "3");
             Assert.NotNull(reply);
@@ -142,7 +142,7 @@ public class EnableRabbitReturnTypesTest
 
         try
         {
-            provider = await CreateAndStartServices(null, queues, typeof(Listener));
+            provider = await CreateAndStartServicesAsync(null, queues, typeof(Listener));
             RabbitTemplate template = provider.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<Three>("EnableRabbitReturnTypesTests.4", "3");
             Assert.NotNull(reply);
@@ -160,7 +160,7 @@ public class EnableRabbitReturnTypesTest
         }
     }
 
-    public static async Task<ServiceProvider> CreateAndStartServices(IConfiguration configuration, List<IQueue> queues, params Type[] listeners)
+    public static async Task<ServiceProvider> CreateAndStartServicesAsync(IConfiguration configuration, List<IQueue> queues, params Type[] listeners)
     {
         var services = new ServiceCollection();
         IConfiguration config = configuration ?? new ConfigurationBuilder().Build();
@@ -199,7 +199,7 @@ public class EnableRabbitReturnTypesTest
         [RabbitListener("EnableRabbitReturnTypesTests.1")]
         public IOne Listen1(string input)
         {
-            _output.WriteLine("Listen1 " + input);
+            _output.WriteLine("Listen1Async " + input);
 
             if ("3".Equals(input))
             {
@@ -212,7 +212,7 @@ public class EnableRabbitReturnTypesTest
         [RabbitListener("EnableRabbitReturnTypesTests.2")]
         public Two Listen2(string input)
         {
-            _output.WriteLine("Listen2 " + input);
+            _output.WriteLine("Listen2Async " + input);
 
             if ("3".Equals(input))
             {
@@ -225,7 +225,7 @@ public class EnableRabbitReturnTypesTest
         [RabbitListener("EnableRabbitReturnTypesTests.3")]
         public List<Three> Listen3(string input)
         {
-            _output.WriteLine("Listen3 " + input);
+            _output.WriteLine("Listen3Async " + input);
 
             var list = new List<Three>
             {
@@ -238,7 +238,7 @@ public class EnableRabbitReturnTypesTest
         [RabbitListener("EnableRabbitReturnTypesTests.4")]
         public IOne Listen4(string input)
         {
-            _output.WriteLine("Listen4 " + input);
+            _output.WriteLine("Listen4Async " + input);
 
             if ("3".Equals(input))
             {

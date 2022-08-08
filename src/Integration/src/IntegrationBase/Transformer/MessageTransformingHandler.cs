@@ -46,21 +46,21 @@ public class MessageTransformingHandler : AbstractReplyProducingMessageHandler, 
         PopulateNotPropagatedHeadersIfAny();
     }
 
-    public Task Start()
+    public Task StartAsync()
     {
         if (Transformer is ILifecycle asLifecycle)
         {
-            return asLifecycle.Start();
+            return asLifecycle.StartAsync();
         }
 
         return Task.CompletedTask;
     }
 
-    public Task Stop()
+    public Task StopAsync()
     {
         if (Transformer is ILifecycle asLifecycle)
         {
-            return asLifecycle.Stop();
+            return asLifecycle.StopAsync();
         }
 
         return Task.CompletedTask;

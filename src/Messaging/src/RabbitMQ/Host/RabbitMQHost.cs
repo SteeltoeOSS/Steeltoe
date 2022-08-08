@@ -39,7 +39,7 @@ public sealed class RabbitMQHost : IHost
         using (IServiceScope scope = _host.Services.CreateScope())
         {
             var lifecycleProcessor = scope.ServiceProvider.GetRequiredService<ILifecycleProcessor>();
-            lifecycleProcessor.OnRefresh();
+            lifecycleProcessor.OnRefreshAsync();
         }
 
         return _host.StartAsync(cancellationToken);
@@ -50,7 +50,7 @@ public sealed class RabbitMQHost : IHost
         using (IServiceScope scope = _host.Services.CreateScope())
         {
             var lifecycleProcessor = scope.ServiceProvider.GetRequiredService<ILifecycleProcessor>();
-            lifecycleProcessor.Stop();
+            lifecycleProcessor.StopAsync();
         }
 
         return _host.StopAsync(cancellationToken);

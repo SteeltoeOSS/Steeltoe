@@ -33,21 +33,21 @@ public class ServiceActivatingHandler : AbstractReplyProducingMessageHandler, IL
         // Nothing to do
     }
 
-    public virtual Task Start()
+    public virtual Task StartAsync()
     {
         if (_processor is ILifecycle lifecycle)
         {
-            return lifecycle.Start();
+            return lifecycle.StartAsync();
         }
 
         return Task.CompletedTask;
     }
 
-    public virtual Task Stop()
+    public virtual Task StopAsync()
     {
         if (_processor is ILifecycle lifecycle)
         {
-            return lifecycle.Stop();
+            return lifecycle.StopAsync();
         }
 
         return Task.CompletedTask;

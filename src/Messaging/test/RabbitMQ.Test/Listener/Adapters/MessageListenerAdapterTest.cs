@@ -146,7 +146,7 @@ public class MessageListenerAdapterTest
         var called = new CountdownEvent(1);
         var @delegate = new TestAsyncDelegate();
 
-        _adapter = new MessageListenerAdapter(null, @delegate, nameof(TestAsyncDelegate.MyPojoMessageMethod))
+        _adapter = new MessageListenerAdapter(null, @delegate, nameof(TestAsyncDelegate.MyPojoMessageMethodAsync))
         {
             ContainerAckMode = AcknowledgeMode.Manual,
             ResponseExchange = "default"
@@ -215,7 +215,7 @@ public class MessageListenerAdapterTest
 
     private sealed class TestAsyncDelegate
     {
-        public Task<string> MyPojoMessageMethod(string input)
+        public Task<string> MyPojoMessageMethodAsync(string input)
         {
             return Task.Run(() =>
             {

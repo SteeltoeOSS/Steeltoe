@@ -20,21 +20,21 @@ public class ReplyProducingMessageHandlerWrapper : AbstractReplyProducingMessage
         _target = target ?? throw new ArgumentNullException(nameof(target));
     }
 
-    public Task Start()
+    public Task StartAsync()
     {
         if (_target is ILifecycle lifeCycle)
         {
-            return lifeCycle.Start();
+            return lifeCycle.StartAsync();
         }
 
         return Task.CompletedTask;
     }
 
-    public Task Stop()
+    public Task StopAsync()
     {
         if (_target is ILifecycle lifeCycle)
         {
-            return lifeCycle.Stop();
+            return lifeCycle.StopAsync();
         }
 
         return Task.CompletedTask;

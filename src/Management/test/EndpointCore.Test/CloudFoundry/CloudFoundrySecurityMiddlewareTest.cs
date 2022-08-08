@@ -235,7 +235,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         options.CloudFoundryApi = "http://localhost:9999/foo";
         var middle = new CloudFoundrySecurityMiddleware(null, options, managementOptions);
         HttpContext context = CreateRequest("Get", "/cloudfoundryapplication");
-        await middle.Invoke(context);
+        await middle.InvokeAsync(context);
     }
 
     [Fact]
@@ -329,7 +329,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         managementOptions.EndpointOptions.Add(opts);
         var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions);
         HttpContext context = CreateRequest("GET", "/");
-        SecurityResult result = await middle.GetPermissions(context);
+        SecurityResult result = await middle.GetPermissionsAsync(context);
         Assert.NotNull(result);
         Assert.Equal(Permissions.None, result.Permissions);
         Assert.Equal(HttpStatusCode.Unauthorized, result.Code);

@@ -93,10 +93,10 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
             throw new ArgumentNullException(nameof(registration));
         }
 
-        return RegisterAsyncInternal(registration);
+        return RegisterInternalAsync(registration);
     }
 
-    private async Task RegisterAsyncInternal(IConsulRegistration registration)
+    private async Task RegisterInternalAsync(IConsulRegistration registration)
     {
         _logger?.LogInformation("Registering service with consul {serviceId} ", registration.ServiceId);
 
@@ -129,10 +129,10 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
             throw new ArgumentNullException(nameof(registration));
         }
 
-        return DeregisterAsyncInternal(registration);
+        return DeregisterInternalAsync(registration);
     }
 
-    private Task DeregisterAsyncInternal(IConsulRegistration registration)
+    private Task DeregisterInternalAsync(IConsulRegistration registration)
     {
         if (Options.IsHeartBeatEnabled && _scheduler != null)
         {
@@ -152,10 +152,10 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
             throw new ArgumentNullException(nameof(registration));
         }
 
-        return SetStatusAsyncInternal(registration, status);
+        return SetStatusInternalAsync(registration, status);
     }
 
-    private Task SetStatusAsyncInternal(IConsulRegistration registration, string status)
+    private Task SetStatusInternalAsync(IConsulRegistration registration, string status)
     {
         if (OutOfService.Equals(status, StringComparison.OrdinalIgnoreCase))
         {
@@ -178,10 +178,10 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
             throw new ArgumentNullException(nameof(registration));
         }
 
-        return GetStatusAsyncInternal(registration);
+        return GetStatusInternalAsync(registration);
     }
 
-    public async Task<object> GetStatusAsyncInternal(IConsulRegistration registration)
+    public async Task<object> GetStatusInternalAsync(IConsulRegistration registration)
     {
         QueryResult<HealthCheck[]> response = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default).ConfigureAwait(false);
         HealthCheck[] checks = response.Response;

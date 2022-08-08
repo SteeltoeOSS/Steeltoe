@@ -418,13 +418,13 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
     [Fact]
     public async Task TestCheckoutLimitWithPublisherConfirmsLogical()
     {
-        await TestCheckoutLimitWithPublisherConfirms(false);
+        await TestCheckoutLimitWithPublisherConfirmsAsync(false);
     }
 
     [Fact]
     public async Task TestCheckoutLimitWithPublisherConfirmsPhysical()
     {
-        await TestCheckoutLimitWithPublisherConfirms(true);
+        await TestCheckoutLimitWithPublisherConfirmsAsync(true);
     }
 
     [Fact]
@@ -1568,7 +1568,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         Assert.Same(mockConnection, conDelegate);
     }
 
-    private async Task TestCheckoutLimitWithPublisherConfirms(bool physicalClose)
+    private async Task TestCheckoutLimitWithPublisherConfirmsAsync(bool physicalClose)
     {
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
         var mockConnection = new Mock<RC.IConnection>();

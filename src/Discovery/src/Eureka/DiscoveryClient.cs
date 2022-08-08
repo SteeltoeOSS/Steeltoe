@@ -408,7 +408,7 @@ public class DiscoveryClient : IEurekaClient
 
         if (inst.IsDirty)
         {
-            await RegisterDirtyInstanceInfo(inst).ConfigureAwait(false);
+            await RegisterDirtyInstanceInfoAsync(inst).ConfigureAwait(false);
         }
 
         try
@@ -556,7 +556,7 @@ public class DiscoveryClient : IEurekaClient
         }
     }
 
-    protected internal async Task<bool> RegisterDirtyInstanceInfo(InstanceInfo inst)
+    protected internal async Task<bool> RegisterDirtyInstanceInfoAsync(InstanceInfo inst)
     {
         bool regResult = await RegisterAsync().ConfigureAwait(false);
         logger.LogDebug("Register dirty InstanceInfo returned {status}", regResult);
@@ -600,7 +600,7 @@ public class DiscoveryClient : IEurekaClient
 
             logger.LogInformation("Starting HeartBeat");
             int intervalInMilliseconds = appInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
-            heartBeatTimer = StartTimer("HeartBeat", intervalInMilliseconds, HeartBeatTaskAsync);
+            heartBeatTimer = StartTimer("HeartBeat", intervalInMilliseconds, HeartBeatTask);
 
             if (ClientConfig.ShouldOnDemandUpdateStatusChange)
             {
@@ -612,7 +612,7 @@ public class DiscoveryClient : IEurekaClient
         {
             await FetchRegistryAsync(true).ConfigureAwait(false);
             int intervalInMilliseconds = ClientConfig.RegistryFetchIntervalSeconds * 1000;
-            cacheRefreshTimer = StartTimer("Query", intervalInMilliseconds, CacheRefreshTaskAsync);
+            cacheRefreshTimer = StartTimer("Query", intervalInMilliseconds, CacheRefreshTask);
         }
 
         Interlocked.Exchange(ref logger, regularLogger);
@@ -654,7 +654,7 @@ public class DiscoveryClient : IEurekaClient
 
     // both of these should fire and forget on execution but log failures
 #pragma warning disable S3168 // "async" methods should not return "void"
-    private async void HeartBeatTaskAsync()
+    private async void HeartBeatTask()
     {
         if (shutdown > 0)
         {
@@ -669,7 +669,7 @@ public class DiscoveryClient : IEurekaClient
         }
     }
 
-    private async void CacheRefreshTaskAsync()
+    private async void CacheRefreshTask()
     {
         if (shutdown > 0)
         {

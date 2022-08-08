@@ -20,7 +20,7 @@ public class SourceBindingWithGlobalPropertiesOnlyTest : AbstractTest
         ServiceProvider provider = CreateStreamsContainerWithISourceBinding(searchDirectories, "spring.cloud.stream.default.contentType=application/json",
             "spring.cloud.stream.default.producer.partitionKeyExpression=key").BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);

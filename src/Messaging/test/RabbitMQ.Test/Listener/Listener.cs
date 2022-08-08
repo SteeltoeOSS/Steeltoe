@@ -14,7 +14,7 @@ public class Listener
     public int Counter { get; set; }
 
     [RabbitListener("test.expiry.main")]
-    public Task Listen(string foo)
+    public Task ListenAsync(string foo)
     {
         Latch.Signal();
         Counter++;

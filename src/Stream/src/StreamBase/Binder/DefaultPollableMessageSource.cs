@@ -73,21 +73,21 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
         _interceptors.Insert(index, interceptor);
     }
 
-    public Task Start()
+    public Task StartAsync()
     {
         if (Interlocked.CompareExchange(ref _running, 1, 0) == 0 && Source is ILifecycle asLifeCycle)
         {
-            return asLifeCycle.Start();
+            return asLifeCycle.StartAsync();
         }
 
         return Task.CompletedTask;
     }
 
-    public Task Stop()
+    public Task StopAsync()
     {
         if (Interlocked.CompareExchange(ref _running, 0, 1) == 1 && Source is ILifecycle asLifeCycle)
         {
-            return asLifeCycle.Stop();
+            return asLifeCycle.StopAsync();
         }
 
         return Task.CompletedTask;

@@ -25,7 +25,7 @@ public abstract class AbstractBindingLifecycle : ISmartLifecycle
         _bindables = bindables.ToList();
     }
 
-    public virtual async Task Start()
+    public virtual async Task StartAsync()
     {
         if (!_running)
         {
@@ -38,7 +38,7 @@ public abstract class AbstractBindingLifecycle : ISmartLifecycle
         }
     }
 
-    public virtual async Task Stop()
+    public virtual async Task StopAsync()
     {
         if (_running)
         {
@@ -51,9 +51,9 @@ public abstract class AbstractBindingLifecycle : ISmartLifecycle
         }
     }
 
-    public async Task Stop(Action callback)
+    public async Task StopAsync(Action callback)
     {
-        await Stop();
+        await StopAsync();
         callback?.Invoke();
     }
 

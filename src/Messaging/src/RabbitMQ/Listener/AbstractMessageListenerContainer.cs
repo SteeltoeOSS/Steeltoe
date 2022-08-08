@@ -487,7 +487,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
     }
 
-    public virtual Task Start()
+    public virtual Task StartAsync()
     {
         if (IsRunning)
         {
@@ -525,7 +525,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         return Task.CompletedTask;
     }
 
-    public virtual Task Stop()
+    public virtual Task StopAsync()
     {
         try
         {
@@ -548,11 +548,11 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         return Task.CompletedTask;
     }
 
-    public virtual Task Stop(Action callback)
+    public virtual Task StopAsync(Action callback)
     {
         try
         {
-            Stop();
+            StopAsync();
         }
         finally
         {

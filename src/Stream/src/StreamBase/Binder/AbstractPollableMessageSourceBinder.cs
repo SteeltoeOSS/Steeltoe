@@ -81,7 +81,7 @@ public abstract class AbstractPollableMessageSourceBinder : AbstractMessageChann
 
         if (sourceAsLifecycle != null)
         {
-            sourceAsLifecycle.Start();
+            sourceAsLifecycle.StartAsync();
         }
 
         var binding = new DefaultPollableChannelBinding(this, name, group, inboundTarget, sourceAsLifecycle ?? null, consumerOptions, destination);

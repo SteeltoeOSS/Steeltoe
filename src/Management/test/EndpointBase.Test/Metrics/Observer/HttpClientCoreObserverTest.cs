@@ -130,7 +130,7 @@ public class HttpClientCoreObserverTest : BaseTest
         observer.HandleStopEvent(act, req, resp, TaskStatus.RanToCompletion);
         observer.HandleStopEvent(act, req, resp, TaskStatus.RanToCompletion);
 
-        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
+        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollectAsync().Result;
 
         KeyValuePair<string, List<MetricSample>> timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.time");
         MetricSample timeSummary = timeSample.Value.FirstOrDefault();
@@ -172,7 +172,7 @@ public class HttpClientCoreObserverTest : BaseTest
         observer.HandleExceptionEvent(act, req);
         observer.HandleExceptionEvent(act, req);
 
-        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
+        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollectAsync().Result;
 
         KeyValuePair<string, List<MetricSample>> timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.time");
         MetricSample timeSummary = timeSample.Value.FirstOrDefault();

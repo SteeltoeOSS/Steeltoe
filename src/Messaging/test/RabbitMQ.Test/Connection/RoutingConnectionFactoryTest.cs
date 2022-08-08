@@ -156,7 +156,7 @@ public class RoutingConnectionFactoryTest
         var container = new DirectMessageListenerContainer(null, connectionFactory);
         container.SetQueueNames("foo", "bar");
         container.Initialize();
-        await container.Start();
+        await container.StartAsync();
 
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
@@ -182,7 +182,7 @@ public class RoutingConnectionFactoryTest
         connectionFactory2.Verify(f => f.CreateConnection(), Times.Never);
         defaultConnectionFactory.Verify(f => f.CreateConnection());
 
-        await container.Stop();
+        await container.StopAsync();
     }
 
     [Fact]
@@ -221,12 +221,12 @@ public class RoutingConnectionFactoryTest
         container.LookupKeyQualifier = "xxx";
         container.ShutdownTimeout = 10;
         container.Initialize();
-        await container.Start();
+        await container.StartAsync();
 
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10))); // Container started
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
 
-        await container.Stop();
+        await container.StopAsync();
         Assert.Equal("xxx[foo]", connectionMakerKey1.Value);
         Assert.Equal("xxx[foo]", connectionMakerKey2.Value);
     }
@@ -271,14 +271,14 @@ public class RoutingConnectionFactoryTest
         };
 
         container.Initialize();
-        await container.Start();
+        await container.StartAsync();
 
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10))); // Container started
 
         DirectReplyToMessageListenerContainer.ChannelHolder channelHolder = container.GetChannelHolder();
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
         container.ReleaseConsumerFor(channelHolder, true, "test");
-        await container.Stop();
+        await container.StopAsync();
 
         Assert.Equal("xxx[amq.rabbitmq.reply-to]", connectionMakerKey1.Value);
         Assert.Equal("xxx[amq.rabbitmq.reply-to]", connectionMakerKey2.Value);

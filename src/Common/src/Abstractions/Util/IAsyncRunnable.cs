@@ -15,5 +15,5 @@ public interface IAsyncRunnable
     /// <returns>
     /// return a task to signal completion.
     /// </returns>
-    Task<bool> Run();
+    Task<bool> RunAsync();
 }

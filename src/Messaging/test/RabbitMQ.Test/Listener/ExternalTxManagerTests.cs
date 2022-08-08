@@ -75,7 +75,7 @@ public class ExternalTxManagerTests
         container.TransactionManager = new DummyTxManager();
         container.TransactionAttribute = new DefaultTransactionAttribute();
         container.Initialize();
-        container.Start();
+        container.StartAsync();
 
         // Assert.True(consumerLatch.Wait(TimeSpan.FromSeconds(10)));
     }

@@ -23,5 +23,5 @@ public interface ISmartLifecycle : ILifecycle, IPhased
     /// <returns>
     /// a task for completion.
     /// </returns>
-    Task Stop(Action callback);
+    Task StopAsync(Action callback);
 }

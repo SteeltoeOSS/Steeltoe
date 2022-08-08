@@ -99,7 +99,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
             // }
             if (startImmediately && container.IsAutoStartup)
             {
-                container.Start();
+                container.StartAsync();
             }
         }
     }
@@ -139,7 +139,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
         }
     }
 
-    public async Task Stop(Action callback)
+    public async Task StopAsync(Action callback)
     {
         ICollection<IMessageListenerContainer> containers = _listenerContainers.Values;
 
@@ -161,7 +161,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
             {
                 try
                 {
-                    await listenerContainer.Stop(aggCallback);
+                    await listenerContainer.StopAsync(aggCallback);
                 }
                 catch (Exception e)
                 {
@@ -175,13 +175,13 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
         }
     }
 
-    public async Task Stop()
+    public async Task StopAsync()
     {
         foreach (IMessageListenerContainer listenerContainer in _listenerContainers.Values)
         {
             try
             {
-                await listenerContainer.Stop();
+                await listenerContainer.StopAsync();
             }
             catch (Exception e)
             {
@@ -190,13 +190,13 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
         }
     }
 
-    public async Task Start()
+    public async Task StartAsync()
     {
         foreach (IMessageListenerContainer listenerContainer in _listenerContainers.Values)
         {
             if (listenerContainer.IsAutoStartup)
             {
-                await listenerContainer.Start();
+                await listenerContainer.StartAsync();
             }
         }
     }

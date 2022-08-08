@@ -42,7 +42,7 @@ public class TokenExchanger
     /// <returns>
     /// The response from the remote server.
     /// </returns>
-    public async Task<HttpResponseMessage> ExchangeCodeForToken(string code, string targetUrl, CancellationToken cancellationToken)
+    public async Task<HttpResponseMessage> ExchangeCodeForTokenAsync(string code, string targetUrl, CancellationToken cancellationToken)
     {
         List<KeyValuePair<string, string>> requestParameters = AuthCodeTokenRequestParameters(code);
         HttpRequestMessage requestMessage = GetTokenRequestMessage(requestParameters, targetUrl);
@@ -70,9 +70,9 @@ public class TokenExchanger
     /// <returns>
     /// The user's ClaimsIdentity.
     /// </returns>
-    public async Task<ClaimsIdentity> ExchangeAuthCodeForClaimsIdentity(string code)
+    public async Task<ClaimsIdentity> ExchangeAuthCodeForClaimsIdentityAsync(string code)
     {
-        HttpResponseMessage response = await ExchangeCodeForToken(code, _options.AuthorizationUrl, default).ConfigureAwait(false);
+        HttpResponseMessage response = await ExchangeCodeForTokenAsync(code, _options.AuthorizationUrl, default).ConfigureAwait(false);
 
         if (response.IsSuccessStatusCode)
         {
@@ -103,7 +103,7 @@ public class TokenExchanger
     /// <returns>
     /// HttpResponse from the auth server.
     /// </returns>
-    public async Task<HttpResponseMessage> GetAccessTokenWithClientCredentials(string targetUrl)
+    public async Task<HttpResponseMessage> GetAccessTokenWithClientCredentialsAsync(string targetUrl)
     {
         HttpRequestMessage requestMessage = GetTokenRequestMessage(ClientCredentialsTokenRequestParameters(), targetUrl);
 

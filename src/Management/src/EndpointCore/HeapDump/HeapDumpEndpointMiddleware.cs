@@ -19,7 +19,7 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
         _next = next;
     }
 
-    public Task Invoke(HttpContext context)
+    public Task InvokeAsync(HttpContext context)
     {
         if (endpoint.ShouldInvoke(managementOptions, logger))
         {

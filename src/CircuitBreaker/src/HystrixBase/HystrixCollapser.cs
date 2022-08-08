@@ -92,11 +92,11 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
     public Task<TRequestResponse> ExecuteAsync(CancellationToken token)
     {
         Token = token;
-        Task<TRequestResponse> toStart = ToTask();
+        Task<TRequestResponse> toStart = ToTaskAsync();
         return toStart;
     }
 
-    public Task<TRequestResponse> ToTask()
+    public Task<TRequestResponse> ToTaskAsync()
     {
         RequestCollapser<TBatchReturn, TRequestResponse, TRequestArgument> requestCollapser = _collapserFactory.GetRequestCollapser(this);
         CollapsedRequest<TRequestResponse, TRequestArgument> request = null;
@@ -159,7 +159,7 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
         IObservable<TRequestResponse> observable = Observable.FromAsync(ct =>
         {
             Token = ct;
-            Task<TRequestResponse> toStart = ToTask();
+            Task<TRequestResponse> toStart = ToTaskAsync();
             return toStart;
         });
 

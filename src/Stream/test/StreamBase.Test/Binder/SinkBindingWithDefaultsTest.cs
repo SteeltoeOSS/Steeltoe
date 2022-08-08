@@ -19,7 +19,7 @@ public class SinkBindingWithDefaultsTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("MockBinder");
         ServiceProvider provider = CreateStreamsContainerWithISinkBinding(searchDirectories, "spring:cloud:stream:defaultBinder=mock").BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);

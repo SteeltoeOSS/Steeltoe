@@ -227,7 +227,7 @@ public static class HttpClientHelper
         return request;
     }
 
-    public static Task<string> GetAccessToken(string accessTokenUri, string clientId, string clientSecret, int timeout = DefaultGetAccessTokenTimeout,
+    public static Task<string> GetAccessTokenAsync(string accessTokenUri, string clientId, string clientSecret, int timeout = DefaultGetAccessTokenTimeout,
         bool validateCertificates = DefaultValidateCertificates, HttpClient httpClient = null, ILogger logger = null)
     {
         if (string.IsNullOrEmpty(accessTokenUri))
@@ -236,10 +236,10 @@ public static class HttpClientHelper
         }
 
         var parsedUri = new Uri(accessTokenUri);
-        return GetAccessToken(parsedUri, clientId, clientSecret, timeout, validateCertificates, null, httpClient, logger);
+        return GetAccessTokenAsync(parsedUri, clientId, clientSecret, timeout, validateCertificates, null, httpClient, logger);
     }
 
-    public static Task<string> GetAccessToken(Uri accessTokenUri, string clientId, string clientSecret, int timeout = DefaultGetAccessTokenTimeout,
+    public static Task<string> GetAccessTokenAsync(Uri accessTokenUri, string clientId, string clientSecret, int timeout = DefaultGetAccessTokenTimeout,
         bool validateCertificates = DefaultValidateCertificates, Dictionary<string, string> additionalParams = null, HttpClient httpClient = null,
         ILogger logger = null)
     {
@@ -263,11 +263,11 @@ public static class HttpClientHelper
             throw new ArgumentException("Access token Uri is not well formed", nameof(accessTokenUri));
         }
 
-        return GetAccessTokenInternal(accessTokenUri, clientId, clientSecret, timeout, validateCertificates, httpClient, additionalParams, logger);
+        return GetAccessTokenInternalAsync(accessTokenUri, clientId, clientSecret, timeout, validateCertificates, httpClient, additionalParams, logger);
     }
 
-    private static async Task<string> GetAccessTokenInternal(Uri accessTokenUri, string clientId, string clientSecret, int timeout, bool validateCertificates,
-        HttpClient httpClient, Dictionary<string, string> additionalParams, ILogger logger)
+    private static async Task<string> GetAccessTokenInternalAsync(Uri accessTokenUri, string clientId, string clientSecret, int timeout,
+        bool validateCertificates, HttpClient httpClient, Dictionary<string, string> additionalParams, ILogger logger)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri);
         logger?.LogInformation("HttpClient not provided, a new instance will be created and disposed after retrieving a token");
@@ -297,7 +297,7 @@ public static class HttpClientHelper
 
             if (!response.IsSuccessStatusCode)
             {
-                logger?.LogInformation("GetAccessToken returned status: {0} while obtaining access token from: {1}", response.StatusCode,
+                logger?.LogInformation("GetAccessTokenAsync returned status: {0} while obtaining access token from: {1}", response.StatusCode,
                     WebUtility.UrlEncode(accessTokenUri.OriginalString));
 
                 return null;
@@ -315,7 +315,7 @@ public static class HttpClientHelper
         }
         catch (Exception e)
         {
-            logger?.LogError("GetAccessToken exception: {0}, obtaining access token from: {1}", e, WebUtility.UrlEncode(accessTokenUri.OriginalString));
+            logger?.LogError("GetAccessTokenAsync exception: {0}, obtaining access token from: {1}", e, WebUtility.UrlEncode(accessTokenUri.OriginalString));
         }
         finally
         {

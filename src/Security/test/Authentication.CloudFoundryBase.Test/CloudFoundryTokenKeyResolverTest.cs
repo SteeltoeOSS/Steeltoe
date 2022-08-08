@@ -109,7 +109,7 @@ public class CloudFoundryTokenKeyResolverTest
         CloudFoundryTokenKeyResolver.Resolved.Clear();
 
         var resolver = new CloudFoundryTokenKeyResolver("https://foo.bar", handler, true);
-        JsonWebKeySet result = await resolver.FetchKeySet();
+        JsonWebKeySet result = await resolver.FetchKeySetAsync();
         Assert.NotNull(result);
     }
 

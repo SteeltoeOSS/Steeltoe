@@ -59,7 +59,7 @@ public class CloudFoundryTokenKeyResolver
             };
         }
 
-        JsonWebKeySet keySet = FetchKeySet().GetAwaiter().GetResult();
+        JsonWebKeySet keySet = FetchKeySetAsync().GetAwaiter().GetResult();
 
         if (keySet != null)
         {
@@ -92,7 +92,7 @@ public class CloudFoundryTokenKeyResolver
         return key;
     }
 
-    public virtual async Task<JsonWebKeySet> FetchKeySet()
+    public virtual async Task<JsonWebKeySet> FetchKeySetAsync()
     {
         var requestMessage = new HttpRequestMessage(HttpMethod.Get, _jwtKeyUrl);
         requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

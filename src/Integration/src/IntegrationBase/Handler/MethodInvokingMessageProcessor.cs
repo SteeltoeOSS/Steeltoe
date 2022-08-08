@@ -51,13 +51,13 @@ public class MethodInvokingMessageProcessor<T> : AbstractMessageProcessor<T>, IL
         _invocableHandlerMethod = messageHandlerMethodFactory.CreateInvocableHandlerMethod(targetObject, method);
     }
 
-    public Task Start()
+    public Task StartAsync()
     {
         IsRunning = true;
         return Task.CompletedTask;
     }
 
-    public Task Stop()
+    public Task StopAsync()
     {
         IsRunning = false;
         return Task.CompletedTask;

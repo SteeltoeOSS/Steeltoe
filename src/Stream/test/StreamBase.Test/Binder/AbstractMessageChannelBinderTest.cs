@@ -70,7 +70,7 @@ public class AbstractMessageChannelBinderTest : AbstractTest
         Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
         Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
 
-        consumerBinding.Unbind();
+        consumerBinding.UnbindAsync();
 
         Assert.False(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
         Assert.False(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
@@ -91,7 +91,7 @@ public class AbstractMessageChannelBinderTest : AbstractTest
         Assert.True(registry.ContainsService<IMessageChannel>("bar.errors"));
         Assert.True(registry.ContainsService<IMessageHandler>("bar.errors.bridge"));
 
-        producerBinding.Unbind();
+        producerBinding.UnbindAsync();
         Assert.False(registry.ContainsService<IMessageChannel>("bar.errors"));
         Assert.False(registry.ContainsService<IMessageHandler>("bar.errors.bridge"));
     }
@@ -136,7 +136,7 @@ public class AbstractMessageChannelBinderTest : AbstractTest
         Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
         Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
 
-        consumerBinding.Unbind();
+        consumerBinding.UnbindAsync();
 
         Assert.False(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
         Assert.False(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));

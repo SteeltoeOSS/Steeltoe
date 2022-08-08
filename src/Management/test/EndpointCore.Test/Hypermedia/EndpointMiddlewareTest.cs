@@ -36,7 +36,7 @@ public class EndpointMiddlewareTest : BaseTest
         var ep = new TestHypermediaEndpoint(opts, managementOptions);
         var middle = new ActuatorHypermediaEndpointMiddleware(null, ep, managementOptions);
         HttpContext context = CreateRequest("GET", "/");
-        await middle.Invoke(context);
+        await middle.InvokeAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var rdr = new StreamReader(context.Response.Body);
         string json = await rdr.ReadToEndAsync();

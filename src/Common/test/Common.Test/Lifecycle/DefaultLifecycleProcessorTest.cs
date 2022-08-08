@@ -26,9 +26,9 @@ public class DefaultLifecycleProcessorTest
         }, new List<ISmartLifecycle>()));
 
         Assert.False(bean.IsRunning);
-        await processor.OnRefresh();
+        await processor.OnRefreshAsync();
         Assert.True(bean.IsRunning);
-        await processor.Stop();
+        await processor.StopAsync();
         Assert.False(bean.IsRunning);
         Assert.Single(startedBeans);
     }
@@ -46,13 +46,13 @@ public class DefaultLifecycleProcessorTest
         }, new List<ISmartLifecycle>()));
 
         Assert.False(bean.IsRunning);
-        await processor.OnRefresh();
+        await processor.OnRefreshAsync();
         Assert.False(bean.IsRunning);
         Assert.Empty(startedBeans);
-        await processor.Start();
+        await processor.StartAsync();
         Assert.True(bean.IsRunning);
         Assert.Single(startedBeans);
-        await processor.Stop();
+        await processor.StopAsync();
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class DefaultLifecycleProcessorTest
         Assert.False(bean3.IsRunning);
         Assert.False(beanMax.IsRunning);
 
-        await processor.OnRefresh();
+        await processor.OnRefreshAsync();
 
         Assert.True(beanMin.IsRunning);
         Assert.True(bean1.IsRunning);
@@ -88,7 +88,7 @@ public class DefaultLifecycleProcessorTest
         Assert.True(bean3.IsRunning);
         Assert.True(beanMax.IsRunning);
 
-        await processor.Stop();
+        await processor.StopAsync();
 
         Assert.Equal(5, startedBeans.Count);
         ILifecycle[] started = startedBeans.ToArray();
@@ -121,7 +121,7 @@ public class DefaultLifecycleProcessorTest
         Assert.False(smartBean1.IsRunning);
         Assert.False(smartBean2.IsRunning);
 
-        await processor.OnRefresh();
+        await processor.OnRefreshAsync();
 
         Assert.False(simpleBean1.IsRunning);
         Assert.False(simpleBean2.IsRunning);
@@ -133,7 +133,7 @@ public class DefaultLifecycleProcessorTest
         Assert.Equal(-3, GetPhase(started[0]));
         Assert.Equal(5, GetPhase(started[1]));
 
-        await processor.Start();
+        await processor.StartAsync();
 
         Assert.True(simpleBean1.IsRunning);
         Assert.True(simpleBean2.IsRunning);
@@ -168,7 +168,7 @@ public class DefaultLifecycleProcessorTest
         Assert.False(smartBean1.IsRunning);
         Assert.False(smartBean2.IsRunning);
 
-        await processor.OnRefresh();
+        await processor.OnRefreshAsync();
 
         Assert.False(simpleBean1.IsRunning);
         Assert.False(simpleBean2.IsRunning);
@@ -180,14 +180,14 @@ public class DefaultLifecycleProcessorTest
         Assert.Equal(-3, GetPhase(started[0]));
         Assert.Equal(5, GetPhase(started[1]));
 
-        await processor.Stop();
+        await processor.StopAsync();
 
         Assert.False(simpleBean1.IsRunning);
         Assert.False(simpleBean2.IsRunning);
         Assert.False(smartBean1.IsRunning);
         Assert.False(smartBean2.IsRunning);
 
-        await processor.Start();
+        await processor.StartAsync();
 
         Assert.True(simpleBean1.IsRunning);
         Assert.True(simpleBean2.IsRunning);
@@ -226,8 +226,8 @@ public class DefaultLifecycleProcessorTest
             bean7
         }, new List<ISmartLifecycle>()));
 
-        await processor.OnRefresh();
-        await processor.Stop();
+        await processor.OnRefreshAsync();
+        await processor.StopAsync();
         ILifecycle[] stopped = stoppedBeans.ToArray();
         Assert.Equal(int.MaxValue, GetPhase(stopped[0]));
         Assert.Equal(3, GetPhase(stopped[1]));
@@ -249,9 +249,9 @@ public class DefaultLifecycleProcessorTest
             bean
         }, new List<ISmartLifecycle>()));
 
-        await processor.OnRefresh();
+        await processor.OnRefreshAsync();
         Assert.True(bean.IsRunning);
-        await processor.Stop();
+        await processor.StopAsync();
         ILifecycle[] stopped = stoppedBeans.ToArray();
         Assert.Same(bean, stopped[0]);
     }
@@ -268,11 +268,11 @@ public class DefaultLifecycleProcessorTest
         }, new List<ISmartLifecycle>()));
 
         Assert.False(bean.IsRunning);
-        await processor.OnRefresh();
+        await processor.OnRefreshAsync();
         Assert.False(bean.IsRunning);
-        await processor.Start();
+        await processor.StartAsync();
         Assert.True(bean.IsRunning);
-        await processor.Stop();
+        await processor.StopAsync();
         ILifecycle[] stopped = stoppedBeans.ToArray();
         Assert.False(bean.IsRunning);
         Assert.Same(bean, stopped[0]);
@@ -301,7 +301,7 @@ public class DefaultLifecycleProcessorTest
             bean7
         }, new List<ISmartLifecycle>()));
 
-        await processor.OnRefresh();
+        await processor.OnRefreshAsync();
 
         Assert.True(bean2.IsRunning);
         Assert.True(bean3.IsRunning);
@@ -311,13 +311,13 @@ public class DefaultLifecycleProcessorTest
         Assert.False(bean1.IsRunning);
         Assert.False(bean4.IsRunning);
 
-        await bean1.Start();
-        await bean4.Start();
+        await bean1.StartAsync();
+        await bean4.StartAsync();
 
         Assert.True(bean1.IsRunning);
         Assert.True(bean4.IsRunning);
 
-        await processor.Stop();
+        await processor.StopAsync();
 
         Assert.False(bean2.IsRunning);
         Assert.False(bean3.IsRunning);
@@ -389,7 +389,7 @@ public class DefaultLifecycleProcessorTest
             return new TestLifecycleBean(null, stoppedBeans);
         }
 
-        public Task Start()
+        public Task StartAsync()
         {
             if (_startedBeans != null)
             {
@@ -400,7 +400,7 @@ public class DefaultLifecycleProcessorTest
             return Task.CompletedTask;
         }
 
-        public Task Stop()
+        public Task StopAsync()
         {
             if (_stoppedBeans != null)
             {
@@ -437,9 +437,9 @@ public class DefaultLifecycleProcessorTest
             return new TestSmartLifecycleBean(phase, shutdownDelay, null, stoppedBeans);
         }
 
-        public async Task Stop(Action callback)
+        public async Task StopAsync(Action callback)
         {
-            await Stop();
+            await StopAsync();
             int delay = _shutdownDelay;
             await Task.Delay(delay);
             callback();

@@ -21,7 +21,7 @@ public class ProcessorBindingWithBindingTargetsTest : AbstractTest
         ServiceProvider provider = CreateStreamsContainerWithIProcessorBinding(searchDirectories, "spring:cloud:stream:defaultBinder=mock",
             "spring.cloud.stream.bindings.input.destination=testtock.0", "spring.cloud.stream.bindings.output.destination=testtock.1").BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);

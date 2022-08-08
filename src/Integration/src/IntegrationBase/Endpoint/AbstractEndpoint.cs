@@ -43,7 +43,7 @@ public abstract class AbstractEndpoint : ISmartLifecycle, IServiceNameAware
         ServiceName = $"{GetType().FullName}.{Guid.NewGuid()}";
     }
 
-    public Task Start()
+    public Task StartAsync()
     {
         bool doTheStart = false;
 
@@ -58,13 +58,13 @@ public abstract class AbstractEndpoint : ISmartLifecycle, IServiceNameAware
 
         if (doTheStart)
         {
-            return DoStart();
+            return DoStartAsync();
         }
 
         return Task.CompletedTask;
     }
 
-    public Task Stop(Action callback)
+    public Task StopAsync(Action callback)
     {
         bool doTheStop = false;
 
@@ -79,14 +79,14 @@ public abstract class AbstractEndpoint : ISmartLifecycle, IServiceNameAware
 
         if (doTheStop)
         {
-            return DoStop(callback);
+            return DoStopAsync(callback);
         }
 
         callback();
         return Task.CompletedTask;
     }
 
-    public Task Stop()
+    public Task StopAsync()
     {
         bool doTheStop = false;
 
@@ -101,19 +101,19 @@ public abstract class AbstractEndpoint : ISmartLifecycle, IServiceNameAware
 
         if (doTheStop)
         {
-            return DoStop();
+            return DoStopAsync();
         }
 
         return Task.CompletedTask;
     }
 
-    protected virtual async Task DoStop(Action callback)
+    protected virtual async Task DoStopAsync(Action callback)
     {
-        await DoStop();
+        await DoStopAsync();
         callback();
     }
 
-    protected abstract Task DoStop();
+    protected abstract Task DoStopAsync();
 
-    protected abstract Task DoStart();
+    protected abstract Task DoStartAsync();
 }

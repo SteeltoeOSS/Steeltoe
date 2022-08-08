@@ -28,9 +28,9 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
         _options = endpoint.Options as ICloudFoundryOptions;
     }
 
-    public Task Invoke(HttpContext context)
+    public Task InvokeAsync(HttpContext context)
     {
-        logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
+        logger?.LogDebug("InvokeAsync({0} {1})", context.Request.Method, context.Request.Path.Value);
 
         if (endpoint.ShouldInvoke(managementOptions, logger))
         {

@@ -22,7 +22,7 @@ internal sealed class SetsUserInContextForTestsMiddleware
         _next = next;
     }
 
-    public async Task Invoke(HttpContext context)
+    public async Task InvokeAsync(HttpContext context)
     {
         if (context.Request.Headers.ContainsKey(TestingHeader))
         {

@@ -38,7 +38,7 @@ public sealed class StreamHost : IHost
     public Task StartAsync(CancellationToken cancellationToken = default)
     {
         var lifecycleProcessor = _host.Services.GetRequiredService<ILifecycleProcessor>();
-        lifecycleProcessor.OnRefresh();
+        lifecycleProcessor.OnRefreshAsync();
         var processor = _host.Services.GetRequiredService<StreamListenerAttributeProcessor>();
         processor.Initialize();
         return _host.StartAsync(cancellationToken);
@@ -47,7 +47,7 @@ public sealed class StreamHost : IHost
     public Task StopAsync(CancellationToken cancellationToken = default)
     {
         var lifecycleProcessor = _host.Services.GetRequiredService<ILifecycleProcessor>();
-        lifecycleProcessor.Stop();
+        lifecycleProcessor.StopAsync();
 
         // Stop that thing
         return _host.StopAsync(cancellationToken);

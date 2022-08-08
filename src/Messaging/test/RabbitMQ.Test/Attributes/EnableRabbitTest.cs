@@ -28,7 +28,7 @@ public class EnableRabbitTest
     [Fact]
     public async Task SampleConfiguration()
     {
-        ServiceProvider services = await RabbitSampleConfig.CreateAndStartServices();
+        ServiceProvider services = await RabbitSampleConfig.CreateAndStartServicesAsync();
         var context = services.GetRequiredService<IApplicationContext>();
         TestSampleConfiguration(context, 2);
     }
@@ -36,7 +36,7 @@ public class EnableRabbitTest
     [Fact]
     public async Task FullConfiguration()
     {
-        ServiceProvider services = await RabbitFullConfig.CreateAndStartServices();
+        ServiceProvider services = await RabbitFullConfig.CreateAndStartServicesAsync();
         var context = services.GetRequiredService<IApplicationContext>();
         TestFullConfiguration(context);
     }
@@ -44,7 +44,7 @@ public class EnableRabbitTest
     [Fact]
     public async Task FullConfigurableConfiguration()
     {
-        ServiceProvider services = await RabbitFullConfigurableConfig.CreateAndStartServices();
+        ServiceProvider services = await RabbitFullConfigurableConfig.CreateAndStartServicesAsync();
         var context = services.GetRequiredService<IApplicationContext>();
         TestFullConfiguration(context);
     }
@@ -52,14 +52,14 @@ public class EnableRabbitTest
     [Fact]
     public async Task NoRabbitAdminConfiguration()
     {
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServices(typeof(FullBean)));
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServicesAsync(typeof(FullBean)));
         Assert.Contains("rabbitAdmin", exception.Message);
     }
 
     [Fact]
     public async Task CustomConfiguration()
     {
-        ServiceProvider services = await RabbitCustomConfig.CreateAndStartServices();
+        ServiceProvider services = await RabbitCustomConfig.CreateAndStartServicesAsync();
         var context = services.GetRequiredService<IApplicationContext>();
         TestCustomConfiguration(context);
     }
@@ -67,7 +67,7 @@ public class EnableRabbitTest
     [Fact]
     public async Task ExplicitContainerFactory()
     {
-        ServiceProvider services = await RabbitCustomContainerFactoryConfig.CreateAndStartServices();
+        ServiceProvider services = await RabbitCustomContainerFactoryConfig.CreateAndStartServicesAsync();
         var context = services.GetRequiredService<IApplicationContext>();
         TestExplicitContainerFactoryConfiguration(context);
     }
@@ -75,7 +75,7 @@ public class EnableRabbitTest
     [Fact]
     public async Task DefaultContainerFactory()
     {
-        ServiceProvider services = await RabbitDefaultContainerFactoryConfig.CreateAndStartServices(typeof(DefaultBean));
+        ServiceProvider services = await RabbitDefaultContainerFactoryConfig.CreateAndStartServicesAsync(typeof(DefaultBean));
         var context = services.GetRequiredService<IApplicationContext>();
         TestDefaultContainerFactoryConfiguration(context);
     }
@@ -87,7 +87,7 @@ public class EnableRabbitTest
 #pragma warning restore S2699 // Tests should include assertions
     {
         // TODO:
-        // var services = await RabbitHandlerMethodFactoryConfig.CreateAndStartServices();
+        // var services = await RabbitHandlerMethodFactoryConfig.CreateAndStartServicesAsync();
         // var context = services.GetRequiredService<IApplicationContext>();
         // TestDefaultContainerFactoryConfiguration(context);
         return Task.CompletedTask;
@@ -97,7 +97,7 @@ public class EnableRabbitTest
     public async Task RabbitListeners()
     {
         ServiceProvider services =
-            await RabbitDefaultContainerFactoryConfig.CreateAndStartServices(typeof(RabbitListenersBean), typeof(ClassLevelListenersBean));
+            await RabbitDefaultContainerFactoryConfig.CreateAndStartServicesAsync(typeof(RabbitListenersBean), typeof(ClassLevelListenersBean));
 
         var context = services.GetRequiredService<IApplicationContext>();
         TestRabbitListenerRepeatable(context);
@@ -106,21 +106,21 @@ public class EnableRabbitTest
     [Fact]
     public async Task UnknownFactory()
     {
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServices(typeof(CustomBean)));
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServicesAsync(typeof(CustomBean)));
         Assert.Contains("customFactory", exception.Message);
     }
 
     [Fact]
     public async Task InvalidPriorityConfiguration()
     {
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServices(typeof(InvalidPriorityBean)));
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServicesAsync(typeof(InvalidPriorityBean)));
         Assert.Contains("NotANumber", exception.Message);
     }
 
     [Fact]
     public async Task TestProperShutdownOnException()
     {
-        ServiceProvider services = await TestProperShutdownOnExceptionConfig.CreateAndStartServices();
+        ServiceProvider services = await TestProperShutdownOnExceptionConfig.CreateAndStartServicesAsync();
         var context = services.GetRequiredService<IApplicationContext>();
         var listenerEndpointRegistry = context.GetService<IRabbitListenerEndpointRegistry>();
         services.Dispose();
@@ -282,7 +282,7 @@ public class EnableRabbitTest
 
     public static class TestProperShutdownOnExceptionConfig
     {
-        public static async Task<ServiceProvider> CreateAndStartServices()
+        public static async Task<ServiceProvider> CreateAndStartServicesAsync()
         {
             var mockConnectionFactory = new Mock<IConnectionFactory>();
             var mockConnection = new Mock<IConnection>();
@@ -329,7 +329,7 @@ public class EnableRabbitTest
 
     public static class RabbitSampleConfig
     {
-        public static async Task<ServiceProvider> CreateAndStartServices(Type listenerBeanType = null)
+        public static async Task<ServiceProvider> CreateAndStartServicesAsync(Type listenerBeanType = null)
         {
             var mockConnectionFactory = new Mock<IConnectionFactory>();
             var mockConnection = new Mock<IConnection>();
@@ -397,7 +397,7 @@ public class EnableRabbitTest
 
     public static class RabbitFullConfig
     {
-        public static async Task<ServiceProvider> CreateAndStartServices()
+        public static async Task<ServiceProvider> CreateAndStartServicesAsync()
         {
             var mockConnectionFactory = new Mock<IConnectionFactory>();
             var mockConnection = new Mock<IConnection>();
@@ -440,7 +440,7 @@ public class EnableRabbitTest
 
     public static class RabbitFullConfigurableConfig
     {
-        public static async Task<ServiceProvider> CreateAndStartServices()
+        public static async Task<ServiceProvider> CreateAndStartServicesAsync()
         {
             var mockConnectionFactory = new Mock<IConnectionFactory>();
             var mockConnection = new Mock<IConnection>();
@@ -496,7 +496,7 @@ public class EnableRabbitTest
 
     public static class RabbitDefaultContainerFactoryConfig
     {
-        public static async Task<ServiceProvider> CreateAndStartServices(params Type[] listeners)
+        public static async Task<ServiceProvider> CreateAndStartServicesAsync(params Type[] listeners)
         {
             var mockConnection = new Mock<IConnectionFactory>();
             var services = new ServiceCollection();
@@ -541,7 +541,7 @@ public class EnableRabbitTest
             _context = context;
         }
 
-        public static async Task<ServiceProvider> CreateAndStartServices()
+        public static async Task<ServiceProvider> CreateAndStartServicesAsync()
         {
             var mockConnectionFactory = new Mock<IConnectionFactory>();
             var mockConnection = new Mock<IConnection>();
@@ -607,7 +607,7 @@ public class EnableRabbitTest
             _context = context;
         }
 
-        public static async Task<ServiceProvider> CreateAndStartServices()
+        public static async Task<ServiceProvider> CreateAndStartServicesAsync()
         {
             var mockConnection = new Mock<IConnectionFactory>();
             var services = new ServiceCollection();

@@ -35,7 +35,7 @@ public class HealthRegistrationsAggregator : DefaultHealthAggregator, IHealthReg
 
             try
             {
-                healthCheckResult = registration.HealthCheck(serviceProvider).GetAwaiter().GetResult();
+                healthCheckResult = registration.HealthCheckAsync(serviceProvider).GetAwaiter().GetResult();
             }
             catch (Exception)
             {

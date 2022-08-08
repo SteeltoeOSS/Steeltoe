@@ -73,7 +73,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
         options.CallbackUrl = context.RedirectUri;
 
         var tEx = new TokenExchanger(options, GetHttpClient());
-        HttpResponseMessage response = await tEx.ExchangeCodeForToken(context.Code, Options.TokenEndpoint, Context.RequestAborted).ConfigureAwait(false);
+        HttpResponseMessage response = await tEx.ExchangeCodeForTokenAsync(context.Code, Options.TokenEndpoint, Context.RequestAborted).ConfigureAwait(false);
 
         if (response.IsSuccessStatusCode)
         {
@@ -86,7 +86,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
             return tokenResponse;
         }
 
-        string error = $"OAuth token endpoint failure: {await Display(response).ConfigureAwait(false)}";
+        string error = $"OAuth token endpoint failure: {await DisplayAsync(response).ConfigureAwait(false)}";
         return OAuthTokenResponse.Failed(new Exception(error));
     }
 
@@ -181,7 +181,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
         queryStrings[name] = value;
     }
 
-    private static async Task<string> Display(HttpResponseMessage response)
+    private static async Task<string> DisplayAsync(HttpResponseMessage response)
     {
         var output = new StringBuilder();
         output.Append($"Status: {response.StatusCode};");

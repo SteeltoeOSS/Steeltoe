@@ -211,7 +211,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         public AtomicBoolean First7 { get; set; } = new(true);
 
         [RabbitListener("queue1", Id = "foo")]
-        public Task<string> Listen1(string foo)
+        public Task<string> Listen1Async(string foo)
         {
             if (FooFirst.GetAndSet(false))
             {
@@ -222,7 +222,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         }
 
         [RabbitListener("queue2", Id = "bar")]
-        public Task<string> Listen2(string foo)
+        public Task<string> Listen2Async(string foo)
         {
             if (BarFirst.GetAndSet(false))
             {
@@ -233,7 +233,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         }
 
         [RabbitListener("queue3", Id = "baz")]
-        public Task<List<string>> Listen3(string foo)
+        public Task<List<string>> Listen3Async(string foo)
         {
             return Task.FromResult(new List<string>
             {
@@ -242,14 +242,14 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         }
 
         [RabbitListener("queue4", Id = "qux")]
-        public Task Listen4(string foo)
+        public Task Listen4Async(string foo)
         {
             Latch4.Signal();
             return Task.CompletedTask;
         }
 
         [RabbitListener("queue5", Id = "fiz")]
-        public Task Listen5(string foo)
+        public Task Listen5Async(string foo)
         {
             return Task.FromException(new RabbitRejectAndDoNotRequeueException("asyncToDLQ"));
         }
@@ -261,7 +261,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         }
 
         [RabbitListener("queue6", Id = "fix", ContainerFactory = "doNotRequeueFactory")]
-        public Task Listen6(string foo)
+        public Task Listen6Async(string foo)
         {
             return Task.FromException(new InvalidOperationException("asyncDefaultToDLQ"));
         }
@@ -273,7 +273,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         }
 
         [RabbitListener("queue7", Id = "overrideFactoryRequeue", ContainerFactory = "doNotRequeueFactory")]
-        public Task<string> Listen7(string foo)
+        public Task<string> Listen7Async(string foo)
         {
             if (First7.CompareAndSet(true, false))
             {
@@ -284,7 +284,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         }
 
         [RabbitListener(Queue = "queueAsyncErrorHandler", Id = "asyncErrorHandler", ErrorHandler = nameof(CustomListenerErrorHandler))]
-        public async Task<string> HandleMessage(string msg)
+        public async Task<string> HandleMessageAsync(string msg)
         {
             await Task.Run(() => Console.WriteLine("Running Listener"));
 
