@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Stream.Config;
 
-public class ConsumerOptions : IConsumerOptions
+public sealed class ConsumerOptions : IConsumerOptions
 {
     private const bool AutoStartupDefault = true;
     private const int ConcurrencyDefault = 1;

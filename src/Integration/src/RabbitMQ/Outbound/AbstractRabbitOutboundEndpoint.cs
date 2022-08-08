@@ -196,12 +196,12 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
         EndpointInit();
     }
 
-    Task ILifecycle.StartAsync()
+    public Task StartAsync()
     {
         return Task.Run(Start);
     }
 
-    Task ILifecycle.StopAsync()
+    public Task StopAsync()
     {
         Stop();
         return Task.CompletedTask;
