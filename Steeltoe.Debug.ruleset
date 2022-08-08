@@ -2,6 +2,7 @@
 <RuleSet Name="Steeltoe Debug" Description="Code quality rules for Steeltoe debug builds" ToolsVersion="17.0">
   <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
     <Rule Id="S100" Action="Warning" />
+    <Rule Id="S1067" Action="Warning" />
     <Rule Id="S107" Action="Info" />
     <Rule Id="S1075" Action="None" />
     <Rule Id="S108" Action="Info" />

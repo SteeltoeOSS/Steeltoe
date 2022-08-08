@@ -2521,7 +2521,12 @@ public class RabbitTemplate
 
     private ConfirmListener AddConfirmListener(Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks, RC.IModel channel)
     {
-        return acks != null && nacks != null && channel is IChannelProxy proxy && proxy.IsConfirmSelected ? new ConfirmListener(acks, nacks, channel) : null;
+        if (acks == null || nacks == null || channel is not IChannelProxy { IsConfirmSelected: true })
+        {
+            return null;
+        }
+
+        return new ConfirmListener(acks, nacks, channel);
     }
 
     private void CleanUpAfterAction(RC.IModel channel, bool invokeScope, RabbitResourceHolder resourceHolder, IConnection connection)

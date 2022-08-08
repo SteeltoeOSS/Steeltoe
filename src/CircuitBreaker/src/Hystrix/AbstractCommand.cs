@@ -1113,31 +1113,18 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
     }
 
-    private bool IsUnrecoverableError(Exception t)
+    private bool IsUnrecoverableError(Exception exception)
     {
-        Exception cause = t;
-
-        if (cause is OutOfMemoryException)
+        switch (exception)
         {
-            return true;
+            case OutOfMemoryException:
+            case VerificationException:
+            case InsufficientExecutionStackException:
+            case BadImageFormatException:
+                return true;
+            default:
+                return false;
         }
-
-        if (cause is VerificationException)
-        {
-            return true;
-        }
-
-        if (cause is InsufficientExecutionStackException)
-        {
-            return true;
-        }
-
-        if (cause is BadImageFormatException)
-        {
-            return true;
-        }
-
-        return false;
     }
 
     private bool IsRecoverableError(Exception t)

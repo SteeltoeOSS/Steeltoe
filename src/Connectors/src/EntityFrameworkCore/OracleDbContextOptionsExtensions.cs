@@ -133,23 +133,20 @@ public static class OracleDbContextOptionsExtensions
         return (DbContextOptionsBuilder<TContext>)DoUseOracle((DbContextOptionsBuilder)optionsBuilder, connection, oracleOptionsAction);
     }
 
-    private static MethodInfo FindUseSqlMethod(Type type, Type[] parameterTypes)
+    private static MethodInfo FindUseSqlMethod(Type type, IReadOnlyList<Type> parameterTypes)
     {
-        TypeInfo typeInfo = type.GetTypeInfo();
-        IEnumerable<MethodInfo> declaredMethods = typeInfo.DeclaredMethods;
+        return type.GetMethods().FirstOrDefault(method => MatchesSignature(method, parameterTypes));
+    }
 
-        foreach (MethodInfo ci in declaredMethods)
+    private static bool MatchesSignature(MethodBase method, IReadOnlyList<Type> parameterTypes)
+    {
+        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseOracle", StringComparison.InvariantCultureIgnoreCase))
         {
-            ParameterInfo[] parameters = ci.GetParameters();
-
-            if (parameters.Length == 3 && ci.Name.Equals("UseOracle", StringComparison.InvariantCultureIgnoreCase) &&
-                parameters[0].ParameterType.Equals(parameterTypes[0]) && parameters[1].ParameterType.Equals(parameterTypes[1]) && ci.IsPublic && ci.IsStatic)
-            {
-                return ci;
-            }
+            ParameterInfo[] parameters = method.GetParameters();
+            return parameters.Length == 3 && parameters[0].ParameterType == parameterTypes[0] && parameters[1].ParameterType == parameterTypes[1];
         }
 
-        return null;
+        return false;
     }
 
     private static string GetConnection(IConfiguration config, string serviceName = null)

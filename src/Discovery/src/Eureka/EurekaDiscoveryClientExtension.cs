@@ -64,7 +64,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
         }).PostConfigure<IConfiguration>((options, config) =>
         {
             EurekaServiceInfo info = GetServiceInfo(config);
-            EurekaPostConfigurer.UpdateConfiguration(config, info, options);
+            EurekaPostConfigurer.UpdateConfiguration(info, options);
         });
 
         services.AddOptions<EurekaInstanceOptions>()

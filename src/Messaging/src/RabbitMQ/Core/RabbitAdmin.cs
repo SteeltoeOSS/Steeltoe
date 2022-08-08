@@ -471,8 +471,17 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
             return false;
         }
 
-        return (declarable.DeclaringAdmins.Count == 0 && !ExplicitDeclarationsOnly) || declarable.DeclaringAdmins.Contains(this) ||
-            (ServiceName != null && declarable.DeclaringAdmins.Contains(ServiceName));
+        if (declarable.DeclaringAdmins.Count == 0 && !ExplicitDeclarationsOnly)
+        {
+            return true;
+        }
+
+        if (declarable.DeclaringAdmins.Contains(this))
+        {
+            return true;
+        }
+
+        return ServiceName != null && declarable.DeclaringAdmins.Contains(ServiceName);
     }
 
     private void DeclareExchanges(RC.IModel channel, params IExchange[] exchanges)

@@ -46,10 +46,22 @@ public class ActuatorRouteBuilderExtensionsTest
                 return t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
             }
 
-            static bool SupportedOnPlatform(Type t)
+            static bool SupportedOnPlatform(Type type)
             {
-                return !(t.Name.StartsWith("ThreadDump") || t.Name.StartsWith("HeapDump")) || (t.Name.StartsWith("ThreadDump") && Platform.IsWindows) ||
-                    t.Name.StartsWith("HeapDump");
+                bool isThreadDump = type.Name.StartsWith("ThreadDump", StringComparison.Ordinal);
+                bool isHeapDump = type.Name.StartsWith("HeapDump", StringComparison.Ordinal);
+
+                if (!(isThreadDump || isHeapDump))
+                {
+                    return true;
+                }
+
+                if (isThreadDump && Platform.IsWindows)
+                {
+                    return true;
+                }
+
+                return isHeapDump;
             }
 
             List<Type> types = Assembly.Load("Steeltoe.Management.Endpoint").GetTypes().Where(Query).Where(SupportedOnPlatform).ToList();

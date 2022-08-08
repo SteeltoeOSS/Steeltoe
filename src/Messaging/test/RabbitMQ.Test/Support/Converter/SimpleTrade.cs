@@ -39,7 +39,9 @@ public class SimpleTrade
             return false;
         }
 
+#pragma warning disable S1067 // Expressions should not be too complex
         return AccountName == other.AccountName && BuyRequest == other.BuyRequest && OrderType == other.OrderType && Price == other.Price &&
             Quantity == other.Quantity && RequestId == other.RequestId && Ticker == other.Ticker && UserName == other.UserName;
+#pragma warning restore S1067 // Expressions should not be too complex
     }
 }

@@ -12,6 +12,16 @@ public abstract class AbstractTypeMapper
     public const string DefaultContentClassIdFieldName = MessageHeaders.ContentTypeId;
     public const string DefaultKeyClassIdFieldName = MessageHeaders.KeyTypeId;
 
+    private static readonly ISet<Type> ContainerTypes = new[]
+    {
+        typeof(Dictionary<,>),
+        typeof(List<>),
+        typeof(HashSet<>),
+        typeof(LinkedList<>),
+        typeof(Stack<>),
+        typeof(Queue<>)
+    }.ToHashSet();
+
     private readonly Dictionary<Type, string> _classIdMapping = new();
 
     public Dictionary<string, Type> IdClassMapping { get; } = new();
@@ -94,13 +104,8 @@ public abstract class AbstractTypeMapper
     {
         if (type.IsGenericType)
         {
-            Type typedef = type.GetGenericTypeDefinition();
-
-            if (typeof(Dictionary<,>) == typedef || typeof(List<>) == typedef || typeof(HashSet<>) == typedef || typeof(LinkedList<>) == typedef ||
-                typeof(Stack<>) == typedef || typeof(Queue<>) == typedef)
-            {
-                return true;
-            }
+            Type genericType = type.GetGenericTypeDefinition();
+            return ContainerTypes.Contains(genericType);
         }
 
         return false;

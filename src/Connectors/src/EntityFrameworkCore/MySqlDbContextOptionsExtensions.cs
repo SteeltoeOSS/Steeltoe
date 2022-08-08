@@ -329,22 +329,25 @@ public static class MySqlDbContextOptionsExtensions
         return (DbContextOptionsBuilder<TContext>)DoUseMySql((DbContextOptionsBuilder)builder, connection, mySqlOptionsAction, serverVersion);
     }
 
-    private static MethodInfo FindUseSqlMethod(Type type, Type[] parameterTypes)
+    private static MethodInfo FindUseSqlMethod(Type type, IReadOnlyList<Type> parameterTypes)
     {
-        TypeInfo typeInfo = type.GetTypeInfo();
-        IEnumerable<MethodInfo> declaredMethods = typeInfo.DeclaredMethods;
+        return type.GetMethods().FirstOrDefault(method => MatchesSignature(method, parameterTypes));
+    }
 
-        foreach (MethodInfo ci in declaredMethods.Where(method => method.Name.Equals("UseMySQL", StringComparison.InvariantCultureIgnoreCase)))
+    private static bool MatchesSignature(MethodBase method, IReadOnlyList<Type> parameterTypes)
+    {
+        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseMySQL", StringComparison.InvariantCultureIgnoreCase))
         {
-            ParameterInfo[] parameters = ci.GetParameters();
+            ParameterInfo[] parameters = method.GetParameters();
 
-            if (parameters.Length == parameterTypes.Length && parameters[0].ParameterType == parameterTypes[0] &&
-                parameters[1].ParameterType == parameterTypes[1] && ci.IsPublic && ci.IsStatic)
+            if (parameters.Length != parameterTypes.Count)
             {
-                return ci;
+                return false;
             }
+
+            return parameters.Length >= 2 && parameters[0].ParameterType == parameterTypes[0] && parameters[1].ParameterType == parameterTypes[1];
         }
 
-        return null;
+        return false;
     }
 }

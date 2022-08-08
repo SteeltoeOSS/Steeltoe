@@ -44,9 +44,15 @@ public class DefaultExceptionStrategy : IFatalExceptionStrategy
         return false;
     }
 
-    private bool IsCauseFatal(Exception cause)
+    private bool IsCauseFatal(Exception exception)
     {
-        return cause is MessageConversionException || cause is MethodArgumentResolutionException || cause is MissingMethodException ||
-            cause is InvalidCastException || IsUserCauseFatal(cause);
+        return exception switch
+        {
+            MessageConversionException => true,
+            MethodArgumentResolutionException => true,
+            MissingMethodException => true,
+            InvalidCastException => true,
+            _ => IsUserCauseFatal(exception)
+        };
     }
 }

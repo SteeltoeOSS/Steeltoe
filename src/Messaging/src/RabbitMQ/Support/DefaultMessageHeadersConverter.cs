@@ -211,11 +211,29 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
             return null;
         }
 
-        bool valid = value is string || value is byte[] || value is bool || value is byte || value is sbyte || value is uint || value is int || value is long ||
-            value is float || value is double || value is decimal || value is short || value is RC.AmqpTimestamp || value is IList || value is IDictionary ||
-            value is RC.BinaryTableValue || value is object[] || value is Type;
+        bool isValid = value switch
+        {
+            string => true,
+            byte[] => true,
+            bool => true,
+            byte => true,
+            sbyte => true,
+            uint => true,
+            int => true,
+            long => true,
+            float => true,
+            double => true,
+            decimal => true,
+            short => true,
+            RC.AmqpTimestamp => true,
+            IList => true,
+            IDictionary => true,
+            RC.BinaryTableValue => true,
+            Type => true,
+            _ => false
+        };
 
-        if (!valid)
+        if (!isValid)
         {
             value = value.ToString();
         }

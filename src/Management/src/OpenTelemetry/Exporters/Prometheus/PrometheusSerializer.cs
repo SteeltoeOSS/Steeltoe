@@ -118,20 +118,16 @@ internal static class PrometheusSerializer
     {
         Debug.Assert(!string.IsNullOrEmpty(value), $"{nameof(value)} should not be null or empty.");
 
-        ushort ordinal = value[0];
-
-        if (ordinal >= '0' && ordinal <= '9')
+        if (IsAsciiDigit(value[0]))
         {
             buffer[cursor++] = unchecked((byte)'_');
         }
 
         foreach (char ch in value)
         {
-            ordinal = ch;
-
-            if ((ordinal >= 'A' && ordinal <= 'Z') || (ordinal >= 'a' && ordinal <= 'z') || (ordinal >= '0' && ordinal <= '9'))
+            if (IsAsciiLetter(ch) || IsAsciiDigit(ch))
             {
-                buffer[cursor++] = unchecked((byte)ordinal);
+                buffer[cursor++] = unchecked((byte)ch);
             }
             else
             {
@@ -140,6 +136,18 @@ internal static class PrometheusSerializer
         }
 
         return cursor;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsAsciiDigit(char ch)
+    {
+        return ch >= '0' && ch <= '9';
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsAsciiLetter(char ch)
+    {
+        return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -215,11 +223,9 @@ internal static class PrometheusSerializer
 
             foreach (char ch in metricUnit)
             {
-                ushort ordinal = ch;
-
-                if ((ordinal >= 'A' && ordinal <= 'Z') || (ordinal >= 'a' && ordinal <= 'z') || (ordinal >= '0' && ordinal <= '9'))
+                if (IsAsciiLetter(ch) || IsAsciiDigit(ch))
                 {
-                    buffer[cursor++] = unchecked((byte)ordinal);
+                    buffer[cursor++] = unchecked((byte)ch);
                 }
                 else
                 {

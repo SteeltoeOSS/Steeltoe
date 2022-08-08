@@ -40,8 +40,8 @@ public class Ternary : SpelNode
         SpelNode left = children[1];
         SpelNode right = children[2];
 
-        return condition.IsCompilable() && left.IsCompilable() && right.IsCompilable() && CodeFlow.IsBooleanCompatible(condition.ExitDescriptor) &&
-            left.ExitDescriptor != null && right.ExitDescriptor != null;
+        bool isCompilable = condition.IsCompilable() && left.IsCompilable() && right.IsCompilable();
+        return isCompilable && CodeFlow.IsBooleanCompatible(condition.ExitDescriptor) && left.ExitDescriptor != null && right.ExitDescriptor != null;
     }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)

@@ -382,8 +382,18 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
 
     protected virtual void VerifyType(string headerName, object headerValue)
     {
-        if (headerName != null && headerValue != null && (Messaging.MessageHeaders.ErrorChannelName.Equals(headerName) ||
-            Messaging.MessageHeaders.ReplyChannelName.EndsWith(headerName)) && !(headerValue is IMessageChannel || headerValue is string))
+        if (headerName == null || headerValue == null)
+        {
+            return;
+        }
+
+        if (!Messaging.MessageHeaders.ErrorChannelName.Equals(headerName) &&
+            !Messaging.MessageHeaders.ReplyChannelName.EndsWith(headerName, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        if (headerValue is not (IMessageChannel or string))
         {
             throw new ArgumentException($"'{headerName}' header value must be a MessageChannel or string");
         }

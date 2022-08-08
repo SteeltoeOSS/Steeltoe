@@ -607,6 +607,17 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
     public class OptimalPropertyAccessor : ICompilablePropertyAccessor
     {
+        private static readonly ISet<Type> NumericIntegralTypes = new[]
+        {
+            typeof(int),
+            typeof(uint),
+            typeof(short),
+            typeof(ushort),
+            typeof(byte),
+            typeof(sbyte),
+            typeof(char)
+        }.ToHashSet();
+
         public MemberInfo Member { get; }
 
         public Type TypeDescriptor { get; }
@@ -844,20 +855,19 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
             switch (field.FieldType)
             {
-                case var t when t == typeof(int) || t == typeof(short) || t == typeof(char) || t == typeof(byte) || t == typeof(uint) || t == typeof(ushort) ||
-                    t == typeof(sbyte):
+                case var type when NumericIntegralTypes.Contains(type):
                     gen.Emit(OpCodes.Ldc_I4, (int)constant);
                     return;
-                case var t when t == typeof(long) || t == typeof(ulong):
+                case var type when type == typeof(long) || type == typeof(ulong):
                     gen.Emit(OpCodes.Ldc_I8, (long)constant);
                     return;
-                case var t when t == typeof(float):
+                case var type when type == typeof(float):
                     gen.Emit(OpCodes.Ldc_R4, (float)constant);
                     return;
-                case var t when t == typeof(double):
+                case var type when type == typeof(double):
                     gen.Emit(OpCodes.Ldc_R8, (double)constant);
                     return;
-                case var t when t == typeof(string):
+                case var type when type == typeof(string):
                     gen.Emit(OpCodes.Ldstr, (string)constant);
                     return;
                 default:

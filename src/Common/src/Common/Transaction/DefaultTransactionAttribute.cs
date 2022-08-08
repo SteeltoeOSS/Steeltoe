@@ -28,13 +28,14 @@ public class DefaultTransactionAttribute : DefaultTransactionDefinition, ITransa
 
     public bool RollbackOn(Exception exception)
     {
-        if (exception is OutOfMemoryException || exception is InvalidProgramException || exception is AccessViolationException ||
-            exception is StackOverflowException || exception is BadImageFormatException)
+        return exception switch
         {
-            return true;
-        }
-
-        return false;
+            OutOfMemoryException => true,
+            InvalidProgramException => true,
+            AccessViolationException => true,
+            BadImageFormatException => true,
+            _ => false
+        };
     }
 
     protected StringBuilder GetAttributeDescription()
