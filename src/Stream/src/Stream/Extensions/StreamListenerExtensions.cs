@@ -5,6 +5,7 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
@@ -21,10 +22,7 @@ public static class StreamListenerExtensions
 
     public static IServiceCollection AddStreamListeners(this IServiceCollection services, Type type)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         MethodInfo[] targetMethods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
@@ -61,10 +59,7 @@ public static class StreamListenerExtensions
     public static IServiceCollection AddStreamListener(this IServiceCollection services, MethodInfo method, string target, string condition = null,
         bool copyHeaders = true)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         var attribute = new StreamListenerAttribute(target, condition, copyHeaders);
         services.AddStreamListener(method, attribute);

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot;
 
@@ -18,10 +19,7 @@ public static class SpringBootConfigurationBuilderExtensions
     /// <returns>builder.</returns>
     public static IConfigurationBuilder AddSpringBootEnv(this IConfigurationBuilder builder)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         builder.Add(new SpringBootEnvSource());
 
@@ -30,10 +28,7 @@ public static class SpringBootConfigurationBuilderExtensions
 
     public static IConfigurationBuilder AddSpringBootCmd(this IConfigurationBuilder builder, IConfiguration configuration)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         builder.Add(new SpringBootCmdSource(configuration));
 

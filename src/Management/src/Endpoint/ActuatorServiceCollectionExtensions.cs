@@ -40,17 +40,9 @@ public static class ActuatorServiceCollectionExtensions
     public static IServiceCollection AddAllActuators(this IServiceCollection services, IConfiguration config = null,
         MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetService<IConfiguration>();
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.AddSteeltoeCors(buildCorsPolicy);
 

@@ -5,13 +5,14 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
 /// <summary>
 /// Add services used by the Info actuator.
 /// </summary>
-public static partial class ServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Adds the services used by the Info actuator.
@@ -27,15 +28,8 @@ public static partial class ServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddInfoActuatorServices(this IServiceCollection services, IConfiguration configuration)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(configuration);
 
         var options = new InfoEndpointOptions(configuration);
         services.TryAddSingleton<IInfoOptions>(options);

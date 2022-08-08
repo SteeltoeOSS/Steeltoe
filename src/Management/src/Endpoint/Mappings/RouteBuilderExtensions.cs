@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Routing;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
@@ -16,10 +17,7 @@ public static class RouteBuilderExtensions
     /// </param>
     public static void AddRoutesToMappingsActuator(this IRouteBuilder builder)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         var routeMappings = builder.ServiceProvider.GetService(typeof(IRouteMappings)) as IRouteMappings;
 

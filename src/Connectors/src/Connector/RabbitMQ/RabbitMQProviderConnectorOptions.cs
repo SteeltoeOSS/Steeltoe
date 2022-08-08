@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.RabbitMQ;
@@ -39,10 +40,7 @@ public class RabbitMQProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public RabbitMQProviderConnectorOptions(IConfiguration config)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         IConfigurationSection section = config.GetSection(RabbitClientSectionPrefix);
         section.Bind(this);

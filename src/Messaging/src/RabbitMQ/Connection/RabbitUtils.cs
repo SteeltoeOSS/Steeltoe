@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client.Exceptions;
 using RabbitMQ.Client.Impl;
+using Steeltoe.Common;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using RC = RabbitMQ.Client;
@@ -75,10 +76,7 @@ public static class RabbitUtils
 
     public static void CommitIfNecessary(RC.IModel channel, ILogger logger = null)
     {
-        if (channel == null)
-        {
-            throw new ArgumentNullException(nameof(channel));
-        }
+        ArgumentGuard.NotNull(channel);
 
         try
         {
@@ -93,10 +91,7 @@ public static class RabbitUtils
 
     public static void RollbackIfNecessary(RC.IModel channel, ILogger logger = null)
     {
-        if (channel == null)
-        {
-            throw new ArgumentNullException(nameof(channel));
-        }
+        ArgumentGuard.NotNull(channel);
 
         try
         {

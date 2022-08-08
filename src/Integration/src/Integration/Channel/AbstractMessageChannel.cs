@@ -4,6 +4,7 @@
 
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Order;
 using Steeltoe.Integration.Support;
@@ -106,10 +107,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
     public virtual bool Send(IMessage message, int timeout)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentGuard.NotNull(message);
 
         if (message.Payload == null)
         {

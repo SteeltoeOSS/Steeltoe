@@ -206,10 +206,7 @@ public class SpelExpression : IExpression
 
     public object GetValue(IEvaluationContext context)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentGuard.NotNull(context);
 
         if (CompiledAst != null)
         {
@@ -246,10 +243,7 @@ public class SpelExpression : IExpression
 
     public object GetValue(IEvaluationContext context, Type desiredResultType)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentGuard.NotNull(context);
 
         if (CompiledAst != null)
         {
@@ -288,10 +282,7 @@ public class SpelExpression : IExpression
 
     public object GetValue(IEvaluationContext context, object rootObject)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentGuard.NotNull(context);
 
         if (CompiledAst != null)
         {
@@ -328,10 +319,7 @@ public class SpelExpression : IExpression
 
     public object GetValue(IEvaluationContext context, object rootObject, Type desiredResultType)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentGuard.NotNull(context);
 
         if (CompiledAst != null)
         {
@@ -380,10 +368,7 @@ public class SpelExpression : IExpression
 
     public Type GetValueType(IEvaluationContext context)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentGuard.NotNull(context);
 
         var expressionState = new ExpressionState(context, _configuration);
         return _ast.GetValueInternal(expressionState).TypeDescriptor;
@@ -402,20 +387,14 @@ public class SpelExpression : IExpression
 
     public bool IsWritable(IEvaluationContext context)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentGuard.NotNull(context);
 
         return _ast.IsWritable(new ExpressionState(context, _configuration));
     }
 
     public bool IsWritable(IEvaluationContext context, object rootObject)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentGuard.NotNull(context);
 
         return _ast.IsWritable(new ExpressionState(context, ToTypedValue(rootObject), _configuration));
     }
@@ -427,20 +406,14 @@ public class SpelExpression : IExpression
 
     public void SetValue(IEvaluationContext context, object value)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentGuard.NotNull(context);
 
         _ast.SetValue(new ExpressionState(context, _configuration), value);
     }
 
     public void SetValue(IEvaluationContext context, object rootObject, object value)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentGuard.NotNull(context);
 
         _ast.SetValue(new ExpressionState(context, ToTypedValue(rootObject), _configuration), value);
     }

@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Transaction;
@@ -131,10 +132,7 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
 
     public void SetAfterReceivePostProcessors(params IMessagePostProcessor[] postProcessors)
     {
-        if (postProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(postProcessors));
-        }
+        ArgumentGuard.NotNull(postProcessors);
 
         foreach (IMessagePostProcessor p in postProcessors)
         {
@@ -149,10 +147,7 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
 
     public void SetBeforeSendReplyPostProcessors(params IMessagePostProcessor[] postProcessors)
     {
-        if (postProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(postProcessors));
-        }
+        ArgumentGuard.NotNull(postProcessors);
 
         foreach (IMessagePostProcessor p in postProcessors)
         {

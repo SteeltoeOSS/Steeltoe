@@ -84,10 +84,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public virtual Task<EurekaHttpResponse> RegisterAsync(InstanceInfo info)
     {
-        if (info == null)
-        {
-            throw new ArgumentNullException(nameof(info));
-        }
+        ArgumentGuard.NotNull(info);
 
         return RegisterInternalAsync(info);
     }
@@ -160,10 +157,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public virtual Task<EurekaHttpResponse<InstanceInfo>> SendHeartBeatAsync(string appName, string id, InstanceInfo info, InstanceStatus overriddenStatus)
     {
-        if (info == null)
-        {
-            throw new ArgumentNullException(nameof(info));
-        }
+        ArgumentGuard.NotNull(info);
 
         if (string.IsNullOrEmpty(appName))
         {
@@ -494,10 +488,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             throw new ArgumentException(nameof(id));
         }
 
-        if (info == null)
-        {
-            throw new ArgumentNullException(nameof(info));
-        }
+        ArgumentGuard.NotNull(info);
 
         return DeleteStatusOverrideInternalAsync(appName, id, info);
     }
@@ -574,10 +565,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             throw new ArgumentException(nameof(id));
         }
 
-        if (info == null)
-        {
-            throw new ArgumentNullException(nameof(info));
-        }
+        ArgumentGuard.NotNull(info);
 
         return StatusUpdateInternalAsync(appName, id, newStatus, info);
     }

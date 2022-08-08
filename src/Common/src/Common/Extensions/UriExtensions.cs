@@ -10,20 +10,14 @@ public static class UriExtensions
 {
     public static string ToMaskedString(this Uri source)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentGuard.NotNull(source);
 
         return source.ToMaskedUri().ToString();
     }
 
     public static Uri ToMaskedUri(this Uri source)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentGuard.NotNull(source);
 
         if (string.IsNullOrEmpty(source.UserInfo))
         {

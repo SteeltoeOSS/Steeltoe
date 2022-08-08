@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class ExchangeBuilder : AbstractBuilder
@@ -128,10 +130,7 @@ public class ExchangeBuilder : AbstractBuilder
 
     public ExchangeBuilder Admins(params object[] admins)
     {
-        if (admins == null)
-        {
-            throw new ArgumentNullException(nameof(admins));
-        }
+        ArgumentGuard.NotNull(admins);
 
         foreach (object a in admins)
         {

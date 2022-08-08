@@ -267,10 +267,7 @@ public static class ConversionUtils
 
     public static ConstructorInfo GetConstructorIfAvailable(Type clazz, params Type[] paramTypes)
     {
-        if (clazz == null)
-        {
-            throw new ArgumentNullException(nameof(clazz));
-        }
+        ArgumentGuard.NotNull(clazz);
 
         try
         {
@@ -284,10 +281,7 @@ public static class ConversionUtils
 
     public static MethodInfo GetStaticMethod(Type clazz, string methodName, params Type[] args)
     {
-        if (clazz == null)
-        {
-            throw new ArgumentNullException(nameof(clazz));
-        }
+        ArgumentGuard.NotNull(clazz);
 
         if (string.IsNullOrEmpty(methodName))
         {
@@ -313,10 +307,7 @@ public static class ConversionUtils
 
     public static MethodInfo GetMethodIfAvailable(Type clazz, string methodName, params Type[] paramTypes)
     {
-        if (clazz == null)
-        {
-            throw new ArgumentNullException(nameof(clazz));
-        }
+        ArgumentGuard.NotNull(clazz);
 
         if (string.IsNullOrEmpty(methodName))
         {

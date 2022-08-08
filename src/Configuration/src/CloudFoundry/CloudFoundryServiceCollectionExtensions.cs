@@ -28,15 +28,8 @@ public static class CloudFoundryServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection ConfigureCloudFoundryOptions(this IServiceCollection services, IConfiguration config)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(config);
 
         services.AddOptions();
 
@@ -72,15 +65,8 @@ public static class CloudFoundryServiceCollectionExtensions
     public static IServiceCollection ConfigureCloudFoundryService<TOption>(this IServiceCollection services, IConfiguration config, string serviceName)
         where TOption : CloudFoundryServicesOptions
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(config);
 
         if (string.IsNullOrEmpty(serviceName))
         {
@@ -118,15 +104,8 @@ public static class CloudFoundryServiceCollectionExtensions
     public static IServiceCollection ConfigureCloudFoundryServices<TOption>(this IServiceCollection services, IConfiguration config, string serviceLabel)
         where TOption : CloudFoundryServicesOptions
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(config);
 
         if (string.IsNullOrEmpty(serviceLabel))
         {

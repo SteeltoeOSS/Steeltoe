@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.Placeholder;
 
@@ -32,10 +33,7 @@ public class ConfigServerHealthContributor : IHealthContributor
 
     public static IHealthContributor GetHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger = null)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         return new ConfigServerHealthContributor(configuration, logger);
     }

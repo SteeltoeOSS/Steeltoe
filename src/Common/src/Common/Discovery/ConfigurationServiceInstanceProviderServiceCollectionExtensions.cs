@@ -27,15 +27,8 @@ public static class ConfigurationServiceInstanceProviderServiceCollectionExtensi
     public static IServiceCollection AddConfigurationDiscoveryClient(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(configuration);
 
         services.Add(new ServiceDescriptor(typeof(IServiceInstanceProvider), typeof(ConfigurationServiceInstanceProvider), serviceLifetime));
         services.AddOptions();

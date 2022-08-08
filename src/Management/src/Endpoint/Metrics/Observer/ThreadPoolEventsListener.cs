@@ -6,6 +6,7 @@ using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 
@@ -50,10 +51,7 @@ public class ThreadPoolEventsListener : EventSourceListener
 
     protected override void OnEventWritten(EventWrittenEventArgs eventData)
     {
-        if (eventData == null)
-        {
-            throw new ArgumentNullException(nameof(eventData));
-        }
+        ArgumentGuard.NotNull(eventData);
 
         try
         {

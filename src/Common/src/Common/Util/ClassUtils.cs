@@ -20,25 +20,15 @@ public static class ClassUtils
 
     public static bool IsAssignableValue(Type type, object value)
     {
-        if (type == null)
-        {
-            throw new ArgumentNullException(nameof(type));
-        }
+        ArgumentGuard.NotNull(type);
 
         return value != null ? IsAssignable(type, value.GetType()) : !type.IsPrimitive;
     }
 
     public static bool IsAssignable(Type lhsType, Type rhsType)
     {
-        if (lhsType == null)
-        {
-            throw new ArgumentNullException(nameof(lhsType));
-        }
-
-        if (rhsType == null)
-        {
-            throw new ArgumentNullException(nameof(rhsType));
-        }
+        ArgumentGuard.NotNull(lhsType);
+        ArgumentGuard.NotNull(rhsType);
 
         if (lhsType.IsAssignableFrom(rhsType))
         {
@@ -102,20 +92,14 @@ public static class ClassUtils
 
     public static string GetQualifiedMethodName(MethodInfo method)
     {
-        if (method == null)
-        {
-            throw new ArgumentNullException(nameof(method));
-        }
+        ArgumentGuard.NotNull(method);
 
         return $"{method.DeclaringType.FullName}.{method.Name}";
     }
 
     public static Type[] GetParameterTypes(MethodBase method)
     {
-        if (method == null)
-        {
-            throw new ArgumentNullException(nameof(method));
-        }
+        ArgumentGuard.NotNull(method);
 
         var results = new Type[method.GetParameters().Length];
         int index = 0;

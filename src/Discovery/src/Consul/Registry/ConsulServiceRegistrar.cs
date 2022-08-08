@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Discovery;
 
 namespace Steeltoe.Discovery.Consul.Registry;
@@ -136,10 +137,7 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
 
     private void DoWithRetry(Action retryable, ConsulRetryOptions options)
     {
-        if (retryable == null)
-        {
-            throw new ArgumentNullException(nameof(retryable));
-        }
+        ArgumentGuard.NotNull(retryable);
 
         _logger?.LogDebug("Starting retryable action ..");
 

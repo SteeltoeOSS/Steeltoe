@@ -20,10 +20,7 @@ public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOpt
 
     public void Configure(string name, CertificateOptions options)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
+        ArgumentGuard.NotNull(options);
 
         options.Name = name;
 

@@ -5,6 +5,7 @@
 using System.Collections.Concurrent;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Messaging.Support;
 
 namespace Steeltoe.Messaging.Handler.Invocation;
@@ -245,10 +246,7 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
 
     protected virtual void RegisterHandlerMethod(object handler, MethodInfo method, T mapping)
     {
-        if (mapping == null)
-        {
-            throw new ArgumentNullException(nameof(mapping));
-        }
+        ArgumentGuard.NotNull(mapping);
 
         HandlerMethod newHandlerMethod = CreateHandlerMethod(handler, method);
         _handlerMethods.TryGetValue(mapping, out HandlerMethod oldHandlerMethod);

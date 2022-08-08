@@ -5,6 +5,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.EntityFrameworkCore;
 using Steeltoe.Connector.Services;
@@ -60,15 +61,8 @@ public static class MySqlDbContextOptionsExtensions
     public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object serverVersion,
         object mySqlOptionsAction = null)
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
 
         string connection = GetConnection(config);
 
@@ -129,15 +123,8 @@ public static class MySqlDbContextOptionsExtensions
     public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, object serverVersion,
         object mySqlOptionsAction = null)
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
 
         if (string.IsNullOrEmpty(serviceName))
         {
@@ -174,15 +161,8 @@ public static class MySqlDbContextOptionsExtensions
         object mySqlOptionsAction = null, object serverVersion = null)
         where TContext : DbContext
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
 
         string connection = GetConnection(config);
 
@@ -217,15 +197,8 @@ public static class MySqlDbContextOptionsExtensions
         string serviceName, object mySqlOptionsAction = null, object serverVersion = null)
         where TContext : DbContext
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
 
         if (string.IsNullOrEmpty(serviceName))
         {

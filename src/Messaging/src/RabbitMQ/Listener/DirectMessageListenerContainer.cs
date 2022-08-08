@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
@@ -105,10 +106,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
     public override void AddQueueNames(params string[] queueNames)
     {
-        if (queueNames == null)
-        {
-            throw new ArgumentNullException(nameof(queueNames));
-        }
+        ArgumentGuard.NotNull(queueNames);
 
         try
         {
@@ -126,10 +124,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
     public override void AddQueues(params IQueue[] queues)
     {
-        if (queues == null)
-        {
-            throw new ArgumentNullException(nameof(queues));
-        }
+        ArgumentGuard.NotNull(queues);
 
         try
         {

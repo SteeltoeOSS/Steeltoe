@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Order;
 using Steeltoe.Common.Util;
@@ -76,10 +77,7 @@ public abstract class AbstractDispatcher : IMessageDispatcher
 
     public virtual bool AddHandler(IMessageHandler handler)
     {
-        if (handler == null)
-        {
-            throw new ArgumentNullException(nameof(handler));
-        }
+        ArgumentGuard.NotNull(handler);
 
         lock (_lock)
         {
@@ -107,10 +105,7 @@ public abstract class AbstractDispatcher : IMessageDispatcher
 
     public virtual bool RemoveHandler(IMessageHandler handler)
     {
-        if (handler == null)
-        {
-            throw new ArgumentNullException(nameof(handler));
-        }
+        ArgumentGuard.NotNull(handler);
 
         lock (_lock)
         {

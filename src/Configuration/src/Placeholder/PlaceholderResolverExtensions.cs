@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.Placeholder;
 
@@ -34,10 +35,7 @@ public static class PlaceholderResolverExtensions
     public static IConfiguration ConfigurePlaceholderResolver(this IServiceCollection services, IConfiguration configuration,
         ILoggerFactory loggerFactory = null)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         IConfiguration newConfig = configuration.AddPlaceholderResolver(loggerFactory);
 

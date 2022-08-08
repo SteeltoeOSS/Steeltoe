@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Common;
 using static Steeltoe.Messaging.Handler.Attributes.Test.MessagingPredicates;
 
 namespace Steeltoe.Messaging.Handler.Invocation.Test;
@@ -15,10 +16,7 @@ internal sealed class ResolvableMethod
 
     public ResolvableMethod(MethodInfo method)
     {
-        if (method == null)
-        {
-            throw new ArgumentNullException(nameof(method));
-        }
+        ArgumentGuard.NotNull(method);
 
         Method = method;
     }

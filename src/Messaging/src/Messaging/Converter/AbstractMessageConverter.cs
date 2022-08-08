@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Support;
 
@@ -63,10 +64,7 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 
     protected AbstractMessageConverter(MimeType supportedMimeType)
     {
-        if (supportedMimeType == null)
-        {
-            throw new ArgumentNullException(nameof(supportedMimeType));
-        }
+        ArgumentGuard.NotNull(supportedMimeType);
 
         _supportedMimeTypes = new List<MimeType>
         {
@@ -76,10 +74,7 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 
     protected AbstractMessageConverter(ICollection<MimeType> supportedMimeTypes)
     {
-        if (supportedMimeTypes == null)
-        {
-            throw new ArgumentNullException(nameof(supportedMimeTypes));
-        }
+        ArgumentGuard.NotNull(supportedMimeTypes);
 
         _supportedMimeTypes = new List<MimeType>(supportedMimeTypes);
     }

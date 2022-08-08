@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 
@@ -75,10 +76,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
 
     private MutableIntegrationMessageBuilder(IMessage message)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentGuard.NotNull(message);
 
         mutableMessage = message as MutableMessage ?? new MutableMessage(message.Payload, message.Headers);
 
@@ -101,20 +99,14 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
 
     public static MutableIntegrationMessageBuilder FromMessage(IMessage message)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentGuard.NotNull(message);
 
         return new MutableIntegrationMessageBuilder(message);
     }
 
     public override IMessageBuilder SetHeader(string headerName, object headerValue)
     {
-        if (headerName == null)
-        {
-            throw new ArgumentNullException(nameof(headerName));
-        }
+        ArgumentGuard.NotNull(headerName);
 
         if (headerValue == null)
         {
@@ -231,10 +223,7 @@ public class MutableIntegrationMessageBuilder<T> : MutableIntegrationMessageBuil
 
     private MutableIntegrationMessageBuilder(IMessage<T> message)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentGuard.NotNull(message);
 
         mutableMessage = message as MutableMessage<T> ?? new MutableMessage<T>(message.Payload, message.Headers);
 
@@ -257,10 +246,7 @@ public class MutableIntegrationMessageBuilder<T> : MutableIntegrationMessageBuil
 
     public static MutableIntegrationMessageBuilder<T> FromMessage(IMessage<T> message)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentGuard.NotNull(message);
 
         return new MutableIntegrationMessageBuilder<T>(message);
     }

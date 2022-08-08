@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using Steeltoe.Messaging.RabbitMQ.Config;
 
 namespace Steeltoe.Messaging.RabbitMQ.Extensions;
@@ -12,10 +13,7 @@ public static class RabbitListenerExtensions
 {
     public static IServiceCollection AddRabbitListeners(this IServiceCollection services, IConfiguration config, params Type[] listenerServices)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         foreach (Type t in listenerServices)
         {

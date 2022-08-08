@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Impl;
+using Steeltoe.Common;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
@@ -259,10 +260,7 @@ public class RabbitTemplate
 
     public virtual void SetBeforePublishPostProcessors(params IMessagePostProcessor[] beforePublishPostProcessors)
     {
-        if (beforePublishPostProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(beforePublishPostProcessors));
-        }
+        ArgumentGuard.NotNull(beforePublishPostProcessors);
 
         Array.ForEach(beforePublishPostProcessors, e =>
         {
@@ -279,10 +277,7 @@ public class RabbitTemplate
 
     public virtual void AddBeforePublishPostProcessors(params IMessagePostProcessor[] beforePublishPostProcessors)
     {
-        if (beforePublishPostProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(beforePublishPostProcessors));
-        }
+        ArgumentGuard.NotNull(beforePublishPostProcessors);
 
         IList<IMessagePostProcessor> existing = BeforePublishPostProcessors;
         var newList = new List<IMessagePostProcessor>(beforePublishPostProcessors);
@@ -298,10 +293,7 @@ public class RabbitTemplate
 
     public virtual bool RemoveBeforePublishPostProcessor(IMessagePostProcessor beforePublishPostProcessor)
     {
-        if (beforePublishPostProcessor == null)
-        {
-            throw new ArgumentNullException(nameof(beforePublishPostProcessor));
-        }
+        ArgumentGuard.NotNull(beforePublishPostProcessor);
 
         IList<IMessagePostProcessor> existing = BeforePublishPostProcessors;
 
@@ -318,10 +310,7 @@ public class RabbitTemplate
 
     public virtual void SetAfterReceivePostProcessors(params IMessagePostProcessor[] afterReceivePostProcessors)
     {
-        if (afterReceivePostProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(afterReceivePostProcessors));
-        }
+        ArgumentGuard.NotNull(afterReceivePostProcessors);
 
         Array.ForEach(afterReceivePostProcessors, e =>
         {
@@ -338,10 +327,7 @@ public class RabbitTemplate
 
     public virtual void AddAfterReceivePostProcessors(params IMessagePostProcessor[] afterReceivePostProcessors)
     {
-        if (afterReceivePostProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(afterReceivePostProcessors));
-        }
+        ArgumentGuard.NotNull(afterReceivePostProcessors);
 
         IList<IMessagePostProcessor> existing = AfterReceivePostProcessors;
         var newList = new List<IMessagePostProcessor>(afterReceivePostProcessors);
@@ -357,10 +343,7 @@ public class RabbitTemplate
 
     public virtual bool RemoveAfterReceivePostProcessor(IMessagePostProcessor afterReceivePostProcessor)
     {
-        if (afterReceivePostProcessor == null)
-        {
-            throw new ArgumentNullException(nameof(afterReceivePostProcessor));
-        }
+        ArgumentGuard.NotNull(afterReceivePostProcessor);
 
         IList<IMessagePostProcessor> existing = AfterReceivePostProcessors;
 
@@ -2423,10 +2406,7 @@ public class RabbitTemplate
 
     private T DoExecute<T>(Func<RC.IModel, T> channelCallback, IConnectionFactory connectionFactory)
     {
-        if (channelCallback == null)
-        {
-            throw new ArgumentNullException(nameof(channelCallback));
-        }
+        ArgumentGuard.NotNull(channelCallback);
 
         RC.IModel channel = null;
         bool invokeScope = false;

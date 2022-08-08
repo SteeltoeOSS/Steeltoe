@@ -4,6 +4,7 @@
 
 using System.Collections.ObjectModel;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
@@ -51,10 +52,7 @@ public static class SimpleResourceHolder
 
     public static void Bind(object key, object value, ILogger logger = null)
     {
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        ArgumentGuard.NotNull(value);
 
         Dictionary<object, object> map = Resources.Value;
 

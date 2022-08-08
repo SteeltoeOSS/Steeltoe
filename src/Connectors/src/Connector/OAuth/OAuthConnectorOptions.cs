@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Connector.OAuth;
@@ -38,10 +39,7 @@ public class OAuthConnectorOptions : AbstractServiceConnectorOptions
 
     public OAuthConnectorOptions(IConfiguration config)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         IConfigurationSection section = config.GetSection(SecurityClientSectionPrefix);
         section.Bind(this);

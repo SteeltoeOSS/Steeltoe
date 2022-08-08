@@ -136,10 +136,7 @@ public static class ConfigurationValuesHelper
             throw new ArgumentException(nameof(key));
         }
 
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         string val = config[key];
 

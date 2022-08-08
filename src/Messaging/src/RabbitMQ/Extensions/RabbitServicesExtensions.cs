@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Lifecycle;
@@ -265,10 +266,7 @@ public static class RabbitServicesExtensions
 
     public static IServiceCollection AddRabbitServices(this IServiceCollection services, bool useJsonMessageConverter = false)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddRabbitHostingServices();
 

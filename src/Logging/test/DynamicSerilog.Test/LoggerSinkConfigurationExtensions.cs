@@ -5,6 +5,7 @@
 using Serilog;
 using Serilog.Configuration;
 using Serilog.Events;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
 
@@ -16,10 +17,7 @@ public static class LoggerSinkConfigurationExtensions
 {
     public static LoggerConfiguration TestSink(this LoggerSinkConfiguration loggerConfiguration)
     {
-        if (loggerConfiguration == null)
-        {
-            throw new ArgumentNullException(nameof(loggerConfiguration));
-        }
+        ArgumentGuard.NotNull(loggerConfiguration);
 
         return loggerConfiguration.Sink(Test.TestSink.GetCurrentSink(), LogEventLevel.Verbose);
     }

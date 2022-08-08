@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
@@ -27,17 +28,9 @@ public static class EndpointServiceCollectionExtensions
 
     public static void AddThreadDumpActuator(this IServiceCollection services, IConfiguration config, MediaTypeVersion version)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetService<IConfiguration>();
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.AddActuatorManagementOptions(config);
         services.AddThreadDumpActuatorServices(config, version);

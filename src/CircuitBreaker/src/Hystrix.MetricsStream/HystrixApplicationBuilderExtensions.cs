@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
+using Steeltoe.Common;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
@@ -13,10 +14,7 @@ public static class HystrixApplicationBuilderExtensions
     [Obsolete("This functionality is now performed by an IHostedService, you may remove this method call")]
     public static IApplicationBuilder UseHystrixMetricsStream(this IApplicationBuilder builder)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         _ = builder.ApplicationServices.GetRequiredService<RabbitMetricsStreamPublisher>();
         return builder;

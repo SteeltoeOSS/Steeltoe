@@ -211,10 +211,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     protected static IHystrixCommandGroupKey InitGroupKey(IHystrixCommandGroupKey fromConstructor)
     {
-        if (fromConstructor == null)
-        {
-            throw new ArgumentNullException("HystrixCommandGroupKey can not be NULL");
-        }
+        ArgumentGuard.NotNull(fromConstructor);
 
         return fromConstructor;
     }

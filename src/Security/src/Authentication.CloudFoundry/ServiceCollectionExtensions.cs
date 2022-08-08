@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Security.Authentication.Mtls;
@@ -38,10 +39,7 @@ public static class ServiceCollectionExtensions
     /// </param>
     public static void AddCloudFoundryContainerIdentity(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddOptions();
         services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();

@@ -26,10 +26,7 @@ public static class ConfigurationExtensions
     /// </param>
     public static IConfigurationBuilder AddPemFiles(this IConfigurationBuilder builder, string certFilePath, string keyFilePath, bool optional = false)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         if (string.IsNullOrEmpty(certFilePath))
         {
@@ -68,10 +65,7 @@ public static class ConfigurationExtensions
     /// </remarks>
     public static IConfigurationBuilder AddCertificateFile(this IConfigurationBuilder builder, string certFilePath, bool optional = false)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         if (string.IsNullOrEmpty(certFilePath))
         {

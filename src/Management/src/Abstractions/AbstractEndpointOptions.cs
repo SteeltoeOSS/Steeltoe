@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management;
 
@@ -47,15 +48,8 @@ public abstract class AbstractEndpointOptions : IEndpointOptions
 
     protected AbstractEndpointOptions(string sectionName, IConfiguration config)
     {
-        if (sectionName == null)
-        {
-            throw new ArgumentNullException(nameof(sectionName));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(sectionName);
+        ArgumentGuard.NotNull(config);
 
         IConfigurationSection section = config.GetSection(sectionName);
 

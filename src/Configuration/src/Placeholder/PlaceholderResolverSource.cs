@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.Placeholder;
 
@@ -31,10 +32,7 @@ public class PlaceholderResolverSource : IConfigurationSource
     /// </param>
     public PlaceholderResolverSource(IList<IConfigurationSource> sources, ILoggerFactory logFactory = null)
     {
-        if (sources == null)
-        {
-            throw new ArgumentNullException(nameof(sources));
-        }
+        ArgumentGuard.NotNull(sources);
 
         Sources = new List<IConfigurationSource>(sources);
         LoggerFactory = logFactory ?? new NullLoggerFactory();

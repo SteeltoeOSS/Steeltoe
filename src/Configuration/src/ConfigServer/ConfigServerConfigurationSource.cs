@@ -102,10 +102,7 @@ public class ConfigServerConfigurationSource : IConfigurationSource
     public ConfigServerConfigurationSource(ConfigServerClientSettings defaultSettings, IList<IConfigurationSource> sources,
         IDictionary<string, object> properties = null, ILoggerFactory logFactory = null)
     {
-        if (sources == null)
-        {
-            throw new ArgumentNullException(nameof(sources));
-        }
+        ArgumentGuard.NotNull(sources);
 
         Sources = new List<IConfigurationSource>(sources);
 

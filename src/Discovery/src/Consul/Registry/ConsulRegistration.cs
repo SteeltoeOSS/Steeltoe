@@ -119,10 +119,7 @@ public class ConsulRegistration : IConsulRegistration
     /// </returns>
     public static ConsulRegistration CreateRegistration(ConsulDiscoveryOptions options, IApplicationInstanceInfo applicationInfo)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
+        ArgumentGuard.NotNull(options);
 
         var service = new AgentServiceRegistration();
         service.ID = GetInstanceId(options, applicationInfo);

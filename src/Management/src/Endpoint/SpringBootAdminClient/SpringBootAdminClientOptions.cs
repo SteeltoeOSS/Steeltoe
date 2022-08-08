@@ -41,10 +41,7 @@ public class SpringBootAdminClientOptions
 
     public SpringBootAdminClientOptions(IConfiguration config, IApplicationInstanceInfo appInfo)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         if (appInfo is null)
         {

@@ -5,6 +5,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.EntityFrameworkCore;
 using Steeltoe.Connector.Services;
@@ -15,15 +16,8 @@ public static class SqlServerDbContextOptionsExtensions
 {
     public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object sqlServerOptionsAction = null)
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
 
         string connection = GetConnection(config);
 
@@ -33,15 +27,8 @@ public static class SqlServerDbContextOptionsExtensions
     public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName,
         object sqlServerOptionsAction = null)
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
 
         if (string.IsNullOrEmpty(serviceName))
         {
@@ -57,15 +44,8 @@ public static class SqlServerDbContextOptionsExtensions
         object sqlServerOptionsAction = null)
         where TContext : DbContext
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
 
         string connection = GetConnection(config);
 
@@ -76,15 +56,8 @@ public static class SqlServerDbContextOptionsExtensions
         string serviceName, object sqlServerOptionsAction = null)
         where TContext : DbContext
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
 
         if (string.IsNullOrEmpty(serviceName))
         {

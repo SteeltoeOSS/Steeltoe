@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
@@ -43,10 +44,7 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
     public RabbitInboundChannelAdapter(IApplicationContext context, AbstractMessageListenerContainer listenerContainer, ILogger logger = null)
         : base(context, logger)
     {
-        if (listenerContainer == null)
-        {
-            throw new ArgumentNullException(nameof(listenerContainer));
-        }
+        ArgumentGuard.NotNull(listenerContainer);
 
         if (listenerContainer.MessageListener != null)
         {

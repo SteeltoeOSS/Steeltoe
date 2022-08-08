@@ -5,6 +5,7 @@
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
@@ -23,10 +24,7 @@ public class MappingDescription
 
     public MappingDescription(string routeHandler, IRouteDetails routeDetails)
     {
-        if (routeDetails == null)
-        {
-            throw new ArgumentNullException(nameof(routeDetails));
-        }
+        ArgumentGuard.NotNull(routeDetails);
 
         Predicate = CreatePredicateString(routeDetails);
         Handler = routeHandler ?? throw new ArgumentNullException(nameof(routeHandler));
@@ -34,15 +32,8 @@ public class MappingDescription
 
     public MappingDescription(MethodInfo routeHandler, IRouteDetails routeDetails)
     {
-        if (routeHandler == null)
-        {
-            throw new ArgumentNullException(nameof(routeHandler));
-        }
-
-        if (routeDetails == null)
-        {
-            throw new ArgumentNullException(nameof(routeDetails));
-        }
+        ArgumentGuard.NotNull(routeHandler);
+        ArgumentGuard.NotNull(routeDetails);
 
         Predicate = CreatePredicateString(routeDetails);
         Handler = CreateHandlerString(routeHandler);

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
@@ -17,10 +18,7 @@ public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>, ICloudFound
     public CloudFoundryEndpoint(ICloudFoundryOptions options, CloudFoundryManagementOptions managementOptions, ILogger<CloudFoundryEndpoint> logger = null)
         : base(options)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
+        ArgumentGuard.NotNull(options);
 
         _managementOption = managementOptions;
 

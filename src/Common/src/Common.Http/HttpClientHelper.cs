@@ -206,15 +206,8 @@ public static class HttpClientHelper
     /// </param>
     public static HttpRequestMessage GetRequestMessage(HttpMethod method, string requestUri, string userName, string password)
     {
-        if (method == null)
-        {
-            throw new ArgumentNullException(nameof(method));
-        }
-
-        if (requestUri == null)
-        {
-            throw new ArgumentNullException(nameof(requestUri));
-        }
+        ArgumentGuard.NotNull(method);
+        ArgumentGuard.NotNull(requestUri);
 
         var request = new HttpRequestMessage(method, requestUri);
 

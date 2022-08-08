@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Services;
 
@@ -34,15 +35,8 @@ public static class RedisCacheServiceCollectionExtensions
     /// </remarks>
     public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, bool addSteeltoeHealthChecks = false)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(config);
 
         return services.AddDistributedRedisCache(config, config, null, addSteeltoeHealthChecks: addSteeltoeHealthChecks);
     }
@@ -71,20 +65,14 @@ public static class RedisCacheServiceCollectionExtensions
     public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, string serviceName,
         bool addSteeltoeHealthChecks = false)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         if (string.IsNullOrEmpty(serviceName))
         {
             throw new ArgumentNullException(nameof(serviceName));
         }
 
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         return services.AddDistributedRedisCache(config, config, serviceName, addSteeltoeHealthChecks: addSteeltoeHealthChecks);
     }
@@ -120,15 +108,8 @@ public static class RedisCacheServiceCollectionExtensions
         IConfiguration connectorConfiguration, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton,
         bool addSteeltoeHealthChecks = false)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (applicationConfiguration == null)
-        {
-            throw new ArgumentNullException(nameof(applicationConfiguration));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(applicationConfiguration);
 
         IConfiguration configToConfigure = connectorConfiguration ?? applicationConfiguration;
 
@@ -161,15 +142,8 @@ public static class RedisCacheServiceCollectionExtensions
     public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config,
         bool addSteeltoeHealthChecks = false)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(config);
 
         return services.AddRedisConnectionMultiplexer(config, config, null, addSteeltoeHealthChecks: addSteeltoeHealthChecks);
     }
@@ -198,20 +172,14 @@ public static class RedisCacheServiceCollectionExtensions
     public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config, string serviceName,
         bool addSteeltoeHealthChecks = false)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         if (string.IsNullOrEmpty(serviceName))
         {
             throw new ArgumentNullException(nameof(serviceName));
         }
 
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         return services.AddRedisConnectionMultiplexer(config, config, serviceName, addSteeltoeHealthChecks: addSteeltoeHealthChecks);
     }
@@ -247,15 +215,8 @@ public static class RedisCacheServiceCollectionExtensions
         IConfiguration connectorConfiguration, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton,
         bool addSteeltoeHealthChecks = false)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (applicationConfiguration == null)
-        {
-            throw new ArgumentNullException(nameof(applicationConfiguration));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(applicationConfiguration);
 
         IConfiguration configToConfigure = connectorConfiguration ?? applicationConfiguration;
 

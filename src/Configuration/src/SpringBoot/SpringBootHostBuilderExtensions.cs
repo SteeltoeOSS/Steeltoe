@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot;
 
@@ -21,10 +22,7 @@ public static class SpringBootHostBuilderExtensions
     /// </returns>
     public static IHostBuilder AddSpringBootConfiguration(this IHostBuilder builder)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         return builder.ConfigureAppConfiguration((c, b) =>
         {
@@ -44,10 +42,7 @@ public static class SpringBootHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddSpringBootConfiguration(this IWebHostBuilder builder)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         return builder.ConfigureAppConfiguration((c, b) =>
         {
@@ -64,10 +59,7 @@ public static class SpringBootHostBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddSpringBootConfiguration(this WebApplicationBuilder builder)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         builder.Configuration.AddSpringBootEnv();
         builder.Configuration.AddSpringBootCmd(builder.Configuration);

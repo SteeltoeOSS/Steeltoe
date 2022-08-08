@@ -25,10 +25,7 @@ public static class TaskWebHostExtensions
     /// </param>
     public static void RunWithTasks(this IWebHost webHost)
     {
-        if (webHost == null)
-        {
-            throw new ArgumentNullException(nameof(webHost));
-        }
+        ArgumentGuard.NotNull(webHost);
 
         if (FindAndRunTask(webHost.Services))
         {
@@ -52,10 +49,7 @@ public static class TaskWebHostExtensions
     /// </param>
     public static void RunWithTasks(this IHost host)
     {
-        if (host == null)
-        {
-            throw new ArgumentNullException(nameof(host));
-        }
+        ArgumentGuard.NotNull(host);
 
         if (FindAndRunTask(host.Services))
         {

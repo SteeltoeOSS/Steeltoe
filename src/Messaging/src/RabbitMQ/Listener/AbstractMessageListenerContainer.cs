@@ -4,6 +4,7 @@
 
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
@@ -168,10 +169,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual void SetQueueNames(params string[] queueNames)
     {
-        if (queueNames == null)
-        {
-            throw new ArgumentNullException(nameof(queueNames));
-        }
+        ArgumentGuard.NotNull(queueNames);
 
         var qs = new IQueue[queueNames.Length];
         int index = 0;
@@ -196,10 +194,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual void SetQueues(params IQueue[] queues)
     {
-        if (queues == null)
-        {
-            throw new ArgumentNullException(nameof(queues));
-        }
+        ArgumentGuard.NotNull(queues);
 
         if (IsRunning)
         {
@@ -222,10 +217,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual void AddQueueNames(params string[] queueNames)
     {
-        if (queueNames == null)
-        {
-            throw new ArgumentNullException(nameof(queueNames));
-        }
+        ArgumentGuard.NotNull(queueNames);
 
         var qs = new IQueue[queueNames.Length];
         int index = 0;
@@ -245,10 +237,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual void AddQueues(params IQueue[] queues)
     {
-        if (queues == null)
-        {
-            throw new ArgumentNullException(nameof(queues));
-        }
+        ArgumentGuard.NotNull(queues);
 
         if (IsRunning)
         {
@@ -273,10 +262,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual bool RemoveQueueNames(params string[] queueNames)
     {
-        if (queueNames == null)
-        {
-            throw new ArgumentNullException(nameof(queueNames));
-        }
+        ArgumentGuard.NotNull(queueNames);
 
         var toRemove = new HashSet<string>();
 
@@ -298,10 +284,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual void RemoveQueues(params IQueue[] queues)
     {
-        if (queues == null)
-        {
-            throw new ArgumentNullException(nameof(queues));
-        }
+        ArgumentGuard.NotNull(queues);
 
         string[] toRemove = new string[queues.Length];
         int index = 0;
@@ -321,10 +304,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual void SetAfterReceivePostProcessors(params IMessagePostProcessor[] afterReceivePostProcessors)
     {
-        if (afterReceivePostProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(afterReceivePostProcessors));
-        }
+        ArgumentGuard.NotNull(afterReceivePostProcessors);
 
         var asList = new List<IMessagePostProcessor>();
 
@@ -343,10 +323,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual void AddAfterReceivePostProcessors(params IMessagePostProcessor[] afterReceivePostProcessors)
     {
-        if (afterReceivePostProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(afterReceivePostProcessors));
-        }
+        ArgumentGuard.NotNull(afterReceivePostProcessors);
 
         IList<IMessagePostProcessor> current = AfterReceivePostProcessors ?? new List<IMessagePostProcessor>();
 
@@ -357,10 +334,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual bool RemoveAfterReceivePostProcessor(IMessagePostProcessor afterReceivePostProcessor)
     {
-        if (afterReceivePostProcessor == null)
-        {
-            throw new ArgumentNullException(nameof(afterReceivePostProcessor));
-        }
+        ArgumentGuard.NotNull(afterReceivePostProcessor);
 
         IList<IMessagePostProcessor> current = AfterReceivePostProcessors;
 

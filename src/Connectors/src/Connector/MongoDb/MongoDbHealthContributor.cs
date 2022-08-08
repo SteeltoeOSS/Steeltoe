@@ -5,6 +5,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
@@ -30,10 +31,7 @@ public class MongoDbHealthContributor : IHealthContributor
 
     public static IHealthContributor GetMongoDbHealthContributor(IConfiguration configuration, ILogger<MongoDbHealthContributor> logger = null)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         var info = configuration.GetSingletonServiceInfo<MongoDbServiceInfo>();
         var mongoOptions = new MongoDbConnectorOptions(configuration);

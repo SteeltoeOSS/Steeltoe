@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 
@@ -18,10 +19,7 @@ public class IntegrationMessageBuilder<T> : IntegrationMessageBuilder, IMessageB
 
     public static IntegrationMessageBuilder<T> FromMessage(IMessage<T> message)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentGuard.NotNull(message);
 
         return new IntegrationMessageBuilder<T>(message.Payload, message);
     }
@@ -188,10 +186,7 @@ public class IntegrationMessageBuilder : AbstractMessageBuilder
 
     public static IntegrationMessageBuilder FromMessage(IMessage message)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentGuard.NotNull(message);
 
         return new IntegrationMessageBuilder(message.Payload, message);
     }

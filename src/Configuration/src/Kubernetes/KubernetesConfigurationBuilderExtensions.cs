@@ -5,6 +5,7 @@
 using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
@@ -26,10 +27,7 @@ public static class KubernetesConfigurationBuilderExtensions
     public static IConfigurationBuilder AddKubernetes(this IConfigurationBuilder configurationBuilder,
         Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)
     {
-        if (configurationBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(configurationBuilder));
-        }
+        ArgumentGuard.NotNull(configurationBuilder);
 
         ILogger logger = loggerFactory?.CreateLogger("Steeltoe.Extensions.Configuration.Kubernetes");
 

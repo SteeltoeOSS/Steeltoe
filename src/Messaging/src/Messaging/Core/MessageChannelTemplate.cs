@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Support;
 
@@ -99,10 +100,7 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
 
     protected void DoSend(IMessageChannel channel, IMessage message, int timeout)
     {
-        if (channel == null)
-        {
-            throw new ArgumentNullException(nameof(channel));
-        }
+        ArgumentGuard.NotNull(channel);
 
         IMessage messageToSend = ProcessMessageBeforeSend(message);
         bool sent = channel.Send(messageToSend, timeout);
@@ -120,10 +118,7 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
 
     protected Task DoSendAsync(IMessageChannel channel, IMessage message, int timeout, CancellationToken cancellationToken = default)
     {
-        if (channel == null)
-        {
-            throw new ArgumentNullException(nameof(channel));
-        }
+        ArgumentGuard.NotNull(channel);
 
         return DoSendInternalAsync(channel, message, timeout, cancellationToken);
     }
@@ -157,10 +152,7 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
 
     protected IMessage DoReceive(IMessageChannel channel, int timeout)
     {
-        if (channel == null)
-        {
-            throw new ArgumentNullException(nameof(channel));
-        }
+        ArgumentGuard.NotNull(channel);
 
         if (channel is not IPollableChannel pollableChannel)
         {
@@ -184,10 +176,7 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
 
     protected Task<IMessage> DoReceiveAsync(IMessageChannel channel, int timeout, CancellationToken cancellationToken = default)
     {
-        if (channel == null)
-        {
-            throw new ArgumentNullException(nameof(channel));
-        }
+        ArgumentGuard.NotNull(channel);
 
         if (channel is not IPollableChannel)
         {
@@ -222,10 +211,7 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
 
     protected override Task<IMessage> DoSendAndReceiveAsync(IMessageChannel destination, IMessage requestMessage, CancellationToken cancellationToken = default)
     {
-        if (destination == null)
-        {
-            throw new ArgumentNullException(nameof(destination));
-        }
+        ArgumentGuard.NotNull(destination);
 
         return DoSendAndReceiveInternalAsync(destination, requestMessage, cancellationToken);
     }
@@ -267,10 +253,7 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
 
     protected override IMessage DoSendAndReceive(IMessageChannel destination, IMessage requestMessage)
     {
-        if (destination == null)
-        {
-            throw new ArgumentNullException(nameof(destination));
-        }
+        ArgumentGuard.NotNull(destination);
 
         object originalReplyChannelHeader = requestMessage.Headers.ReplyChannel;
         object originalErrorChannelHeader = requestMessage.Headers.ErrorChannel;

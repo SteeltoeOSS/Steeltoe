@@ -80,10 +80,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
     public ITypedValue Read(IEvaluationContext context, object target, string name)
     {
-        if (target == null)
-        {
-            throw new ArgumentNullException(nameof(target));
-        }
+        ArgumentGuard.NotNull(target);
 
         Type type = target as Type ?? target.GetType();
 
@@ -207,14 +204,11 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
     public void Write(IEvaluationContext context, object target, string name, object newValue)
     {
+        ArgumentGuard.NotNull(target);
+
         if (!_allowWrite)
         {
             throw new AccessException($"PropertyAccessor for property '{name}' on target [{target}] does not allow write operations");
-        }
-
-        if (target == null)
-        {
-            throw new ArgumentNullException(nameof(target));
         }
 
         Type type = target as Type ?? target.GetType();

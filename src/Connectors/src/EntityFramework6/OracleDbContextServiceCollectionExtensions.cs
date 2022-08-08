@@ -6,6 +6,7 @@ using System.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Oracle;
 using Steeltoe.Connector.Oracle.EntityFramework6;
@@ -39,15 +40,8 @@ public static class OracleDbContextServiceCollectionExtensions
     public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(config);
 
         var info = config.GetSingletonServiceInfo<OracleServiceInfo>();
         DoAdd(services, config, info, typeof(TContext), contextLifetime, logFactory?.CreateLogger("OracleDbContextServiceCollectionExtensions"));
@@ -82,20 +76,14 @@ public static class OracleDbContextServiceCollectionExtensions
     public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         if (string.IsNullOrEmpty(serviceName))
         {
             throw new ArgumentNullException(nameof(serviceName));
         }
 
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         var info = config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
         DoAdd(services, config, info, typeof(TContext), contextLifetime, logFactory?.CreateLogger("OracleDbContextServiceCollectionExtensions"));

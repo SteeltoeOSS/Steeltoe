@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
+using Steeltoe.Common;
 using Steeltoe.Security.Authentication.Mtls;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
@@ -20,10 +21,7 @@ public static class ApplicationBuilderExtensions
         "Certificate rotation should be activated by CertificateRotationService and UseCertificateForwarding can be called directly instead of using this method.")]
     public static IApplicationBuilder UseCloudFoundryContainerIdentity(this IApplicationBuilder app)
     {
-        if (app == null)
-        {
-            throw new ArgumentNullException(nameof(app));
-        }
+        ArgumentGuard.NotNull(app);
 
         return app.UseCertificateRotation().UseCertificateForwarding();
     }

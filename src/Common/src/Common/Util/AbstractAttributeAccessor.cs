@@ -20,10 +20,7 @@ public abstract class AbstractAttributeAccessor : IAttributeAccessor
 
     public virtual void SetAttribute(string name, object value)
     {
-        if (name == null)
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
+        ArgumentGuard.NotNull(name);
 
         if (value != null)
         {
@@ -37,10 +34,7 @@ public abstract class AbstractAttributeAccessor : IAttributeAccessor
 
     public virtual object GetAttribute(string name)
     {
-        if (name == null)
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
+        ArgumentGuard.NotNull(name);
 
         _attributes.TryGetValue(name, out object result);
         return result;
@@ -48,10 +42,7 @@ public abstract class AbstractAttributeAccessor : IAttributeAccessor
 
     public virtual object RemoveAttribute(string name)
     {
-        if (name == null)
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
+        ArgumentGuard.NotNull(name);
 
         _attributes.TryGetValue(name, out object original);
         _attributes.Remove(name);
@@ -60,10 +51,7 @@ public abstract class AbstractAttributeAccessor : IAttributeAccessor
 
     public virtual bool HasAttribute(string name)
     {
-        if (name == null)
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
+        ArgumentGuard.NotNull(name);
 
         return _attributes.ContainsKey(name);
     }
@@ -108,10 +96,7 @@ public abstract class AbstractAttributeAccessor : IAttributeAccessor
 
     protected virtual void CopyAttributesFrom(IAttributeAccessor source)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentGuard.NotNull(source);
 
         string[] attributeNames = source.AttributeNames;
 

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
+using Steeltoe.Common;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
@@ -42,10 +43,7 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
 
     public virtual void SetTargetConnectionFactories(Dictionary<object, IConnectionFactory> targetConnectionFactories)
     {
-        if (targetConnectionFactories == null)
-        {
-            throw new ArgumentNullException(nameof(targetConnectionFactories));
-        }
+        ArgumentGuard.NotNull(targetConnectionFactories);
 
         foreach (IConnectionFactory factory in targetConnectionFactories.Values)
         {

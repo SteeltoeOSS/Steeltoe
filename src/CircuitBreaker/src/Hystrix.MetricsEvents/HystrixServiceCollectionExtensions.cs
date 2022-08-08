@@ -10,6 +10,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.EventSources;
+using Steeltoe.Common;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
@@ -18,20 +19,14 @@ public static class HystrixServiceCollectionExtensions
     // this config param is still here to share the signature used in MetricsStream
     public static void AddHystrixMetricsStream(this IServiceCollection services, IConfiguration config)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.TryAddSingleton(HystrixDashboardStream.GetInstance());
     }
 
     public static void AddHystrixMetricsEventSource(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddHystrixMetricsStream(null);
         services.AddHostedService<HystrixEventSourceService>();
@@ -45,10 +40,7 @@ public static class HystrixServiceCollectionExtensions
 
     public static void AddHystrixRequestEventStream(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddSingleton(HystrixRequestEventsStream.GetInstance());
     }
@@ -61,10 +53,7 @@ public static class HystrixServiceCollectionExtensions
 
     public static void AddHystrixUtilizationStream(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddSingleton(HystrixUtilizationStream.GetInstance());
     }
@@ -77,10 +66,7 @@ public static class HystrixServiceCollectionExtensions
 
     public static void AddHystrixConfigStream(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddSingleton(HystrixConfigurationStream.GetInstance());
     }
@@ -88,10 +74,7 @@ public static class HystrixServiceCollectionExtensions
     // this config param is still here to share the signature used in MetricsStream
     public static void AddHystrixMonitoringStreams(this IServiceCollection services, IConfiguration config)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddHystrixMetricsStream(config);
         services.AddHystrixConfigStream();

@@ -4,6 +4,7 @@
 
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Connector.MySql;
 
@@ -70,10 +71,7 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public MySqlProviderConnectorOptions(IConfiguration config)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         IConfigurationSection section = config.GetSection(MysqlClientSectionPrefix);
         section.Bind(this);

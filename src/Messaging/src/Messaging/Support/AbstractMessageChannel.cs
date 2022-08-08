@@ -4,6 +4,7 @@
 
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Order;
 
 namespace Steeltoe.Messaging.Support;
@@ -95,10 +96,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
     public virtual bool Send(IMessage message, int timeout)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentGuard.NotNull(message);
 
         return DoSend(message, timeout);
     }
@@ -127,10 +125,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
     protected virtual bool DoSend(IMessage message, CancellationToken cancellationToken)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentGuard.NotNull(message);
 
         IMessage messageToUse = message;
         List<IChannelInterceptor> interceptors = _interceptors;

@@ -15,10 +15,7 @@ public abstract class AbstractOptions
 
     protected AbstractOptions(IConfiguration root, string sectionPrefix = null)
     {
-        if (root == null)
-        {
-            throw new ArgumentNullException(nameof(root));
-        }
+        ArgumentGuard.NotNull(root);
 
         if (!string.IsNullOrEmpty(sectionPrefix))
         {

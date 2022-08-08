@@ -31,10 +31,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
     public DiagnosticsManager(IEnumerable<IRuntimeDiagnosticSource> runtimeSources, IEnumerable<IDiagnosticObserver> observers,
         IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger = null)
     {
-        if (observers == null)
-        {
-            throw new ArgumentNullException(nameof(observers));
-        }
+        ArgumentGuard.NotNull(observers);
 
         Logger = logger;
         InnerObservers = observers.ToList();

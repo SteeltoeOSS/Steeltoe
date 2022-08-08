@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.Placeholder;
 
@@ -24,10 +25,7 @@ public static class PlaceholderResolverConfigurationExtensions
     /// <returns>builder.</returns>
     public static IConfigurationBuilder AddPlaceholderResolver(this IConfigurationBuilder builder, ILoggerFactory loggerFactory = null)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         if (builder is IConfigurationRoot configuration)
         {
@@ -59,10 +57,7 @@ public static class PlaceholderResolverConfigurationExtensions
     /// </returns>
     public static IConfiguration AddPlaceholderResolver(this IConfiguration configuration, ILoggerFactory loggerFactory = null)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         var root = configuration as IConfigurationRoot;
 

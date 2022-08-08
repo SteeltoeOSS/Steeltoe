@@ -32,10 +32,7 @@ public static class HostBuilderExtensions
     /// </remarks>
     public static IWebHostBuilder UseCloudHosting(this IWebHostBuilder webHostBuilder, int? runLocalHttpPort = null, int? runLocalHttpsPort = null)
     {
-        if (webHostBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(webHostBuilder));
-        }
+        ArgumentGuard.NotNull(webHostBuilder);
 
         return webHostBuilder.BindToPorts(runLocalHttpPort, runLocalHttpsPort);
     }
@@ -60,10 +57,7 @@ public static class HostBuilderExtensions
     /// </remarks>
     public static IHostBuilder UseCloudHosting(this IHostBuilder hostBuilder, int? runLocalHttpPort = null, int? runLocalHttpsPort = null)
     {
-        if (hostBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(hostBuilder));
-        }
+        ArgumentGuard.NotNull(hostBuilder);
 
         return hostBuilder.ConfigureWebHost(configure => configure.BindToPorts(runLocalHttpPort, runLocalHttpsPort));
     }
@@ -89,10 +83,7 @@ public static class HostBuilderExtensions
     public static WebApplicationBuilder UseCloudHosting(this WebApplicationBuilder webApplicationBuilder, int? runLocalHttpPort = null,
         int? runLocalHttpsPort = null)
     {
-        if (webApplicationBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(webApplicationBuilder));
-        }
+        ArgumentGuard.NotNull(webApplicationBuilder);
 
         webApplicationBuilder.WebHost.BindToPorts(runLocalHttpPort, runLocalHttpsPort);
         return webApplicationBuilder;

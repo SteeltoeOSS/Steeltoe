@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Info;
@@ -59,17 +60,9 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddInfoActuator(this IServiceCollection services, IConfiguration config = null, params IInfoContributor[] contributors)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetService<IConfiguration>();
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.AddActuatorManagementOptions(config);
         services.AddInfoActuatorServices(config);

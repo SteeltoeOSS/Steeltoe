@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
@@ -115,10 +116,7 @@ public static class ActuatorRouteBuilderExtensions
 
     internal static void MapActuatorEndpoint(this IEndpointRouteBuilder endpoints, Type typeEndpoint, Action<IEndpointConventionBuilder> convention)
     {
-        if (endpoints == null)
-        {
-            throw new ArgumentNullException(nameof(endpoints));
-        }
+        ArgumentGuard.NotNull(endpoints);
 
         ConnectEndpointOptionsWithManagementOptions(endpoints);
 

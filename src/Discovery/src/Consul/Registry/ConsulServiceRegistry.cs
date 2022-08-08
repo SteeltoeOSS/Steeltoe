@@ -5,6 +5,7 @@
 using Consul;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Discovery;
 
 namespace Steeltoe.Discovery.Consul.Registry;
@@ -88,10 +89,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     /// <inheritdoc />
     public Task RegisterAsync(IConsulRegistration registration)
     {
-        if (registration == null)
-        {
-            throw new ArgumentNullException(nameof(registration));
-        }
+        ArgumentGuard.NotNull(registration);
 
         return RegisterInternalAsync(registration);
     }
@@ -124,10 +122,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     /// <inheritdoc />
     public Task DeregisterAsync(IConsulRegistration registration)
     {
-        if (registration == null)
-        {
-            throw new ArgumentNullException(nameof(registration));
-        }
+        ArgumentGuard.NotNull(registration);
 
         return DeregisterInternalAsync(registration);
     }
@@ -147,10 +142,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     /// <inheritdoc />
     public Task SetStatusAsync(IConsulRegistration registration, string status)
     {
-        if (registration == null)
-        {
-            throw new ArgumentNullException(nameof(registration));
-        }
+        ArgumentGuard.NotNull(registration);
 
         return SetStatusInternalAsync(registration, status);
     }
@@ -173,10 +165,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     /// <inheritdoc />
     public Task<object> GetStatusAsync(IConsulRegistration registration)
     {
-        if (registration == null)
-        {
-            throw new ArgumentNullException(nameof(registration));
-        }
+        ArgumentGuard.NotNull(registration);
 
         return GetStatusInternalAsync(registration);
     }

@@ -4,6 +4,7 @@
 
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 
@@ -13,10 +14,7 @@ public static class RedisCacheConfigurationExtensions
 {
     public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration config, string serviceName = null)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         var redisConfig = new RedisCacheConnectorOptions(config);
         return config.CreateRedisServiceConnectorFactory(redisConfig, serviceName);
@@ -25,15 +23,8 @@ public static class RedisCacheConfigurationExtensions
     public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration config, IConfiguration connectorConfiguration,
         string serviceName = null)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        if (connectorConfiguration == null)
-        {
-            throw new ArgumentNullException(nameof(connectorConfiguration));
-        }
+        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(connectorConfiguration);
 
         var connectorOptions = new RedisCacheConnectorOptions(connectorConfiguration);
         return config.CreateRedisServiceConnectorFactory(connectorOptions, serviceName);
@@ -42,15 +33,8 @@ public static class RedisCacheConfigurationExtensions
     public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration config, RedisCacheConnectorOptions connectorOptions,
         string serviceName = null)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        if (connectorOptions == null)
-        {
-            throw new ArgumentNullException(nameof(connectorOptions));
-        }
+        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(connectorOptions);
 
         string[] redisAssemblies =
         {

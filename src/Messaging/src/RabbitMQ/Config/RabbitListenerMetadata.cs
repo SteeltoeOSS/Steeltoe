@@ -4,6 +4,7 @@
 
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using Steeltoe.Messaging.RabbitMQ.Attributes;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 
@@ -40,10 +41,7 @@ public class RabbitListenerMetadata
 
     internal static RabbitListenerMetadata BuildMetadata(IServiceCollection services, Type targetClass)
     {
-        if (targetClass == null)
-        {
-            throw new ArgumentNullException(nameof(targetClass));
-        }
+        ArgumentGuard.NotNull(targetClass);
 
         if (TypeCache.TryGetValue(targetClass, out _))
         {

@@ -4,6 +4,7 @@
 
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Contexts;
@@ -93,10 +94,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     public virtual void SetBeforeSendReplyPostProcessors(params IMessagePostProcessor[] beforeSendReplyPostProcessors)
     {
-        if (beforeSendReplyPostProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(beforeSendReplyPostProcessors));
-        }
+        ArgumentGuard.NotNull(beforeSendReplyPostProcessors);
 
         foreach (IMessagePostProcessor elem in beforeSendReplyPostProcessors)
         {

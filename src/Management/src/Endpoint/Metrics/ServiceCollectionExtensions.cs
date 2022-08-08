@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenTelemetry.Metrics;
+using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
@@ -31,15 +32,8 @@ public static class ServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddMetricsActuatorServices(this IServiceCollection services, IConfiguration configuration)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(configuration);
 
         var options = new MetricsEndpointOptions(configuration);
         services.TryAddSingleton<IMetricsEndpointOptions>(options);
@@ -79,15 +73,8 @@ public static class ServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddPrometheusActuatorServices(this IServiceCollection services, IConfiguration configuration)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(configuration);
 
         var options = new PrometheusEndpointOptions(configuration);
         services.TryAddSingleton<IPrometheusEndpointOptions>(options);

@@ -5,6 +5,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -46,10 +47,7 @@ public class ManagementEndpointOptions : IManagementOptions
     public ManagementEndpointOptions(IConfiguration config)
         : this()
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         IConfigurationSection section = config.GetSection(ManagementInfoPrefix);
 

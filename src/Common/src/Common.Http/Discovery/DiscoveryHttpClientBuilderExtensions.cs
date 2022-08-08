@@ -22,10 +22,7 @@ public static class DiscoveryHttpClientBuilderExtensions
     /// </returns>
     public static IHttpClientBuilder AddServiceDiscovery(this IHttpClientBuilder builder)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         builder.AddHttpMessageHandler<DiscoveryHttpMessageHandler>();
         return builder;

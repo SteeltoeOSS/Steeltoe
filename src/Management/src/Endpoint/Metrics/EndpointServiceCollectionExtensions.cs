@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -22,17 +23,9 @@ public static class EndpointServiceCollectionExtensions
 {
     public static void AddMetricsActuator(this IServiceCollection services, IConfiguration config = null)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetService<IConfiguration>();
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
@@ -51,17 +44,9 @@ public static class EndpointServiceCollectionExtensions
 
     public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration config = null)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetService<IConfiguration>();
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
@@ -94,10 +79,7 @@ public static class EndpointServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddWavefrontMetrics(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());

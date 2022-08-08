@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
@@ -17,10 +18,7 @@ public static class ConfigServerConfigurationBuilderExtensionsCore
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostingEnvironment environment,
         ILoggerFactory logFactory = null)
     {
-        if (environment == null)
-        {
-            throw new ArgumentNullException(nameof(environment));
-        }
+        ArgumentGuard.NotNull(environment);
 
         return DoAddConfigServer(configurationBuilder, environment.ApplicationName, environment.EnvironmentName, logFactory);
     }
@@ -29,10 +27,7 @@ public static class ConfigServerConfigurationBuilderExtensionsCore
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder,
         Microsoft.AspNetCore.Hosting.IHostingEnvironment environment, ILoggerFactory logFactory = null)
     {
-        if (environment == null)
-        {
-            throw new ArgumentNullException(nameof(environment));
-        }
+        ArgumentGuard.NotNull(environment);
 
         return DoAddConfigServer(configurationBuilder, environment.ApplicationName, environment.EnvironmentName, logFactory);
     }
@@ -40,10 +35,7 @@ public static class ConfigServerConfigurationBuilderExtensionsCore
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostEnvironment environment,
         ILoggerFactory logFactory = null)
     {
-        if (environment == null)
-        {
-            throw new ArgumentNullException(nameof(environment));
-        }
+        ArgumentGuard.NotNull(environment);
 
         return DoAddConfigServer(configurationBuilder, environment.ApplicationName, environment.EnvironmentName, logFactory);
     }
@@ -51,10 +43,7 @@ public static class ConfigServerConfigurationBuilderExtensionsCore
     private static IConfigurationBuilder DoAddConfigServer(IConfigurationBuilder configurationBuilder, string applicationName, string environmentName,
         ILoggerFactory logFactory)
     {
-        if (configurationBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(configurationBuilder));
-        }
+        ArgumentGuard.NotNull(configurationBuilder);
 
         var settings = new ConfigServerClientSettings
         {

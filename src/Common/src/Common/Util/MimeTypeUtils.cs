@@ -121,10 +121,7 @@ public static class MimeTypeUtils
 
     public static void SortBySpecificity(List<MimeType> mimeTypes)
     {
-        if (mimeTypes == null)
-        {
-            throw new ArgumentNullException(nameof(mimeTypes));
-        }
+        ArgumentGuard.NotNull(mimeTypes);
 
         if (mimeTypes.Count > 1)
         {

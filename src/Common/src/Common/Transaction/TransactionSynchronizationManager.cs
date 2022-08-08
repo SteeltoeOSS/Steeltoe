@@ -46,10 +46,7 @@ public static class TransactionSynchronizationManager
 
     public static void BindResource(object key, object value, ILogger logger = null)
     {
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        ArgumentGuard.NotNull(value);
 
         Dictionary<object, object> map = Resources.Value;
 
@@ -112,10 +109,7 @@ public static class TransactionSynchronizationManager
 
     public static void RegisterSynchronization(ITransactionSynchronization synchronization)
     {
-        if (synchronization == null)
-        {
-            throw new ArgumentNullException(nameof(synchronization));
-        }
+        ArgumentGuard.NotNull(synchronization);
 
         ISet<ITransactionSynchronization> synchs = Synchronizations.Value;
 

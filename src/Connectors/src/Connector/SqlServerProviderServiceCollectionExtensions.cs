@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Services;
 
@@ -35,15 +36,8 @@ public static class SqlServerProviderServiceCollectionExtensions
     public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(config);
 
         var info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
         DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
@@ -75,20 +69,14 @@ public static class SqlServerProviderServiceCollectionExtensions
     public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         if (string.IsNullOrEmpty(serviceName))
         {
             throw new ArgumentNullException(nameof(serviceName));
         }
 
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         var info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
         DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);

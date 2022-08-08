@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor;
 
@@ -23,10 +24,7 @@ public class DiskSpaceContributorOptions
 
     public DiskSpaceContributorOptions(IConfiguration config)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         IConfigurationSection section = config.GetSection(ManagementInfoPrefix);
 

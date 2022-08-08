@@ -17,10 +17,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
 
     public bool CanConvert(Type sourceType, Type targetType)
     {
-        if (targetType == null)
-        {
-            throw new ArgumentNullException(nameof(targetType));
-        }
+        ArgumentGuard.NotNull(targetType);
 
         if (sourceType == null)
         {
@@ -38,10 +35,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
 
     public object Convert(object source, Type sourceType, Type targetType)
     {
-        if (targetType == null)
-        {
-            throw new ArgumentNullException(nameof(targetType));
-        }
+        ArgumentGuard.NotNull(targetType);
 
         if (sourceType == null)
         {
@@ -82,10 +76,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
 
     public bool CanBypassConvert(Type sourceType, Type targetType)
     {
-        if (targetType == null)
-        {
-            throw new ArgumentNullException(nameof(targetType));
-        }
+        ArgumentGuard.NotNull(targetType);
 
         if (sourceType == null)
         {

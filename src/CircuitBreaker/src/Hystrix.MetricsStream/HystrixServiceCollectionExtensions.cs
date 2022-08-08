@@ -11,6 +11,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
+using Steeltoe.Common;
 using Steeltoe.Connector.Hystrix;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
@@ -21,10 +22,7 @@ public static class HystrixServiceCollectionExtensions
 
     public static void AddHystrixMetricsStream(this IServiceCollection services, IConfiguration config)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddSingleton(HystrixDashboardStream.GetInstance());
         services.AddHystrixConnection(config);
@@ -41,10 +39,7 @@ public static class HystrixServiceCollectionExtensions
 
     public static void AddHystrixRequestEventStream(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddSingleton(HystrixRequestEventsStream.GetInstance());
     }
@@ -57,10 +52,7 @@ public static class HystrixServiceCollectionExtensions
 
     public static void AddHystrixUtilizationStream(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddSingleton(HystrixUtilizationStream.GetInstance());
     }
@@ -73,20 +65,14 @@ public static class HystrixServiceCollectionExtensions
 
     public static void AddHystrixConfigStream(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddSingleton(HystrixConfigurationStream.GetInstance());
     }
 
     public static void AddHystrixMonitoringStreams(this IServiceCollection services, IConfiguration config)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddHystrixMetricsStream(config);
         services.AddHystrixConfigStream();

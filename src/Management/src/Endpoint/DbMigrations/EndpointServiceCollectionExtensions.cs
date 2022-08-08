@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
@@ -22,17 +23,9 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddDbMigrationsActuator(this IServiceCollection services, IConfiguration config = null)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetService<IConfiguration>();
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.AddActuatorManagementOptions(config);
         services.AddDbMigrationsActuatorServices(config);

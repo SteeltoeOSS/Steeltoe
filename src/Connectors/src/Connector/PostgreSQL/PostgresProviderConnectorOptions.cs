@@ -4,6 +4,7 @@
 
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Connector.PostgreSql;
 
@@ -50,10 +51,7 @@ public class PostgresProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public PostgresProviderConnectorOptions(IConfiguration config)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         IConfigurationSection section = config.GetSection(PostgresClientSectionPrefix);
         section.Bind(this);

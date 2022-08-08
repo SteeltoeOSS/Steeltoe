@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Logging;
 
@@ -21,10 +22,7 @@ public static class DynamicLoggingBuilder
     /// </param>
     public static ILoggingBuilder AddDynamicConsole(this ILoggingBuilder builder)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         // only run if an IDynamicLoggerProvider hasn't already been added
         if (!builder.Services.Any(sd => sd.ServiceType == typeof(IDynamicLoggerProvider)))

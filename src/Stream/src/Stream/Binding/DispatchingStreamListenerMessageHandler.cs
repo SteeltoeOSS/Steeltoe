@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Integration.Handler;
@@ -111,10 +112,7 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
 
         internal ConditionalStreamListenerMessageHandlerWrapper(IExpression condition, StreamListenerMessageHandler streamListenerMessageHandler)
         {
-            if (streamListenerMessageHandler == null)
-            {
-                throw new ArgumentNullException(nameof(streamListenerMessageHandler));
-            }
+            ArgumentGuard.NotNull(streamListenerMessageHandler);
 
             if (!(condition == null || streamListenerMessageHandler.IsVoid))
             {

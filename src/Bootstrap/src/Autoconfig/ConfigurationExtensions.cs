@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 
 namespace Steeltoe.Bootstrap.Autoconfig;
@@ -11,10 +12,7 @@ internal static class ConfigurationExtensions
 {
     public static bool HasWavefront(this IConfiguration configuration)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         var options = new WavefrontExporterOptions(configuration);
         return !string.IsNullOrEmpty(options.Uri);

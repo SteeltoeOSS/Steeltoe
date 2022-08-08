@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -16,10 +17,7 @@ public static class EndpointApplicationBuilderExtensions
     /// </param>
     public static void UseCloudFoundrySecurity(this IApplicationBuilder builder)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         builder.UseMiddleware<CloudFoundrySecurityMiddleware>();
     }

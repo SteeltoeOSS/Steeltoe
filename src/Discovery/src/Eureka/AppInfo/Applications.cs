@@ -4,6 +4,7 @@
 
 using System.Collections.Concurrent;
 using System.Text;
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 using Steeltoe.Discovery.Eureka.Transport;
 
@@ -31,10 +32,7 @@ public class Applications
 
     internal Applications(IList<Application> apps)
     {
-        if (apps == null)
-        {
-            throw new ArgumentNullException(nameof(apps));
-        }
+        ArgumentGuard.NotNull(apps);
 
         foreach (Application app in apps)
         {
@@ -94,10 +92,7 @@ public class Applications
 
     internal void Add(Application app)
     {
-        if (app == null)
-        {
-            throw new ArgumentNullException(nameof(app));
-        }
+        ArgumentGuard.NotNull(app);
 
         ApplicationMap.AddOrUpdate(app.Name.ToUpperInvariant(), app, (_, _) => app);
         AddInstances(app);

@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binding;
@@ -15,10 +16,7 @@ public static class EnableBindingsExtensions
 {
     public static IServiceCollection AddEnableBinding<T>(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         Type type = typeof(T);
         object attr = type.GetCustomAttributes(true).SingleOrDefault(attr => attr.GetType() == typeof(EnableBindingAttribute));
@@ -44,30 +42,21 @@ public static class EnableBindingsExtensions
 
     public static IServiceCollection AddProcessorStreamBinding(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         return services.AddStreamBinding<IProcessor>();
     }
 
     public static IServiceCollection AddSinkStreamBinding(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         return services.AddStreamBinding<ISink>();
     }
 
     public static IServiceCollection AddSourceStreamBinding(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         return services.AddStreamBinding<ISource>();
     }
@@ -80,40 +69,28 @@ public static class EnableBindingsExtensions
 
     public static IServiceCollection AddStreamBinding<TBinding>(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         return services.AddStreamBindings(typeof(TBinding));
     }
 
     public static IServiceCollection AddStreamBindings<TBinding1, TBinding2>(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         return services.AddStreamBindings(typeof(TBinding1), typeof(TBinding2));
     }
 
     public static IServiceCollection AddStreamBindings<TBinding1, TBinding2, TBinding3>(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         return services.AddStreamBindings(typeof(TBinding1), typeof(TBinding2), typeof(TBinding3));
     }
 
     public static IServiceCollection AddStreamBindings(this IServiceCollection services, params Type[] bindings)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         if (bindings == null || bindings.Length == 0)
         {

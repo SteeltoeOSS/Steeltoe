@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using RC = RabbitMQ.Client;
@@ -79,10 +80,7 @@ public static class ConnectionFactoryUtils
 
     public static void RegisterDeliveryTag(IConnectionFactory connectionFactory, RC.IModel channel, ulong tag)
     {
-        if (connectionFactory == null)
-        {
-            throw new ArgumentNullException(nameof(connectionFactory));
-        }
+        ArgumentGuard.NotNull(connectionFactory);
 
         var resourceHolder = (RabbitResourceHolder)TransactionSynchronizationManager.GetResource(connectionFactory);
 
@@ -94,15 +92,8 @@ public static class ConnectionFactoryUtils
 
     private static RabbitResourceHolder DoGetTransactionalResourceHolder(IConnectionFactory connectionFactory, IResourceFactory resourceFactory)
     {
-        if (connectionFactory == null)
-        {
-            throw new ArgumentNullException(nameof(connectionFactory));
-        }
-
-        if (resourceFactory == null)
-        {
-            throw new ArgumentNullException(nameof(resourceFactory));
-        }
+        ArgumentGuard.NotNull(connectionFactory);
+        ArgumentGuard.NotNull(resourceFactory);
 
         var resourceHolder = (RabbitResourceHolder)TransactionSynchronizationManager.GetResource(connectionFactory);
 

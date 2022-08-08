@@ -5,6 +5,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 
 namespace Steeltoe.Messaging.Handler;
@@ -45,10 +46,7 @@ public class HandlerMethod
 
     public HandlerMethod(object handler, MethodInfo handlerMethod)
     {
-        if (handlerMethod == null)
-        {
-            throw new ArgumentNullException(nameof(handlerMethod));
-        }
+        ArgumentGuard.NotNull(handlerMethod);
 
         InnerHandler = handler ?? throw new ArgumentNullException(nameof(handler));
         HandlerType = handler.GetType();
@@ -73,10 +71,7 @@ public class HandlerMethod
 
     protected HandlerMethod(HandlerMethod handlerMethod)
     {
-        if (handlerMethod == null)
-        {
-            throw new ArgumentNullException(nameof(handlerMethod));
-        }
+        ArgumentGuard.NotNull(handlerMethod);
 
         InnerHandler = handlerMethod.Handler;
         HandlerType = handlerMethod.HandlerType;
@@ -87,10 +82,7 @@ public class HandlerMethod
 
     private HandlerMethod(HandlerMethod handlerMethod, object handler)
     {
-        if (handlerMethod == null)
-        {
-            throw new ArgumentNullException(nameof(handlerMethod));
-        }
+        ArgumentGuard.NotNull(handlerMethod);
 
         InnerHandler = handler ?? throw new ArgumentNullException(nameof(handler));
         HandlerType = handlerMethod.HandlerType;

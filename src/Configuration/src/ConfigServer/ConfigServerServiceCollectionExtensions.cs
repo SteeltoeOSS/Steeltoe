@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
@@ -18,15 +19,8 @@ public static class ConfigServerServiceCollectionExtensions
     [Obsolete("IConfiguration parameter is not needed anymore")]
     public static IServiceCollection ConfigureConfigServerClientOptions(this IServiceCollection services, IConfiguration config)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(config);
 
         services.AddOptions();
 
@@ -38,10 +32,7 @@ public static class ConfigServerServiceCollectionExtensions
 
     public static IServiceCollection ConfigureConfigServerClientOptions(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddOptions<ConfigServerClientSettingsOptions>().Configure<IConfiguration>((options, config) =>
         {
@@ -62,10 +53,7 @@ public static class ConfigServerServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddConfigServerHealthContributor(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddSingleton<IHealthContributor, ConfigServerHealthContributor>();
 

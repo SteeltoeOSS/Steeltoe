@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
@@ -29,10 +30,7 @@ public class RabbitMQHealthContributor : IHealthContributor
 
     public static IHealthContributor GetRabbitMQContributor(IConfiguration configuration, ILogger<RabbitMQHealthContributor> logger = null)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
 

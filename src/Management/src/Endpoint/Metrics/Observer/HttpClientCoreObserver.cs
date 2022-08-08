@@ -31,10 +31,7 @@ public class HttpClientCoreObserver : MetricsObserver
     public HttpClientCoreObserver(IMetricsObserverOptions options, ILogger<HttpClientCoreObserver> logger, IViewRegistry viewRegistry)
         : base(DefaultObserverName, DiagnosticName, options, logger)
     {
-        if (viewRegistry == null)
-        {
-            throw new ArgumentNullException(nameof(viewRegistry));
-        }
+        ArgumentGuard.NotNull(viewRegistry);
 
         SetPathMatcher(new Regex(options.EgressIgnorePattern));
         _clientTimeMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("http.client.request.time");

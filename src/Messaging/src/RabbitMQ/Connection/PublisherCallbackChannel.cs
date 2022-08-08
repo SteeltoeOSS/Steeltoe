@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Support;
@@ -175,10 +176,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
 
     public virtual void AddListener(IListener listener)
     {
-        if (listener == null)
-        {
-            throw new ArgumentNullException(nameof(listener));
-        }
+        ArgumentGuard.NotNull(listener);
 
         if (_listeners.Count == 0)
         {

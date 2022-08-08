@@ -4,6 +4,7 @@
 
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
@@ -60,15 +61,8 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 
     public void RegisterListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory, bool startImmediately)
     {
-        if (endpoint == null)
-        {
-            throw new ArgumentNullException(nameof(endpoint));
-        }
-
-        if (factory == null)
-        {
-            throw new ArgumentNullException(nameof(factory));
-        }
+        ArgumentGuard.NotNull(endpoint);
+        ArgumentGuard.NotNull(factory);
 
         string id = endpoint.Id;
 

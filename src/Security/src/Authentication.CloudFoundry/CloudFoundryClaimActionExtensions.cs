@@ -4,6 +4,7 @@
 
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
+using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 
@@ -11,10 +12,7 @@ public static class CloudFoundryClaimActionExtensions
 {
     public static void MapScopes(this ClaimActionCollection collection, string claimType = "scope")
     {
-        if (collection == null)
-        {
-            throw new ArgumentNullException(nameof(collection));
-        }
+        ArgumentGuard.NotNull(collection);
 
         collection.Add(new CloudFoundryScopeClaimAction(claimType, ClaimValueTypes.String));
     }
