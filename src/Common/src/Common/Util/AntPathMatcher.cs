@@ -55,10 +55,7 @@ public class AntPathMatcher : IPathMatcher
 
     public AntPathMatcher(string pathSeparator)
     {
-        if (string.IsNullOrEmpty(pathSeparator))
-        {
-            throw new ArgumentException(nameof(pathSeparator));
-        }
+        ArgumentGuard.NotNullOrEmpty(pathSeparator);
 
         _pathSeparator = pathSeparator;
         _pathSeparatorPatternCache = new PathSeparatorPatternCache(pathSeparator);

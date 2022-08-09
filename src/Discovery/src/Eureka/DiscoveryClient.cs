@@ -82,10 +82,7 @@ public class DiscoveryClient : IEurekaClient
 
     public Application GetApplication(string appName)
     {
-        if (string.IsNullOrEmpty(appName))
-        {
-            throw new ArgumentException(nameof(appName));
-        }
+        ArgumentGuard.NotNullOrEmpty(appName);
 
         Applications apps = Applications;
 
@@ -99,10 +96,7 @@ public class DiscoveryClient : IEurekaClient
 
     public IList<InstanceInfo> GetInstanceById(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException(nameof(id));
-        }
+        ArgumentGuard.NotNullOrEmpty(id);
 
         var results = new List<InstanceInfo>();
 
@@ -130,10 +124,7 @@ public class DiscoveryClient : IEurekaClient
 
     public IList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure)
     {
-        if (string.IsNullOrEmpty(vipAddress))
-        {
-            throw new ArgumentException(nameof(vipAddress));
-        }
+        ArgumentGuard.NotNullOrEmpty(vipAddress);
 
         var results = new List<InstanceInfo>();
 
@@ -198,10 +189,7 @@ public class DiscoveryClient : IEurekaClient
 
     public InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure)
     {
-        if (string.IsNullOrEmpty(virtualHostname))
-        {
-            throw new ArgumentException(nameof(virtualHostname));
-        }
+        ArgumentGuard.NotNullOrEmpty(virtualHostname);
 
         IList<InstanceInfo> results = GetInstancesByVipAddress(virtualHostname, secure);
 

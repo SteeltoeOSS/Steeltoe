@@ -150,10 +150,7 @@ public static class MimeTypeUtils
 
     private static MimeType ParseMimeTypeInternal(string mimeType)
     {
-        if (string.IsNullOrEmpty(mimeType))
-        {
-            throw new ArgumentException("'mimeType' must not be empty");
-        }
+        ArgumentGuard.NotNullOrEmpty(mimeType);
 
         int index = mimeType.IndexOf(';');
         string fullType = (index >= 0 ? mimeType.Substring(0, index) : mimeType).Trim();

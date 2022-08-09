@@ -29,11 +29,7 @@ public static class OracleDbContextOptionsExtensions
     {
         ArgumentGuard.NotNull(optionsBuilder);
         ArgumentGuard.NotNull(config);
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         string connection = GetConnection(config, serviceName);
 
@@ -58,11 +54,7 @@ public static class OracleDbContextOptionsExtensions
     {
         ArgumentGuard.NotNull(optionsBuilder);
         ArgumentGuard.NotNull(config);
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         string connection = GetConnection(config, serviceName);
 

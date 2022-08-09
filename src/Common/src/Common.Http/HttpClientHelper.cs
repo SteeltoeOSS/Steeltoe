@@ -223,10 +223,7 @@ public static class HttpClientHelper
     public static Task<string> GetAccessTokenAsync(string accessTokenUri, string clientId, string clientSecret, int timeout = DefaultGetAccessTokenTimeout,
         bool validateCertificates = DefaultValidateCertificates, HttpClient httpClient = null, ILogger logger = null)
     {
-        if (string.IsNullOrEmpty(accessTokenUri))
-        {
-            throw new ArgumentException(nameof(accessTokenUri));
-        }
+        ArgumentGuard.NotNullOrEmpty(accessTokenUri);
 
         var parsedUri = new Uri(accessTokenUri);
         return GetAccessTokenAsync(parsedUri, clientId, clientSecret, timeout, validateCertificates, null, httpClient, logger);
@@ -236,20 +233,9 @@ public static class HttpClientHelper
         bool validateCertificates = DefaultValidateCertificates, Dictionary<string, string> additionalParams = null, HttpClient httpClient = null,
         ILogger logger = null)
     {
-        if (accessTokenUri is null)
-        {
-            throw new ArgumentException(nameof(accessTokenUri));
-        }
-
-        if (string.IsNullOrEmpty(clientId))
-        {
-            throw new ArgumentException(nameof(clientId));
-        }
-
-        if (string.IsNullOrEmpty(clientSecret))
-        {
-            throw new ArgumentException(nameof(clientSecret));
-        }
+        ArgumentGuard.NotNull(accessTokenUri);
+        ArgumentGuard.NotNullOrEmpty(clientId);
+        ArgumentGuard.NotNullOrEmpty(clientSecret);
 
         if (!accessTokenUri.IsWellFormedOriginalString())
         {

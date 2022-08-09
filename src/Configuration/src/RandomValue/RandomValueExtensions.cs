@@ -46,11 +46,7 @@ public static class RandomValueExtensions
     public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string prefix, ILoggerFactory loggerFactory = null)
     {
         ArgumentGuard.NotNull(builder);
-
-        if (string.IsNullOrEmpty(prefix))
-        {
-            throw new ArgumentException(nameof(prefix));
-        }
+        ArgumentGuard.NotNullOrEmpty(prefix);
 
         if (!prefix.EndsWith(":"))
         {

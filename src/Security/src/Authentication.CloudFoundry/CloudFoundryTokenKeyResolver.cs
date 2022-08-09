@@ -24,10 +24,7 @@ public class CloudFoundryTokenKeyResolver
 
     public CloudFoundryTokenKeyResolver(string jwtKeyUrl, HttpMessageHandler httpHandler, bool validateCertificates)
     {
-        if (string.IsNullOrEmpty(jwtKeyUrl))
-        {
-            throw new ArgumentException(nameof(jwtKeyUrl));
-        }
+        ArgumentGuard.NotNullOrEmpty(jwtKeyUrl);
 
         _jwtKeyUrl = jwtKeyUrl;
         _httpHandler = httpHandler;
@@ -37,10 +34,7 @@ public class CloudFoundryTokenKeyResolver
 
     public CloudFoundryTokenKeyResolver(string jwtKeyUrl, HttpMessageHandler httpHandler, bool validateCertificates, int httpClientTimeoutMs)
     {
-        if (string.IsNullOrEmpty(jwtKeyUrl))
-        {
-            throw new ArgumentException(nameof(jwtKeyUrl));
-        }
+        ArgumentGuard.NotNullOrEmpty(jwtKeyUrl);
 
         _jwtKeyUrl = jwtKeyUrl;
         _httpHandler = httpHandler;

@@ -26,10 +26,7 @@ public class StandardServiceExpressionResolver : IServiceExpressionResolver
         get => _expressionPrefix;
         set
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new ArgumentException("Expression prefix must not be empty");
-            }
+            ArgumentGuard.NotNullOrEmpty(value);
 
             _expressionPrefix = value;
         }
@@ -40,10 +37,7 @@ public class StandardServiceExpressionResolver : IServiceExpressionResolver
         get => _expressionSuffix;
         set
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new ArgumentException("Expression suffix must not be empty");
-            }
+            ArgumentGuard.NotNullOrEmpty(value);
 
             _expressionSuffix = value;
         }

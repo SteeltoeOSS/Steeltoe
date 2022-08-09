@@ -86,15 +86,12 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
 
     public virtual void SetLogLevel(IDynamicLoggerProvider provider, string name, string level)
     {
+        ArgumentGuard.NotNullOrEmpty(name);
+
         if (provider == null)
         {
             _logger?.LogInformation("Unable to access the Dynamic Logging provider, log level not changed");
             return;
-        }
-
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentException(nameof(name));
         }
 
         provider.SetLogLevel(name, LoggerLevels.MapLogLevel(level));

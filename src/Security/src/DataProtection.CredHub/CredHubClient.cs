@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Http;
 
 namespace Steeltoe.Security.DataProtection.CredHub;
@@ -160,10 +161,7 @@ public class CredHubClient : ICredHubClient
 
     public Task<CredHubCredential<T>> RegenerateAsync<T>(string name)
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentException("Name of credential to regenerate is required");
-        }
+        ArgumentGuard.NotNullOrEmpty(name);
 
         return RegenerateInternalAsync<T>(name);
     }
@@ -192,10 +190,7 @@ public class CredHubClient : ICredHubClient
 
     public Task<RegeneratedCertificates> BulkRegenerateAsync(string certificateAuthority)
     {
-        if (string.IsNullOrEmpty(certificateAuthority))
-        {
-            throw new ArgumentException("Certificate authority used for certificates is required");
-        }
+        ArgumentGuard.NotNullOrEmpty(certificateAuthority);
 
         return BulkRegenerateInternalAsync(certificateAuthority);
     }
@@ -251,10 +246,7 @@ public class CredHubClient : ICredHubClient
 
     public Task<CredHubCredential<T>> GetByNameAsync<T>(string name)
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentException("Name of credential is required");
-        }
+        ArgumentGuard.NotNullOrEmpty(name);
 
         return GetByNameInternalAsync<T>(name);
     }
@@ -278,10 +270,7 @@ public class CredHubClient : ICredHubClient
 
     public Task<List<CredHubCredential<T>>> GetByNameWithHistoryAsync<T>(string name, int entries = 10)
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentException("Name is required");
-        }
+        ArgumentGuard.NotNullOrEmpty(name);
 
         return GetByNameWithHistoryInternalAsync<T>(name, entries);
     }
@@ -305,10 +294,7 @@ public class CredHubClient : ICredHubClient
 
     public Task<List<FoundCredential>> FindByNameAsync(string name)
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentException("Name is required");
-        }
+        ArgumentGuard.NotNullOrEmpty(name);
 
         return FindByNameInternalAsync(name);
     }
@@ -332,10 +318,7 @@ public class CredHubClient : ICredHubClient
 
     public Task<List<FoundCredential>> FindByPathAsync(string path)
     {
-        if (string.IsNullOrEmpty(path))
-        {
-            throw new ArgumentException("Path is required");
-        }
+        ArgumentGuard.NotNullOrEmpty(path);
 
         return FindByPathInternalAsync(path);
     }
@@ -359,10 +342,7 @@ public class CredHubClient : ICredHubClient
 
     public Task<bool> DeleteByNameAsync(string name)
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentException("Name of credential to regenerate is required");
-        }
+        ArgumentGuard.NotNullOrEmpty(name);
 
         return DeleteByNameInternalAsync(name);
     }
@@ -392,10 +372,7 @@ public class CredHubClient : ICredHubClient
 
     public Task<List<CredentialPermission>> GetPermissionsAsync(string credentialName)
     {
-        if (string.IsNullOrEmpty(credentialName))
-        {
-            throw new ArgumentException("Name is required");
-        }
+        ArgumentGuard.NotNullOrEmpty(credentialName);
 
         return GetPermissionsInternalAsync(credentialName);
     }
@@ -419,10 +396,7 @@ public class CredHubClient : ICredHubClient
 
     public Task<List<CredentialPermission>> AddPermissionsAsync(string credentialName, List<CredentialPermission> permissions)
     {
-        if (string.IsNullOrEmpty(credentialName))
-        {
-            throw new ArgumentException("Name is required");
-        }
+        ArgumentGuard.NotNullOrEmpty(credentialName);
 
         if (permissions == null || !permissions.Any())
         {
@@ -459,15 +433,8 @@ public class CredHubClient : ICredHubClient
 
     public Task<bool> DeletePermissionAsync(string credentialName, string actor)
     {
-        if (string.IsNullOrEmpty(credentialName))
-        {
-            throw new ArgumentException("Name is required");
-        }
-
-        if (string.IsNullOrEmpty(actor))
-        {
-            throw new ArgumentException("Actor is required");
-        }
+        ArgumentGuard.NotNullOrEmpty(credentialName);
+        ArgumentGuard.NotNullOrEmpty(actor);
 
         return DeletePermissionInternalAsync(credentialName, actor);
     }
@@ -499,10 +466,7 @@ public class CredHubClient : ICredHubClient
 
     public Task<string> InterpolateServiceDataAsync(string serviceData)
     {
-        if (string.IsNullOrEmpty(serviceData))
-        {
-            throw new ArgumentException("Service data is required");
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceData);
 
         return InterpolateServiceDataInternalAsync(serviceData);
     }

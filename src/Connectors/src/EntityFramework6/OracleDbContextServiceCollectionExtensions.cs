@@ -77,12 +77,7 @@ public static class OracleDbContextServiceCollectionExtensions
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentNullException(nameof(serviceName));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(serviceName);
         ArgumentGuard.NotNull(config);
 
         var info = config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
@@ -57,10 +58,7 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
 
         set
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new ArgumentException("OutputChannelName can not be null or empty");
-            }
+            ArgumentGuard.NotNullOrEmpty(value);
 
             _outputChannelName = value;
         }
@@ -95,10 +93,7 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
 
         set
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new ArgumentException("ErrorChannelName can not be null or empty");
-            }
+            ArgumentGuard.NotNullOrEmpty(value);
 
             _errorChannelName = value;
         }

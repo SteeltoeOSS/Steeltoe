@@ -47,10 +47,7 @@ public class Applications
 
     public Application GetRegisteredApplication(string appName)
     {
-        if (string.IsNullOrEmpty(appName))
-        {
-            throw new ArgumentException(nameof(appName));
-        }
+        ArgumentGuard.NotNullOrEmpty(appName);
 
         ApplicationMap.TryGetValue(appName.ToUpperInvariant(), out Application result);
         return result;
@@ -58,20 +55,14 @@ public class Applications
 
     public IList<InstanceInfo> GetInstancesBySecureVirtualHostName(string secureVirtualHostName)
     {
-        if (string.IsNullOrEmpty(secureVirtualHostName))
-        {
-            throw new ArgumentException(nameof(secureVirtualHostName));
-        }
+        ArgumentGuard.NotNullOrEmpty(secureVirtualHostName);
 
         return DoGetByVirtualHostName(secureVirtualHostName, SecureVirtualHostInstanceMap);
     }
 
     public IList<InstanceInfo> GetInstancesByVirtualHostName(string virtualHostName)
     {
-        if (string.IsNullOrEmpty(virtualHostName))
-        {
-            throw new ArgumentException(nameof(virtualHostName));
-        }
+        ArgumentGuard.NotNullOrEmpty(virtualHostName);
 
         return DoGetByVirtualHostName(virtualHostName, VirtualHostInstanceMap);
     }

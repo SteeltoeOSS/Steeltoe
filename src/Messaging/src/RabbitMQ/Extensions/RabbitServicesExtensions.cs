@@ -38,10 +38,7 @@ public static class RabbitServicesExtensions
     public static IServiceCollection AddRabbitTemplate(this IServiceCollection services, string serviceName,
         Action<IServiceProvider, RabbitTemplate> configure = null)
     {
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         services.AddSingleton(p =>
         {
@@ -77,10 +74,7 @@ public static class RabbitServicesExtensions
     public static IServiceCollection AddRabbitAdmin(this IServiceCollection services, string serviceName,
         Action<IServiceProvider, RabbitAdmin> configure = null)
     {
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         services.AddSingleton(p =>
         {
@@ -170,15 +164,8 @@ public static class RabbitServicesExtensions
     public static IServiceCollection AddRabbitExchange(this IServiceCollection services, string exchangeName, string exchangeType,
         Action<IServiceProvider, IExchange> configure = null)
     {
-        if (string.IsNullOrEmpty(exchangeName))
-        {
-            throw new ArgumentException(nameof(exchangeName));
-        }
-
-        if (string.IsNullOrEmpty(exchangeType))
-        {
-            throw new ArgumentException(nameof(exchangeType));
-        }
+        ArgumentGuard.NotNullOrEmpty(exchangeName);
+        ArgumentGuard.NotNullOrEmpty(exchangeType);
 
         services.AddSingleton(p =>
         {
@@ -222,10 +209,7 @@ public static class RabbitServicesExtensions
     public static IServiceCollection AddRabbitBinding(this IServiceCollection services, string bindingName, Binding.DestinationType bindingType,
         Action<IServiceProvider, IBinding> configure = null)
     {
-        if (string.IsNullOrEmpty(bindingName))
-        {
-            throw new ArgumentException(nameof(bindingName));
-        }
+        ArgumentGuard.NotNullOrEmpty(bindingName);
 
         services.RegisterService(bindingName, typeof(IBinding));
 
@@ -316,10 +300,7 @@ public static class RabbitServicesExtensions
     public static IServiceCollection AddRabbitListenerAttributeProcessor(this IServiceCollection services, string serviceName,
         Action<IServiceProvider, RabbitListenerAttributeProcessor> configure = null)
     {
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         services.AddRabbitListenerAttributeProcessor<RabbitListenerAttributeProcessor>(serviceName, configure);
         return services;
@@ -366,10 +347,7 @@ public static class RabbitServicesExtensions
     public static IServiceCollection AddRabbitListenerEndpointRegistrar(this IServiceCollection services, string serviceName,
         Action<IServiceProvider, RabbitListenerEndpointRegistrar> configure = null)
     {
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         services.AddRabbitListenerEndpointRegistrar<RabbitListenerEndpointRegistrar>(serviceName, configure);
         return services;
@@ -416,10 +394,7 @@ public static class RabbitServicesExtensions
     public static IServiceCollection AddRabbitListenerEndpointRegistry(this IServiceCollection services, string serviceName,
         Action<IServiceProvider, RabbitListenerEndpointRegistry> configure = null)
     {
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         services.AddRabbitListenerEndpointRegistry<RabbitListenerEndpointRegistry>(serviceName, configure);
         return services;
@@ -472,10 +447,7 @@ public static class RabbitServicesExtensions
     public static IServiceCollection AddRabbitListenerContainerFactory(this IServiceCollection services, string serviceName,
         Action<IServiceProvider, DirectRabbitListenerContainerFactory> configure = null)
     {
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentNullException(serviceName);
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         return services.AddRabbitListenerContainerFactory<DirectRabbitListenerContainerFactory>(serviceName, configure);
     }
@@ -490,10 +462,7 @@ public static class RabbitServicesExtensions
         Action<IServiceProvider, TFactory> configure = null)
         where TFactory : IRabbitListenerContainerFactory
     {
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         services.AddSingleton<IRabbitListenerContainerFactory>(p =>
         {
@@ -524,10 +493,7 @@ public static class RabbitServicesExtensions
     public static IServiceCollection AddRabbitConnectionFactory(this IServiceCollection services, string serviceName,
         Action<IServiceProvider, CachingConnectionFactory> configure = null)
     {
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         return services.AddRabbitConnectionFactory<CachingConnectionFactory>(serviceName, configure);
     }
@@ -576,10 +542,7 @@ public static class RabbitServicesExtensions
     public static IServiceCollection AddRabbitJsonMessageConverter(this IServiceCollection services, string serviceName,
         Action<IServiceProvider, JsonMessageConverter> configure = null)
     {
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(serviceName);
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         return services.AddRabbitMessageConverter(serviceName, configure);
     }
@@ -593,10 +556,7 @@ public static class RabbitServicesExtensions
     public static IServiceCollection AddRabbitDefaultMessageConverter(this IServiceCollection services, string serviceName,
         Action<IServiceProvider, SimpleMessageConverter> configure = null)
     {
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(serviceName);
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         return services.AddRabbitMessageConverter(serviceName, configure);
     }
@@ -641,10 +601,7 @@ public static class RabbitServicesExtensions
     public static IServiceCollection AddRabbitMessageHandlerMethodFactory(this IServiceCollection services, string serviceName,
         Action<IServiceProvider, RabbitMessageHandlerMethodFactory> configure = null)
     {
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(serviceName);
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         return services.AddRabbitMessageHandlerMethodFactory<RabbitMessageHandlerMethodFactory>(serviceName, configure);
     }
@@ -732,10 +689,7 @@ public static class RabbitServicesExtensions
         Func<IServiceProvider, THandler> factory)
         where THandler : IRabbitListenerErrorHandler
     {
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(serviceName);
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         services.RegisterService(serviceName, typeof(IRabbitListenerErrorHandler));
 
@@ -752,10 +706,7 @@ public static class RabbitServicesExtensions
     public static IServiceCollection AddRabbitListenerErrorHandler<THandler>(this IServiceCollection services, string serviceName)
         where THandler : IRabbitListenerErrorHandler
     {
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(serviceName);
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         services.RegisterService(serviceName, typeof(IRabbitListenerErrorHandler));
 

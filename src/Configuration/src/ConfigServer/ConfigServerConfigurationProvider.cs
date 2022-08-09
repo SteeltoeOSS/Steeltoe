@@ -740,10 +740,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// </returns>
     protected internal virtual string GetConfigServerUri(string baseRawUri, string label)
     {
-        if (string.IsNullOrEmpty(baseRawUri))
-        {
-            throw new ArgumentException(nameof(baseRawUri));
-        }
+        ArgumentGuard.NotNullOrEmpty(baseRawUri);
 
         string path = $"{settings.Name}/{settings.Environment}";
 

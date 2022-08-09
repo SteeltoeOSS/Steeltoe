@@ -282,11 +282,7 @@ public static class ConversionUtils
     public static MethodInfo GetStaticMethod(Type clazz, string methodName, params Type[] args)
     {
         ArgumentGuard.NotNull(clazz);
-
-        if (string.IsNullOrEmpty(methodName))
-        {
-            throw new ArgumentException(nameof(methodName));
-        }
+        ArgumentGuard.NotNullOrEmpty(methodName);
 
         try
         {
@@ -308,11 +304,7 @@ public static class ConversionUtils
     public static MethodInfo GetMethodIfAvailable(Type clazz, string methodName, params Type[] paramTypes)
     {
         ArgumentGuard.NotNull(clazz);
-
-        if (string.IsNullOrEmpty(methodName))
-        {
-            throw new ArgumentException(nameof(methodName));
-        }
+        ArgumentGuard.NotNullOrEmpty(methodName);
 
         if (paramTypes != null)
         {

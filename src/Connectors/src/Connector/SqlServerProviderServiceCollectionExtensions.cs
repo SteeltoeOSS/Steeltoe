@@ -70,12 +70,7 @@ public static class SqlServerProviderServiceCollectionExtensions
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentNullException(nameof(serviceName));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(serviceName);
         ArgumentGuard.NotNull(config);
 
         var info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);

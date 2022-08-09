@@ -73,11 +73,7 @@ public abstract class AbstractServiceOptions : AbstractOptions, IServicesInfo
     public void Bind(IConfiguration configuration, string serviceName)
     {
         ArgumentGuard.NotNull(configuration);
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         IConfigurationSection services = configuration.GetSection(ConfigurationPrefix);
         IConfigurationSection section = FindServiceSection(services, serviceName);

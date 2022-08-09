@@ -66,12 +66,7 @@ public static class RedisCacheServiceCollectionExtensions
         bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentNullException(nameof(serviceName));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(serviceName);
         ArgumentGuard.NotNull(config);
 
         return services.AddDistributedRedisCache(config, config, serviceName, addSteeltoeHealthChecks: addSteeltoeHealthChecks);
@@ -173,12 +168,7 @@ public static class RedisCacheServiceCollectionExtensions
         bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentNullException(nameof(serviceName));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(serviceName);
         ArgumentGuard.NotNull(config);
 
         return services.AddRedisConnectionMultiplexer(config, config, serviceName, addSteeltoeHealthChecks: addSteeltoeHealthChecks);

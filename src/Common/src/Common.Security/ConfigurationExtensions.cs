@@ -28,15 +28,8 @@ public static class ConfigurationExtensions
     {
         ArgumentGuard.NotNull(builder);
 
-        if (string.IsNullOrEmpty(certFilePath))
-        {
-            throw new ArgumentException(nameof(certFilePath));
-        }
-
-        if (string.IsNullOrEmpty(keyFilePath))
-        {
-            throw new ArgumentException(nameof(keyFilePath));
-        }
+        ArgumentGuard.NotNullOrEmpty(certFilePath);
+        ArgumentGuard.NotNullOrEmpty(keyFilePath);
 
         if (optional && (!File.Exists(certFilePath) || !File.Exists(keyFilePath)))
         {
@@ -66,11 +59,7 @@ public static class ConfigurationExtensions
     public static IConfigurationBuilder AddCertificateFile(this IConfigurationBuilder builder, string certFilePath, bool optional = false)
     {
         ArgumentGuard.NotNull(builder);
-
-        if (string.IsNullOrEmpty(certFilePath))
-        {
-            throw new ArgumentException(nameof(certFilePath));
-        }
+        ArgumentGuard.NotNullOrEmpty(certFilePath);
 
         if (optional && !File.Exists(certFilePath))
         {

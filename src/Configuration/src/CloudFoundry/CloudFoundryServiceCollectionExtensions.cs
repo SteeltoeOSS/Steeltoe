@@ -67,11 +67,7 @@ public static class CloudFoundryServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(config);
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         services.Configure<TOption>(serviceName, option =>
         {
@@ -106,11 +102,7 @@ public static class CloudFoundryServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(config);
-
-        if (string.IsNullOrEmpty(serviceLabel))
-        {
-            throw new ArgumentException(nameof(serviceLabel));
-        }
+        ArgumentGuard.NotNullOrEmpty(serviceLabel);
 
         CloudFoundryServicesOptions servicesOptions = GetServiceOptionsFromConfiguration(config);
         servicesOptions.Services.TryGetValue(serviceLabel, out IEnumerable<Service> cfServices);

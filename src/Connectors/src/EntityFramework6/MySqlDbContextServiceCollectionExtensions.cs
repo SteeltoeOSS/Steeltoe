@@ -69,12 +69,7 @@ public static class MySqlDbContextServiceCollectionExtensions
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentNullException(nameof(serviceName));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(serviceName);
         ArgumentGuard.NotNull(config);
 
         var info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);

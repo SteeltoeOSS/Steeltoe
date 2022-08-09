@@ -198,10 +198,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
     public QueueInformation GetQueueInfo(string queueName)
     {
-        if (string.IsNullOrEmpty(queueName))
-        {
-            throw new ArgumentNullException(nameof(queueName));
-        }
+        ArgumentGuard.NotNullOrEmpty(queueName);
 
         if (queueName.Length > 255)
         {

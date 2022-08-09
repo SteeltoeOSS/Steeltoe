@@ -54,12 +54,7 @@ public static class OAuthServiceCollectionExtensions
     public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration config, string serviceName)
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentNullException(nameof(serviceName));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(serviceName);
         ArgumentGuard.NotNull(config);
 
         var oauthConfig = new OAuthConnectorOptions(config);

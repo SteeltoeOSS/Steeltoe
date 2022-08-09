@@ -112,12 +112,7 @@ public static class HystrixServiceCollectionExtensions
         where TService : class
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(groupKey))
-        {
-            throw new ArgumentNullException(nameof(groupKey));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(groupKey);
         ArgumentGuard.NotNull(config);
 
         AddHystrixCommand<TService>(services, HystrixCommandGroupKeyDefault.AsKey(groupKey), config);
@@ -127,17 +122,8 @@ public static class HystrixServiceCollectionExtensions
         where TService : class
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(groupKey))
-        {
-            throw new ArgumentNullException(nameof(groupKey));
-        }
-
-        if (string.IsNullOrEmpty(commandKey))
-        {
-            throw new ArgumentNullException(nameof(commandKey));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(groupKey);
+        ArgumentGuard.NotNullOrEmpty(commandKey);
         ArgumentGuard.NotNull(config);
 
         AddHystrixCommand<TService>(services, HystrixCommandGroupKeyDefault.AsKey(groupKey), HystrixCommandKeyDefault.AsKey(commandKey), config);
@@ -148,12 +134,7 @@ public static class HystrixServiceCollectionExtensions
         where TImplementation : class, TService
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(groupKey))
-        {
-            throw new ArgumentNullException(nameof(groupKey));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(groupKey);
         ArgumentGuard.NotNull(config);
 
         AddHystrixCommand<TService, TImplementation>(services, HystrixCommandGroupKeyDefault.AsKey(groupKey), config);
@@ -164,17 +145,8 @@ public static class HystrixServiceCollectionExtensions
         where TImplementation : class, TService
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(groupKey))
-        {
-            throw new ArgumentNullException(nameof(groupKey));
-        }
-
-        if (string.IsNullOrEmpty(commandKey))
-        {
-            throw new ArgumentNullException(nameof(commandKey));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(groupKey);
+        ArgumentGuard.NotNullOrEmpty(commandKey);
         ArgumentGuard.NotNull(config);
 
         AddHystrixCommand<TService, TImplementation>(services, HystrixCommandGroupKeyDefault.AsKey(groupKey), HystrixCommandKeyDefault.AsKey(commandKey),
@@ -249,12 +221,7 @@ public static class HystrixServiceCollectionExtensions
         where TService : class
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(collapserKey))
-        {
-            throw new ArgumentNullException(nameof(collapserKey));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(collapserKey);
         ArgumentGuard.NotNull(config);
 
         AddHystrixCollapser<TService>(services, HystrixCollapserKeyDefault.AsKey(collapserKey), config);
@@ -264,12 +231,7 @@ public static class HystrixServiceCollectionExtensions
         where TService : class
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(collapserKey))
-        {
-            throw new ArgumentNullException(nameof(collapserKey));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(collapserKey);
         ArgumentGuard.NotNull(config);
 
         AddHystrixCollapser<TService>(services, HystrixCollapserKeyDefault.AsKey(collapserKey), scope, config);
@@ -280,12 +242,7 @@ public static class HystrixServiceCollectionExtensions
         where TImplementation : class, TService
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(collapserKey))
-        {
-            throw new ArgumentNullException(nameof(collapserKey));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(collapserKey);
         ArgumentGuard.NotNull(config);
 
         AddHystrixCollapser<TService, TImplementation>(services, HystrixCollapserKeyDefault.AsKey(collapserKey), config);
@@ -297,12 +254,7 @@ public static class HystrixServiceCollectionExtensions
         where TImplementation : class, TService
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(collapserKey))
-        {
-            throw new ArgumentNullException(nameof(collapserKey));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(collapserKey);
         ArgumentGuard.NotNull(config);
 
         AddHystrixCollapser<TService, TImplementation>(services, HystrixCollapserKeyDefault.AsKey(collapserKey), scope, config);

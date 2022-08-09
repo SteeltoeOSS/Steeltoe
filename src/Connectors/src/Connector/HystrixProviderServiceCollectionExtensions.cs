@@ -61,12 +61,7 @@ public static class HystrixProviderServiceCollectionExtensions
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         ArgumentGuard.NotNull(services);
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentNullException(nameof(serviceName));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(serviceName);
         ArgumentGuard.NotNull(config);
 
         var info = config.GetRequiredServiceInfo<HystrixRabbitMQServiceInfo>(serviceName);

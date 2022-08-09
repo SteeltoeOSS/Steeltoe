@@ -35,10 +35,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 
     public IMessageListenerContainer GetListenerContainer(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException(nameof(id));
-        }
+        ArgumentGuard.NotNullOrEmpty(id);
 
         _listenerContainers.TryGetValue(id, out IMessageListenerContainer messageListenerContainer);
         return messageListenerContainer;

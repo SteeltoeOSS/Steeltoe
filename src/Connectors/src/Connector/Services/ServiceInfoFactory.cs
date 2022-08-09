@@ -47,10 +47,7 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
             scheme
         })
     {
-        if (string.IsNullOrEmpty(scheme))
-        {
-            throw new ArgumentNullException(nameof(scheme));
-        }
+        ArgumentGuard.NotNullOrEmpty(scheme);
     }
 
     protected ServiceInfoFactory(Tags tags, IEnumerable<string> schemes)
