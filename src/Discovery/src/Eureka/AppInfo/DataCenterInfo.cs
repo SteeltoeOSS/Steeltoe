@@ -27,7 +27,7 @@ public class DataCenterInfo : IDataCenterInfo
             return new DataCenterInfo(DataCenterName.Amazon);
         }
 
-        throw new ArgumentOutOfRangeException("Datacenter name");
+        throw new ArgumentException($"Unsupported datacenter name '{dataCenterInfo.Name}'.", nameof(dataCenterInfo));
     }
 
     internal JsonInstanceInfo.JsonDataCenterInfo ToJson()

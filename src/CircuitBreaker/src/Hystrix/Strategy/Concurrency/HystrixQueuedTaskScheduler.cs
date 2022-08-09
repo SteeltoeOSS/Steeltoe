@@ -24,12 +24,12 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
     {
         if (options.MaxQueueSize < 0)
         {
-            throw new ArgumentOutOfRangeException("MaxQueueSize");
+            throw new ArgumentException($"{nameof(options.MaxQueueSize)} in {nameof(options)} must not be negative.", nameof(options));
         }
 
         if (options.QueueSizeRejectionThreshold < 0)
         {
-            throw new ArgumentOutOfRangeException("queueSizeRejectionThreshold");
+            throw new ArgumentException($"{nameof(options.QueueSizeRejectionThreshold)} in {nameof(options)} must not be negative.", nameof(options));
         }
 
         workQueue = new BlockingCollection<Task>(queueSize);

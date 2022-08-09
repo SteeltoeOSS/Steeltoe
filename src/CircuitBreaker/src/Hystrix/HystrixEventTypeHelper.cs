@@ -39,9 +39,9 @@ public static class HystrixEventTypeHelper
 
     public static IList<HystrixEventType> TerminalEventTypes { get; } = GetTerminalEventTypes();
 
-    public static bool IsTerminal(this HystrixEventType evType)
+    public static bool IsTerminal(this HystrixEventType eventType)
     {
-        return evType switch
+        return eventType switch
         {
             HystrixEventType.Emit => false,
             HystrixEventType.Success => false,
@@ -60,7 +60,7 @@ public static class HystrixEventTypeHelper
             HystrixEventType.ResponseFromCache => false,
             HystrixEventType.Cancelled => false,
             HystrixEventType.Collapsed => false,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException(nameof(eventType), eventType, "Value cannot be converted.")
         };
     }
 
@@ -84,7 +84,7 @@ public static class HystrixEventTypeHelper
             HystrixRollingNumberEvent.ResponseFromCache => HystrixEventType.ResponseFromCache,
             HystrixRollingNumberEvent.Collapsed => HystrixEventType.Collapsed,
             HystrixRollingNumberEvent.BadRequest => HystrixEventType.BadRequest,
-            _ => throw new ArgumentOutOfRangeException($"Not an event that can be converted to HystrixEventType : {@event}")
+            _ => throw new ArgumentOutOfRangeException(nameof(@event), @event, $"Value cannot be converted to {nameof(HystrixEventType)}.")
         };
     }
 
