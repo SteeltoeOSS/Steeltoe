@@ -46,7 +46,7 @@ public abstract class AbstractMessageHandler : IMessageHandler, IOrdered
 
         if (message.Payload == null)
         {
-            throw new ArgumentNullException("Message payload is null");
+            throw new ArgumentException("Message payload must not be null.", nameof(message));
         }
 
         try

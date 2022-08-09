@@ -104,12 +104,12 @@ public class MethodInvoker
 
         if (targetClass == null)
         {
-            throw new ArgumentNullException("Either 'targetClass' or 'targetObject' is required");
+            throw new InvalidOperationException($"{nameof(TargetClass)} must be set first.");
         }
 
         if (targetMethod == null)
         {
-            throw new ArgumentNullException("Property 'targetMethod' is required");
+            throw new InvalidOperationException($"{nameof(TargetMethod)} must be set first.");
         }
 
         object[] arguments = Arguments;

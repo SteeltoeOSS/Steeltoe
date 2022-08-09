@@ -72,7 +72,12 @@ public class StandardEvaluationContext : IEvaluationContext
             return _typeLocator;
         }
 
-        set => _typeLocator = value ?? throw new ArgumentNullException("TypeLocator can not be null");
+        set
+        {
+            ArgumentGuard.NotNull(value);
+
+            _typeLocator = value;
+        }
     }
 
     public ITypeConverter TypeConverter
@@ -83,21 +88,36 @@ public class StandardEvaluationContext : IEvaluationContext
             return _typeConverter;
         }
 
-        set => _typeConverter = value ?? throw new ArgumentNullException("TypeConverter can not be null");
+        set
+        {
+            ArgumentGuard.NotNull(value);
+
+            _typeConverter = value;
+        }
     }
 
     public ITypeComparator TypeComparator
     {
         get => _typeComparator;
 
-        set => _typeComparator = value ?? throw new ArgumentNullException("TypeComparator can not be null");
+        set
+        {
+            ArgumentGuard.NotNull(value);
+
+            _typeComparator = value;
+        }
     }
 
     public IOperatorOverloader OperatorOverloader
     {
         get => _operatorOverloader;
 
-        set => _operatorOverloader = value ?? throw new ArgumentNullException("OperatorOverloader can not be null");
+        set
+        {
+            ArgumentGuard.NotNull(value);
+
+            _operatorOverloader = value;
+        }
     }
 
     public StandardEvaluationContext()

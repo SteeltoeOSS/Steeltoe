@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
@@ -38,7 +39,12 @@ public class ErrorMessagePublisher
     {
         get => _errorMessageStrategy;
 
-        set => _errorMessageStrategy = value ?? throw new ArgumentNullException("errorMessageStrategy must not be null");
+        set
+        {
+            ArgumentGuard.NotNull(value);
+
+            _errorMessageStrategy = value;
+        }
     }
 
     public virtual IMessageChannel Channel
@@ -70,7 +76,12 @@ public class ErrorMessagePublisher
             return _channelResolver;
         }
 
-        set => _channelResolver = value ?? throw new ArgumentNullException("channelResolver must not be null");
+        set
+        {
+            ArgumentGuard.NotNull(value);
+
+            _channelResolver = value;
+        }
     }
 
     public ErrorMessagePublisher(IApplicationContext context, ILogger logger = null)

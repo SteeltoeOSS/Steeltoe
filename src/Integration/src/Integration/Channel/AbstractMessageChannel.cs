@@ -111,7 +111,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
         if (message.Payload == null)
         {
-            throw new ArgumentNullException(nameof(message), "Message payload is null!");
+            throw new ArgumentException("Message payload must not be null.", nameof(message));
         }
 
         return DoSend(message, timeout);

@@ -18,7 +18,9 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
     public MetricsEndpoint(IMetricsEndpointOptions options, IEnumerable<MetricsExporter> exporters, ILogger<MetricsEndpoint> logger = null)
         : base(options)
     {
-        _exporter = exporters?.OfType<SteeltoeExporter>().SingleOrDefault() ?? throw new ArgumentNullException(nameof(exporters));
+        _exporter = exporters?.OfType<SteeltoeExporter>().SingleOrDefault() ??
+            throw new ArgumentException($"Exporters must contain a single {nameof(SteeltoeExporter)}.", nameof(exporters));
+
         _logger = logger;
     }
 

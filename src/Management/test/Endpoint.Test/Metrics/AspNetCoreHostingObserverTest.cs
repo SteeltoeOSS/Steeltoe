@@ -79,7 +79,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
 
         var exceptionHandlerFeature = new ExceptionHandlerFeature
         {
-            Error = new ArgumentNullException()
+            Error = new Exception()
         };
 
         context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
@@ -98,7 +98,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
 
         var exceptionHandlerFeature = new ExceptionHandlerFeature
         {
-            Error = new ArgumentNullException()
+            Error = new Exception()
         };
 
         context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
@@ -127,7 +127,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
 
         var exceptionHandlerFeature = new ExceptionHandlerFeature
         {
-            Error = new ArgumentNullException()
+            Error = new Exception()
         };
 
         context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);

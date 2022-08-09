@@ -110,7 +110,12 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
     {
         get => _errorMessageStrategy;
 
-        set => _errorMessageStrategy = value ?? throw new ArgumentNullException(nameof(value), "'errorMessageStrategy' cannot be null");
+        set
+        {
+            ArgumentGuard.NotNull(value);
+
+            _errorMessageStrategy = value;
+        }
     }
 
     protected MessageProducerSupportEndpoint(IApplicationContext context, ILogger logger = null)

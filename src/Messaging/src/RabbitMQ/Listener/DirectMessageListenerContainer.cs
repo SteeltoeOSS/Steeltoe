@@ -107,11 +107,11 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     public override void AddQueueNames(params string[] queueNames)
     {
         ArgumentGuard.NotNull(queueNames);
+        ArgumentGuard.ElementsNotNull(queueNames);
 
         try
         {
-            IEnumerable<string> names = queueNames.Select(n => n ?? throw new ArgumentNullException("queue names cannot be null"));
-            AddQueues(names);
+            AddQueues(queueNames);
         }
         catch (Exception e)
         {
@@ -125,11 +125,12 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     public override void AddQueues(params IQueue[] queues)
     {
         ArgumentGuard.NotNull(queues);
+        ArgumentGuard.ElementsNotNull(queues);
 
         try
         {
-            IEnumerable<string> names = queues.Select(q => q != null ? q.QueueName : throw new ArgumentNullException("queues cannot contain nulls"));
-            AddQueues(names);
+            IEnumerable<string> queueNames = queues.Select(queue => queue.QueueName);
+            AddQueues(queueNames);
         }
         catch (Exception e)
         {

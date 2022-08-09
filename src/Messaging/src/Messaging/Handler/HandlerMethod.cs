@@ -59,11 +59,7 @@ public class HandlerMethod
 
     public HandlerMethod(object handler, string handlerMethodName, params Type[] parameterTypes)
     {
-        if (string.IsNullOrEmpty(nameof(handlerMethodName)))
-        {
-            throw new ArgumentNullException(nameof(handlerMethodName));
-        }
-
+        ArgumentGuard.NotNullOrEmpty(handlerMethodName);
         ArgumentGuard.NotNull(handler);
 
         InnerHandler = handler;

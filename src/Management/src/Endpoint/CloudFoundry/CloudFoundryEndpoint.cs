@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>, ICloudFoundryEndpoint
 {
     private readonly ILogger<CloudFoundryEndpoint> _logger;
-    private readonly IManagementOptions _managementOption;
+    private readonly IManagementOptions _managementOptions;
 
     protected new ICloudFoundryOptions Options => options as ICloudFoundryOptions;
 
@@ -19,20 +19,15 @@ public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>, ICloudFound
         : base(options)
     {
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(managementOptions);
 
-        _managementOption = managementOptions;
-
-        if (_managementOption == null)
-        {
-            throw new ArgumentNullException(nameof(managementOptions));
-        }
-
+        _managementOptions = managementOptions;
         _logger = logger;
     }
 
     public override Links Invoke(string baseUrl)
     {
-        var hypermediaService = new HypermediaService(_managementOption, options, _logger);
+        var hypermediaService = new HypermediaService(_managementOptions, options, _logger);
         return hypermediaService.Invoke(baseUrl);
     }
 }

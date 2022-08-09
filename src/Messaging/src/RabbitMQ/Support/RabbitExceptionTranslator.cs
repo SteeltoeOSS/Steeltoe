@@ -4,6 +4,7 @@
 
 using RabbitMQ.Client.Exceptions;
 using RabbitMQ.Client.Impl;
+using Steeltoe.Common;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support;
@@ -12,9 +13,10 @@ public static class RabbitExceptionTranslator
 {
     public static Exception ConvertRabbitAccessException(Exception exception)
     {
+        ArgumentGuard.NotNull(exception);
+
         return exception switch
         {
-            null => throw new ArgumentNullException(nameof(exception)),
             RabbitException rabbitException => rabbitException,
             ChannelAllocationException => new RabbitResourceNotAvailableException(exception),
             ProtocolException or ShutdownSignalException => new RabbitConnectException(exception),

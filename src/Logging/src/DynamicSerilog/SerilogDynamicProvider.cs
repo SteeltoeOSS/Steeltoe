@@ -32,12 +32,17 @@ public class SerilogDynamicProvider : DynamicLoggerProviderBase
 
     private static ILoggerProvider GetDelegateLogger(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)
     {
-        SerilogOptions serilogOptions = serilogOptionsMonitor?.CurrentValue ?? throw new ArgumentNullException(nameof(serilogOptionsMonitor));
+        SerilogOptions serilogOptions = serilogOptionsMonitor?.CurrentValue;
+
+        if (serilogOptions == null)
+        {
+            throw new InvalidOperationException($"{nameof(serilogOptionsMonitor.CurrentValue)} must not be null.");
+        }
 
         lock (Sync)
         {
-            _serilogLogger ??=
-                serilogOptions.GetSerilogConfiguration().CreateLogger(); // Cannot create more than once, so protect with a lock and static property
+            // Cannot create more than once, so protect with a lock and static property
+            _serilogLogger ??= serilogOptions.GetSerilogConfiguration().CreateLogger();
         }
 
         return new SerilogLoggerProvider(_serilogLogger);

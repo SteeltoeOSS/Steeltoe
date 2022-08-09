@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.Net;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
@@ -34,7 +35,15 @@ public class WavefrontExporterOptions : IWavefrontExporterOptions
 
     public WavefrontExporterOptions(IConfiguration config)
     {
-        IConfigurationSection section = config?.GetSection(WavefrontPrefix) ?? throw new ArgumentNullException(nameof(config));
+        ArgumentGuard.NotNull(config);
+
+        IConfigurationSection section = config.GetSection(WavefrontPrefix);
+
+        if (section == null)
+        {
+            throw new InvalidOperationException($"Failed to locate configuration section '{WavefrontPrefix}'.");
+        }
+
         section.Bind(this);
         ApplicationOptions = new WavefrontApplicationOptions(config);
     }

@@ -145,12 +145,12 @@ public class DiscoveryClient : IEurekaClient
 
     public IList<InstanceInfo> GetInstancesByVipAddressAndAppName(string vipAddress, string appName, bool secure)
     {
-        IList<InstanceInfo> result = new List<InstanceInfo>();
-
         if (vipAddress == null && appName == null)
         {
-            throw new ArgumentNullException("vipAddress and appName both null");
+            throw new ArgumentException($"{nameof(vipAddress)} and {nameof(appName)} cannot both be null.");
         }
+
+        IList<InstanceInfo> result = new List<InstanceInfo>();
 
         if (vipAddress != null && appName == null)
         {

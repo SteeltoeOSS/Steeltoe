@@ -131,14 +131,7 @@ public class ExchangeBuilder : AbstractBuilder
     public ExchangeBuilder Admins(params object[] admins)
     {
         ArgumentGuard.NotNull(admins);
-
-        foreach (object a in admins)
-        {
-            if (a == null)
-            {
-                throw new ArgumentNullException("'admins' can't have null elements");
-            }
-        }
+        ArgumentGuard.ElementsNotNull(admins);
 
         _declaringAdmins = new List<object>(admins);
         return this;

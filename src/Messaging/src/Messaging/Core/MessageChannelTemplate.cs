@@ -45,14 +45,24 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
     {
         get => _sendTimeoutHeader;
 
-        set => _sendTimeoutHeader = value ?? throw new ArgumentNullException(nameof(value), "SendTimeoutHeader cannot be null");
+        set
+        {
+            ArgumentGuard.NotNull(value);
+
+            _sendTimeoutHeader = value;
+        }
     }
 
     public virtual string ReceiveTimeoutHeader
     {
         get => _receiveTimeoutHeader;
 
-        set => _receiveTimeoutHeader = value ?? throw new ArgumentNullException(nameof(value), "ReceiveTimeoutHeader cannot be null");
+        set
+        {
+            ArgumentGuard.NotNull(value);
+
+            _receiveTimeoutHeader = value;
+        }
     }
 
     public virtual bool ThrowExceptionOnLateReply

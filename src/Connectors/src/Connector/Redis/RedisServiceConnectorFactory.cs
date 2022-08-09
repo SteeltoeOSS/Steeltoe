@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 
@@ -42,8 +43,10 @@ public class RedisServiceConnectorFactory
     public RedisServiceConnectorFactory(RedisServiceInfo serviceInfo, RedisCacheConnectorOptions options, Type connectionType, Type optionsType,
         MethodInfo initializer)
     {
+        ArgumentGuard.NotNull(options);
+
         _info = serviceInfo;
-        _config = options ?? throw new ArgumentNullException(nameof(options), "Cache connector options must be provided");
+        _config = options;
         ConnectorType = connectionType;
         OptionsType = optionsType;
         Initializer = initializer;

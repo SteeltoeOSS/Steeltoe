@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
+using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using Wavefront.SDK.CSharp.DirectIngestion;
@@ -21,7 +22,14 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
 
     public WavefrontMetricsExporter(IWavefrontExporterOptions options, ILogger<WavefrontMetricsExporter> logger)
     {
-        Options = options as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(options));
+        ArgumentGuard.NotNull(options);
+
+        if (options is not WavefrontExporterOptions exporterOptions)
+        {
+            throw new ArgumentException($"Options must be convertible to {nameof(WavefrontExporterOptions)}.", nameof(options));
+        }
+
+        Options = exporterOptions;
         _logger = logger;
 
         string token = string.Empty;
@@ -34,7 +42,8 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
         else
         {
             // Token is required for Direct Ingestion
-            token = Options.ApiToken ?? throw new ArgumentNullException(nameof(Options.ApiToken));
+            token = Options.ApiToken ??
+                throw new ArgumentException($"{nameof(exporterOptions.ApiToken)} in {nameof(options)} must be provided.", nameof(options));
         }
 
         int flushInterval = Math.Max(Options.Step / 1000, 1); // Minimum of 1 second

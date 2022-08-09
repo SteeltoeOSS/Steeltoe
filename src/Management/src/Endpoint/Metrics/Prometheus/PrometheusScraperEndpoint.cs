@@ -17,7 +17,9 @@ public class PrometheusScraperEndpoint : AbstractEndpoint<string>, IPrometheusSc
         ILogger<PrometheusScraperEndpoint> logger = null)
         : base(options)
     {
-        _exporter = exporters?.OfType<SteeltoePrometheusExporter>().FirstOrDefault() ?? throw new ArgumentNullException(nameof(exporters));
+        _exporter = exporters?.OfType<SteeltoePrometheusExporter>().FirstOrDefault() ??
+            throw new ArgumentException($"Exporters must contain at least one {nameof(SteeltoePrometheusExporter)}.", nameof(exporters));
+
         _logger = logger;
     }
 

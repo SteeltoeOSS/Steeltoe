@@ -43,7 +43,7 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
 
         if (evaluateExpressions && evaluationContext == null)
         {
-            throw new ArgumentNullException(nameof(evaluationContext));
+            throw new InvalidOperationException("Evaluation context must be provided when evaluating expressions.");
         }
 
         _evaluationContext = evaluationContext;

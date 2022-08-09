@@ -95,14 +95,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
     public virtual void SetBeforeSendReplyPostProcessors(params IMessagePostProcessor[] beforeSendReplyPostProcessors)
     {
         ArgumentGuard.NotNull(beforeSendReplyPostProcessors);
-
-        foreach (IMessagePostProcessor elem in beforeSendReplyPostProcessors)
-        {
-            if (elem == null)
-            {
-                throw new ArgumentNullException("'replyPostProcessors' must not have any null elements");
-            }
-        }
+        ArgumentGuard.ElementsNotNull(beforeSendReplyPostProcessors);
 
         BeforeSendReplyPostProcessors = new List<IMessagePostProcessor>(beforeSendReplyPostProcessors);
     }

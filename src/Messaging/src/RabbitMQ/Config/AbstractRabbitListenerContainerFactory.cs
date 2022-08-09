@@ -133,14 +133,7 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
     public void SetAfterReceivePostProcessors(params IMessagePostProcessor[] postProcessors)
     {
         ArgumentGuard.NotNull(postProcessors);
-
-        foreach (IMessagePostProcessor p in postProcessors)
-        {
-            if (p == null)
-            {
-                throw new ArgumentNullException("'postProcessors' cannot have null elements");
-            }
-        }
+        ArgumentGuard.ElementsNotNull(postProcessors);
 
         AfterReceivePostProcessors = new List<IMessagePostProcessor>(postProcessors);
     }
@@ -148,14 +141,7 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
     public void SetBeforeSendReplyPostProcessors(params IMessagePostProcessor[] postProcessors)
     {
         ArgumentGuard.NotNull(postProcessors);
-
-        foreach (IMessagePostProcessor p in postProcessors)
-        {
-            if (p == null)
-            {
-                throw new ArgumentNullException("'postProcessors' cannot have null elements");
-            }
-        }
+        ArgumentGuard.ElementsNotNull(postProcessors);
 
         BeforeSendReplyPostProcessors = new List<IMessagePostProcessor>(postProcessors);
     }

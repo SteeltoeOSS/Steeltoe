@@ -80,7 +80,10 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
         _logger = logger;
         RabbitTemplate = template;
-        ConnectionFactory = template.ConnectionFactory ?? throw new ArgumentNullException("RabbitTemplate's ConnectionFactory must not be null");
+
+        ConnectionFactory = template.ConnectionFactory ??
+            throw new ArgumentException($"{nameof(template.ConnectionFactory)} in {nameof(template)} must not be null.", nameof(template));
+
         DoInitialize();
     }
 

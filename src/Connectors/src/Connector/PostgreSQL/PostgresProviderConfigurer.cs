@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Connector.Services;
 
@@ -70,11 +71,8 @@ public class PostgresProviderConfigurer
     // from https://stackoverflow.com/a/4405876/761468
     private string FirstCharToUpper(string input)
     {
-        return input switch
-        {
-            null => throw new ArgumentNullException(nameof(input)),
-            "" => throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input)),
-            _ => input.First().ToString().ToUpper() + input.Substring(1)
-        };
+        ArgumentGuard.NotNullOrEmpty(input);
+
+        return string.Concat(input[0].ToString().ToUpper(), input.AsSpan(1));
     }
 }
