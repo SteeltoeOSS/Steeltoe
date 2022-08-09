@@ -46,7 +46,12 @@ public class StandardServiceExpressionResolver : IServiceExpressionResolver
     public IExpressionParser ExpressionParser
     {
         get => _expressionParser;
-        set => _expressionParser = value ?? throw new ArgumentException("Expression parser must not be null");
+        set
+        {
+            ArgumentGuard.NotNull(value);
+
+            _expressionParser = value;
+        }
     }
 
     public StandardServiceExpressionResolver()

@@ -22,10 +22,7 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
         IEvaluationContext evaluationContext = null)
         : base(context)
     {
-        if (handlerMethods == null || handlerMethods.Count == 0)
-        {
-            throw new ArgumentException(nameof(handlerMethods));
-        }
+        ArgumentGuard.NotNullOrEmpty(handlerMethods);
 
         _handlerMethods = new List<ConditionalStreamListenerMessageHandlerWrapper>(handlerMethods);
         bool evaluateExpressions = false;
@@ -116,7 +113,7 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
 
             if (!(condition == null || streamListenerMessageHandler.IsVoid))
             {
-                throw new ArgumentException("cannot specify a condition and a return value at the same time");
+                throw new ArgumentException("Cannot specify a condition and a return value at the same time.");
             }
 
             Condition = condition;

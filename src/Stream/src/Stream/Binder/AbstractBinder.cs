@@ -70,7 +70,7 @@ public abstract class AbstractBinder<T> : IBinder<T>
     {
         if (string.IsNullOrEmpty(group) && consumerOptions.IsPartitioned)
         {
-            throw new ArgumentException("A consumer group is required for a partitioned subscription");
+            throw new ArgumentException("A consumer group is required for a partitioned subscription.", nameof(group));
         }
 
         return DoBindConsumer(name, group, inboundTarget, consumerOptions);

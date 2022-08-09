@@ -104,7 +104,7 @@ public class StreamListenerAttributeProcessor
                 {
                     if (!h.IsVoid)
                     {
-                        throw new ArgumentException(StreamListenerErrorMessages.MultipleValueReturningMethods);
+                        throw new InvalidOperationException(StreamListenerErrorMessages.MultipleValueReturningMethods);
                     }
                 }
             }

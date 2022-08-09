@@ -71,50 +71,50 @@ public class StreamListenerMethodValidator
 
         if (!isDeclarative && !(inputAnnotationCount == 0 && outputAnnotationCount == 0))
         {
-            throw new ArgumentException(StreamListenerErrorMessages.InvalidDeclarativeMethodParameters);
+            throw new InvalidOperationException(StreamListenerErrorMessages.InvalidDeclarativeMethodParameters);
         }
 
         if (!string.IsNullOrEmpty(methodAnnotatedInboundName) && !string.IsNullOrEmpty(methodAnnotatedOutboundName) &&
             !(inputAnnotationCount == 0 && outputAnnotationCount == 0))
         {
-            throw new ArgumentException(StreamListenerErrorMessages.InvalidInputOutputMethodParameters);
+            throw new InvalidOperationException(StreamListenerErrorMessages.InvalidInputOutputMethodParameters);
         }
 
         if (!string.IsNullOrEmpty(methodAnnotatedInboundName))
         {
             if (inputAnnotationCount != 0)
             {
-                throw new ArgumentException(StreamListenerErrorMessages.InvalidInputValues);
+                throw new InvalidOperationException(StreamListenerErrorMessages.InvalidInputValues);
             }
 
             if (outputAnnotationCount != 0)
             {
-                throw new ArgumentException(StreamListenerErrorMessages.InvalidInputValueWithOutputMethodParam);
+                throw new InvalidOperationException(StreamListenerErrorMessages.InvalidInputValueWithOutputMethodParam);
             }
         }
         else
         {
             if (inputAnnotationCount < 1)
             {
-                throw new ArgumentException(StreamListenerErrorMessages.NoInputDestination);
+                throw new InvalidOperationException(StreamListenerErrorMessages.NoInputDestination);
             }
         }
 
         if (!string.IsNullOrEmpty(methodAnnotatedOutboundName) && outputAnnotationCount != 0)
         {
-            throw new ArgumentException(StreamListenerErrorMessages.InvalidOutputValues);
+            throw new InvalidOperationException(StreamListenerErrorMessages.InvalidOutputValues);
         }
 
         if (!typeof(void).Equals(returnType) && !string.IsNullOrEmpty(condition))
         {
-            throw new ArgumentException(StreamListenerErrorMessages.ConditionOnMethodReturningValue);
+            throw new InvalidOperationException(StreamListenerErrorMessages.ConditionOnMethodReturningValue);
         }
 
         if (isDeclarative)
         {
             if (!string.IsNullOrEmpty(condition))
             {
-                throw new ArgumentException(StreamListenerErrorMessages.ConditionOnDeclarativeMethod);
+                throw new InvalidOperationException(StreamListenerErrorMessages.ConditionOnDeclarativeMethod);
             }
 
             for (int parameterIndex = 0; parameterIndex < methodArgumentsLength; parameterIndex++)
@@ -128,7 +128,7 @@ public class StreamListenerMethodValidator
 
                     if (string.IsNullOrEmpty(inboundName))
                     {
-                        throw new ArgumentException(StreamListenerErrorMessages.InvalidInboundName);
+                        throw new InvalidOperationException(StreamListenerErrorMessages.InvalidInboundName);
                     }
                 }
 
@@ -139,14 +139,14 @@ public class StreamListenerMethodValidator
 
                     if (string.IsNullOrEmpty(outboundName))
                     {
-                        throw new ArgumentException(StreamListenerErrorMessages.InvalidOutboundName);
+                        throw new InvalidOperationException(StreamListenerErrorMessages.InvalidOutboundName);
                     }
                 }
             }
 
             if (methodArgumentsLength > 1 && inputAnnotationCount + outputAnnotationCount != methodArgumentsLength)
             {
-                throw new ArgumentException(StreamListenerErrorMessages.InvalidDeclarativeMethodParameters);
+                throw new InvalidOperationException(StreamListenerErrorMessages.InvalidDeclarativeMethodParameters);
             }
         }
 
@@ -154,12 +154,12 @@ public class StreamListenerMethodValidator
         {
             if (outputAnnotationCount == 0)
             {
-                throw new ArgumentException(StreamListenerErrorMessages.ReturnTypeNoOutboundSpecified);
+                throw new InvalidOperationException(StreamListenerErrorMessages.ReturnTypeNoOutboundSpecified);
             }
 
             if (outputAnnotationCount != 1)
             {
-                throw new ArgumentException(StreamListenerErrorMessages.ReturnTypeMultipleOutboundSpecified);
+                throw new InvalidOperationException(StreamListenerErrorMessages.ReturnTypeMultipleOutboundSpecified);
             }
         }
     }
@@ -192,7 +192,7 @@ public class StreamListenerMethodValidator
 
             if (numPayloadAnnotations > 0 && !(methodArgumentsLength == numAnnotatedMethodParameters && numPayloadAnnotations <= 1))
             {
-                throw new ArgumentException(StreamListenerErrorMessages.AmbiguousMessageHandlerMethodArguments);
+                throw new InvalidOperationException(StreamListenerErrorMessages.AmbiguousMessageHandlerMethodArguments);
             }
         }
     }
@@ -205,17 +205,17 @@ public class StreamListenerMethodValidator
         {
             if (ObjectUtils.IsNullOrEmpty(sendTo.Destinations))
             {
-                throw new ArgumentException(StreamListenerErrorMessages.AtLeastOneOutput);
+                throw new InvalidOperationException(StreamListenerErrorMessages.AtLeastOneOutput);
             }
 
             if (sendTo.Destinations.Length != 1)
             {
-                throw new ArgumentException(StreamListenerErrorMessages.SendToMultipleDestinations);
+                throw new InvalidOperationException(StreamListenerErrorMessages.SendToMultipleDestinations);
             }
 
             if (string.IsNullOrEmpty(sendTo.Destinations[0]))
             {
-                throw new ArgumentException(StreamListenerErrorMessages.SendToEmptyDestination);
+                throw new InvalidOperationException(StreamListenerErrorMessages.SendToEmptyDestination);
             }
 
             return sendTo.Destinations[0];
@@ -227,7 +227,7 @@ public class StreamListenerMethodValidator
         {
             if (string.IsNullOrEmpty(output.Name))
             {
-                throw new ArgumentException(StreamListenerErrorMessages.AtLeastOneOutput);
+                throw new InvalidOperationException(StreamListenerErrorMessages.AtLeastOneOutput);
             }
 
             return output.Name;
@@ -253,12 +253,12 @@ public class StreamListenerMethodValidator
 
                 if (string.IsNullOrEmpty(inboundName))
                 {
-                    throw new ArgumentException(StreamListenerErrorMessages.InvalidInboundName);
+                    throw new InvalidOperationException(StreamListenerErrorMessages.InvalidInboundName);
                 }
 
                 if (IsDeclarativeMethodParameter(inboundName, methodParameter))
                 {
-                    throw new ArgumentException(StreamListenerErrorMessages.InvalidDeclarativeMethodParameters);
+                    throw new InvalidOperationException(StreamListenerErrorMessages.InvalidDeclarativeMethodParameters);
                 }
 
                 return true;
@@ -271,12 +271,12 @@ public class StreamListenerMethodValidator
 
                 if (string.IsNullOrEmpty(outboundName))
                 {
-                    throw new ArgumentException(StreamListenerErrorMessages.InvalidOutboundName);
+                    throw new InvalidOperationException(StreamListenerErrorMessages.InvalidOutboundName);
                 }
 
                 if (IsDeclarativeMethodParameter(outboundName, methodParameter))
                 {
-                    throw new ArgumentException(StreamListenerErrorMessages.InvalidDeclarativeMethodParameters);
+                    throw new InvalidOperationException(StreamListenerErrorMessages.InvalidDeclarativeMethodParameters);
                 }
 
                 return true;

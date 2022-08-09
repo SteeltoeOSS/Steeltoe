@@ -8,13 +8,13 @@ namespace Steeltoe.Stream.Util;
 
 internal static class GenericsUtils
 {
-    internal static Type GetParameterType(Type evaluatedClass, Type interfaceClass, int position)
+    internal static Type GetParameterType(Type evaluatedClass, Type interfaceType, int position)
     {
         Type bindableType = null;
 
-        if (!interfaceClass.IsInterface)
+        if (!interfaceType.IsInterface)
         {
-            throw new ArgumentException($"{nameof(interfaceClass)} is not an interface");
+            throw new ArgumentException($"{nameof(interfaceType)} must be an interface.", nameof(interfaceType));
         }
 
         Type currentType = evaluatedClass;
@@ -24,18 +24,18 @@ internal static class GenericsUtils
             Type[] interfaces = currentType.GetInterfaces();
             Type resolvableType = null;
 
-            foreach (Type interfaceType in interfaces)
+            foreach (Type @interface in interfaces)
             {
-                Type typeToCheck = interfaceType;
+                Type typeToCheck = @interface;
 
-                if (interfaceType.IsGenericType)
+                if (@interface.IsGenericType)
                 {
-                    typeToCheck = interfaceType.GetGenericTypeDefinition();
+                    typeToCheck = @interface.GetGenericTypeDefinition();
                 }
 
-                if (interfaceClass == typeToCheck)
+                if (interfaceType == typeToCheck)
                 {
-                    resolvableType = interfaceType;
+                    resolvableType = @interface;
                     break;
                 }
             }
@@ -60,7 +60,7 @@ internal static class GenericsUtils
 
         if (bindableType == null)
         {
-            throw new InvalidOperationException($"Cannot find parameter of {evaluatedClass.Name} for {interfaceClass} at position {position}");
+            throw new InvalidOperationException($"Cannot find parameter of {evaluatedClass.Name} for {interfaceType} at position {position}");
         }
 
         return bindableType;

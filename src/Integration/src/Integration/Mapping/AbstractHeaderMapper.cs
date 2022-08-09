@@ -317,12 +317,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
         public PatternBasedHeaderMatcher(List<string> patterns)
         {
-            ArgumentGuard.NotNull(patterns);
-
-            if (patterns.Count == 0)
-            {
-                throw new ArgumentException("At least one pattern must be specified");
-            }
+            ArgumentGuard.NotNullOrEmpty(patterns);
 
             foreach (string pattern in patterns)
             {

@@ -55,7 +55,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
     {
         if (outboundTarget is not ISubscribableChannel subscribableChannel)
         {
-            throw new ArgumentException("Binding is supported only for ISubscribableChannel instances");
+            throw new ArgumentException($"Binding is supported only for {nameof(ISubscribableChannel)} instances.", nameof(outboundTarget));
         }
 
         IMessageHandler producerMessageHandler;
@@ -341,7 +341,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         {
             if (errorChannelObject is not ISubscribableChannel subscribableChannel)
             {
-                throw new ArgumentException($"Error channel '{errorChannelName}' must be a ISubscribableChannel");
+                throw new InvalidOperationException($"Error channel '{errorChannelName}' must be a {nameof(ISubscribableChannel)}.");
             }
 
             errorChannel = subscribableChannel;

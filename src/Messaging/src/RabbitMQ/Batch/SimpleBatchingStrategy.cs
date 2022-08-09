@@ -32,19 +32,19 @@ public class SimpleBatchingStrategy : IBatchingStrategy
     {
         if (_exchange != null && _exchange != exchange)
         {
-            throw new ArgumentException("Cannot send to different exchanges in the same batch");
+            throw new ArgumentException("Cannot send to different exchanges in the same batch.", nameof(exchange));
         }
 
         _exchange = exchange;
 
         if (_routingKey != null && _routingKey != routingKey)
         {
-            throw new ArgumentException("Cannot send with different routing keys in the same batch");
+            throw new ArgumentException("Cannot send with different routing keys in the same batch.", nameof(routingKey));
         }
 
         if (message is not IMessage<byte[]> bytesMessage)
         {
-            throw new ArgumentException("SimpleBatchingStrategy only supports messages with byte[] payloads");
+            throw new ArgumentException($"{nameof(SimpleBatchingStrategy)} only supports messages with byte[] payloads.", nameof(message));
         }
 
         _routingKey = routingKey;
@@ -115,7 +115,7 @@ public class SimpleBatchingStrategy : IBatchingStrategy
     {
         if (message is not IMessage<byte[]> bytesMessage)
         {
-            throw new ArgumentException("SimpleBatchingStrategy only supports messages with byte[] payloads");
+            throw new ArgumentException($"{nameof(SimpleBatchingStrategy)} only supports messages with byte[] payloads.", nameof(message));
         }
 
         RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(bytesMessage);

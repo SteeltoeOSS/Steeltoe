@@ -48,8 +48,10 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
 
         if (listenerContainer.MessageListener != null)
         {
-            throw new ArgumentException("The listenerContainer provided to a RabbitMQ inbound Channel Adapter " +
-                "must not have a MessageListener configured since the adapter " + "configures its own listener implementation.");
+            throw new ArgumentException(
+                $"The {nameof(listenerContainer)} provided to a RabbitMQ inbound Channel Adapter must not have a " +
+                $"{nameof(listenerContainer.MessageListener)} configured since the adapter configures its own listener implementation.",
+                nameof(listenerContainer));
         }
 
         _logger = logger;

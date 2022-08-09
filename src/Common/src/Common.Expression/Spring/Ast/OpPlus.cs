@@ -35,10 +35,7 @@ public class OpPlus : Operator
     public OpPlus(int startPos, int endPos, params SpelNode[] operands)
         : base("+", startPos, endPos, operands)
     {
-        if (operands == null || operands.Length == 0)
-        {
-            throw new ArgumentException("Operands must not be empty");
-        }
+        ArgumentGuard.NotNullOrEmpty(operands);
     }
 
     public override ITypedValue GetValueInternal(ExpressionState state)

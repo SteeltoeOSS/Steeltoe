@@ -132,7 +132,7 @@ public class CachedValuesHistogram
             9995 => _p99Dot95,
             9999 => _p99Dot99,
             10000 => _p100,
-            _ => throw new ArgumentException($"Percentile ({percentile}) is not currently cached")
+            _ => throw new ArgumentOutOfRangeException(nameof(percentile), percentile, "Percentile is not currently cached.")
         };
     }
 

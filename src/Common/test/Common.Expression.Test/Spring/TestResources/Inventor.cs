@@ -123,7 +123,7 @@ public class Inventor
 
         if (valueIn == 1)
         {
-            throw new ArgumentException("IllegalArgumentException for 1");
+            throw new ArgumentException("ArgumentException for 1", nameof(valueIn));
         }
 
         if (valueIn == 2)

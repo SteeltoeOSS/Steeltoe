@@ -49,7 +49,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
 
         if (source != null && !sourceType.IsInstanceOfType(source))
         {
-            throw new ArgumentException($"Source to convert from must be an instance of [{sourceType}]; instead it was a [{source.GetType().Name}]");
+            throw new ArgumentException($"Source to convert from must be an instance of [{sourceType.Name}]; instead it was a [{source.GetType().Name}]");
         }
 
         IGenericConverter converter = GetConverter(sourceType, targetType);
@@ -153,7 +153,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
     {
         if (targetType.IsPrimitive)
         {
-            throw new ConversionFailedException(sourceType, targetType, null, new ArgumentException("A null value cannot be assigned to a primitive type"));
+            throw new ConversionFailedException(sourceType, targetType, null, new ArgumentException("A null value cannot be assigned to a primitive type."));
         }
     }
 

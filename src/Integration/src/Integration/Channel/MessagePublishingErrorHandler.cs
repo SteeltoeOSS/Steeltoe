@@ -105,8 +105,8 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
 
         if (errorChannelHeader is not string header)
         {
-            throw new ArgumentException(
-                $"Unsupported error channel header type. Expected IMessageChannel or String, but actual type is [{errorChannelHeader.GetType()}]");
+            throw new InvalidOperationException(
+                $"Unsupported error channel header type. Expected {nameof(IMessageChannel)} or {nameof(String)}, but actual type is [{errorChannelHeader.GetType()}]");
         }
 
         if (ChannelResolver != null)

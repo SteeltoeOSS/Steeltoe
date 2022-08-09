@@ -115,7 +115,7 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
         {
             AssertTargetBean(Method, Handler, args);
             string text = !string.IsNullOrEmpty(ex.Message) ? ex.Message : "Illegal argument";
-            throw new InvalidOperationException(FormatInvokeError(text, args), new ArgumentException());
+            throw new InvalidOperationException(FormatInvokeError(text, args));
         }
         catch (Exception ex)
         {

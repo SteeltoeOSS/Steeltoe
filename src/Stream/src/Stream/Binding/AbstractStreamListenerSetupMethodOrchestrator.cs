@@ -64,7 +64,7 @@ public abstract class AbstractStreamListenerSetupMethodOrchestrator : IStreamLis
 
                 if (arguments[parameterIndex] == null)
                 {
-                    throw new ArgumentException($"Cannot convert argument {parameterIndex} of {method}from {targetBean.GetType()} to {parameterType}");
+                    throw new InvalidOperationException($"Cannot convert argument {parameterIndex} of {method} from {targetBean.GetType()} to {parameterType}");
                 }
             }
             else

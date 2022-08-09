@@ -49,7 +49,7 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
         {
             if (factory == null)
             {
-                throw new ArgumentException("'targetConnectionFactories' cannot have null values.");
+                throw new ArgumentException($"Values in {nameof(targetConnectionFactories)} cannot contain nulls.", nameof(targetConnectionFactories));
             }
 
             foreach (KeyValuePair<object, IConnectionFactory> kvp in targetConnectionFactories)

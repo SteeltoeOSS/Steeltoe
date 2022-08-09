@@ -64,7 +64,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         {
             if (value && ConsumersPerQueue != 1)
             {
-                throw new ArgumentException("When the consumer is exclusive, the consumers per queue must be 1");
+                throw new ArgumentException("When the consumer is exclusive, the number of consumers per queue must be 1.", nameof(value));
             }
 
             base.Exclusive = value;
@@ -162,7 +162,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
         if (MessagesPerAck > 0 && IsChannelTransacted)
         {
-            throw new ArgumentException("'messagesPerAck' is not allowed with transactions");
+            throw new InvalidOperationException("'messagesPerAck' is not allowed with transactions.");
         }
     }
 

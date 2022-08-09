@@ -239,7 +239,7 @@ public static class HttpClientHelper
 
         if (!accessTokenUri.IsWellFormedOriginalString())
         {
-            throw new ArgumentException("Access token Uri is not well formed", nameof(accessTokenUri));
+            throw new ArgumentException("Access token Uri is not well-formed.", nameof(accessTokenUri));
         }
 
         return GetAccessTokenInternalAsync(accessTokenUri, clientId, clientSecret, timeout, validateCertificates, httpClient, additionalParams, logger);

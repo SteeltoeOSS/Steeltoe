@@ -49,14 +49,12 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 
         set
         {
-            if (value == typeof(byte[]) || value == typeof(string))
+            if (value != typeof(byte[]) && value != typeof(string))
             {
-                _serializedPayloadClass = value;
+                throw new ArgumentException("Value must be a byte array or a string.", nameof(value));
             }
-            else
-            {
-                throw new ArgumentException("Payload class must be byte[] or String");
-            }
+
+            _serializedPayloadClass = value;
         }
     }
 

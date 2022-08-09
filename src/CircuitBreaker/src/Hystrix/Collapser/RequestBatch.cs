@@ -99,7 +99,8 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                         else
                         {
                             throw new ArgumentException(
-                                $"Duplicate argument in collapser batch : [{arg}]  This is not supported.  Please turn request-caching on for HystrixCollapser:{_commandCollapser.CollapserKey.Name} or prevent duplicates from making it into the batch!");
+                                $"Duplicate argument in collapser batch : [{arg}]  This is not supported.  Please turn request-caching on for HystrixCollapser:{_commandCollapser.CollapserKey.Name} or prevent duplicates from making it into the batch!",
+                                nameof(arg));
                         }
                     }
                     else

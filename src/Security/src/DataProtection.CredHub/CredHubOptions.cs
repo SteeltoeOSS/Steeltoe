@@ -36,12 +36,12 @@ public class CredHubOptions
     {
         if (string.IsNullOrEmpty(ClientId))
         {
-            throw new ArgumentException("A Client Id is required for the CredHub Client");
+            throw new InvalidOperationException("A Client Id is required for the CredHub Client");
         }
 
         if (string.IsNullOrEmpty(ClientSecret))
         {
-            throw new ArgumentException("A Client Secret is required for the CredHub Client");
+            throw new InvalidOperationException("A Client Secret is required for the CredHub Client");
         }
     }
 }

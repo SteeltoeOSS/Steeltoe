@@ -938,6 +938,6 @@ public class DiscoveryClientTest : AbstractBaseTest
     private void TimerFuncThrows()
     {
         ++_timerFuncCount;
-        throw new ArgumentException();
+        throw new FormatException();
     }
 }

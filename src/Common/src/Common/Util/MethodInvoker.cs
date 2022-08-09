@@ -89,7 +89,7 @@ public class MethodInvoker
 
             if (lastDotIndex == -1 || lastDotIndex == StaticMethod.Length)
             {
-                throw new ArgumentException("staticMethod must be a fully qualified class plus method name: " +
+                throw new InvalidOperationException($"{nameof(StaticMethod)} must be a fully qualified type plus method name: " +
                     "e.g. 'example.MyExampleClass.myExampleMethod'");
             }
 

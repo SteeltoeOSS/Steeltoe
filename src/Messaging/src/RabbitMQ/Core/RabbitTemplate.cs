@@ -136,10 +136,7 @@ public class RabbitTemplate
 
         set
         {
-            if (value == null)
-            {
-                throw new ArgumentException("MandatoryExpression' must not be null");
-            }
+            ArgumentGuard.NotNull(value);
 
             MandatoryExpression = Parser.ParseExpression(value);
         }
@@ -261,14 +258,7 @@ public class RabbitTemplate
     public virtual void SetBeforePublishPostProcessors(params IMessagePostProcessor[] beforePublishPostProcessors)
     {
         ArgumentGuard.NotNull(beforePublishPostProcessors);
-
-        Array.ForEach(beforePublishPostProcessors, e =>
-        {
-            if (e == null)
-            {
-                throw new ArgumentException("'beforePublishPostProcessors' cannot have null elements");
-            }
-        });
+        ArgumentGuard.ElementsNotNull(beforePublishPostProcessors);
 
         var newList = new List<IMessagePostProcessor>(beforePublishPostProcessors);
         MessagePostProcessorUtils.Sort(newList);
@@ -311,14 +301,7 @@ public class RabbitTemplate
     public virtual void SetAfterReceivePostProcessors(params IMessagePostProcessor[] afterReceivePostProcessors)
     {
         ArgumentGuard.NotNull(afterReceivePostProcessors);
-
-        Array.ForEach(afterReceivePostProcessors, e =>
-        {
-            if (e == null)
-            {
-                throw new ArgumentException("'afterReceivePostProcessors' cannot have null elements");
-            }
-        });
+        ArgumentGuard.ElementsNotNull(afterReceivePostProcessors);
 
         var newList = new List<IMessagePostProcessor>(afterReceivePostProcessors);
         MessagePostProcessorUtils.Sort(newList);
@@ -1360,7 +1343,8 @@ public class RabbitTemplate
         {
             if (message.Headers.ReplyTo() != null)
             {
-                throw new ArgumentException("Send-and-receive methods can only be used if the Message does not already have a replyTo property.");
+                throw new InvalidOperationException(
+                    $"Send-and-receive methods can only be used if the message does not already have a {nameof(RabbitMessageHeaders.ReplyTo)} property.");
             }
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -2270,19 +2254,19 @@ public class RabbitTemplate
     private bool SendReply<TReceive, TReply>(Func<TReceive, TReply> receiveAndReplyCallback, Func<IMessage, TReply, Address> replyToAddressCallback,
         RC.IModel channel, IMessage receiveMessage)
     {
-        object receive = receiveMessage;
+        object message = receiveMessage;
 
-        if (receive is not TReceive)
+        if (message is not TReceive)
         {
-            receive = GetRequiredMessageConverter().FromMessage(receiveMessage, typeof(TReceive));
+            message = GetRequiredMessageConverter().FromMessage(receiveMessage, typeof(TReceive));
         }
 
-        if (receive is not TReceive messageAsR)
+        if (message is not TReceive messageAsTReceive)
         {
-            throw new ArgumentException($"'receiveAndReplyCallback' can't handle received object '{receive.GetType()}'");
+            throw new InvalidOperationException($"'receiveAndReplyCallback' can't handle received object of type '{message.GetType()}'.");
         }
 
-        TReply reply = receiveAndReplyCallback(messageAsR);
+        TReply reply = receiveAndReplyCallback(messageAsTReceive);
 
         if (reply != null)
         {

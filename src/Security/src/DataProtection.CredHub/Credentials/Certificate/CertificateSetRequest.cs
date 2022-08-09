@@ -32,7 +32,7 @@ public class CertificateSetRequest : CredentialSetRequest
     {
         if (!string.IsNullOrEmpty(certificateAuthority) && !string.IsNullOrEmpty(certificateAuthorityName))
         {
-            throw new ArgumentException("You must specify either the CA Certificate or the name, not both");
+            throw new ArgumentException("You must specify either the CA Certificate or the Name, not both.");
         }
 
         Name = credentialName;

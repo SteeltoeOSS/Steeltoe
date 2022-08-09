@@ -61,22 +61,20 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
         ArgumentGuard.NotNull(endpoint);
         ArgumentGuard.NotNull(factory);
 
-        string id = endpoint.Id;
-
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrEmpty(endpoint.Id))
         {
-            throw new ArgumentException("Endpoint id must not be empty");
+            throw new ArgumentException($"{nameof(endpoint.Id)} in {nameof(endpoint)} must not be null or empty.", nameof(endpoint));
         }
 
         lock (_listenerContainers)
         {
-            if (_listenerContainers.ContainsKey(id))
+            if (_listenerContainers.ContainsKey(endpoint.Id))
             {
-                throw new InvalidOperationException($"Another endpoint is already registered with id '{id}'");
+                throw new InvalidOperationException($"Another endpoint is already registered with id '{endpoint.Id}'");
             }
 
             IMessageListenerContainer container = CreateListenerContainer(endpoint, factory);
-            _listenerContainers.TryAdd(id, container);
+            _listenerContainers.TryAdd(endpoint.Id, container);
 
             if (!string.IsNullOrEmpty(endpoint.Group) && ApplicationContext != null &&
                 ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) is MessageListenerContainerCollection containerCollection)

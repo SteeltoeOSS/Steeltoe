@@ -29,7 +29,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
         {
             if (value < AbstractTransactionDefinition.TimeoutDefault)
             {
-                throw new ArgumentException(nameof(DefaultTimeout));
+                throw new ArgumentException("Invalid timeout value.", nameof(value));
             }
 
             _defaultTimeout = value;

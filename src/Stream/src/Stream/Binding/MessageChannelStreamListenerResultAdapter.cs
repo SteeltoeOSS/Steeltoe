@@ -36,9 +36,17 @@ public class MessageChannelStreamListenerResultAdapter : IStreamListenerResultAd
 
     public IDisposable Adapt(object streamListenerResult, object bindingTarget)
     {
-        return streamListenerResult is IMessageChannel channel && bindingTarget is IMessageChannel channel1
-            ? Adapt(channel, channel1)
-            : throw new ArgumentException("Invalid arguments, IMessageChannel required");
+        if (streamListenerResult is not IMessageChannel listenerResult)
+        {
+            throw new ArgumentException($"Value must be of type {nameof(IMessageChannel)}.", nameof(streamListenerResult));
+        }
+
+        if (bindingTarget is not IMessageChannel target)
+        {
+            throw new ArgumentException($"Value must be of type {nameof(IMessageChannel)}.", nameof(bindingTarget));
+        }
+
+        return Adapt(listenerResult, target);
     }
 
     public sealed class NoOpDisposable : IDisposable

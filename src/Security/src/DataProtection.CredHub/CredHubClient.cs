@@ -221,7 +221,7 @@ public class CredHubClient : ICredHubClient
     {
         if (id == Guid.Empty)
         {
-            throw new ArgumentException("Id of credential is required");
+            throw new ArgumentException("Id of credential is required.", nameof(id));
         }
 
         return GetByIdInternalAsync<T>(id);
@@ -397,11 +397,7 @@ public class CredHubClient : ICredHubClient
     public Task<List<CredentialPermission>> AddPermissionsAsync(string credentialName, List<CredentialPermission> permissions)
     {
         ArgumentGuard.NotNullOrEmpty(credentialName);
-
-        if (permissions == null || !permissions.Any())
-        {
-            throw new ArgumentException("At least one permission is required");
-        }
+        ArgumentGuard.NotNullOrEmpty(permissions);
 
         return AddPermissionsInternalAsync(credentialName, permissions);
     }

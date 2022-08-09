@@ -63,7 +63,7 @@ public class PartitionHandler
 
         if (key == null)
         {
-            throw new ArgumentException("Partition key cannot be null");
+            throw new InvalidOperationException("Partition key cannot be null.");
         }
 
         return key;

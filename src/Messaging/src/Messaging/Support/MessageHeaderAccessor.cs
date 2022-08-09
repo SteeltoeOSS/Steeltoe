@@ -250,7 +250,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     {
         if (IsReadOnly(name))
         {
-            throw new ArgumentException($"'{name}' header is read-only");
+            throw new ArgumentException($"'{name}' header is read-only.", nameof(name));
         }
 
         VerifyType(name, value);
@@ -395,7 +395,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
 
         if (headerValue is not (IMessageChannel or string))
         {
-            throw new ArgumentException($"'{headerName}' header value must be a MessageChannel or string");
+            throw new ArgumentException($"'{headerName}' header value must be a {nameof(IMessageChannel)} or {nameof(String)}.", nameof(headerValue));
         }
     }
 

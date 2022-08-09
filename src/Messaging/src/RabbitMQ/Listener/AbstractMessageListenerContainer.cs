@@ -907,13 +907,13 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     {
         if (!(ExposeListenerChannel || !AcknowledgeMode.IsManual()))
         {
-            throw new ArgumentException("You cannot acknowledge messages manually if the channel is not exposed to the listener " +
+            throw new InvalidOperationException("You cannot acknowledge messages manually if the channel is not exposed to the listener " +
                 "(please check your configuration and set exposeListenerChannel=true or " + "acknowledgeMode!=MANUAL)");
         }
 
         if (IsChannelTransacted && AcknowledgeMode.IsAutoAck())
         {
-            throw new ArgumentException("The acknowledgeMode is NONE (autoack in Rabbit terms) which is not consistent with having a " +
+            throw new InvalidOperationException("The acknowledgeMode is NONE (autoack in Rabbit terms) which is not consistent with having a " +
                 "transactional channel. Either use a different AcknowledgeMode or make sure " + "channelTransacted=false");
         }
     }
@@ -932,7 +932,8 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     {
         if (listener is not IMessageListener)
         {
-            throw new ArgumentException($"Message listener needs to be of type [{nameof(IMessageListener)}] or [{nameof(IChannelAwareMessageListener)}]");
+            throw new ArgumentException($"Message listener needs to be of type [{nameof(IMessageListener)}] or [{nameof(IChannelAwareMessageListener)}]",
+                nameof(listener));
         }
     }
 

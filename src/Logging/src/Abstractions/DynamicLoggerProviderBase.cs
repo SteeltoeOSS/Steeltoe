@@ -37,12 +37,12 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     {
         if (initialLevels.OriginalLevels == null)
         {
-            throw new ArgumentException($"{nameof(initialLevels.OriginalLevels)} must not be null.", nameof(initialLevels));
+            throw new ArgumentException($"{nameof(initialLevels.OriginalLevels)} in {nameof(initialLevels)} must not be null.", nameof(initialLevels));
         }
 
         if (initialLevels.RunningLevelFilters == null)
         {
-            throw new ArgumentException($"{nameof(initialLevels.RunningLevelFilters)} must not be null.", nameof(initialLevels));
+            throw new ArgumentException($"{nameof(initialLevels.RunningLevelFilters)} in {nameof(initialLevels)} must not be null.", nameof(initialLevels));
         }
 
         _delegate = getDelegateLogger?.Invoke();

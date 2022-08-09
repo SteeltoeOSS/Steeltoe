@@ -30,7 +30,7 @@ public class RabbitExpressionEvaluatingInterceptor : IChannelInterceptor
     {
         if (routingKeyExpression == null && delayExpression == null)
         {
-            throw new ArgumentException("At least one expression is required");
+            throw new ArgumentException("At least one expression is required.");
         }
 
         ArgumentGuard.NotNull(evaluationContext);

@@ -165,7 +165,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
             return _client.Agent.DisableServiceMaintenance(registration.InstanceId);
         }
 
-        throw new ArgumentException($"Unknown status: {status}");
+        throw new ArgumentException($"Unknown status: {status}", nameof(status));
     }
 
     /// <inheritdoc />

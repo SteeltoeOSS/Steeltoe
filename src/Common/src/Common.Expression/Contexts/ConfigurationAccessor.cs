@@ -28,12 +28,12 @@ public class ConfigurationAccessor : IPropertyAccessor
 
     public ITypedValue Read(IEvaluationContext context, object target, string name)
     {
-        if (target is not IConfiguration asConfig)
+        if (target is not IConfiguration configuration)
         {
-            throw new ArgumentException("Target must be of type IConfiguration");
+            throw new ArgumentException($"Target must be of type {nameof(IConfiguration)}", nameof(target));
         }
 
-        return new TypedValue(asConfig[name]);
+        return new TypedValue(configuration[name]);
     }
 
     public void Write(IEvaluationContext context, object target, string name, object newValue)

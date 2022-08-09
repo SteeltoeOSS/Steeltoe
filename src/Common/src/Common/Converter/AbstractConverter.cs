@@ -26,7 +26,7 @@ public abstract class AbstractConverter<TSource, TTarget> : AbstractGenericCondi
         return source switch
         {
             null => null,
-            not TSource => throw new ArgumentException("'source' type invalid"),
+            not TSource => throw new ArgumentException($"Expected source type '{typeof(TSource).Name}' instead of '{source.GetType().Name}'.", nameof(source)),
             _ => Convert((TSource)source)
         };
     }

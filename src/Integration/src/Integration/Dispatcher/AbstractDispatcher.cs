@@ -83,7 +83,7 @@ public abstract class AbstractDispatcher : IMessageDispatcher
         {
             if (handlers.Count == MaxSubscribers)
             {
-                throw new ArgumentException("Maximum subscribers exceeded");
+                throw new InvalidOperationException("Maximum number of subscribers exceeded.");
             }
 
             var newHandlers = new List<IMessageHandler>(handlers);

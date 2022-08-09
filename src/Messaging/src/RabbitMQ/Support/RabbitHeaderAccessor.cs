@@ -331,7 +331,7 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
 
         if (RabbitMessageHeaders.Priority.Equals(headerName) && headerValue is not int)
         {
-            throw new ArgumentException($"The '{headerName}' header value must be an Integer.");
+            throw new ArgumentException($"The '{headerName}' header value must be an {nameof(Int32)}.", nameof(headerName));
         }
     }
 

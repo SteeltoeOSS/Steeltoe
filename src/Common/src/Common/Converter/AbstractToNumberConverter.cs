@@ -79,6 +79,6 @@ public abstract class AbstractToNumberConverter : AbstractGenericConditionalConv
             return System.Convert.ToSByte(source);
         }
 
-        throw new ArgumentException(nameof(targetType));
+        throw new ArgumentException($"Target type '{targetType.Name}' is not supported.", nameof(targetType));
     }
 }

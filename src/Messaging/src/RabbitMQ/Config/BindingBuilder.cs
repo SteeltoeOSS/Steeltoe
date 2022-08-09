@@ -159,10 +159,7 @@ public class BindingBuilder
 
             public HeadersExchangeKeysBindingCreator(HeadersExchangeMapConfigurer configurer, string[] headerKeys, bool matchAll)
             {
-                if (headerKeys == null || headerKeys.Length == 0)
-                {
-                    throw new ArgumentException(nameof(headerKeys));
-                }
+                ArgumentGuard.NotNullOrEmpty(headerKeys);
 
                 _headerMap = CreateMapForKeys(headerKeys);
                 _headerMap["x-match"] = matchAll ? "all" : "any";
@@ -185,10 +182,7 @@ public class BindingBuilder
 
             public HeadersExchangeMapBindingCreator(HeadersExchangeMapConfigurer configurer, Dictionary<string, object> headerMap, bool matchAll)
             {
-                if (headerMap == null || headerMap.Count == 0)
-                {
-                    throw new ArgumentException(nameof(headerMap));
-                }
+                ArgumentGuard.NotNullOrEmpty(headerMap);
 
                 _headerMap = new Dictionary<string, object>(headerMap)
                 {

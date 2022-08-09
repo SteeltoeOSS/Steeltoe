@@ -362,8 +362,8 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
         Address replyTo = value switch
         {
-            not string and not Address => throw new ArgumentException("response expression must evaluate to a String or Address"),
-            string sValue => new Address(sValue),
+            not string and not Address => throw new InvalidOperationException($"Response expression must be of type {nameof(String)} or {nameof(Address)}."),
+            string stringValue => new Address(stringValue),
             _ => (Address)value
         };
 

@@ -535,7 +535,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
                 if (queue.QueueName.Length > 255)
                 {
-                    throw new ArgumentException("Queue names limited to < 255 characters");
+                    throw new ArgumentException("Queue names cannot be longer than 255 characters.", nameof(queue));
                 }
 
                 try

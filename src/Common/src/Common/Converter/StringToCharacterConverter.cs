@@ -29,7 +29,7 @@ public class StringToCharacterConverter : AbstractGenericConditionalConverter
         if (asString.Length > 1)
         {
             throw new ArgumentException(
-                $"Can only convert a [String] with length of 1 to a [Character]; string value '{source}'  has length of {asString.Length}");
+                $"Can only convert a [String] with length of 1 to a [Character]; string value '{source}'  has length of {asString.Length}", nameof(source));
         }
 
         return asString[0];

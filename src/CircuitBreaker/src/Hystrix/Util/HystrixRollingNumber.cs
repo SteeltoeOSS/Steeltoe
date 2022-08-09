@@ -34,7 +34,8 @@ public class HystrixRollingNumber
 
         if (timeInMilliseconds % numberOfBuckets != 0)
         {
-            throw new ArgumentException("The timeInMilliseconds must divide equally into numberOfBuckets. For example 1000/10 is ok, 1000/11 is not.");
+            throw new ArgumentException("The time must divide equally into the number of buckets. For example 1000/10 is ok, 1000/11 is not.",
+                nameof(timeInMilliseconds));
         }
 
         BucketSizeInMilliseconds = timeInMilliseconds / numberOfBuckets;

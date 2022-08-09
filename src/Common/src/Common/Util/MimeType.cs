@@ -485,7 +485,7 @@ public class MimeType : IComparable<MimeType>
         {
             if (!Token.Get(ch))
             {
-                throw new ArgumentException($"Invalid token character '{ch}' in token \"{token}\"");
+                throw new ArgumentException($"Invalid token character '{ch}' in token \"{token}\"", nameof(token));
             }
         }
     }

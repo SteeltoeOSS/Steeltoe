@@ -90,12 +90,7 @@ public static class EnableBindingsExtensions
 
     public static IServiceCollection AddStreamBindings(this IServiceCollection services, params Type[] bindings)
     {
-        ArgumentGuard.NotNull(services);
-
-        if (bindings == null || bindings.Length == 0)
-        {
-            throw new ArgumentException("Must provide one or more bindings");
-        }
+        ArgumentGuard.NotNullOrEmpty(services);
 
         // Add all the bindings to container
         services.AddBindings(bindings);
@@ -111,7 +106,7 @@ public static class EnableBindingsExtensions
             // Validate binding interface
             if (!binding.IsInterface || !binding.IsPublic || binding.IsGenericType)
             {
-                throw new ArgumentException($"Binding {binding} incorrectly defined");
+                throw new ArgumentException($"Binding {binding} is incorrectly defined.", nameof(bindings));
             }
 
             // Add the binding to container

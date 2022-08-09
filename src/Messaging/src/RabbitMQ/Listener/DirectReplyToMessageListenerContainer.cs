@@ -125,7 +125,7 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
                 {
                     if (message == null)
                     {
-                        throw new ArgumentException("A 'message' is required when 'cancelConsumer' is 'true'");
+                        throw new InvalidOperationException("A 'message' is required when 'cancelConsumer' is 'true'.");
                     }
 
                     consumer.CancelConsumer($"Consumer {this} canceled due to {message}");

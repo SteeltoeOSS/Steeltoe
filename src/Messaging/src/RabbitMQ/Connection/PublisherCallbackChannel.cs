@@ -198,7 +198,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
         {
             if (!_pendingConfirms.TryGetValue(listener, out SortedDictionary<ulong, PendingConfirm> pendingConfirmsForListener))
             {
-                throw new ArgumentException(nameof(listener));
+                throw new ArgumentException("Listener not found in pending confirms.", nameof(listener));
             }
 
             pendingConfirmsForListener[sequence] = pendingConfirm;

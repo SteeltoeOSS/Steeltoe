@@ -75,7 +75,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         {
             if (value < 1)
             {
-                throw new ArgumentException(nameof(ChannelCacheSize));
+                throw new ArgumentOutOfRangeException(nameof(value), value, "Value cannot be zero or negative.");
             }
 
             _channelCacheSize = value;
@@ -97,7 +97,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         {
             if (value < 1)
             {
-                throw new ArgumentException(nameof(ConnectionCacheSize));
+                throw new ArgumentOutOfRangeException(nameof(value), value, "Value cannot be zero or negative.");
             }
 
             _connectionCacheSize = value;
@@ -117,7 +117,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         {
             if (value < 1)
             {
-                throw new ArgumentException(nameof(ConnectionLimit));
+                throw new ArgumentOutOfRangeException(nameof(value), value, "Value cannot be zero or negative.");
             }
 
             _connectionLimit = value;

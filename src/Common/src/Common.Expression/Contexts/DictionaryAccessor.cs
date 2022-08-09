@@ -46,14 +46,14 @@ public class DictionaryAccessor : ICompilablePropertyAccessor
 
     public ITypedValue Read(IEvaluationContext context, object target, string name)
     {
-        if (target is not IDictionary asDict)
+        if (target is not IDictionary dictionary)
         {
-            throw new ArgumentException("Target must be of type IDictionary");
+            throw new ArgumentException($"Target must be of type {nameof(IDictionary)}", nameof(target));
         }
 
-        if (asDict.Contains(name))
+        if (dictionary.Contains(name))
         {
-            return new TypedValue(asDict[name]);
+            return new TypedValue(dictionary[name]);
         }
 
         throw new DictionaryAccessException(name);
@@ -61,12 +61,12 @@ public class DictionaryAccessor : ICompilablePropertyAccessor
 
     public void Write(IEvaluationContext context, object target, string name, object newValue)
     {
-        if (target is not IDictionary asDict)
+        if (target is not IDictionary dictionary)
         {
-            throw new ArgumentException("Target must be of type IDictionary");
+            throw new ArgumentException($"Target must be of type {nameof(IDictionary)}", nameof(target));
         }
 
-        asDict[name] = newValue;
+        dictionary[name] = newValue;
     }
 
     public void GenerateCode(string propertyName, ILGenerator gen, CodeFlow cf)

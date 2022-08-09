@@ -37,9 +37,9 @@ public class ExpressionEvaluatingMessageProcessor<T> : AbstractMessageProcessor<
             Expression = ExpressionParser.ParseExpression(expression);
             ExpectedType = typeof(T);
         }
-        catch (ParseException ex)
+        catch (ParseException exception)
         {
-            throw new ArgumentException("Failed to parse expression.", ex);
+            throw new ArgumentException($"Failed to parse expression '{expression}'.", nameof(expression), exception);
         }
     }
 
@@ -51,9 +51,9 @@ public class ExpressionEvaluatingMessageProcessor<T> : AbstractMessageProcessor<
             Expression = ExpressionParser.ParseExpression(expression);
             ExpectedType = expectedType;
         }
-        catch (ParseException ex)
+        catch (ParseException exception)
         {
-            throw new ArgumentException("Failed to parse expression.", ex);
+            throw new ArgumentException($"Failed to parse expression '{expression}'.", nameof(expression), exception);
         }
     }
 
