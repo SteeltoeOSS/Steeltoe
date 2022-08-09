@@ -22,7 +22,7 @@ public class EndpointServiceCollectionTest : BaseTest
         Action action2 = () => services.AddDbMigrationsActuator();
 
         action1.Should().ThrowExactly<ArgumentNullException>().Where(exception => exception.ParamName == "services");
-        action2.Should().ThrowExactly<ArgumentNullException>().Where(exception => exception.ParamName == "config");
+        action2.Should().ThrowExactly<InvalidOperationException>();
     }
 
     [Fact]

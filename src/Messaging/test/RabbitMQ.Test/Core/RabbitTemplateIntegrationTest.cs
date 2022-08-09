@@ -1432,7 +1432,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         }
         catch (Exception e)
         {
-            Assert.IsType<ArgumentException>(e.InnerException);
+            Assert.IsType<InvalidOperationException>(e.InnerException);
         }
     }
 

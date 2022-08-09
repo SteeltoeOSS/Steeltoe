@@ -22,7 +22,7 @@ public class RandomValueExtensionsTest
     {
         const string prefix = null;
 
-        Assert.Throws<ArgumentException>(() => new ConfigurationBuilder().AddRandomValueSource(prefix));
+        Assert.Throws<ArgumentNullException>(() => new ConfigurationBuilder().AddRandomValueSource(prefix));
     }
 
     [Fact]

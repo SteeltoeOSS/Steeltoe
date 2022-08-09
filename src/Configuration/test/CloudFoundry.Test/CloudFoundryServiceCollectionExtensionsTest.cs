@@ -76,7 +76,7 @@ public class CloudFoundryServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         IConfigurationRoot config = new ConfigurationBuilder().Build();
 
-        Assert.Throws<ArgumentException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, null));
+        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, null));
         Assert.Throws<ArgumentException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, string.Empty));
     }
 

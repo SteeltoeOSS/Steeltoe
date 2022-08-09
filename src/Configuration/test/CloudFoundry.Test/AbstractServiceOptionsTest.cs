@@ -14,7 +14,7 @@ public class AbstractServiceOptionsTest
     {
         var opt = new MySqlServiceOption();
         Assert.Throws<ArgumentNullException>(() => opt.Bind(null, "foobar"));
-        Assert.Throws<ArgumentException>(() => opt.Bind(new ConfigurationBuilder().Build(), null));
+        Assert.Throws<ArgumentNullException>(() => opt.Bind(new ConfigurationBuilder().Build(), null));
         Assert.Throws<ArgumentException>(() => opt.Bind(new ConfigurationBuilder().Build(), string.Empty));
     }
 

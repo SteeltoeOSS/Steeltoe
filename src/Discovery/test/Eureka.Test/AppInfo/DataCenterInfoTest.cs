@@ -39,7 +39,7 @@ public class DataCenterInfoTest : AbstractBaseTest
     public void FromJson_Throws_Invalid()
     {
         var info = new JsonInstanceInfo.JsonDataCenterInfo("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", "FooBar");
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => DataCenterInfo.FromJson(info));
-        Assert.Contains("Datacenter", ex.Message);
+        var ex = Assert.Throws<ArgumentException>(() => DataCenterInfo.FromJson(info));
+        Assert.Contains("Unsupported datacenter name", ex.Message);
     }
 }

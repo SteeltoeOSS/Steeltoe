@@ -84,7 +84,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
 
         context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
         exception = observer.GetException(context);
-        Assert.Equal("ArgumentNullException", exception);
+        Assert.Equal("Exception", exception);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
 
         List<KeyValuePair<string, object>> tagContext = observer.GetLabelSets(context).ToList();
 
-        Assert.Contains(KeyValuePair.Create("exception", (object)"ArgumentNullException"), tagContext);
+        Assert.Contains(KeyValuePair.Create("exception", (object)"Exception"), tagContext);
         Assert.Contains(KeyValuePair.Create("uri", (object)"/foobar"), tagContext);
         Assert.Contains(KeyValuePair.Create("status", (object)"404"), tagContext);
         Assert.Contains(KeyValuePair.Create("method", (object)"GET"), tagContext);

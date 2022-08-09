@@ -13,7 +13,7 @@ public class CloudFoundryTokenKeyResolverTest
     [Fact]
     public void Constructor_ThrowsIfOptionsNull()
     {
-        Assert.Throws<ArgumentException>(() => new CloudFoundryTokenKeyResolver(null, null, false));
+        Assert.Throws<ArgumentNullException>(() => new CloudFoundryTokenKeyResolver(null, null, false));
     }
 
     [Fact]

@@ -15,8 +15,8 @@ public class ConfigurationExtensionsTest
     public void AddPemFiles_ThrowsOnNulls()
     {
         Assert.Throws<ArgumentNullException>(() => ConfigurationExtensions.AddPemFiles(null, null, null));
-        Assert.Throws<ArgumentException>(() => new ConfigurationBuilder().AddPemFiles(null, null));
-        Assert.Throws<ArgumentException>(() => new ConfigurationBuilder().AddPemFiles("foobar", null));
+        Assert.Throws<ArgumentNullException>(() => new ConfigurationBuilder().AddPemFiles(null, null));
+        Assert.Throws<ArgumentNullException>(() => new ConfigurationBuilder().AddPemFiles("foobar", null));
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class ConfigurationExtensionsTest
     public void AddCertificateFile_ThrowsOnNulls()
     {
         Assert.Throws<ArgumentNullException>(() => ConfigurationExtensions.AddCertificateFile(null, null));
-        Assert.Throws<ArgumentException>(() => new ConfigurationBuilder().AddCertificateFile(null));
+        Assert.Throws<ArgumentNullException>(() => new ConfigurationBuilder().AddCertificateFile(null));
     }
 
     [Fact]

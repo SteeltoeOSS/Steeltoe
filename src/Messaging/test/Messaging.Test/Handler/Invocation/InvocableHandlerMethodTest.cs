@@ -160,7 +160,6 @@ public class InvocableHandlerMethodTest
         _resolvers.AddResolver(new StubArgumentResolver(typeof(int?), "__not_an_int__"));
         _resolvers.AddResolver(new StubArgumentResolver("value"));
         var ex = Assert.Throws<InvalidOperationException>(() => Invoke(new Handler(), method));
-        Assert.IsType<ArgumentException>(ex.InnerException);
         Assert.Contains("Endpoint [", ex.Message);
         Assert.Contains("Method [", ex.Message);
         Assert.Contains("with argument values:", ex.Message);

@@ -396,7 +396,7 @@ public class ApplicationsTest : AbstractBaseTest
     public void GetRegisteredApplication_ThrowsIfAppNull()
     {
         var apps = new Applications();
-        var ex = Assert.Throws<ArgumentException>(() => apps.GetRegisteredApplication(null));
+        var ex = Assert.Throws<ArgumentNullException>(() => apps.GetRegisteredApplication(null));
         Assert.Contains("appName", ex.Message);
     }
 
@@ -404,7 +404,7 @@ public class ApplicationsTest : AbstractBaseTest
     public void GetInstancesBySecureVirtualHostName_ThrowsIfAddressNull()
     {
         var apps = new Applications();
-        var ex = Assert.Throws<ArgumentException>(() => apps.GetInstancesBySecureVirtualHostName(null));
+        var ex = Assert.Throws<ArgumentNullException>(() => apps.GetInstancesBySecureVirtualHostName(null));
         Assert.Contains("secureVirtualHostName", ex.Message);
     }
 
@@ -412,7 +412,7 @@ public class ApplicationsTest : AbstractBaseTest
     public void GetInstancesByVirtualHostName_ThrowsIfAddressNull()
     {
         var apps = new Applications();
-        var ex = Assert.Throws<ArgumentException>(() => apps.GetInstancesByVirtualHostName(null));
+        var ex = Assert.Throws<ArgumentNullException>(() => apps.GetInstancesByVirtualHostName(null));
         Assert.Contains("virtualHostName", ex.Message);
     }
 

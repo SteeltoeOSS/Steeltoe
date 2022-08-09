@@ -12,7 +12,7 @@ public class LoggersChangeRequestTest : BaseTest
     [Fact]
     public void Constructor_ThrowsOnNull_Name()
     {
-        Assert.Throws<ArgumentException>(() => new LoggersChangeRequest(null, "foobar"));
+        Assert.Throws<ArgumentNullException>(() => new LoggersChangeRequest(null, "foobar"));
     }
 
     [Fact]

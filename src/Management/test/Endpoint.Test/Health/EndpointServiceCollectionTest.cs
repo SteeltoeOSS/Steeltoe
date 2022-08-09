@@ -24,8 +24,7 @@ public class EndpointServiceCollectionTest : BaseTest
 
         var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(null));
         Assert.Equal("services", ex.ParamName);
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuator());
-        Assert.Equal("config", ex2.ParamName);
+        Assert.Throws<InvalidOperationException>(() => services.AddHealthActuator());
         var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuator(config, aggregator));
         Assert.Contains(nameof(aggregator), ex3.Message);
     }
