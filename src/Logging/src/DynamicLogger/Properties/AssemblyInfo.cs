@@ -4,4 +4,4 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Extensions.Logging.DynamicSerilogBase")]
+[assembly: InternalsVisibleTo("Steeltoe.Extensions.Logging.DynamicSerilog")]

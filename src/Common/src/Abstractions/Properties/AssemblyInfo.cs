@@ -4,4 +4,4 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.HystrixBase.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.CircuitBreaker.Hystrix.Test")]

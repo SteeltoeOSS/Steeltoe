@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28729.10
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9BB0395E-B595-4B95-89ED-F55AF12B4EE7}"
 EndProject
@@ -26,21 +26,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.EFCore",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.EFCore.Test", "test\Connector.EFCore.Test\Steeltoe.Connector.EFCore.Test.csproj", "{D7BAC24F-1FCC-4941-9016-079C0C5AD25B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.ConnectorCore", "src\ConnectorCore\Steeltoe.Connector.ConnectorCore.csproj", "{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.ConnectorCore.Test", "test\ConnectorCore.Test\Steeltoe.Connector.ConnectorCore.Test.csproj", "{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.EF6Core", "src\Connector.EF6Core\Steeltoe.Connector.EF6Core.csproj", "{43012B18-D80D-4581-A85A-80F69DBD0431}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.ConnectorBase.Test", "test\ConnectorBase.Test\Steeltoe.Connector.ConnectorBase.Test.csproj", "{B40DE919-FBC0-4CC6-B36F-98364FCA4203}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Connector.Test", "test\Connector.Test\Steeltoe.Connector.Connector.Test.csproj", "{B40DE919-FBC0-4CC6-B36F-98364FCA4203}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{4F6282E5-97B9-4655-8E67-7DF32320FE0C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore", "..\Configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj", "{6FB46EFB-B870-4383-B52A-39579E31688F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Common\src\Common\Steeltoe.Common.csproj", "{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundry", "..\Configuration\src\CloudFoundry\Steeltoe.Extensions.Configuration.CloudFoundry.csproj", "{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResources", "..\Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj", "{D131F3BD-57EE-4878-B708-C917268BA123}"
 EndProject
@@ -58,9 +52,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.EF6Core.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "External.Connector.Test", "test\External.Connector.Test\External.Connector.Test.csproj", "{0D1C5F38-D7E4-4F14-BD51-90064CE89C95}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.ConnectorBase", "src\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj", "{EDB042A3-A6DB-4400-84C4-DF467FA01B8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Connector", "src\Connector\Steeltoe.Connector.Connector.csproj", "{EDB042A3-A6DB-4400-84C4-DF467FA01B8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Common.Utils", "..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj", "{B0A47904-1C27-4380-9327-986F762B0250}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Utils", "..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj", "{B0A47904-1C27-4380-9327-986F762B0250}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -96,30 +90,6 @@ Global
 		{D7BAC24F-1FCC-4941-9016-079C0C5AD25B}.Release|x64.Build.0 = Release|Any CPU
 		{D7BAC24F-1FCC-4941-9016-079C0C5AD25B}.Release|x86.ActiveCfg = Release|Any CPU
 		{D7BAC24F-1FCC-4941-9016-079C0C5AD25B}.Release|x86.Build.0 = Release|Any CPU
-		{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}.Debug|x64.Build.0 = Debug|Any CPU
-		{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}.Debug|x86.Build.0 = Debug|Any CPU
-		{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}.Release|x64.ActiveCfg = Release|Any CPU
-		{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}.Release|x64.Build.0 = Release|Any CPU
-		{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}.Release|x86.ActiveCfg = Release|Any CPU
-		{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8}.Release|x86.Build.0 = Release|Any CPU
-		{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}.Debug|x64.Build.0 = Debug|Any CPU
-		{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}.Debug|x86.Build.0 = Debug|Any CPU
-		{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}.Release|x64.ActiveCfg = Release|Any CPU
-		{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}.Release|x64.Build.0 = Release|Any CPU
-		{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}.Release|x86.ActiveCfg = Release|Any CPU
-		{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9}.Release|x86.Build.0 = Release|Any CPU
 		{43012B18-D80D-4581-A85A-80F69DBD0431}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{43012B18-D80D-4581-A85A-80F69DBD0431}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43012B18-D80D-4581-A85A-80F69DBD0431}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -144,18 +114,6 @@ Global
 		{B40DE919-FBC0-4CC6-B36F-98364FCA4203}.Release|x64.Build.0 = Release|Any CPU
 		{B40DE919-FBC0-4CC6-B36F-98364FCA4203}.Release|x86.ActiveCfg = Release|Any CPU
 		{B40DE919-FBC0-4CC6-B36F-98364FCA4203}.Release|x86.Build.0 = Release|Any CPU
-		{6FB46EFB-B870-4383-B52A-39579E31688F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6FB46EFB-B870-4383-B52A-39579E31688F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6FB46EFB-B870-4383-B52A-39579E31688F}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{6FB46EFB-B870-4383-B52A-39579E31688F}.Debug|x64.Build.0 = Debug|Any CPU
-		{6FB46EFB-B870-4383-B52A-39579E31688F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{6FB46EFB-B870-4383-B52A-39579E31688F}.Debug|x86.Build.0 = Debug|Any CPU
-		{6FB46EFB-B870-4383-B52A-39579E31688F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6FB46EFB-B870-4383-B52A-39579E31688F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6FB46EFB-B870-4383-B52A-39579E31688F}.Release|x64.ActiveCfg = Release|Any CPU
-		{6FB46EFB-B870-4383-B52A-39579E31688F}.Release|x64.Build.0 = Release|Any CPU
-		{6FB46EFB-B870-4383-B52A-39579E31688F}.Release|x86.ActiveCfg = Release|Any CPU
-		{6FB46EFB-B870-4383-B52A-39579E31688F}.Release|x86.Build.0 = Release|Any CPU
 		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -307,11 +265,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{1130C00D-CE87-43A2-8723-C930D9C8891D} = {9BB0395E-B595-4B95-89ED-F55AF12B4EE7}
 		{D7BAC24F-1FCC-4941-9016-079C0C5AD25B} = {1CEE3AF7-DC06-4BBE-B28D-62FB1BD4A7A5}
-		{DE66FCE9-0FB0-4079-8753-DBF55A0FE8B8} = {9BB0395E-B595-4B95-89ED-F55AF12B4EE7}
-		{28DBA1B5-7892-45EC-B4B9-27EF9DD59BC9} = {1CEE3AF7-DC06-4BBE-B28D-62FB1BD4A7A5}
 		{43012B18-D80D-4581-A85A-80F69DBD0431} = {9BB0395E-B595-4B95-89ED-F55AF12B4EE7}
 		{B40DE919-FBC0-4CC6-B36F-98364FCA4203} = {1CEE3AF7-DC06-4BBE-B28D-62FB1BD4A7A5}
-		{6FB46EFB-B870-4383-B52A-39579E31688F} = {4F6282E5-97B9-4655-8E67-7DF32320FE0C}
 		{A3361A9F-3AE0-4A11-92EB-84A698EB3ACE} = {4F6282E5-97B9-4655-8E67-7DF32320FE0C}
 		{8790B73A-E0B2-4A52-9E92-1EF337D8EE1D} = {4F6282E5-97B9-4655-8E67-7DF32320FE0C}
 		{D131F3BD-57EE-4878-B708-C917268BA123} = {4F6282E5-97B9-4655-8E67-7DF32320FE0C}

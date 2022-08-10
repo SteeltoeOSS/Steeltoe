@@ -12,7 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Integration\src\RabbitMQ\Steeltoe.Integration.RabbitMQ.csproj" />
     <ProjectReference Include="..\..\..\Messaging\src\RabbitMQ\Steeltoe.Messaging.RabbitMQ.csproj" />
-    <ProjectReference Include="..\StreamBase\Steeltoe.Stream.StreamBase.csproj" />
+    <ProjectReference Include="..\Stream\Steeltoe.Stream.Stream.csproj" />
   </ItemGroup>
 
 </Project>

@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\IntegrationBase\Steeltoe.Integration.IntegrationBase.csproj" />
+    <ProjectReference Include="..\..\src\Integration\Steeltoe.Integration.Integration.csproj" />
   </ItemGroup>
 
 </Project>

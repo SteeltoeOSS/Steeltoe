@@ -76,7 +76,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                 var inetOptions = config.GetSection(InetOptions.Prefix).Get<InetOptions>();
                 options.NetUtils = new InetUtils(inetOptions);
                 options.ApplyNetUtils();
-                const string endpointAssembly = "Steeltoe.Management.EndpointBase";
+                const string endpointAssembly = "Steeltoe.Management.Endpoint";
 
                 if (ReflectionHelpers.IsAssemblyLoaded(endpointAssembly))
                 {

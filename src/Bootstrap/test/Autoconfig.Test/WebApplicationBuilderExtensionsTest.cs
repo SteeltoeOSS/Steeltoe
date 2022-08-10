@@ -45,8 +45,8 @@ public class WebApplicationBuilderExtensionsTest
     [Fact]
     public void ConfigServerConfiguration_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServerCore,
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryCore);
+        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServer,
+            SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundry);
 
         var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
@@ -59,7 +59,7 @@ public class WebApplicationBuilderExtensionsTest
     [Fact]
     public void CloudFoundryConfiguration_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryCore);
+        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundry);
         var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
         Assert.Equal(8, config.Providers.Count());
@@ -70,7 +70,7 @@ public class WebApplicationBuilderExtensionsTest
     public void KubernetesConfiguration_IsAutowired()
     {
         Environment.SetEnvironmentVariable("KUBERNETES_SERVICE_HOST", "TEST");
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetesCore);
+        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetes);
         var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
         Assert.Equal(11, config.Providers.Count());
@@ -81,7 +81,7 @@ public class WebApplicationBuilderExtensionsTest
     [Fact]
     public void RandomValueConfiguration_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValueBase);
+        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValue);
         var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
         Assert.Equal(8, config.Providers.Count());
@@ -91,7 +91,7 @@ public class WebApplicationBuilderExtensionsTest
     [Fact]
     public void PlaceholderResolver_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholderBase);
+        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholder);
         var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
         Assert.Single(config.Providers.OfType<PlaceholderResolverProvider>());
     }
@@ -99,7 +99,7 @@ public class WebApplicationBuilderExtensionsTest
     [Fact]
     public void Connectors_AreAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeConnectorConnectorCore);
+        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeConnectorConnector);
         var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
         IServiceProvider services = host.Services;
 
@@ -117,7 +117,7 @@ public class WebApplicationBuilderExtensionsTest
     [Fact]
     public void DynamicSerilog_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsLoggingDynamicSerilogCore);
+        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsLoggingDynamicSerilog);
 
         var loggerProvider = (IDynamicLoggerProvider)host.Services.GetService(typeof(IDynamicLoggerProvider));
 
@@ -125,19 +125,9 @@ public class WebApplicationBuilderExtensionsTest
     }
 
     [Fact]
-    public void ServiceDiscoveryBase_IsAutowired()
+    public void ServiceDiscovery_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeDiscoveryClientBase);
-        IEnumerable<IDiscoveryClient> discoveryClient = host.Services.GetServices<IDiscoveryClient>();
-
-        Assert.Single(discoveryClient);
-        Assert.IsType<EurekaDiscoveryClient>(discoveryClient.First());
-    }
-
-    [Fact]
-    public void ServiceDiscoveryCore_IsAutowired()
-    {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeDiscoveryClientCore);
+        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeDiscoveryClient);
         IEnumerable<IDiscoveryClient> discoveryClient = host.Services.GetServices<IDiscoveryClient>();
 
         Assert.Single(discoveryClient);
@@ -147,7 +137,7 @@ public class WebApplicationBuilderExtensionsTest
     [Fact]
     public async Task KubernetesActuators_AreAutowired()
     {
-        WebApplication webApp = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeManagementKubernetesCore);
+        WebApplication webApp = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeManagementKubernetes);
         webApp.UseRouting();
         await webApp.StartAsync();
 
@@ -162,7 +152,7 @@ public class WebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AllActuators_AreAutowired()
     {
-        WebApplication webApp = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeManagementEndpointCore);
+        WebApplication webApp = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeManagementEndpoint);
         webApp.UseRouting();
         await webApp.StartAsync();
 
@@ -183,7 +173,7 @@ public class WebApplicationBuilderExtensionsTest
 
         var exclusions = new List<string>
         {
-            SteeltoeAssemblies.SteeltoeManagementEndpointCore
+            SteeltoeAssemblies.SteeltoeManagementEndpoint
         };
 
         webAppBuilder.AddSteeltoe(SteeltoeAssemblies.AllAssemblies.Except(exclusions));
@@ -205,7 +195,7 @@ public class WebApplicationBuilderExtensionsTest
 
         var exclusions = new List<string>
         {
-            SteeltoeAssemblies.SteeltoeManagementTracingCore
+            SteeltoeAssemblies.SteeltoeManagementTracing
         };
 
         webAppBuilder.AddSteeltoe(SteeltoeAssemblies.AllAssemblies.Except(exclusions));
@@ -227,30 +217,9 @@ public class WebApplicationBuilderExtensionsTest
     }
 
     [Fact]
-    public void TracingBase_IsAutowired()
+    public void Tracing_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeManagementTracingBase);
-        var tracerProvider = host.Services.GetService<TracerProvider>();
-
-        Assert.NotNull(host.Services.GetService<IHostedService>());
-        Assert.NotNull(host.Services.GetService<ITracingOptions>());
-        Assert.NotNull(tracerProvider);
-        Assert.NotNull(host.Services.GetService<IDynamicMessageProcessor>());
-
-        // confirm instrumentation(s) were added as expected
-        var instrumentations =
-            tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tracerProvider) as List<object>;
-
-        Assert.NotNull(instrumentations);
-        Assert.Single(instrumentations);
-        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
-        Assert.DoesNotContain(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
-    }
-
-    [Fact]
-    public void TracingCore_IsAutowired()
-    {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeManagementTracingCore);
+        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeManagementTracing);
         var tracerProvider = host.Services.GetService<TracerProvider>();
 
         Assert.NotNull(host.Services.GetService<IHostedService>());
@@ -271,7 +240,7 @@ public class WebApplicationBuilderExtensionsTest
     [Fact]
     public void CloudFoundryContainerSecurity_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeSecurityAuthenticationCloudFoundryCore);
+        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeSecurityAuthenticationCloudFoundry);
         var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
         Assert.Equal(8, config.Providers.Count());

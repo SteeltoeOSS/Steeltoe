@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <Description>Package for using Steeltoe management endpoints with ASP.NET Core on Kubernetes.</Description>
+    <PackageTags>actuator;management;monitoring;aspnetcore;Kubernetes;Spring Cloud;k8s</PackageTags>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common.Kubernetes\Steeltoe.Common.Kubernetes.csproj" />
+    <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" />
+    <ProjectReference Include="..\Endpoint\Steeltoe.Management.Endpoint.csproj" />
+  </ItemGroup>
+</Project>

@@ -32,9 +32,7 @@ using Steeltoe.Extensions.Configuration.Placeholder;
 using Steeltoe.Extensions.Configuration.RandomValue;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Extensions.Logging.DynamicSerilog;
-using Steeltoe.Management;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Trace;
@@ -52,8 +50,8 @@ public class HostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServerCore,
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryCore
+            SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServer,
+            SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundry
         });
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
@@ -71,7 +69,7 @@ public class HostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryCore
+            SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundry
         });
 
         var hostBuilder = new HostBuilder();
@@ -90,7 +88,7 @@ public class HostBuilderExtensionsTest
 
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetesCore
+            SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetes
         });
 
         var hostBuilder = new HostBuilder();
@@ -108,7 +106,7 @@ public class HostBuilderExtensionsTest
     {
         List<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValueBase
+            SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValue
         }).ToList();
 
         var hostBuilder = new HostBuilder();
@@ -125,7 +123,7 @@ public class HostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholderCore
+            SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholder
         });
 
         var hostBuilder = new HostBuilder();
@@ -142,7 +140,7 @@ public class HostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeConnectorConnectorCore
+            SteeltoeAssemblies.SteeltoeConnectorConnector
         });
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
@@ -167,7 +165,7 @@ public class HostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeExtensionsLoggingDynamicSerilogCore
+            SteeltoeAssemblies.SteeltoeExtensionsLoggingDynamicSerilog
         });
 
         var hostBuilder = new HostBuilder();
@@ -180,11 +178,11 @@ public class HostBuilderExtensionsTest
     }
 
     [Fact]
-    public void ServiceDiscoveryBase_IsAutowired()
+    public void ServiceDiscovery_IsAutowired()
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeDiscoveryClientBase
+            SteeltoeAssemblies.SteeltoeDiscoveryClient
         });
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
@@ -197,28 +195,11 @@ public class HostBuilderExtensionsTest
     }
 
     [Fact]
-    public void ServiceDiscoveryCore_IsAutowired()
-    {
-        IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
-        {
-            SteeltoeAssemblies.SteeltoeDiscoveryClientCore
-        });
-
-        IHost host = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))
-            .AddSteeltoe(exclusions).Build();
-
-        IEnumerable<IDiscoveryClient> discoveryClient = host.Services.GetServices<IDiscoveryClient>();
-
-        Assert.Single(discoveryClient);
-        Assert.IsType<EurekaDiscoveryClient>(discoveryClient.First());
-    }
-
-    [Fact]
     public async Task KubernetesActuators_AreAutowired()
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeManagementKubernetesCore
+            SteeltoeAssemblies.SteeltoeManagementKubernetes
         });
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
@@ -226,35 +207,6 @@ public class HostBuilderExtensionsTest
         IHost host = await hostBuilder.AddSteeltoe(exclusions).StartAsync();
         HttpClient testClient = host.GetTestServer().CreateClient();
 
-        HttpResponseMessage response = await testClient.GetAsync("/actuator");
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await testClient.GetAsync("/actuator/info");
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await testClient.GetAsync("/actuator/health");
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await testClient.GetAsync("/actuator/health/liveness");
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("\"LivenessState\":\"CORRECT\"", await response.Content.ReadAsStringAsync());
-        response = await testClient.GetAsync("/actuator/health/readiness");
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync());
-    }
-
-    [Fact]
-    public async Task CloudFoundryActuators_AreAutowired()
-    {
-        IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
-        {
-            SteeltoeAssemblies.SteeltoeManagementCloudFoundryCore
-        });
-
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
-
-        IHost host = await hostBuilder.AddSteeltoe(exclusions).StartAsync();
-        IEnumerable<IManagementOptions> managementOptions = host.Services.GetServices<IManagementOptions>();
-        HttpClient testClient = host.GetTestServer().CreateClient();
-
-        Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
         HttpResponseMessage response = await testClient.GetAsync("/actuator");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response = await testClient.GetAsync("/actuator/info");
@@ -274,7 +226,7 @@ public class HostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeManagementEndpointCore
+            SteeltoeAssemblies.SteeltoeManagementEndpoint
         });
 
         var hostBuilder = new HostBuilder();
@@ -293,7 +245,7 @@ public class HostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeManagementEndpointCore
+            SteeltoeAssemblies.SteeltoeManagementEndpoint
         });
 
         IHost host = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
@@ -309,7 +261,7 @@ public class HostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeManagementTracingCore
+            SteeltoeAssemblies.SteeltoeManagementTracing
         });
 
         IHost host = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
@@ -327,39 +279,11 @@ public class HostBuilderExtensionsTest
     }
 
     [Fact]
-    public void TracingBase_IsAutowired()
+    public void Tracing_IsAutowired()
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeManagementTracingBase
-        });
-
-        var hostBuilder = new HostBuilder();
-
-        IHost host = hostBuilder.AddSteeltoe(exclusions).Build();
-
-        Assert.NotNull(host.Services.GetService<IHostedService>());
-        Assert.NotNull(host.Services.GetService<ITracingOptions>());
-        var tracerProvider = host.Services.GetService<TracerProvider>();
-        Assert.NotNull(tracerProvider);
-        Assert.NotNull(host.Services.GetService<IDynamicMessageProcessor>());
-
-        // confirm instrumentation(s) were added as expected
-        var instrumentations =
-            tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tracerProvider) as List<object>;
-
-        Assert.NotNull(instrumentations);
-        Assert.Single(instrumentations);
-        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
-        Assert.DoesNotContain(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
-    }
-
-    [Fact]
-    public void TracingCore_IsAutowired()
-    {
-        IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
-        {
-            SteeltoeAssemblies.SteeltoeManagementTracingCore
+            SteeltoeAssemblies.SteeltoeManagementTracing
         });
 
         var hostBuilder = new HostBuilder();
@@ -387,7 +311,7 @@ public class HostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeSecurityAuthenticationCloudFoundryCore
+            SteeltoeAssemblies.SteeltoeSecurityAuthenticationCloudFoundry
         });
 
         var hostBuilder = new HostBuilder();

@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj" />
+    <ProjectReference Include="..\Connector\Steeltoe.Connector.Connector.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\Abstractions\Steeltoe.Extensions.Configuration.Abstractions.csproj" />
   </ItemGroup>
 </Project>

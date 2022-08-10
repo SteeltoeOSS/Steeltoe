@@ -14,9 +14,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Expression\Steeltoe.Common.Expression.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common.RetryPolly\Steeltoe.Common.RetryPolly.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\src\SpringBootBase\Steeltoe.Extensions.Configuration.SpringBootBase.csproj" />
-    <ProjectReference Include="..\..\..\Connectors\src\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj" />
-    <ProjectReference Include="..\MessagingBase\Steeltoe.Messaging.MessagingBase.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\SpringBoot\Steeltoe.Extensions.Configuration.SpringBoot.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\Connector\Steeltoe.Connector.Connector.csproj" />
+    <ProjectReference Include="..\Messaging\Steeltoe.Messaging.Messaging.csproj" />
   </ItemGroup>
 
   <ItemGroup>

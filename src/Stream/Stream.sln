@@ -37,13 +37,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Commo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.RetryPolly", "..\Common\src\Common.RetryPolly\Steeltoe.Common.RetryPolly.csproj", "{95A21139-16C3-47B3-8F0D-BD973516A844}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.IntegrationBase", "..\Integration\src\IntegrationBase\Steeltoe.Integration.IntegrationBase.csproj", "{9FAEEB6E-48DA-4C04-B896-95EEC8305544}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.Integration", "..\Integration\src\Integration\Steeltoe.Integration.Integration.csproj", "{9FAEEB6E-48DA-4C04-B896-95EEC8305544}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.MessagingBase", "..\Messaging\src\MessagingBase\Steeltoe.Messaging.MessagingBase.csproj", "{11E7AF1E-C784-4EC5-A932-D182A5AF3A4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Messaging", "..\Messaging\src\Messaging\Steeltoe.Messaging.Messaging.csproj", "{11E7AF1E-C784-4EC5-A932-D182A5AF3A4B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.StreamBase", "src\StreamBase\Steeltoe.Stream.StreamBase.csproj", "{D6BF96EC-99A4-46A7-B353-337ABE951C63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Stream", "src\Stream\Steeltoe.Stream.Stream.csproj", "{D6BF96EC-99A4-46A7-B353-337ABE951C63}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.StreamBase.Test", "test\StreamBase.Test\Steeltoe.Stream.StreamBase.Test.csproj", "{64BAB809-FA2D-4F10-ABE3-C9F9E6A4BCFC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Stream.Test", "test\Stream.Test\Steeltoe.Stream.Stream.Test.csproj", "{64BAB809-FA2D-4F10-ABE3-C9F9E6A4BCFC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Binder.RabbitMQ", "src\BinderRabbitMQ\Steeltoe.Stream.Binder.RabbitMQ.csproj", "{1260C9D8-19D7-4AFF-8A91-9B657628F0D6}"
 EndProject
@@ -61,7 +61,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Abstract
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Expression", "..\Common\src\Common.Expression\Steeltoe.Common.Expression.csproj", "{BA9A9A06-930F-4AEA-8291-CE2994C9C804}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.SpringBootBase", "..\Configuration\src\SpringBootBase\Steeltoe.Extensions.Configuration.SpringBootBase.csproj", "{F0945C79-4685-46DF-8016-4CA7C2B81F03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.SpringBoot", "..\Configuration\src\SpringBoot\Steeltoe.Extensions.Configuration.SpringBoot.csproj", "{F0945C79-4685-46DF-8016-4CA7C2B81F03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

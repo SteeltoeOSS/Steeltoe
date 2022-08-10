@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\MessagingBase\Steeltoe.Messaging.MessagingBase.csproj" />
+    <ProjectReference Include="..\..\..\src\Messaging\Steeltoe.Messaging.Messaging.csproj" />
   </ItemGroup>
 
 </Project>

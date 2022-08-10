@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Kubernetes\Steeltoe.Common.Kubernetes.csproj" />
-    <ProjectReference Include="..\ClientBase\Steeltoe.Discovery.ClientBase.csproj" />
+    <ProjectReference Include="..\Client\Steeltoe.Discovery.Client.csproj" />
   </ItemGroup>
 
 </Project>

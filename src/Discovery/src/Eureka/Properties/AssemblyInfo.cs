@@ -7,5 +7,5 @@ using Steeltoe.Discovery;
 using Steeltoe.Discovery.Eureka;
 
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.ClientCore.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Discovery.Client.Test")]
 [assembly: DiscoveryClientAssembly(typeof(EurekaDiscoveryClientExtension))]
