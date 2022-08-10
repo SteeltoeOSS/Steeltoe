@@ -21,7 +21,8 @@ public class TestOptionsMonitor<T> : IOptionsMonitor<T>
 
     public IDisposable OnChange(Action<T, string> listener)
     {
-        throw new NotImplementedException();
+       // throw new NotImplementedException();
+       return null;
     }
 
     public T CurrentValue { get; }
