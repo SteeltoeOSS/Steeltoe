@@ -10,7 +10,7 @@ namespace Steeltoe.Extensions.Logging;
 
 public class MessageProcessingLogger : ILogger
 {
-    protected readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
+    private protected readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageProcessingLogger"/> class.

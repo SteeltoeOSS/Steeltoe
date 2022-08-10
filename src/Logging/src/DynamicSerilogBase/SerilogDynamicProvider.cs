@@ -30,7 +30,7 @@ public class SerilogDynamicProvider : DynamicLoggerProviderBase
         _serilogger = null;
     }
 
-    protected override MessageProcessingLogger CreateLoggerImplementation(string name)
+    private protected override MessageProcessingLogger CreateLoggerImplementation(string name)
     {
         var logger = _delegate.CreateLogger(name);
         return new StructuredMessageProcessingLogger(logger, _messageProcessors) { Filter = GetFilter(name), Name = name };
