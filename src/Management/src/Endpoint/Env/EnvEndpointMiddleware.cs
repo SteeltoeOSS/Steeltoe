@@ -32,7 +32,7 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
     protected internal Task HandleEnvRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest();
-        logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);

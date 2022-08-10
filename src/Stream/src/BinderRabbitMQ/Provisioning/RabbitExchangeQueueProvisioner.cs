@@ -417,7 +417,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
     {
         bool autoBindDlq = properties.AutoBindDlq.Value;
 
-        _logger.LogDebug("autoBindDLQ=" + autoBindDlq + " for: " + baseQueueName);
+        _logger.LogDebug("autoBindDLQ={autoBindDLQ} for: {queueName}", autoBindDlq, baseQueueName);
 
         if (autoBindDlq)
         {
@@ -477,7 +477,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         }
         catch (RabbitConnectException e)
         {
-            _logger.LogDebug("Declaration of queue: " + queue.QueueName + " deferred - connection not available " + e.Message);
+            _logger.LogDebug(e, "Declaration of queue: {queueName} deferred - connection not available", queue.QueueName);
         }
         catch (Exception e)
         {
@@ -487,7 +487,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
                 throw;
             }
 
-            _logger.LogDebug("Declaration of queue: " + queue.QueueName + " deferred", e);
+            _logger.LogDebug(e, "Declaration of queue: {queueName} deferred", queue.QueueName);
         }
 
         AddToAutoDeclareContext(beanName, queue);
@@ -635,7 +635,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         }
         catch (RabbitConnectException e)
         {
-            _logger?.LogDebug("Declaration of exchange: " + exchange.ExchangeName + " deferred - connection not available; " + e.Message);
+            _logger.LogDebug(e, "Declaration of exchange: {exchangeName} deferred - connection not available", exchange.ExchangeName);
         }
         catch (Exception e)
         {
@@ -645,7 +645,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
                 throw;
             }
 
-            _logger.LogDebug("Declaration of exchange: " + exchange.ExchangeName + " deferred", e);
+            _logger.LogDebug(e, "Declaration of exchange: {exchangeName} deferred", exchange.ExchangeName);
         }
 
         AddToAutoDeclareContext($"{rootName}.exchange", exchange);
@@ -677,7 +677,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         }
         catch (RabbitConnectException e)
         {
-            _logger.LogDebug("Declaration of binding: " + rootName + ".binding deferred - connection not available; " + e.Message);
+            _logger.LogDebug(e, "Declaration of binding: {name}.binding deferred - connection not available", rootName);
         }
         catch (Exception e)
         {
@@ -687,7 +687,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
                 throw;
             }
 
-            _logger.LogDebug("Declaration of binding: " + rootName + ".binding deferred", e);
+            _logger.LogDebug(e, "Declaration of binding: {name}.binding deferred", rootName);
         }
 
         AddToAutoDeclareContext($"{rootName}.binding", binding);

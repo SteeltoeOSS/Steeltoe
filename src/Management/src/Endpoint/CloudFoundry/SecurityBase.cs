@@ -51,7 +51,7 @@ public class SecurityBase
         }
         catch (Exception e)
         {
-            _logger?.LogError("Serialization Exception: {0}", e);
+            _logger?.LogError(e, "Serialization Exception.");
         }
 
         return string.Empty;
@@ -75,7 +75,7 @@ public class SecurityBase
 
         try
         {
-            _logger?.LogDebug("GetPermissionsAsync({0}, {1})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
+            _logger?.LogDebug("GetPermissionsAsync({uri}, {token})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
             _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DefaultGetPermissionsTimeout);
             using HttpResponseMessage response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
@@ -93,8 +93,7 @@ public class SecurityBase
         }
         catch (Exception e)
         {
-            _logger?.LogError("Cloud Foundry returned exception: {SecurityException} while obtaining permissions from: {PermissionsUri}", e,
-                checkPermissionsUri);
+            _logger?.LogError(e, "Cloud Foundry returned exception while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
 
             return new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
         }
@@ -113,7 +112,7 @@ public class SecurityBase
         {
             json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            _logger?.LogDebug("GetPermissionsAsync returned json: {0}", SecurityUtilities.SanitizeInput(json));
+            _logger?.LogDebug("GetPermissionsAsync returned json: {json}", SecurityUtilities.SanitizeInput(json));
 
             var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
@@ -125,11 +124,11 @@ public class SecurityBase
         }
         catch (Exception e)
         {
-            _logger?.LogError("Exception {0} extracting permissions from {1}", e, SecurityUtilities.SanitizeInput(json));
+            _logger?.LogError(e, "Exception extracting permissions from {json}", SecurityUtilities.SanitizeInput(json));
             throw;
         }
 
-        _logger?.LogDebug("GetPermissionsAsync returning: {0}", permissions);
+        _logger?.LogDebug("GetPermissionsAsync returning: {permissions}", permissions);
         return permissions;
     }
 }

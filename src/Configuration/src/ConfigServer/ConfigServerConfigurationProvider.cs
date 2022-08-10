@@ -266,7 +266,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
             do
             {
-                logger.LogInformation("Fetching config from server at: {0}", settings.Uri);
+                logger.LogInformation("Fetching config from server at: {uri}", settings.Uri);
 
                 try
                 {
@@ -274,7 +274,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                 }
                 catch (ConfigServerException e)
                 {
-                    logger.LogInformation("Failed fetching config from server at: {0}, Exception: {1}", settings.Uri, e);
+                    logger.LogInformation(e, "Failed fetching config from server at: {uri}.", settings.Uri);
                     attempts++;
 
                     if (attempts < settings.RetryAttempts)
@@ -292,7 +292,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             while (true);
         }
 
-        logger.LogInformation("Fetching config from server at: {0}", settings.Uri);
+        logger.LogInformation("Fetching config from server at: {uri}", settings.Uri);
         return DoLoad(updateDictionary);
     }
 
@@ -388,7 +388,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             error = e;
         }
 
-        logger.LogWarning("Could not locate PropertySource: " + error);
+        logger.LogWarning(error, "Could not locate PropertySource");
 
         if (settings.FailFast)
         {
@@ -717,7 +717,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         catch (Exception e)
         {
             // Log and rethrow
-            logger.LogError("Config Server exception: {0}, path: {1}", e, WebUtility.UrlEncode(requestUri));
+            logger.LogError(e, "Config Server exception at path: {uri}", WebUtility.UrlEncode(requestUri));
             throw;
         }
         finally
@@ -816,7 +816,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             }
             catch (Exception exception)
             {
-                logger.LogError(exception, "Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType());
+                logger.LogError(exception, "Config Server exception, property: {key}={type}", kvp.Key, kvp.Value.GetType());
             }
         }
     }
@@ -954,18 +954,18 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             string uri = GetVaultRenewUri();
             HttpRequestMessage message = GetVaultRenewMessage(uri);
 
-            logger.LogInformation("Renewing Vault token {0} for {1} milliseconds at Uri {2}", obscuredToken, Settings.TokenTtl, uri);
+            logger.LogInformation("Renewing Vault token {token} for {ttl} milliseconds at Uri {uri}", obscuredToken, Settings.TokenTtl, uri);
 
             using HttpResponseMessage response = await httpClient.SendAsync(message).ConfigureAwait(false);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                logger.LogWarning("Renewing Vault token {0} returned status: {1}", obscuredToken, response.StatusCode);
+                logger.LogWarning("Renewing Vault token {token} returned status: {status}", obscuredToken, response.StatusCode);
             }
         }
         catch (Exception e)
         {
-            logger.LogError("Unable to renew Vault token {0}. Is the token invalid or expired? - {1}", obscuredToken, e);
+            logger.LogError(e, "Unable to renew Vault token {token}. Is the token invalid or expired?", obscuredToken);
         }
         finally
         {

@@ -153,7 +153,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
                 defaultMethod = method;
             }
 
-            _logger?.LogDebug("Adding RabbitHandler method {handlerMethod} from type {type}", method.ToString(), method.DeclaringType);
+            _logger?.LogDebug("Adding RabbitHandler method {handlerMethod} from type {type}", method, method.DeclaringType);
             checkedMethods.Add(method);
         }
 
@@ -202,7 +202,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
 
     private void ProcessAmqpListener(RabbitListenerAttribute rabbitListener, MethodInfo method, object bean, string beanName)
     {
-        _logger?.LogDebug("Adding RabbitListener method {method} from type {type}", method.ToString(), method.DeclaringType);
+        _logger?.LogDebug("Adding RabbitListener method {method} from type {type}", method, method.DeclaringType);
 
         var endpoint = new MethodRabbitListenerEndpoint(ApplicationContext, method, bean, _loggerFactory)
         {
@@ -511,7 +511,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     {
         try
         {
-            _logger?.LogDebug("Creating RabbitListener service {serviceType}.", implementation.ToString());
+            _logger?.LogDebug("Creating RabbitListener service {serviceType}.", implementation);
             return ApplicationContext.ServiceProvider.GetService(implementation);
         }
         catch (Exception e)

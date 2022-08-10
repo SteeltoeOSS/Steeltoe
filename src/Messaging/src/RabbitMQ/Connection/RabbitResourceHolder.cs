@@ -127,7 +127,7 @@ public class RabbitResourceHolder : ResourceHolderSupport
                 }
                 else
                 {
-                    _logger?.LogDebug("Skipping close of consumer channel: {channel} ", channel);
+                    _logger?.LogDebug("Skipping close of consumer channel: {channel}", channel);
                 }
             }
             catch (Exception ex)
@@ -181,7 +181,7 @@ public class RabbitResourceHolder : ResourceHolderSupport
                     }
                     catch (Exception ex)
                     {
-                        _logger?.LogError(ex, "Error Rolling back messages to {channel} ", channel);
+                        _logger?.LogError(ex, "Error Rolling back messages to {channel}", channel);
                         throw RabbitExceptionTranslator.ConvertRabbitAccessException(ex);
                     }
                 }

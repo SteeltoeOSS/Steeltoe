@@ -176,7 +176,7 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
 
                     if (theMessage == null)
                     {
-                        _logger?.LogDebug(executorInterceptor.GetType().Name + " returned null from beforeHandle, i.e. precluding the send.");
+                        _logger?.LogDebug("{name} returned null from beforeHandle, i.e. precluding the send.", executorInterceptor.GetType().Name);
                         TriggerAfterMessageHandled(null, null, interceptorStack);
                         return null;
                     }
@@ -200,7 +200,7 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
                 }
                 catch (Exception ex2)
                 {
-                    _logger?.LogError("Exception from afterMessageHandled in " + interceptor, ex2);
+                    _logger?.LogError(ex2, "Exception from afterMessageHandled in {interceptor}", interceptor);
                 }
             }
         }

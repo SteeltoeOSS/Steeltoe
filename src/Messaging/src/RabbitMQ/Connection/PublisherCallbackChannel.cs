@@ -496,7 +496,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
                 foreach (KeyValuePair<ulong, PendingConfirm> confirmEntry in entry.Value)
                 {
                     confirmEntry.Value.Cause = cause;
-                    _logger?.LogDebug("{channel} PC:Nack:(close):{confirmEntry}", ToString(), confirmEntry.Key);
+                    _logger?.LogDebug("{channel} PC:Nack:(close):{confirmEntry}", this, confirmEntry.Key);
                     ProcessAck(confirmEntry.Key, false, false, false);
                 }
 
@@ -558,13 +558,13 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
 
     private void HandleAck(object sender, BasicAckEventArgs args)
     {
-        _logger?.LogDebug("{channel} PC:Ack: {deliveryTag}:{multiple}", ToString(), args.DeliveryTag, args.Multiple);
+        _logger?.LogDebug("{channel} PC:Ack: {deliveryTag}:{multiple}", this, args.DeliveryTag, args.Multiple);
         ProcessAck(args.DeliveryTag, true, args.Multiple, true);
     }
 
     private void HandleNack(object sender, BasicNackEventArgs args)
     {
-        _logger?.LogDebug("{channel} PC:Nack: {deliveryTag}:{multiple}", ToString(), args.DeliveryTag, args.Multiple);
+        _logger?.LogDebug("{channel} PC:Nack: {deliveryTag}:{multiple}", this, args.DeliveryTag, args.Multiple);
         ProcessAck(args.DeliveryTag, false, args.Multiple, true);
     }
 
@@ -699,7 +699,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
                     //    this.logger
                     //            .error("Return callback failed to execute in " + RETURN_CALLBACK_TIMEOUT + " seconds");
                     // }
-                    _logger?.LogDebug("Sending confirm {confirm} ", pendingConfirm);
+                    _logger?.LogDebug("Sending confirm {confirm}", pendingConfirm);
                     listener.HandleConfirm(pendingConfirm, ack);
                 }
             }

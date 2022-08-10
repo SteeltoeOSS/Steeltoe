@@ -303,7 +303,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
         }
         catch (Exception e)
         {
-            Logger?.LogWarning("Could not get host name, using 'localhost' as default value", e);
+            Logger?.LogWarning(e, "Could not get host name, using 'localhost' as default value");
             temp = "localhost";
         }
 
@@ -330,7 +330,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
                 addressesToConnect = list.ToList();
             }
 
-            Logger?.LogInformation("Attempting to connect to: {address} ", addressesToConnect);
+            Logger?.LogInformation("Attempting to connect to: {address}", addressesToConnect);
 
             rabbitConnection = InnerRabbitConnectionFactory.CreateConnection(addressesToConnect);
         }
@@ -370,7 +370,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
 
         public void HandleUnblocked(object sender, EventArgs args)
         {
-            _logger?.LogInformation("Connection unblocked: {args}", args.ToString());
+            _logger?.LogInformation("Connection unblocked: {args}", args);
         }
     }
 

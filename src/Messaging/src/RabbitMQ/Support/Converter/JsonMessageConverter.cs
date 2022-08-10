@@ -78,8 +78,8 @@ public class JsonMessageConverter : AbstractMessageConverter
             }
             else
             {
-                Logger?.LogWarning("Could not convert incoming message with content-type [" + contentType + "], '" + SupportedContentType.Subtype +
-                    "' keyword missing.");
+                Logger?.LogWarning("Could not convert incoming message with content-type [{contentType}], '{keyword}' keyword missing.", contentType,
+                    SupportedContentType.Subtype);
             }
         }
 

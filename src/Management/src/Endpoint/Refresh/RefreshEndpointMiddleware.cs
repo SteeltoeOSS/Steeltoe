@@ -33,7 +33,7 @@ public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
     protected internal Task HandleRefreshRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest();
-        logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);

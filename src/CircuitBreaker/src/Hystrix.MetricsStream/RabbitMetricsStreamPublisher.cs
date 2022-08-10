@@ -62,7 +62,7 @@ public class RabbitMetricsStreamPublisher : HystrixMetricsStreamPublisher
         }
         catch (Exception e)
         {
-            logger?.LogError("Error creating connection/channel, metrics streaming disabled: {0}", e);
+            logger?.LogError(e, "Error creating connection/channel, metrics streaming disabled.");
             return false;
         }
     }
@@ -75,7 +75,7 @@ public class RabbitMetricsStreamPublisher : HystrixMetricsStreamPublisher
             {
                 if (!string.IsNullOrEmpty(sampleDataAsString))
                 {
-                    logger?.LogDebug("Hystrix Metrics: {0}", sampleDataAsString);
+                    logger?.LogDebug("Hystrix Metrics: {data}", sampleDataAsString);
 
                     byte[] body = Encoding.UTF8.GetBytes(sampleDataAsString);
                     IBasicProperties props = Channel.CreateBasicProperties();

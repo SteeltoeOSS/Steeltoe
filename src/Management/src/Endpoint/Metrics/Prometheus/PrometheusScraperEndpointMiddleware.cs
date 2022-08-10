@@ -41,7 +41,7 @@ public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;
 
-        logger?.LogDebug("Incoming path: {0}", request.Path.Value);
+        logger?.LogDebug("Incoming path: {path}", request.Path.Value);
 
         // GET /metrics/{metricName}?tag=key:value&tag=key:value
         string serialInfo = HandleRequest();

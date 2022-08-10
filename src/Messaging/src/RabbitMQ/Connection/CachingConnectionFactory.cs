@@ -676,7 +676,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
             if (channel != null)
             {
-                Logger?.LogTrace("Found cached Rabbit Channel:{channel}", channel);
+                Logger?.LogTrace("Found cached Rabbit Channel: {channel}", channel);
             }
         }
 
@@ -686,12 +686,14 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             {
                 channel = GetCachedChannelProxy(connection, channelList, transactional);
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 if (permits != null)
                 {
                     permits.Release();
-                    Logger?.LogDebug("Could not get channel; released permit for {connection}, remaining {permits}", connection, permits.CurrentCount);
+
+                    Logger?.LogDebug(exception, "Could not get channel; released permit for {connection}, remaining {permits}", connection,
+                        permits.CurrentCount);
                 }
 
                 throw;
@@ -767,17 +769,17 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                  */
             }
         }
-        catch (AlreadyClosedException)
+        catch (AlreadyClosedException exception)
         {
-            Logger?.LogTrace("{channel} is already closed", channel);
+            Logger?.LogTrace(exception, "{channel} is already closed", channel);
         }
-        catch (TimeoutException e)
+        catch (TimeoutException exception)
         {
-            Logger?.LogWarning(e, "TimeoutException closing channel {channel}", channel);
+            Logger?.LogWarning(exception, "TimeoutException closing channel {channel}", channel);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            Logger?.LogDebug(e, "Unexpected Exception closing channel {channel}", channel);
+            Logger?.LogDebug(exception, "Unexpected Exception closing channel {channel}", channel);
         }
     }
 
@@ -2172,7 +2174,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             if (target == null || !target.IsOpen)
             {
                 // Basic re-connection logic...
-                Logger?.LogDebug(e, "Detected closed channel on exception.  Re-initializing: {target} ", target);
+                Logger?.LogDebug(e, "Detected closed channel on exception. Re-initializing: {target}", target);
                 target = null;
 
                 lock (TargetMonitor)
@@ -2231,7 +2233,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 }
                 else
                 {
-                    Logger?.LogError("LEAKAGE: No permits map entry for {connection} ", TheConnection);
+                    Logger?.LogError("LEAKAGE: No permits map entry for {connection}", TheConnection);
                 }
             }
         }
@@ -2341,7 +2343,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         protected virtual void PhysicalClose()
         {
-            Logger?.LogDebug("Closing cached channel: {channel} ", target);
+            Logger?.LogDebug("Closing cached channel: {channel}", target);
 
             if (target == null)
             {

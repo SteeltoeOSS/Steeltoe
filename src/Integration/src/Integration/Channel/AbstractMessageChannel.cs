@@ -146,7 +146,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
                 message = ConvertPayloadIfNecessary(message);
             }
 
-            Logger?.LogDebug("PreSend on channel '" + ServiceName + "', message: " + message);
+            Logger?.LogDebug("PreSend on channel '{channel}', message: {message}", ServiceName, message);
 
             if (Interceptors.Count > 0)
             {
@@ -161,7 +161,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
             sent = DoSendInternal(message, cancellationToken);
 
-            Logger?.LogDebug("PostSend (sent=" + sent + ") on channel '" + ServiceName + "', message: " + message);
+            Logger?.LogDebug("PostSend (sent={sent}) on channel '{channel}', message: {message}", sent, ServiceName, message);
 
             if (interceptorStack != null)
             {

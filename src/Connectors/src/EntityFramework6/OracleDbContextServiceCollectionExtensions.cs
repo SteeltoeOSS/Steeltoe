@@ -102,9 +102,9 @@ public static class OracleDbContextServiceCollectionExtensions
                 ctx => new RelationalDbHealthContributor((IDbConnection)healthFactory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),
                 contextLifetime));
         }
-        catch (TypeLoadException)
+        catch (TypeLoadException exception)
         {
-            logger?.LogWarning("Failed to add a HealthContributor for the Oracle DbContext");
+            logger?.LogWarning(exception, "Failed to add a HealthContributor for the Oracle DbContext");
         }
     }
 }

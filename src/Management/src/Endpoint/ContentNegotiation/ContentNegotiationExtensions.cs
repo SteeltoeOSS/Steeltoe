@@ -18,14 +18,14 @@ public static class ContentNegotiationExtensions
 
     public static void LogContentType(this ILogger logger, IHeaderDictionary requestHeaders, string contentType)
     {
-        logger?.LogTrace("setting contentType to {0}", contentType);
+        logger?.LogTrace("setting contentType to {type}", contentType);
         bool? logTrace = logger?.IsEnabled(LogLevel.Trace);
 
         if (logTrace.GetValueOrDefault())
         {
             foreach (KeyValuePair<string, StringValues> header in requestHeaders)
             {
-                logger.LogTrace("Header: {0} - {1}", header.Key, header.Value);
+                logger.LogTrace("Header: {key} - {value}", header.Key, header.Value);
             }
         }
     }

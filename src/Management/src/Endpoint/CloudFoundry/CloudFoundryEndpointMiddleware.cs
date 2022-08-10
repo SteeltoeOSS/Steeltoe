@@ -30,7 +30,7 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 
     public Task InvokeAsync(HttpContext context)
     {
-        logger?.LogDebug("InvokeAsync({0} {1})", context.Request.Method, context.Request.Path.Value);
+        logger?.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
         if (Endpoint.ShouldInvoke(managementOptions, logger))
         {
@@ -43,7 +43,7 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
     protected internal Task HandleCloudFoundryRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest(GetRequestUri(context.Request));
-        logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {info}", serialInfo);
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }

@@ -93,7 +93,7 @@ public class SpelCompiler
         }
         catch (Exception ex)
         {
-            _logger?.LogDebug(expressionToCompile.GetType().Name + ".GenerateCode opted out of compilation: " + ex.Message);
+            _logger?.LogDebug(ex, "{name}.GenerateCode opted out of compilation: {message}", expressionToCompile.GetType().Name, ex.Message);
             return null;
         }
     }

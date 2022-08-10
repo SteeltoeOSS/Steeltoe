@@ -470,17 +470,16 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         {
             if (MissingQueuesFatal)
             {
-                Logger?.LogWarning("'mismatchedQueuesFatal' and 'missingQueuesFatal' are ignored during the initial start(), " +
-                    "for lazily loaded containers");
+                Logger?.LogWarning("'mismatchedQueuesFatal' and 'missingQueuesFatal' are ignored during the initial start(), for lazily loaded containers");
             }
             else
             {
-                Logger?.LogWarning("'mismatchedQueuesFatal' is ignored during the initial start(), " + "for lazily loaded containers");
+                Logger?.LogWarning("'mismatchedQueuesFatal' is ignored during the initial start(), for lazily loaded containers");
             }
         }
         else if (MissingQueuesFatal)
         {
-            Logger?.LogWarning("'missingQueuesFatal' is ignored during the initial start(), " + "for lazily loaded containers");
+            Logger?.LogWarning("'missingQueuesFatal' is ignored during the initial start(), for lazily loaded containers");
         }
 
         IsLazyLoad = true;

@@ -36,7 +36,7 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
 
     public override Dictionary<string, object> Invoke(LoggersChangeRequest request)
     {
-        _logger?.LogDebug("Invoke({0})", SecurityUtilities.SanitizeInput(request?.ToString()));
+        _logger?.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
 
         return DoInvoke(_cloudFoundryLoggerProvider, request);
     }
@@ -52,14 +52,14 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
         else
         {
             AddLevels(result);
-            ICollection<ILoggerConfiguration> configuration = GetLoggerConfigurations(provider);
+            ICollection<ILoggerConfiguration> configurations = GetLoggerConfigurations(provider);
             var loggers = new Dictionary<string, LoggerLevels>();
 
-            foreach (ILoggerConfiguration c in configuration.OrderBy(entry => entry.Name))
+            foreach (ILoggerConfiguration configuration in configurations.OrderBy(entry => entry.Name))
             {
-                _logger.LogTrace("Adding " + c);
-                var lv = new LoggerLevels(c.ConfiguredLevel, c.EffectiveLevel);
-                loggers.Add(c.Name, lv);
+                _logger.LogTrace("Adding {configuration}", configuration);
+                var lv = new LoggerLevels(configuration.ConfiguredLevel, configuration.EffectiveLevel);
+                loggers.Add(configuration.Name, lv);
             }
 
             result.Add("loggers", loggers);
@@ -105,7 +105,7 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
         }
         catch (Exception e)
         {
-            _logger?.LogError("Exception deserializing LoggersEndpoint Request: {Exception}", e);
+            _logger?.LogError(e, "Exception deserializing LoggersEndpoint Request.");
         }
 
         return new Dictionary<string, string>();

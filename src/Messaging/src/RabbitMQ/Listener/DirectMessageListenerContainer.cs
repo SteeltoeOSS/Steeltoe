@@ -539,7 +539,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                                 {
                                     if (!ConsumersByQueue.ContainsKey(consumer.Queue))
                                     {
-                                        Logger?.LogDebug("Skipping restart of consumer {consumer} ", consumer);
+                                        Logger?.LogDebug("Skipping restart of consumer {consumer}", consumer);
                                         continue;
                                     }
 
@@ -694,7 +694,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
             //    this.taskScheduler.schedule(this::stop, new Date());
             // }
             ConsumersToRestart.AddRange(restartableConsumers);
-            Logger?.LogTrace("After restart exception, consumers to restart now: {consumersToRestart}", ConsumersToRestart.Count);
+            Logger?.LogTrace(e, "After restart exception, consumers to restart now: {consumersToRestart}", ConsumersToRestart.Count);
             return false;
         }
     }
@@ -812,7 +812,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                 {
                     if (current.Contains(name))
                     {
-                        Logger?.LogWarning("Queue " + name + " is already configured for this container: " + this + ", ignoring add");
+                        Logger?.LogWarning("Queue {name} is already configured for this container: {container}, ignoring add", name, this);
                     }
                     else
                     {
@@ -1126,7 +1126,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
             {
                 if (_container.CauseChainHasImmediateAcknowledgeRabbitException(e))
                 {
-                    _logger?.LogDebug("User requested ack for failed delivery: {tag}", deliveryTag);
+                    _logger?.LogDebug(e, "User requested ack for failed delivery: {tag}", deliveryTag);
                     HandleAck(deliveryTag, channelLocallyTransacted);
                 }
                 else

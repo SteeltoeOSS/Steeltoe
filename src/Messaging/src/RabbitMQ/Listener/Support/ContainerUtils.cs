@@ -31,7 +31,7 @@ public static class ContainerUtils
             e = e.InnerException;
         }
 
-        logger?.LogDebug("Rejecting messages (requeue={requeue})", shouldRequeue);
+        logger?.LogDebug(exception, "Rejecting messages (requeue={requeue})", shouldRequeue);
         return shouldRequeue;
     }
 

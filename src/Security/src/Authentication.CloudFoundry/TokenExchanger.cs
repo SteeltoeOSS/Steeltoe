@@ -87,7 +87,7 @@ public class TokenExchanger
             return BuildIdentityWithClaims(securityToken.Claims, tokens.Scope, tokens.AccessToken);
         }
 
-        _logger?.LogError("Failed call to exchange code for token : " + response.StatusCode);
+        _logger?.LogError("Failed call to exchange code for token: {status}", response.StatusCode);
         _logger?.LogWarning(response.ReasonPhrase);
         _logger?.LogInformation(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
@@ -192,7 +192,7 @@ public class TokenExchanger
 #if DEBUG
         foreach (Claim claim in claims)
         {
-            _logger?.LogTrace(claim.Type + " : " + claim.Value);
+            _logger?.LogTrace("{type} : {value}", claim.Type, claim.Value);
         }
 #endif
         string[] typedClaimNames =

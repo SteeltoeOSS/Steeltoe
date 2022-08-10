@@ -52,7 +52,7 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
         ApplicationMappings result = GetApplicationMappings(context);
         string serialInfo = Serialize(result);
 
-        logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);

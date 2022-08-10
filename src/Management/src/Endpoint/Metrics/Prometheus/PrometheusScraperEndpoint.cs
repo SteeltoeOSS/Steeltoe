@@ -56,7 +56,7 @@ public class PrometheusScraperEndpoint : AbstractEndpoint<string>, IPrometheusSc
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex.Message);
+            _logger?.LogError(ex, "Operation failed.");
         }
 
         _exporter.OnExport = null;

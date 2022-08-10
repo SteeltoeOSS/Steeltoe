@@ -232,7 +232,6 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
     {
         string message = $"{GetType()} HystrixCollapser failed while executing.";
 
-        // logger.debug(message, e); // debug only since we're throwing the exception and someone higher will do something with it
         return new HystrixRuntimeException(FailureType.CommandException, GetType(), message, e, null);
     }
 

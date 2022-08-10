@@ -188,7 +188,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
         }
         else
         {
-            Logger?.LogWarning("Listener method returned result [" + resultArg + "]: not generating response message for it because no Rabbit Channel given");
+            Logger?.LogWarning("Listener method returned result [{result}]: not generating response message for it because no Rabbit Channel given", resultArg);
         }
     }
 

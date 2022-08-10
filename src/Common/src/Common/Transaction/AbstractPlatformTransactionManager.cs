@@ -101,8 +101,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
         // Create "empty" transaction: no actual transaction, but potentially synchronization.
         if (def.IsolationLevel != AbstractTransactionDefinition.IsolationDefault)
         {
-            Logger?.LogWarning("Custom isolation level specified but no actual transaction initiated; " + "isolation level will effectively be ignored: " +
-                def);
+            Logger?.LogWarning("Custom isolation level specified but no actual transaction initiated; isolation level will effectively be ignored: {def}", def);
         }
 
         bool isSynchronizationAlways = TransactionSynchronization == SynchronizationAlways;

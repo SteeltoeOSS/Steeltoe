@@ -419,7 +419,7 @@ public class RabbitTemplate
 
         if (!ReplyHolder.TryGetValue((string)messageTag, out PendingReply pendingReply))
         {
-            Logger?.LogWarning("Reply received after timeout for " + messageTag);
+            Logger?.LogWarning("Reply received after timeout for {tag}", messageTag);
             throw new RabbitRejectAndDoNotRequeueException("Reply received after timeout");
         }
 
@@ -2541,7 +2541,7 @@ public class RabbitTemplate
 
         if (cause != null && RabbitUtils.IsPassiveDeclarationChannelClose(cause))
         {
-            Logger?.LogWarning("Broker does not support fast replies via 'amq.rabbitmq.reply-to', temporary " + "queues will be used: " + cause.Message + ".");
+            Logger?.LogWarning(ex, "Broker does not support fast replies via 'amq.rabbitmq.reply-to', temporary queues will be used: {cause}.", cause.Message);
             _replyAddress = null;
             return false;
         }

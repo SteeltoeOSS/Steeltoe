@@ -306,7 +306,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
     public void OnCreate(IConnection connection)
     {
-        _logger?.LogDebug("OnCreate for connection: {connection}", connection?.ToString());
+        _logger?.LogDebug("OnCreate for connection: {connection}", connection);
 
         if (Interlocked.CompareExchange(ref _initializing, 1, 0) != 0)
         {
@@ -342,12 +342,12 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
     public void OnClose(IConnection connection)
     {
-        _logger?.LogDebug("OnClose for connection: {connection}", connection?.ToString());
+        _logger?.LogDebug("OnClose for connection: {connection}", connection);
     }
 
     public void OnShutDown(RC.ShutdownEventArgs args)
     {
-        _logger?.LogDebug("OnShutDown for connection: {args}", args.ToString());
+        _logger?.LogDebug("OnShutDown for connection: {args}", args);
     }
 
     public void Initialize()
@@ -535,7 +535,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
                 if (queue.QueueName.Length > 255)
                 {
-                    throw new ArgumentException("Queue names cannot be longer than 255 characters.", nameof(queue));
+                    throw new ArgumentException("Queue names cannot be longer than 255 characters.", nameof(queues));
                 }
 
                 try
@@ -583,9 +583,9 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
                 proxy.TargetChannel.Close();
             }
         }
-        catch (Exception e1)
+        catch (Exception exception)
         {
-            _logger?.LogError(e1, "Failed to close {channel} after illegal argument", channel);
+            _logger?.LogError(exception, "Failed to close {channel} after illegal argument", channel);
         }
     }
 
@@ -623,18 +623,13 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
         if (IgnoreDeclarationExceptions || (element != null && element.IgnoreDeclarationExceptions))
         {
-            _logger?.LogDebug(exception,
-                "Failed to declare " + elementType + ": " + (element == null ? "broker-generated" : element.ToString()) + ", continuing...");
+            string elementText = element == null ? "broker-generated" : element.ToString();
 
-            Exception cause = exception;
+            _logger?.LogDebug(exception, "Failed to declare {elementType}: {elementText}, continuing...", elementType, elementText);
 
-            if (exception.InnerException != null)
-            {
-                cause = exception.InnerException;
-            }
+            Exception cause = exception.InnerException ?? exception;
 
-            _logger?.LogWarning(exception, "Failed to declare {elementType}: {element}, continuing... {cause} ", elementType,
-                element == null ? "broker-generated" : element.ToString(), cause);
+            _logger?.LogWarning(exception, "Failed to declare {elementType}: {element}, continuing... {cause}", elementType, elementText, cause);
         }
         else
         {

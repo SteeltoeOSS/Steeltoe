@@ -98,7 +98,7 @@ public class RelationalDbHealthContributor : IHealthContributor
         }
         catch (Exception e)
         {
-            _logger?.LogError("{DbConnection} down! {HealthCheckException}", Id, e.Message);
+            _logger?.LogError(e, "{DbConnection} down! {HealthCheckException}", Id, e.Message);
             result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
             result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Down;

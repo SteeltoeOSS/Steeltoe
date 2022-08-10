@@ -33,7 +33,7 @@ public class HypermediaService
             return links;
         }
 
-        _logger?.LogTrace("Processing hypermedia for  {ManagementOptions} ", _managementOptions);
+        _logger?.LogTrace("Processing hypermedia for {ManagementOptions}", _managementOptions);
 
         foreach (IEndpointOptions opt in endpointOptions)
         {

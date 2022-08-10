@@ -54,7 +54,7 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
             }
             catch (Exception errorDeliveryError)
             {
-                Logger?.LogWarning("Error message was not delivered.", errorDeliveryError);
+                Logger?.LogWarning(errorDeliveryError, "Error message was not delivered.");
             }
         }
 
@@ -64,11 +64,11 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
 
             if (failedMessage != null)
             {
-                Logger?.LogError("failure occurred in messaging task with message: " + failedMessage, exception);
+                Logger?.LogError(exception, "failure occurred in messaging task with message: {message}", failedMessage);
             }
             else
             {
-                Logger?.LogError("failure occurred in messaging task", exception);
+                Logger?.LogError(exception, "failure occurred in messaging task");
             }
         }
 

@@ -78,7 +78,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
 
         if (eventName == StopEvent)
         {
-            Logger?.LogTrace("HandleStopEvent start{thread}", Thread.CurrentThread.ManagedThreadId);
+            Logger?.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
             var context = DiagnosticHelpers.GetProperty<HttpContext>(value, "HttpContext");
 

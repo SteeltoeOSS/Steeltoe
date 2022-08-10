@@ -83,7 +83,7 @@ public class RabbitMQHealthContributor : IHealthContributor
                 e = e.InnerException;
             }
 
-            _logger?.LogError("RabbitMQ connection down! {HealthCheckException}", e.Message);
+            _logger?.LogError(e, "RabbitMQ connection down! {HealthCheckException}", e.Message);
             result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
             result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Down;

@@ -222,9 +222,9 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
             }
             else
             {
-                _logger?.LogWarning("The provided errorChannel '" + errorChannelName + "' is an instance of DirectChannel, " +
-                    "so no more subscribers could be added which may affect DLQ processing. " + "Resolution: Configure your own errorChannel as " +
-                    "an instance of PublishSubscribeChannel");
+                _logger?.LogWarning(
+                    "The provided errorChannel '{channel}' is an instance of DirectChannel, so no more subscribers could be added " +
+                    "which may affect DLQ processing. Resolution: Configure your own errorChannel as an instance of PublishSubscribeChannel", errorChannelName);
             }
         }
 
@@ -245,9 +245,10 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
             }
             else
             {
-                _logger?.LogWarning("The provided errorChannel '" + errorChannelName + "' is an instance of DirectChannel, " +
-                    "so no more subscribers could be added and no error messages will be sent to global error channel. " +
-                    "Resolution: Configure your own errorChannel as " + "an instance of PublishSubscribeChannel");
+                _logger?.LogWarning(
+                    "The provided errorChannel '{channel}' is an instance of DirectChannel, so no more subscribers could be added " +
+                    "and no error messages will be sent to global error channel. Resolution: Configure your own errorChannel as an instance of PublishSubscribeChannel",
+                    errorChannelName);
             }
         }
 

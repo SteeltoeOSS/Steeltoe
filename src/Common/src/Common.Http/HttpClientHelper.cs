@@ -276,7 +276,7 @@ public static class HttpClientHelper
 
             if (!response.IsSuccessStatusCode)
             {
-                logger?.LogInformation("GetAccessTokenAsync returned status: {0} while obtaining access token from: {1}", response.StatusCode,
+                logger?.LogInformation("GetAccessTokenAsync returned status: {statusCode} while obtaining access token from: {uri}", response.StatusCode,
                     WebUtility.UrlEncode(accessTokenUri.OriginalString));
 
                 return null;
@@ -294,7 +294,7 @@ public static class HttpClientHelper
         }
         catch (Exception e)
         {
-            logger?.LogError("GetAccessTokenAsync exception: {0}, obtaining access token from: {1}", e, WebUtility.UrlEncode(accessTokenUri.OriginalString));
+            logger?.LogError(e, "GetAccessTokenAsync exception obtaining access token from: {uri}", WebUtility.UrlEncode(accessTokenUri.OriginalString));
         }
         finally
         {

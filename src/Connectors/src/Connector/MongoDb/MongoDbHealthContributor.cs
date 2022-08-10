@@ -76,7 +76,7 @@ public class MongoDbHealthContributor : IHealthContributor
                 e = e.InnerException;
             }
 
-            _logger?.LogError("MongoDb connection is down! {HealthCheckException}", e.Message);
+            _logger?.LogError(e, "MongoDb connection is down! {HealthCheckException}", e.Message);
             result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
             result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Down;

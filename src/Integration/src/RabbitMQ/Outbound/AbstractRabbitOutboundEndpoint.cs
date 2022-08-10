@@ -141,7 +141,7 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogError("Failed to eagerly establish the connection.", e);
+                        _logger?.LogError(e, "Failed to eagerly establish the connection.");
                     }
                 }
 
@@ -345,7 +345,7 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
 
         if (correlationData == null)
         {
-            _logger.LogDebug("No correlation data provided for ack: " + ack + " cause:" + cause);
+            _logger.LogDebug("No correlation data provided for ack: {ack} cause:{cause}", ack, cause);
             return;
         }
 
@@ -363,7 +363,7 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
         }
         else
         {
-            _logger.LogInformation("Nowhere to send publisher confirm " + (ack ? "ack" : "nack") + " for " + userCorrelationData);
+            _logger.LogInformation("Nowhere to send publisher confirm {confirm} for {user}", ack ? "ack" : "nack", userCorrelationData);
         }
     }
 

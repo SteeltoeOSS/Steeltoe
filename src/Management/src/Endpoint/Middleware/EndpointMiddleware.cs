@@ -64,7 +64,7 @@ public class EndpointMiddleware<TResult>
         }
         catch (Exception e) when (e is ArgumentException or ArgumentNullException or NotSupportedException)
         {
-            logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
+            logger?.LogError(e, "Error serializing {MiddlewareResponse}", result);
         }
 
         return string.Empty;

@@ -36,7 +36,7 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
     protected internal Task HandleHealthRequestAsync(HttpContext context)
     {
         string serialInfo = DoRequest(context);
-        logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);

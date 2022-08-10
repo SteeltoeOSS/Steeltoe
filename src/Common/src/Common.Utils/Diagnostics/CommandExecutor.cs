@@ -97,7 +97,7 @@ public class CommandExecutor : ICommandExecutor
         }
         catch (Exception ex)
         {
-            _logger?.LogDebug("[{CommandId}] failed to start: {Error}", commandId, ex.Message);
+            _logger?.LogDebug(ex, "[{CommandId}] failed to start: {Error}", commandId, ex.Message);
             throw new CommandException($"'{command}' failed to start: {ex.Message}", ex);
         }
 

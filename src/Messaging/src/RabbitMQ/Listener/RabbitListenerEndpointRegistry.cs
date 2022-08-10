@@ -119,7 +119,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
                     }
                     catch (Exception ex)
                     {
-                        _logger?.LogWarning("Failed to destroy listener container [" + listenerContainer + "]", ex);
+                        _logger?.LogWarning(ex, "Failed to destroy listener container [{container}]", listenerContainer);
                     }
                 }
             }
@@ -154,7 +154,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogWarning("Failed to stop listener container [" + listenerContainer + "]", e);
+                    _logger?.LogWarning(e, "Failed to stop listener container [{container}]", listenerContainer);
                 }
             }
         }
@@ -174,7 +174,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
             }
             catch (Exception e)
             {
-                _logger?.LogWarning("Failed to stop listener container [" + listenerContainer + "]", e);
+                _logger?.LogWarning(e, "Failed to stop listener container [{container}]", listenerContainer);
             }
         }
     }

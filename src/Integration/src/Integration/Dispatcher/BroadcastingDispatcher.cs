@@ -133,7 +133,7 @@ public class BroadcastingDispatcher : AbstractDispatcher
                 throw;
             }
 
-            InnerLogger?.LogWarning("Suppressing Exception since 'ignoreFailures' is set to TRUE.", e);
+            InnerLogger?.LogWarning(e, "Suppressing Exception since 'ignoreFailures' is set to TRUE.");
         }
     }
 

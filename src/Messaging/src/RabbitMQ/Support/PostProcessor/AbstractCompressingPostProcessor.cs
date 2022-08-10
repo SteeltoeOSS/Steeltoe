@@ -44,7 +44,7 @@ public abstract class AbstractCompressingPostProcessor : IMessagePostProcessor, 
 
             byte[] compressed = zipped.ToArray();
 
-            Logger?.LogTrace("Compressed " + ((byte[])message.Payload).Length + " to " + compressed.Length);
+            Logger?.LogTrace("Compressed {beforeLength} to {afterLength} bytes.", ((byte[])message.Payload).Length, compressed.Length);
 
             return CreateMessage(message, compressed);
         }

@@ -79,7 +79,7 @@ public class RedisHealthContributor : IHealthContributor
                 e = e.InnerException;
             }
 
-            _logger?.LogError("Redis connection down! {HealthCheckException}", e.Message);
+            _logger?.LogError(e, "Redis connection down! {HealthCheckException}", e.Message);
             result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
             result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Down;

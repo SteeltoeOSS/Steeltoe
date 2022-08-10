@@ -144,7 +144,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
                     }
                     else
                     {
-                        Logger?.LogTrace("Error handler returned no result");
+                        Logger?.LogTrace(e, "Error handler returned no result");
                     }
                 }
                 catch (Exception ex)

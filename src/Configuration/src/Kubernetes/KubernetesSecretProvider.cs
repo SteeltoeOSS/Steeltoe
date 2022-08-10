@@ -91,7 +91,7 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
     {
         SecretWatcher = KubernetesClient.WatchNamespacedSecretAsync(Settings.Name, Settings.Namespace, onEvent: (eventType, item) =>
                 {
-                    Logger?.LogInformation("Received {eventType} event for Secret {secretName} with {entries} values", eventType.ToString(), Settings.Name,
+                    Logger?.LogInformation("Received {eventType} event for Secret {secretName} with {entries} values", eventType, Settings.Name,
                         item?.Data?.Count);
 
                     switch (eventType)
