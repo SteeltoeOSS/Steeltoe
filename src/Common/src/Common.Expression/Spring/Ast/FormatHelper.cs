@@ -18,8 +18,8 @@ public static class FormatHelper
         return $"{name}({string.Join(",", items)})";
     }
 
-    public static string FormatClassNameForMessage(Type clazz)
+    public static string FormatClassNameForMessage(Type type)
     {
-        return clazz != null ? clazz.FullName : "null";
+        return type != null ? type.FullName : "null";
     }
 }

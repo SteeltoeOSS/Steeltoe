@@ -81,14 +81,14 @@ public static class ConversionUtils
         return enumerable.Cast<object>().Count();
     }
 
-    public static Type GetNullableElementType(Type nullable)
+    public static Type GetNullableElementType(Type nullableType)
     {
-        if (nullable.IsGenericType && typeof(Nullable<>) == nullable.GetGenericTypeDefinition())
+        if (nullableType.IsGenericType && typeof(Nullable<>) == nullableType.GetGenericTypeDefinition())
         {
-            return nullable.GetGenericArguments()[0];
+            return nullableType.GetGenericArguments()[0];
         }
 
-        return nullable;
+        return nullableType;
     }
 
     public static bool CanCreateCompatListFor(Type type)
@@ -265,13 +265,13 @@ public static class ConversionUtils
         return (IDictionary)Activator.CreateInstance(type);
     }
 
-    public static ConstructorInfo GetConstructorIfAvailable(Type clazz, params Type[] paramTypes)
+    public static ConstructorInfo GetConstructorIfAvailable(Type type, params Type[] paramTypes)
     {
-        ArgumentGuard.NotNull(clazz);
+        ArgumentGuard.NotNull(type);
 
         try
         {
-            return clazz.GetConstructor(paramTypes);
+            return type.GetConstructor(paramTypes);
         }
         catch (Exception)
         {
@@ -279,14 +279,14 @@ public static class ConversionUtils
         }
     }
 
-    public static MethodInfo GetStaticMethod(Type clazz, string methodName, params Type[] args)
+    public static MethodInfo GetStaticMethod(Type type, string methodName, params Type[] types)
     {
-        ArgumentGuard.NotNull(clazz);
+        ArgumentGuard.NotNull(type);
         ArgumentGuard.NotNullOrEmpty(methodName);
 
         try
         {
-            MethodInfo method = clazz.GetMethod(methodName, args);
+            MethodInfo method = type.GetMethod(methodName, types);
 
             if (method != null)
             {
@@ -301,16 +301,16 @@ public static class ConversionUtils
         }
     }
 
-    public static MethodInfo GetMethodIfAvailable(Type clazz, string methodName, params Type[] paramTypes)
+    public static MethodInfo GetMethodIfAvailable(Type type, string methodName, params Type[] paramTypes)
     {
-        ArgumentGuard.NotNull(clazz);
+        ArgumentGuard.NotNull(type);
         ArgumentGuard.NotNullOrEmpty(methodName);
 
         if (paramTypes != null)
         {
             try
             {
-                return clazz.GetMethod(methodName, paramTypes);
+                return type.GetMethod(methodName, paramTypes);
             }
             catch (Exception)
             {
@@ -318,7 +318,7 @@ public static class ConversionUtils
             }
         }
 
-        List<MethodInfo> candidates = FindMethodCandidatesByName(clazz, methodName);
+        List<MethodInfo> candidates = FindMethodCandidatesByName(type, methodName);
 
         if (candidates.Count == 1)
         {
@@ -328,10 +328,10 @@ public static class ConversionUtils
         return null;
     }
 
-    internal static List<MethodInfo> FindMethodCandidatesByName(Type clazz, string methodName)
+    internal static List<MethodInfo> FindMethodCandidatesByName(Type type, string methodName)
     {
         var candidates = new List<MethodInfo>();
-        MethodInfo[] methods = clazz.GetMethods();
+        MethodInfo[] methods = type.GetMethods();
 
         foreach (MethodInfo method in methods)
         {

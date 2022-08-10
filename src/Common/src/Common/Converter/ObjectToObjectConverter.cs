@@ -66,35 +66,35 @@ public class ObjectToObjectConverter : AbstractGenericConditionalConverter
             targetClass.Name));
     }
 
-    internal static bool HasConversionMethodOrConstructor(Type targetClass, Type sourceClass)
+    internal static bool HasConversionMethodOrConstructor(Type targetType, Type sourceType)
     {
-        return GetValidatedMember(targetClass, sourceClass) != null;
+        return GetValidatedMember(targetType, sourceType) != null;
     }
 
-    private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
+    private static ISet<(Type SourceType, Type TargetType)> GetConvertiblePairs()
     {
-        return new HashSet<(Type Source, Type Target)>
+        return new HashSet<(Type SourceType, Type TargetType)>
         {
             (typeof(object), typeof(object))
         };
     }
 
-    private static MemberInfo GetValidatedMember(Type targetClass, Type sourceClass)
+    private static MemberInfo GetValidatedMember(Type targetType, Type sourceType)
     {
-        if (ConversionMemberCache.TryGetValue(targetClass, out MemberInfo member) && IsApplicable(member, sourceClass))
+        if (ConversionMemberCache.TryGetValue(targetType, out MemberInfo member) && IsApplicable(member, sourceType))
         {
             return member;
         }
 
-        member = DetermineToMethod(targetClass, sourceClass);
+        member = DetermineToMethod(targetType, sourceType);
 
         if (member == null)
         {
-            member = DetermineFactoryMethod(targetClass, sourceClass);
+            member = DetermineFactoryMethod(targetType, sourceType);
 
             if (member == null)
             {
-                member = DetermineFactoryConstructor(targetClass, sourceClass);
+                member = DetermineFactoryConstructor(targetType, sourceType);
 
                 if (member == null)
                 {
@@ -103,57 +103,57 @@ public class ObjectToObjectConverter : AbstractGenericConditionalConverter
             }
         }
 
-        ConversionMemberCache.TryAdd(targetClass, member);
+        ConversionMemberCache.TryAdd(targetType, member);
         return member;
     }
 
-    private static bool IsApplicable(MemberInfo member, Type sourceClass)
+    private static bool IsApplicable(MemberInfo member, Type sourceType)
     {
         return member switch
         {
-            MethodInfo method => !method.IsStatic ? method.DeclaringType.IsAssignableFrom(sourceClass) : method.GetParameters()[0].ParameterType == sourceClass,
-            ConstructorInfo ctor => ctor.GetParameters()[0].ParameterType == sourceClass,
+            MethodInfo method => !method.IsStatic ? method.DeclaringType.IsAssignableFrom(sourceType) : method.GetParameters()[0].ParameterType == sourceType,
+            ConstructorInfo ctor => ctor.GetParameters()[0].ParameterType == sourceType,
             _ => false
         };
     }
 
-    private static MethodInfo DetermineToMethod(Type targetClass, Type sourceClass)
+    private static MethodInfo DetermineToMethod(Type targetType, Type sourceType)
     {
-        if (typeof(string) == targetClass || typeof(string) == sourceClass)
+        if (typeof(string) == targetType || typeof(string) == sourceType)
         {
             // Do not accept a ToString() method or any to methods on String itself
             return null;
         }
 
-        MethodInfo method = ConversionUtils.GetMethodIfAvailable(sourceClass, $"To{targetClass.Name}");
-        return method != null && !method.IsStatic && targetClass.IsAssignableFrom(method.ReturnType) ? method : null;
+        MethodInfo method = ConversionUtils.GetMethodIfAvailable(sourceType, $"To{targetType.Name}");
+        return method != null && !method.IsStatic && targetType.IsAssignableFrom(method.ReturnType) ? method : null;
     }
 
-    private static MethodInfo DetermineFactoryMethod(Type targetClass, Type sourceClass)
+    private static MethodInfo DetermineFactoryMethod(Type targetType, Type sourceType)
     {
-        if (typeof(string) == targetClass)
+        if (typeof(string) == targetType)
         {
             // Do not accept the String.valueOf(Object) method
             return null;
         }
 
-        MethodInfo method = ConversionUtils.GetStaticMethod(targetClass, "ValueOf", sourceClass);
+        MethodInfo method = ConversionUtils.GetStaticMethod(targetType, "ValueOf", sourceType);
 
         if (method == null)
         {
-            method = ConversionUtils.GetStaticMethod(targetClass, "Of", sourceClass);
+            method = ConversionUtils.GetStaticMethod(targetType, "Of", sourceType);
 
             if (method == null)
             {
-                method = ConversionUtils.GetStaticMethod(targetClass, "From", sourceClass);
+                method = ConversionUtils.GetStaticMethod(targetType, "From", sourceType);
             }
         }
 
         return method;
     }
 
-    private static ConstructorInfo DetermineFactoryConstructor(Type targetClass, Type sourceClass)
+    private static ConstructorInfo DetermineFactoryConstructor(Type targetType, Type sourceType)
     {
-        return ConversionUtils.GetConstructorIfAvailable(targetClass, sourceClass);
+        return ConversionUtils.GetConstructorIfAvailable(targetType, sourceType);
     }
 }

@@ -9,7 +9,7 @@ public class ArrayToArrayConverter : AbstractGenericConditionalConverter
     private readonly IConversionService _conversionService;
 
     public ArrayToArrayConverter(IConversionService conversionService)
-        : base(new HashSet<(Type Source, Type Target)>
+        : base(new HashSet<(Type SourceType, Type TargetType)>
         {
             (typeof(object[]), typeof(object[]))
         })

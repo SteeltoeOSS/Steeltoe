@@ -79,9 +79,9 @@ public class ActuatorRouteBuilderExtensionsTest
     [MemberData(nameof(EndpointImplementations))]
     public void LookupMiddlewareTest(Type type)
     {
-        (Type middleware, Type options) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
-        Assert.NotNull(middleware);
-        Assert.NotNull(options);
+        (Type middlewareType, Type optionsType) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
+        Assert.NotNull(middlewareType);
+        Assert.NotNull(optionsType);
     }
 
     [Theory]

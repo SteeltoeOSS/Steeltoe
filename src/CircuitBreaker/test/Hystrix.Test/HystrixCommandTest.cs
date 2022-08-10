@@ -89,7 +89,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         {
             _output.WriteLine(e.ToString());
             Assert.NotNull(e.FallbackException);
-            Assert.NotNull(e.ImplementingClass);
+            Assert.NotNull(e.ImplementingType);
         }
 
         Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -114,7 +114,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         {
             _output.WriteLine(e.ToString());
             Assert.NotNull(e.FallbackException);
-            Assert.NotNull(e.ImplementingClass);
+            Assert.NotNull(e.ImplementingType);
         }
 
         Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -243,7 +243,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         {
             _output.WriteLine(e.ToString());
             Assert.NotNull(e.FallbackException);
-            Assert.NotNull(e.ImplementingClass);
+            Assert.NotNull(e.ImplementingType);
         }
 
         Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -268,7 +268,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         {
             _output.WriteLine(e.ToString());
             Assert.NotNull(e.FallbackException);
-            Assert.NotNull(e.ImplementingClass);
+            Assert.NotNull(e.ImplementingType);
         }
 
         Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -563,7 +563,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             {
                 Assert.NotNull(de.FallbackException);
                 Assert.True(de.FallbackException is InvalidOperationException);
-                Assert.NotNull(de.ImplementingClass);
+                Assert.NotNull(de.ImplementingType);
                 Assert.NotNull(de.InnerException);
                 Assert.True(de.InnerException is TimeoutException);
             }
@@ -621,7 +621,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             {
                 Assert.NotNull(de.FallbackException);
                 Assert.False(de.FallbackException is InvalidOperationException);
-                Assert.NotNull(de.ImplementingClass);
+                Assert.NotNull(de.ImplementingType);
                 Assert.NotNull(de.InnerException);
                 Assert.True(de.InnerException is TimeoutException);
             }
@@ -679,7 +679,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             // e.printStackTrace();
             Assert.NotNull(e.FallbackException);
             Assert.True(e.FallbackException is InvalidOperationException);
-            Assert.NotNull(e.ImplementingClass);
+            Assert.NotNull(e.ImplementingType);
             Assert.NotNull(e.InnerException);
             Assert.True(e.InnerException is TimeoutException);
         }
@@ -717,7 +717,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         {
             Assert.NotNull(e.FallbackException);
             Assert.False(e.FallbackException is InvalidOperationException, "Fallback exception was unexpected type");
-            Assert.NotNull(e.ImplementingClass);
+            Assert.NotNull(e.ImplementingType);
             Assert.NotNull(e.InnerException);
             Assert.True(e.InnerException is TimeoutException, "Inner exception was unexpected type");
         }
@@ -744,7 +744,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             {
                 Assert.NotNull(de.FallbackException);
                 Assert.True(de.FallbackException is InvalidOperationException);
-                Assert.NotNull(de.ImplementingClass);
+                Assert.NotNull(de.ImplementingType);
                 Assert.NotNull(de.InnerException);
                 Assert.True(de.InnerException is TimeoutException);
             }
@@ -790,7 +790,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             {
                 Assert.NotNull(de.FallbackException);
                 Assert.False(de.FallbackException is InvalidOperationException);
-                Assert.NotNull(de.ImplementingClass);
+                Assert.NotNull(de.ImplementingType);
                 Assert.NotNull(de.InnerException);
                 Assert.True(de.InnerException is TimeoutException);
             }
@@ -868,7 +868,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
                 HystrixRuntimeException de = exception;
                 Assert.NotNull(de.FallbackException);
                 Assert.True(de.FallbackException is InvalidOperationException);
-                Assert.NotNull(de.ImplementingClass);
+                Assert.NotNull(de.ImplementingType);
                 Assert.NotNull(de.InnerException);
                 Assert.True(de.InnerException is RejectedExecutionException);
             }
@@ -964,7 +964,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
                 HystrixRuntimeException de = exception;
                 Assert.NotNull(de.FallbackException);
                 Assert.False(de.FallbackException is InvalidOperationException);
-                Assert.NotNull(de.ImplementingClass);
+                Assert.NotNull(de.ImplementingType);
                 Assert.NotNull(de.InnerException);
                 Assert.True(de.InnerException is RejectedExecutionException);
             }
@@ -1038,7 +1038,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
                 HystrixRuntimeException de = exception;
                 Assert.NotNull(de.FallbackException);
                 Assert.True(de.FallbackException is InvalidOperationException);
-                Assert.NotNull(de.ImplementingClass);
+                Assert.NotNull(de.ImplementingType);
                 Assert.NotNull(de.InnerException);
                 Assert.True(de.InnerException is RejectedExecutionException);
             }
@@ -2556,7 +2556,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         {
             Assert.NotNull(de.FallbackException);
             Assert.True(de.FallbackException is InvalidOperationException);
-            Assert.NotNull(de.ImplementingClass);
+            Assert.NotNull(de.ImplementingType);
             Assert.NotNull(de.InnerException);
             Assert.True(de.InnerException is TimeoutException);
         }

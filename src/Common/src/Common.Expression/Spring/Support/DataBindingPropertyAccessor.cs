@@ -25,7 +25,7 @@ public class DataBindingPropertyAccessor : ReflectivePropertyAccessor
 
     protected override bool IsCandidateForProperty(MethodInfo method, Type targetClass)
     {
-        Type clazz = method.DeclaringType;
-        return clazz != typeof(object) && clazz != typeof(Type);
+        Type type = method.DeclaringType;
+        return type != typeof(object) && type != typeof(Type);
     }
 }

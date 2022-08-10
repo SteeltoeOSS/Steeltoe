@@ -507,18 +507,18 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         return $"Steeltoe.Messaging.Rabbit.RabbitListenerEndpointContainer#{Interlocked.Increment(ref _counter)}";
     }
 
-    private object CreateTargetBean(Type implementation)
+    private object CreateTargetBean(Type implementationType)
     {
         try
         {
-            _logger?.LogDebug("Creating RabbitListener service {serviceType}.", implementation);
-            return ApplicationContext.ServiceProvider.GetService(implementation);
+            _logger?.LogDebug("Creating RabbitListener service {serviceType}.", implementationType);
+            return ApplicationContext.ServiceProvider.GetService(implementationType);
         }
         catch (Exception e)
         {
             // Log
-            _logger?.LogError(e, "Error creating RabbitListener service {serviceType}.", implementation);
-            throw new InvalidOperationException($"Unable to CreateInstance of type containing RabbitListener method, Type: {implementation}", e);
+            _logger?.LogError(e, "Error creating RabbitListener service {serviceType}.", implementationType);
+            throw new InvalidOperationException($"Unable to CreateInstance of type containing RabbitListener method, Type: {implementationType}", e);
         }
     }
 }

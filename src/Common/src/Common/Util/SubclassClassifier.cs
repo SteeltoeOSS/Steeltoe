@@ -35,9 +35,9 @@ public class SubclassClassifier<TSource, TTarget> : IClassifier<TSource, TTarget
             return DefaultValue;
         }
 
-        Type clazz = classifiable.GetType();
+        Type type = classifiable.GetType();
 
-        if (TypeMap.TryGetValue(clazz, out TTarget result))
+        if (TypeMap.TryGetValue(type, out TTarget result))
         {
             return result;
         }
@@ -46,9 +46,9 @@ public class SubclassClassifier<TSource, TTarget> : IClassifier<TSource, TTarget
         bool foundValue = false;
         var value = default(TTarget);
 
-        for (Type cls = clazz; !cls.Equals(typeof(object)); cls = cls.BaseType)
+        for (Type currentType = type; !currentType.Equals(typeof(object)); currentType = currentType.BaseType)
         {
-            if (TypeMap.TryGetValue(cls, out value))
+            if (TypeMap.TryGetValue(currentType, out value))
             {
                 foundValue = true;
                 break;
@@ -57,7 +57,7 @@ public class SubclassClassifier<TSource, TTarget> : IClassifier<TSource, TTarget
 
         if (foundValue)
         {
-            TypeMap.TryAdd(clazz, value);
+            TypeMap.TryAdd(type, value);
             return value;
         }
 

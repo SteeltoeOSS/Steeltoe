@@ -215,8 +215,8 @@ public class PropertyOrFieldReference : SpelNode
                 {
                     if (IsWritableProperty(Name, contextObject, evalContext))
                     {
-                        Type clazz = result.TypeDescriptor;
-                        object newObject = ReflectionHelper.GetAccessibleConstructor(clazz).Invoke(Array.Empty<object>());
+                        Type type = result.TypeDescriptor;
+                        object newObject = ReflectionHelper.GetAccessibleConstructor(type).Invoke(Array.Empty<object>());
                         WriteProperty(contextObject, evalContext, Name, newObject);
                         result = ReadProperty(contextObject, evalContext, Name);
                     }
@@ -366,24 +366,24 @@ public class PropertyOrFieldReference : SpelNode
 
         foreach (IPropertyAccessor resolver in propertyAccessors)
         {
-            IList<Type> targets = resolver.GetSpecificTargetClasses();
+            IList<Type> targetTypes = resolver.GetSpecificTargetClasses();
 
-            if (targets == null)
+            if (targetTypes == null)
             {
                 // generic resolver that says it can be used for any type
                 generalAccessors.Add(resolver);
             }
             else if (targetType != null)
             {
-                foreach (Type clazz in targets)
+                foreach (Type type in targetTypes)
                 {
-                    if (clazz == targetType)
+                    if (type == targetType)
                     {
                         specificAccessors.Add(resolver);
                         break;
                     }
 
-                    if (clazz.IsAssignableFrom(targetType))
+                    if (type.IsAssignableFrom(targetType))
                     {
                         generalAccessors.Add(resolver);
                     }

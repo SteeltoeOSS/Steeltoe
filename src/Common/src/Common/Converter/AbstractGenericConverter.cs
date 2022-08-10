@@ -6,9 +6,9 @@ namespace Steeltoe.Common.Converter;
 
 public abstract class AbstractGenericConverter : IGenericConverter
 {
-    public ISet<(Type Source, Type Target)> ConvertibleTypes { get; }
+    public ISet<(Type SourceType, Type TargetType)> ConvertibleTypes { get; }
 
-    protected AbstractGenericConverter(ISet<(Type Source, Type Target)> convertableTypes)
+    protected AbstractGenericConverter(ISet<(Type SourceType, Type TargetType)> convertableTypes)
     {
         ConvertibleTypes = convertableTypes;
     }

@@ -49,11 +49,11 @@ public class TypeReference : SpelNode
             }
         }
 
-        Type clazz = state.FindType(typeName);
-        clazz = MakeArrayIfNecessary(clazz);
+        Type foundType = state.FindType(typeName);
+        foundType = MakeArrayIfNecessary(foundType);
         exitTypeDescriptor = TypeDescriptor.Type;
-        _type = clazz;
-        return new TypedValue(clazz);
+        _type = foundType;
+        return new TypedValue(foundType);
     }
 
     public override string ToStringAst()
@@ -87,17 +87,17 @@ public class TypeReference : SpelNode
         cf.PushDescriptor(exitTypeDescriptor);
     }
 
-    private Type MakeArrayIfNecessary(Type clazz)
+    private Type MakeArrayIfNecessary(Type type)
     {
         if (_dimensions != 0)
         {
             for (int i = 0; i < _dimensions; i++)
             {
-                var array = Array.CreateInstance(clazz, 0);
-                clazz = array.GetType();
+                var array = Array.CreateInstance(type, 0);
+                type = array.GetType();
             }
         }
 
-        return clazz;
+        return type;
     }
 }

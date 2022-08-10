@@ -42,10 +42,10 @@ public abstract class AbstractTypeMapper
         CreateReverseMap();
     }
 
-    protected virtual void AddHeader(IMessageHeaders headers, string headerName, Type clazz)
+    protected virtual void AddHeader(IMessageHeaders headers, string headerName, Type type)
     {
         MessageHeaderAccessor accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
-        accessor.SetHeader(headerName, _classIdMapping.ContainsKey(clazz) ? _classIdMapping[clazz] : GetClassName(clazz));
+        accessor.SetHeader(headerName, _classIdMapping.ContainsKey(type) ? _classIdMapping[type] : GetClassName(type));
     }
 
     protected virtual string RetrieveHeader(IMessageHeaders headers, string headerName)
@@ -143,8 +143,8 @@ public abstract class AbstractTypeMapper
         foreach (KeyValuePair<string, Type> entry in IdClassMapping)
         {
             string id = entry.Key;
-            Type clazz = entry.Value;
-            _classIdMapping[clazz] = id;
+            Type type = entry.Value;
+            _classIdMapping[type] = id;
         }
     }
 }

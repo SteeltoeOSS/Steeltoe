@@ -27,14 +27,14 @@ public class SpelParserTests
     {
         var parser = new SpelExpressionParser();
         var ctx = new StandardEvaluationContext();
-        Type c = parser.ParseRaw("2").GetValueType();
-        Assert.Equal(typeof(int), c);
-        c = parser.ParseRaw("12").GetValueType(ctx);
-        Assert.Equal(typeof(int), c);
-        c = parser.ParseRaw("null").GetValueType();
-        Assert.Null(c);
-        c = parser.ParseRaw("null").GetValueType(ctx);
-        Assert.Null(c);
+        Type type = parser.ParseRaw("2").GetValueType();
+        Assert.Equal(typeof(int), type);
+        type = parser.ParseRaw("12").GetValueType(ctx);
+        Assert.Equal(typeof(int), type);
+        type = parser.ParseRaw("null").GetValueType();
+        Assert.Null(type);
+        type = parser.ParseRaw("null").GetValueType(ctx);
+        Assert.Null(type);
         object o = parser.ParseRaw("null").GetValue(ctx, typeof(object));
         Assert.Null(o);
     }

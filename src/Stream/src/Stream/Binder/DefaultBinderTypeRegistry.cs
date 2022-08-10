@@ -197,7 +197,7 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
 
     internal static string GetConfigureClass(CustomAttributeData data)
     {
-        Type type = data.ConstructorArguments[1].Value as Type ?? GetNamedArgument<Type>(data.NamedArguments, "ConfigureClass");
+        Type type = data.ConstructorArguments[1].Value as Type ?? GetNamedArgument<Type>(data.NamedArguments, "ConfigureType");
 
         return type?.AssemblyQualifiedName;
     }

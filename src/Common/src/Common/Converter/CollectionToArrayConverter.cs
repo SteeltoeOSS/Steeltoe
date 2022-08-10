@@ -55,9 +55,9 @@ public class CollectionToArrayConverter : AbstractGenericConditionalConverter
         return array;
     }
 
-    private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
+    private static ISet<(Type SourceType, Type TargetType)> GetConvertiblePairs()
     {
-        return new HashSet<(Type Source, Type Target)>
+        return new HashSet<(Type SourceType, Type TargetType)>
         {
             (typeof(ICollection), typeof(object[])),
             (typeof(ISet<>), typeof(object[]))

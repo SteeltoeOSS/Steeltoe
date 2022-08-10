@@ -26,7 +26,7 @@ public class ObjectStringMessageConverter : AbstractMessageConverter
         return SupportsMimeType(message.Headers);
     }
 
-    protected override bool Supports(Type clazz)
+    protected override bool Supports(Type type)
     {
         return true;
     }

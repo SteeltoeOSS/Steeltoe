@@ -98,31 +98,31 @@ public class DelegatingInvocableHandler
         return null;
     }
 
-    protected IInvocableHandlerMethod GetHandlerForPayload(Type payloadClass)
+    protected IInvocableHandlerMethod GetHandlerForPayload(Type payloadType)
     {
-        if (!_cachedHandlers.TryGetValue(payloadClass, out IInvocableHandlerMethod handler))
+        if (!_cachedHandlers.TryGetValue(payloadType, out IInvocableHandlerMethod handler))
         {
-            handler = FindHandlerForPayload(payloadClass);
+            handler = FindHandlerForPayload(payloadType);
 
             if (handler == null)
             {
-                throw new RabbitException($"No method found for {payloadClass}");
+                throw new RabbitException($"No method found for {payloadType}");
             }
 
-            _cachedHandlers.TryAdd(payloadClass, handler);
+            _cachedHandlers.TryAdd(payloadType, handler);
             SetupReplyTo(handler);
         }
 
         return handler;
     }
 
-    protected virtual IInvocableHandlerMethod FindHandlerForPayload(Type payloadClass)
+    protected virtual IInvocableHandlerMethod FindHandlerForPayload(Type payloadType)
     {
         IInvocableHandlerMethod result = null;
 
         foreach (IInvocableHandlerMethod handler in Handlers)
         {
-            if (MatchHandlerMethod(payloadClass, handler))
+            if (MatchHandlerMethod(payloadType, handler))
             {
                 if (result != null)
                 {
@@ -130,7 +130,7 @@ public class DelegatingInvocableHandler
 
                     if (!handler.Equals(DefaultHandler) && !resultIsDefault)
                     {
-                        throw new RabbitException($"Ambiguous methods for payload type: {payloadClass}: {result.Method.Name} and {handler.Method.Name}");
+                        throw new RabbitException($"Ambiguous methods for payload type: {payloadType}: {result.Method.Name} and {handler.Method.Name}");
                     }
 
                     if (!resultIsDefault)
@@ -146,7 +146,7 @@ public class DelegatingInvocableHandler
         return result ?? DefaultHandler;
     }
 
-    protected bool MatchHandlerMethod(Type payloadClass, IInvocableHandlerMethod handler)
+    protected bool MatchHandlerMethod(Type payloadType, IInvocableHandlerMethod handler)
     {
         MethodInfo method = handler.Method;
         ParameterInfo[] parameters = method.GetParameters();
@@ -154,7 +154,7 @@ public class DelegatingInvocableHandler
 
         // Single param; no annotation or not @Header
         if (parameterAnnotations.Length == 1 && (parameterAnnotations[0].Length == 0 ||
-            !parameterAnnotations[0].Any(attr => attr.GetType() == typeof(HeaderAttribute))) && parameters[0].ParameterType.IsAssignableFrom(payloadClass))
+            !parameterAnnotations[0].Any(attr => attr.GetType() == typeof(HeaderAttribute))) && parameters[0].ParameterType.IsAssignableFrom(payloadType))
         {
             return true;
         }
@@ -165,7 +165,7 @@ public class DelegatingInvocableHandler
         {
             // MethodParameter methodParameter = new MethodParameter(method, i);
             if ((parameterAnnotations[i].Length == 0 || !parameterAnnotations[i].Any(attr => attr.GetType() == typeof(HeaderAttribute))) &&
-                parameters[i].ParameterType.IsAssignableFrom(payloadClass))
+                parameters[i].ParameterType.IsAssignableFrom(payloadType))
             {
                 if (foundCandidate)
                 {

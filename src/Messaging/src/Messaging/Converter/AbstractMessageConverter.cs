@@ -199,7 +199,7 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
         return headers != null && ContentTypeResolver != null ? ContentTypeResolver.Resolve(headers) : null;
     }
 
-    protected abstract bool Supports(Type clazz);
+    protected abstract bool Supports(Type type);
 
     protected virtual object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
     {

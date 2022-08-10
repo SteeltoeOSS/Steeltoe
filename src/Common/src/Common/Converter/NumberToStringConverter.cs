@@ -16,9 +16,9 @@ public class NumberToStringConverter : AbstractGenericConverter
         return System.Convert.ToString(source);
     }
 
-    private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
+    private static ISet<(Type SourceType, Type TargetType)> GetConvertiblePairs()
     {
-        return new HashSet<(Type Source, Type Target)>
+        return new HashSet<(Type SourceType, Type TargetType)>
         {
             (typeof(int), typeof(string)),
             (typeof(float), typeof(string)),

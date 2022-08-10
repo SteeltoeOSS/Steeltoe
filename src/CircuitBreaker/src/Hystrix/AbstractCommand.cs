@@ -216,11 +216,11 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         return fromConstructor;
     }
 
-    protected static IHystrixCommandKey InitCommandKey(IHystrixCommandKey fromConstructor, Type clazz)
+    protected static IHystrixCommandKey InitCommandKey(IHystrixCommandKey fromConstructor, Type type)
     {
         if (fromConstructor == null || string.IsNullOrWhiteSpace(fromConstructor.Name))
         {
-            string keyName = clazz.Name;
+            string keyName = type.Name;
             return HystrixCommandKeyDefault.AsKey(keyName);
         }
 

@@ -7,10 +7,10 @@ namespace Steeltoe.Stream.Attributes;
 [AttributeUsage(AttributeTargets.Class)]
 public class EnableBindingAttribute : Attribute
 {
-    public virtual Type[] Bindings { get; set; }
+    public virtual Type[] BindingTypes { get; set; }
 
-    public EnableBindingAttribute(params Type[] bindings)
+    public EnableBindingAttribute(params Type[] bindingTypes)
     {
-        Bindings = bindings;
+        BindingTypes = bindingTypes;
     }
 }

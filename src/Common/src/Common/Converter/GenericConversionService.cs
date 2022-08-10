@@ -161,7 +161,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
     {
         private readonly string _name;
 
-        public ISet<(Type Source, Type Target)> ConvertibleTypes => null;
+        public ISet<(Type SourceType, Type TargetType)> ConvertibleTypes => null;
 
         public NoOpConverter(string name)
         {
@@ -263,11 +263,11 @@ public class GenericConversionService : IConversionService, IConverterRegistry
     {
         private readonly ISet<IGenericConverter> _globalConverters = new HashSet<IGenericConverter>();
 
-        private readonly Dictionary<(Type Source, Type Target), ConvertersForPair> _converters = new();
+        private readonly Dictionary<(Type SourceType, Type TargetType), ConvertersForPair> _converters = new();
 
         public void Add(IGenericConverter converter)
         {
-            ISet<(Type Source, Type Target)> convertibleTypes = converter.ConvertibleTypes;
+            ISet<(Type SourceType, Type TargetType)> convertibleTypes = converter.ConvertibleTypes;
 
             if (convertibleTypes == null)
             {
@@ -280,7 +280,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
             }
             else
             {
-                foreach ((Type Source, Type Target) convertiblePair in convertibleTypes)
+                foreach ((Type SourceType, Type TargetType) convertiblePair in convertibleTypes)
                 {
                     ConvertersForPair convertersForPair = GetMatchableConverters(convertiblePair);
                     convertersForPair.Add(converter);
@@ -317,11 +317,11 @@ public class GenericConversionService : IConversionService, IConverterRegistry
             return null;
         }
 
-        public IGenericConverter CheckTargets(Type sourceType, Type targetType, Type sourceCandidate, List<Type> targetCandidates)
+        public IGenericConverter CheckTargets(Type sourceType, Type targetType, Type sourceCandidate, List<Type> targetCandidateTypes)
         {
-            foreach (Type targetCandidate in targetCandidates)
+            foreach (Type targetCandidateType in targetCandidateTypes)
             {
-                (Type Source, Type Target) convertiblePair = (Source: sourceCandidate, Target: targetCandidate);
+                (Type SourceType, Type TargetType) convertiblePair = (SourceType: sourceCandidate, TargetType: targetCandidateType);
                 IGenericConverter converter = GetRegisteredConverter(sourceType, targetType, convertiblePair);
 
                 if (converter != null)
@@ -329,9 +329,9 @@ public class GenericConversionService : IConversionService, IConverterRegistry
                     return converter;
                 }
 
-                if (targetCandidate.IsConstructedGenericType)
+                if (targetCandidateType.IsConstructedGenericType)
                 {
-                    convertiblePair.Target = targetCandidate.GetGenericTypeDefinition();
+                    convertiblePair.TargetType = targetCandidateType.GetGenericTypeDefinition();
                     converter = GetRegisteredConverter(sourceType, targetType, convertiblePair);
 
                     if (converter != null)
@@ -357,7 +357,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
             return builder.ToString();
         }
 
-        private ConvertersForPair GetMatchableConverters((Type Source, Type Target) convertiblePair)
+        private ConvertersForPair GetMatchableConverters((Type SourceType, Type TargetType) convertiblePair)
         {
             if (!_converters.TryGetValue(convertiblePair, out ConvertersForPair convertersForPair))
             {
@@ -368,7 +368,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
             return convertersForPair;
         }
 
-        private IGenericConverter GetRegisteredConverter(Type sourceType, Type targetType, (Type Source, Type Target) convertiblePair)
+        private IGenericConverter GetRegisteredConverter(Type sourceType, Type targetType, (Type SourceType, Type TargetType) convertiblePair)
         {
             // Check specifically registered converters
             if (_converters.TryGetValue(convertiblePair, out ConvertersForPair convertersForPair))

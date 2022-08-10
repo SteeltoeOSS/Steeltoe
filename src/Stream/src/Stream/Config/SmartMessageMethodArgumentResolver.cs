@@ -57,9 +57,9 @@ public class SmartMessageMethodArgumentResolver : MessageMethodArgumentResolver
         };
     }
 
-    private bool ConversionNotRequired(Type a, Type b)
+    private bool ConversionNotRequired(Type leftType, Type rightType)
     {
-        return b == typeof(object) ? ClassUtils.IsAssignable(a, b) : ClassUtils.IsAssignable(b, a);
+        return rightType == typeof(object) ? ClassUtils.IsAssignable(leftType, rightType) : ClassUtils.IsAssignable(rightType, leftType);
     }
 
     private object ConvertPayload(IMessage message, ParameterInfo parameter, Type targetPayloadType)

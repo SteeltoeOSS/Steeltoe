@@ -305,14 +305,14 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             return this;
         }
 
-        Type clazz = target as Type ?? target.GetType();
+        Type type = target as Type ?? target.GetType();
 
-        if (clazz.IsArray)
+        if (type.IsArray)
         {
             return this;
         }
 
-        var cacheKey = new PropertyCacheKey(clazz, name, target is Type);
+        var cacheKey = new PropertyCacheKey(type, name, target is Type);
         _readerCache.TryGetValue(cacheKey, out InvokerPair invocationTarget);
 
         if (invocationTarget == null || invocationTarget.Member is MethodInfo)
@@ -321,7 +321,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
             if (method == null)
             {
-                method = FindGetterForProperty(name, clazz, target);
+                method = FindGetterForProperty(name, type, target);
 
                 if (method != null)
                 {
@@ -344,7 +344,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
             if (field == null)
             {
-                field = FindField(name, clazz, target is Type);
+                field = FindField(name, type, target is Type);
 
                 if (field != null)
                 {
@@ -382,14 +382,14 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
         return new string(chars);
     }
 
-    protected virtual MethodInfo FindGetterForProperty(string propertyName, Type clazz, bool mustBeStatic)
+    protected virtual MethodInfo FindGetterForProperty(string propertyName, Type type, bool mustBeStatic)
     {
-        return FindMethodForProperty(propertyName, clazz, false, mustBeStatic);
+        return FindMethodForProperty(propertyName, type, false, mustBeStatic);
     }
 
-    protected virtual MethodInfo FindSetterForProperty(string propertyName, Type clazz, bool mustBeStatic)
+    protected virtual MethodInfo FindSetterForProperty(string propertyName, Type type, bool mustBeStatic)
     {
-        return FindMethodForProperty(propertyName, clazz, true, mustBeStatic);
+        return FindMethodForProperty(propertyName, type, true, mustBeStatic);
     }
 
     protected virtual bool IsCandidateForProperty(MethodInfo method, Type targetClass)
@@ -397,9 +397,9 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
         return true;
     }
 
-    protected virtual FieldInfo FindField(string name, Type clazz, bool mustBeStatic)
+    protected virtual FieldInfo FindField(string name, Type type, bool mustBeStatic)
     {
-        FieldInfo[] fields = clazz.GetFields();
+        FieldInfo[] fields = type.GetFields();
 
         foreach (FieldInfo field in fields)
         {
@@ -411,9 +411,9 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
         // We'll search superclasses and implemented interfaces explicitly,
         // although it shouldn't be necessary - however, see SPR-10125.
-        if (clazz.BaseType != null)
+        if (type.BaseType != null)
         {
-            FieldInfo field = FindField(name, clazz.BaseType, mustBeStatic);
+            FieldInfo field = FindField(name, type.BaseType, mustBeStatic);
 
             if (field != null)
             {
@@ -421,7 +421,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             }
         }
 
-        foreach (Type implementedInterface in clazz.GetInterfaces())
+        foreach (Type implementedInterface in type.GetInterfaces())
         {
             FieldInfo field = FindField(name, implementedInterface, mustBeStatic);
 
@@ -434,9 +434,9 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
         return null;
     }
 
-    private FieldInfo FindField(string name, Type clazz, object target)
+    private FieldInfo FindField(string name, Type type, object target)
     {
-        FieldInfo field = FindField(name, clazz, target is Type);
+        FieldInfo field = FindField(name, type, target is Type);
 
         if (field == null && target is Type)
         {
@@ -446,9 +446,9 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
         return field;
     }
 
-    private MethodInfo FindMethodForProperty(string propertyName, Type clazz, bool setter, bool mustBeStatic)
+    private MethodInfo FindMethodForProperty(string propertyName, Type type, bool setter, bool mustBeStatic)
     {
-        PropertyInfo propInfo = clazz.GetProperty(propertyName);
+        PropertyInfo propInfo = type.GetProperty(propertyName);
 
         if (propInfo != null)
         {
@@ -469,7 +469,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
                 }
             }
 
-            if (method != null && IsCandidateForProperty(method, clazz) && (!mustBeStatic || method.IsStatic))
+            if (method != null && IsCandidateForProperty(method, type) && (!mustBeStatic || method.IsStatic))
             {
                 return method;
             }
@@ -509,9 +509,9 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
         return typeDescriptor;
     }
 
-    private MethodInfo FindGetterForProperty(string propertyName, Type clazz, object target)
+    private MethodInfo FindGetterForProperty(string propertyName, Type type, object target)
     {
-        MethodInfo method = FindGetterForProperty(propertyName, clazz, target is Type);
+        MethodInfo method = FindGetterForProperty(propertyName, type, target is Type);
 
         if (method == null && target is Type)
         {
@@ -521,9 +521,9 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
         return method;
     }
 
-    private MethodInfo FindSetterForProperty(string propertyName, Type clazz, object target)
+    private MethodInfo FindSetterForProperty(string propertyName, Type type, object target)
     {
-        MethodInfo method = FindSetterForProperty(propertyName, clazz, target is Type);
+        MethodInfo method = FindSetterForProperty(propertyName, type, target is Type);
 
         if (method == null && target is Type)
         {
@@ -550,13 +550,13 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
     public class PropertyCacheKey : IComparable<PropertyCacheKey>
 #pragma warning restore S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
     {
-        private readonly Type _clazz;
+        private readonly Type _type;
         private readonly string _property;
         private readonly bool _targetIsClass;
 
-        public PropertyCacheKey(Type clazz, string name, bool targetIsClass)
+        public PropertyCacheKey(Type type, string name, bool targetIsClass)
         {
-            _clazz = clazz;
+            _type = type;
             _property = name;
             _targetIsClass = targetIsClass;
         }
@@ -573,22 +573,22 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
                 return false;
             }
 
-            return _clazz == otherKey._clazz && _property.Equals(otherKey._property) && _targetIsClass == otherKey._targetIsClass;
+            return _type == otherKey._type && _property.Equals(otherKey._property) && _targetIsClass == otherKey._targetIsClass;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(_clazz, _property);
+            return HashCode.Combine(_type, _property);
         }
 
         public override string ToString()
         {
-            return $"CacheKey [clazz={_clazz.FullName}, property={_property}, {_property}, targetIsClass={_targetIsClass}]";
+            return $"CacheKey [type={_type.FullName}, property={_property}, {_property}, targetIsClass={_targetIsClass}]";
         }
 
         public int CompareTo(PropertyCacheKey other)
         {
-            int result = _clazz.Name.CompareTo(_clazz.Name);
+            int result = _type.Name.CompareTo(_type.Name);
 
             if (result == 0)
             {

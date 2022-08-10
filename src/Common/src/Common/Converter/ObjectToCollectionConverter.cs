@@ -46,9 +46,9 @@ public class ObjectToCollectionConverter : AbstractToCollectionConverter
         return target;
     }
 
-    private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
+    private static ISet<(Type SourceType, Type TargetType)> GetConvertiblePairs()
     {
-        return new HashSet<(Type Source, Type Target)>
+        return new HashSet<(Type SourceType, Type TargetType)>
         {
             (typeof(object), typeof(ICollection)),
             (typeof(object), typeof(ICollection<>)),

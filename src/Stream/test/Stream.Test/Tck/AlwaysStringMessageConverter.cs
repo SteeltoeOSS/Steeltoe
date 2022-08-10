@@ -25,9 +25,9 @@ public class AlwaysStringMessageConverter : AbstractMessageConverter
     {
     }
 
-    protected override bool Supports(Type clazz)
+    protected override bool Supports(Type type)
     {
-        return clazz == null || typeof(string).IsAssignableFrom(clazz);
+        return type == null || typeof(string).IsAssignableFrom(type);
     }
 
     protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)

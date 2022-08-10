@@ -12,13 +12,13 @@ public class BytesToStringConverter : IGenericConverter
 {
     private readonly Encoding _charset;
 
-    public ISet<(Type Source, Type Target)> ConvertibleTypes { get; }
+    public ISet<(Type SourceType, Type TargetType)> ConvertibleTypes { get; }
 
     public BytesToStringConverter(Encoding charset)
     {
         _charset = charset ?? EncodingUtils.Utf8;
 
-        ConvertibleTypes = new HashSet<(Type Source, Type Target)>
+        ConvertibleTypes = new HashSet<(Type SourceType, Type TargetType)>
         {
             (typeof(byte[]), typeof(string))
         };

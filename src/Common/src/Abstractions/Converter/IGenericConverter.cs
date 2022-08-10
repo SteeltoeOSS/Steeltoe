@@ -12,7 +12,7 @@ public interface IGenericConverter
     /// <summary>
     /// Gets the source and target types this converter can convert between.
     /// </summary>
-    ISet<(Type Source, Type Target)> ConvertibleTypes { get; }
+    ISet<(Type SourceType, Type TargetType)> ConvertibleTypes { get; }
 
     /// <summary>
     /// Convert the source object to the target type.

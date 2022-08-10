@@ -75,8 +75,8 @@ public class SmartPayloadArgumentResolver : PayloadMethodArgumentResolver
         return payload;
     }
 
-    private bool ConversionNotRequired(Type a, Type b)
+    private bool ConversionNotRequired(Type leftType, Type rightType)
     {
-        return b == typeof(object) ? ClassUtils.IsAssignable(a, b) : ClassUtils.IsAssignable(b, a);
+        return rightType == typeof(object) ? ClassUtils.IsAssignable(leftType, rightType) : ClassUtils.IsAssignable(rightType, leftType);
     }
 }

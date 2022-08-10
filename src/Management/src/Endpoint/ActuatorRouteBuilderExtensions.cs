@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorRouteBuilderExtensions
 {
-    public static (Type Middleware, Type Options) LookupMiddleware(Type endpointType)
+    public static (Type MiddlewareType, Type OptionsType) LookupMiddleware(Type endpointType)
     {
         return endpointType switch
         {
@@ -120,7 +120,7 @@ public static class ActuatorRouteBuilderExtensions
 
         ConnectEndpointOptionsWithManagementOptions(endpoints);
 
-        (Type middleware, Type optionsType) = LookupMiddleware(typeEndpoint);
+        (Type middlewareType, Type optionsType) = LookupMiddleware(typeEndpoint);
         var options = endpoints.ServiceProvider.GetService(optionsType) as IEndpointOptions;
         IEnumerable<IManagementOptions> managementOptionsCollection = endpoints.ServiceProvider.GetServices<IManagementOptions>();
 
@@ -139,7 +139,7 @@ public static class ActuatorRouteBuilderExtensions
             // only add middleware if the route hasn't already been mapped
             if (!endpoints.DataSources.Any(d => d.Endpoints.Any(ep => ep is RouteEndpoint endpoint && endpoint.RoutePattern.RawText == pattern.RawText)))
             {
-                RequestDelegate pipeline = endpoints.CreateApplicationBuilder().UseMiddleware(middleware, managementOptions).Build();
+                RequestDelegate pipeline = endpoints.CreateApplicationBuilder().UseMiddleware(middlewareType, managementOptions).Build();
 
                 IEnumerable<string> allowedVerbs = options.AllowedVerbs ?? new List<string>
                 {

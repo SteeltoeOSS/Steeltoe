@@ -34,7 +34,7 @@ public class DataBindingMethodResolver : ReflectiveMethodResolver
             return false;
         }
 
-        Type clazz = method.DeclaringType;
-        return clazz != typeof(object) && clazz != typeof(Type);
+        Type type = method.DeclaringType;
+        return type != typeof(object) && type != typeof(Type);
     }
 }

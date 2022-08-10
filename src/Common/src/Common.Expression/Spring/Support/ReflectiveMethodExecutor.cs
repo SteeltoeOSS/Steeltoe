@@ -47,14 +47,14 @@ public class ReflectiveMethodExecutor : IMethodExecutor
         return _publicDeclaringClass;
     }
 
-    private Type DiscoverPublicDeclaringClass(MethodInfo method, Type clazz)
+    private Type DiscoverPublicDeclaringClass(MethodInfo method, Type type)
     {
-        if (ReflectionHelper.IsPublic(clazz))
+        if (ReflectionHelper.IsPublic(type))
         {
             try
             {
-                clazz.GetMethod(method.Name, ClassUtils.GetParameterTypes(method));
-                return clazz;
+                type.GetMethod(method.Name, ClassUtils.GetParameterTypes(method));
+                return type;
             }
             catch (Exception)
             {
@@ -62,9 +62,9 @@ public class ReflectiveMethodExecutor : IMethodExecutor
             }
         }
 
-        if (clazz.BaseType != null)
+        if (type.BaseType != null)
         {
-            return DiscoverPublicDeclaringClass(method, clazz.BaseType);
+            return DiscoverPublicDeclaringClass(method, type.BaseType);
         }
 
         return null;

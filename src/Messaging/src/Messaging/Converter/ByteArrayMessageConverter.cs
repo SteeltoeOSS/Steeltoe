@@ -17,9 +17,9 @@ public class ByteArrayMessageConverter : AbstractMessageConverter
     {
     }
 
-    protected override bool Supports(Type clazz)
+    protected override bool Supports(Type type)
     {
-        return typeof(byte[]) == clazz;
+        return typeof(byte[]) == type;
     }
 
     protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)

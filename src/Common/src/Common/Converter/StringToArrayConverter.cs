@@ -14,7 +14,7 @@ public class StringToArrayConverter : AbstractGenericConditionalConverter
     private readonly IConversionService _conversionService;
 
     public StringToArrayConverter(IConversionService conversionService)
-        : base(new HashSet<(Type Source, Type Target)>
+        : base(new HashSet<(Type SourceType, Type TargetType)>
         {
             (typeof(string), typeof(object[]))
         })

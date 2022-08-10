@@ -125,29 +125,29 @@ public static class ClassUtils
         return paramsAttributes;
     }
 
-    public static Type DetermineCommonAncestor(Type clazz1, Type clazz2)
+    public static Type DetermineCommonAncestor(Type type1, Type type2)
     {
-        if (clazz1 == null)
+        if (type1 == null)
         {
-            return clazz2;
+            return type2;
         }
 
-        if (clazz2 == null)
+        if (type2 == null)
         {
-            return clazz1;
+            return type1;
         }
 
-        if (clazz1.IsAssignableFrom(clazz2))
+        if (type1.IsAssignableFrom(type2))
         {
-            return clazz1;
+            return type1;
         }
 
-        if (clazz2.IsAssignableFrom(clazz1))
+        if (type2.IsAssignableFrom(type1))
         {
-            return clazz2;
+            return type2;
         }
 
-        Type ancestor = clazz1;
+        Type ancestor = type1;
 
         do
         {
@@ -158,7 +158,7 @@ public static class ClassUtils
                 return null;
             }
         }
-        while (!ancestor.IsAssignableFrom(clazz2));
+        while (!ancestor.IsAssignableFrom(type2));
 
         return ancestor;
     }

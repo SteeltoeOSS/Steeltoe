@@ -21,9 +21,9 @@ public abstract class AbstractBindable : IBindable
     {
     }
 
-    protected AbstractBindable(Type binding)
+    protected AbstractBindable(Type bindingType)
     {
-        BindingType = binding;
+        BindingType = bindingType;
     }
 
     public virtual ICollection<IBinding> CreateAndBindInputs(IBindingService bindingService)

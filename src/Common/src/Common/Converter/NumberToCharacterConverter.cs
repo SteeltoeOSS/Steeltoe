@@ -16,9 +16,9 @@ public class NumberToCharacterConverter : AbstractGenericConverter
         return System.Convert.ToChar(source);
     }
 
-    private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
+    private static ISet<(Type SourceType, Type TargetType)> GetConvertiblePairs()
     {
-        return new HashSet<(Type Source, Type Target)>
+        return new HashSet<(Type SourceType, Type TargetType)>
         {
             (typeof(int), typeof(char)),
             (typeof(uint), typeof(char)),

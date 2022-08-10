@@ -9,17 +9,17 @@ public class BinderAttribute : Attribute
 {
     public virtual string Name { get; set; }
 
-    public virtual string ConfigureClass { get; set; }
+    public virtual string ConfigureType { get; set; }
 
     public BinderAttribute()
     {
         Name = string.Empty;
-        ConfigureClass = string.Empty;
+        ConfigureType = string.Empty;
     }
 
-    public BinderAttribute(string name, Type configureClass)
+    public BinderAttribute(string name, Type configureType)
     {
         Name = name;
-        ConfigureClass = configureClass.AssemblyQualifiedName;
+        ConfigureType = configureType.AssemblyQualifiedName;
     }
 }

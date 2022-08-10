@@ -94,9 +94,9 @@ internal static class GenericsUtils
         {
             if (typeof(IPollableSource).IsAssignableFrom(targetInterface))
             {
-                Type[] supers = targetInterface.GetInterfaces();
+                Type[] interfaces = targetInterface.GetInterfaces();
 
-                foreach (Type type in supers)
+                foreach (Type type in interfaces)
                 {
                     if (type.IsGenericType)
                     {

@@ -50,9 +50,9 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
         return true;
     }
 
-    private void InvokeStreamListenerResultAdapter(MethodInfo method, Type implementation, string outboundName, params object[] arguments)
+    private void InvokeStreamListenerResultAdapter(MethodInfo method, Type implementationType, string outboundName, params object[] arguments)
     {
-        object bean = ActivatorUtilities.CreateInstance(Context.ServiceProvider, implementation);
+        object bean = ActivatorUtilities.CreateInstance(Context.ServiceProvider, implementationType);
 
         if (typeof(void).Equals(method.ReturnType))
         {
@@ -91,7 +91,7 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
     }
 
     private void RegisterHandlerMethodOnListenedChannel(StreamListenerMethodValidator streamListenerMethod, StreamListenerAttribute streamListener,
-        Type implementation)
+        Type implementationType)
     {
         if (string.IsNullOrEmpty(streamListener.Target))
         {
@@ -120,6 +120,6 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
         streamListenerMethod.ValidateStreamListenerMessageHandler();
 
         _processor.AddMappedListenerMethod(streamListener.Target,
-            new StreamListenerHandlerMethodMapping(implementation, method, streamListener.Condition, defaultOutputChannel, streamListener.CopyHeaders));
+            new StreamListenerHandlerMethodMapping(implementationType, method, streamListener.Condition, defaultOutputChannel, streamListener.CopyHeaders));
     }
 }

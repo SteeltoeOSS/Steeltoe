@@ -55,9 +55,9 @@ public class StringToCollectionConverter : AbstractToCollectionConverter
         return list;
     }
 
-    private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
+    private static ISet<(Type SourceType, Type TargetType)> GetConvertiblePairs()
     {
-        return new HashSet<(Type Source, Type Target)>
+        return new HashSet<(Type SourceType, Type TargetType)>
         {
             (typeof(string), typeof(ICollection)),
             (typeof(string), typeof(ICollection<>)),

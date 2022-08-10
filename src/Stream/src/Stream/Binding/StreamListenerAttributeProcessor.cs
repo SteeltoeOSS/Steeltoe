@@ -64,7 +64,7 @@ public class StreamListenerAttributeProcessor
 
             foreach (StreamListenerHandlerMethodMapping mapping in mappedBindingEntry.Value)
             {
-                object targetBean = CreateTargetBean(mapping.Implementation);
+                object targetBean = CreateTargetBean(mapping.ImplementationType);
 
                 IInvocableHandlerMethod invocableHandlerMethod = _messageHandlerMethodFactory.CreateInvocableHandlerMethod(targetBean, mapping.Method);
 
@@ -167,16 +167,16 @@ public class StreamListenerAttributeProcessor
         return resolvedValue;
     }
 
-    private object CreateTargetBean(Type implementation)
+    private object CreateTargetBean(Type implementationType)
     {
         try
         {
-            return _context.GetService(implementation);
+            return _context.GetService(implementationType);
         }
         catch (Exception e)
         {
             // Log
-            throw new InvalidOperationException($"Unable to CreateInstance of type containing StreamListener method, Type: {implementation}", e);
+            throw new InvalidOperationException($"Unable to CreateInstance of type containing StreamListener method, Type: {implementationType}", e);
         }
     }
 
