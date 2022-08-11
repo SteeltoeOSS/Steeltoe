@@ -16,34 +16,40 @@ public class SpringBootAdminClientHostedServiceTest
     [Fact]
     public async Task SpringBootAdminClient_RegistersAndDeletes()
     {
-        var appSettings = new Dictionary<string, string>
+        try
         {
-            ["management:endpoints:path"] = "/management",
-            ["management:endpoints:health:path"] = "myhealth",
-            ["URLS"] = "http://localhost:8080;https://localhost:8082",
-            ["spring:boot:admin:client:url"] = "http://springbootadmin:9090",
-            ["spring:application:name"] = "MySteeltoeApplication"
-        };
+            var appSettings = new Dictionary<string, string>
+            {
+                ["management:endpoints:path"] = "/management",
+                ["management:endpoints:health:path"] = "myhealth",
+                ["URLS"] = "http://localhost:8080;https://localhost:8082",
+                ["spring:boot:admin:client:url"] = "http://springbootadmin:9090",
+                ["spring:application:name"] = "MySteeltoeApplication"
+            };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var appInfo = new ApplicationInstanceInfo(config);
-        var sbaOptions = new SpringBootAdminClientOptions(config, appInfo);
-        var managementOptions = new ManagementEndpointOptions(config);
-        var healthOptions = new HealthEndpointOptions(config);
-        var httpMessageHandler = new MockHttpMessageHandler();
-        httpMessageHandler.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances").Respond("application/json", "{\"Id\":\"1234567\"}");
+            IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+            var appInfo = new ApplicationInstanceInfo(config);
+            var sbaOptions = new SpringBootAdminClientOptions(config, appInfo);
+            var managementOptions = new ManagementEndpointOptions(config);
+            var healthOptions = new HealthEndpointOptions(config);
+            var httpMessageHandler = new MockHttpMessageHandler();
+            httpMessageHandler.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances").Respond("application/json", "{\"Id\":\"1234567\"}");
 
-        httpMessageHandler.Expect(HttpMethod.Delete, "http://springbootadmin:9090/instances/1234567")
-            .Respond(_ => new HttpResponseMessage(HttpStatusCode.NoContent));
+            httpMessageHandler.Expect(HttpMethod.Delete, "http://springbootadmin:9090/instances/1234567")
+                .Respond(_ => new HttpResponseMessage(HttpStatusCode.NoContent));
 
-        Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
-        var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions, httpMessageHandler.ToHttpClient());
-        await service.StartAsync(default);
-        await service.StopAsync(default);
+            Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
+            var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions, httpMessageHandler.ToHttpClient());
+            await service.StartAsync(default);
+            await service.StopAsync(default);
 
-        httpMessageHandler.VerifyNoOutstandingExpectation();
-        Assert.Equal("1234567", SpringBootAdminClientHostedService.RegistrationResult?.Id);
-        SpringBootAdminClientHostedService.RegistrationResult = null;
+            httpMessageHandler.VerifyNoOutstandingExpectation();
+            Assert.Equal("1234567", SpringBootAdminClientHostedService.RegistrationResult?.Id);
+        }
+        finally
+        {
+            SpringBootAdminClientHostedService.RegistrationResult = null;
+        }
     }
 
     [Fact]

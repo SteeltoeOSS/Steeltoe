@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
+namespace Steeltoe.Management.Endpoint.Hypermedia.Test;
 
 public class ServiceCollectionTests
 {

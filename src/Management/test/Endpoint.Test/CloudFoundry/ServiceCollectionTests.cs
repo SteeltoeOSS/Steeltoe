@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
+namespace Steeltoe.Management.Endpoint.CloudFoundry.Test;
 
 public class ServiceCollectionTests
 {

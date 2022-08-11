@@ -18,7 +18,7 @@
     <ProjectReference Include="..\..\..\Configuration\src\Kubernetes\Steeltoe.Extensions.Configuration.Kubernetes.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Configuration\src\RandomValue\Steeltoe.Extensions.Configuration.RandomValue.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Configuration\src\Placeholder\Steeltoe.Extensions.Configuration.Placeholder.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Connectors\src\Connector.EF6Core\Steeltoe.Connector.EF6Core.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Connectors\src\EntityFramework6\Steeltoe.Connector.EntityFramework6.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Connectors\src\Connector\Steeltoe.Connector.Connector.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Discovery\src\Client\Steeltoe.Discovery.Client.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicSerilog\Steeltoe.Extensions.Logging.DynamicSerilog.csproj" PrivateAssets="All" />
@@ -31,7 +31,7 @@
     <ProjectReference Include="..\..\..\Security\src\DataProtection.CredHub\Steeltoe.Security.DataProtection.CredHub.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Security\src\DataProtection.Redis\Steeltoe.Security.DataProtection.Redis.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Connectors\src\Connector.EFCore\Steeltoe.Connector.EFCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Connectors\src\EntityFrameworkCore\Steeltoe.Connector.EntityFrameworkCore.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>

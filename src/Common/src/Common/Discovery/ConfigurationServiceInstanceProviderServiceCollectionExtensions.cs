@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.Discovery;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Steeltoe.Common.Discovery;
 
 public static class ConfigurationServiceInstanceProviderServiceCollectionExtensions
 {

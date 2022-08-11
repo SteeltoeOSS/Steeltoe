@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.Info;
+namespace Steeltoe.Management.Endpoint.Info.Test;
 
 public class ServiceCollectionTests
 {

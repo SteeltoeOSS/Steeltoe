@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
+namespace Steeltoe.Management.Endpoint.DbMigrations.Test;
 
 public class ServiceCollectionTests
 {

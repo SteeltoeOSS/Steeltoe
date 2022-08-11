@@ -3,16 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Management;
-using Steeltoe.Management.Endpoint.Loggers;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Steeltoe.Management.Endpoint.Loggers;
 
 /// <summary>
 /// Add services used by the Loggers actuator.
 /// </summary>
-public static partial class ServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Adds the services used by the Loggers actuator.

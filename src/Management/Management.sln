@@ -55,7 +55,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Abstract
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Abstractions", "..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj", "{282B2292-7D12-48DF-A25D-509B79B9FDE1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenTelemetryBase", "src\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj", "{C5A54146-778D-44EE-9F84-38E57963E30A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenTelemetry", "src\OpenTelemetry\Steeltoe.Management.OpenTelemetry.csproj", "{C5A54146-778D-44EE-9F84-38E57963E30A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Tracing", "src\Tracing\Steeltoe.Management.Tracing.csproj", "{96267423-D9EF-4058-80CA-8E537A32DA99}"
 EndProject

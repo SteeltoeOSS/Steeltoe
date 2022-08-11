@@ -3,20 +3,19 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenTelemetry.Metrics;
-using Steeltoe.Management;
-using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Steeltoe.Management.Endpoint.Metrics;
 
 /// <summary>
 /// Add services used by the Metrics actuator.
 /// </summary>
-public static partial class ServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Adds the services used by the Metrics actuator.

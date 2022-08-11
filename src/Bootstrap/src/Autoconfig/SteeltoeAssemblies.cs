@@ -14,8 +14,8 @@ public static class SteeltoeAssemblies
     public const string SteeltoeExtensionsConfigurationKubernetes = "Steeltoe.Extensions.Configuration.Kubernetes";
     public const string SteeltoeExtensionsConfigurationRandomValue = "Steeltoe.Extensions.Configuration.RandomValue";
     public const string SteeltoeExtensionsConfigurationPlaceholder = "Steeltoe.Extensions.Configuration.Placeholder";
-    public const string SteeltoeConnectorEf6Core = "Steeltoe.Connector.EF6Core";
-    public const string SteeltoeConnectorEfCore = "Steeltoe.Connector.EFCore";
+    public const string SteeltoeConnectorEf6Core = "Steeltoe.Connector.EntityFramework6";
+    public const string SteeltoeConnectorEfCore = "Steeltoe.Connector.EntityFrameworkCore";
     public const string SteeltoeConnectorConnector = "Steeltoe.Connector.Connector";
     public const string SteeltoeDiscoveryClient = "Steeltoe.Discovery.Client";
     public const string SteeltoeExtensionsLoggingDynamicSerilog = "Steeltoe.Extensions.Logging.DynamicSerilog";

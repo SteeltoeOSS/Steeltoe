@@ -3,11 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Management;
-using Steeltoe.Management.Endpoint.Info;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Steeltoe.Management.Endpoint.Info;
 
 /// <summary>
 /// Add services used by the Info actuator.

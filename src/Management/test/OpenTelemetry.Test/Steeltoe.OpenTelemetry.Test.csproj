@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj" />
+    <ProjectReference Include="..\..\src\OpenTelemetry\Steeltoe.Management.OpenTelemetry.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -3,13 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common.Discovery;
-using Steeltoe.Common.Http.LoadBalancer;
 using Steeltoe.Common.LoadBalancer;
 using Steeltoe.Discovery;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Steeltoe.Common.Http.LoadBalancer;
 
 public static class LoadBalancerHttpClientBuilderExtensions
 {
