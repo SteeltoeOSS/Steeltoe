@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http.Discovery;
+using Steeltoe.Common.Http.LoadBalancer;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
