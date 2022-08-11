@@ -21,6 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
-    <ProjectReference Include="..\..\src\Connector.EFCore\Steeltoe.Connector.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\EntityFrameworkCore\Steeltoe.Connector.EntityFrameworkCore.csproj" />
   </ItemGroup>
 </Project>

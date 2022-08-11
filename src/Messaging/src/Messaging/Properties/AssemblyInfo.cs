@@ -4,7 +4,7 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Messaging.Messaging.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Stream.Stream")]
-[assembly: InternalsVisibleTo("Steeltoe.Integration.Integration")]
-[assembly: InternalsVisibleTo("Steeltoe.Integration.Integration.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Messaging.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Stream")]
+[assembly: InternalsVisibleTo("Steeltoe.Integration")]
+[assembly: InternalsVisibleTo("Steeltoe.Integration.Test")]

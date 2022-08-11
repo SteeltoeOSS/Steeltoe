@@ -15,7 +15,7 @@
     <ProjectReference Include="..\..\..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Extensions.Configuration.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
-    <ProjectReference Include="..\..\..\Connectors\src\Connector\Steeltoe.Connector.Connector.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\Connector\Steeltoe.Connector.csproj" />
     <ProjectReference Include="..\..\..\Management\src\Endpoint\Steeltoe.Management.Endpoint.csproj" />
     <ProjectReference Include="..\..\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
   </ItemGroup>

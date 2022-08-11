@@ -35,9 +35,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.RabbitMQ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.RetryPolly", "..\Common\src\Common.RetryPolly\Steeltoe.Common.RetryPolly.csproj", "{2A3F9095-F2D4-4030-8A84-7BDB64BD60C8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Messaging", "src\Messaging\Steeltoe.Messaging.Messaging.csproj", "{9E884AF4-6F7E-48FF-85CE-C4AD6967C4F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging", "src\Messaging\Steeltoe.Messaging.csproj", "{9E884AF4-6F7E-48FF-85CE-C4AD6967C4F1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Messaging.Test", "test\Messaging.Test\Steeltoe.Messaging.Messaging.Test.csproj", "{D252B729-BA69-4D4D-95A3-AAF2877124F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Test", "test\Messaging.Test\Steeltoe.Messaging.Test.csproj", "{D252B729-BA69-4D4D-95A3-AAF2877124F9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Expression", "..\Common\src\Common.Expression\Steeltoe.Common.Expression.csproj", "{F1ED43DD-569E-4D2E-9A45-3ADDDA9E24DF}"
 EndProject

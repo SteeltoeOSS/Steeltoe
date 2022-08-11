@@ -2,8 +2,6 @@
   <PropertyGroup>
     <Description>Steeltoe library for common hosting-related utilities</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Common.Hosting</AssemblyName>
-    <PackageId>Steeltoe.Common.Hosting</PackageId>
     <PackageTags>NET Core;Cloud Hosting;</PackageTags>
   </PropertyGroup>
 

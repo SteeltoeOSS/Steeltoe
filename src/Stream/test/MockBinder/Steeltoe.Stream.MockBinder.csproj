@@ -12,7 +12,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Stream\Steeltoe.Stream.Stream.csproj" />
+    <ProjectReference Include="..\..\src\Stream\Steeltoe.Stream.csproj" />
   </ItemGroup>
 
 </Project>

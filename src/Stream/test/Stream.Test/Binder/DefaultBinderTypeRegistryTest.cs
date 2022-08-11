@@ -72,7 +72,7 @@ public class DefaultBinderTypeRegistryTest : AbstractTest
     [Fact]
     public void ShouldCheckFile_ReturnsExpected()
     {
-        var fileInfo = new FileInfo("Steeltoe.Stream.Stream.dll");
+        var fileInfo = new FileInfo("Steeltoe.Stream.dll");
         Assert.False(DefaultBinderTypeRegistry.ShouldCheckFile(fileInfo));
         fileInfo = new FileInfo("foo.bar");
         Assert.True(DefaultBinderTypeRegistry.ShouldCheckFile(fileInfo));

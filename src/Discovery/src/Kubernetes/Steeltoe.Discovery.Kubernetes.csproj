@@ -4,7 +4,6 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Client for service discovery with Kubernetes native service discovery</Description>
     <PackageTags>aspnetcore;Kubernetes;Spring;Spring Cloud</PackageTags>
-    <RootNamespace>Steeltoe.Discovery.Kubernetes</RootNamespace>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

@@ -28,7 +28,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.EntityFr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.EntityFramework6", "src\EntityFramework6\Steeltoe.Connector.EntityFramework6.csproj", "{43012B18-D80D-4581-A85A-80F69DBD0431}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Connector.Test", "test\Connector.Test\Steeltoe.Connector.Connector.Test.csproj", "{B40DE919-FBC0-4CC6-B36F-98364FCA4203}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Test", "test\Connector.Test\Steeltoe.Connector.Test.csproj", "{B40DE919-FBC0-4CC6-B36F-98364FCA4203}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{4F6282E5-97B9-4655-8E67-7DF32320FE0C}"
 EndProject
@@ -52,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.EntityFr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "External.Connector.Test", "test\External.Connector.Test\External.Connector.Test.csproj", "{0D1C5F38-D7E4-4F14-BD51-90064CE89C95}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Connector", "src\Connector\Steeltoe.Connector.Connector.csproj", "{EDB042A3-A6DB-4400-84C4-DF467FA01B8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector", "src\Connector\Steeltoe.Connector.csproj", "{EDB042A3-A6DB-4400-84C4-DF467FA01B8C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Utils", "..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj", "{B0A47904-1C27-4380-9327-986F762B0250}"
 EndProject

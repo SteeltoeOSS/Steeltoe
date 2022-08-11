@@ -3,7 +3,6 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Base package for using Steeltoe Service Discovery</Description>
     <PackageTags>service discovery;service registry;Spring Cloud;eureka;consul;kubernetes</PackageTags>
-    <RootNamespace>Steeltoe.Discovery.Client</RootNamespace>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -19,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
-    <ProjectReference Include="..\..\..\Connectors\src\Connector\Steeltoe.Connector.Connector.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\Connector\Steeltoe.Connector.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
   </ItemGroup>
 </Project>

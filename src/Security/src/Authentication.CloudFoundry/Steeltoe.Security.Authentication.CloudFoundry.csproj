@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <RootNamespace>Steeltoe.Security.Authentication.CloudFoundry</RootNamespace>
     <Description>Base Security Provider for CloudFoundry</Description>
     <PackageTags>CloudFoundry;security;oauth2;sso;openid</PackageTags>
   </PropertyGroup>
@@ -10,7 +9,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
-    <ProjectReference Include="..\..\..\Connectors\src\Connector\Steeltoe.Connector.Connector.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\Connector\Steeltoe.Connector.csproj" />
     <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
     <ProjectReference Include="..\Authentication.Mtls\Steeltoe.Security.Authentication.Mtls.csproj" />
   </ItemGroup>

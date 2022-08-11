@@ -4,6 +4,6 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Stream.Stream.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Stream.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Stream.Binder.RabbitMQ.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Stream.Binder.Test")]

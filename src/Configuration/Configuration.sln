@@ -83,7 +83,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Client",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger", "..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj", "{3A265CB8-530E-4FC8-931D-01DE4E7F3F61}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Connector", "..\Connectors\src\Connector\Steeltoe.Connector.Connector.csproj", "{36F12A1C-00C2-4049-8A0C-7595C6185F01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector", "..\Connectors\src\Connector\Steeltoe.Connector.csproj", "{36F12A1C-00C2-4049-8A0C-7595C6185F01}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.Abstractions", "..\Logging\src\Abstractions\Steeltoe.Extensions.Logging.Abstractions.csproj", "{C86FB6E5-3024-4028-9BC0-602AEBA65E5B}"
 EndProject

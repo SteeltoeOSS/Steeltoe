@@ -57,7 +57,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Abstract
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.Abstractions", "..\Configuration\src\Abstractions\Steeltoe.Extensions.Configuration.Abstractions.csproj", "{C699011E-AB0A-4FA4-B0C6-9BE3D75A2FD3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Connector", "..\Connectors\src\Connector\Steeltoe.Connector.Connector.csproj", "{3B956CF1-91A2-4D62-9538-054D2C40D42F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector", "..\Connectors\src\Connector\Steeltoe.Connector.csproj", "{3B956CF1-91A2-4D62-9538-054D2C40D42F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.CloudFoundry", "..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj", "{91D9A0F8-679F-421A-BFF0-F6D6BEAEB3C9}"
 EndProject

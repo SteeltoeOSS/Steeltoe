@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Connectors\src\Connector\Steeltoe.Connector.Connector.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\Connector\Steeltoe.Connector.csproj" />
     <ProjectReference Include="..\..\..\Discovery\src\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
     <ProjectReference Include="..\Hystrix\Steeltoe.CircuitBreaker.Hystrix.csproj" />
   </ItemGroup>

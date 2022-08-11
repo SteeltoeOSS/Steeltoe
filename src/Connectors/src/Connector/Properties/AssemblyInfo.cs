@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using Steeltoe.Connector;
 
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.Autoconfig.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Connector.Connector.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Connector.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Connector.CloudFoundry.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Connector.EntityFrameworkCore.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Connector.EntityFramework6.Test")]

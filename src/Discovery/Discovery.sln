@@ -61,7 +61,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Client",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Client.Test", "test\Client.Test\Steeltoe.Discovery.Client.Test.csproj", "{EB232992-9F47-48EA-9776-EC7DD94ECC09}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Connector", "..\Connectors\src\Connector\Steeltoe.Connector.Connector.csproj", "{B23B13F4-D766-464A-812C-F4669C47892E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector", "..\Connectors\src\Connector\Steeltoe.Connector.csproj", "{B23B13F4-D766-464A-812C-F4669C47892E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.CloudFoundry", "..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj", "{17ECD43C-70AA-494B-865D-BBE2F0378EE6}"
 EndProject

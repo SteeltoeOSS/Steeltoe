@@ -2,8 +2,6 @@
   <PropertyGroup>
     <Description>Steeltoe common expression language library</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Common.Expression</AssemblyName>
-    <PackageId>Steeltoe.Common.Expression</PackageId>
     <PackageTags>NET Core;Expression;SPEL</PackageTags>
   </PropertyGroup>
 

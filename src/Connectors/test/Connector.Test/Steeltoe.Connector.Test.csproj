@@ -35,7 +35,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Extensions.Configuration.CloudFoundry.csproj" />
-    <ProjectReference Include="..\..\src\Connector\Steeltoe.Connector.Connector.csproj" />
+    <ProjectReference Include="..\..\src\Connector\Steeltoe.Connector.csproj" />
     <ProjectReference Include="..\..\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
   </ItemGroup>
 </Project>

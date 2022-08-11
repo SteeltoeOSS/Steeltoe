@@ -108,7 +108,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.EntityFrameworkCore", "Connectors\src\EntityFrameworkCore\Steeltoe.Connector.EntityFrameworkCore.csproj", "{B1B7522F-6EF2-4935-BE9F-66B6DB974303}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Connector", "Connectors\src\Connector\Steeltoe.Connector.Connector.csproj", "{34891C2A-FAF2-466A-90A6-F25DBD8283E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector", "Connectors\src\Connector\Steeltoe.Connector.csproj", "{34891C2A-FAF2-466A-90A6-F25DBD8283E8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.EntityFrameworkCore.Test", "Connectors\test\EntityFrameworkCore.Test\Steeltoe.Connector.EntityFrameworkCore.Test.csproj", "{72C7AD35-98E4-478E-B594-06A3DB2E61D6}"
 EndProject
@@ -220,7 +220,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.EntityFr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "External.Connector.Test", "Connectors\test\External.Connector.Test\External.Connector.Test.csproj", "{71BBC2CC-8449-4D28-8D23-C544E857B642}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Connector.Test", "Connectors\test\Connector.Test\Steeltoe.Connector.Connector.Test.csproj", "{C3232459-EE86-430B-B310-EB32C991A11A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Test", "Connectors\test\Connector.Test\Steeltoe.Connector.Test.csproj", "{C3232459-EE86-430B-B310-EB32C991A11A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicSerilog", "Logging\src\DynamicSerilog\Steeltoe.Extensions.Logging.DynamicSerilog.csproj", "{E0B1415D-8D97-4BA5-9315-82E7D33E3933}"
 EndProject
@@ -234,17 +234,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Kuberne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Kubernetes.Test", "Management\test\Kubernetes.Test\Steeltoe.Management.Kubernetes.Test.csproj", "{5549BB0D-E426-4F4C-ABE6-611D22EB8A06}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.Integration", "Integration\src\Integration\Steeltoe.Integration.Integration.csproj", "{2F43CD2B-A9C0-4281-8DA5-D7088AD60AF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration", "Integration\src\Integration\Steeltoe.Integration.csproj", "{2F43CD2B-A9C0-4281-8DA5-D7088AD60AF3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.Integration.Test", "Integration\test\Integration.Test\Steeltoe.Integration.Integration.Test.csproj", "{558AFDB0-C130-49FF-99D5-F14244E3CC06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.Test", "Integration\test\Integration.Test\Steeltoe.Integration.Test.csproj", "{558AFDB0-C130-49FF-99D5-F14244E3CC06}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Stream", "Stream\src\Stream\Steeltoe.Stream.Stream.csproj", "{19D3FF2E-0F94-4C17-AEB1-6B623535BE45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream", "Stream\src\Stream\Steeltoe.Stream.csproj", "{19D3FF2E-0F94-4C17-AEB1-6B623535BE45}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Stream.Test", "Stream\test\Stream.Test\Steeltoe.Stream.Stream.Test.csproj", "{53BE0E37-067C-46C8-84FF-357B5B19197E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Test", "Stream\test\Stream.Test\Steeltoe.Stream.Test.csproj", "{53BE0E37-067C-46C8-84FF-357B5B19197E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Messaging", "Messaging\src\Messaging\Steeltoe.Messaging.Messaging.csproj", "{4F3EA150-6099-4DCF-8C42-CC86EA101A67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging", "Messaging\src\Messaging\Steeltoe.Messaging.csproj", "{4F3EA150-6099-4DCF-8C42-CC86EA101A67}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Messaging.Test", "Messaging\test\Messaging.Test\Steeltoe.Messaging.Messaging.Test.csproj", "{96AF536F-BCEC-46D2-BCD0-C1737418ED44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Test", "Messaging\test\Messaging.Test\Steeltoe.Messaging.Test.csproj", "{96AF536F-BCEC-46D2-BCD0-C1737418ED44}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Client", "Discovery\src\Client\Steeltoe.Discovery.Client.csproj", "{E2BE4A3F-1C35-41ED-99D1-7630B5369942}"
 EndProject

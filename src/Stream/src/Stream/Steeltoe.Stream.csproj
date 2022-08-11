@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <RootNamespace>Steeltoe.Stream</RootNamespace>
     <Description>Steeltoe Stream Base</Description>
     <PackageTags>Streams, NET Core, Spring, Spring Cloud</PackageTags>
   </PropertyGroup>
@@ -11,7 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Abstractions\Steeltoe.Stream.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common.RetryPolly\Steeltoe.Common.RetryPolly.csproj" />
-    <ProjectReference Include="..\..\..\Integration\src\Integration\Steeltoe.Integration.Integration.csproj" />
+    <ProjectReference Include="..\..\..\Integration\src\Integration\Steeltoe.Integration.csproj" />
     <ProjectReference Include="..\..\..\Messaging\src\RabbitMQ\Steeltoe.Messaging.RabbitMQ.csproj" />
   </ItemGroup>
 

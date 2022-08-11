@@ -6,7 +6,6 @@
       **PLEASE NOTE** The public API of this package is subject to change and is not recommended for direct use outside of Steeltoe.
     </Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <RootNamespace>Steeltoe.Integration</RootNamespace>
     <PackageTags>Integration, NET Core, Spring, Spring Cloud</PackageTags>
   </PropertyGroup>
 

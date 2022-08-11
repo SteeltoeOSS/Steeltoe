@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <RootNamespace>Steeltoe.Bootstrap.Autoconfig</RootNamespace>
     <Description>Package for automatically configuring Steeltoe packages that have separately been added to a project.</Description>
     <PackageTags>Autoconfiguration;automatic configuration;application bootstrapping</PackageTags>
   </PropertyGroup>
@@ -19,7 +18,7 @@
     <ProjectReference Include="..\..\..\Configuration\src\RandomValue\Steeltoe.Extensions.Configuration.RandomValue.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Configuration\src\Placeholder\Steeltoe.Extensions.Configuration.Placeholder.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Connectors\src\EntityFramework6\Steeltoe.Connector.EntityFramework6.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Connectors\src\Connector\Steeltoe.Connector.Connector.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Connectors\src\Connector\Steeltoe.Connector.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Discovery\src\Client\Steeltoe.Discovery.Client.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicSerilog\Steeltoe.Extensions.Logging.DynamicSerilog.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Management\src\Endpoint\Steeltoe.Management.Endpoint.csproj" PrivateAssets="All" />

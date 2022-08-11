@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <RootNamespace>Steeltoe.Integration</RootNamespace>
+    <RootNamespace>Steeltoe.Messaging</RootNamespace>
   </PropertyGroup>
-
+  
   <Import Project="..\..\..\..\shared.props" />
-
+  
   <ItemGroup>
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -14,9 +14,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Integration\Steeltoe.Integration.Integration.csproj" />
+    <ProjectReference Include="..\..\src\Messaging\Steeltoe.Messaging.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
-  </ItemGroup>  
+  </ItemGroup>
+  
 
 </Project>

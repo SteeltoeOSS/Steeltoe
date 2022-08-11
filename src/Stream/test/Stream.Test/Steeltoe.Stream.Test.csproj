@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
-    <ProjectReference Include="..\..\src\Stream\Steeltoe.Stream.Stream.csproj" />
+    <ProjectReference Include="..\..\src\Stream\Steeltoe.Stream.csproj" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <ProjectReference Include="..\TestBinder\Steeltoe.Stream.TestBinder.csproj" />
 
