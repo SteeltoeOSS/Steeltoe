@@ -12,6 +12,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Messaging\src\MessagingBase\Steeltoe.Messaging.MessagingBase.csproj" />
+    <ProjectReference Include="..\..\..\Messaging\src\Messaging\Steeltoe.Messaging.csproj" />
   </ItemGroup>
 </Project>

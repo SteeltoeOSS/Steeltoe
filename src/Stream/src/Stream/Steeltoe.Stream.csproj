@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <Description>Steeltoe Stream Base</Description>
+    <PackageTags>Streams, NET Core, Spring, Spring Cloud</PackageTags>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\Abstractions\Steeltoe.Stream.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Common.RetryPolly\Steeltoe.Common.RetryPolly.csproj" />
+    <ProjectReference Include="..\..\..\Integration\src\Integration\Steeltoe.Integration.csproj" />
+    <ProjectReference Include="..\..\..\Messaging\src\RabbitMQ\Steeltoe.Messaging.RabbitMQ.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" Version="$(CastleCoreVersion)" />
+    <PackageReference Include="System.Runtime.Loader" Version="$(RuntimeLoaderVersion)" />
+  </ItemGroup>
+
+</Project>

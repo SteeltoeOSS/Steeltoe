@@ -24,7 +24,6 @@ using Steeltoe.Extensions.Configuration.Kubernetes;
 using Steeltoe.Extensions.Configuration.Placeholder;
 using Steeltoe.Extensions.Configuration.RandomValue;
 using Steeltoe.Extensions.Logging.DynamicSerilog;
-using Steeltoe.Management.CloudFoundry;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Kubernetes;
@@ -65,25 +64,21 @@ public static class WebHostBuilderExtensions
         _loggerFactory = loggerFactory;
         _logger = loggerFactory?.CreateLogger(LoggerName) ?? NullLogger.Instance;
 
-        if (!hostBuilder.WireIfAnyLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServerBase,
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServerCore))
+        if (!hostBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServer))
         {
-            hostBuilder.WireIfAnyLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryBase,
-                SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryCore);
+            hostBuilder.WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundry);
         }
 
-        if (Platform.IsKubernetes && AssemblyExtensions.IsEitherAssemblyLoaded(SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetesBase,
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetesCore))
+        if (Platform.IsKubernetes && AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetes))
         {
             WireKubernetesConfiguration(hostBuilder);
         }
 
-        hostBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValueBase);
+        hostBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValue);
 
-        hostBuilder.WireIfAnyLoaded(WirePlaceholderResolver, SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholderBase,
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholderCore);
+        hostBuilder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholder);
 
-        if (hostBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.SteeltoeConnectorConnectorCore))
+        if (hostBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.SteeltoeConnector))
         {
             hostBuilder.WireIfAnyLoaded(WireMySqlConnection, MySqlTypeLocator.Assemblies);
             hostBuilder.WireIfAnyLoaded(WireMongoClient, MongoDbTypeLocator.Assemblies);
@@ -100,28 +95,23 @@ public static class WebHostBuilderExtensions
             hostBuilder.WireIfAnyLoaded(WireSqlServerConnection, SqlServerTypeLocator.Assemblies);
         }
 
-        hostBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.SteeltoeExtensionsLoggingDynamicSerilogCore);
-        hostBuilder.WireIfAnyLoaded(WireDiscoveryClient, SteeltoeAssemblies.SteeltoeDiscoveryClientBase, SteeltoeAssemblies.SteeltoeDiscoveryClientCore);
+        hostBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.SteeltoeExtensionsLoggingDynamicSerilog);
+        hostBuilder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblies.SteeltoeDiscoveryClient);
 
-        if (AssemblyExtensions.IsEitherAssemblyLoaded(SteeltoeAssemblies.SteeltoeManagementKubernetesCore,
-            SteeltoeAssemblies.SteeltoeManagementCloudFoundryCore))
+        if (AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeManagementKubernetes))
         {
-            hostBuilder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblies.SteeltoeManagementKubernetesCore);
-            hostBuilder.WireIfLoaded(WireCloudFoundryActuators, SteeltoeAssemblies.SteeltoeManagementCloudFoundryCore);
+            hostBuilder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblies.SteeltoeManagementKubernetes);
         }
         else
         {
-            hostBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.SteeltoeManagementEndpointCore);
+            hostBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.SteeltoeManagementEndpoint);
         }
 
-        hostBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeManagementEndpointCore);
+        hostBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeManagementEndpoint);
 
-        if (!hostBuilder.WireIfLoaded(WireDistributedTracingCore, SteeltoeAssemblies.SteeltoeManagementTracingCore))
-        {
-            hostBuilder.WireIfLoaded(WireDistributedTracingBase, SteeltoeAssemblies.SteeltoeManagementTracingBase);
-        }
+        hostBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblies.SteeltoeManagementTracing);
 
-        hostBuilder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblies.SteeltoeSecurityAuthenticationCloudFoundryCore);
+        hostBuilder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblies.SteeltoeSecurityAuthenticationCloudFoundry);
         return hostBuilder;
     }
 
@@ -246,22 +236,10 @@ public static class WebHostBuilderExtensions
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireDistributedTracingBase(this IWebHostBuilder hostBuilder)
-    {
-        hostBuilder.ConfigureServices((_, svc) => svc.AddDistributedTracing()).Log(LogMessages.WireDistributedTracing);
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireDistributedTracingCore(this IWebHostBuilder hostBuilder)
+    private static void WireDistributedTracing(this IWebHostBuilder hostBuilder)
     {
         hostBuilder.ConfigureServices((_, svc) => svc.AddDistributedTracingAspNetCore()).Log(LogMessages.WireDistributedTracing);
     }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-#pragma warning disable CS0618 // Type or member is obsolete
-    private static void WireCloudFoundryActuators(this IWebHostBuilder hostBuilder) =>
-        hostBuilder.AddCloudFoundryActuators().Log(LogMessages.WireCloudFoundryActuators);
-#pragma warning restore CS0618 // Type or member is obsolete
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireKubernetesActuators(this IWebHostBuilder hostBuilder)

@@ -6,7 +6,6 @@
       **PLEASE NOTE** The public API of this package is subject to change and is not recommended for direct use outside of Steeltoe.
     </Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <RootNamespace>Steeltoe.Integration.RabbitMQ</RootNamespace>
     <PackageTags>Integration, ASPNET Core, Spring, Spring Cloud, RabbitMQ</PackageTags>
   </PropertyGroup>
 
@@ -15,6 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
     <ProjectReference Include="..\..\..\Messaging\src\RabbitMQ\Steeltoe.Messaging.RabbitMQ.csproj" />
-    <ProjectReference Include="..\IntegrationBase\Steeltoe.Integration.IntegrationBase.csproj" />
+    <ProjectReference Include="..\Integration\Steeltoe.Integration.csproj" />
   </ItemGroup>
 </Project>

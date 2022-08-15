@@ -12,21 +12,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\src\ConfigServerCore\Steeltoe.Extensions.Configuration.ConfigServerCore.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\src\KubernetesCore\Steeltoe.Extensions.Configuration.KubernetesCore.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\src\PlaceholderCore\Steeltoe.Extensions.Configuration.PlaceholderCore.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\src\RandomValueBase\Steeltoe.Extensions.Configuration.RandomValueBase.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\test\KubernetesCore.Test\Steeltoe.Extensions.Configuration.KubernetesCore.Test.csproj" />
-    <ProjectReference Include="..\..\..\Connectors\src\ConnectorCore\Steeltoe.Connector.ConnectorCore.csproj" />
-    <ProjectReference Include="..\..\..\Discovery\src\ClientCore\Steeltoe.Discovery.ClientCore.csproj" />
+   <ProjectReference Include="..\..\..\Configuration\src\ConfigServer\Steeltoe.Extensions.Configuration.ConfigServer.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\Kubernetes\Steeltoe.Extensions.Configuration.Kubernetes.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\RandomValue\Steeltoe.Extensions.Configuration.RandomValue.csproj" />
+    <ProjectReference Include="..\..\..\Discovery\src\Client\Steeltoe.Discovery.Client.csproj" />
     <ProjectReference Include="..\..\..\Discovery\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
-    <ProjectReference Include="..\..\..\Logging\src\DynamicSerilogCore\Steeltoe.Extensions.Logging.DynamicSerilogCore.csproj" />
-    <ProjectReference Include="..\..\..\Management\src\CloudFoundryCore\Steeltoe.Management.CloudFoundryCore.csproj" />
-    <ProjectReference Include="..\..\..\Management\src\EndpointCore\Steeltoe.Management.EndpointCore.csproj" />
-    <ProjectReference Include="..\..\..\Management\src\KubernetesCore\Steeltoe.Management.KubernetesCore.csproj" />
-    <ProjectReference Include="..\..\..\Management\src\TracingCore\Steeltoe.Management.TracingCore.csproj" />
-    <ProjectReference Include="..\..\..\Security\src\Authentication.CloudFoundryCore\Steeltoe.Security.Authentication.CloudFoundryCore.csproj" />
+    <ProjectReference Include="..\..\..\Logging\src\DynamicSerilog\Steeltoe.Extensions.Logging.DynamicSerilog.csproj" />
+    <ProjectReference Include="..\..\..\Management\src\Endpoint\Steeltoe.Management.Endpoint.csproj" />
+    <ProjectReference Include="..\..\..\Management\src\Kubernetes\Steeltoe.Management.Kubernetes.csproj" />
+    <ProjectReference Include="..\..\..\Management\src\Tracing\Steeltoe.Management.Tracing.csproj" />
+    <ProjectReference Include="..\..\..\Security\src\Authentication.CloudFoundry\Steeltoe.Security.Authentication.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\src\Autoconfig\Steeltoe.Bootstrap.Autoconfig.csproj" />
   </ItemGroup>
 

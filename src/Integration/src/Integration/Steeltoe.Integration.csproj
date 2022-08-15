@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <Description>
+      Steeltoe Integration Base
+      **PLEASE NOTE** The public API of this package is subject to change and is not recommended for direct use outside of Steeltoe.
+    </Description>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <PackageTags>Integration, NET Core, Spring, Spring Cloud</PackageTags>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common.Expression\Steeltoe.Common.Expression.csproj" />
+    <ProjectReference Include="..\Abstractions\Steeltoe.Integration.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

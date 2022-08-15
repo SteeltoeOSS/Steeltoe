@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Common.LoadBalancer;
 using Xunit;
 

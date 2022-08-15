@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <RootNamespace>Steeltoe.Bootstrap.Autoconfig</RootNamespace>
     <Description>Package for automatically configuring Steeltoe packages that have separately been added to a project.</Description>
     <PackageTags>Autoconfiguration;automatic configuration;application bootstrapping</PackageTags>
   </PropertyGroup>
@@ -13,30 +12,29 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Configuration\src\ConfigServerCore\Steeltoe.Extensions.Configuration.ConfigServerCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Configuration\src\KubernetesCore\Steeltoe.Extensions.Configuration.KubernetesCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Configuration\src\RandomValueBase\Steeltoe.Extensions.Configuration.RandomValueBase.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Configuration\src\PlaceholderCore\Steeltoe.Extensions.Configuration.PlaceholderCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Connectors\src\Connector.EF6Core\Steeltoe.Connector.EF6Core.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Connectors\src\ConnectorCore\Steeltoe.Connector.ConnectorCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Discovery\src\ClientCore\Steeltoe.Discovery.ClientCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Logging\src\DynamicSerilogCore\Steeltoe.Extensions.Logging.DynamicSerilogCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Management\src\CloudFoundryCore\Steeltoe.Management.CloudFoundryCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Management\src\EndpointCore\Steeltoe.Management.EndpointCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Management\src\KubernetesCore\Steeltoe.Management.KubernetesCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Management\src\TaskCore\Steeltoe.Management.TaskCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Management\src\TracingCore\Steeltoe.Management.TracingCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Security\src\Authentication.CloudFoundryCore\Steeltoe.Security.Authentication.CloudFoundryCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Security\src\Authentication.MtlsCore\Steeltoe.Security.Authentication.MtlsCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Security\src\DataProtection.CredHubCore\Steeltoe.Security.DataProtection.CredHubCore.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Security\src\DataProtection.RedisCore\Steeltoe.Security.DataProtection.RedisCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Extensions.Configuration.CloudFoundry.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Configuration\src\ConfigServer\Steeltoe.Extensions.Configuration.ConfigServer.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Configuration\src\Kubernetes\Steeltoe.Extensions.Configuration.Kubernetes.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Configuration\src\RandomValue\Steeltoe.Extensions.Configuration.RandomValue.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Configuration\src\Placeholder\Steeltoe.Extensions.Configuration.Placeholder.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Connectors\src\EntityFramework6\Steeltoe.Connector.EntityFramework6.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Connectors\src\Connector\Steeltoe.Connector.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Discovery\src\Client\Steeltoe.Discovery.Client.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Logging\src\DynamicSerilog\Steeltoe.Extensions.Logging.DynamicSerilog.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Management\src\Endpoint\Steeltoe.Management.Endpoint.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Management\src\Kubernetes\Steeltoe.Management.Kubernetes.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Management\src\Task\Steeltoe.Management.Task.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Management\src\Tracing\Steeltoe.Management.Tracing.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Security\src\Authentication.CloudFoundry\Steeltoe.Security.Authentication.CloudFoundry.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Security\src\Authentication.Mtls\Steeltoe.Security.Authentication.Mtls.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Security\src\DataProtection.CredHub\Steeltoe.Security.DataProtection.CredHub.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Security\src\DataProtection.Redis\Steeltoe.Security.DataProtection.Redis.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Connectors\src\Connector.EFCore\Steeltoe.Connector.EFCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Connectors\src\EntityFrameworkCore\Steeltoe.Connector.EntityFrameworkCore.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\Connectors\src\ConnectorBase\**\*TypeLocator.cs" LinkBase="TypeLocators" />
+    <Compile Include="..\..\..\Connectors\src\Connector\**\*TypeLocator.cs" LinkBase="TypeLocators" />
   </ItemGroup>
   <ItemDefinitionGroup>
     <Reference>

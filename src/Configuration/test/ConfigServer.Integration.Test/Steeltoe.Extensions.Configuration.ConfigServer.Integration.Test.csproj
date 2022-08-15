@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj" />
-    <ProjectReference Include="..\..\src\ConfigServerCore\Steeltoe.Extensions.Configuration.ConfigServerCore.csproj" />
+    <ProjectReference Include="..\..\src\ConfigServer\Steeltoe.Extensions.Configuration.ConfigServer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

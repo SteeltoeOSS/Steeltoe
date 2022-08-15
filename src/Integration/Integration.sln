@@ -30,11 +30,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Abstraction
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResources", "..\Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj", "{6F582D6B-7384-4077-B381-74E5B6193C62}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.MessagingBase", "..\Messaging\src\MessagingBase\Steeltoe.Messaging.MessagingBase.csproj", "{7D16B604-FFBA-4D4C-98F9-D9E46491B7CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging", "..\Messaging\src\Messaging\Steeltoe.Messaging.csproj", "{7D16B604-FFBA-4D4C-98F9-D9E46491B7CE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.IntegrationBase", "src\IntegrationBase\Steeltoe.Integration.IntegrationBase.csproj", "{7D073E38-DF3D-4287-ADE8-9964DA4EDD2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration", "src\Integration\Steeltoe.Integration.csproj", "{7D073E38-DF3D-4287-ADE8-9964DA4EDD2F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.IntegrationBase.Test", "test\IntegrationBase.Test\Steeltoe.Integration.IntegrationBase.Test.csproj", "{83B7E465-0260-4458-8879-96B0ADEA6E10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.Test", "test\Integration.Test\Steeltoe.Integration.Test.csproj", "{83B7E465-0260-4458-8879-96B0ADEA6E10}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Expression", "..\Common\src\Common.Expression\Steeltoe.Common.Expression.csproj", "{DE561582-6F09-472A-8411-442805BF39A9}"
 EndProject

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28315.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7608EFF0-BADC-4259-A760-FA312F9887CD}"
 EndProject
@@ -21,25 +21,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryCore", "src\Authentication.CloudFoundryCore\Steeltoe.Security.Authentication.CloudFoundryCore.csproj", "{C2EDCFE9-B3C5-466C-B1DA-C62D896C8F9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundry", "src\Authentication.CloudFoundry\Steeltoe.Security.Authentication.CloudFoundry.csproj", "{C2EDCFE9-B3C5-466C-B1DA-C62D896C8F9E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.RedisCore", "src\DataProtection.RedisCore\Steeltoe.Security.DataProtection.RedisCore.csproj", "{CFA2306E-770A-4136-B232-41FC75FCC335}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.Redis", "src\DataProtection.Redis\Steeltoe.Security.DataProtection.Redis.csproj", "{CFA2306E-770A-4136-B232-41FC75FCC335}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryCore.Test", "test\Authentication.CloudFoundryCore.Test\Steeltoe.Security.Authentication.CloudFoundryCore.Test.csproj", "{DB10D179-F064-4AD9-8713-4635B2364BBA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundry.Test", "test\Authentication.CloudFoundry.Test\Steeltoe.Security.Authentication.CloudFoundry.Test.csproj", "{DB10D179-F064-4AD9-8713-4635B2364BBA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.RedisCore.Test", "test\DataProtection.RedisCore.Test\Steeltoe.Security.DataProtection.RedisCore.Test.csproj", "{4A9E583F-3C55-4B06-996A-2245DE10A489}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.Redis.Test", "test\DataProtection.Redis.Test\Steeltoe.Security.DataProtection.Redis.Test.csproj", "{4A9E583F-3C55-4B06-996A-2245DE10A489}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.CredHubCore", "src\DataProtection.CredHubCore\Steeltoe.Security.DataProtection.CredHubCore.csproj", "{2C058652-DE6E-4A33-8D11-F9F5AB9E481A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.CredHub", "src\DataProtection.CredHub\Steeltoe.Security.DataProtection.CredHub.csproj", "{2C058652-DE6E-4A33-8D11-F9F5AB9E481A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.CredHubCore.Test", "test\DataProtection.CredHubCore.Test\Steeltoe.Security.DataProtection.CredHubCore.Test.csproj", "{B5EDB484-9639-4F81-9E8E-639EA866ECA6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.CredHubBase", "src\DataProtection.CredHubBase\Steeltoe.Security.DataProtection.CredHubBase.csproj", "{E698B09A-4865-49B4-A132-DD91701CF1C9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.CredHubBase.Test", "test\DataProtection.CredHubBase.Test\Steeltoe.Security.DataProtection.CredHubBase.Test.csproj", "{5F0D59A7-FB7D-4CA6-8DC4-2BDF50D176AF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryBase", "src\Authentication.CloudFoundryBase\Steeltoe.Security.Authentication.CloudFoundryBase.csproj", "{F5FA179B-3731-485B-B2D3-994AE05166EA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.CloudFoundryBase.Test", "test\Authentication.CloudFoundryBase.Test\Steeltoe.Security.Authentication.CloudFoundryBase.Test.csproj", "{350CC18B-D550-4207-9023-E90C9B61BF6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.CredHub.Test", "test\DataProtection.CredHub.Test\Steeltoe.Security.DataProtection.CredHub.Test.csproj", "{B5EDB484-9639-4F81-9E8E-639EA866ECA6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{2FE6A5FE-4512-41A9-9994-90C12DF1C409}"
 EndProject
@@ -47,13 +39,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common", "..\Common\src\Common\Steeltoe.Common.csproj", "{E0BE23BB-47B5-4838-B845-254A6CE8F791}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryBase", "..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj", "{321350A1-20CE-4672-B901-9C58F12B43A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundry", "..\Configuration\src\CloudFoundry\Steeltoe.Extensions.Configuration.CloudFoundry.csproj", "{321350A1-20CE-4672-B901-9C58F12B43A8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResources", "..\Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj", "{507EDE3C-B9B1-4068-8525-EE477DFE6378}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.MtlsCore", "src\Authentication.MtlsCore\Steeltoe.Security.Authentication.MtlsCore.csproj", "{79A751F7-2368-464A-95C5-4A9436122FDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.Mtls", "src\Authentication.Mtls\Steeltoe.Security.Authentication.Mtls.csproj", "{79A751F7-2368-464A-95C5-4A9436122FDC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.MtlsCore.Test", "test\Authentication.MtlsCore.Test\Steeltoe.Security.Authentication.MtlsCore.Test.csproj", "{E9C7110C-F12F-40B4-AB11-4AAAF1B4A330}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.Mtls.Test", "test\Authentication.Mtls.Test\Steeltoe.Security.Authentication.Mtls.Test.csproj", "{E9C7110C-F12F-40B4-AB11-4AAAF1B4A330}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security", "..\Common\src\Common.Security\Steeltoe.Common.Security.csproj", "{7C5DB43D-2728-430B-8AFB-9F239CF93E18}"
 EndProject
@@ -65,7 +57,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Abstract
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.Abstractions", "..\Configuration\src\Abstractions\Steeltoe.Extensions.Configuration.Abstractions.csproj", "{C699011E-AB0A-4FA4-B0C6-9BE3D75A2FD3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.ConnectorBase", "..\Connectors\src\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj", "{3B956CF1-91A2-4D62-9538-054D2C40D42F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector", "..\Connectors\src\Connector\Steeltoe.Connector.csproj", "{3B956CF1-91A2-4D62-9538-054D2C40D42F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.CloudFoundry", "..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj", "{91D9A0F8-679F-421A-BFF0-F6D6BEAEB3C9}"
 EndProject
@@ -99,22 +91,6 @@ Global
 		{B5EDB484-9639-4F81-9E8E-639EA866ECA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5EDB484-9639-4F81-9E8E-639EA866ECA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5EDB484-9639-4F81-9E8E-639EA866ECA6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E698B09A-4865-49B4-A132-DD91701CF1C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E698B09A-4865-49B4-A132-DD91701CF1C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E698B09A-4865-49B4-A132-DD91701CF1C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E698B09A-4865-49B4-A132-DD91701CF1C9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5F0D59A7-FB7D-4CA6-8DC4-2BDF50D176AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5F0D59A7-FB7D-4CA6-8DC4-2BDF50D176AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5F0D59A7-FB7D-4CA6-8DC4-2BDF50D176AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5F0D59A7-FB7D-4CA6-8DC4-2BDF50D176AF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F5FA179B-3731-485B-B2D3-994AE05166EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5FA179B-3731-485B-B2D3-994AE05166EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F5FA179B-3731-485B-B2D3-994AE05166EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F5FA179B-3731-485B-B2D3-994AE05166EA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{350CC18B-D550-4207-9023-E90C9B61BF6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{350CC18B-D550-4207-9023-E90C9B61BF6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{350CC18B-D550-4207-9023-E90C9B61BF6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{350CC18B-D550-4207-9023-E90C9B61BF6C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{495C7871-EE98-4B53-ABAE-26294046DDDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{495C7871-EE98-4B53-ABAE-26294046DDDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{495C7871-EE98-4B53-ABAE-26294046DDDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -178,10 +154,6 @@ Global
 		{4A9E583F-3C55-4B06-996A-2245DE10A489} = {BA3B33D3-64A5-4219-B4C2-787C4BD505F7}
 		{2C058652-DE6E-4A33-8D11-F9F5AB9E481A} = {7608EFF0-BADC-4259-A760-FA312F9887CD}
 		{B5EDB484-9639-4F81-9E8E-639EA866ECA6} = {BA3B33D3-64A5-4219-B4C2-787C4BD505F7}
-		{E698B09A-4865-49B4-A132-DD91701CF1C9} = {7608EFF0-BADC-4259-A760-FA312F9887CD}
-		{5F0D59A7-FB7D-4CA6-8DC4-2BDF50D176AF} = {BA3B33D3-64A5-4219-B4C2-787C4BD505F7}
-		{F5FA179B-3731-485B-B2D3-994AE05166EA} = {7608EFF0-BADC-4259-A760-FA312F9887CD}
-		{350CC18B-D550-4207-9023-E90C9B61BF6C} = {BA3B33D3-64A5-4219-B4C2-787C4BD505F7}
 		{495C7871-EE98-4B53-ABAE-26294046DDDC} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
 		{E0BE23BB-47B5-4838-B845-254A6CE8F791} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
 		{321350A1-20CE-4672-B901-9C58F12B43A8} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}

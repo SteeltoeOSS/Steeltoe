@@ -5,4 +5,4 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Common.Security.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.CloudFoundryCore.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.CloudFoundry.Test")]
