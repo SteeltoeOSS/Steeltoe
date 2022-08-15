@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 // ReSharper disable MemberCanBeInternal
+
 namespace Steeltoe.Bootstrap.Autoconfig;
 
 public static class SteeltoeAssemblies
