@@ -151,7 +151,7 @@ public class WebHostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeConnectorConnector
+            SteeltoeAssemblies.SteeltoeConnector
         });
 
         IWebHostBuilder hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))

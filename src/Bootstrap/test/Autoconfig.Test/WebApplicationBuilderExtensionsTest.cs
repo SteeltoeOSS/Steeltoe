@@ -99,7 +99,7 @@ public class WebApplicationBuilderExtensionsTest
     [Fact]
     public void Connectors_AreAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeConnectorConnector);
+        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeConnector);
         var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
         IServiceProvider services = host.Services;
 

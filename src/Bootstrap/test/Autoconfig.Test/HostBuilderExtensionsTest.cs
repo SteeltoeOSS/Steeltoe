@@ -140,7 +140,7 @@ public class HostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeConnectorConnector
+            SteeltoeAssemblies.SteeltoeConnector
         });
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
