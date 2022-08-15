@@ -32,7 +32,6 @@ public class ApplicationInfoManager
 
             return InstanceInfo.Status;
         }
-
         set
         {
             if (InstanceInfo == null)

@@ -31,7 +31,6 @@ public class Queue : AbstractDeclarable, IQueue, ICloneable
             Arguments.TryGetValue(XQueueMasterLocator, out object result);
             return result as string;
         }
-
         set
         {
             if (value == null)

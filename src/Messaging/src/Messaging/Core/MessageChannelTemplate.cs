@@ -30,21 +30,18 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
     public virtual int SendTimeout
     {
         get => _sendTimeout;
-
         set => _sendTimeout = value;
     }
 
     public virtual int ReceiveTimeout
     {
         get => _receiveTimeout;
-
         set => _receiveTimeout = value;
     }
 
     public virtual string SendTimeoutHeader
     {
         get => _sendTimeoutHeader;
-
         set
         {
             ArgumentGuard.NotNull(value);
@@ -56,7 +53,6 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
     public virtual string ReceiveTimeoutHeader
     {
         get => _receiveTimeoutHeader;
-
         set
         {
             ArgumentGuard.NotNull(value);
@@ -68,7 +64,6 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
     public virtual bool ThrowExceptionOnLateReply
     {
         get => _throwExceptionOnLateReply;
-
         set => _throwExceptionOnLateReply = value;
     }
 

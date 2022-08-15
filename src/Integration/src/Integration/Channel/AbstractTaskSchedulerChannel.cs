@@ -19,7 +19,6 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
     public override List<IChannelInterceptor> ChannelInterceptors
     {
         get => base.ChannelInterceptors;
-
         set
         {
             base.ChannelInterceptors = value;

@@ -63,14 +63,12 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public CachingConnectionFactory PublisherCachingConnectionFactory
     {
         get => (CachingConnectionFactory)PublisherConnectionFactory;
-
         set => PublisherConnectionFactory = value;
     }
 
     public int ChannelCacheSize
     {
         get => _channelCacheSize;
-
         set
         {
             if (value < 1)
@@ -92,7 +90,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public int ConnectionCacheSize
     {
         get => _connectionCacheSize;
-
         set
         {
             if (value < 1)
@@ -112,7 +109,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public int ConnectionLimit
     {
         get => _connectionLimit;
-
         set
         {
             if (value < 1)
@@ -132,7 +128,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public override bool IsPublisherReturns
     {
         get => _publisherReturns;
-
         set
         {
             _publisherReturns = value;
@@ -147,7 +142,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public ConfirmType PublisherConfirmType
     {
         get => _confirmType;
-
         set
         {
             _confirmType = value;
@@ -166,7 +160,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public int ChannelCheckoutTimeout
     {
         get => _channelCheckoutTimeout;
-
         set
         {
             _channelCheckoutTimeout = value;
@@ -181,7 +174,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public IConditionalExceptionLogger CloseExceptionLogger
     {
         get => _closeExceptionLogger;
-
         set
         {
             _closeExceptionLogger = value;
@@ -1191,7 +1183,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             set
             {
                 try
@@ -1243,7 +1234,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             set
             {
                 try
@@ -1274,7 +1264,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             remove
             {
                 try
@@ -1305,7 +1294,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             remove
             {
                 try
@@ -1336,7 +1324,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             remove
             {
                 try
@@ -1367,7 +1354,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             remove
             {
                 try
@@ -1398,7 +1384,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             remove
             {
                 try
@@ -1429,7 +1414,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             remove
             {
                 try
@@ -1460,7 +1444,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             remove
             {
                 try

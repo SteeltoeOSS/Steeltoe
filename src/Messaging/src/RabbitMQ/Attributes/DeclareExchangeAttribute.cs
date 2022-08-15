@@ -36,7 +36,6 @@ public class DeclareExchangeAttribute : Attribute
 
             return Admins[0];
         }
-
         set
         {
             Admins = new[]

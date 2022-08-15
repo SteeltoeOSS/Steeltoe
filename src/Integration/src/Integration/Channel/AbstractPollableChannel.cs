@@ -16,7 +16,6 @@ public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollabl
     public override List<IChannelInterceptor> ChannelInterceptors
     {
         get => base.ChannelInterceptors;
-
         set
         {
             base.ChannelInterceptors = value;

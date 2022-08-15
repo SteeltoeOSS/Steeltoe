@@ -42,7 +42,6 @@ public class SpelExpression : IExpression
             _evaluationContext ??= new StandardEvaluationContext();
             return _evaluationContext;
         }
-
         set => _evaluationContext = value;
     }
 

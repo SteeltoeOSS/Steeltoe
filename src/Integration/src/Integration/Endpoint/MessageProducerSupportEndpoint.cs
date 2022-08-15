@@ -48,14 +48,12 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
 
             return _outputChannel;
         }
-
         set => _outputChannel = value;
     }
 
     public virtual string OutputChannelName
     {
         get => _outputChannelName;
-
         set
         {
             ArgumentGuard.NotNullOrEmpty(value);
@@ -83,14 +81,12 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
 
             return _errorChannel;
         }
-
         set => _errorChannel = value;
     }
 
     public virtual string ErrorChannelName
     {
         get => _errorChannelName;
-
         set
         {
             ArgumentGuard.NotNullOrEmpty(value);
@@ -102,14 +98,12 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
     public virtual int SendTimeout
     {
         get => _messagingTemplate.SendTimeout;
-
         set => _messagingTemplate.SendTimeout = value;
     }
 
     public virtual IErrorMessageStrategy ErrorMessageStrategy
     {
         get => _errorMessageStrategy;
-
         set
         {
             ArgumentGuard.NotNull(value);

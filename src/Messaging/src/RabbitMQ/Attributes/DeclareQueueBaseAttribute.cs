@@ -27,7 +27,6 @@ public abstract class DeclareQueueBaseAttribute : Attribute
 
             return Admins[0];
         }
-
         set
         {
             Admins = new[]

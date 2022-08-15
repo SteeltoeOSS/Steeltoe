@@ -33,7 +33,6 @@ public class AntPathMatcher : IPathMatcher
     public virtual string PathSeparator
     {
         get => _pathSeparator;
-
         set
         {
             _pathSeparator = value ?? DefaultPathSeparator;

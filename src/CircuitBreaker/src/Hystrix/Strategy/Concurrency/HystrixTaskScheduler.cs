@@ -39,21 +39,18 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
     public virtual int CorePoolSize
     {
         get => corePoolSize;
-
         set => throw new NotImplementedException();
     }
 
     public virtual int MaximumPoolSize
     {
         get => maximumPoolSize;
-
         set => throw new NotImplementedException();
     }
 
     public virtual TimeSpan KeepAliveTime
     {
         get => keepAliveTime;
-
         set => throw new NotImplementedException();
     }
 

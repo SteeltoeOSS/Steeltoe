@@ -29,7 +29,6 @@ public abstract class AbstractExpressionEvaluator
             _evaluationContext ??= GetEvaluationContext();
             return _evaluationContext;
         }
-
         set => _evaluationContext = value;
     }
 
@@ -49,7 +48,6 @@ public abstract class AbstractExpressionEvaluator
             _messageBuilderFactory ??= GetMessageBuilderFactory();
             return _messageBuilderFactory;
         }
-
         set => _messageBuilderFactory = value;
     }
 

@@ -23,7 +23,6 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
     public string ServiceUrl
     {
         get => EurekaServerServiceUrls;
-
         set => EurekaServerServiceUrls = value;
     }
 
@@ -32,7 +31,6 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
     public bool Validate_Certificates
     {
         get => ValidateCertificates;
-
         set => ValidateCertificates = value;
     }
 
@@ -64,7 +62,6 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         public bool Enabled
         {
             get => _options.HealthContribEnabled;
-
             set => _options.HealthContribEnabled = value;
         }
 
@@ -72,7 +69,6 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         public string MonitoredApps
         {
             get => _options.HealthMonitoredApps;
-
             set => _options.HealthMonitoredApps = value;
         }
 
@@ -80,7 +76,6 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         public bool CheckEnabled
         {
             get => _options.HealthCheckEnabled;
-
             set => _options.HealthCheckEnabled = value;
         }
 
@@ -100,7 +95,6 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         public string ProxyHost
         {
             get => _options.ProxyHost;
-
             set => _options.ProxyHost = value;
         }
 
@@ -110,7 +104,6 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         public int ProxyPort
         {
             get => _options.ProxyPort;
-
             set => _options.ProxyPort = value;
         }
 
@@ -120,7 +113,6 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         public string ProxyUserName
         {
             get => _options.ProxyUserName;
-
             set => _options.ProxyUserName = value;
         }
 
@@ -130,7 +122,6 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         public string ProxyPassword
         {
             get => _options.ProxyPassword;
-
             set => _options.ProxyPassword = value;
         }
 
@@ -140,7 +131,6 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         public bool ShouldGZipContent
         {
             get => _options.ShouldGZipContent;
-
             set => _options.ShouldGZipContent = value;
         }
 
@@ -150,7 +140,6 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         public int ConnectTimeoutSeconds
         {
             get => _options.EurekaServerConnectTimeoutSeconds;
-
             set => _options.EurekaServerConnectTimeoutSeconds = value;
         }
 
@@ -160,7 +149,6 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         public int RetryCount
         {
             get => _options.EurekaServerRetryCount;
-
             set => _options.EurekaServerRetryCount = value;
         }
 

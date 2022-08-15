@@ -22,7 +22,6 @@ public class CollapsedRequest<TRequestResponse, TRequestArgument> : ICollapsedRe
     public bool Complete
     {
         get => _complete;
-
         set
         {
             _complete = value;
@@ -37,7 +36,6 @@ public class CollapsedRequest<TRequestResponse, TRequestArgument> : ICollapsedRe
     public Exception Exception
     {
         get => _exception;
-
         set
         {
             _exception = value;
@@ -53,7 +51,6 @@ public class CollapsedRequest<TRequestResponse, TRequestArgument> : ICollapsedRe
     public TRequestResponse Response
     {
         get => _response;
-
         set
         {
             _response = value;

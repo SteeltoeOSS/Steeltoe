@@ -23,7 +23,6 @@ public class BroadcastingDispatcher : AbstractDispatcher
             _messageBuilderFactory ??= IntegrationServices.MessageBuilderFactory;
             return _messageBuilderFactory;
         }
-
         set => _messageBuilderFactory = value;
     }
 

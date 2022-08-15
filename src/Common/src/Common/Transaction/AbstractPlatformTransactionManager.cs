@@ -24,7 +24,6 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
     public virtual int DefaultTimeout
     {
         get => _defaultTimeout;
-
         set
         {
             if (value < AbstractTransactionDefinition.TimeoutDefault)

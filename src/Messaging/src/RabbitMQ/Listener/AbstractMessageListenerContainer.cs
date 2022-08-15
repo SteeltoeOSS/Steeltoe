@@ -54,7 +54,6 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             _connectionFactory ??= ApplicationContext.GetService<IConnectionFactory>();
             return _connectionFactory;
         }
-
         set => _connectionFactory = value;
     }
 
@@ -85,7 +84,6 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     public virtual string ListenerId
     {
         get => _listenerId ?? ServiceName;
-
         set => _listenerId = value;
     }
 

@@ -103,7 +103,6 @@ public class RabbitTemplate
     public virtual string ReplyAddress
     {
         get => _replyAddress;
-
         set
         {
             EvaluatedFastReplyTo = false;
@@ -124,7 +123,6 @@ public class RabbitTemplate
     public virtual bool Mandatory
     {
         get => MandatoryExpression.GetValue<bool>();
-
         set => MandatoryExpression = new ValueExpression<bool>(value);
     }
 
@@ -133,7 +131,6 @@ public class RabbitTemplate
     public virtual string MandatoryExpressionString
     {
         get => MandatoryExpression?.ToString();
-
         set
         {
             ArgumentGuard.NotNull(value);
@@ -169,7 +166,6 @@ public class RabbitTemplate
     public virtual string UserIdExpressionString
     {
         get => UserIdExpression?.ToString();
-
         set => UserIdExpression = Parser.ParseExpression(value);
     }
 

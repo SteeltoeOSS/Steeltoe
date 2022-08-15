@@ -23,7 +23,6 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
     public virtual bool StrictContentTypeMatch
     {
         get => _strictContentTypeMatch;
-
         set
         {
             if (value)
@@ -46,7 +45,6 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
     public virtual Type SerializedPayloadClass
     {
         get => _serializedPayloadClass;
-
         set
         {
             if (value != typeof(byte[]) && value != typeof(string))

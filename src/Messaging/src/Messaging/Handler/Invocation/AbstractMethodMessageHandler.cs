@@ -53,7 +53,6 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
     public virtual IList<string> DestinationPrefixes
     {
         get => _destinationPrefixes;
-
         set
         {
             _destinationPrefixes.Clear();
@@ -71,7 +70,6 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
     public virtual IList<IHandlerMethodArgumentResolver> CustomArgumentResolvers
     {
         get => _customArgumentResolvers;
-
         set
         {
             _customArgumentResolvers.Clear();
@@ -86,7 +84,6 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
     public virtual IList<IHandlerMethodArgumentResolver> ArgumentResolvers
     {
         get => MethodArgumentResolvers.Resolvers;
-
         set
         {
             if (value == null)
@@ -102,7 +99,6 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
     public virtual IList<IHandlerMethodReturnValueHandler> ReturnValueHandlers
     {
         get => MethodReturnValueHandlers.ReturnValueHandlers;
-
         set
         {
             if (value == null)
@@ -118,7 +114,6 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
     public virtual IList<IHandlerMethodReturnValueHandler> CustomReturnValueHandlers
     {
         get => _customReturnValueHandlers;
-
         set
         {
             _customReturnValueHandlers.Clear();

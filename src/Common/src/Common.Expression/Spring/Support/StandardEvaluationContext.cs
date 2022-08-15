@@ -38,7 +38,6 @@ public class StandardEvaluationContext : IEvaluationContext
             _propertyAccessors = InitPropertyAccessors();
             return _propertyAccessors;
         }
-
         set => _propertyAccessors = value;
     }
 
@@ -49,7 +48,6 @@ public class StandardEvaluationContext : IEvaluationContext
             _constructorResolvers = InitConstructorResolvers();
             return _constructorResolvers;
         }
-
         set => _constructorResolvers = value;
     }
 
@@ -60,7 +58,6 @@ public class StandardEvaluationContext : IEvaluationContext
             _methodResolvers = InitMethodResolvers();
             return _methodResolvers;
         }
-
         set => _methodResolvers = value;
     }
 
@@ -71,7 +68,6 @@ public class StandardEvaluationContext : IEvaluationContext
             _typeLocator ??= new StandardTypeLocator();
             return _typeLocator;
         }
-
         set
         {
             ArgumentGuard.NotNull(value);
@@ -87,7 +83,6 @@ public class StandardEvaluationContext : IEvaluationContext
             _typeConverter ??= new StandardTypeConverter();
             return _typeConverter;
         }
-
         set
         {
             ArgumentGuard.NotNull(value);
@@ -99,7 +94,6 @@ public class StandardEvaluationContext : IEvaluationContext
     public ITypeComparator TypeComparator
     {
         get => _typeComparator;
-
         set
         {
             ArgumentGuard.NotNull(value);
@@ -111,7 +105,6 @@ public class StandardEvaluationContext : IEvaluationContext
     public IOperatorOverloader OperatorOverloader
     {
         get => _operatorOverloader;
-
         set
         {
             ArgumentGuard.NotNull(value);

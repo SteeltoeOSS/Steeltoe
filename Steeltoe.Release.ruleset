@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="Steeltoe Release" Description="Code quality rules for Steeltoe release builds" ToolsVersion="17.0">
   <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
     <Rule Id="S100" Action="Warning" />
@@ -150,6 +150,7 @@
     <Rule Id="SA1513" Action="None" />
     <Rule Id="SA1514" Action="None" />
     <Rule Id="SA1515" Action="None" />
+    <Rule Id="SA1516" Action="None" />
     <Rule Id="SA1517" Action="None" />
     <Rule Id="SA1518" Action="None" />
     <Rule Id="SA1519" Action="None" />

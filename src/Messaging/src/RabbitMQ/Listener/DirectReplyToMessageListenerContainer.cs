@@ -26,7 +26,6 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
         {
             return base.ConsumersPerQueue;
         }
-
         set
         {
             throw new NotSupportedException();
@@ -36,7 +35,6 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
     public override IMessageListener MessageListener
     {
         get => base.MessageListener;
-
         set => base.MessageListener = new ChannelAwareMessageListener(this, value);
     }
 
@@ -220,7 +218,6 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
         public AcknowledgeMode ContainerAckMode
         {
             get => AcknowledgeMode.None;
-
             set
             {
                 // Do nothing

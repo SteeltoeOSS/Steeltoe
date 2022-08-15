@@ -21,7 +21,6 @@ public abstract class AbstractTransformer : ITransformer
             _messageBuilderFactory ??= ApplicationContext.GetService<IMessageBuilderFactory>() ?? new DefaultMessageBuilderFactory();
             return _messageBuilderFactory;
         }
-
         set => _messageBuilderFactory = value;
     }
 

@@ -28,7 +28,6 @@ public class AtomicReferenceArray<T>
                 return _array[index];
             }
         }
-
         set
         {
             lock (_array)

@@ -11,7 +11,6 @@ public class AtomicInteger
     public int Value
     {
         get => value;
-
         set => this.value = value;
     }
 

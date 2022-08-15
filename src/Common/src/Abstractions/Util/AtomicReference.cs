@@ -12,7 +12,6 @@ public class AtomicReference<T>
     public T Value
     {
         get => _value;
-
         set => _value = value;
     }
 

@@ -59,7 +59,6 @@ public abstract class AbstractDispatcher : IMessageDispatcher
 
             return _errorHandler;
         }
-
         set => _errorHandler = value;
     }
 

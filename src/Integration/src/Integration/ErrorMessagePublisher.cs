@@ -38,7 +38,6 @@ public class ErrorMessagePublisher
     public virtual IErrorMessageStrategy ErrorMessageStrategy
     {
         get => _errorMessageStrategy;
-
         set
         {
             ArgumentGuard.NotNull(value);
@@ -55,7 +54,6 @@ public class ErrorMessagePublisher
 
             return _channel;
         }
-
         set => _channel = value;
     }
 
@@ -64,7 +62,6 @@ public class ErrorMessagePublisher
     public virtual int SendTimeout
     {
         get => InnerMessagingTemplate.SendTimeout;
-
         set => InnerMessagingTemplate.SendTimeout = value;
     }
 
@@ -75,7 +72,6 @@ public class ErrorMessagePublisher
             _channelResolver ??= IntegrationServices.ChannelResolver;
             return _channelResolver;
         }
-
         set
         {
             ArgumentGuard.NotNull(value);

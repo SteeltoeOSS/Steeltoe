@@ -506,7 +506,6 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
 
                 return base.ReturnedMessage;
             }
-
             set
             {
                 if (UserData is CorrelationData data)

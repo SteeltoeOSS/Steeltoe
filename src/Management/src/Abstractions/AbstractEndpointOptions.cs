@@ -28,7 +28,6 @@ public abstract class AbstractEndpointOptions : IEndpointOptions
 
             return Id;
         }
-
         set => path = value;
     }
 

@@ -52,14 +52,12 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
             _messageConverter ??= ApplicationContext.GetService<DefaultDataTypeChannelMessageConverter>();
             return _messageConverter;
         }
-
         set => _messageConverter = value;
     }
 
     public virtual List<IChannelInterceptor> ChannelInterceptors
     {
         get => Interceptors.Interceptors;
-
         set
         {
             value.Sort(new OrderComparer());

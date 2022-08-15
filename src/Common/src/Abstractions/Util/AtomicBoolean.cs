@@ -11,7 +11,6 @@ public class AtomicBoolean
     public bool Value
     {
         get => _value != 0;
-
         set => _value = value ? 1 : 0;
     }
 

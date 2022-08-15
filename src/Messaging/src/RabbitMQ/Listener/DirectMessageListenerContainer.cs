@@ -44,7 +44,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     public virtual int ConsumersPerQueue
     {
         get => _consumersPerQueue;
-
         set
         {
             if (IsRunning)
@@ -59,7 +58,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     public override bool Exclusive
     {
         get => base.Exclusive;
-
         set
         {
             if (value && ConsumersPerQueue != 1)

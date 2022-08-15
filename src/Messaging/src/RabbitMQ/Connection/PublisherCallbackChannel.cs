@@ -58,49 +58,42 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
     public virtual event EventHandler<BasicAckEventArgs> BasicAcks
     {
         add => Channel.BasicAcks += value;
-
         remove => Channel.BasicAcks -= value;
     }
 
     public virtual event EventHandler<BasicNackEventArgs> BasicNacks
     {
         add => Channel.BasicNacks += value;
-
         remove => Channel.BasicNacks -= value;
     }
 
     public virtual event EventHandler<EventArgs> BasicRecoverOk
     {
         add => Channel.BasicRecoverOk += value;
-
         remove => Channel.BasicRecoverOk -= value;
     }
 
     public virtual event EventHandler<BasicReturnEventArgs> BasicReturn
     {
         add => Channel.BasicReturn += value;
-
         remove => Channel.BasicReturn -= value;
     }
 
     public virtual event EventHandler<CallbackExceptionEventArgs> CallbackException
     {
         add => Channel.CallbackException += value;
-
         remove => Channel.CallbackException -= value;
     }
 
     public virtual event EventHandler<FlowControlEventArgs> FlowControl
     {
         add => Channel.FlowControl += value;
-
         remove => Channel.FlowControl -= value;
     }
 
     public virtual event EventHandler<RC.ShutdownEventArgs> ModelShutdown
     {
         add => Channel.ModelShutdown += value;
-
         remove => Channel.ModelShutdown -= value;
     }
 

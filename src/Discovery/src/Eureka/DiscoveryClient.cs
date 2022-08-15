@@ -51,7 +51,6 @@ public class DiscoveryClient : IEurekaClient
     public Applications Applications
     {
         get => localRegionApps;
-
         internal set => localRegionApps = value;
     }
 

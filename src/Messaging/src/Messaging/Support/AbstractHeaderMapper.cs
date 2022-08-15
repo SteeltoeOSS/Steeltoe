@@ -17,14 +17,12 @@ public abstract class AbstractHeaderMapper<T> : IHeaderMapper<T>
     public string InboundPrefix
     {
         get => _inboundPrefix;
-
         set => _inboundPrefix = value ?? string.Empty;
     }
 
     public string OutboundPrefix
     {
         get => _outboundPrefix;
-
         set => _outboundPrefix = value ?? string.Empty;
     }
 

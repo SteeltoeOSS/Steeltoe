@@ -39,14 +39,12 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
 
             return _outputChannel;
         }
-
         set => _outputChannel = value;
     }
 
     public virtual string OutputChannelName
     {
         get => _outputChannelName;
-
         set
         {
             ArgumentGuard.NotNullOrEmpty(value);

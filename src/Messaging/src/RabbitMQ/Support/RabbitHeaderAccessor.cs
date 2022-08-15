@@ -68,7 +68,6 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
     public int? Delay
     {
         get => GetHeader(XDelay) as int?;
-
         set
         {
             if (value == null || value.Value < 0)
@@ -187,7 +186,6 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
 
             return null;
         }
-
         set => ReplyTo = value.ToString();
     }
 

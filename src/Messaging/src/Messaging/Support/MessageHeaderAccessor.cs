@@ -41,7 +41,6 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     public virtual bool LeaveMutable
     {
         get => _leaveMutable;
-
         set
         {
             if (!headers.IsMutable)
@@ -111,7 +110,6 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
 
             return value.ToString();
         }
-
         set => SetHeader(Messaging.MessageHeaders.ContentType, value);
     }
 

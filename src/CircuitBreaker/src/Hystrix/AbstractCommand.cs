@@ -1390,7 +1390,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         public new CommandState Value
         {
             get => (CommandState)value;
-
             set => this.value = (int)value;
         }
 
@@ -1410,7 +1409,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         public new ThreadState Value
         {
             get => (ThreadState)value;
-
             set => this.value = (int)value;
         }
 
@@ -1430,7 +1428,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         public new TimedOutStatus Value
         {
             get => (TimedOutStatus)value;
-
             set => this.value = (int)value;
         }
 

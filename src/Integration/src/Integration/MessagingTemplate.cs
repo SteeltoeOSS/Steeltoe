@@ -15,7 +15,6 @@ public class MessagingTemplate : MessageChannelTemplate
     {
         // Default Receive and Send are kept the same
         get => DefaultReceiveDestination;
-
         set => DefaultSendDestination = DefaultReceiveDestination = value;
     }
 

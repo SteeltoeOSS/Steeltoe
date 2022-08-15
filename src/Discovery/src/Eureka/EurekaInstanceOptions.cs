@@ -20,7 +20,6 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
     public virtual string AppGroup
     {
         get => AppGroupName;
-
         set => AppGroupName = value;
     }
 
@@ -28,7 +27,6 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
     public virtual bool InstanceEnabledOnInit
     {
         get => IsInstanceEnabledOnInit;
-
         set => IsInstanceEnabledOnInit = value;
     }
 
@@ -36,7 +34,6 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
     public virtual int Port
     {
         get => NonSecurePort;
-
         set => NonSecurePort = value;
     }
 
@@ -44,7 +41,6 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
     public virtual bool NonSecurePortEnabled
     {
         get => IsNonSecurePortEnabled;
-
         set => IsNonSecurePortEnabled = value;
     }
 
@@ -52,7 +48,6 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
     public virtual string VipAddress
     {
         get => VirtualHostName;
-
         set => VirtualHostName = value;
     }
 
@@ -60,7 +55,6 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
     public virtual string SecureVipAddress
     {
         get => SecureVirtualHostName;
-
         set => SecureVirtualHostName = value;
     }
 
@@ -70,7 +64,6 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
     public override string IpAddress
     {
         get => _ipAddress ?? thisHostAddress;
-
         set => _ipAddress = value;
     }
 

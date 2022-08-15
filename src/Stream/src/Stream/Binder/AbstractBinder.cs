@@ -29,7 +29,6 @@ public abstract class AbstractBinder<T> : IBinder<T>
             _evaluationContext ??= _context.GetService<IEvaluationContext>() ?? new StandardEvaluationContext();
             return _evaluationContext;
         }
-
         set => _evaluationContext = value;
     }
 
@@ -40,7 +39,6 @@ public abstract class AbstractBinder<T> : IBinder<T>
             _expressionParser ??= new SpelExpressionParser();
             return _expressionParser;
         }
-
         set => _expressionParser = value;
     }
 
