@@ -369,7 +369,8 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     {
         if (messageHeaders is not MessageHeaders asHeaders)
         {
-            throw new InvalidOperationException("Unable to create mutable accessor, message has no headers or headers are not of type MessageHeaders");
+            throw new InvalidOperationException(
+                $"Unable to create mutable accessor, message has no headers or headers are not of type {nameof(MessageHeaders)}.");
         }
 
         return new MessageHeaderAccessor(asHeaders);

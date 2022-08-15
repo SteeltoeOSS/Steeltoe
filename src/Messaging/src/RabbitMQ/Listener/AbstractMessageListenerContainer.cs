@@ -1001,7 +1001,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         {
             if (StatefulRetryFatalWithNullMessageId)
             {
-                throw new FatalListenerExecutionException($"Illegal null id in message. Failed to manage retry for message: {message}", ex);
+                throw new FatalListenerExecutionException($"Illegal null id in {nameof(message)}. Failed to manage retry for: {message}", ex);
             }
 
             throw new ListenerExecutionFailedException("Cannot retry message more than once without an ID",

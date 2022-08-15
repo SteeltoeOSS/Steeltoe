@@ -66,17 +66,20 @@ public class JsonToObjectTransformer : AbstractTransformer
         switch (payload)
         {
             case string sPayload:
+            {
                 result = JsonConvert.DeserializeObject(sPayload, targetClass, Settings);
                 break;
+            }
             case byte[] bPayload:
             {
                 string contentAsString = DefaultCharset.GetString(bPayload);
                 result = JsonConvert.DeserializeObject(contentAsString, targetClass, Settings);
                 break;
             }
-
             default:
-                throw new MessageConversionException($"Failed to convert Message content, message missing byte[] or string: {payload.GetType()}");
+            {
+                throw new MessageConversionException($"Failed to convert message content, message missing byte[] or string: {payload.GetType()}");
+            }
         }
 
         if (removeHeaders)

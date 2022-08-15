@@ -41,7 +41,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
         {
             if (source != null)
             {
-                throw new ArgumentException("Source must be [null] if source type == [null]");
+                throw new ArgumentException($"{nameof(source)} must be null if {nameof(sourceType)} is null.");
             }
 
             return HandleResult(null, targetType, null);

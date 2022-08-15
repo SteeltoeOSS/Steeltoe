@@ -35,7 +35,7 @@ public class ServiceExpressionContextAccessor : IPropertyAccessor
     {
         if (target is not IServiceExpressionContext targetContext)
         {
-            throw new InvalidOperationException("target must be of type IServiceExpressionContext");
+            throw new InvalidOperationException($"{nameof(target)} must be of type {nameof(IServiceExpressionContext)}.");
         }
 
         Type serviceType = ServiceFactoryResolver.GetServiceNameAndType(context, name, out string lookupName);
