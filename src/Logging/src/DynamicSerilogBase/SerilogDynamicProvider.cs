@@ -30,6 +30,12 @@ public class SerilogDynamicProvider : DynamicLoggerProviderBase
         _serilogger = null;
     }
 
+    private protected override MessageProcessingLogger CreateLoggerImplementation(string name)
+    {
+        var logger = _delegate.CreateLogger(name);
+        return new StructuredMessageProcessingLogger(logger, _messageProcessors) { Filter = GetFilter(name), Name = name };
+    }
+
     private static ILoggerProvider GetDelegateLogger(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)
     {
         var serilogOptions = serilogOptionsMonitor?.CurrentValue ?? throw new ArgumentNullException(nameof(serilogOptionsMonitor));

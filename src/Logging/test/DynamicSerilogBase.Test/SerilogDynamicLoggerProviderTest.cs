@@ -272,7 +272,7 @@ public class SerilogDynamicLoggerProviderTest
 
         var logged = unConsole.ToString();
 
-        Assert.Contains(@"Info { Info1 = information1, Info2 = information2 }", logged);
+        Assert.Contains("Info {\"Info1\": \"information1\", \"Info2\": \"information2\"}", logged);
     }
 
     [Fact]
