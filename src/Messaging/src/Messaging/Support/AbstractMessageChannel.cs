@@ -26,7 +26,9 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
         Logger = logger;
     }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public virtual void SetInterceptors(List<IChannelInterceptor> interceptors)
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
     {
         lock (_lock)
         {
@@ -58,7 +60,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
         }
     }
 
-    public virtual List<IChannelInterceptor> GetInterceptors()
+    public virtual IList<IChannelInterceptor> GetInterceptors()
     {
         lock (_lock)
         {

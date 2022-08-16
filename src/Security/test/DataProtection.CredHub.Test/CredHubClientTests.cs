@@ -622,7 +622,7 @@ public class CredHubClientTests
 
         CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
 
-        List<CredentialPermission> response = await client.GetPermissionsAsync("/example-password");
+        ICollection<CredentialPermission> response = await client.GetPermissionsAsync("/example-password");
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -689,7 +689,7 @@ public class CredHubClientTests
             }
         };
 
-        List<CredentialPermission> response = await client.AddPermissionsAsync(credentialName, new List<CredentialPermission>
+        ICollection<CredentialPermission> response = await client.AddPermissionsAsync(credentialName, new List<CredentialPermission>
         {
             newPermissions
         });

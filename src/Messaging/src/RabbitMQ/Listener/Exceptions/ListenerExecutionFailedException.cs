@@ -19,7 +19,9 @@ public class ListenerExecutionFailedException : Exception
         }
     }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public List<IMessage> FailedMessages { get; } = new();
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
 
     public ListenerExecutionFailedException(string message, Exception cause, params IMessage[] failedMessages)
         : base(message, cause)

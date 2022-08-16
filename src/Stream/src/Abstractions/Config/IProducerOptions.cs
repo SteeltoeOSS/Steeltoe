@@ -23,7 +23,7 @@ public interface IProducerOptions
 
     int PartitionCount { get; }
 
-    List<string> RequiredGroups { get; }
+    IEnumerable<string> RequiredGroups { get; }
 
     HeaderMode HeaderMode { get; }
 

@@ -736,7 +736,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
             Count++;
         }
 
-        public void OnMessageBatch(List<IMessage> messages)
+        public void OnMessageBatch(IEnumerable<IMessage> messages)
         {
         }
     }
@@ -775,7 +775,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
             Latch.Signal();
         }
 
-        public void OnMessageBatch(List<IMessage> messages)
+        public void OnMessageBatch(IEnumerable<IMessage> messages)
         {
         }
     }

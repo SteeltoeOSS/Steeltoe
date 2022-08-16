@@ -10,7 +10,7 @@ public abstract class AbstractDeclarable : IDeclarable
 
     public Dictionary<string, object> Arguments { get; set; }
 
-    public List<object> DeclaringAdmins { get; set; } = new();
+    public ICollection<object> DeclaringAdmins { get; set; } = new List<object>();
 
     public bool IgnoreDeclarationExceptions { get; set; }
 

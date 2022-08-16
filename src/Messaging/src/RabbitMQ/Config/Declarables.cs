@@ -9,7 +9,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class Declarables : IServiceNameAware
 {
-    public List<IDeclarable> DeclarableList { get; }
+    public ICollection<IDeclarable> DeclarableList { get; }
 
     public string ServiceName { get; set; }
 
@@ -22,7 +22,7 @@ public class Declarables : IServiceNameAware
         ServiceName = name;
     }
 
-    public Declarables(string name, List<IDeclarable> declarables)
+    public Declarables(string name, ICollection<IDeclarable> declarables)
     {
         ArgumentGuard.NotNull(declarables);
         ArgumentGuard.NotNull(name);

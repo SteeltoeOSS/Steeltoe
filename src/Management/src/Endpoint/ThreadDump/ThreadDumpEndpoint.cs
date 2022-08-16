@@ -7,7 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class ThreadDumpEndpoint : AbstractEndpoint<List<ThreadInfo>>, IThreadDumpEndpoint
+public class ThreadDumpEndpoint : AbstractEndpoint<IReadOnlyList<ThreadInfo>>, IThreadDumpEndpoint
 {
     private readonly ILogger<ThreadDumpEndpoint> _logger;
     private readonly IThreadDumper _threadDumper;
@@ -23,7 +23,7 @@ public class ThreadDumpEndpoint : AbstractEndpoint<List<ThreadInfo>>, IThreadDum
         _logger = logger;
     }
 
-    public override List<ThreadInfo> Invoke()
+    public override IReadOnlyList<ThreadInfo> Invoke()
     {
         return _threadDumper.DumpThreads();
     }

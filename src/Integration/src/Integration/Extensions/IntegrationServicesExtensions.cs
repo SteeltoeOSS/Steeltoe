@@ -175,7 +175,7 @@ public static class IntegrationServicesExtensions
 
     public static IServiceCollection AddServiceActivators(this IServiceCollection services, Type targetClass)
     {
-        List<MethodInfo> targetMethods = AttributeUtils.FindMethodsWithAttribute(targetClass, typeof(ServiceActivatorAttribute),
+        IReadOnlyCollection<MethodInfo> targetMethods = AttributeUtils.FindMethodsWithAttribute(targetClass, typeof(ServiceActivatorAttribute),
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
         foreach (MethodInfo method in targetMethods)

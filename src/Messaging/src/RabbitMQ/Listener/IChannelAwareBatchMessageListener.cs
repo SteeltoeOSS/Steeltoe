@@ -13,5 +13,5 @@ public interface IChannelAwareBatchMessageListener : IChannelAwareMessageListene
         throw new InvalidOperationException("Should never be called by the container");
     }
 
-    new void OnMessageBatch(List<IMessage> messages, RC.IModel channel);
+    new void OnMessageBatch(IEnumerable<IMessage> messages, RC.IModel channel);
 }

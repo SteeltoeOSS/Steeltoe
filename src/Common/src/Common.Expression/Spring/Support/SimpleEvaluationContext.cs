@@ -13,11 +13,11 @@ public class SimpleEvaluationContext : IEvaluationContext
 
     public ITypedValue RootObject { get; }
 
-    public List<IPropertyAccessor> PropertyAccessors { get; }
+    public IList<IPropertyAccessor> PropertyAccessors { get; }
 
-    public List<IConstructorResolver> ConstructorResolvers => EmptyConstructorResolver;
+    public IList<IConstructorResolver> ConstructorResolvers => EmptyConstructorResolver;
 
-    public List<IMethodResolver> MethodResolvers { get; }
+    public IList<IMethodResolver> MethodResolvers { get; }
 
     public IServiceResolver ServiceResolver => null;
 

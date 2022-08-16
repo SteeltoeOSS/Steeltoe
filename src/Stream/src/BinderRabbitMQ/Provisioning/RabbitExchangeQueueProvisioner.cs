@@ -27,7 +27,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
 
     private RabbitAdmin Admin { get; }
 
-    private List<RabbitConfig.IDeclarableCustomizer> Customizers { get; }
+    private IEnumerable<RabbitConfig.IDeclarableCustomizer> Customizers { get; }
 
     private RabbitBindingsOptions Options { get; }
 
@@ -37,7 +37,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
     {
     }
 
-    public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, List<RabbitConfig.IDeclarableCustomizer> customizers,
+    public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, IEnumerable<RabbitConfig.IDeclarableCustomizer> customizers,
         IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
     {
         Admin = new RabbitAdmin(applicationContext, connectionFactory, logger);
@@ -152,7 +152,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
 
             foreach (string destination in trimmed)
             {
-                if (options.IsPartitioned && options.InstanceIndexList.Count > 0)
+                if (options.IsPartitioned && options.InstanceIndexList.Any())
                 {
                     foreach (int index in options.InstanceIndexList)
                     {

@@ -50,7 +50,7 @@ public class ThreadDumperEp : IThreadDumper
     /// <returns>
     /// the list of threads with stack trace information.
     /// </returns>
-    public List<ThreadInfo> DumpThreads()
+    public IReadOnlyList<ThreadInfo> DumpThreads()
     {
         var results = new List<ThreadInfo>();
 
@@ -82,7 +82,7 @@ public class ThreadDumperEp : IThreadDumper
     }
 
     // Much of this code is from diagnostics/dotnet-stack
-    private void DumpThreads(EventPipeSession session, List<ThreadInfo> results)
+    private void DumpThreads(EventPipeSession session, ICollection<ThreadInfo> results)
     {
         string traceFileName = null;
 
@@ -173,7 +173,7 @@ public class ThreadDumperEp : IThreadDumper
         _logger?.LogTrace("Finished thread walk");
     }
 
-    private bool IsThreadInNative(List<StackTraceElement> frames)
+    private bool IsThreadInNative(IReadOnlyList<StackTraceElement> frames)
     {
         if (frames.Count > 0)
         {
@@ -183,7 +183,7 @@ public class ThreadDumperEp : IThreadDumper
         return false;
     }
 
-    private State GetThreadState(List<StackTraceElement> frames)
+    private State GetThreadState(IReadOnlyList<StackTraceElement> frames)
     {
         if (IsThreadInNative(frames) && frames.Count > 1 && frames[1].MethodName.Contains("Wait", StringComparison.OrdinalIgnoreCase))
         {

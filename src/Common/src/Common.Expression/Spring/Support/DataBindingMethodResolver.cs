@@ -17,7 +17,7 @@ public class DataBindingMethodResolver : ReflectiveMethodResolver
         return new DataBindingMethodResolver();
     }
 
-    public override IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
+    public override IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, IReadOnlyList<Type> argumentTypes)
     {
         if (targetObject is Type)
         {

@@ -12,5 +12,5 @@ public class MutualTlsAuthenticationOptions : CertificateAuthenticationOptions
     /// <summary>
     /// Gets or sets partial or full certificate chain for validation.
     /// </summary>
-    public List<X509Certificate2> IssuerChain { get; set; } = new();
+    public ICollection<X509Certificate2> IssuerChain { get; set; } = new List<X509Certificate2>();
 }

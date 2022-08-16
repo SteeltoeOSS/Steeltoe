@@ -23,5 +23,5 @@ public interface ILoadBalancingStrategy
     /// <returns>
     /// an index into the handler list at which to start load balancing.
     /// </returns>
-    int GetNextHandlerStartIndex(IMessage message, List<IMessageHandler> handlers);
+    int GetNextHandlerStartIndex(IMessage message, ICollection<IMessageHandler> handlers);
 }

@@ -42,14 +42,14 @@ public static class MimeTypeUtils
         return CachedMimeTypes.GetOrAdd(mimeType, ParseMimeTypeInternal(mimeType));
     }
 
-    public static List<MimeType> ParseMimeTypes(string mimeTypes)
+    public static IReadOnlyCollection<MimeType> ParseMimeTypes(string mimeTypes)
     {
         if (string.IsNullOrEmpty(mimeTypes))
         {
             return new List<MimeType>();
         }
 
-        List<string> tokens = Tokenize(mimeTypes);
+        IReadOnlyCollection<string> tokens = Tokenize(mimeTypes);
         var results = new List<MimeType>();
 
         foreach (string token in tokens)
@@ -60,7 +60,7 @@ public static class MimeTypeUtils
         return results;
     }
 
-    public static List<string> Tokenize(string mimeTypes)
+    public static IReadOnlyCollection<string> Tokenize(string mimeTypes)
     {
         if (string.IsNullOrEmpty(mimeTypes))
         {
@@ -119,7 +119,9 @@ public static class MimeTypeUtils
         return built;
     }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public static void SortBySpecificity(List<MimeType> mimeTypes)
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
     {
         ArgumentGuard.NotNull(mimeTypes);
 

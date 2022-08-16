@@ -25,7 +25,7 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
     protected const string InputChannelPropertyName = "InputChannel";
     private readonly ILogger _logger;
 
-    protected virtual List<string> MessageHandlerProperties { get; } = new();
+    protected virtual ICollection<string> MessageHandlerProperties { get; } = new List<string>();
 
     protected IApplicationContext ApplicationContext { get; }
 
@@ -50,7 +50,7 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
         AnnotationType = typeof(TAttribute);
     }
 
-    public object PostProcess(object service, string serviceName, MethodInfo method, List<Attribute> attributes)
+    public object PostProcess(object service, string serviceName, MethodInfo method, ICollection<Attribute> attributes)
     {
         GetSourceHandlerFromContext(method, out object sourceHandler, out bool skipEndpointCreation);
 
@@ -84,7 +84,7 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
         return handler;
     }
 
-    public virtual bool ShouldCreateEndpoint(MethodInfo method, List<Attribute> attributes)
+    public virtual bool ShouldCreateEndpoint(MethodInfo method, ICollection<Attribute> attributes)
     {
         string inputChannel = MessagingAttributeUtils.ResolveAttribute<string>(attributes, InputChannelProperty);
         bool createEndpoint = !string.IsNullOrEmpty(inputChannel);
@@ -108,7 +108,7 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
         return false;
     }
 
-    protected virtual AbstractEndpoint CreateEndpoint(IMessageHandler handler, MethodInfo method, List<Attribute> annotations)
+    protected virtual AbstractEndpoint CreateEndpoint(IMessageHandler handler, MethodInfo method, ICollection<Attribute> annotations)
     {
         AbstractEndpoint endpoint = null;
         string inputChannelName = MessagingAttributeUtils.ResolveAttribute<string>(annotations, InputChannelProperty);
@@ -139,7 +139,7 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
         return endpoint;
     }
 
-    protected virtual AbstractEndpoint DoCreateEndpoint(IMessageHandler handler, IMessageChannel inputChannel, List<Attribute> annotations)
+    protected virtual AbstractEndpoint DoCreateEndpoint(IMessageHandler handler, IMessageChannel inputChannel, ICollection<Attribute> annotations)
     {
         if (inputChannel is IPollableChannel)
         {
@@ -170,7 +170,7 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
         return $"{name}.handler";
     }
 
-    protected virtual void SetOutputChannelIfPresent(List<Attribute> annotations, AbstractReplyProducingMessageHandler handler)
+    protected virtual void SetOutputChannelIfPresent(ICollection<Attribute> annotations, AbstractReplyProducingMessageHandler handler)
     {
         string outputChannelName = MessagingAttributeUtils.ResolveAttribute<string>(annotations, "OutputChannel");
 
@@ -214,7 +214,7 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
         return default;
     }
 
-    protected void CheckMessageHandlerAttributes(string handlerServiceName, List<Attribute> annotations)
+    protected void CheckMessageHandlerAttributes(string handlerServiceName, ICollection<Attribute> annotations)
     {
         foreach (string property in MessageHandlerProperties)
         {
@@ -233,9 +233,9 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
         }
     }
 
-    protected abstract IMessageHandler CreateHandler(object service, MethodInfo method, List<Attribute> attributes);
+    protected abstract IMessageHandler CreateHandler(object service, MethodInfo method, ICollection<Attribute> attributes);
 
-    private IMessageHandler GetHandler(object service, MethodInfo method, List<Attribute> attributes)
+    private IMessageHandler GetHandler(object service, MethodInfo method, ICollection<Attribute> attributes)
     {
         IMessageHandler handler = CreateHandler(service, method, attributes);
 

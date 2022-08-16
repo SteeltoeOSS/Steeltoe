@@ -22,7 +22,7 @@ public class DefaultMessageHandlerMethodFactory : IMessageHandlerMethodFactory
 
     public virtual IMessageConverter MessageConverter { get; set; }
 
-    public virtual List<IHandlerMethodArgumentResolver> CustomArgumentResolvers { get; set; }
+    public virtual ICollection<IHandlerMethodArgumentResolver> CustomArgumentResolvers { get; set; }
 
     public virtual IApplicationContext ApplicationContext { get; set; }
 
@@ -44,7 +44,7 @@ public class DefaultMessageHandlerMethodFactory : IMessageHandlerMethodFactory
         MessageConverter = converter;
     }
 
-    public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter, List<IHandlerMethodArgumentResolver> resolvers,
+    public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter, ICollection<IHandlerMethodArgumentResolver> resolvers,
         IApplicationContext context = null)
     {
         ConversionService = conversionService;
@@ -63,7 +63,7 @@ public class DefaultMessageHandlerMethodFactory : IMessageHandlerMethodFactory
         ApplicationContext = context;
     }
 
-    public virtual void SetArgumentResolvers(List<IHandlerMethodArgumentResolver> argumentResolvers)
+    public virtual void SetArgumentResolvers(ICollection<IHandlerMethodArgumentResolver> argumentResolvers)
     {
         if (argumentResolvers == null)
         {
@@ -103,7 +103,7 @@ public class DefaultMessageHandlerMethodFactory : IMessageHandlerMethodFactory
         }
     }
 
-    protected List<IHandlerMethodArgumentResolver> InitArgumentResolvers()
+    protected ICollection<IHandlerMethodArgumentResolver> InitArgumentResolvers()
     {
         var resolvers = new List<IHandlerMethodArgumentResolver>
         {

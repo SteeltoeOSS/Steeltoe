@@ -261,7 +261,7 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
             throw new InvalidOperationException("Should never be called for a ChannelAwareMessageListener");
         }
 
-        public void OnMessageBatch(List<IMessage> messages, RC.IModel channel)
+        public void OnMessageBatch(IEnumerable<IMessage> messages, RC.IModel channel)
         {
             if (_listener is IChannelAwareMessageListener chanAwareListener)
             {
@@ -287,7 +287,7 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
             }
         }
 
-        public void OnMessageBatch(List<IMessage> messages)
+        public void OnMessageBatch(IEnumerable<IMessage> messages)
         {
             throw new InvalidOperationException("Should never be called for a ChannelAwareMessageListener");
         }

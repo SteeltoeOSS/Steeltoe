@@ -6,5 +6,5 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 public interface ITraceEndpoint
 {
-    List<TraceResult> Invoke();
+    IReadOnlyList<TraceResult> Invoke();
 }

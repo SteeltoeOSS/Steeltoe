@@ -12,7 +12,7 @@ public class CompositeMessageConverter : ISmartMessageConverter
 
     public string ServiceName { get; set; } = DefaultServiceName;
 
-    public List<IMessageConverter> Converters { get; }
+    public ICollection<IMessageConverter> Converters { get; }
 
     public CompositeMessageConverter(ICollection<IMessageConverter> converters)
     {

@@ -11,11 +11,11 @@ public class StandardEvaluationContext : IEvaluationContext
 {
     private readonly ConcurrentDictionary<string, object> _variables = new();
 
-    private volatile List<IPropertyAccessor> _propertyAccessors;
+    private volatile IList<IPropertyAccessor> _propertyAccessors;
 
-    private volatile List<IConstructorResolver> _constructorResolvers;
+    private volatile IList<IConstructorResolver> _constructorResolvers;
 
-    private volatile List<IMethodResolver> _methodResolvers;
+    private volatile IList<IMethodResolver> _methodResolvers;
 
     private volatile ReflectiveMethodResolver _reflectiveMethodResolver;
 
@@ -31,7 +31,7 @@ public class StandardEvaluationContext : IEvaluationContext
 
     public IServiceResolver ServiceResolver { get; set; }
 
-    public List<IPropertyAccessor> PropertyAccessors
+    public IList<IPropertyAccessor> PropertyAccessors
     {
         get
         {
@@ -41,7 +41,7 @@ public class StandardEvaluationContext : IEvaluationContext
         set => _propertyAccessors = value;
     }
 
-    public List<IConstructorResolver> ConstructorResolvers
+    public IList<IConstructorResolver> ConstructorResolvers
     {
         get
         {
@@ -51,7 +51,7 @@ public class StandardEvaluationContext : IEvaluationContext
         set => _constructorResolvers = value;
     }
 
-    public List<IMethodResolver> MethodResolvers
+    public IList<IMethodResolver> MethodResolvers
     {
         get
         {
@@ -219,14 +219,14 @@ public class StandardEvaluationContext : IEvaluationContext
         resolver.RegisterMethodFilter(type, filter);
     }
 
-    private static void AddBeforeDefault<T>(List<T> resolvers, T resolver)
+    private static void AddBeforeDefault<T>(IList<T> resolvers, T resolver)
     {
         resolvers.Insert(resolvers.Count - 1, resolver);
     }
 
-    private List<IPropertyAccessor> InitPropertyAccessors()
+    private IList<IPropertyAccessor> InitPropertyAccessors()
     {
-        List<IPropertyAccessor> accessors = _propertyAccessors;
+        IList<IPropertyAccessor> accessors = _propertyAccessors;
 
         if (accessors == null)
         {
@@ -241,9 +241,9 @@ public class StandardEvaluationContext : IEvaluationContext
         return accessors;
     }
 
-    private List<IConstructorResolver> InitConstructorResolvers()
+    private IList<IConstructorResolver> InitConstructorResolvers()
     {
-        List<IConstructorResolver> resolvers = _constructorResolvers;
+        IList<IConstructorResolver> resolvers = _constructorResolvers;
 
         if (resolvers == null)
         {
@@ -258,9 +258,9 @@ public class StandardEvaluationContext : IEvaluationContext
         return resolvers;
     }
 
-    private List<IMethodResolver> InitMethodResolvers()
+    private IList<IMethodResolver> InitMethodResolvers()
     {
-        List<IMethodResolver> resolvers = _methodResolvers;
+        IList<IMethodResolver> resolvers = _methodResolvers;
 
         if (resolvers == null)
         {

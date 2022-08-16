@@ -30,7 +30,7 @@ public class RabbitProducerOptions : RabbitCommonOptions
 
     public MessageDeliveryMode? DeliveryMode { get; set; }
 
-    public List<string> HeaderPatterns { get; set; }
+    public IEnumerable<string> HeaderPatterns { get; set; }
 
     public string DelayExpression { get; set; }
 

@@ -6,5 +6,5 @@ namespace Steeltoe.Common.Expression.Internal;
 
 public interface IConstructorResolver
 {
-    IConstructorExecutor Resolve(IEvaluationContext context, string typeName, List<Type> argumentTypes);
+    IConstructorExecutor Resolve(IEvaluationContext context, string typeName, IReadOnlyList<Type> argumentTypes);
 }

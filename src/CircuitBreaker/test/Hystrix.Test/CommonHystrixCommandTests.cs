@@ -76,7 +76,7 @@ public abstract class CommonHystrixCommandTests<TCommand> : HystrixTestBase
 
         Assert.Equal(numCommands, currentRequestLog.AllExecutedCommands.Count);
         Assert.DoesNotContain("Executed", currentRequestLog.GetExecutedCommandsAsString());
-        Assert.True(currentRequestLog.AllExecutedCommands.First().ExecutionEvents.Count >= 1);
+        Assert.True(currentRequestLog.AllExecutedCommands.First().ExecutionEvents.Any());
 
         // Most commands should have 1 execution event, but fallbacks / responses from cache can cause more than 1.  They should never have 0
     }
@@ -121,7 +121,7 @@ public abstract class CommonHystrixCommandTests<TCommand> : HystrixTestBase
             }
         }
 
-        List<HystrixEventType> actualEventTypes = command.ExecutionEvents;
+        IEnumerable<HystrixEventType> actualEventTypes = command.ExecutionEvents;
         Assert.Equal(expectedEmitCount, command.NumberEmissions);
         Assert.Equal(expectedFallbackEmitCount, command.NumberFallbackEmissions);
         Assert.Equal(condensedEmitExpectedEventTypes, actualEventTypes);

@@ -8,9 +8,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
 public class StandardTypeLocator : ITypeLocator
 {
-    private readonly List<string> _knownNamespacePrefixes = new(1);
+    private readonly IList<string> _knownNamespacePrefixes = new List<string>(1);
 
-    public virtual List<string> ImportPrefixes => new(_knownNamespacePrefixes);
+    public virtual IList<string> ImportPrefixes => new List<string>(_knownNamespacePrefixes);
 
     public StandardTypeLocator()
     {

@@ -25,7 +25,7 @@ public class BindingServiceOptions // : IBindingServiceOptions
 
     public bool? OverrideCloudConnectors { get; set; }
 
-    public List<string> DynamicDestinations { get; set; }
+    public IEnumerable<string> DynamicDestinations { get; set; }
 
     public Dictionary<string, BinderOptions> Binders { get; set; }
 

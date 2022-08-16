@@ -323,7 +323,7 @@ public class InvocableHandlerMethodTest
 
     private StubArgumentResolver GetStubResolver(int index)
     {
-        return (StubArgumentResolver)_resolvers.Resolvers[index];
+        return (StubArgumentResolver)_resolvers.Resolvers.ToList()[index];
     }
 
     internal sealed class Handler

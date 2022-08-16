@@ -54,7 +54,7 @@ public class CloudFoundryHelperTest
     {
         string info = TestHelpers.GetValidTokenInfoRequestResponse();
         JsonElement payload = JsonDocument.Parse(info).RootElement;
-        List<string> scopes = CloudFoundryHelper.GetScopes(payload);
+        ICollection<string> scopes = CloudFoundryHelper.GetScopes(payload);
         Assert.Contains("openid", scopes);
         Assert.Single(scopes);
     }

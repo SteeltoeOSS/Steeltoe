@@ -14,5 +14,5 @@ public class CredentialPermission
     /// <summary>
     /// Gets or sets list of operations permitted for the actor.
     /// </summary>
-    public List<OperationPermissions> Operations { get; set; }
+    public ICollection<OperationPermissions> Operations { get; set; }
 }

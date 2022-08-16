@@ -266,17 +266,17 @@ public class EnableRabbitTest
         Assert.Equal(queues.Length, actualQueues.Count);
     }
 
-    private void CheckAdmins(List<object> admins)
+    private void CheckAdmins(IEnumerable<object> admins)
     {
         Assert.Single(admins);
 
-        if (admins[0] is RabbitAdmin admin)
+        if (admins.First() is RabbitAdmin admin)
         {
             Assert.Equal("myAdmin", admin.ServiceName);
         }
         else
         {
-            Assert.Equal("myAdmin", (string)admins[0]);
+            Assert.Equal("myAdmin", (string)admins.First());
         }
     }
 

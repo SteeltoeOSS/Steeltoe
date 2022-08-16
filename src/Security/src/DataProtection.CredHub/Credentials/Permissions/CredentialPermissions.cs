@@ -20,5 +20,5 @@ internal sealed class CredentialPermissions
     /// <summary>
     /// Gets or sets list of actors and their permissions for access to this credential.
     /// </summary>
-    public List<CredentialPermission> Permissions { get; set; }
+    public ICollection<CredentialPermission> Permissions { get; set; }
 }

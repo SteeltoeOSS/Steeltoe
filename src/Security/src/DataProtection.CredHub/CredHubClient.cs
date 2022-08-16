@@ -370,14 +370,14 @@ public class CredHubClient : ICredHubClient
         }
     }
 
-    public Task<List<CredentialPermission>> GetPermissionsAsync(string credentialName)
+    public Task<ICollection<CredentialPermission>> GetPermissionsAsync(string credentialName)
     {
         ArgumentGuard.NotNullOrEmpty(credentialName);
 
         return GetPermissionsInternalAsync(credentialName);
     }
 
-    private async Task<List<CredentialPermission>> GetPermissionsInternalAsync(string name)
+    private async Task<ICollection<CredentialPermission>> GetPermissionsInternalAsync(string name)
     {
         HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
             out RemoteCertificateValidationCallback prevValidator);
@@ -394,7 +394,7 @@ public class CredHubClient : ICredHubClient
         }
     }
 
-    public Task<List<CredentialPermission>> AddPermissionsAsync(string credentialName, List<CredentialPermission> permissions)
+    public Task<ICollection<CredentialPermission>> AddPermissionsAsync(string credentialName, ICollection<CredentialPermission> permissions)
     {
         ArgumentGuard.NotNullOrEmpty(credentialName);
         ArgumentGuard.NotNullOrEmpty(permissions);
@@ -402,7 +402,7 @@ public class CredHubClient : ICredHubClient
         return AddPermissionsInternalAsync(credentialName, permissions);
     }
 
-    private async Task<List<CredentialPermission>> AddPermissionsInternalAsync(string name, List<CredentialPermission> permissions)
+    private async Task<ICollection<CredentialPermission>> AddPermissionsInternalAsync(string name, ICollection<CredentialPermission> permissions)
     {
         HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
             out RemoteCertificateValidationCallback prevValidator);

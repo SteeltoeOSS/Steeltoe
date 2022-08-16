@@ -52,9 +52,9 @@ public class CompositeConnectionListener : IConnectionListener
         }
     }
 
-    public void SetListeners(List<IConnectionListener> connectionListeners)
+    public void SetListeners(IEnumerable<IConnectionListener> connectionListeners)
     {
-        _connectionListeners = connectionListeners;
+        _connectionListeners = connectionListeners.ToList();
     }
 
     public void AddListener(IConnectionListener connectionListener)

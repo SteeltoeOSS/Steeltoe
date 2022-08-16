@@ -114,7 +114,7 @@ public abstract class AbstractBinder<T> : IBinder<T>
             options.BackOffInitialInterval, options.BackOffMaxInterval, options.BackOffMultiplier, _logger);
     }
 
-    protected Dictionary<Type, bool> GetRetryableExceptions(List<string> exceptionList)
+    protected Dictionary<Type, bool> GetRetryableExceptions(IEnumerable<string> exceptionList)
     {
         var dict = new Dictionary<Type, bool>();
 

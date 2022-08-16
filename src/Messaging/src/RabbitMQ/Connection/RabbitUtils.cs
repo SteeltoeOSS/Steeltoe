@@ -104,7 +104,7 @@ public static class RabbitUtils
         }
     }
 
-    public static void CloseMessageConsumer(RC.IModel channel, List<string> consumerTags, bool transactional, ILogger logger = null)
+    public static void CloseMessageConsumer(RC.IModel channel, IEnumerable<string> consumerTags, bool transactional, ILogger logger = null)
     {
         if (!channel.IsOpen)
         {

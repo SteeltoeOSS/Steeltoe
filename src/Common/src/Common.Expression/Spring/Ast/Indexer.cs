@@ -570,7 +570,7 @@ public class Indexer : SpelNode
                     return accessor.Read(_evaluationContext, _targetObject, _name);
                 }
 
-                List<IPropertyAccessor> accessorsToTry = AstUtils.GetPropertyAccessorsToTry(targetObjectRuntimeClass, _evaluationContext.PropertyAccessors);
+                IReadOnlyCollection<IPropertyAccessor> accessorsToTry = AstUtils.GetPropertyAccessorsToTry(targetObjectRuntimeClass, _evaluationContext.PropertyAccessors);
 
                 foreach (IPropertyAccessor acc in accessorsToTry)
                 {
@@ -626,7 +626,7 @@ public class Indexer : SpelNode
                     return;
                 }
 
-                List<IPropertyAccessor> accessorsToTry = AstUtils.GetPropertyAccessorsToTry(contextObjectClass, _evaluationContext.PropertyAccessors);
+                IReadOnlyCollection<IPropertyAccessor> accessorsToTry = AstUtils.GetPropertyAccessorsToTry(contextObjectClass, _evaluationContext.PropertyAccessors);
 
                 foreach (IPropertyAccessor acc in accessorsToTry)
                 {

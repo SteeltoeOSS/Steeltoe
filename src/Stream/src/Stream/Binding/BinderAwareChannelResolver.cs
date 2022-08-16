@@ -46,10 +46,10 @@ public class BinderAwareChannelResolver : DefaultMessageChannelDestinationResolv
     public override IMessageChannel ResolveDestination(string name)
     {
         BindingServiceOptions options = Options;
-        List<string> dynamicDestinations = options.DynamicDestinations;
+        IEnumerable<string> dynamicDestinations = options.DynamicDestinations;
 
         IMessageChannel channel;
-        bool dynamicAllowed = dynamicDestinations.Count == 0 || dynamicDestinations.Contains(name);
+        bool dynamicAllowed = !dynamicDestinations.Any() || dynamicDestinations.Contains(name);
 
         try
         {

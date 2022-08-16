@@ -108,11 +108,11 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
         {
         }
 
-        public void OnMessageBatch(List<IMessage> messages, RC.IModel channel)
+        public void OnMessageBatch(IEnumerable<IMessage> messages, RC.IModel channel)
         {
         }
 
-        public void OnMessageBatch(List<IMessage> messages)
+        public void OnMessageBatch(IEnumerable<IMessage> messages)
         {
         }
     }
@@ -125,7 +125,7 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
         {
         }
 
-        public void OnMessageBatch(List<IMessage> messages)
+        public void OnMessageBatch(IEnumerable<IMessage> messages)
         {
         }
     }

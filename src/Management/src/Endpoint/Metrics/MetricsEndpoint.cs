@@ -40,7 +40,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
 
         if (metricNames.Contains(request.MetricName))
         {
-            List<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
+            IReadOnlyList<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
 
             return GetMetric(request, sampleList, availTags[request.MetricName]);
         }
@@ -48,7 +48,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         return null;
     }
 
-    protected internal List<MetricSample> GetMetricSamplesByTags(MetricsCollection<List<MetricSample>> measurements, string metricName,
+    protected internal IReadOnlyList<MetricSample> GetMetricSamplesByTags(MetricsCollection<List<MetricSample>> measurements, string metricName,
         IEnumerable<KeyValuePair<string, string>> tags)
     {
         IEnumerable<MetricSample> filtered = measurements[metricName];
@@ -109,7 +109,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         return sampleList;
     }
 
-    protected internal MetricsResponse GetMetric(MetricsRequest request, List<MetricSample> metricSamples, List<MetricTag> availTags)
+    protected internal MetricsResponse GetMetric(MetricsRequest request, IReadOnlyList<MetricSample> metricSamples, IReadOnlyList<MetricTag> availTags)
     {
         return new MetricsResponse(request.MetricName, metricSamples, availTags);
     }

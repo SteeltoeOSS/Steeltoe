@@ -15,7 +15,9 @@ public interface IInterceptableChannel
     /// <param name="interceptors">
     /// the interceptors to use.
     /// </param>
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     void SetInterceptors(List<IChannelInterceptor> interceptors);
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
 
     /// <summary>
     /// Add an interceptor to the list.
@@ -42,7 +44,7 @@ public interface IInterceptableChannel
     /// <returns>
     /// the list of interceptors.
     /// </returns>
-    List<IChannelInterceptor> GetInterceptors();
+    IList<IChannelInterceptor> GetInterceptors();
 
     /// <summary>
     /// Remove the specified interceptor.

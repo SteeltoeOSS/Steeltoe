@@ -43,7 +43,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
     public virtual string ComponentName { get; set; }
 
-    public virtual List<Type> DataTypes { get; set; } = new();
+    public virtual ICollection<Type> DataTypes { get; set; } = new List<Type>();
 
     public virtual IMessageConverter MessageConverter
     {
@@ -55,7 +55,9 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
         set => _messageConverter = value;
     }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public virtual List<IChannelInterceptor> ChannelInterceptors
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
     {
         get => Interceptors.Interceptors;
         set

@@ -35,7 +35,7 @@ public class KubernetesDiscoveryOptions
     /// <summary>
     /// Gets or sets a list of port numbers that are considered secure and use HTTPS.
     /// </summary>
-    public List<int> KnownSecurePorts { get; set; } = new()
+    public IList<int> KnownSecurePorts { get; set; } = new List<int>
     {
         443,
         8443

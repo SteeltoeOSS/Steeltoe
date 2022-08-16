@@ -19,7 +19,7 @@ public class FixedMethodFilter : IMethodFilter
         _method = method;
     }
 
-    public List<MethodInfo> Filter(List<MethodInfo> methods)
+    public IEnumerable<MethodInfo> Filter(ICollection<MethodInfo> methods)
     {
         if (methods != null && methods.Contains(_method))
         {

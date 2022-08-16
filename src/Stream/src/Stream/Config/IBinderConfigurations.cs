@@ -10,5 +10,5 @@ public interface IBinderConfigurations
 {
     Dictionary<string, BinderConfiguration> Configurations { get; }
 
-    List<string> FindMatchingConfigurationsIfAny(IBinder binder);
+    IEnumerable<string> FindMatchingConfigurationsIfAny(IBinder binder);
 }

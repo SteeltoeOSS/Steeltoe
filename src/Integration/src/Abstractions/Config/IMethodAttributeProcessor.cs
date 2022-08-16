@@ -11,7 +11,7 @@ public interface IMethodAttributeProcessor<TAttribute>
 #pragma warning restore S2326 // Unused type parameters should be removed
     where TAttribute : Attribute
 {
-    object PostProcess(object service, string serviceName, MethodInfo method, List<Attribute> attributes);
+    object PostProcess(object service, string serviceName, MethodInfo method, ICollection<Attribute> attributes);
 
-    bool ShouldCreateEndpoint(MethodInfo method, List<Attribute> attributes);
+    bool ShouldCreateEndpoint(MethodInfo method, ICollection<Attribute> attributes);
 }

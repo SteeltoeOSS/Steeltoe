@@ -101,7 +101,7 @@ public class ExternalTxManagerTests
             _latch.Signal();
         }
 
-        public void OnMessageBatch(List<IMessage> messages)
+        public void OnMessageBatch(IEnumerable<IMessage> messages)
         {
             throw new NotImplementedException();
         }

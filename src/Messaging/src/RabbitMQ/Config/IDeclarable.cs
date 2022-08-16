@@ -14,7 +14,7 @@ public interface IDeclarable
     /// <summary>
     /// Gets or sets a collection of Admins that should declare this object.
     /// </summary>
-    List<object> DeclaringAdmins { get; set; }
+    ICollection<object> DeclaringAdmins { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether should ignore exceptions.

@@ -60,7 +60,7 @@ public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
                         Assert.True(false, "Timeout not found in executed command");
                     }
 
-                    if (hi.IsResponseTimedOut && hi.ExecutionEvents.Count == 1)
+                    if (hi.IsResponseTimedOut && hi.ExecutionEvents.Count() == 1)
                     {
                         _output.WriteLine("Missing fallback status!");
                         Assert.True(false, "Missing fallback status on timeout.");

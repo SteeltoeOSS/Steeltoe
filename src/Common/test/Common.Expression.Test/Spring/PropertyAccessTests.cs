@@ -42,7 +42,7 @@ public class PropertyAccessTests : AbstractExpressionTests
     /**
          * The standard reflection resolver cannot find properties on null objects but some
          * supplied resolver might be able to - so null shouldn't crash the reflection resolver.
-         */
+        */
     [Fact]
     public void TestAccessingOnNullObject()
     {
@@ -94,7 +94,7 @@ public class PropertyAccessTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext();
 
         // reflective property accessor is the only one by default
-        List<IPropertyAccessor> propertyAccessors = ctx.PropertyAccessors;
+        IList<IPropertyAccessor> propertyAccessors = ctx.PropertyAccessors;
         Assert.Single(propertyAccessors);
 
         var spa = new StringyPropertyAccessor();

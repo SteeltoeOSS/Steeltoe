@@ -563,7 +563,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
     }
 
-    protected virtual void ActualInvokeListener(R.IModel channel, List<IMessage> data)
+    protected virtual void ActualInvokeListener(R.IModel channel, IEnumerable<IMessage> data)
     {
         IMessageListener listener = MessageListener;
 
@@ -645,7 +645,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
     }
 
-    protected virtual void DoInvokeListener(IChannelAwareMessageListener listener, R.IModel channel, List<IMessage> data)
+    protected virtual void DoInvokeListener(IChannelAwareMessageListener listener, R.IModel channel, IEnumerable<IMessage> data)
     {
         RabbitResourceHolder resourceHolder = null;
         R.IModel channelToUse = channel;
@@ -697,7 +697,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
     }
 
-    protected virtual void DoInvokeListener(IMessageListener listener, List<IMessage> data)
+    protected virtual void DoInvokeListener(IMessageListener listener, IEnumerable<IMessage> data)
     {
         try
         {
@@ -765,7 +765,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         return boundHere;
     }
 
-    protected virtual ListenerExecutionFailedException WrapToListenerExecutionFailedExceptionIfNeeded(Exception exception, List<IMessage> data)
+    protected virtual ListenerExecutionFailedException WrapToListenerExecutionFailedExceptionIfNeeded(Exception exception, IEnumerable<IMessage> data)
     {
         if (exception is not ListenerExecutionFailedException listenerException)
         {

@@ -56,7 +56,7 @@ public class UnicastingDispatcher : AbstractDispatcher
             return true;
         }
 
-        List<IMessageHandler> handlers = this.handlers;
+        List<IMessageHandler> handlers = this.handlers.ToList();
 
         if (handlers.Count == 0)
         {

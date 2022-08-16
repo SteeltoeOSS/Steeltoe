@@ -1667,7 +1667,7 @@ public class SpelReproTests : AbstractExpressionTests
 
     public class ValuesMethodResolver : IMethodResolver
     {
-        public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
+        public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, IReadOnlyList<Type> argumentTypes)
         {
             return new ValuesMethodExecutor();
         }

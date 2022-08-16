@@ -12,11 +12,11 @@ public interface IEvaluationContext
 {
     ITypedValue RootObject { get; }
 
-    List<IPropertyAccessor> PropertyAccessors { get; }
+    IList<IPropertyAccessor> PropertyAccessors { get; }
 
-    List<IConstructorResolver> ConstructorResolvers { get; }
+    IList<IConstructorResolver> ConstructorResolvers { get; }
 
-    List<IMethodResolver> MethodResolvers { get; }
+    IList<IMethodResolver> MethodResolvers { get; }
 
     IServiceResolver ServiceResolver { get; }
 

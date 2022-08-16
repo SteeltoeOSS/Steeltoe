@@ -46,7 +46,7 @@ public interface IHystrixInvokableInfo
 
     bool IsResponseThreadPoolRejected { get; }
 
-    List<HystrixEventType> ExecutionEvents { get; }
+    IReadOnlyList<HystrixEventType> ExecutionEvents { get; }
 
     int NumberEmissions { get; }
 

@@ -14,12 +14,12 @@ namespace Steeltoe.Stream.Binding;
 public class StreamListenerMethodValidator
 {
     private readonly IApplicationContext _context;
-    private readonly List<IStreamListenerParameterAdapter> _streamListenerParameterAdapters;
+    private readonly IEnumerable<IStreamListenerParameterAdapter> _streamListenerParameterAdapters;
 
     public MethodInfo Method { get; }
 
     public StreamListenerMethodValidator(MethodInfo method, IApplicationContext context = null,
-        List<IStreamListenerParameterAdapter> streamListenerParameterAdapters = null)
+        IEnumerable<IStreamListenerParameterAdapter> streamListenerParameterAdapters = null)
     {
         Method = method;
         _context = context;

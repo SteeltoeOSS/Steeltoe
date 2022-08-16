@@ -27,7 +27,7 @@ public class RabbitConsumerOptions : RabbitCommonOptions
 
     public bool? RequeueRejected { get; set; }
 
-    public List<string> HeaderPatterns { get; set; }
+    public IEnumerable<string> HeaderPatterns { get; set; }
 
     public int? RecoveryInterval { get; set; }
 

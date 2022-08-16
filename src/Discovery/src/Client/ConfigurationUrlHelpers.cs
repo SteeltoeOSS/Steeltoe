@@ -10,7 +10,7 @@ public static class ConfigurationUrlHelpers
 {
     public const string WildcardHost = "---asterisk---";
 
-    public static List<Uri> GetAspNetCoreUrls(this IConfiguration config)
+    public static IList<Uri> GetAspNetCoreUrls(this IConfiguration config)
     {
         string urls = config["urls"];
         var uris = new List<Uri>();

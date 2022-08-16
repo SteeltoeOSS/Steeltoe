@@ -8,9 +8,9 @@ public class MetricsRequest
 {
     public string MetricName { get; }
 
-    public List<KeyValuePair<string, string>> Tags { get; }
+    public IReadOnlyList<KeyValuePair<string, string>> Tags { get; }
 
-    public MetricsRequest(string metricName, List<KeyValuePair<string, string>> tags)
+    public MetricsRequest(string metricName, IReadOnlyList<KeyValuePair<string, string>> tags)
     {
         MetricName = metricName;
         Tags = tags;

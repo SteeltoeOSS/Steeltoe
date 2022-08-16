@@ -48,7 +48,7 @@ public class ConditionalRejectingErrorHandler : IErrorHandler
                 if (failed != null)
                 {
                     RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(failed);
-                    List<Dictionary<string, object>> xDeath = accessor.GetXDeathHeader();
+                    ICollection<Dictionary<string, object>> xDeath = accessor.GetXDeathHeader();
 
                     if (xDeath != null && xDeath.Count > 0)
                     {

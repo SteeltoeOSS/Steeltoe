@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public static class FormatHelper
 {
-    public static string FormatMethodForMessage(string name, IList<Type> argumentTypes)
+    public static string FormatMethodForMessage(string name, IEnumerable<Type> argumentTypes)
     {
         var items = new List<string>();
 

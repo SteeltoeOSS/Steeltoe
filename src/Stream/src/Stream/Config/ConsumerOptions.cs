@@ -45,7 +45,7 @@ public sealed class ConsumerOptions : IConsumerOptions
 
     public int InstanceIndex { get; set; } = int.MinValue;
 
-    public List<int> InstanceIndexList { get; set; }
+    public IEnumerable<int> InstanceIndexList { get; set; }
 
     public int MaxAttempts { get; set; } = int.MinValue;
 
@@ -57,7 +57,7 @@ public sealed class ConsumerOptions : IConsumerOptions
 
     public bool? DefaultRetryable { get; set; }
 
-    public List<string> RetryableExceptions { get; set; }
+    public IEnumerable<string> RetryableExceptions { get; set; }
 
     public HeaderMode? HeaderMode { get; set; }
 

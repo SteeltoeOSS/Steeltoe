@@ -389,7 +389,7 @@ public class DirectMessageListenerContainerMockTest
             _target.Value = _object;
         }
 
-        public void OnMessageBatch(List<IMessage> messages)
+        public void OnMessageBatch(IEnumerable<IMessage> messages)
         {
             throw new NotImplementedException();
         }
@@ -407,7 +407,7 @@ public class DirectMessageListenerContainerMockTest
             }
         }
 
-        public void OnMessageBatch(List<IMessage> messages)
+        public void OnMessageBatch(IEnumerable<IMessage> messages)
         {
         }
     }

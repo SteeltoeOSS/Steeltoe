@@ -29,7 +29,7 @@ public class OAuthConnectorOptions : AbstractServiceConnectorOptions
 
     public string JwtKeyUri { get; set; } = OAuthConnectorDefaults.DefaultJwtTokenKey;
 
-    public List<string> Scope { get; set; }
+    public ICollection<string> Scope { get; set; }
 
     public bool ValidateCertificates { get; set; } = OAuthConnectorDefaults.DefaultValidateCertificates;
 

@@ -22,7 +22,7 @@ public class AnnotatedMethodFilter : IMethodFilter
         _requiresReply = requiresReply;
     }
 
-    public List<MethodInfo> Filter(List<MethodInfo> methods)
+    public IEnumerable<MethodInfo> Filter(ICollection<MethodInfo> methods)
     {
         var annotatedCandidates = new List<MethodInfo>();
         var fallbackCandidates = new List<MethodInfo>();

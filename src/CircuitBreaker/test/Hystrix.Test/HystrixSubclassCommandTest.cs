@@ -49,8 +49,8 @@ public class HystrixSubclassCommandTest : HystrixTestBase
         Assert.Single(info1.ExecutionEvents);
         IHystrixInvokableInfo info2 = infos[1];
         Assert.Equal("SuperCommand", info2.CommandKey.Name);
-        Assert.Equal(2, info2.ExecutionEvents.Count);
-        Assert.Equal(HystrixEventType.ResponseFromCache, info2.ExecutionEvents[1]);
+        Assert.Equal(2, info2.ExecutionEvents.Count());
+        Assert.Contains(HystrixEventType.ResponseFromCache, info2.ExecutionEvents);
         IHystrixInvokableInfo info3 = infos[2];
         Assert.Equal("SuperCommand", info3.CommandKey.Name);
         Assert.Single(info3.ExecutionEvents);
@@ -75,8 +75,8 @@ public class HystrixSubclassCommandTest : HystrixTestBase
         Assert.Single(info1.ExecutionEvents);
         IHystrixInvokableInfo info2 = infos[1];
         Assert.Equal("SubCommandNoOverride", info2.CommandKey.Name);
-        Assert.Equal(2, info2.ExecutionEvents.Count);
-        Assert.Equal(HystrixEventType.ResponseFromCache, info2.ExecutionEvents[1]);
+        Assert.Equal(2, info2.ExecutionEvents.Count());
+        Assert.Contains(HystrixEventType.ResponseFromCache, info2.ExecutionEvents);
         IHystrixInvokableInfo info3 = infos[2];
         Assert.Equal("SubCommandNoOverride", info3.CommandKey.Name);
         Assert.Single(info3.ExecutionEvents);

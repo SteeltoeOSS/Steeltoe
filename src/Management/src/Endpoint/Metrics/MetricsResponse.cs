@@ -13,12 +13,12 @@ public class MetricsResponse : IMetricsResponse
     public string Name { get; }
 
     [JsonPropertyName("measurements")]
-    public List<MetricSample> Measurements { get; }
+    public IReadOnlyList<MetricSample> Measurements { get; }
 
     [JsonPropertyName("availableTags")]
-    public List<MetricTag> AvailableTags { get; }
+    public IReadOnlyList<MetricTag> AvailableTags { get; }
 
-    public MetricsResponse(string name, List<MetricSample> measurements, List<MetricTag> availableTags)
+    public MetricsResponse(string name, IReadOnlyList<MetricSample> measurements, IReadOnlyList<MetricTag> availableTags)
     {
         Name = name;
         Measurements = measurements;

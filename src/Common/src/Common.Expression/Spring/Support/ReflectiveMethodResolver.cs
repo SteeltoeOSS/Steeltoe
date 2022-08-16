@@ -35,7 +35,7 @@ public class ReflectiveMethodResolver : IMethodResolver
         }
     }
 
-    public virtual IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
+    public virtual IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, IReadOnlyList<Type> argumentTypes)
     {
         try
         {
@@ -49,7 +49,7 @@ public class ReflectiveMethodResolver : IMethodResolver
 
             if (filter != null)
             {
-                methods = filter.Filter(methods);
+                methods = filter.Filter(methods).ToList();
             }
 
             // Sort methods into a sensible order

@@ -16,7 +16,9 @@ public class HystrixRabbitMQServiceInfo : ServiceInfo
 
     public string Uri => RabbitInfo.Uri;
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public List<string> Uris => RabbitInfo.Uris;
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
 
     public string Host => RabbitInfo.Host;
 
@@ -35,7 +37,9 @@ public class HystrixRabbitMQServiceInfo : ServiceInfo
         RabbitInfo = new RabbitMQServiceInfo(id, uri);
     }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public HystrixRabbitMQServiceInfo(string id, string uri, List<string> uris, bool sslEnabled)
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
         : base(id)
     {
         RabbitInfo = new RabbitMQServiceInfo(id, uri, null, uris, null);

@@ -9,7 +9,7 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class ThreadDumpEndpointMiddleware : EndpointMiddleware<List<ThreadInfo>>
+public class ThreadDumpEndpointMiddleware : EndpointMiddleware<IReadOnlyList<ThreadInfo>>
 {
     private readonly RequestDelegate _next;
 

@@ -18,7 +18,7 @@ public class CertificateGenerationParameters : KeyParameters
     /// Gets or sets alternative names of generated credential value.
     /// </summary>
     [JsonPropertyName("alternative_names")]
-    public List<string> AlternativeNames { get; set; }
+    public ICollection<string> AlternativeNames { get; set; }
 
     /// <summary>
     /// Gets or sets organization of generated credential value.
@@ -50,13 +50,13 @@ public class CertificateGenerationParameters : KeyParameters
     /// Gets or sets key usage values.
     /// </summary>
     [JsonPropertyName("key_usage")]
-    public List<KeyUsage> KeyUsage { get; set; }
+    public IEnumerable<KeyUsage> KeyUsage { get; set; }
 
     /// <summary>
     /// Gets or sets extended key usage values.
     /// </summary>
     [JsonPropertyName("extended_key_usage")]
-    public List<ExtendedKeyUsage> ExtendedKeyUsage { get; set; }
+    public IEnumerable<ExtendedKeyUsage> ExtendedKeyUsage { get; set; }
 
     /// <summary>
     /// Gets or sets duration in days of generated credential value.

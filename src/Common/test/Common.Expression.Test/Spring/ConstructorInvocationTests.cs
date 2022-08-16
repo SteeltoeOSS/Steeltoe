@@ -88,7 +88,7 @@ public class ConstructorInvocationTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext();
 
         // reflective constructor accessor is the only one by default
-        List<IConstructorResolver> constructorResolvers = ctx.ConstructorResolvers;
+        IList<IConstructorResolver> constructorResolvers = ctx.ConstructorResolvers;
         Assert.Single(constructorResolvers);
 
         var dummy = new DummyConstructorResolver();
@@ -160,7 +160,7 @@ public class ConstructorInvocationTests : AbstractExpressionTests
 
     public class DummyConstructorResolver : IConstructorResolver
     {
-        public IConstructorExecutor Resolve(IEvaluationContext context, string typeName, List<Type> argumentTypes)
+        public IConstructorExecutor Resolve(IEvaluationContext context, string typeName, IReadOnlyList<Type> argumentTypes)
         {
             throw new InvalidOperationException("Auto-generated method stub");
         }

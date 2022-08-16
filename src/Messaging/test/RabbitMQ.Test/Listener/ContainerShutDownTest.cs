@@ -91,7 +91,7 @@ public class ContainerShutDownTest : AbstractTest
             _testEnded.Wait(TimeSpan.FromSeconds(30));
         }
 
-        public void OnMessageBatch(List<IMessage> messages)
+        public void OnMessageBatch(IEnumerable<IMessage> messages)
         {
         }
     }

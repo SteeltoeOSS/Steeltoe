@@ -15,10 +15,10 @@ public class ThreadInfo
     public long BlockedTime { get; set; } = -1; // Not available
 
     [JsonPropertyName("lockedMonitors")]
-    public List<MonitorInfo> LockedMonitors { get; set; }
+    public IReadOnlyList<MonitorInfo> LockedMonitors { get; set; }
 
     [JsonPropertyName("lockedSynchronizers")]
-    public List<LockInfo> LockedSynchronizers { get; set; }
+    public IReadOnlyList<LockInfo> LockedSynchronizers { get; set; }
 
     [JsonPropertyName("lockInfo")]
     public LockInfo LockInfo { get; set; }
@@ -33,7 +33,7 @@ public class ThreadInfo
     public string LockOwnerName { get; set; }
 
     [JsonPropertyName("stackTrace")]
-    public List<StackTraceElement> StackTrace { get; set; }
+    public IReadOnlyList<StackTraceElement> StackTrace { get; set; }
 
     [JsonPropertyName("threadId")]
     public long ThreadId { get; set; }

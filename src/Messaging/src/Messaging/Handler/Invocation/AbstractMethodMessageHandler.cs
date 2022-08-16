@@ -81,7 +81,7 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
         }
     }
 
-    public virtual IList<IHandlerMethodArgumentResolver> ArgumentResolvers
+    public virtual ICollection<IHandlerMethodArgumentResolver> ArgumentResolvers
     {
         get => MethodArgumentResolvers.Resolvers;
         set

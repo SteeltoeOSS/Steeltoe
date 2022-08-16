@@ -20,7 +20,9 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
     protected IList<string> readOnlyHeaders;
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     protected abstract List<List<object>> SequenceDetails { get; }
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
 
     protected abstract object CorrelationId { get; }
 

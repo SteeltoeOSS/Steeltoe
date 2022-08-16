@@ -9,7 +9,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Support;
 
 public static class MessagePostProcessorUtils
 {
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public static List<IMessagePostProcessor> Sort(List<IMessagePostProcessor> processors)
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
     {
         var priorityOrdered = new List<IPriorityOrdered>();
         var ordered = new List<IOrdered>();

@@ -11,15 +11,15 @@ public class Exposure
     private const string ExposurePrefix = "management:endpoints:actuator:exposure";
     private const string ExposureSecondChancePrefix = "management:endpoints:web:exposure";
 
-    private static readonly List<string> DefaultInclude = new()
+    private static readonly IList<string> DefaultInclude = new List<string>
     {
         "health",
         "info"
     };
 
-    public List<string> Include { get; set; }
+    public IList<string> Include { get; set; }
 
-    public List<string> Exclude { get; set; }
+    public IList<string> Exclude { get; set; }
 
     public Exposure()
     {

@@ -8,7 +8,7 @@ internal sealed class TestTraceRepo : ITraceRepository
 {
     public bool GetTracesCalled { get; set; }
 
-    public List<TraceResult> GetTraces()
+    public IReadOnlyList<TraceResult> GetTraces()
     {
         GetTracesCalled = true;
         return new List<TraceResult>();

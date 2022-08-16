@@ -23,11 +23,8 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
         ILogger<ServiceActivatorAttributeProcessor> logger)
         : base(applicationContext, logger)
     {
-        MessageHandlerProperties.AddRange(new List<string>
-        {
-            "OutputChannel",
-            "RequiresReply"
-        });
+        MessageHandlerProperties.Add("OutputChannel");
+        MessageHandlerProperties.Add("RequiresReply");
 
         _serviceActivatorMethods = methods.ToList();
     }
@@ -65,7 +62,7 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
         }
     }
 
-    protected override IMessageHandler CreateHandler(object service, MethodInfo method, List<Attribute> attributes)
+    protected override IMessageHandler CreateHandler(object service, MethodInfo method, ICollection<Attribute> attributes)
     {
         AbstractReplyProducingMessageHandler serviceActivator;
 

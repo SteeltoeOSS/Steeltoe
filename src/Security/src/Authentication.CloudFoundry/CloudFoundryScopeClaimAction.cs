@@ -17,7 +17,7 @@ public class CloudFoundryScopeClaimAction : ClaimAction
 
     public override void Run(JsonElement userData, ClaimsIdentity identity, string issuer)
     {
-        List<string> scopes = CloudFoundryHelper.GetScopes(userData);
+        ICollection<string> scopes = CloudFoundryHelper.GetScopes(userData);
 
         if (scopes != null)
         {

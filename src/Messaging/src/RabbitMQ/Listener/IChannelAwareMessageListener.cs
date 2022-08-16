@@ -10,5 +10,5 @@ public interface IChannelAwareMessageListener : IMessageListener
 {
     void OnMessage(IMessage message, RC.IModel channel);
 
-    void OnMessageBatch(List<IMessage> messages, RC.IModel channel);
+    void OnMessageBatch(IEnumerable<IMessage> messages, RC.IModel channel);
 }

@@ -46,7 +46,9 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     public virtual ISmartMessageConverter MessageConverter { get; set; }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public virtual List<IMessagePostProcessor> BeforeSendReplyPostProcessors { get; private set; }
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
 
     public virtual RetryTemplate RetryTemplate { get; set; }
 
@@ -107,12 +109,12 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
         throw new InvalidOperationException("Should never be called for a ChannelAwareMessageListener");
     }
 
-    public virtual void OnMessageBatch(List<IMessage> messages, RC.IModel channel)
+    public virtual void OnMessageBatch(IEnumerable<IMessage> messages, RC.IModel channel)
     {
         throw new NotSupportedException("This listener does not support message batches");
     }
 
-    public virtual void OnMessageBatch(List<IMessage> messages)
+    public virtual void OnMessageBatch(IEnumerable<IMessage> messages)
     {
         throw new NotSupportedException("This listener does not support message batches");
     }

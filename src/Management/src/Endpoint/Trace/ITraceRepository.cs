@@ -6,5 +6,5 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 public interface ITraceRepository
 {
-    List<TraceResult> GetTraces();
+    IReadOnlyList<TraceResult> GetTraces();
 }

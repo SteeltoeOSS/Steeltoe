@@ -121,7 +121,7 @@ public static class TransactionSynchronizationManager
         synchs.Add(synchronization);
     }
 
-    public static List<ITransactionSynchronization> GetSynchronizations()
+    public static ICollection<ITransactionSynchronization> GetSynchronizations()
     {
         ISet<ITransactionSynchronization> synchs = Synchronizations.Value;
 

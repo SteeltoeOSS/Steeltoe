@@ -8,5 +8,5 @@ namespace Steeltoe.Common.Expression.Internal;
 
 public interface IMethodFilter
 {
-    List<MethodInfo> Filter(List<MethodInfo> methods);
+    IEnumerable<MethodInfo> Filter(ICollection<MethodInfo> methods);
 }

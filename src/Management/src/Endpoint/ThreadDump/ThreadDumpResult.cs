@@ -9,5 +9,5 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 public class ThreadDumpResult
 {
     [JsonPropertyName("threads")]
-    public List<ThreadInfo> Threads { get; set; }
+    public IReadOnlyList<ThreadInfo> Threads { get; set; }
 }

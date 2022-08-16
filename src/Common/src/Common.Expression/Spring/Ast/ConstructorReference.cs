@@ -195,10 +195,10 @@ public class ConstructorReference : SpelNode
         }
     }
 
-    private IConstructorExecutor FindExecutorForConstructor(string typeName, List<Type> argumentTypes, ExpressionState state)
+    private IConstructorExecutor FindExecutorForConstructor(string typeName, IReadOnlyList<Type> argumentTypes, ExpressionState state)
     {
         IEvaluationContext evalContext = state.EvaluationContext;
-        List<IConstructorResolver> ctorResolvers = evalContext.ConstructorResolvers;
+        IList<IConstructorResolver> ctorResolvers = evalContext.ConstructorResolvers;
 
         foreach (IConstructorResolver ctorResolver in ctorResolvers)
         {

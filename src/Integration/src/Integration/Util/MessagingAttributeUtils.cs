@@ -30,7 +30,7 @@ public static class MessagingAttributeUtils
         return true;
     }
 
-    public static T ResolveAttribute<T>(List<Attribute> attributes, string name)
+    public static T ResolveAttribute<T>(ICollection<Attribute> attributes, string name)
     {
         foreach (Attribute attribute in attributes)
         {

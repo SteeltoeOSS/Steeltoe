@@ -38,7 +38,7 @@ public class TraceEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<ITraceEndpoint>();
-        List<TraceResult> result = ep.Invoke();
+        IReadOnlyList<TraceResult> result = ep.Invoke();
         Assert.NotNull(result);
         Assert.True(repo.GetTracesCalled);
     }

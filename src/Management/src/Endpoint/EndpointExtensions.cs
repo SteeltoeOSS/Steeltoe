@@ -37,14 +37,14 @@ public static class EndPointExtensions
     {
         if (!string.IsNullOrEmpty(options.Id) && managementOptions is ActuatorManagementOptions actOptions && actOptions.Exposure != null)
         {
-            List<string> exclude = actOptions.Exposure.Exclude;
+            IList<string> exclude = actOptions.Exposure.Exclude;
 
             if (exclude != null && (exclude.Contains("*") || exclude.Contains(options.Id)))
             {
                 return false;
             }
 
-            List<string> include = actOptions.Exposure.Include;
+            IList<string> include = actOptions.Exposure.Include;
 
             if (include != null && (include.Contains("*") || include.Contains(options.Id)))
             {

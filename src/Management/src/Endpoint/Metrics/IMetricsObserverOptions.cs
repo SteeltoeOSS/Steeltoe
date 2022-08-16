@@ -26,5 +26,5 @@ public interface IMetricsObserverOptions
     /// <para />
     /// See this list for values to choose from: <see href="https://docs.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters" />.
     /// </remarks>
-    List<string> ExcludedMetrics { get; }
+    IList<string> ExcludedMetrics { get; }
 }

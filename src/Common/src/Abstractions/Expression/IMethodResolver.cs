@@ -6,5 +6,5 @@ namespace Steeltoe.Common.Expression.Internal;
 
 public interface IMethodResolver
 {
-    IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes);
+    IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, IReadOnlyList<Type> argumentTypes);
 }

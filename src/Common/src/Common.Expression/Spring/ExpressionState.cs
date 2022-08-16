@@ -12,7 +12,7 @@ public class ExpressionState
 
     private Stack<ITypedValue> _scopeRootObjects;
 
-    public List<IPropertyAccessor> PropertyAccessors => EvaluationContext.PropertyAccessors;
+    public IEnumerable<IPropertyAccessor> PropertyAccessors => EvaluationContext.PropertyAccessors;
 
     public IEvaluationContext EvaluationContext { get; }
 

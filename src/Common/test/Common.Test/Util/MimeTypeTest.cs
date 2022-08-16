@@ -267,9 +267,9 @@ public class MimeTypeTest
     public void ParseMimeTypes()
     {
         const string s = "text/plain, text/html, text/x-dvi, text/x-c";
-        List<MimeType> mimeTypes = MimeTypeUtils.ParseMimeTypes(s);
+        IEnumerable<MimeType> mimeTypes = MimeTypeUtils.ParseMimeTypes(s);
         Assert.NotNull(mimeTypes);
-        Assert.Equal(4, mimeTypes.Count);
+        Assert.Equal(4, mimeTypes.Count());
 
         mimeTypes = MimeTypeUtils.ParseMimeTypes(null);
         Assert.NotNull(mimeTypes);
@@ -359,12 +359,12 @@ public class MimeTypeTest
     private void TestWithQuotedParameters(params string[] mimeTypes)
     {
         string s = string.Join(",", mimeTypes);
-        List<MimeType> actual = MimeTypeUtils.ParseMimeTypes(s);
+        IReadOnlyCollection<MimeType> actual = MimeTypeUtils.ParseMimeTypes(s);
         Assert.Equal(mimeTypes.Length, actual.Count);
-
-        for (int i = 0; i < mimeTypes.Length; i++)
+        IList<string> actualStrings = actual.Select(m => m.ToString()).ToList();
+        foreach (string mimeType in mimeTypes)
         {
-            Assert.Equal(mimeTypes[i], actual[i].ToString());
+            Assert.Contains(mimeType, actualStrings);
         }
     }
 

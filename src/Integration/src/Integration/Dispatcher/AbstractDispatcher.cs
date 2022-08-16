@@ -25,7 +25,7 @@ public abstract class AbstractDispatcher : IMessageDispatcher
     private IErrorHandler _errorHandler;
     private volatile IMessageHandler _theOneHandler;
     private IIntegrationServices _integrationServices;
-    protected List<IMessageHandler> handlers = new();
+    protected ICollection<IMessageHandler> handlers = new List<IMessageHandler>();
 
     internal List<IMessageHandler> Handlers => new(handlers);
 

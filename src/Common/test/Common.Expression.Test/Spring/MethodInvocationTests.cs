@@ -179,7 +179,7 @@ public class MethodInvocationTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext();
 
         // reflective method accessor is the only one by default
-        List<IMethodResolver> methodResolvers = ctx.MethodResolvers;
+        IList<IMethodResolver> methodResolvers = ctx.MethodResolvers;
         Assert.Single(methodResolvers);
 
         var dummy = new DummyMethodResolver();
@@ -268,7 +268,7 @@ public class MethodInvocationTests : AbstractExpressionTests
         public bool RemoveIfNotAnnotated;
         public bool FilterCalled;
 
-        public List<MethodInfo> Filter(List<MethodInfo> methods)
+        public IEnumerable<MethodInfo> Filter(ICollection<MethodInfo> methods)
         {
             FilterCalled = true;
             var forRemoval = new List<MethodInfo>();
@@ -316,7 +316,7 @@ public class MethodInvocationTests : AbstractExpressionTests
 
     public class DummyMethodResolver : IMethodResolver
     {
-        public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
+        public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, IReadOnlyList<Type> argumentTypes)
         {
             throw new InvalidOperationException();
         }

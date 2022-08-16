@@ -12,17 +12,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class MultiMethodRabbitListenerEndpoint : MethodRabbitListenerEndpoint
 {
-    public List<MethodInfo> Methods { get; }
+    public IEnumerable<MethodInfo> Methods { get; }
 
     public MethodInfo DefaultMethod { get; }
 
-    public MultiMethodRabbitListenerEndpoint(IApplicationContext applicationContext, List<MethodInfo> methods, object instance,
+    public MultiMethodRabbitListenerEndpoint(IApplicationContext applicationContext, IEnumerable<MethodInfo> methods, object instance,
         ILoggerFactory loggerFactory = null)
         : this(applicationContext, methods, null, instance, loggerFactory)
     {
     }
 
-    public MultiMethodRabbitListenerEndpoint(IApplicationContext applicationContext, List<MethodInfo> methods, MethodInfo defaultMethod, object instance,
+    public MultiMethodRabbitListenerEndpoint(IApplicationContext applicationContext, IEnumerable<MethodInfo> methods, MethodInfo defaultMethod, object instance,
         ILoggerFactory loggerFactory = null)
         : base(applicationContext, null, instance, loggerFactory)
     {

@@ -250,7 +250,7 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
         {
         }
 
-        public void OnMessageBatch(List<IMessage> messages)
+        public void OnMessageBatch(IEnumerable<IMessage> messages)
         {
         }
     }

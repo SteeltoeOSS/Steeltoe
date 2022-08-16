@@ -181,12 +181,12 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
             throw new InvalidOperationException("Should never be called for a ChannelAwareMessageListener");
         }
 
-        public void OnMessageBatch(List<IMessage> messages, IModel channel)
+        public void OnMessageBatch(IEnumerable<IMessage> messages, IModel channel)
         {
             throw new NotSupportedException("This listener does not support message batches");
         }
 
-        public void OnMessageBatch(List<IMessage> messages)
+        public void OnMessageBatch(IEnumerable<IMessage> messages)
         {
             throw new NotSupportedException("This listener does not support message batches");
         }

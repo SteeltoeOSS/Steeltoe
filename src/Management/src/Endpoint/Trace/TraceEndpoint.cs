@@ -7,7 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class TraceEndpoint : AbstractEndpoint<List<TraceResult>>, ITraceEndpoint
+public class TraceEndpoint : AbstractEndpoint<IReadOnlyList<TraceResult>>, ITraceEndpoint
 {
     private readonly ILogger<TraceEndpoint> _logger;
     private readonly ITraceRepository _traceRepo;
@@ -23,12 +23,12 @@ public class TraceEndpoint : AbstractEndpoint<List<TraceResult>>, ITraceEndpoint
         _logger = logger;
     }
 
-    public override List<TraceResult> Invoke()
+    public override IReadOnlyList<TraceResult> Invoke()
     {
         return DoInvoke(_traceRepo);
     }
 
-    public List<TraceResult> DoInvoke(ITraceRepository repo)
+    public IReadOnlyList<TraceResult> DoInvoke(ITraceRepository repo)
     {
         return repo.GetTraces();
     }

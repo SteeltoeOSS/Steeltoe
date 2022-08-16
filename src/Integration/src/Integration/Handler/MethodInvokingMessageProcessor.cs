@@ -84,7 +84,7 @@ public class MethodInvokingMessageProcessor<T> : AbstractMessageProcessor<T>, IL
 
     private static MethodInfo FindAnnotatedMethod(object target, Type attribute)
     {
-        List<MethodInfo> results = AttributeUtils.FindMethodsWithAttribute(
+        IReadOnlyList<MethodInfo> results = AttributeUtils.FindMethodsWithAttribute(
             target.GetType(), attribute, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
         if (results.Count != 1)

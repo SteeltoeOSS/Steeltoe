@@ -12,9 +12,9 @@ public class RabbitBinderOptions
 {
     public const string Prefix = "spring:cloud:stream:rabbit:binder";
 
-    public List<string> AdminAddresses { get; set; } = new();
+    public IList<string> AdminAddresses { get; set; } = new List<string>();
 
-    public List<string> Nodes { get; set; } = new();
+    public IList<string> Nodes { get; set; } = new List<string>();
 
     public CompressionLevel CompressionLevel { get; set; }
 

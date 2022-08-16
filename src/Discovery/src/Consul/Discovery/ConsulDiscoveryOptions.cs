@@ -222,7 +222,7 @@ public class ConsulDiscoveryOptions
     /// <param name="wildcardHostname">
     /// String representation of a wildcard hostname.
     /// </param>
-    public void ApplyConfigUrls(List<Uri> addresses, string wildcardHostname)
+    public void ApplyConfigUrls(IList<Uri> addresses, string wildcardHostname)
     {
         // try to pull some values out of server config to override defaults, but only if not using NetUtils
         // if NetUtils are configured, the user probably wants to define their own behavior

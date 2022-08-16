@@ -8,7 +8,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics;
 
 public interface IViewRegistry
 {
-    List<KeyValuePair<string, MetricStreamConfiguration>> Views { get; }
+    IList<KeyValuePair<string, MetricStreamConfiguration>> Views { get; }
 
     void AddView(string instrumentName, MetricStreamConfiguration viewConfig);
 }

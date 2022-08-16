@@ -388,7 +388,7 @@ public class RabbitTemplate
         Logger?.LogDebug("Removed publisher confirm channel: {channel} from map, size now {size}", channel, PublisherConfirmChannels.Count);
     }
 
-    public virtual void OnMessageBatch(List<IMessage> messages)
+    public virtual void OnMessageBatch(IEnumerable<IMessage> messages)
     {
         throw new NotSupportedException("This listener does not support message batches");
     }
@@ -423,7 +423,7 @@ public class RabbitTemplate
         pendingReply.Reply(message);
     }
 
-    public virtual List<string> GetExpectedQueueNames()
+    public virtual IEnumerable<string> GetExpectedQueueNames()
     {
         _isListener = true;
         List<string> replyQueue = null;

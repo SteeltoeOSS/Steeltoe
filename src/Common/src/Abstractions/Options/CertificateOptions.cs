@@ -15,5 +15,5 @@ public class CertificateOptions
 
     public X509Certificate2 Certificate { get; set; }
 
-    public List<X509Certificate2> IssuerChain { get; set; } = new();
+    public ICollection<X509Certificate2> IssuerChain { get; set; } = new List<X509Certificate2>();
 }

@@ -6,5 +6,5 @@ namespace Steeltoe.Messaging.RabbitMQ.Support;
 
 public interface IListenerContainerAware
 {
-    List<string> GetExpectedQueueNames();
+    IEnumerable<string> GetExpectedQueueNames();
 }

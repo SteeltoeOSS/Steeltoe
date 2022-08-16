@@ -35,7 +35,7 @@ public class ProducerOptions : IProducerOptions
 
     public int PartitionCount { get; set; } = int.MinValue;
 
-    public List<string> RequiredGroups { get; set; }
+    public IEnumerable<string> RequiredGroups { get; set; }
 
     public HeaderMode? HeaderMode { get; set; }
 

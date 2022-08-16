@@ -41,7 +41,7 @@ public class ExecutionResult
 
     public bool IsResponseRejected => IsResponseThreadPoolRejected || IsResponseSemaphoreRejected;
 
-    public List<HystrixEventType> OrderedList
+    public IReadOnlyList<HystrixEventType> OrderedList
     {
         get
         {

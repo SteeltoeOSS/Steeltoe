@@ -6,5 +6,5 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 
 public interface IThreadDumper
 {
-    List<ThreadInfo> DumpThreads();
+    IReadOnlyList<ThreadInfo> DumpThreads();
 }

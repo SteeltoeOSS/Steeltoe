@@ -20,7 +20,9 @@ public class ManagementEndpointOptions : IManagementOptions
 
     public string Path { get; set; }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public List<IEndpointOptions> EndpointOptions { get; set; }
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
 
     public bool UseStatusCodeFromResponse { get; set; } = true;
 

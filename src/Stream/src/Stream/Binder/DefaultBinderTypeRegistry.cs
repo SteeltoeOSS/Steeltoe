@@ -13,7 +13,7 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
     private static readonly string ThisAssemblyName = typeof(DefaultBinderTypeRegistry).Assembly.GetName().Name;
     private readonly Dictionary<string, IBinderType> _binderTypes;
 
-    internal List<string> SearchDirectories { get; }
+    internal IEnumerable<string> SearchDirectories { get; }
 
     public DefaultBinderTypeRegistry()
     {
@@ -31,7 +31,7 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
         _binderTypes = FindBinders(searchDirectories);
     }
 
-    public DefaultBinderTypeRegistry(List<string> searchDirectories, bool checkLoadedAssemblies = true)
+    public DefaultBinderTypeRegistry(IEnumerable<string> searchDirectories, bool checkLoadedAssemblies = true)
     {
         SearchDirectories = searchDirectories;
         _binderTypes = FindBinders(searchDirectories, checkLoadedAssemblies);
@@ -53,7 +53,7 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
         return _binderTypes;
     }
 
-    internal static Dictionary<string, IBinderType> FindBinders(List<string> searchDirectories, bool checkLoadedAssemblies = true)
+    internal static Dictionary<string, IBinderType> FindBinders(IEnumerable<string> searchDirectories, bool checkLoadedAssemblies = true)
     {
         var binderTypes = new Dictionary<string, IBinderType>();
 
@@ -62,7 +62,7 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
         return binderTypes;
     }
 
-    internal static void ParseBinderConfigurations(List<string> searchDirectories, Dictionary<string, IBinderType> registrations,
+    internal static void ParseBinderConfigurations(IEnumerable<string> searchDirectories, Dictionary<string, IBinderType> registrations,
         bool checkLoadedAssemblies = true)
     {
         if (checkLoadedAssemblies)

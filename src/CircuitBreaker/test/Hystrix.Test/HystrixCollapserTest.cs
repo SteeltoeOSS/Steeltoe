@@ -681,8 +681,8 @@ public class HystrixCollapserTest : HystrixTestBase
         Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
         IHystrixInvokableInfo command = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.AsEnumerable().First();
-        _output.WriteLine("command.getExecutionEvents(): " + command.ExecutionEvents.Count);
-        Assert.Equal(2, command.ExecutionEvents.Count);
+        _output.WriteLine("command.getExecutionEvents(): " + command.ExecutionEvents.Count());
+        Assert.Equal(2, command.ExecutionEvents.Count());
         Assert.Contains(HystrixEventType.Success, command.ExecutionEvents);
         Assert.Contains(HystrixEventType.Collapsed, command.ExecutionEvents);
 
@@ -732,8 +732,8 @@ public class HystrixCollapserTest : HystrixTestBase
         Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
         IHystrixInvokableInfo command = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.AsEnumerable().First();
-        _output.WriteLine("command.getExecutionEvents(): " + command.ExecutionEvents.Count);
-        Assert.Equal(2, command.ExecutionEvents.Count);
+        _output.WriteLine("command.getExecutionEvents(): " + command.ExecutionEvents.Count());
+        Assert.Equal(2, command.ExecutionEvents.Count());
         Assert.Contains(HystrixEventType.Success, command.ExecutionEvents);
         Assert.Contains(HystrixEventType.Collapsed, command.ExecutionEvents);
     }
@@ -772,7 +772,7 @@ public class HystrixCollapserTest : HystrixTestBase
         Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
 
         IHystrixInvokableInfo command = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList()[0];
-        Assert.Equal(2, command.ExecutionEvents.Count);
+        Assert.Equal(2, command.ExecutionEvents.Count());
         Assert.Contains(HystrixEventType.Success, command.ExecutionEvents);
         Assert.Contains(HystrixEventType.Collapsed, command.ExecutionEvents);
 
@@ -814,13 +814,13 @@ public class HystrixCollapserTest : HystrixTestBase
 
         // we expect to see it with SUCCESS and COLLAPSED and both
         IHystrixInvokableInfo commandA = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList()[0];
-        Assert.Equal(2, commandA.ExecutionEvents.Count);
+        Assert.Equal(2, commandA.ExecutionEvents.Count());
         Assert.Contains(HystrixEventType.Success, commandA.ExecutionEvents);
         Assert.Contains(HystrixEventType.Collapsed, commandA.ExecutionEvents);
 
         // we expect to see it with SUCCESS and COLLAPSED and both
         IHystrixInvokableInfo commandB = HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.ToList()[1];
-        Assert.Equal(2, commandB.ExecutionEvents.Count);
+        Assert.Equal(2, commandB.ExecutionEvents.Count());
         Assert.Contains(HystrixEventType.Success, commandB.ExecutionEvents);
         Assert.Contains(HystrixEventType.Collapsed, commandB.ExecutionEvents);
 
@@ -1659,7 +1659,7 @@ public class HystrixCollapserTest : HystrixTestBase
             }
         }
 
-        List<HystrixEventType> actualEventTypes = command.ExecutionEvents;
+        IEnumerable<HystrixEventType> actualEventTypes = command.ExecutionEvents;
         Assert.Equal(expectedEmitCount, command.NumberEmissions);
         Assert.Equal(expectedFallbackEmitCount, command.NumberFallbackEmissions);
         Assert.Equal(condensedEmitExpectedEventTypes, actualEventTypes);

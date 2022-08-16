@@ -14,7 +14,9 @@ public interface IChannelInterceptorAware
     /// <summary>
     /// Gets or sets the channel interceptors.
     /// </summary>
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     List<IChannelInterceptor> ChannelInterceptors { get; set; }
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
 
     /// <summary>
     /// Add a interceptor to the channel.

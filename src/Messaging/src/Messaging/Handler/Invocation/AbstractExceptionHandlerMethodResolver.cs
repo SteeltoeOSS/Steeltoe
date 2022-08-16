@@ -27,7 +27,7 @@ public abstract class AbstractExceptionHandlerMethodResolver
         }
     }
 
-    protected static List<Type> GetExceptionsFromMethodSignature(MethodInfo method)
+    protected static IEnumerable<Type> GetExceptionsFromMethodSignature(MethodInfo method)
     {
         var result = new List<Type>();
 

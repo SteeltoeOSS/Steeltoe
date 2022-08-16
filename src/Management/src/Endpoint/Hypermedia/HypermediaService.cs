@@ -25,7 +25,7 @@ public class HypermediaService
 
     public Links Invoke(string baseUrl)
     {
-        List<IEndpointOptions> endpointOptions = _managementOptions.EndpointOptions;
+        IList<IEndpointOptions> endpointOptions = _managementOptions.EndpointOptions;
         var links = new Links();
 
         if (!_options.IsEnabled(_managementOptions))

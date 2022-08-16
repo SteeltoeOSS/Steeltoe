@@ -56,7 +56,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
         HttpContext context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?foo=key:value");
-        List<KeyValuePair<string, string>> result = middle.ParseTags(context1.Request.Query);
+        IReadOnlyList<KeyValuePair<string, string>> result = middle.ParseTags(context1.Request.Query);
         Assert.NotNull(result);
         Assert.Empty(result);
 

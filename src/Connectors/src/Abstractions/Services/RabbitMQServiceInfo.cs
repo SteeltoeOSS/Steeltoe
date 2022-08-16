@@ -11,9 +11,11 @@ public class RabbitMQServiceInfo : UriServiceInfo
 
     public string ManagementUri { get; protected internal set; }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public List<string> Uris { get; protected internal set; }
 
     public List<string> ManagementUris { get; protected internal set; }
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
 
     public string VirtualHost => Info.Path;
 
@@ -28,7 +30,9 @@ public class RabbitMQServiceInfo : UriServiceInfo
         ManagementUri = managementUri;
     }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public RabbitMQServiceInfo(string id, string uri, string managementUri, List<string> uris, List<string> managementUris)
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
         : this(id, uri, managementUri)
     {
         Uris = uris;

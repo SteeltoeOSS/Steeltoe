@@ -25,15 +25,15 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
     public string StandardHeaderPrefix { get; set; }
 
-    public List<string> RequestHeaderNames { get; set; }
+    public ICollection<string> RequestHeaderNames { get; set; }
 
-    public List<string> ReplyHeaderNames { get; set; }
+    public ICollection<string> ReplyHeaderNames { get; set; }
 
     public IHeaderMatcher RequestHeaderMatcher { get; set; }
 
     public IHeaderMatcher ReplyHeaderMatcher { get; set; }
 
-    protected AbstractHeaderMapper(string standardHeaderPrefix, List<string> requestHeaderNames, List<string> replyHeaderNames, ILogger logger)
+    protected AbstractHeaderMapper(string standardHeaderPrefix, ICollection<string> requestHeaderNames, ICollection<string> replyHeaderNames, ILogger logger)
     {
         StandardHeaderPrefix = standardHeaderPrefix;
         RequestHeaderNames = requestHeaderNames;
@@ -80,7 +80,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
         return ToHeaders(source, ReplyHeaderMatcher);
     }
 
-    protected virtual IHeaderMatcher CreateDefaultHeaderMatcher(string standardHeaderPrefix, List<string> headerNames)
+    protected virtual IHeaderMatcher CreateDefaultHeaderMatcher(string standardHeaderPrefix, ICollection<string> headerNames)
     {
         return new ContentBasedHeaderMatcher(true, new List<string>(headerNames));
     }
@@ -155,7 +155,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
         return propertyName;
     }
 
-    protected virtual List<string> GetTransientHeaderNames()
+    protected virtual IEnumerable<string> GetTransientHeaderNames()
     {
         return _transientHeaderNames;
     }
@@ -277,11 +277,11 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
     {
         private bool Match { get; }
 
-        private List<string> Content { get; }
+        private ICollection<string> Content { get; }
 
         public bool IsNegated => false;
 
-        public ContentBasedHeaderMatcher(bool match, List<string> content)
+        public ContentBasedHeaderMatcher(bool match, ICollection<string> content)
         {
             ArgumentGuard.NotNull(content);
 
@@ -315,7 +315,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
         public bool IsNegated => false;
 
-        public PatternBasedHeaderMatcher(List<string> patterns)
+        public PatternBasedHeaderMatcher(IEnumerable<string> patterns)
         {
             ArgumentGuard.NotNullOrEmpty(patterns);
 
@@ -398,11 +398,11 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
     protected class CompositeHeaderMatcher : IHeaderMatcher
     {
-        private List<IHeaderMatcher> Matchers { get; }
+        private IEnumerable<IHeaderMatcher> Matchers { get; }
 
         public bool IsNegated { get; }
 
-        public CompositeHeaderMatcher(List<IHeaderMatcher> strategies)
+        public CompositeHeaderMatcher(IEnumerable<IHeaderMatcher> strategies)
         {
             Matchers = strategies;
         }

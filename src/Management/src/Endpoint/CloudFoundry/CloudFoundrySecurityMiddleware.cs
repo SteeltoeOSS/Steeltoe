@@ -109,9 +109,7 @@ public class CloudFoundrySecurityMiddleware
 
     private IEndpointOptions FindTargetEndpoint(PathString path)
     {
-        List<IEndpointOptions> configEndpoints;
-
-        configEndpoints = _managementOptions.EndpointOptions;
+        IList<IEndpointOptions> configEndpoints = _managementOptions.EndpointOptions;
 
         foreach (IEndpointOptions ep in configEndpoints)
         {

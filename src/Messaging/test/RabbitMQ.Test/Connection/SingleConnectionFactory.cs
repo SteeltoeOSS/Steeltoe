@@ -57,7 +57,7 @@ public class SingleConnectionFactory : AbstractConnectionFactory
         ServiceName = DefaultServiceName;
     }
 
-    public override void SetConnectionListeners(List<IConnectionListener> listeners)
+    public override void SetConnectionListeners(IEnumerable<IConnectionListener> listeners)
     {
         base.SetConnectionListeners(listeners);
 

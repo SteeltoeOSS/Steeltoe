@@ -21,7 +21,7 @@ public interface IConsumerOptions
 
     int InstanceIndex { get; }
 
-    List<int> InstanceIndexList { get; }
+    IEnumerable<int> InstanceIndexList { get; }
 
     int MaxAttempts { get; }
 
@@ -33,7 +33,7 @@ public interface IConsumerOptions
 
     bool DefaultRetryable { get; }
 
-    List<string> RetryableExceptions { get; }
+    IEnumerable<string> RetryableExceptions { get; }
 
     HeaderMode HeaderMode { get; }
 

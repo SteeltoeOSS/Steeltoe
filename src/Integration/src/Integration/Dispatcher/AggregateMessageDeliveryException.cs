@@ -11,7 +11,7 @@ public class AggregateMessageDeliveryException : MessageDeliveryException
 {
     private readonly List<Exception> _aggregatedExceptions;
 
-    public List<Exception> AggregatedExceptions => new(_aggregatedExceptions);
+    public ICollection<Exception> AggregatedExceptions => new List<Exception>(_aggregatedExceptions);
 
     public override string Message
     {
@@ -30,7 +30,9 @@ public class AggregateMessageDeliveryException : MessageDeliveryException
         }
     }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public AggregateMessageDeliveryException(IMessage undeliveredMessage, string description, List<Exception> aggregatedExceptions)
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
         : base(undeliveredMessage, description, aggregatedExceptions[0])
     {
         _aggregatedExceptions = new List<Exception>(aggregatedExceptions);

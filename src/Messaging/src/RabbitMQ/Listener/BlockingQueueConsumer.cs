@@ -48,7 +48,7 @@ public class BlockingQueueConsumer
 
     public ushort PrefetchCount { get; }
 
-    public List<string> Queues { get; }
+    public IEnumerable<string> Queues { get; }
 
     public AcknowledgeMode AcknowledgeMode { get; }
 
@@ -88,7 +88,7 @@ public class BlockingQueueConsumer
 
     public bool LocallyTransacted { get; set; }
 
-    public int QueueCount => Queues.Count;
+    public int QueueCount => Queues.Count();
 
     public HashSet<string> MissingQueues => new();
 
@@ -156,9 +156,9 @@ public class BlockingQueueConsumer
         Logger = loggerFactory?.CreateLogger<BlockingQueueConsumer>();
     }
 
-    public List<string> GetConsumerTags()
+    public IEnumerable<string> GetConsumerTags()
     {
-        return Consumers.Values.Select(c => c.ConsumerTag).Where(tag => tag != null).ToList();
+        return Consumers.Values.Select(c => c.ConsumerTag).Where(tag => tag != null);
     }
 
     public void ClearDeliveryTags()
@@ -333,13 +333,10 @@ public class BlockingQueueConsumer
     {
         NormalCancel = expected;
 
-        GetConsumerTags().ForEach(consumerTag =>
+        foreach (string consumerTag in GetConsumerTags().Where(consumerTag => Channel.IsOpen))
         {
-            if (Channel.IsOpen)
-            {
-                RabbitUtils.Cancel(Channel, consumerTag);
-            }
-        });
+            RabbitUtils.Cancel(Channel, consumerTag);
+        }
 
         Cancel.Value = true;
         AbortStarted = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -432,7 +429,7 @@ public class BlockingQueueConsumer
                 throw RabbitExceptionTranslator.ConvertRabbitAccessException(e1);
             }
         }
-        else if (e.FailedQueues.Count < Queues.Count)
+        else if (e.FailedQueues.Count < Queues.Count())
         {
             Logger?.LogWarning(e, "Not all queues are available; only listening on those that are - configured: {queues}; not available: {notAvailable}",
                 string.Join(',', Queues), string.Join(',', e.FailedQueues));

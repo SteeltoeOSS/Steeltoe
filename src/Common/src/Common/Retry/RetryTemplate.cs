@@ -6,11 +6,11 @@ namespace Steeltoe.Common.Retry;
 
 public abstract class RetryTemplate : IRetryOperation
 {
-    protected List<IRetryListener> listeners = new();
+    protected readonly ICollection<IRetryListener> Listeners = new List<IRetryListener>();
 
     public void RegisterListener(IRetryListener listener)
     {
-        listeners.Add(listener);
+        Listeners.Add(listener);
     }
 
     public abstract T Execute<T>(Func<IRetryContext, T> retryCallback);

@@ -16,7 +16,9 @@ public static class Serialize
 {
     private static readonly string ContextId = Guid.NewGuid().ToString();
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public static List<string> ToJsonList(HystrixDashboardStream.DashboardData data, IDiscoveryClient discoveryClient)
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
     {
         var jsonList = new List<string>();
         WriteCommandData(data, discoveryClient, jsonList);

@@ -69,7 +69,7 @@ public class BindingServiceOptionsTest
 
         Assert.Equal(100, options.InstanceCount);
         Assert.Equal(1, options.InstanceIndex);
-        Assert.Equal("dynamicDestinations", options.DynamicDestinations[0]);
+        Assert.Equal("dynamicDestinations", options.DynamicDestinations.First());
         Assert.Equal("defaultBinder", options.DefaultBinder);
         Assert.Equal(true, options.OverrideCloudConnectors);
         Assert.Equal(500, options.BindingRetryInterval);
@@ -118,7 +118,7 @@ public class BindingServiceOptionsTest
         Assert.Equal("partitionKeyExtractorName", output.Producer.PartitionKeyExtractorName);
         Assert.Equal("partitionSelectorName", output.Producer.PartitionSelectorName);
         Assert.Equal(10, output.Producer.PartitionCount);
-        Assert.Equal("requiredGroups", output.Producer.RequiredGroups[0]);
+        Assert.Equal("requiredGroups", output.Producer.RequiredGroups.First());
         Assert.Equal(HeaderMode.Headers, output.Producer.HeaderMode);
         Assert.Equal(true, output.Producer.UseNativeEncoding);
         Assert.Equal(true, output.Producer.ErrorChannelEnabled);
@@ -180,7 +180,7 @@ public class BindingServiceOptionsTest
         Assert.Equal(1, options.InstanceIndex);
         Assert.True(options.OverrideCloudConnectors);
         Assert.Single(options.DynamicDestinations);
-        Assert.Equal("dynamicDestinations", options.DynamicDestinations[0]);
+        Assert.Equal("dynamicDestinations", options.DynamicDestinations.First());
         Assert.Equal("defaultBinder", options.DefaultBinder);
         Assert.Equal(500, options.BindingRetryInterval);
         Assert.Empty(options.Binders);
@@ -214,7 +214,7 @@ public class BindingServiceOptionsTest
         Assert.Equal(2, options.InstanceIndex);
         Assert.True(options.OverrideCloudConnectors);
         Assert.Single(options.DynamicDestinations);
-        Assert.Equal("dynamicDestinations", options.DynamicDestinations[0]);
+        Assert.Equal("dynamicDestinations", options.DynamicDestinations.First());
         Assert.Null(options.DefaultBinder);
         Assert.Equal(100, options.BindingRetryInterval);
         Assert.Empty(options.Binders);

@@ -127,7 +127,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         Registrar.Initialize();
     }
 
-    protected void ProcessMultiMethodListeners(List<RabbitListenerAttribute> classLevelListeners, List<MethodInfo> multiMethods, object bean, string beanName)
+    protected void ProcessMultiMethodListeners(IEnumerable<RabbitListenerAttribute> classLevelListeners, IEnumerable<MethodInfo> multiMethods, object bean, string beanName)
     {
         var checkedMethods = new List<MethodInfo>();
         MethodInfo defaultMethod = null;

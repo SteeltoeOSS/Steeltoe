@@ -176,7 +176,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
         DefaultRabbitHeaderMapper mapper = DefaultRabbitHeaderMapper.GetOutboundMapper(logger);
 
-        var headerPatterns = new List<string>(extendedProperties.HeaderPatterns.Count + 3)
+        var headerPatterns = new List<string>(extendedProperties.HeaderPatterns.Count() + 3)
         {
             $"!{BinderHeaders.PartitionHeader}",
             $"!{IntegrationMessageHeaderAccessor.SourceData}",

@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public static class AstUtils
 {
-    public static List<IPropertyAccessor> GetPropertyAccessorsToTry(Type targetType, List<IPropertyAccessor> propertyAccessors)
+    public static IReadOnlyCollection<IPropertyAccessor> GetPropertyAccessorsToTry(Type targetType, IEnumerable<IPropertyAccessor> propertyAccessors)
     {
         var specificAccessors = new List<IPropertyAccessor>();
         var generalAccessors = new List<IPropertyAccessor>();

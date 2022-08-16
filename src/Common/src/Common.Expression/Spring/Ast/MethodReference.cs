@@ -338,7 +338,7 @@ public class MethodReference : SpelNode
 
     private IMethodExecutor GetCachedExecutor(IEvaluationContext evaluationContext, object value, Type targetType, IList<Type> argumentTypes)
     {
-        List<IMethodResolver> methodResolvers = evaluationContext.MethodResolvers;
+        IList<IMethodResolver> methodResolvers = evaluationContext.MethodResolvers;
 
         if (methodResolvers.Count != 1 || methodResolvers[0] is not ReflectiveMethodResolver)
         {
@@ -360,7 +360,7 @@ public class MethodReference : SpelNode
     private IMethodExecutor FindAccessorForMethod(List<Type> argumentTypes, object targetObject, IEvaluationContext evaluationContext)
     {
         AccessException accessException = null;
-        List<IMethodResolver> methodResolvers = evaluationContext.MethodResolvers;
+        IList<IMethodResolver> methodResolvers = evaluationContext.MethodResolvers;
 
         foreach (IMethodResolver methodResolver in methodResolvers)
         {

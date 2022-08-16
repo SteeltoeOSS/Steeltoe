@@ -15,7 +15,7 @@ public class HandlerMethodArgumentResolverComposite : IHandlerMethodArgumentReso
 
     public int Count => _argumentResolvers.Count;
 
-    public List<IHandlerMethodArgumentResolver> Resolvers => new(_argumentResolvers);
+    public ICollection<IHandlerMethodArgumentResolver> Resolvers => new List<IHandlerMethodArgumentResolver>(_argumentResolvers);
 
     public HandlerMethodArgumentResolverComposite AddResolver(IHandlerMethodArgumentResolver argumentResolver)
     {
@@ -33,7 +33,7 @@ public class HandlerMethodArgumentResolverComposite : IHandlerMethodArgumentReso
         return this;
     }
 
-    public HandlerMethodArgumentResolverComposite AddResolvers(IList<IHandlerMethodArgumentResolver> resolvers)
+    public HandlerMethodArgumentResolverComposite AddResolvers(ICollection<IHandlerMethodArgumentResolver> resolvers)
     {
         if (resolvers != null)
         {

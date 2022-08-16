@@ -15,5 +15,5 @@ public class RegeneratedCertificates
     /// Gets or sets names of certificates that were regenerated.
     /// </summary>
     [JsonPropertyName("regenerated_credentials")]
-    public List<string> RegeneratedCredentials { get; set; }
+    public ICollection<string> RegeneratedCredentials { get; set; }
 }

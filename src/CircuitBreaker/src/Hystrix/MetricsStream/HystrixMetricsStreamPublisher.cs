@@ -16,7 +16,7 @@ public class HystrixMetricsStreamPublisher : IDisposable
 {
     protected const string SpringCloudHystrixStreamExchange = "spring.cloud.hystrix.stream";
 
-    protected IObservable<List<string>> observable;
+    protected IObservable<IReadOnlyCollection<string>> observable;
     protected IDiscoveryClient discoveryClient;
     protected ILogger logger;
     protected HystrixMetricsStreamOptions options;
@@ -108,7 +108,7 @@ public class HystrixMetricsStreamPublisher : IDisposable
         return true;
     }
 
-    protected virtual void OnNext(List<string> jsonList)
+    protected virtual void OnNext(IReadOnlyCollection<string> jsonList)
     {
     }
 

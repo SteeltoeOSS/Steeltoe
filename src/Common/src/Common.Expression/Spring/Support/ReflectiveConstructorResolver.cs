@@ -8,7 +8,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
 public class ReflectiveConstructorResolver : IConstructorResolver
 {
-    public IConstructorExecutor Resolve(IEvaluationContext context, string typeName, List<Type> argumentTypes)
+    public IConstructorExecutor Resolve(IEvaluationContext context, string typeName, IReadOnlyList<Type> argumentTypes)
     {
         try
         {

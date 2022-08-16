@@ -293,7 +293,7 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
         return messageHeaderAccessor;
     }
 
-    public List<Dictionary<string, object>> GetXDeathHeader()
+    public ICollection<Dictionary<string, object>> GetXDeathHeader()
     {
         return GetHeader(RabbitMessageHeaders.XDeath) as List<Dictionary<string, object>>;
     }

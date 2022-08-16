@@ -46,9 +46,11 @@ public abstract class AbstractRabbitListenerEndpoint : IRabbitListenerEndpoint
 
     public string Id { get; set; }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public List<IQueue> Queues { get; } = new();
 
     public List<string> QueueNames { get; } = new();
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
 
     public bool Exclusive { get; set; }
 

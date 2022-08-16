@@ -67,7 +67,7 @@ public class RabbitMetricsStreamPublisher : HystrixMetricsStreamPublisher
         }
     }
 
-    protected override void OnNext(List<string> jsonList)
+    protected override void OnNext(IReadOnlyCollection<string> jsonList)
     {
         if (Channel != null)
         {

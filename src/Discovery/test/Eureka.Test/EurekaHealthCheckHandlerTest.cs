@@ -25,7 +25,7 @@ public class EurekaHealthCheckHandlerTest
     public void DoHealthChecks_ReturnsExpected()
     {
         var handler = new EurekaHealthCheckHandler();
-        List<HealthCheckResult> result = handler.DoHealthChecks(new List<IHealthContributor>());
+        IList<HealthCheckResult> result = handler.DoHealthChecks(new List<IHealthContributor>());
         Assert.Empty(result);
 
         result = handler.DoHealthChecks(new List<IHealthContributor>

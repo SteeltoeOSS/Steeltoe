@@ -36,7 +36,7 @@ public class BinderConfigurations : IBinderConfigurations
         Options = options;
     }
 
-    public List<string> FindMatchingConfigurationsIfAny(IBinder binder)
+    public IEnumerable<string> FindMatchingConfigurationsIfAny(IBinder binder)
     {
         var results = new List<string>();
         IBinderType registryEntry = Registry.Get(binder.ServiceName);

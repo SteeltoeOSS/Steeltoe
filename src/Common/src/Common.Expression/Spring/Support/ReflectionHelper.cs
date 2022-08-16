@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
 public static class ReflectionHelper
 {
-    public static ArgumentsMatchInfo CompareArguments(List<Type> expectedArgTypes, List<Type> suppliedArgTypes, ITypeConverter typeConverter)
+    public static ArgumentsMatchInfo CompareArguments(IReadOnlyList<Type> expectedArgTypes, IReadOnlyList<Type> suppliedArgTypes, ITypeConverter typeConverter)
     {
         if (expectedArgTypes.Count != suppliedArgTypes.Count)
         {
@@ -56,7 +56,7 @@ public static class ReflectionHelper
         return match != null ? new ArgumentsMatchInfo(match.Value) : null;
     }
 
-    public static int GetTypeDifferenceWeight(List<Type> paramTypes, List<Type> argTypes)
+    public static int GetTypeDifferenceWeight(IReadOnlyList<Type> paramTypes, IReadOnlyList<Type> argTypes)
     {
         int result = 0;
 
@@ -116,7 +116,7 @@ public static class ReflectionHelper
         return result;
     }
 
-    public static ArgumentsMatchInfo CompareArgumentsVarargs(List<Type> expectedArgTypes, List<Type> suppliedArgTypes, ITypeConverter typeConverter)
+    public static ArgumentsMatchInfo CompareArgumentsVarargs(IReadOnlyList<Type> expectedArgTypes, IReadOnlyList<Type> suppliedArgTypes, ITypeConverter typeConverter)
     {
         if (expectedArgTypes == null || expectedArgTypes.Count == 0)
         {

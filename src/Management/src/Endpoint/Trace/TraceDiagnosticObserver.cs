@@ -33,7 +33,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         _logger = logger;
     }
 
-    public List<TraceResult> GetTraces()
+    public IReadOnlyList<TraceResult> GetTraces()
     {
         TraceResult[] traces = Queue.ToArray();
         return new List<TraceResult>(traces);

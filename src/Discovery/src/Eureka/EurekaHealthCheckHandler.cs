@@ -31,12 +31,12 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
 
     public virtual InstanceStatus GetStatus(InstanceStatus currentStatus)
     {
-        List<HealthCheckResult> results = DoHealthChecks(Contributors);
+        IList<HealthCheckResult> results = DoHealthChecks(Contributors);
         HealthStatus status = AggregateStatus(results);
         return MapToInstanceStatus(status);
     }
 
-    protected internal virtual List<HealthCheckResult> DoHealthChecks(IList<IHealthContributor> contributors)
+    protected internal virtual IList<HealthCheckResult> DoHealthChecks(IList<IHealthContributor> contributors)
     {
         var results = new List<HealthCheckResult>();
 
@@ -55,7 +55,7 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
         return results;
     }
 
-    protected internal virtual HealthStatus AggregateStatus(List<HealthCheckResult> results)
+    protected internal virtual HealthStatus AggregateStatus(IEnumerable<HealthCheckResult> results)
     {
         var considered = new List<HealthStatus>();
 

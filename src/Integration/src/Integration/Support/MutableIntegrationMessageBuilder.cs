@@ -198,7 +198,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
         return mutableMessage;
     }
 
-    protected List<string> GetMatchingHeaderNames(string pattern, IDictionary<string, object> headers)
+    protected ICollection<string> GetMatchingHeaderNames(string pattern, IDictionary<string, object> headers)
     {
         var matchingHeaderNames = new List<string>();
 

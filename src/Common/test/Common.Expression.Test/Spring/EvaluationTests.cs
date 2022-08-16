@@ -1431,7 +1431,7 @@ public class EvaluationTests : AbstractExpressionTests
 
     public class CustomMethodResolver : IMethodResolver
     {
-        public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
+        public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, IReadOnlyList<Type> argumentTypes)
         {
             return null;
         }
@@ -1439,7 +1439,7 @@ public class EvaluationTests : AbstractExpressionTests
 
     public class CustomMethodFilter : IMethodFilter
     {
-        public List<MethodInfo> Filter(List<MethodInfo> methods)
+        public IEnumerable<MethodInfo> Filter(ICollection<MethodInfo> methods)
         {
             return null;
         }

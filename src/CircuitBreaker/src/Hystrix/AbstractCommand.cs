@@ -96,7 +96,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     public ExecutionResult.EventCounts EventCounts => CommandResult.Eventcounts;
 
-    public List<HystrixEventType> ExecutionEvents => CommandResult.OrderedList;
+    public IReadOnlyList<HystrixEventType> ExecutionEvents => CommandResult.OrderedList;
 
     public int ExecutionTimeInMilliseconds => CommandResult.ExecutionLatency;
 

@@ -36,7 +36,7 @@ public static class TransactionSynchronizationUtils
         InvokeAfterCommit(TransactionSynchronizationManager.GetSynchronizations());
     }
 
-    public static void InvokeAfterCommit(List<ITransactionSynchronization> synchronizations)
+    public static void InvokeAfterCommit(ICollection<ITransactionSynchronization> synchronizations)
     {
         if (synchronizations != null)
         {
@@ -49,11 +49,11 @@ public static class TransactionSynchronizationUtils
 
     public static void TriggerAfterCompletion(int completionStatus)
     {
-        List<ITransactionSynchronization> synchronizations = TransactionSynchronizationManager.GetSynchronizations();
+        ICollection<ITransactionSynchronization> synchronizations = TransactionSynchronizationManager.GetSynchronizations();
         InvokeAfterCompletion(synchronizations, completionStatus);
     }
 
-    public static void InvokeAfterCompletion(List<ITransactionSynchronization> synchronizations, int completionStatus, ILogger logger = null)
+    public static void InvokeAfterCompletion(ICollection<ITransactionSynchronization> synchronizations, int completionStatus, ILogger logger = null)
     {
         if (synchronizations != null)
         {

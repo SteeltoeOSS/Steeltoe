@@ -61,7 +61,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
             template.Execute(_ =>
             {
                 BlockingQueueConsumer consumer = CreateConsumer(template.ConnectionFactory);
-                string tag = consumer.GetConsumerTags()[0];
+                string tag = consumer.GetConsumerTags().First();
                 Assert.NotNull(tag);
                 template.ConvertAndSend("foo", "message");
 
@@ -101,7 +101,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
             template.Execute(_ =>
             {
                 BlockingQueueConsumer consumer = CreateConsumer(template.ConnectionFactory);
-                string tag = consumer.GetConsumerTags()[0];
+                string tag = consumer.GetConsumerTags().First();
                 Assert.NotNull(tag);
                 template.ConvertAndSend("topic", "foo", "message");
 
@@ -147,7 +147,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
         BlockingQueueConsumer consumer = template1.Execute(_ =>
         {
             BlockingQueueConsumer consumer1 = CreateConsumer(template1.ConnectionFactory);
-            string tag = consumer1.GetConsumerTags()[0];
+            string tag = consumer1.GetConsumerTags().First();
             Assert.NotNull(tag);
 
             return consumer1;
@@ -184,7 +184,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
             template.Execute(_ =>
             {
                 BlockingQueueConsumer consumer = CreateConsumer(template.ConnectionFactory);
-                string tag = consumer.GetConsumerTags()[0];
+                string tag = consumer.GetConsumerTags().First();
                 Assert.NotNull(tag);
 
                 try
@@ -202,7 +202,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
             template.Execute(_ =>
             {
                 BlockingQueueConsumer consumer = CreateConsumer(template.ConnectionFactory);
-                string tag = consumer.GetConsumerTags()[0];
+                string tag = consumer.GetConsumerTags().First();
                 Assert.NotNull(tag);
 
                 try
@@ -240,7 +240,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
             template.Execute(_ =>
             {
                 BlockingQueueConsumer consumer = CreateConsumer(template.ConnectionFactory);
-                string tag = consumer.GetConsumerTags()[0];
+                string tag = consumer.GetConsumerTags().First();
                 Assert.NotNull(tag);
 
                 try

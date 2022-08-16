@@ -18,7 +18,7 @@ public class RoundRobinLoadBalancingStrategy : ILoadBalancingStrategy
         set => _currentHandlerIndex = value;
     }
 
-    public int GetNextHandlerStartIndex(IMessage message, List<IMessageHandler> handlers)
+    public int GetNextHandlerStartIndex(IMessage message, ICollection<IMessageHandler> handlers)
     {
         if (handlers == null)
         {

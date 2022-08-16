@@ -104,7 +104,7 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
         return base.HostName;
     }
 
-    public void ApplyConfigUrls(List<Uri> addresses, string wildcardHostname)
+    public void ApplyConfigUrls(IEnumerable<Uri> addresses, string wildcardHostname)
     {
         // only use addresses from config if there are any and registration method hasn't been set
         // if registration method has been set, the user probably wants to define their own behavior

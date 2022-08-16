@@ -10,7 +10,9 @@ namespace Steeltoe.Messaging.Support;
 public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
 {
     private readonly object _lock = new();
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     protected List<ITaskSchedulerChannelInterceptor> schedulerInterceptors = new();
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
 
     protected TaskScheduler Scheduler { get; }
 
@@ -69,7 +71,7 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
 
     protected override bool DoSendInternal(IMessage message, CancellationToken cancellationToken)
     {
-        List<ITaskSchedulerChannelInterceptor> interceptors = schedulerInterceptors;
+        var interceptors = schedulerInterceptors;
         HashSet<IMessageHandler> handlers = Handlers;
 
         foreach (IMessageHandler handler in handlers)
@@ -92,7 +94,7 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
         return true;
     }
 
-    private void Invoke(List<ITaskSchedulerChannelInterceptor> interceptors, IMessage message, IMessageHandler handler)
+    private void Invoke(ICollection<ITaskSchedulerChannelInterceptor> interceptors, IMessage message, IMessageHandler handler)
     {
         if (interceptors.Count > 0)
         {
@@ -142,10 +144,10 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
     internal struct SendTask : IMessageHandlingRunnable
     {
         private readonly TaskSchedulerSubscribableChannel _channel;
-        private readonly List<ITaskSchedulerChannelInterceptor> _interceptors;
+        private readonly ICollection<ITaskSchedulerChannelInterceptor> _interceptors;
         private int _interceptorIndex;
 
-        public SendTask(TaskSchedulerSubscribableChannel channel, List<ITaskSchedulerChannelInterceptor> interceptors, IMessage message,
+        public SendTask(TaskSchedulerSubscribableChannel channel, ICollection<ITaskSchedulerChannelInterceptor> interceptors, IMessage message,
             IMessageHandler messageHandler)
         {
             _channel = channel;

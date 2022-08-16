@@ -87,9 +87,9 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
 
     public int Phase { get; set; }
 
-    public List<IMessagePostProcessor> AfterReceivePostProcessors { get; set; }
+    public ICollection<IMessagePostProcessor> AfterReceivePostProcessors { get; set; }
 
-    public List<IMessagePostProcessor> BeforeSendReplyPostProcessors { get; set; }
+    public ICollection<IMessagePostProcessor> BeforeSendReplyPostProcessors { get; set; }
 
     public RetryTemplate RetryTemplate { get; set; }
 

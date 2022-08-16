@@ -25,7 +25,7 @@ public class BatchMessagingMessageListenerAdapter : MessagingMessageListenerAdap
         BatchingStrategy = batchingStrategy ?? new SimpleBatchingStrategy(0, 0, 0L);
     }
 
-    public override void OnMessageBatch(List<IMessage> messages, RC.IModel channel)
+    public override void OnMessageBatch(IEnumerable<IMessage> messages, RC.IModel channel)
     {
         IMessage converted = null;
 

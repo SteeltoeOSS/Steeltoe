@@ -31,7 +31,9 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
 
     protected Tags ServiceInfoTags { get; set; }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     protected List<string> UriKeys { get; set; } = new()
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
     {
         "uri",
         "url"
@@ -193,7 +195,9 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
         });
     }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     protected internal virtual string GetStringFromCredentials(Dictionary<string, Credential> credentials, List<string> keys)
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
     {
         if (credentials != null)
         {
@@ -229,7 +233,9 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
         });
     }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     protected internal virtual int GetIntFromCredentials(Dictionary<string, Credential> credentials, List<string> keys)
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
     {
         int result = 0;
 
@@ -247,7 +253,9 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
         return result;
     }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     protected internal virtual List<string> GetListFromCredentials(Dictionary<string, Credential> credentials, string key)
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
     {
         var result = new List<string>();
 

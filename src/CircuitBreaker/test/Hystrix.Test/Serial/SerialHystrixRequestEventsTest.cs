@@ -366,7 +366,7 @@ public class SerialHystrixRequestEventsTest
 
         public bool IsResponseThreadPoolRejected => _executionResult.Eventcounts.Contains(HystrixEventType.ThreadPoolRejected);
 
-        public List<HystrixEventType> ExecutionEvents => _executionResult.OrderedList;
+        public IReadOnlyList<HystrixEventType> ExecutionEvents => _executionResult.OrderedList;
 
         public int NumberEmissions => _executionResult.Eventcounts.GetCount(HystrixEventType.Emit);
 

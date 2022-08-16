@@ -102,7 +102,7 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
         return map != null && map.ContainsKey(headerName);
     }
 
-    public List<string> GetNativeHeader(string headerName)
+    public IEnumerable<string> GetNativeHeader(string headerName)
     {
         IDictionary<string, List<string>> map = GetNativeHeaders();
 
@@ -202,7 +202,7 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
         }
     }
 
-    public List<string> RemoveNativeHeader(string name)
+    public ICollection<string> RemoveNativeHeader(string name)
     {
         if (!IsMutable)
         {

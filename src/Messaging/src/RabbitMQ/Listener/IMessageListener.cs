@@ -12,5 +12,5 @@ public interface IMessageListener
 
     void OnMessage(IMessage message);
 
-    void OnMessageBatch(List<IMessage> messages);
+    void OnMessageBatch(IEnumerable<IMessage> messages);
 }

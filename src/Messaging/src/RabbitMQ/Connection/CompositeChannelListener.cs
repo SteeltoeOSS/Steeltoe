@@ -41,9 +41,9 @@ public class CompositeChannelListener : IChannelListener
         }
     }
 
-    public void SetListeners(List<IChannelListener> channelListeners)
+    public void SetListeners(IEnumerable<IChannelListener> channelListeners)
     {
-        _channelListeners = channelListeners;
+        _channelListeners = channelListeners.ToList();
     }
 
     public void AddListener(IChannelListener channelListener)

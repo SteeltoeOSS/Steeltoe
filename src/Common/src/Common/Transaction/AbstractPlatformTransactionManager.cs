@@ -189,7 +189,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
     {
         if (TransactionSynchronizationManager.IsSynchronizationActive())
         {
-            List<ITransactionSynchronization> suspendedSynchronizations = DoSuspendSynchronization();
+            ICollection<ITransactionSynchronization> suspendedSynchronizations = DoSuspendSynchronization();
 
             try
             {
@@ -240,7 +240,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
                 DoResume(transaction, suspendedResources);
             }
 
-            List<ITransactionSynchronization> suspendedSynchronizations = resourcesHolder.SuspendedSynchronizations;
+            ICollection<ITransactionSynchronization> suspendedSynchronizations = resourcesHolder.SuspendedSynchronizations;
 
             if (suspendedSynchronizations != null)
             {
@@ -271,7 +271,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
         }
     }
 
-    protected virtual void InvokeAfterCompletion(List<ITransactionSynchronization> synchronizations, int completionStatus)
+    protected virtual void InvokeAfterCompletion(ICollection<ITransactionSynchronization> synchronizations, int completionStatus)
     {
         TransactionSynchronizationUtils.InvokeAfterCompletion(synchronizations, completionStatus);
     }
@@ -305,7 +305,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
             "returns true, appropriate 'doSetRollbackOnly' behavior must be provided");
     }
 
-    protected virtual void RegisterAfterCompletionWithExistingTransaction(object transaction, List<ITransactionSynchronization> synchronizations)
+    protected virtual void RegisterAfterCompletionWithExistingTransaction(object transaction, ICollection<ITransactionSynchronization> synchronizations)
     {
         Logger?.LogDebug("Cannot register Spring after-completion synchronization with existing transaction - " +
             "processing Spring after-completion callbacks immediately, with outcome status 'unknown'");
@@ -356,7 +356,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
     {
         if (status.IsNewSynchronization)
         {
-            List<ITransactionSynchronization> synchronizations = TransactionSynchronizationManager.GetSynchronizations();
+            ICollection<ITransactionSynchronization> synchronizations = TransactionSynchronizationManager.GetSynchronizations();
             TransactionSynchronizationManager.ClearSynchronization();
 
             if (!status.HasTransaction || status.IsNewTransaction)
@@ -555,7 +555,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
         }
     }
 
-    private void DoResumeSynchronization(List<ITransactionSynchronization> suspendedSynchronizations)
+    private void DoResumeSynchronization(ICollection<ITransactionSynchronization> suspendedSynchronizations)
     {
         TransactionSynchronizationManager.InitSynchronization();
 
@@ -566,9 +566,9 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
         }
     }
 
-    private List<ITransactionSynchronization> DoSuspendSynchronization()
+    private ICollection<ITransactionSynchronization> DoSuspendSynchronization()
     {
-        List<ITransactionSynchronization> suspendedSynchronizations = TransactionSynchronizationManager.GetSynchronizations();
+        ICollection<ITransactionSynchronization> suspendedSynchronizations = TransactionSynchronizationManager.GetSynchronizations();
 
         foreach (ITransactionSynchronization synchronization in suspendedSynchronizations)
         {
@@ -690,7 +690,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
     {
         public object SuspendedResources { get; }
 
-        public List<ITransactionSynchronization> SuspendedSynchronizations { get; }
+        public ICollection<ITransactionSynchronization> SuspendedSynchronizations { get; }
 
         public string Name { get; }
 
@@ -705,7 +705,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
             SuspendedResources = suspendedResources;
         }
 
-        public SuspendedResourcesHolder(object suspendedResources, List<ITransactionSynchronization> suspendedSynchronizations, string name, bool readOnly,
+        public SuspendedResourcesHolder(object suspendedResources, ICollection<ITransactionSynchronization> suspendedSynchronizations, string name, bool readOnly,
             int? isolationLevel, bool wasActive)
         {
             SuspendedResources = suspendedResources;

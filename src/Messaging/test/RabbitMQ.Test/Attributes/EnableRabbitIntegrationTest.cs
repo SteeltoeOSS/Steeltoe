@@ -1691,9 +1691,9 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             ManualContainerLatch.Signal();
         }
 
-        public void OnMessageBatch(List<IMessage> messages)
+        public void OnMessageBatch(IEnumerable<IMessage> messages)
         {
-            Message.Value = messages[0];
+            Message.Value = messages.First();
             ManualContainerLatch.Signal();
         }
     }

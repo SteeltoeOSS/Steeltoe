@@ -184,7 +184,7 @@ public class DefaultBinderFactory : IBinderFactory, IDisposable
                         string binderName = binder.ServiceName;
                         _binderInstanceCache.TryAdd(binderName, binder);
 
-                        List<string> names = _binderConfigurations.FindMatchingConfigurationsIfAny(binder);
+                        IEnumerable<string> names = _binderConfigurations.FindMatchingConfigurationsIfAny(binder);
 
                         foreach (string name in names)
                         {

@@ -59,7 +59,7 @@ public class BroadcastingDispatcher : AbstractDispatcher
     {
         int dispatched = 0;
         int sequenceNumber = 1;
-        List<IMessageHandler> handlers = this.handlers;
+        ICollection<IMessageHandler> handlers = this.handlers;
 
         if (_requireSubscribers && handlers.Count == 0)
         {

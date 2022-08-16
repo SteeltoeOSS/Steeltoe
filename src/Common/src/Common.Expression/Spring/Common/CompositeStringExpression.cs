@@ -10,9 +10,9 @@ public class CompositeStringExpression : IExpression
 {
     public string ExpressionString { get; }
 
-    public List<IExpression> Expressions { get; }
+    public IEnumerable<IExpression> Expressions { get; }
 
-    public CompositeStringExpression(string expressionString, List<IExpression> expressions)
+    public CompositeStringExpression(string expressionString, IEnumerable<IExpression> expressions)
     {
         ExpressionString = expressionString;
         Expressions = expressions;

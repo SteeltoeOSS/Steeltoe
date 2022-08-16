@@ -9,7 +9,7 @@ using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
+public class TraceEndpointMiddleware : EndpointMiddleware<IReadOnlyList<TraceResult>>
 {
     private readonly RequestDelegate _next;
 

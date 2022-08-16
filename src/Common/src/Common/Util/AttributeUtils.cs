@@ -25,7 +25,7 @@ public static class AttributeUtils
         return null;
     }
 
-    public static List<MethodInfo> FindMethodsWithAttribute(Type targetClass, Type attribute, BindingFlags flags)
+    public static IReadOnlyList<MethodInfo> FindMethodsWithAttribute(Type targetClass, Type attribute, BindingFlags flags)
     {
         var results = new List<MethodInfo>();
         MethodInfo[] targetMethods = targetClass.GetMethods(flags);

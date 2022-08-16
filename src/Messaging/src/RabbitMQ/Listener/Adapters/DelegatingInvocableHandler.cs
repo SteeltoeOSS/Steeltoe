@@ -22,7 +22,7 @@ public class DelegatingInvocableHandler
     private readonly Dictionary<IInvocableHandlerMethod, IExpression> _handlerSendTo = new();
     private readonly ConcurrentDictionary<Type, IInvocableHandlerMethod> _cachedHandlers = new();
 
-    public List<IInvocableHandlerMethod> Handlers { get; }
+    public IEnumerable<IInvocableHandlerMethod> Handlers { get; }
 
     public IInvocableHandlerMethod DefaultHandler { get; }
 
@@ -34,13 +34,13 @@ public class DelegatingInvocableHandler
 
     public bool HasDefaultHandler => DefaultHandler != null;
 
-    public DelegatingInvocableHandler(List<IInvocableHandlerMethod> handlers, object bean, IServiceExpressionResolver resolver,
+    public DelegatingInvocableHandler(IEnumerable<IInvocableHandlerMethod> handlers, object bean, IServiceExpressionResolver resolver,
         IServiceExpressionContext context)
         : this(handlers, null, bean, resolver, context)
     {
     }
 
-    public DelegatingInvocableHandler(List<IInvocableHandlerMethod> handlers, IInvocableHandlerMethod defaultHandler, object bean,
+    public DelegatingInvocableHandler(IEnumerable<IInvocableHandlerMethod> handlers, IInvocableHandlerMethod defaultHandler, object bean,
         IServiceExpressionResolver resolver, IServiceExpressionContext context)
     {
         Handlers = new List<IInvocableHandlerMethod>(handlers);

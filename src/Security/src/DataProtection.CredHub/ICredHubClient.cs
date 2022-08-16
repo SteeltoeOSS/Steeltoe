@@ -147,7 +147,7 @@ public interface ICredHubClient
     /// <returns>
     /// List of permissions.
     /// </returns>
-    Task<List<CredentialPermission>> GetPermissionsAsync(string credentialName);
+    Task<ICollection<CredentialPermission>> GetPermissionsAsync(string credentialName);
 
     /// <summary>
     /// Add permissions to an existing credential.
@@ -161,7 +161,7 @@ public interface ICredHubClient
     /// <returns>
     /// List of permissions.
     /// </returns>
-    Task<List<CredentialPermission>> AddPermissionsAsync(string credentialName, List<CredentialPermission> permissions);
+    Task<ICollection<CredentialPermission>> AddPermissionsAsync(string credentialName, ICollection<CredentialPermission> permissions);
 
     /// <summary>
     /// Delete a permission associated with a credential.

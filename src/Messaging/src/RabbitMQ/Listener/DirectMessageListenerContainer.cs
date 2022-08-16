@@ -27,10 +27,12 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     protected const int DefaultMonitorInterval = 10_000;
     protected const int DefaultAckTimeout = 20_000;
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     protected internal readonly List<SimpleConsumer> Consumers = new();
+    protected internal readonly List<SimpleConsumer> ConsumersToRestart = new();
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
     protected internal readonly Dictionary<string, List<SimpleConsumer>> ConsumersByQueue = new();
     protected internal readonly ActiveObjectCounter<SimpleConsumer> CancellationLock = new();
-    protected internal readonly List<SimpleConsumer> ConsumersToRestart = new();
 
     private int _consumersPerQueue = 1;
     private volatile bool _started;
@@ -315,7 +317,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
         if (MessageListener is IListenerContainerAware listenerAware)
         {
-            List<string> expectedQueueNames = listenerAware.GetExpectedQueueNames();
+            List<string> expectedQueueNames = listenerAware.GetExpectedQueueNames().ToList();
             string[] queueNames = GetQueueNames();
 
             if (expectedQueueNames.Count != queueNames.Length)

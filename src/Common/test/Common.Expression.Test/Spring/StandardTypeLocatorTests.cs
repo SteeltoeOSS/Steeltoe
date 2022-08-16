@@ -17,7 +17,7 @@ public class StandardTypeLocatorTests
         Assert.Equal(typeof(int), locator.FindType("System.Int32"));
         Assert.Equal(typeof(string), locator.FindType("System.String"));
 
-        List<string> prefixes = locator.ImportPrefixes;
+        IList<string> prefixes = locator.ImportPrefixes;
         Assert.Single(prefixes);
         Assert.Contains("System", prefixes);
         Assert.DoesNotContain("System.Collections", prefixes);

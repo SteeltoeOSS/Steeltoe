@@ -148,7 +148,7 @@ public class BrokerDeclaredQueueNameTest : AbstractTest
             }
         }
 
-        public void OnMessageBatch(List<IMessage> messages)
+        public void OnMessageBatch(IEnumerable<IMessage> messages)
         {
             throw new NotImplementedException();
         }

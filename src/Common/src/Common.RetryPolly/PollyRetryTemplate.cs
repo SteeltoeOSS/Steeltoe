@@ -203,7 +203,7 @@ public class PollyRetryTemplate : RetryTemplate
     {
         bool running = true;
 
-        foreach (IRetryListener listener in listeners)
+        foreach (IRetryListener listener in Listeners)
         {
             running &= listener.Open(context);
         }
@@ -215,7 +215,7 @@ public class PollyRetryTemplate : RetryTemplate
     {
         context.SetAttribute(Closed, true);
 
-        foreach (IRetryListener listener in listeners)
+        foreach (IRetryListener listener in Listeners)
         {
             listener.Close(context, ex);
         }
@@ -223,7 +223,7 @@ public class PollyRetryTemplate : RetryTemplate
 
     private void CallListenerOnError(RetryContext context, Exception ex)
     {
-        foreach (IRetryListener listener in listeners)
+        foreach (IRetryListener listener in Listeners)
         {
             listener.OnError(context, ex);
         }

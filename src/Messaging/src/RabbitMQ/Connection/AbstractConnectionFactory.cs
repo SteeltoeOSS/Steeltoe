@@ -81,7 +81,9 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
 
     public virtual bool ShuffleAddresses { get; set; }
 
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
     public virtual List<RC.AmqpTcpEndpoint> Addresses { get; set; }
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
 
     public virtual bool HasPublisherConnectionFactory => PublisherConnectionFactory != null;
 
@@ -122,7 +124,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
         ServiceName = $"{GetType().Name}@{GetHashCode()}";
     }
 
-    public virtual void SetConnectionListeners(List<IConnectionListener> listeners)
+    public virtual void SetConnectionListeners(IEnumerable<IConnectionListener> listeners)
     {
         _connectionListener.SetListeners(listeners);
 
@@ -164,7 +166,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
         }
     }
 
-    public virtual void SetChannelListeners(List<IChannelListener> listeners)
+    public virtual void SetChannelListeners(IEnumerable<IChannelListener> listeners)
     {
         _channelListener.SetListeners(listeners);
     }
