@@ -15,18 +15,6 @@ public class StructuredMessageProcessingLogger : MessageProcessingLogger
     {
     }
 
-    public new Func<string, LogLevel, bool> Filter
-    {
-        get => base.Filter;
-        set => base.Filter = value;
-    }
-
-    public new string Name
-    {
-        get => base.Name;
-        set => base.Name = value;
-    }
-
     public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
         if (!IsEnabled(logLevel))
