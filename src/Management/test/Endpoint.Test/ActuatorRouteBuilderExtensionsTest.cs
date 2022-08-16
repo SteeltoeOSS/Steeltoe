@@ -33,7 +33,12 @@ public class ActuatorRouteBuilderExtensionsTest
                 return t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
             }
 
-            return Assembly.Load("Steeltoe.Management.Endpoint").GetTypes().Where(Query).Select(t => new object[] { t });
+            IEnumerable<Type> types = Assembly.Load("Steeltoe.Management.Endpoint").GetTypes().Where(Query);
+
+            return types.Select(type => new object[]
+            {
+                type
+            });
         }
     }
 
