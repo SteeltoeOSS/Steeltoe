@@ -21,7 +21,7 @@ public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResul
 
     public Task InvokeAsync(HttpContext context)
     {
-        if (endpoint.ShouldInvoke(managementOptions, logger))
+        if (Endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleThreadDumpRequestAsync(context);
         }
@@ -32,7 +32,7 @@ public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResul
     protected internal Task HandleThreadDumpRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest();
-        logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {info}", serialInfo);
         context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
         return context.Response.WriteAsync(serialInfo);
     }

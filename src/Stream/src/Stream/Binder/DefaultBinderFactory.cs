@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Util;
@@ -25,10 +26,12 @@ public class DefaultBinderFactory : IBinderFactory, IDisposable
     public DefaultBinderFactory(IApplicationContext context, IOptionsMonitor<BindingServiceOptions> optionsMonitor, IBinderConfigurations binderConfigurations,
         IEnumerable<IBinderFactoryListener> listeners = null)
     {
+        ArgumentGuard.NotNull(binderConfigurations);
+
         _listeners = listeners?.ToList();
         _context = context;
         _optionsMonitor = optionsMonitor;
-        _binderConfigurations = binderConfigurations ?? throw new ArgumentNullException(nameof(binderConfigurations));
+        _binderConfigurations = binderConfigurations;
     }
 
     public void Dispose()

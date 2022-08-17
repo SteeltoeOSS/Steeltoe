@@ -8,7 +8,7 @@ namespace Steeltoe.Stream.Binding;
 
 internal sealed class StreamListenerHandlerMethodMapping
 {
-    public Type Implementation { get; }
+    public Type ImplementationType { get; }
 
     public MethodInfo Method { get; }
 
@@ -18,9 +18,9 @@ internal sealed class StreamListenerHandlerMethodMapping
 
     public bool CopyHeaders { get; }
 
-    public StreamListenerHandlerMethodMapping(Type implementation, MethodInfo method, string condition, string defaultOutputChannel, bool copyHeaders)
+    public StreamListenerHandlerMethodMapping(Type implementationType, MethodInfo method, string condition, string defaultOutputChannel, bool copyHeaders)
     {
-        Implementation = implementation;
+        ImplementationType = implementationType;
         Method = method;
         Condition = condition;
         DefaultOutputChannel = defaultOutputChannel;

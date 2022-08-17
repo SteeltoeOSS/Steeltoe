@@ -39,10 +39,14 @@ public class ServiceFactoryTypeConverter : ITypeConverter
             return null;
         }
 
-        if (sourceType != null && ((sourceType == typeof(IMessageHeaders) && targetType == typeof(IMessageHeaders)) ||
-            (targetType.IsAssignableFrom(sourceType) && sourceType.IsArray && sourceType.IsPrimitive)))
+        if (sourceType != null)
         {
-            return value;
+            bool isMessageHeaders = sourceType == typeof(IMessageHeaders) && targetType == typeof(IMessageHeaders);
+
+            if (isMessageHeaders || (targetType.IsAssignableFrom(sourceType) && sourceType.IsArray && sourceType.IsPrimitive))
+            {
+                return value;
+            }
         }
 
         return ConversionService.Convert(value, sourceType, targetType);

@@ -11,9 +11,9 @@ public class CharacterToNumberConverter : AbstractToNumberConverter
     {
     }
 
-    private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
+    private static ISet<(Type SourceType, Type TargetType)> GetConvertiblePairs()
     {
-        return new HashSet<(Type Source, Type Target)>
+        return new HashSet<(Type SourceType, Type TargetType)>
         {
             (typeof(char), typeof(int)),
             (typeof(char), typeof(float)),

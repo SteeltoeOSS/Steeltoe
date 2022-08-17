@@ -16,7 +16,9 @@ public abstract class AvailabilityHealthContributor : IHealthContributor
 
     protected AvailabilityHealthContributor(Dictionary<IAvailabilityState, HealthStatus> stateMappings, ILogger logger = null)
     {
-        _stateMappings = stateMappings ?? throw new ArgumentNullException(nameof(stateMappings));
+        ArgumentGuard.NotNull(stateMappings);
+
+        _stateMappings = stateMappings;
         _logger = logger;
     }
 

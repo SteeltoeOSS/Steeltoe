@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Messaging.Converter;
 
 public class CompositeMessageConverter : ISmartMessageConverter
@@ -14,10 +16,7 @@ public class CompositeMessageConverter : ISmartMessageConverter
 
     public CompositeMessageConverter(ICollection<IMessageConverter> converters)
     {
-        if (converters == null || converters.Count == 0)
-        {
-            throw new ArgumentException(nameof(converters));
-        }
+        ArgumentGuard.NotNullOrEmpty(converters);
 
         Converters = new List<IMessageConverter>(converters);
     }

@@ -22,7 +22,7 @@ public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
 
     public Task InvokeAsync(HttpContext context)
     {
-        if (endpoint.ShouldInvoke(managementOptions, logger))
+        if (Endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleRefreshRequestAsync(context);
         }
@@ -33,7 +33,7 @@ public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
     protected internal Task HandleRefreshRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest();
-        logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);

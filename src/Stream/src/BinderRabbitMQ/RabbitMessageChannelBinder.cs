@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Retry;
@@ -94,9 +95,12 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         IListenerContainerCustomizer containerCustomizer, IMessageSourceCustomizer sourceCustomizer)
         : base(context, Array.Empty<string>(), provisioningProvider, containerCustomizer, sourceCustomizer, logger)
     {
+        ArgumentGuard.NotNull(connectionFactory);
+        ArgumentGuard.NotNull(rabbitOptions);
+
         this.logger = logger;
-        ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-        RabbitConnectionOptions = rabbitOptions ?? throw new ArgumentNullException(nameof(rabbitOptions));
+        ConnectionFactory = connectionFactory;
+        RabbitConnectionOptions = rabbitOptions;
         BinderOptions = binderOptions?.CurrentValue;
         BindingsOptions = bindingsOptions?.CurrentValue;
         ServiceName = "rabbitBinder";
@@ -462,7 +466,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
     {
         if (ConnectionFactory is not CachingConnectionFactory factory)
         {
-            logger.LogWarning("Unknown connection factory type, cannot determine error capabilities: " + ConnectionFactory.GetType());
+            logger.LogWarning("Unknown connection factory type, cannot determine error capabilities: {type}", ConnectionFactory.GetType());
         }
         else
         {
@@ -556,7 +560,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
             if (message is not MessagingSupport.ErrorMessage errorMessage)
             {
-                _logger?.LogError("Expected an ErrorMessage, not a " + message.GetType() + " for: " + message);
+                _logger?.LogError("Expected an ErrorMessage, not a {type} for: {message}", message.GetType(), message);
             }
             else if (amqpMessage == null)
             {
@@ -597,7 +601,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         {
             if (message is not MessagingSupport.ErrorMessage errorMessage)
             {
-                _logger?.LogError("Expected an ErrorMessage, not a " + message.GetType() + " for: " + message);
+                _logger?.LogError("Expected an ErrorMessage, not a {type} for: {message}", message.GetType(), message);
                 throw new ListenerExecutionFailedException($"Unexpected error message {message}", new RabbitRejectAndDoNotRequeueException(string.Empty), null);
             }
 
@@ -639,7 +643,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         {
             if (message.Headers[IntegrationMessageHeaderAccessor.SourceData] is not IMessage errorMessage)
             {
-                _logger.LogError("Expected an ErrorMessage, not a " + message.GetType() + " for: " + message);
+                _logger?.LogError("Expected an ErrorMessage, not a {type} for: {message}", message.GetType(), message);
                 return;
             }
 
@@ -647,7 +651,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
             if (!ShouldRepublish(cause))
             {
-                _logger.LogDebug("Skipping republish of: " + message);
+                _logger.LogDebug("Skipping republish of: {message}", message);
                 return;
             }
 
@@ -668,9 +672,8 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             {
                 stackTraceAsString = stackTraceAsString.Substring(0, _maxStackTraceLength);
 
-                _logger.LogWarning(
-                    "Stack trace in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the stack trace depth",
-                    cause);
+                _logger.LogWarning(cause,
+                    "Stack trace in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the stack trace depth");
             }
 
             accessor.SetHeader(RepublishMessageRecoverer.XExceptionStacktrace, stackTraceAsString);

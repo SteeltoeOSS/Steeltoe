@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="Steeltoe Release" Description="Code quality rules for Steeltoe release builds" ToolsVersion="17.0">
   <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
     <Rule Id="S100" Action="Warning" />
+    <Rule Id="S1067" Action="Warning" />
     <Rule Id="S1075" Action="None" />
     <Rule Id="S110" Action="Warning" />
     <Rule Id="S1104" Action="None" />
@@ -22,7 +23,6 @@
     <Rule Id="S2148" Action="Warning" />
     <Rule Id="S2156" Action="Warning" />
     <Rule Id="S2187" Action="None" />
-    <Rule Id="S2292" Action="None" />
     <Rule Id="S2327" Action="Warning" />
     <Rule Id="S2342" Action="Warning" />
     <Rule Id="S2387" Action="Warning" />
@@ -41,11 +41,11 @@
     <Rule Id="S3925" Action="None" />
     <Rule Id="S3926" Action="None" />
     <Rule Id="S3927" Action="None" />
-    <Rule Id="S3928" Action="None" />
     <Rule Id="S3937" Action="Warning" />
     <Rule Id="S3962" Action="Warning" />
     <Rule Id="S3998" Action="None" />
     <Rule Id="S4022" Action="Warning" />
+    <Rule Id="S4039" Action="Warning" />
     <Rule Id="S4061" Action="None" />
     <Rule Id="S4159" Action="None" />
     <Rule Id="S4210" Action="None" />
@@ -150,6 +150,7 @@
     <Rule Id="SA1513" Action="None" />
     <Rule Id="SA1514" Action="None" />
     <Rule Id="SA1515" Action="None" />
+    <Rule Id="SA1516" Action="None" />
     <Rule Id="SA1517" Action="None" />
     <Rule Id="SA1518" Action="None" />
     <Rule Id="SA1519" Action="None" />

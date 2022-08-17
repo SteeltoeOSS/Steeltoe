@@ -5,6 +5,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
@@ -36,10 +37,7 @@ public class RedisHealthContributor : IHealthContributor
 
     public static IHealthContributor GetRedisContributor(IConfiguration configuration, ILogger<RedisHealthContributor> logger = null)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         Type redisImplementation = RedisTypeLocator.StackExchangeImplementation;
         Type redisOptions = RedisTypeLocator.StackExchangeOptions;
@@ -81,7 +79,7 @@ public class RedisHealthContributor : IHealthContributor
                 e = e.InnerException;
             }
 
-            _logger?.LogError("Redis connection down! {HealthCheckException}", e.Message);
+            _logger?.LogError(e, "Redis connection down! {HealthCheckException}", e.Message);
             result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
             result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Down;

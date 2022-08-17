@@ -40,10 +40,7 @@ public class ServiceInfoCreator
 
     public static ServiceInfoCreator Instance(IConfiguration config)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         if (config != _me?.Configuration)
         {

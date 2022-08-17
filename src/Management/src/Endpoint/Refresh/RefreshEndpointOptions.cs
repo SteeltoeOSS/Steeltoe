@@ -16,7 +16,6 @@ public class RefreshEndpointOptions : AbstractEndpointOptions, IRefreshOptions
     public bool ReturnConfiguration
     {
         get => _returnConfiguration ?? DefaultReturnConfiguration;
-
         set => _returnConfiguration = value;
     }
 

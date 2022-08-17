@@ -110,15 +110,8 @@ public class MimeType : IComparable<MimeType>
 
     public MimeType(string type, string subtype, IDictionary<string, string> parameters)
     {
-        if (string.IsNullOrEmpty(type))
-        {
-            throw new ArgumentException("'type' must not be empty");
-        }
-
-        if (string.IsNullOrEmpty(subtype))
-        {
-            throw new ArgumentException("'subtype' must not be empty");
-        }
+        ArgumentGuard.NotNullOrEmpty(type);
+        ArgumentGuard.NotNullOrEmpty(subtype);
 
         CheckToken(type);
         CheckToken(subtype);
@@ -150,15 +143,8 @@ public class MimeType : IComparable<MimeType>
 
     protected void CheckParameters(string attribute, string value)
     {
-        if (string.IsNullOrEmpty(attribute))
-        {
-            throw new ArgumentException("'attribute' must not be empty");
-        }
-
-        if (string.IsNullOrEmpty(value))
-        {
-            throw new ArgumentException("'value' must not be empty");
-        }
+        ArgumentGuard.NotNullOrEmpty(attribute);
+        ArgumentGuard.NotNullOrEmpty(value);
 
         CheckToken(attribute);
 
@@ -499,7 +485,7 @@ public class MimeType : IComparable<MimeType>
         {
             if (!Token.Get(ch))
             {
-                throw new ArgumentException($"Invalid token character '{ch}' in token \"{token}\"");
+                throw new ArgumentException($"Invalid token character '{ch}' in token \"{token}\"", nameof(token));
             }
         }
     }

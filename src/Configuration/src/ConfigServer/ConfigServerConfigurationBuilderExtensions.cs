@@ -5,6 +5,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
@@ -24,10 +25,7 @@ public static class ConfigServerConfigurationBuilderExtensions
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string environment, string applicationName,
         ILoggerFactory logFactory = null)
     {
-        if (configurationBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(configurationBuilder));
-        }
+        ArgumentGuard.NotNull(configurationBuilder);
 
         var settings = new ConfigServerClientSettings
         {
@@ -42,15 +40,8 @@ public static class ConfigServerConfigurationBuilderExtensions
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ConfigServerClientSettings defaultSettings,
         ILoggerFactory logFactory = null)
     {
-        if (configurationBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(configurationBuilder));
-        }
-
-        if (defaultSettings == null)
-        {
-            throw new ArgumentNullException(nameof(defaultSettings));
-        }
+        ArgumentGuard.NotNull(configurationBuilder);
+        ArgumentGuard.NotNull(defaultSettings);
 
         if (!configurationBuilder.Sources.Any(c => c.GetType() == typeof(CloudFoundryConfigurationSource)))
         {

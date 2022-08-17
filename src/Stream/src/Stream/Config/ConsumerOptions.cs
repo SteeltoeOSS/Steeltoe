@@ -2,9 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Stream.Config;
 
-public class ConsumerOptions : IConsumerOptions
+public sealed class ConsumerOptions : IConsumerOptions
 {
     private const bool AutoStartupDefault = true;
     private const int ConcurrencyDefault = 1;
@@ -69,7 +71,9 @@ public class ConsumerOptions : IConsumerOptions
 
     public ConsumerOptions(string bindingName)
     {
-        BindingName = bindingName ?? throw new ArgumentNullException(nameof(bindingName));
+        ArgumentGuard.NotNull(bindingName);
+
+        BindingName = bindingName;
     }
 
     public IConsumerOptions Clone()

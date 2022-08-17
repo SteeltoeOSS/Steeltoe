@@ -29,12 +29,12 @@ public class DefaultContentTypeResolver : IContentTypeResolver
             return mimeType;
         }
 
-        if (value is string stringVal)
+        if (value is string stringValue)
         {
-            return MimeType.ToMimeType(stringVal);
+            return MimeType.ToMimeType(stringValue);
         }
 
-        throw new ArgumentException($"Unknown type for contentType header value: {value.GetType()}");
+        throw new ArgumentException($"Unknown type for contentType header value: {value.GetType()}", nameof(headers));
     }
 
     public override string ToString()

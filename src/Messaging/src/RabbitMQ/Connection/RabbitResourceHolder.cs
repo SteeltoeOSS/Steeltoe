@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
@@ -41,10 +42,7 @@ public class RabbitResourceHolder : ResourceHolderSupport
 
     public void AddConnection(IConnection connection)
     {
-        if (connection == null)
-        {
-            throw new ArgumentNullException(nameof(connection));
-        }
+        ArgumentGuard.NotNull(connection);
 
         if (!_connections.Contains(connection))
         {
@@ -59,10 +57,7 @@ public class RabbitResourceHolder : ResourceHolderSupport
 
     public void AddChannel(RC.IModel channel, IConnection connection)
     {
-        if (channel == null)
-        {
-            throw new ArgumentNullException(nameof(channel));
-        }
+        ArgumentGuard.NotNull(channel);
 
         if (!_channels.Contains(channel))
         {
@@ -132,7 +127,7 @@ public class RabbitResourceHolder : ResourceHolderSupport
                 }
                 else
                 {
-                    _logger?.LogDebug("Skipping close of consumer channel: {channel} ", channel);
+                    _logger?.LogDebug("Skipping close of consumer channel: {channel}", channel);
                 }
             }
             catch (Exception ex)
@@ -186,7 +181,7 @@ public class RabbitResourceHolder : ResourceHolderSupport
                     }
                     catch (Exception ex)
                     {
-                        _logger?.LogError(ex, "Error Rolling back messages to {channel} ", channel);
+                        _logger?.LogError(ex, "Error Rolling back messages to {channel}", channel);
                         throw RabbitExceptionTranslator.ConvertRabbitAccessException(ex);
                     }
                 }

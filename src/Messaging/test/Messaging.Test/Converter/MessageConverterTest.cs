@@ -135,9 +135,9 @@ public class MessageConverterTest
         {
         }
 
-        protected override bool Supports(Type clazz)
+        protected override bool Supports(Type type)
         {
-            return typeof(string).Equals(clazz);
+            return typeof(string).Equals(type);
         }
 
         protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)

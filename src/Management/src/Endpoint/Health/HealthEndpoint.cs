@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Security;
 
@@ -21,12 +22,11 @@ public class HealthEndpoint : AbstractEndpoint<HealthEndpointResponse, ISecurity
         ILogger<HealthEndpoint> logger = null)
         : base(options)
     {
-        if (contributors == null)
-        {
-            throw new ArgumentNullException(nameof(contributors));
-        }
+        ArgumentGuard.NotNull(contributors);
 
-        _aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
+        ArgumentGuard.NotNull(aggregator);
+
+        _aggregator = aggregator;
         _contributors = contributors.ToList();
         _logger = logger;
     }

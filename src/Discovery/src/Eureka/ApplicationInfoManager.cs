@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
 
 namespace Steeltoe.Discovery.Eureka;
@@ -31,7 +32,6 @@ public class ApplicationInfoManager
 
             return InstanceInfo.Status;
         }
-
         set
         {
             if (InstanceInfo == null)
@@ -68,8 +68,10 @@ public class ApplicationInfoManager
 
     public virtual void Initialize(IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
     {
+        ArgumentGuard.NotNull(instanceConfig);
+
         logger = logFactory?.CreateLogger<ApplicationInfoManager>();
-        InstanceConfig = instanceConfig ?? throw new ArgumentNullException(nameof(instanceConfig));
+        InstanceConfig = instanceConfig;
         InstanceInfo = InstanceInfo.FromInstanceConfig(instanceConfig);
     }
 

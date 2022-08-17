@@ -11,7 +11,6 @@ public class AtomicLong
     public long Value
     {
         get => Interlocked.Read(ref _value);
-
         set => Interlocked.Exchange(ref _value, value);
     }
 

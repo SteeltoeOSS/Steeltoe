@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
@@ -19,8 +20,11 @@ public class ErrorHandlingMessageHandlingRunnable : IMessageHandlingRunnable
 
     public ErrorHandlingMessageHandlingRunnable(IMessageHandlingRunnable runnable, IErrorHandler errorHandler)
     {
-        _runnable = runnable ?? throw new ArgumentNullException(nameof(runnable));
-        _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
+        ArgumentGuard.NotNull(runnable);
+        ArgumentGuard.NotNull(errorHandler);
+
+        _runnable = runnable;
+        _errorHandler = errorHandler;
     }
 
     public bool Run()

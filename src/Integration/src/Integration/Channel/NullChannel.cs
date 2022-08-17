@@ -43,19 +43,19 @@ public class NullChannel : Channel<IMessage>, IPollableChannel
 
     public bool Send(IMessage message)
     {
-        _logger?.LogDebug("message sent to null channel: " + message);
+        _logger?.LogDebug("message sent to null channel: {message}", message);
         return true;
     }
 
     public bool Send(IMessage message, int timeout)
     {
-        _logger?.LogDebug("message sent to null channel: " + message);
+        _logger?.LogDebug("message sent to null channel: {message}", message);
         return Send(message);
     }
 
     public ValueTask<bool> SendAsync(IMessage message, CancellationToken cancellationToken = default)
     {
-        _logger?.LogDebug("message sent to null channel: " + message);
+        _logger?.LogDebug("message sent to null channel: {message}", message);
         return new ValueTask<bool>(false);
     }
 }

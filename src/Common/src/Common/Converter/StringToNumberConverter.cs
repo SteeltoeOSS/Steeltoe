@@ -23,9 +23,9 @@ public class StringToNumberConverter : AbstractToNumberConverter
         return base.Convert(source, sourceType, targetType);
     }
 
-    private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
+    private static ISet<(Type SourceType, Type TargetType)> GetConvertiblePairs()
     {
-        return new HashSet<(Type Source, Type Target)>
+        return new HashSet<(Type SourceType, Type TargetType)>
         {
             (typeof(string), typeof(int)),
             (typeof(string), typeof(float)),

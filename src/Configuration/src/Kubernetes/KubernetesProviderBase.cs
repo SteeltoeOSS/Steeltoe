@@ -5,6 +5,7 @@
 using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
@@ -22,8 +23,11 @@ internal abstract class KubernetesProviderBase : ConfigurationProvider
 
     protected KubernetesProviderBase(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken token = default)
     {
-        KubernetesClient = kubernetes ?? throw new ArgumentNullException(nameof(kubernetes));
-        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        ArgumentGuard.NotNull(kubernetes);
+        ArgumentGuard.NotNull(settings);
+
+        KubernetesClient = kubernetes;
+        Settings = settings;
         CancellationToken = token;
     }
 

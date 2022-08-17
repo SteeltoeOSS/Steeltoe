@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Integration.Support;
@@ -29,12 +30,14 @@ public class RabbitExpressionEvaluatingInterceptor : IChannelInterceptor
     {
         if (routingKeyExpression == null && delayExpression == null)
         {
-            throw new ArgumentException("At least one expression is required");
+            throw new ArgumentException("At least one expression is required.");
         }
+
+        ArgumentGuard.NotNull(evaluationContext);
 
         RoutingKeyExpression = routingKeyExpression;
         DelayExpression = delayExpression;
-        EvaluationContext = evaluationContext ?? throw new ArgumentNullException(nameof(evaluationContext));
+        EvaluationContext = evaluationContext;
     }
 
     public void AfterReceiveCompletion(IMessage message, IMessageChannel channel, Exception exception)

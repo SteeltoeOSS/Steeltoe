@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 
@@ -19,8 +20,11 @@ public class RabbitMQProviderConnectorFactory
 
     public RabbitMQProviderConnectorFactory(RabbitMQServiceInfo serviceInfo, RabbitMQProviderConnectorOptions options, Type connectFactory)
     {
-        _config = options ?? throw new ArgumentNullException(nameof(options));
-        ConnectorType = connectFactory ?? throw new ArgumentNullException(nameof(connectFactory));
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(connectFactory);
+
+        _config = options;
+        ConnectorType = connectFactory;
         _info = serviceInfo;
         _setUri = FindSetUriMethod(ConnectorType);
 

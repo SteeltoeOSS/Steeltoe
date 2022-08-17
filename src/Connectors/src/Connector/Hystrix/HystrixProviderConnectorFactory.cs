@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 
@@ -19,9 +20,12 @@ public class HystrixProviderConnectorFactory
 
     public HystrixProviderConnectorFactory(HystrixRabbitMQServiceInfo serviceInfo, HystrixProviderConnectorOptions options, Type connectFactory)
     {
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(connectFactory);
+
         _info = serviceInfo;
-        _config = options ?? throw new ArgumentNullException(nameof(options));
-        _type = connectFactory ?? throw new ArgumentNullException(nameof(connectFactory));
+        _config = options;
+        _type = connectFactory;
         _setUri = FindSetUriMethod(_type);
 
         if (_setUri == null)

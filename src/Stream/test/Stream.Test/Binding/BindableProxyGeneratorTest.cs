@@ -75,9 +75,9 @@ public class BindableProxyGeneratorTest
 
         public Type BindingType { get; }
 
-        public TestBindableFactory(Type binding)
+        public TestBindableFactory(Type bindingType)
         {
-            BindingType = binding;
+            BindingType = bindingType;
         }
 
         public object Invoke(MethodInfo info)

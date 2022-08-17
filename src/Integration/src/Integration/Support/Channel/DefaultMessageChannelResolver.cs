@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
@@ -15,7 +16,9 @@ public class DefaultMessageChannelResolver : IDestinationResolver<IMessageChanne
 
     public DefaultMessageChannelResolver(IApplicationContext context, IHeaderChannelRegistry registry = null)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
+        ArgumentGuard.NotNull(context);
+
+        _context = context;
         _registry = registry;
     }
 

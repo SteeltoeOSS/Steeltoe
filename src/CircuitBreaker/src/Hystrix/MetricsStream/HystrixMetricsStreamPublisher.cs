@@ -54,7 +54,7 @@ public class HystrixMetricsStreamPublisher : IDisposable
             }
             catch (Exception e)
             {
-                logger?.LogError("Error sending metrics to Hystrix dashboard, metrics streaming disabled: {0}", e);
+                logger?.LogError(e, "Error sending metrics to Hystrix dashboard, metrics streaming disabled.");
 
                 if (SampleSubscription != null)
                 {
@@ -68,7 +68,7 @@ public class HystrixMetricsStreamPublisher : IDisposable
         {
             OnError(error);
 
-            logger?.LogError("Error sending metrics to Hystrix dashboard, metrics streaming disabled: {0}", error);
+            logger?.LogError(error, "Error sending metrics to Hystrix dashboard, metrics streaming disabled.");
 
             if (SampleSubscription != null)
             {

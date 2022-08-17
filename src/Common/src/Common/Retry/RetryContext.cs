@@ -15,7 +15,6 @@ public class RetryContext : AbstractAttributeAccessor, IRetryContext
     public Exception LastException
     {
         get => (Exception)GetAttribute(LastExceptionName);
-
         set
         {
             if (value == null && HasAttribute(LastExceptionName))
@@ -42,14 +41,12 @@ public class RetryContext : AbstractAttributeAccessor, IRetryContext
 
             return result.Value;
         }
-
         set => SetAttribute(RetryCountName, value);
     }
 
     public IRetryContext Parent
     {
         get => (IRetryContext)GetAttribute(RetryParentName);
-
         set
         {
             if (value == null && HasAttribute(RetryParentName))

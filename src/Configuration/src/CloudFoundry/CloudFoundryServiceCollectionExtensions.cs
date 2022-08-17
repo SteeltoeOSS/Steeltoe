@@ -28,15 +28,8 @@ public static class CloudFoundryServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection ConfigureCloudFoundryOptions(this IServiceCollection services, IConfiguration config)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(config);
 
         services.AddOptions();
 
@@ -72,20 +65,9 @@ public static class CloudFoundryServiceCollectionExtensions
     public static IServiceCollection ConfigureCloudFoundryService<TOption>(this IServiceCollection services, IConfiguration config, string serviceName)
         where TOption : CloudFoundryServicesOptions
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         services.Configure<TOption>(serviceName, option =>
         {
@@ -118,20 +100,9 @@ public static class CloudFoundryServiceCollectionExtensions
     public static IServiceCollection ConfigureCloudFoundryServices<TOption>(this IServiceCollection services, IConfiguration config, string serviceLabel)
         where TOption : CloudFoundryServicesOptions
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        if (string.IsNullOrEmpty(serviceLabel))
-        {
-            throw new ArgumentException(nameof(serviceLabel));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNullOrEmpty(serviceLabel);
 
         CloudFoundryServicesOptions servicesOptions = GetServiceOptionsFromConfiguration(config);
         servicesOptions.Services.TryGetValue(serviceLabel, out IEnumerable<Service> cfServices);

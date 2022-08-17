@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 
@@ -12,10 +13,7 @@ public class MySqlDbContextConnectorFactory : MySqlProviderConnectorFactory
     public MySqlDbContextConnectorFactory(MySqlServiceInfo info, MySqlProviderConnectorOptions options, Type dbContextType)
         : base(info, options, dbContextType)
     {
-        if (dbContextType == null)
-        {
-            throw new ArgumentNullException(nameof(dbContextType));
-        }
+        ArgumentGuard.NotNull(dbContextType);
     }
 
     internal MySqlDbContextConnectorFactory()

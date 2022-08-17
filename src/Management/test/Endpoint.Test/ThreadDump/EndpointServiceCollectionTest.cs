@@ -16,12 +16,10 @@ public class EndpointServiceCollectionTest : BaseTest
     {
         const IServiceCollection services = null;
         IServiceCollection services2 = new ServiceCollection();
-        const IConfigurationRoot config = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddThreadDumpActuator());
         Assert.Contains(nameof(services), ex.Message);
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddThreadDumpActuator());
-        Assert.Contains(nameof(config), ex2.Message);
+        Assert.Throws<InvalidOperationException>(() => services2.AddThreadDumpActuator());
     }
 
     [Fact]

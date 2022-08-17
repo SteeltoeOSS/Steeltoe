@@ -5,6 +5,7 @@
 using Consul;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Discovery;
 
 namespace Steeltoe.Discovery.Consul.Registry;
@@ -55,8 +56,11 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     public ConsulServiceRegistry(IConsulClient client, ConsulDiscoveryOptions options, IScheduler scheduler = null,
         ILogger<ConsulServiceRegistry> logger = null)
     {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        ArgumentGuard.NotNull(client);
+        ArgumentGuard.NotNull(options);
+
+        _client = client;
+        _options = options;
         _scheduler = scheduler;
         _logger = logger;
     }
@@ -79,8 +83,11 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     public ConsulServiceRegistry(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IScheduler scheduler = null,
         ILogger<ConsulServiceRegistry> logger = null)
     {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-        _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
+        ArgumentGuard.NotNull(client);
+        ArgumentGuard.NotNull(optionsMonitor);
+
+        _client = client;
+        _optionsMonitor = optionsMonitor;
         _scheduler = scheduler;
         _logger = logger;
     }
@@ -88,10 +95,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     /// <inheritdoc />
     public Task RegisterAsync(IConsulRegistration registration)
     {
-        if (registration == null)
-        {
-            throw new ArgumentNullException(nameof(registration));
-        }
+        ArgumentGuard.NotNull(registration);
 
         return RegisterInternalAsync(registration);
     }
@@ -124,10 +128,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     /// <inheritdoc />
     public Task DeregisterAsync(IConsulRegistration registration)
     {
-        if (registration == null)
-        {
-            throw new ArgumentNullException(nameof(registration));
-        }
+        ArgumentGuard.NotNull(registration);
 
         return DeregisterInternalAsync(registration);
     }
@@ -147,10 +148,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     /// <inheritdoc />
     public Task SetStatusAsync(IConsulRegistration registration, string status)
     {
-        if (registration == null)
-        {
-            throw new ArgumentNullException(nameof(registration));
-        }
+        ArgumentGuard.NotNull(registration);
 
         return SetStatusInternalAsync(registration, status);
     }
@@ -167,16 +165,13 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
             return _client.Agent.DisableServiceMaintenance(registration.InstanceId);
         }
 
-        throw new ArgumentException($"Unknown status: {status}");
+        throw new ArgumentException($"Unknown status: {status}", nameof(status));
     }
 
     /// <inheritdoc />
     public Task<object> GetStatusAsync(IConsulRegistration registration)
     {
-        if (registration == null)
-        {
-            throw new ArgumentNullException(nameof(registration));
-        }
+        ArgumentGuard.NotNull(registration);
 
         return GetStatusInternalAsync(registration);
     }

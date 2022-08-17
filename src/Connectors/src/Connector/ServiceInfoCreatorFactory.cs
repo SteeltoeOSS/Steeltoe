@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 
 namespace Steeltoe.Connector;
@@ -23,10 +24,7 @@ internal static class ServiceInfoCreatorFactory
     /// </returns>
     internal static ServiceInfoCreator GetServiceInfoCreator(IConfiguration configuration)
     {
-        if (configuration is null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         lock (Lock)
         {

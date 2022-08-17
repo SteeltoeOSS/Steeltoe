@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Impl;
+using Steeltoe.Common;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
@@ -102,7 +103,6 @@ public class RabbitTemplate
     public virtual string ReplyAddress
     {
         get => _replyAddress;
-
         set
         {
             EvaluatedFastReplyTo = false;
@@ -123,7 +123,6 @@ public class RabbitTemplate
     public virtual bool Mandatory
     {
         get => MandatoryExpression.GetValue<bool>();
-
         set => MandatoryExpression = new ValueExpression<bool>(value);
     }
 
@@ -132,13 +131,9 @@ public class RabbitTemplate
     public virtual string MandatoryExpressionString
     {
         get => MandatoryExpression?.ToString();
-
         set
         {
-            if (value == null)
-            {
-                throw new ArgumentException("MandatoryExpression' must not be null");
-            }
+            ArgumentGuard.NotNull(value);
 
             MandatoryExpression = Parser.ParseExpression(value);
         }
@@ -171,7 +166,6 @@ public class RabbitTemplate
     public virtual string UserIdExpressionString
     {
         get => UserIdExpression?.ToString();
-
         set => UserIdExpression = Parser.ParseExpression(value);
     }
 
@@ -259,18 +253,8 @@ public class RabbitTemplate
 
     public virtual void SetBeforePublishPostProcessors(params IMessagePostProcessor[] beforePublishPostProcessors)
     {
-        if (beforePublishPostProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(beforePublishPostProcessors));
-        }
-
-        Array.ForEach(beforePublishPostProcessors, e =>
-        {
-            if (e == null)
-            {
-                throw new ArgumentException("'beforePublishPostProcessors' cannot have null elements");
-            }
-        });
+        ArgumentGuard.NotNull(beforePublishPostProcessors);
+        ArgumentGuard.ElementsNotNull(beforePublishPostProcessors);
 
         var newList = new List<IMessagePostProcessor>(beforePublishPostProcessors);
         MessagePostProcessorUtils.Sort(newList);
@@ -279,10 +263,7 @@ public class RabbitTemplate
 
     public virtual void AddBeforePublishPostProcessors(params IMessagePostProcessor[] beforePublishPostProcessors)
     {
-        if (beforePublishPostProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(beforePublishPostProcessors));
-        }
+        ArgumentGuard.NotNull(beforePublishPostProcessors);
 
         IList<IMessagePostProcessor> existing = BeforePublishPostProcessors;
         var newList = new List<IMessagePostProcessor>(beforePublishPostProcessors);
@@ -298,10 +279,7 @@ public class RabbitTemplate
 
     public virtual bool RemoveBeforePublishPostProcessor(IMessagePostProcessor beforePublishPostProcessor)
     {
-        if (beforePublishPostProcessor == null)
-        {
-            throw new ArgumentNullException(nameof(beforePublishPostProcessor));
-        }
+        ArgumentGuard.NotNull(beforePublishPostProcessor);
 
         IList<IMessagePostProcessor> existing = BeforePublishPostProcessors;
 
@@ -318,18 +296,8 @@ public class RabbitTemplate
 
     public virtual void SetAfterReceivePostProcessors(params IMessagePostProcessor[] afterReceivePostProcessors)
     {
-        if (afterReceivePostProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(afterReceivePostProcessors));
-        }
-
-        Array.ForEach(afterReceivePostProcessors, e =>
-        {
-            if (e == null)
-            {
-                throw new ArgumentException("'afterReceivePostProcessors' cannot have null elements");
-            }
-        });
+        ArgumentGuard.NotNull(afterReceivePostProcessors);
+        ArgumentGuard.ElementsNotNull(afterReceivePostProcessors);
 
         var newList = new List<IMessagePostProcessor>(afterReceivePostProcessors);
         MessagePostProcessorUtils.Sort(newList);
@@ -338,10 +306,7 @@ public class RabbitTemplate
 
     public virtual void AddAfterReceivePostProcessors(params IMessagePostProcessor[] afterReceivePostProcessors)
     {
-        if (afterReceivePostProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(afterReceivePostProcessors));
-        }
+        ArgumentGuard.NotNull(afterReceivePostProcessors);
 
         IList<IMessagePostProcessor> existing = AfterReceivePostProcessors;
         var newList = new List<IMessagePostProcessor>(afterReceivePostProcessors);
@@ -357,10 +322,7 @@ public class RabbitTemplate
 
     public virtual bool RemoveAfterReceivePostProcessor(IMessagePostProcessor afterReceivePostProcessor)
     {
-        if (afterReceivePostProcessor == null)
-        {
-            throw new ArgumentNullException(nameof(afterReceivePostProcessor));
-        }
+        ArgumentGuard.NotNull(afterReceivePostProcessor);
 
         IList<IMessagePostProcessor> existing = AfterReceivePostProcessors;
 
@@ -453,7 +415,7 @@ public class RabbitTemplate
 
         if (!ReplyHolder.TryGetValue((string)messageTag, out PendingReply pendingReply))
         {
-            Logger?.LogWarning("Reply received after timeout for " + messageTag);
+            Logger?.LogWarning("Reply received after timeout for {tag}", messageTag);
             throw new RabbitRejectAndDoNotRequeueException("Reply received after timeout");
         }
 
@@ -1377,7 +1339,8 @@ public class RabbitTemplate
         {
             if (message.Headers.ReplyTo() != null)
             {
-                throw new ArgumentException("Send-and-receive methods can only be used if the Message does not already have a replyTo property.");
+                throw new InvalidOperationException(
+                    $"Send-and-receive methods can only be used if the message does not already have a {nameof(RabbitMessageHeaders.ReplyTo)} property.");
             }
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -2287,19 +2250,19 @@ public class RabbitTemplate
     private bool SendReply<TReceive, TReply>(Func<TReceive, TReply> receiveAndReplyCallback, Func<IMessage, TReply, Address> replyToAddressCallback,
         RC.IModel channel, IMessage receiveMessage)
     {
-        object receive = receiveMessage;
+        object message = receiveMessage;
 
-        if (receive is not TReceive)
+        if (message is not TReceive)
         {
-            receive = GetRequiredMessageConverter().FromMessage(receiveMessage, typeof(TReceive));
+            message = GetRequiredMessageConverter().FromMessage(receiveMessage, typeof(TReceive));
         }
 
-        if (receive is not TReceive messageAsR)
+        if (message is not TReceive messageAsTReceive)
         {
-            throw new ArgumentException($"'receiveAndReplyCallback' can't handle received object '{receive.GetType()}'");
+            throw new InvalidOperationException($"'receiveAndReplyCallback' can't handle received object of type '{message.GetType()}'.");
         }
 
-        TReply reply = receiveAndReplyCallback(messageAsR);
+        TReply reply = receiveAndReplyCallback(messageAsTReceive);
 
         if (reply != null)
         {
@@ -2423,10 +2386,7 @@ public class RabbitTemplate
 
     private T DoExecute<T>(Func<RC.IModel, T> channelCallback, IConnectionFactory connectionFactory)
     {
-        if (channelCallback == null)
-        {
-            throw new ArgumentNullException(nameof(channelCallback));
-        }
+        ArgumentGuard.NotNull(channelCallback);
 
         RC.IModel channel = null;
         bool invokeScope = false;
@@ -2521,7 +2481,12 @@ public class RabbitTemplate
 
     private ConfirmListener AddConfirmListener(Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks, RC.IModel channel)
     {
-        return acks != null && nacks != null && channel is IChannelProxy proxy && proxy.IsConfirmSelected ? new ConfirmListener(acks, nacks, channel) : null;
+        if (acks == null || nacks == null || channel is not IChannelProxy { IsConfirmSelected: true })
+        {
+            return null;
+        }
+
+        return new ConfirmListener(acks, nacks, channel);
     }
 
     private void CleanUpAfterAction(RC.IModel channel, bool invokeScope, RabbitResourceHolder resourceHolder, IConnection connection)
@@ -2572,7 +2537,7 @@ public class RabbitTemplate
 
         if (cause != null && RabbitUtils.IsPassiveDeclarationChannelClose(cause))
         {
-            Logger?.LogWarning("Broker does not support fast replies via 'amq.rabbitmq.reply-to', temporary " + "queues will be used: " + cause.Message + ".");
+            Logger?.LogWarning(ex, "Broker does not support fast replies via 'amq.rabbitmq.reply-to', temporary queues will be used: {cause}.", cause.Message);
             _replyAddress = null;
             return false;
         }

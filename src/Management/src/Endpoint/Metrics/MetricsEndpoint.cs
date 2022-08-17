@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 
@@ -18,7 +19,11 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
     public MetricsEndpoint(IMetricsEndpointOptions options, IEnumerable<MetricsExporter> exporters, ILogger<MetricsEndpoint> logger = null)
         : base(options)
     {
-        _exporter = exporters?.OfType<SteeltoeExporter>().SingleOrDefault() ?? throw new ArgumentNullException(nameof(exporters));
+        ArgumentGuard.NotNull(exporters);
+
+        _exporter = exporters.OfType<SteeltoeExporter>().SingleOrDefault() ??
+            throw new ArgumentException($"Exporters must contain a single {nameof(SteeltoeExporter)}.", nameof(exporters));
+
         _logger = logger;
     }
 

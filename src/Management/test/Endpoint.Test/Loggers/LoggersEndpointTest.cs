@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
@@ -81,7 +80,7 @@ public class LoggersEndpointTest : BaseTest
 
         var ep = tc.GetService<ILoggersEndpoint>();
 
-        Assert.Throws<ArgumentException>(() => ep.SetLogLevel(new TestLogProvider(), null, null));
+        Assert.Throws<ArgumentNullException>(() => ep.SetLogLevel(new TestLogProvider(), null, null));
     }
 
     [Fact]

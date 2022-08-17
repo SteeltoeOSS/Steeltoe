@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 
 namespace Steeltoe.Messaging.Converter;
@@ -23,12 +24,14 @@ public class StringMessageConverter : AbstractMessageConverter
     public StringMessageConverter(Encoding defaultCharset)
         : base(new MimeType("text", "plain", defaultCharset))
     {
-        _defaultCharset = defaultCharset ?? throw new ArgumentNullException(nameof(defaultCharset));
+        ArgumentGuard.NotNull(defaultCharset);
+
+        _defaultCharset = defaultCharset;
     }
 
-    protected override bool Supports(Type clazz)
+    protected override bool Supports(Type type)
     {
-        return typeof(string) == clazz;
+        return typeof(string) == type;
     }
 
     protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)

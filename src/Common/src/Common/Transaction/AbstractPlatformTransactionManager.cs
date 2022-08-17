@@ -24,12 +24,11 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
     public virtual int DefaultTimeout
     {
         get => _defaultTimeout;
-
         set
         {
             if (value < AbstractTransactionDefinition.TimeoutDefault)
             {
-                throw new ArgumentException(nameof(DefaultTimeout));
+                throw new ArgumentException("Invalid timeout value.", nameof(value));
             }
 
             _defaultTimeout = value;
@@ -101,8 +100,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
         // Create "empty" transaction: no actual transaction, but potentially synchronization.
         if (def.IsolationLevel != AbstractTransactionDefinition.IsolationDefault)
         {
-            Logger?.LogWarning("Custom isolation level specified but no actual transaction initiated; " + "isolation level will effectively be ignored: " +
-                def);
+            Logger?.LogWarning("Custom isolation level specified but no actual transaction initiated; isolation level will effectively be ignored: {def}", def);
         }
 
         bool isSynchronizationAlways = TransactionSynchronization == SynchronizationAlways;

@@ -116,23 +116,23 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
 
     public override void Cleanup()
     {
-        foreach (string q in queues)
+        foreach (string name in queues)
         {
-            _logger.LogInformation("Deleting queue " + q);
-            _rabbitAdmin.DeleteQueue(q);
-            _rabbitAdmin.DeleteQueue($"{q}.dlq");
+            _logger.LogInformation("Deleting queue {queue}", name);
+            _rabbitAdmin.DeleteQueue(name);
+            _rabbitAdmin.DeleteQueue($"{name}.dlq");
 
             // delete any partitioned queues
             for (int i = 0; i < 10; i++)
             {
-                _rabbitAdmin.DeleteQueue($"{q}-{i}");
-                _rabbitAdmin.DeleteQueue($"{q}-{i}.dlq");
+                _rabbitAdmin.DeleteQueue($"{name}-{i}");
+                _rabbitAdmin.DeleteQueue($"{name}-{i}.dlq");
             }
         }
 
         foreach (string exchange in exchanges)
         {
-            _logger.LogInformation("Deleting exch " + exchange);
+            _logger.LogInformation("Deleting exchange {exchange}", exchange);
             _rabbitAdmin.DeleteExchange(exchange);
         }
 

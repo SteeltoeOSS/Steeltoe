@@ -5,6 +5,7 @@
 using System.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Task;
@@ -50,7 +51,6 @@ public class DiscoveryClient : IEurekaClient
     public Applications Applications
     {
         get => localRegionApps;
-
         internal set => localRegionApps = value;
     }
 
@@ -63,7 +63,9 @@ public class DiscoveryClient : IEurekaClient
     public DiscoveryClient(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
         : this(ApplicationInfoManager.Instance, logFactory)
     {
-        ClientConfig = clientConfig ?? throw new ArgumentNullException(nameof(clientConfig));
+        ArgumentGuard.NotNull(clientConfig);
+
+        ClientConfig = clientConfig;
         this.httpClient = httpClient ?? new EurekaHttpClient(clientConfig, logFactory);
 
         Initialize();
@@ -79,10 +81,7 @@ public class DiscoveryClient : IEurekaClient
 
     public Application GetApplication(string appName)
     {
-        if (string.IsNullOrEmpty(appName))
-        {
-            throw new ArgumentException(nameof(appName));
-        }
+        ArgumentGuard.NotNullOrEmpty(appName);
 
         Applications apps = Applications;
 
@@ -96,10 +95,7 @@ public class DiscoveryClient : IEurekaClient
 
     public IList<InstanceInfo> GetInstanceById(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException(nameof(id));
-        }
+        ArgumentGuard.NotNullOrEmpty(id);
 
         var results = new List<InstanceInfo>();
 
@@ -127,10 +123,7 @@ public class DiscoveryClient : IEurekaClient
 
     public IList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure)
     {
-        if (string.IsNullOrEmpty(vipAddress))
-        {
-            throw new ArgumentException(nameof(vipAddress));
-        }
+        ArgumentGuard.NotNullOrEmpty(vipAddress);
 
         var results = new List<InstanceInfo>();
 
@@ -151,12 +144,12 @@ public class DiscoveryClient : IEurekaClient
 
     public IList<InstanceInfo> GetInstancesByVipAddressAndAppName(string vipAddress, string appName, bool secure)
     {
-        IList<InstanceInfo> result = new List<InstanceInfo>();
-
         if (vipAddress == null && appName == null)
         {
-            throw new ArgumentNullException("vipAddress and appName both null");
+            throw new ArgumentException($"{nameof(vipAddress)} and {nameof(appName)} cannot both be null.");
         }
+
+        IList<InstanceInfo> result = new List<InstanceInfo>();
 
         if (vipAddress != null && appName == null)
         {
@@ -195,10 +188,7 @@ public class DiscoveryClient : IEurekaClient
 
     public InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure)
     {
-        if (string.IsNullOrEmpty(virtualHostname))
-        {
-            throw new ArgumentException(nameof(virtualHostname));
-        }
+        ArgumentGuard.NotNullOrEmpty(virtualHostname);
 
         IList<InstanceInfo> results = GetInstancesByVipAddress(virtualHostname, secure);
 

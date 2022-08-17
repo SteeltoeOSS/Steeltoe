@@ -8,27 +8,20 @@ namespace Steeltoe.Messaging.Core;
 
 public abstract class AbstractMessageReceivingTemplate<TDestination> : AbstractMessageSendingTemplate<TDestination>, IMessageReceivingOperations<TDestination>
 {
-    private TDestination _defaultReceiveDestination;
-
     protected virtual TDestination RequiredDefaultReceiveDestination
     {
         get
         {
-            if (_defaultReceiveDestination == null)
+            if (DefaultReceiveDestination == null)
             {
                 throw new InvalidOperationException("No default destination configured");
             }
 
-            return _defaultReceiveDestination;
+            return DefaultReceiveDestination;
         }
     }
 
-    public virtual TDestination DefaultReceiveDestination
-    {
-        get => _defaultReceiveDestination;
-
-        set => _defaultReceiveDestination = value;
-    }
+    public virtual TDestination DefaultReceiveDestination { get; set; }
 
     public virtual bool ThrowReceivedExceptions { get; set; }
 

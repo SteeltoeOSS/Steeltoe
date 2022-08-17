@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Support;
 
@@ -11,24 +12,17 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 {
     private readonly List<MimeType> _supportedMimeTypes;
 
-    private IContentTypeResolver _contentTypeResolver = new DefaultContentTypeResolver();
-
     private bool _strictContentTypeMatch;
 
     private Type _serializedPayloadClass = typeof(byte[]);
 
     public virtual ICollection<MimeType> SupportedMimeTypes => new List<MimeType>(_supportedMimeTypes);
 
-    public virtual IContentTypeResolver ContentTypeResolver
-    {
-        get => _contentTypeResolver;
-        set => _contentTypeResolver = value;
-    }
+    public virtual IContentTypeResolver ContentTypeResolver { get; set; } = new DefaultContentTypeResolver();
 
     public virtual bool StrictContentTypeMatch
     {
         get => _strictContentTypeMatch;
-
         set
         {
             if (value)
@@ -51,17 +45,14 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
     public virtual Type SerializedPayloadClass
     {
         get => _serializedPayloadClass;
-
         set
         {
-            if (value == typeof(byte[]) || value == typeof(string))
+            if (value != typeof(byte[]) && value != typeof(string))
             {
-                _serializedPayloadClass = value;
+                throw new ArgumentException("Value must be a byte array or a string.", nameof(value));
             }
-            else
-            {
-                throw new ArgumentException("Payload class must be byte[] or String");
-            }
+
+            _serializedPayloadClass = value;
         }
     }
 
@@ -69,10 +60,7 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 
     protected AbstractMessageConverter(MimeType supportedMimeType)
     {
-        if (supportedMimeType == null)
-        {
-            throw new ArgumentNullException(nameof(supportedMimeType));
-        }
+        ArgumentGuard.NotNull(supportedMimeType);
 
         _supportedMimeTypes = new List<MimeType>
         {
@@ -82,10 +70,7 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 
     protected AbstractMessageConverter(ICollection<MimeType> supportedMimeTypes)
     {
-        if (supportedMimeTypes == null)
-        {
-            throw new ArgumentNullException(nameof(supportedMimeTypes));
-        }
+        ArgumentGuard.NotNull(supportedMimeTypes);
 
         _supportedMimeTypes = new List<MimeType>(supportedMimeTypes);
     }
@@ -209,10 +194,10 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 
     protected virtual MimeType GetMimeType(IMessageHeaders headers)
     {
-        return headers != null && _contentTypeResolver != null ? _contentTypeResolver.Resolve(headers) : null;
+        return headers != null && ContentTypeResolver != null ? ContentTypeResolver.Resolve(headers) : null;
     }
 
-    protected abstract bool Supports(Type clazz);
+    protected abstract bool Supports(Type type);
 
     protected virtual object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
     {

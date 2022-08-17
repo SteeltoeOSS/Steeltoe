@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -11,17 +12,9 @@ public static class EndpointServiceCollectionExtensions
 {
     public static void AddCloudFoundryActuator(this IServiceCollection services, IConfiguration config = null)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetService<IConfiguration>();
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.AddCloudFoundryActuatorServices(config);
         services.AddActuatorEndpointMapping<CloudFoundryEndpoint>();

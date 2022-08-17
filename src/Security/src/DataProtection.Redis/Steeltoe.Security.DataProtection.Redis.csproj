@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="$(ExtensionsVersion)" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj" />
+  </ItemGroup>
 </Project>

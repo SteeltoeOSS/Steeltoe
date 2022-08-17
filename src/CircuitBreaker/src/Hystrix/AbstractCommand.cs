@@ -47,7 +47,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     protected HystrixCompletionSource tcs;
 
-    protected bool isFallbackUserDefined;
     protected internal long CommandStartTimestamp = -1L;
     protected internal long ThreadStartTimestamp = -1L;
     protected internal volatile bool InnerIsResponseFromCache;
@@ -139,12 +138,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     public string PublicCacheKey => CacheKey;
 
-    public virtual bool IsFallbackUserDefined
-    {
-        get => isFallbackUserDefined;
-
-        set => isFallbackUserDefined = value;
-    }
+    public virtual bool IsFallbackUserDefined { get; set; }
 
     public Exception ExecutionException => ExecutionResult.ExecutionException;
 
@@ -217,19 +211,16 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     protected static IHystrixCommandGroupKey InitGroupKey(IHystrixCommandGroupKey fromConstructor)
     {
-        if (fromConstructor == null)
-        {
-            throw new ArgumentNullException("HystrixCommandGroupKey can not be NULL");
-        }
+        ArgumentGuard.NotNull(fromConstructor);
 
         return fromConstructor;
     }
 
-    protected static IHystrixCommandKey InitCommandKey(IHystrixCommandKey fromConstructor, Type clazz)
+    protected static IHystrixCommandKey InitCommandKey(IHystrixCommandKey fromConstructor, Type type)
     {
         if (fromConstructor == null || string.IsNullOrWhiteSpace(fromConstructor.Name))
         {
-            string keyName = clazz.Name;
+            string keyName = type.Name;
             return HystrixCommandKeyDefault.AsKey(keyName);
         }
 
@@ -480,8 +471,9 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
 
         // we don't know what kind of exception this is so create a generic message and throw a new HystrixRuntimeException
-        string message = $"{LogMessagePrefix} failed while executing. {{0}}";
-        _logger?.LogDebug(message, e); // debug only since we're throwing the exception and someone higher will do something with it
+        string message = $"{LogMessagePrefix} failed while executing.";
+        // debug only since we're throwing the exception and someone higher will do something with it
+        _logger?.LogDebug(e, message);
         return new HystrixRuntimeException(FailureType.CommandException, GetType(), message, e, null);
     }
 
@@ -516,7 +508,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         catch (Exception hookEx)
         {
-            _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onThreadComplete: {0}", hookEx);
+            _logger?.LogWarning(hookEx, "Error calling HystrixCommandExecutionHook.onThreadComplete.");
         }
     }
 
@@ -531,7 +523,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         if (IsUnrecoverableError(originalException))
         {
             Exception e = originalException;
-            _logger?.LogError("Unrecoverable Error for HystrixCommand so will throw HystrixRuntimeException and not apply fallback: {0} ", e);
+            _logger?.LogError(e, "Unrecoverable Error for HystrixCommand so will throw HystrixRuntimeException and not apply fallback.");
 
             /* executionHook for all errors */
             e = WrapWithOnErrorHook(failureType, e);
@@ -543,7 +535,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         {
             if (IsRecoverableError(originalException))
             {
-                _logger?.LogWarning("Recovered from Error by serving Hystrix fallback: {0}", originalException);
+                _logger?.LogWarning(originalException, "Recovered from Error by serving Hystrix fallback.");
             }
 
             if (InnerOptions.FallbackEnabled)
@@ -613,8 +605,8 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         {
             long latency = Time.CurrentTimeMillis - ExecutionResult.StartTimestamp;
 
-            _logger?.LogDebug("No fallback for HystrixCommand: {0} ",
-                fe); // debug only since we're throwing the exception and someone higher will do something with it
+            // debug only since we're throwing the exception and someone higher will do something with it
+            _logger?.LogDebug(fe, "No fallback for HystrixCommand.");
 
             EventNotifier.MarkEvent(HystrixEventType.FallbackMissing, InnerCommandKey);
             ExecutionResult = ExecutionResult.AddEvent((int)latency, HystrixEventType.FallbackMissing);
@@ -627,7 +619,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         else
         {
             long latency = Time.CurrentTimeMillis - ExecutionResult.StartTimestamp;
-            _logger?.LogDebug("HystrixCommand execution {0} and fallback failed: {1}", failureType.ToString(), fe);
+            _logger?.LogDebug(fe, "HystrixCommand execution {failureType} and fallback failed.", failureType);
             EventNotifier.MarkEvent(HystrixEventType.FallbackFailure, InnerCommandKey);
             ExecutionResult = ExecutionResult.AddEvent((int)latency, HystrixEventType.FallbackFailure);
 
@@ -641,8 +633,8 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     private void HandleFallbackDisabledByEmittingError(Exception underlying, FailureType failureType, string message)
     {
         /* fallback is disabled so throw HystrixRuntimeException */
-        _logger?.LogDebug("Fallback disabled for HystrixCommand so will throw HystrixRuntimeException: {0} ",
-            underlying); // debug only since we're throwing the exception and someone higher will do something with it
+        // debug only since we're throwing the exception and someone higher will do something with it
+        _logger?.LogDebug(underlying, "Fallback disabled for HystrixCommand so will throw HystrixRuntimeException.");
 
         /* executionHook for all errors */
         Exception wrapped = WrapWithOnErrorHook(failureType, underlying);
@@ -654,7 +646,8 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         long latencyWithFallback = Time.CurrentTimeMillis - ExecutionResult.StartTimestamp;
         EventNotifier.MarkEvent(HystrixEventType.FallbackRejection, InnerCommandKey);
         ExecutionResult = ExecutionResult.AddEvent((int)latencyWithFallback, HystrixEventType.FallbackRejection);
-        _logger?.LogDebug("HystrixCommand Fallback Rejection."); // debug only since we're throwing the exception and someone higher will do something with it
+        // debug only since we're throwing the exception and someone higher will do something with it
+        _logger?.LogDebug("HystrixCommand Fallback Rejection.");
 
         // if we couldn't acquire a permit, we "fail fast" by throwing an exception
         tcs.TrySetException(new HystrixRuntimeException(FailureType.RejectedSemaphoreFallback, GetType(), $"{LogMessagePrefix} fallback execution rejected.",
@@ -667,8 +660,8 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         ExecutionResult = ExecutionResult.SetExecutionException(semaphoreRejectionException);
         EventNotifier.MarkEvent(HystrixEventType.SemaphoreRejected, InnerCommandKey);
 
-        _logger?.LogDebug(
-            "HystrixCommand Execution Rejection by Semaphore."); // debug only since we're throwing the exception and someone higher will do something with it
+        // debug only since we're throwing the exception and someone higher will do something with it
+        _logger?.LogDebug("HystrixCommand Execution Rejection by Semaphore.");
 
         // retrieve a fallback or throw an exception if no fallback available
         HandleFallbackOrThrowException(HystrixEventType.SemaphoreRejected, FailureType.RejectedSemaphoreExecution,
@@ -730,7 +723,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     private void HandleFailureViaFallback(Exception underlying)
     {
-        _logger?.LogDebug("Error executing HystrixCommand.Run(). Proceeding to fallback logic...: {0}", underlying);
+        _logger?.LogDebug(underlying, "Error executing HystrixCommand.Run(). Proceeding to fallback logic.");
 
         // report failure
         EventNotifier.MarkEvent(HystrixEventType.Failure, InnerCommandKey);
@@ -757,13 +750,13 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
             }
             else
             {
-                _logger?.LogWarning(
-                    "ExecutionHook.onError returned an exception that was not an instance of HystrixBadRequestException so will be ignored: {0}", decorated);
+                _logger?.LogWarning(decorated,
+                    "ExecutionHook.onError returned an exception that was not an instance of HystrixBadRequestException so will be ignored.");
             }
         }
         catch (Exception hookEx)
         {
-            _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onError: {0}", hookEx);
+            _logger?.LogWarning(hookEx, "Error calling HystrixCommandExecutionHook.onError.");
         }
 
         tcs.TrySetException(toEmit);
@@ -792,7 +785,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         catch (Exception hookEx)
         {
-            _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onCacheHit: {0}", hookEx);
+            _logger?.LogWarning(hookEx, "Error calling HystrixCommandExecutionHook.onCacheHit.");
         }
 
         if (cmd.Token.IsCancellationRequested)
@@ -1113,31 +1106,18 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
     }
 
-    private bool IsUnrecoverableError(Exception t)
+    private bool IsUnrecoverableError(Exception exception)
     {
-        Exception cause = t;
-
-        if (cause is OutOfMemoryException)
+        switch (exception)
         {
-            return true;
+            case OutOfMemoryException:
+            case VerificationException:
+            case InsufficientExecutionStackException:
+            case BadImageFormatException:
+                return true;
+            default:
+                return false;
         }
-
-        if (cause is VerificationException)
-        {
-            return true;
-        }
-
-        if (cause is InsufficientExecutionStackException)
-        {
-            return true;
-        }
-
-        if (cause is BadImageFormatException)
-        {
-            return true;
-        }
-
-        return false;
     }
 
     private bool IsRecoverableError(Exception t)
@@ -1203,7 +1183,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
             }
             catch (Exception hookEx)
             {
-                _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onSuccess - {0}", hookEx);
+                _logger?.LogWarning(hookEx, "Error calling HystrixCommandExecutionHook.onSuccess.");
             }
         }
     }
@@ -1273,7 +1253,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         catch (Exception hookEx)
         {
-            _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onFallbackSuccess - {0}", hookEx);
+            _logger?.LogWarning(hookEx, "Error calling HystrixCommandExecutionHook.onFallbackSuccess.");
         }
     }
 
@@ -1285,7 +1265,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         catch (Exception hookEx)
         {
-            _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onFallbackEmit - {0}", hookEx);
+            _logger?.LogWarning(hookEx, "Error calling HystrixCommandExecutionHook.onFallbackEmit.");
             return r;
         }
     }
@@ -1298,7 +1278,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         catch (Exception hookEx)
         {
-            _logger?.LogWarning("Error calling HystrixCommandExecutionHook.OnFallbackStart - {0}", hookEx);
+            _logger?.LogWarning(hookEx, "Error calling HystrixCommandExecutionHook.OnFallbackStart.");
         }
     }
 
@@ -1310,7 +1290,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         catch (Exception hookEx)
         {
-            _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onEmit - {0}", hookEx);
+            _logger?.LogWarning(hookEx, "Error calling HystrixCommandExecutionHook.onEmit.");
             return result;
         }
     }
@@ -1323,7 +1303,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         catch (Exception hookEx)
         {
-            _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onError - {0}", hookEx);
+            _logger?.LogWarning(hookEx, "Error calling HystrixCommandExecutionHook.onError.");
             return e;
         }
     }
@@ -1336,7 +1316,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         catch (Exception hookEx)
         {
-            _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onExecutionSuccess - {0}", hookEx);
+            _logger?.LogWarning(hookEx, "Error calling HystrixCommandExecutionHook.onExecutionSuccess.");
         }
     }
 
@@ -1348,7 +1328,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         catch (Exception hookEx)
         {
-            _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onExecutionError - {0}", hookEx);
+            _logger?.LogWarning(hookEx, "Error calling HystrixCommandExecutionHook.onExecutionError.");
             return e;
         }
     }
@@ -1361,7 +1341,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         catch (Exception hookEx)
         {
-            _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onExecutionEmit - {0}", hookEx);
+            _logger?.LogWarning(hookEx, "Error calling HystrixCommandExecutionHook.onExecutionEmit.");
             return r;
         }
     }
@@ -1377,7 +1357,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         catch (Exception hookEx)
         {
-            _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onFallbackError - {0}", hookEx);
+            _logger?.LogWarning(hookEx, "Error calling HystrixCommandExecutionHook.onFallbackError.");
         }
     }
 
@@ -1410,7 +1390,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         public new CommandState Value
         {
             get => (CommandState)value;
-
             set => this.value = (int)value;
         }
 
@@ -1430,7 +1409,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         public new ThreadState Value
         {
             get => (ThreadState)value;
-
             set => this.value = (int)value;
         }
 
@@ -1450,7 +1428,6 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         public new TimedOutStatus Value
         {
             get => (TimedOutStatus)value;
-
             set => this.value = (int)value;
         }
 

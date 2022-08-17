@@ -1,10 +1,11 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
 
@@ -12,21 +13,17 @@ namespace Steeltoe.Management.Endpoint.Middleware;
 
 public class EndpointMiddleware<TResult>
 {
-    protected IEndpoint<TResult> endpoint;
     protected ILogger logger;
     protected IManagementOptions managementOptions;
 
-    public IEndpoint<TResult> Endpoint
-    {
-        get => endpoint;
-
-        set => endpoint = value;
-    }
+    public IEndpoint<TResult> Endpoint { get; set; }
 
     public EndpointMiddleware(IManagementOptions managementOptions, ILogger logger = null)
     {
+        ArgumentGuard.NotNull(managementOptions);
+
         this.logger = logger;
-        this.managementOptions = managementOptions ?? throw new ArgumentNullException(nameof(managementOptions));
+        this.managementOptions = managementOptions;
 
         if (this.managementOptions is ManagementEndpointOptions options)
         {
@@ -37,12 +34,14 @@ public class EndpointMiddleware<TResult>
     public EndpointMiddleware(IEndpoint<TResult> endpoint, IManagementOptions managementOptions, ILogger logger = null)
         : this(managementOptions, logger)
     {
-        this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        ArgumentGuard.NotNull(endpoint);
+
+        Endpoint = endpoint;
     }
 
     public virtual string HandleRequest()
     {
-        TResult result = endpoint.Invoke();
+        TResult result = Endpoint.Invoke();
         return Serialize(result);
     }
 
@@ -65,7 +64,7 @@ public class EndpointMiddleware<TResult>
         }
         catch (Exception e) when (e is ArgumentException or ArgumentNullException or NotSupportedException)
         {
-            logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
+            logger?.LogError(e, "Error serializing {MiddlewareResponse}", result);
         }
 
         return string.Empty;
@@ -101,19 +100,14 @@ public class EndpointMiddleware<TResult>
 
 public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
 {
-    protected new IEndpoint<TResult, TRequest> endpoint;
-
-    internal new IEndpoint<TResult, TRequest> Endpoint
-    {
-        get => endpoint;
-
-        set => endpoint = value;
-    }
+    public new IEndpoint<TResult, TRequest> Endpoint { get; set; }
 
     public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IManagementOptions managementOptions, ILogger logger = null)
         : base(managementOptions, logger)
     {
-        this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        ArgumentGuard.NotNull(endpoint);
+
+        Endpoint = endpoint;
     }
 
     public EndpointMiddleware(IManagementOptions managementOptions, ILogger logger = null)
@@ -123,7 +117,7 @@ public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
 
     public virtual string HandleRequest(TRequest arg)
     {
-        TResult result = endpoint.Invoke(arg);
+        TResult result = Endpoint.Invoke(arg);
         return Serialize(result);
     }
 }

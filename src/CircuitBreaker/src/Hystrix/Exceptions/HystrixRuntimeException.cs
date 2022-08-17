@@ -13,21 +13,21 @@ public class HystrixRuntimeException : Exception
 
     public Exception FallbackException { get; }
 
-    public Type ImplementingClass { get; }
+    public Type ImplementingType { get; }
 
-    public HystrixRuntimeException(FailureType failureCause, Type commandClass, string message)
+    public HystrixRuntimeException(FailureType failureType, Type commandType, string message)
         : base(message)
     {
-        FailureType = failureCause;
-        ImplementingClass = commandClass;
+        FailureType = failureType;
+        ImplementingType = commandType;
         FallbackException = null;
     }
 
-    public HystrixRuntimeException(FailureType failureCause, Type commandClass, string message, Exception cause, Exception fallbackException)
+    public HystrixRuntimeException(FailureType failureType, Type commandType, string message, Exception cause, Exception fallbackException)
         : base(message, cause)
     {
-        FailureType = failureCause;
-        ImplementingClass = commandClass;
+        FailureType = failureType;
+        ImplementingType = commandType;
         FallbackException = fallbackException;
     }
 

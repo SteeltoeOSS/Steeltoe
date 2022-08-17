@@ -33,7 +33,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Registering with Spring Boot Admin Server at {0}", _options.Url);
+        _logger.LogInformation("Registering with Spring Boot Admin Server at {url}", _options.Url);
         string basePath = _options.BasePath.TrimEnd('/');
 
         var app = new Application

@@ -25,12 +25,12 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
 
     public Task InvokeAsync(HttpContext context)
     {
-        logger?.LogDebug("InvokeAsync({0} {1})", context.Request.Method, context.Request.Path.Value);
+        logger?.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
-        if (endpoint.ShouldInvoke(managementOptions, logger))
+        if (Endpoint.ShouldInvoke(managementOptions, logger))
         {
-            string serialInfo = HandleRequest(endpoint, GetRequestUri(context.Request), logger);
-            logger?.LogDebug("Returning: {0}", serialInfo);
+            string serialInfo = HandleRequest(Endpoint, GetRequestUri(context.Request), logger);
+            logger?.LogDebug("Returning: {info}", serialInfo);
 
             context.HandleContentNegotiation(logger);
             return context.Response.WriteAsync(serialInfo);
@@ -78,7 +78,7 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
         }
         catch (Exception e)
         {
-            logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
+            logger?.LogError(e, "Error serializing {MiddlewareResponse}", result);
         }
 
         return string.Empty;

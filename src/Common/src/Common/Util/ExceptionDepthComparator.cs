@@ -10,17 +10,16 @@ public class ExceptionDepthComparator : IComparer<Type>
 
     public ExceptionDepthComparator(Exception exception)
     {
-        if (exception == null)
-        {
-            throw new ArgumentNullException(nameof(exception));
-        }
+        ArgumentGuard.NotNull(exception);
 
         _targetException = exception.GetType();
     }
 
     public ExceptionDepthComparator(Type exceptionType)
     {
-        _targetException = exceptionType ?? throw new ArgumentNullException(nameof(exceptionType));
+        ArgumentGuard.NotNull(exceptionType);
+
+        _targetException = exceptionType;
     }
 
     public int Compare(Type o1, Type o2)

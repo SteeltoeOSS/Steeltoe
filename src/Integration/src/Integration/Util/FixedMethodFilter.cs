@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Common;
 using Steeltoe.Common.Expression.Internal;
 
 namespace Steeltoe.Integration.Util;
@@ -13,10 +14,7 @@ public class FixedMethodFilter : IMethodFilter
 
     public FixedMethodFilter(MethodInfo method)
     {
-        if (method == null)
-        {
-            throw new ArgumentNullException(nameof(method));
-        }
+        ArgumentGuard.NotNull(method);
 
         _method = method;
     }

@@ -4,6 +4,7 @@
 
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
@@ -53,7 +54,6 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             _connectionFactory ??= ApplicationContext.GetService<IConnectionFactory>();
             return _connectionFactory;
         }
-
         set => _connectionFactory = value;
     }
 
@@ -84,7 +84,6 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     public virtual string ListenerId
     {
         get => _listenerId ?? ServiceName;
-
         set => _listenerId = value;
     }
 
@@ -168,25 +167,11 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual void SetQueueNames(params string[] queueNames)
     {
-        if (queueNames == null)
-        {
-            throw new ArgumentNullException(nameof(queueNames));
-        }
+        ArgumentGuard.NotNull(queueNames);
+        ArgumentGuard.ElementsNotNull(queueNames);
 
-        var qs = new IQueue[queueNames.Length];
-        int index = 0;
-
-        foreach (string name in queueNames)
-        {
-            if (name == null)
-            {
-                throw new ArgumentNullException("queue names cannot be null");
-            }
-
-            qs[index++] = new Queue(name);
-        }
-
-        SetQueues(qs);
+        IQueue[] queues = queueNames.Select(name => new Queue(name)).Cast<IQueue>().ToArray();
+        SetQueues(queues);
     }
 
     public virtual string[] GetQueueNames()
@@ -196,25 +181,12 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual void SetQueues(params IQueue[] queues)
     {
-        if (queues == null)
-        {
-            throw new ArgumentNullException(nameof(queues));
-        }
+        ArgumentGuard.NotNull(queues);
+        ArgumentGuard.ElementsNotNull(queues);
 
-        if (IsRunning)
+        if (IsRunning && queues.Any(queue => queue.QueueName == string.Empty))
         {
-            foreach (IQueue queue in queues)
-            {
-                if (queue == null)
-                {
-                    throw new ArgumentNullException("queue cannot be null");
-                }
-
-                if (string.IsNullOrEmpty(queue.QueueName))
-                {
-                    throw new ArgumentException("Cannot add broker-named queues dynamically");
-                }
-            }
+            throw new InvalidOperationException("Cannot add broker-named queues dynamically.");
         }
 
         Queues = queues.ToList();
@@ -222,48 +194,21 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual void AddQueueNames(params string[] queueNames)
     {
-        if (queueNames == null)
-        {
-            throw new ArgumentNullException(nameof(queueNames));
-        }
+        ArgumentGuard.NotNull(queueNames);
+        ArgumentGuard.ElementsNotNull(queueNames);
 
-        var qs = new IQueue[queueNames.Length];
-        int index = 0;
-
-        foreach (string name in queueNames)
-        {
-            if (name == null)
-            {
-                throw new ArgumentNullException("queue names cannot be null");
-            }
-
-            qs[index++] = new Queue(name);
-        }
-
-        AddQueues(qs);
+        IQueue[] queues = queueNames.Select(name => new Queue(name)).Cast<IQueue>().ToArray();
+        AddQueues(queues);
     }
 
     public virtual void AddQueues(params IQueue[] queues)
     {
-        if (queues == null)
-        {
-            throw new ArgumentNullException(nameof(queues));
-        }
+        ArgumentGuard.NotNull(queues);
+        ArgumentGuard.ElementsNotNull(queues);
 
-        if (IsRunning)
+        if (IsRunning && queues.Any(queue => queue.QueueName == string.Empty))
         {
-            foreach (IQueue queue in queues)
-            {
-                if (queue == null)
-                {
-                    throw new ArgumentNullException("queue cannot be null");
-                }
-
-                if (string.IsNullOrEmpty(queue.QueueName))
-                {
-                    throw new ArgumentException("Cannot add broker-named queues dynamically");
-                }
-            }
+            throw new InvalidOperationException("Cannot add broker-named queues dynamically.");
         }
 
         var newQueues = new List<IQueue>(Queues);
@@ -273,23 +218,10 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual bool RemoveQueueNames(params string[] queueNames)
     {
-        if (queueNames == null)
-        {
-            throw new ArgumentNullException(nameof(queueNames));
-        }
+        ArgumentGuard.NotNull(queueNames);
+        ArgumentGuard.ElementsNotNull(queueNames);
 
-        var toRemove = new HashSet<string>();
-
-        foreach (string name in queueNames)
-        {
-            if (name == null)
-            {
-                throw new ArgumentNullException("queue names cannot be null");
-            }
-
-            toRemove.Add(name);
-        }
-
+        HashSet<string> toRemove = queueNames.ToHashSet();
         var copy = new List<IQueue>(Queues);
         List<IQueue> filtered = copy.Where(q => !toRemove.Contains(q.ActualName)).ToList();
         Queues = filtered;
@@ -298,55 +230,26 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual void RemoveQueues(params IQueue[] queues)
     {
-        if (queues == null)
-        {
-            throw new ArgumentNullException(nameof(queues));
-        }
+        ArgumentGuard.NotNull(queues);
+        ArgumentGuard.ElementsNotNull(queues);
 
-        string[] toRemove = new string[queues.Length];
-        int index = 0;
-
-        foreach (IQueue queue in queues)
-        {
-            if (queue == null)
-            {
-                throw new ArgumentNullException("queue cannot be null");
-            }
-
-            toRemove[index++] = queue.ActualName;
-        }
-
+        string[] toRemove = queues.Select(queue => queue.ActualName).ToArray();
         RemoveQueueNames(toRemove);
     }
 
     public virtual void SetAfterReceivePostProcessors(params IMessagePostProcessor[] afterReceivePostProcessors)
     {
-        if (afterReceivePostProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(afterReceivePostProcessors));
-        }
+        ArgumentGuard.NotNull(afterReceivePostProcessors);
+        ArgumentGuard.ElementsNotNull(afterReceivePostProcessors);
 
-        var asList = new List<IMessagePostProcessor>();
-
-        foreach (IMessagePostProcessor p in afterReceivePostProcessors)
-        {
-            if (p == null)
-            {
-                throw new ArgumentNullException("'afterReceivePostProcessors' cannot have null elements");
-            }
-
-            asList.Add(p);
-        }
-
+        List<IMessagePostProcessor> asList = afterReceivePostProcessors.ToList();
         AfterReceivePostProcessors = MessagePostProcessorUtils.Sort(asList);
     }
 
     public virtual void AddAfterReceivePostProcessors(params IMessagePostProcessor[] afterReceivePostProcessors)
     {
-        if (afterReceivePostProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(afterReceivePostProcessors));
-        }
+        ArgumentGuard.NotNull(afterReceivePostProcessors);
+        ArgumentGuard.ElementsNotNull(afterReceivePostProcessors);
 
         IList<IMessagePostProcessor> current = AfterReceivePostProcessors ?? new List<IMessagePostProcessor>();
 
@@ -357,10 +260,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual bool RemoveAfterReceivePostProcessor(IMessagePostProcessor afterReceivePostProcessor)
     {
-        if (afterReceivePostProcessor == null)
-        {
-            throw new ArgumentNullException(nameof(afterReceivePostProcessor));
-        }
+        ArgumentGuard.NotNull(afterReceivePostProcessor);
 
         IList<IMessagePostProcessor> current = AfterReceivePostProcessors;
 
@@ -568,17 +468,16 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         {
             if (MissingQueuesFatal)
             {
-                Logger?.LogWarning("'mismatchedQueuesFatal' and 'missingQueuesFatal' are ignored during the initial start(), " +
-                    "for lazily loaded containers");
+                Logger?.LogWarning("'mismatchedQueuesFatal' and 'missingQueuesFatal' are ignored during the initial start(), for lazily loaded containers");
             }
             else
             {
-                Logger?.LogWarning("'mismatchedQueuesFatal' is ignored during the initial start(), " + "for lazily loaded containers");
+                Logger?.LogWarning("'mismatchedQueuesFatal' is ignored during the initial start(), for lazily loaded containers");
             }
         }
         else if (MissingQueuesFatal)
         {
-            Logger?.LogWarning("'missingQueuesFatal' is ignored during the initial start(), " + "for lazily loaded containers");
+            Logger?.LogWarning("'missingQueuesFatal' is ignored during the initial start(), for lazily loaded containers");
         }
 
         IsLazyLoad = true;
@@ -1005,13 +904,13 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     {
         if (!(ExposeListenerChannel || !AcknowledgeMode.IsManual()))
         {
-            throw new ArgumentException("You cannot acknowledge messages manually if the channel is not exposed to the listener " +
+            throw new InvalidOperationException("You cannot acknowledge messages manually if the channel is not exposed to the listener " +
                 "(please check your configuration and set exposeListenerChannel=true or " + "acknowledgeMode!=MANUAL)");
         }
 
         if (IsChannelTransacted && AcknowledgeMode.IsAutoAck())
         {
-            throw new ArgumentException("The acknowledgeMode is NONE (autoack in Rabbit terms) which is not consistent with having a " +
+            throw new InvalidOperationException("The acknowledgeMode is NONE (autoack in Rabbit terms) which is not consistent with having a " +
                 "transactional channel. Either use a different AcknowledgeMode or make sure " + "channelTransacted=false");
         }
     }
@@ -1030,7 +929,8 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     {
         if (listener is not IMessageListener)
         {
-            throw new ArgumentException($"Message listener needs to be of type [{nameof(IMessageListener)}] or [{nameof(IChannelAwareMessageListener)}]");
+            throw new ArgumentException($"Message listener needs to be of type [{nameof(IMessageListener)}] or [{nameof(IChannelAwareMessageListener)}]",
+                nameof(listener));
         }
     }
 
@@ -1099,7 +999,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         {
             if (StatefulRetryFatalWithNullMessageId)
             {
-                throw new FatalListenerExecutionException($"Illegal null id in message. Failed to manage retry for message: {message}", ex);
+                throw new FatalListenerExecutionException($"Illegal null id in {nameof(message)}. Failed to manage retry for: {message}", ex);
             }
 
             throw new ListenerExecutionFailedException("Cannot retry message more than once without an ID",

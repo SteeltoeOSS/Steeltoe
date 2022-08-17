@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot;
 
@@ -23,7 +24,9 @@ public class SpringBootCmdProvider : ConfigurationProvider
     /// </param>
     public SpringBootCmdProvider(IConfiguration config)
     {
-        Config = config ?? throw new ArgumentNullException(nameof(config));
+        ArgumentGuard.NotNull(config);
+
+        Config = config;
     }
 
     public override void Load()

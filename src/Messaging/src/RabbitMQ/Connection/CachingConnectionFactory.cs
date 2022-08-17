@@ -63,19 +63,17 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public CachingConnectionFactory PublisherCachingConnectionFactory
     {
         get => (CachingConnectionFactory)PublisherConnectionFactory;
-
         set => PublisherConnectionFactory = value;
     }
 
     public int ChannelCacheSize
     {
         get => _channelCacheSize;
-
         set
         {
             if (value < 1)
             {
-                throw new ArgumentException(nameof(ChannelCacheSize));
+                throw new ArgumentOutOfRangeException(nameof(value), value, "Value cannot be zero or negative.");
             }
 
             _channelCacheSize = value;
@@ -92,12 +90,11 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public int ConnectionCacheSize
     {
         get => _connectionCacheSize;
-
         set
         {
             if (value < 1)
             {
-                throw new ArgumentException(nameof(ConnectionCacheSize));
+                throw new ArgumentOutOfRangeException(nameof(value), value, "Value cannot be zero or negative.");
             }
 
             _connectionCacheSize = value;
@@ -112,12 +109,11 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public int ConnectionLimit
     {
         get => _connectionLimit;
-
         set
         {
             if (value < 1)
             {
-                throw new ArgumentException(nameof(ConnectionLimit));
+                throw new ArgumentOutOfRangeException(nameof(value), value, "Value cannot be zero or negative.");
             }
 
             _connectionLimit = value;
@@ -132,7 +128,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public override bool IsPublisherReturns
     {
         get => _publisherReturns;
-
         set
         {
             _publisherReturns = value;
@@ -147,7 +142,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public ConfirmType PublisherConfirmType
     {
         get => _confirmType;
-
         set
         {
             _confirmType = value;
@@ -166,7 +160,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public int ChannelCheckoutTimeout
     {
         get => _channelCheckoutTimeout;
-
         set
         {
             _channelCheckoutTimeout = value;
@@ -181,7 +174,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public IConditionalExceptionLogger CloseExceptionLogger
     {
         get => _closeExceptionLogger;
-
         set
         {
             _closeExceptionLogger = value;
@@ -676,7 +668,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
             if (channel != null)
             {
-                Logger?.LogTrace("Found cached Rabbit Channel:{channel}", channel);
+                Logger?.LogTrace("Found cached Rabbit Channel: {channel}", channel);
             }
         }
 
@@ -686,12 +678,14 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             {
                 channel = GetCachedChannelProxy(connection, channelList, transactional);
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 if (permits != null)
                 {
                     permits.Release();
-                    Logger?.LogDebug("Could not get channel; released permit for {connection}, remaining {permits}", connection, permits.CurrentCount);
+
+                    Logger?.LogDebug(exception, "Could not get channel; released permit for {connection}, remaining {permits}", connection,
+                        permits.CurrentCount);
                 }
 
                 throw;
@@ -767,17 +761,17 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                  */
             }
         }
-        catch (AlreadyClosedException)
+        catch (AlreadyClosedException exception)
         {
-            Logger?.LogTrace("{channel} is already closed", channel);
+            Logger?.LogTrace(exception, "{channel} is already closed", channel);
         }
-        catch (TimeoutException e)
+        catch (TimeoutException exception)
         {
-            Logger?.LogWarning(e, "TimeoutException closing channel {channel}", channel);
+            Logger?.LogWarning(exception, "TimeoutException closing channel {channel}", channel);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            Logger?.LogDebug(e, "Unexpected Exception closing channel {channel}", channel);
+            Logger?.LogDebug(exception, "Unexpected Exception closing channel {channel}", channel);
         }
     }
 
@@ -1189,7 +1183,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             set
             {
                 try
@@ -1241,7 +1234,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             set
             {
                 try
@@ -1272,7 +1264,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             remove
             {
                 try
@@ -1303,7 +1294,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             remove
             {
                 try
@@ -1334,7 +1324,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             remove
             {
                 try
@@ -1365,7 +1354,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             remove
             {
                 try
@@ -1396,7 +1384,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             remove
             {
                 try
@@ -1427,7 +1414,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             remove
             {
                 try
@@ -1458,7 +1444,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw;
                 }
             }
-
             remove
             {
                 try
@@ -2172,7 +2157,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             if (target == null || !target.IsOpen)
             {
                 // Basic re-connection logic...
-                Logger?.LogDebug(e, "Detected closed channel on exception.  Re-initializing: {target} ", target);
+                Logger?.LogDebug(e, "Detected closed channel on exception. Re-initializing: {target}", target);
                 target = null;
 
                 lock (TargetMonitor)
@@ -2231,7 +2216,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 }
                 else
                 {
-                    Logger?.LogError("LEAKAGE: No permits map entry for {connection} ", TheConnection);
+                    Logger?.LogError("LEAKAGE: No permits map entry for {connection}", TheConnection);
                 }
             }
         }
@@ -2341,7 +2326,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         protected virtual void PhysicalClose()
         {
-            Logger?.LogDebug("Closing cached channel: {channel} ", target);
+            Logger?.LogDebug("Closing cached channel: {channel}", target);
 
             if (target == null)
             {

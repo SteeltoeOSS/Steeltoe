@@ -68,8 +68,11 @@ public class ConsulRegistration : IConsulRegistration
     /// </param>
     public ConsulRegistration(AgentServiceRegistration agentServiceRegistration, ConsulDiscoveryOptions options)
     {
-        Service = agentServiceRegistration ?? throw new ArgumentNullException(nameof(agentServiceRegistration));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        ArgumentGuard.NotNull(agentServiceRegistration);
+        ArgumentGuard.NotNull(options);
+
+        Service = agentServiceRegistration;
+        _options = options;
 
         Initialize(agentServiceRegistration);
     }
@@ -85,8 +88,11 @@ public class ConsulRegistration : IConsulRegistration
     /// </param>
     public ConsulRegistration(AgentServiceRegistration agentServiceRegistration, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
     {
-        Service = agentServiceRegistration ?? throw new ArgumentNullException(nameof(agentServiceRegistration));
-        _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
+        ArgumentGuard.NotNull(agentServiceRegistration);
+        ArgumentGuard.NotNull(optionsMonitor);
+
+        Service = agentServiceRegistration;
+        _optionsMonitor = optionsMonitor;
 
         Initialize(agentServiceRegistration);
     }
@@ -119,10 +125,7 @@ public class ConsulRegistration : IConsulRegistration
     /// </returns>
     public static ConsulRegistration CreateRegistration(ConsulDiscoveryOptions options, IApplicationInstanceInfo applicationInfo)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
+        ArgumentGuard.NotNull(options);
 
         var service = new AgentServiceRegistration();
         service.ID = GetInstanceId(options, applicationInfo);
@@ -198,18 +201,19 @@ public class ConsulRegistration : IConsulRegistration
         return $"{appName}:{instanceId}";
     }
 
-    internal static string NormalizeForConsul(string s)
+    internal static string NormalizeForConsul(string serviceId)
     {
-        if (s == null || !char.IsLetter(s[0]) || !char.IsLetterOrDigit(s[s.Length - 1]))
+        if (serviceId == null || !char.IsLetter(serviceId[0]) || !char.IsLetterOrDigit(serviceId[serviceId.Length - 1]))
         {
             throw new ArgumentException(
-                $"Consul service ids must not be empty, must start with a letter, end with a letter or digit, and have as interior characters only letters, digits, and hyphen: {s}");
+                $"Consul service ids must not be empty, must start with a letter, end with a letter or digit, and have as interior characters only letters, digits, and hyphen: {serviceId}",
+                nameof(serviceId));
         }
 
         var normalized = new StringBuilder();
         char prev = default;
 
-        foreach (char ch in s)
+        foreach (char ch in serviceId)
         {
             char toAppend = default;
 
@@ -249,7 +253,7 @@ public class ConsulRegistration : IConsulRegistration
 
         if (port <= 0)
         {
-            throw new ArgumentException("CreateCheck port must be greater than 0");
+            throw new ArgumentOutOfRangeException(nameof(port), port, "Port must be greater than zero.");
         }
 
         if (!string.IsNullOrEmpty(options.HealthCheckUrl))

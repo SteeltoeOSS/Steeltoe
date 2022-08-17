@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using Consul;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 
 namespace Steeltoe.Discovery.Consul.Discovery;
 
@@ -79,10 +80,7 @@ public class TtlScheduler : IScheduler
     /// <inheritdoc />
     public void Add(string instanceId)
     {
-        if (string.IsNullOrWhiteSpace(instanceId))
-        {
-            throw new ArgumentException(nameof(instanceId));
-        }
+        ArgumentGuard.NotNullOrWhiteSpace(instanceId);
 
         _logger?.LogDebug("Add {instanceId}", instanceId);
 
@@ -113,10 +111,7 @@ public class TtlScheduler : IScheduler
     /// <inheritdoc />
     public void Remove(string instanceId)
     {
-        if (string.IsNullOrWhiteSpace(instanceId))
-        {
-            throw new ArgumentException(nameof(instanceId));
-        }
+        ArgumentGuard.NotNullOrWhiteSpace(instanceId);
 
         _logger?.LogDebug("Remove {instanceId}", instanceId);
 

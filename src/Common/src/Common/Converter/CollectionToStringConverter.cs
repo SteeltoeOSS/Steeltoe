@@ -11,7 +11,7 @@ public class CollectionToStringConverter : AbstractGenericConditionalConverter
     private readonly IConversionService _conversionService;
 
     public CollectionToStringConverter(IConversionService conversionService)
-        : base(new HashSet<(Type Source, Type Target)>
+        : base(new HashSet<(Type SourceType, Type TargetType)>
         {
             (typeof(ICollection), typeof(string))
         })

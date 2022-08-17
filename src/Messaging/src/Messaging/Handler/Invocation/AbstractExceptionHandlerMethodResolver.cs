@@ -4,6 +4,7 @@
 
 using System.Collections.Concurrent;
 using System.Reflection;
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 
 namespace Steeltoe.Messaging.Handler.Invocation;
@@ -18,10 +19,7 @@ public abstract class AbstractExceptionHandlerMethodResolver
 
     protected AbstractExceptionHandlerMethodResolver(IDictionary<Type, MethodInfo> mappedMethods)
     {
-        if (mappedMethods == null)
-        {
-            throw new ArgumentNullException(nameof(mappedMethods));
-        }
+        ArgumentGuard.NotNull(mappedMethods);
 
         foreach (KeyValuePair<Type, MethodInfo> entry in mappedMethods)
         {

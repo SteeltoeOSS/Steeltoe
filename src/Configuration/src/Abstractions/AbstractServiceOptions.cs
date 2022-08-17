@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.Options;
 
 namespace Steeltoe.Extensions.Configuration;
@@ -71,15 +72,8 @@ public abstract class AbstractServiceOptions : AbstractOptions, IServicesInfo
 
     public void Bind(IConfiguration configuration, string serviceName)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         IConfigurationSection services = configuration.GetSection(ConfigurationPrefix);
         IConfigurationSection section = FindServiceSection(services, serviceName);

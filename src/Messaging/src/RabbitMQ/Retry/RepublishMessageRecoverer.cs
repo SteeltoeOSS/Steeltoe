@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
@@ -48,7 +49,9 @@ public class RepublishMessageRecoverer : IMessageRecoverer
 
     public RepublishMessageRecoverer(RabbitTemplate errorTemplate, string errorExchange, string errorRoutingKey, ILogger logger = null)
     {
-        ErrorTemplate = errorTemplate ?? throw new ArgumentNullException(nameof(errorTemplate));
+        ArgumentGuard.NotNull(errorTemplate);
+
+        ErrorTemplate = errorTemplate;
         ErrorExchangeName = errorExchange;
         ErrorRoutingKey = errorRoutingKey;
         MaxStackTraceLength = int.MaxValue;

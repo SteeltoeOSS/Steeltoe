@@ -31,7 +31,7 @@ public class CloudFoundrySecurityMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        _logger?.LogDebug("InvokeAsync({0}) contextPath: {1}", context.Request.Path.Value, _managementOptions.Path);
+        _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);
 
         bool isEndpointExposed = _managementOptions == null || _options.IsExposed(_managementOptions);
 
@@ -156,13 +156,13 @@ public class CloudFoundrySecurityMiddleware
 
     private void LogError(HttpContext context, SecurityResult error)
     {
-        _logger?.LogError("Actuator Security Error: {0} - {1}", error.Code, error.Message);
+        _logger?.LogError("Actuator Security Error: {code} - {message}", error.Code, error.Message);
 
         if (_logger != null && _logger.IsEnabled(LogLevel.Trace))
         {
             foreach (KeyValuePair<string, StringValues> header in context.Request.Headers)
             {
-                _logger.LogTrace("Header: {0} - {1}", header.Key, header.Value);
+                _logger.LogTrace("Header: {key} - {value}", header.Key, header.Value);
             }
         }
     }

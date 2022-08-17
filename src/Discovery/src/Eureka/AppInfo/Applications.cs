@@ -4,6 +4,7 @@
 
 using System.Collections.Concurrent;
 using System.Text;
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 using Steeltoe.Discovery.Eureka.Transport;
 
@@ -31,10 +32,7 @@ public class Applications
 
     internal Applications(IList<Application> apps)
     {
-        if (apps == null)
-        {
-            throw new ArgumentNullException(nameof(apps));
-        }
+        ArgumentGuard.NotNull(apps);
 
         foreach (Application app in apps)
         {
@@ -49,10 +47,7 @@ public class Applications
 
     public Application GetRegisteredApplication(string appName)
     {
-        if (string.IsNullOrEmpty(appName))
-        {
-            throw new ArgumentException(nameof(appName));
-        }
+        ArgumentGuard.NotNullOrEmpty(appName);
 
         ApplicationMap.TryGetValue(appName.ToUpperInvariant(), out Application result);
         return result;
@@ -60,20 +55,14 @@ public class Applications
 
     public IList<InstanceInfo> GetInstancesBySecureVirtualHostName(string secureVirtualHostName)
     {
-        if (string.IsNullOrEmpty(secureVirtualHostName))
-        {
-            throw new ArgumentException(nameof(secureVirtualHostName));
-        }
+        ArgumentGuard.NotNullOrEmpty(secureVirtualHostName);
 
         return DoGetByVirtualHostName(secureVirtualHostName, SecureVirtualHostInstanceMap);
     }
 
     public IList<InstanceInfo> GetInstancesByVirtualHostName(string virtualHostName)
     {
-        if (string.IsNullOrEmpty(virtualHostName))
-        {
-            throw new ArgumentException(nameof(virtualHostName));
-        }
+        ArgumentGuard.NotNullOrEmpty(virtualHostName);
 
         return DoGetByVirtualHostName(virtualHostName, VirtualHostInstanceMap);
     }
@@ -94,10 +83,7 @@ public class Applications
 
     internal void Add(Application app)
     {
-        if (app == null)
-        {
-            throw new ArgumentNullException(nameof(app));
-        }
+        ArgumentGuard.NotNull(app);
 
         ApplicationMap.AddOrUpdate(app.Name.ToUpperInvariant(), app, (_, _) => app);
         AddInstances(app);

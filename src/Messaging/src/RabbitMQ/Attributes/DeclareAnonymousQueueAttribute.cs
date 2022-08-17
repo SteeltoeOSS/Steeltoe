@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Messaging.RabbitMQ.Core;
 
 namespace Steeltoe.Messaging.RabbitMQ.Attributes;
@@ -15,10 +16,7 @@ public class DeclareAnonymousQueueAttribute : DeclareQueueBaseAttribute
 
     public DeclareAnonymousQueueAttribute(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException(nameof(id));
-        }
+        ArgumentGuard.NotNullOrEmpty(id);
 
         Id = id;
         Name = Base64UrlNamingStrategy.Default.GenerateName();

@@ -73,9 +73,9 @@ public class MethodReference : SpelNode
             return false;
         }
 
-        Type clazz = executor.Method.DeclaringType;
+        Type type = executor.Method.DeclaringType;
 
-        if (!ReflectionHelper.IsPublic(clazz) && executor.GetPublicDeclaringClass() == null)
+        if (!ReflectionHelper.IsPublic(type) && executor.GetPublicDeclaringClass() == null)
         {
             return false;
         }
@@ -336,7 +336,7 @@ public class MethodReference : SpelNode
         return descriptors;
     }
 
-    private IMethodExecutor GetCachedExecutor(IEvaluationContext evaluationContext, object value, Type target, IList<Type> argumentTypes)
+    private IMethodExecutor GetCachedExecutor(IEvaluationContext evaluationContext, object value, Type targetType, IList<Type> argumentTypes)
     {
         List<IMethodResolver> methodResolvers = evaluationContext.MethodResolvers;
 
@@ -348,7 +348,7 @@ public class MethodReference : SpelNode
 
         CachedMethodExecutor executorToCheck = _cachedExecutor;
 
-        if (executorToCheck != null && executorToCheck.IsSuitable(value, target, argumentTypes))
+        if (executorToCheck != null && executorToCheck.IsSuitable(value, targetType, argumentTypes))
         {
             return executorToCheck.Get();
         }
@@ -472,22 +472,23 @@ public class MethodReference : SpelNode
     {
         private readonly IMethodExecutor _methodExecutor;
         private readonly Type _staticClass;
-        private readonly Type _target;
+        private readonly Type _targetType;
         private readonly List<Type> _argumentTypes;
 
         public bool HasProxyTarget => false;
 
-        public CachedMethodExecutor(IMethodExecutor methodExecutor, Type staticClass, Type target, List<Type> argumentTypes)
+        public CachedMethodExecutor(IMethodExecutor methodExecutor, Type staticClass, Type targetType, List<Type> argumentTypes)
         {
             _methodExecutor = methodExecutor;
             _staticClass = staticClass;
-            _target = target;
+            _targetType = targetType;
             _argumentTypes = argumentTypes;
         }
 
-        public bool IsSuitable(object value, Type target, IList<Type> argumentTypes)
+        public bool IsSuitable(object value, Type targetType, IList<Type> argumentTypes)
         {
-            return (_staticClass == null || _staticClass.Equals(value)) && ObjectUtils.NullSafeEquals(_target, target) && Equal(_argumentTypes, argumentTypes);
+            return (_staticClass == null || _staticClass.Equals(value)) && ObjectUtils.NullSafeEquals(_targetType, targetType) &&
+                Equal(_argumentTypes, argumentTypes);
         }
 
         public IMethodExecutor Get()

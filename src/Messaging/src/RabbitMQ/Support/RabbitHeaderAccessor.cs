@@ -68,7 +68,6 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
     public int? Delay
     {
         get => GetHeader(XDelay) as int?;
-
         set
         {
             if (value == null || value.Value < 0)
@@ -187,7 +186,6 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
 
             return null;
         }
-
         set => ReplyTo = value.ToString();
     }
 
@@ -314,7 +312,8 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
     {
         if (messageHeaders is not MessageHeaders headers)
         {
-            throw new InvalidOperationException("Unable to create mutable accessor, message has no headers or headers are not of type MessageHeaders");
+            throw new InvalidOperationException(
+                $"Unable to create mutable accessor, message has no headers or headers are not of type {nameof(MessageHeaders)}.");
         }
 
         return new RabbitHeaderAccessor(headers);
@@ -331,7 +330,7 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
 
         if (RabbitMessageHeaders.Priority.Equals(headerName) && headerValue is not int)
         {
-            throw new ArgumentException($"The '{headerName}' header value must be an Integer.");
+            throw new ArgumentException($"The '{headerName}' header value must be an {nameof(Int32)}.", nameof(headerName));
         }
     }
 

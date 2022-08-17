@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
@@ -21,10 +22,7 @@ public class KubernetesHostedService : IHostedService
 
     public KubernetesHostedService(IConfiguration configuration, ILoggerFactory loggerFactory)
     {
-        if (configuration is null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         _configMapProviders = ((IConfigurationRoot)configuration).Providers.OfType<KubernetesConfigMapProvider>();
 

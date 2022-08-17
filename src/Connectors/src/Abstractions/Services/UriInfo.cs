@@ -248,7 +248,7 @@ public class UriInfo
 
         if (split.Length != 2)
         {
-            throw new ArgumentException($"Bad user/password in URI: {userPass}");
+            throw new ArgumentException($"Bad user/password in URI: {userPass}", nameof(userPass));
         }
 
         return split;

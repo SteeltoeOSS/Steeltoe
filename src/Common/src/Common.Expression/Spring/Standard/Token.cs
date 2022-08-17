@@ -8,6 +8,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
 
 public class Token
 {
+    private static readonly ISet<TokenKind> NumericOperatorKinds = new[]
+    {
+        TokenKind.Gt,
+        TokenKind.Ge,
+        TokenKind.Lt,
+        TokenKind.Le,
+        TokenKind.Eq,
+        TokenKind.Ne
+    }.ToHashSet();
+
     public TokenKind Kind { get; }
 
     public int StartPos { get; }
@@ -18,9 +28,7 @@ public class Token
 
     public bool IsIdentifier => Equals(Kind, TokenKind.Identifier);
 
-    public bool IsNumericRelationalOperator =>
-        Equals(Kind, TokenKind.Gt) || Equals(Kind, TokenKind.Ge) || Equals(Kind, TokenKind.Lt) || Equals(Kind, TokenKind.Le) || Equals(Kind, TokenKind.Eq) ||
-        Equals(Kind, TokenKind.Ne);
+    public bool IsNumericRelationalOperator => NumericOperatorKinds.Contains(Kind);
 
     public string StringValue => Data ?? string.Empty;
 

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 
@@ -15,10 +16,7 @@ public static class CloudFoundryConfigurationBuilderExtensions
 
     public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder, ICloudFoundrySettingsReader settingsReader)
     {
-        if (configurationBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(configurationBuilder));
-        }
+        ArgumentGuard.NotNull(configurationBuilder);
 
         return configurationBuilder.Add(new CloudFoundryConfigurationSource
         {

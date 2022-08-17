@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -33,7 +32,12 @@ public class ActuatorRouteBuilderExtensionsTest
                 return t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
             }
 
-            return Assembly.Load("Steeltoe.Management.Endpoint").GetTypes().Where(Query).Select(t => new object[] { t });
+            IEnumerable<Type> types = Assembly.Load("Steeltoe.Management.Endpoint").GetTypes().Where(Query);
+
+            return types.Select(type => new object[]
+            {
+                type
+            });
         }
     }
 
@@ -46,13 +50,7 @@ public class ActuatorRouteBuilderExtensionsTest
                 return t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
             }
 
-            static bool SupportedOnPlatform(Type t)
-            {
-                return !(t.Name.StartsWith("ThreadDump") || t.Name.StartsWith("HeapDump")) || (t.Name.StartsWith("ThreadDump") && Platform.IsWindows) ||
-                    t.Name.StartsWith("HeapDump");
-            }
-
-            List<Type> types = Assembly.Load("Steeltoe.Management.Endpoint").GetTypes().Where(Query).Where(SupportedOnPlatform).ToList();
+            List<Type> types = Assembly.Load("Steeltoe.Management.Endpoint").GetTypes().Where(Query).ToList();
 
             return
                 from t in types
@@ -67,9 +65,9 @@ public class ActuatorRouteBuilderExtensionsTest
     [MemberData(nameof(EndpointImplementations))]
     public void LookupMiddlewareTest(Type type)
     {
-        (Type middleware, Type options) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
-        Assert.NotNull(middleware);
-        Assert.NotNull(options);
+        (Type middlewareType, Type optionsType) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
+        Assert.NotNull(middlewareType);
+        Assert.NotNull(optionsType);
     }
 
     [Theory]

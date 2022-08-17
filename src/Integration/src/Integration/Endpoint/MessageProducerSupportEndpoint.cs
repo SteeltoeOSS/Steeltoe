@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
@@ -47,20 +48,15 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
 
             return _outputChannel;
         }
-
         set => _outputChannel = value;
     }
 
     public virtual string OutputChannelName
     {
         get => _outputChannelName;
-
         set
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new ArgumentException("OutputChannelName can not be null or empty");
-            }
+            ArgumentGuard.NotNullOrEmpty(value);
 
             _outputChannelName = value;
         }
@@ -85,20 +81,15 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
 
             return _errorChannel;
         }
-
         set => _errorChannel = value;
     }
 
     public virtual string ErrorChannelName
     {
         get => _errorChannelName;
-
         set
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new ArgumentException("ErrorChannelName can not be null or empty");
-            }
+            ArgumentGuard.NotNullOrEmpty(value);
 
             _errorChannelName = value;
         }
@@ -107,15 +98,18 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
     public virtual int SendTimeout
     {
         get => _messagingTemplate.SendTimeout;
-
         set => _messagingTemplate.SendTimeout = value;
     }
 
     public virtual IErrorMessageStrategy ErrorMessageStrategy
     {
         get => _errorMessageStrategy;
+        set
+        {
+            ArgumentGuard.NotNull(value);
 
-        set => _errorMessageStrategy = value ?? throw new ArgumentNullException(nameof(value), "'errorMessageStrategy' cannot be null");
+            _errorMessageStrategy = value;
+        }
     }
 
     protected MessageProducerSupportEndpoint(IApplicationContext context, ILogger logger = null)

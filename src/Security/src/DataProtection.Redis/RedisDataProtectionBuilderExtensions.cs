@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Security.DataProtection.Redis;
 
 namespace Steeltoe.Security.DataProtection;
@@ -16,10 +17,7 @@ public static class RedisDataProtectionBuilderExtensions
 {
     public static IDataProtectionBuilder PersistKeysToRedis(this IDataProtectionBuilder builder)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         builder.Services.TryAddSingleton<IXmlRepository, CloudFoundryRedisXmlRepository>();
 

@@ -16,7 +16,6 @@ public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollabl
     public override List<IChannelInterceptor> ChannelInterceptors
     {
         get => base.ChannelInterceptors;
-
         set
         {
             base.ChannelInterceptors = value;
@@ -77,7 +76,7 @@ public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollabl
 
         try
         {
-            Logger?.LogTrace("PreReceive on channel '" + this + "'");
+            Logger?.LogTrace("PreReceive on channel '{channel}'", this);
 
             if (interceptorList.Count > 0)
             {
@@ -93,11 +92,11 @@ public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollabl
 
             if (message == null)
             {
-                Logger?.LogTrace("PostReceive on channel '" + ServiceName + "', message is null");
+                Logger?.LogTrace("PostReceive on channel '{channel}', message is null", ServiceName);
             }
             else
             {
-                Logger?.LogDebug("PostReceive on channel '" + ServiceName + "', message: " + message);
+                Logger?.LogDebug("PostReceive on channel '{channel}', message: {message}", ServiceName, message);
             }
 
             if (interceptorStack != null && message != null)

@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 
 namespace Steeltoe.Connector.Redis;
@@ -69,10 +70,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     public RedisCacheConnectorOptions(IConfiguration config)
         : base(',', DefaultSeparator)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         IConfigurationSection section = config.GetSection(RedisClientSectionPrefix);
         section.Bind(this);

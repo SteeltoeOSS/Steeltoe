@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client.Exceptions;
 using RabbitMQ.Client.Impl;
+using Steeltoe.Common;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using RC = RabbitMQ.Client;
@@ -61,7 +62,7 @@ public static class RabbitUtils
             }
             catch (ShutdownSignalException sig)
             {
-                if (!IsNormalShutdown(sig))
+                if (!IsNormalShutdown(sig.Args))
                 {
                     logger?.LogDebug(sig, "Unexpected exception on closing RabbitMQ Channel");
                 }
@@ -75,10 +76,7 @@ public static class RabbitUtils
 
     public static void CommitIfNecessary(RC.IModel channel, ILogger logger = null)
     {
-        if (channel == null)
-        {
-            throw new ArgumentNullException(nameof(channel));
-        }
+        ArgumentGuard.NotNull(channel);
 
         try
         {
@@ -93,10 +91,7 @@ public static class RabbitUtils
 
     public static void RollbackIfNecessary(RC.IModel channel, ILogger logger = null)
     {
-        if (channel == null)
-        {
-            throw new ArgumentNullException(nameof(channel));
-        }
+        ArgumentGuard.NotNull(channel);
 
         try
         {
@@ -196,22 +191,27 @@ public static class RabbitUtils
 
     public static bool IsNormalChannelClose(RC.ShutdownEventArgs args)
     {
-        return IsNormalShutdown(args) ||
-            (args.ClassId == ChannelCloseClassId && args.MethodId == ChannelCloseMethodId && args.ReplyCode == ReplySuccess && args.ReplyText == "OK") ||
-            (args.Initiator == RC.ShutdownInitiator.Application && args.ClassId == 0 && args.MethodId == 0 && args.ReplyText == "Goodbye");
-    }
+        if (IsNormalShutdown(args))
+        {
+            return true;
+        }
 
-    public static bool IsNormalShutdown(ShutdownSignalException sig)
-    {
-        return (sig.ClassId == ConnectionCloseClassId && sig.MethodId == ConnectionCloseMethodId && sig.ReplyCode == ReplySuccess && sig.ReplyText == "OK") ||
-            (sig.Initiator == RC.ShutdownInitiator.Application && sig.ClassId == 0 && sig.MethodId == 0 && sig.ReplyText == "Goodbye");
+        if (args.ClassId == ChannelCloseClassId && args.MethodId == ChannelCloseMethodId && args.ReplyCode == ReplySuccess && args.ReplyText == "OK")
+        {
+            return true;
+        }
+
+        return args.Initiator == RC.ShutdownInitiator.Application && args.ClassId == 0 && args.MethodId == 0 && args.ReplyText == "Goodbye";
     }
 
     public static bool IsNormalShutdown(RC.ShutdownEventArgs args)
     {
-        return (args.ClassId == ConnectionCloseClassId && args.MethodId == ConnectionCloseMethodId && args.ReplyCode == ReplySuccess &&
-            args.ReplyText == "OK") || (args.Initiator == RC.ShutdownInitiator.Application && args.ClassId == 0 && args.MethodId == 0 &&
-            args.ReplyText == "Goodbye");
+        if (args.ClassId == ConnectionCloseClassId && args.MethodId == ConnectionCloseMethodId && args.ReplyCode == ReplySuccess && args.ReplyText == "OK")
+        {
+            return true;
+        }
+
+        return args.Initiator == RC.ShutdownInitiator.Application && args.ClassId == 0 && args.MethodId == 0 && args.ReplyText == "Goodbye";
     }
 
     public static bool IsPassiveDeclarationChannelClose(Exception exception)

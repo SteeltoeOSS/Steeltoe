@@ -111,9 +111,8 @@ public class SimpleMessageConverter : AbstractMessageConverter
                 accessor.ContentEncoding = DefaultCharset;
                 break;
             }
-
             default:
-                if (payload.GetType().IsSerializable)
+                if (payload != null && payload.GetType().IsSerializable)
                 {
                     bytes = SerializeObject(payload);
                     accessor.ContentType = MessageHeaders.ContentTypeDotnetSerializedObject;
@@ -124,7 +123,9 @@ public class SimpleMessageConverter : AbstractMessageConverter
 
         if (bytes == null)
         {
-            throw new ArgumentException($"SimpleMessageConverter only supports string, byte[] and serializable payloads, received: {payload?.GetType().Name}");
+            throw new ArgumentException(
+                $"{nameof(SimpleMessageConverter)} only supports string, byte[] and binary serializable payloads, received: {payload?.GetType().Name}",
+                nameof(payload));
         }
 
         IMessage<byte[]> message = Message.Create(bytes, headers);

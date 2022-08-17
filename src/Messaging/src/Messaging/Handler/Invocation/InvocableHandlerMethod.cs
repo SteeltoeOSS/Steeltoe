@@ -35,7 +35,7 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
     {
         object[] argValues = GetMethodArgumentValues(requestMessage, args);
 
-        _logger?.LogTrace("Arguments: " + string.Join(", ", args));
+        _logger?.LogTrace("Arguments: {arguments}", string.Join(", ", args));
 
         return DoInvoke(argValues);
     }
@@ -115,7 +115,7 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
         {
             AssertTargetBean(Method, Handler, args);
             string text = !string.IsNullOrEmpty(ex.Message) ? ex.Message : "Illegal argument";
-            throw new InvalidOperationException(FormatInvokeError(text, args), new ArgumentException());
+            throw new InvalidOperationException(FormatInvokeError(text, args));
         }
         catch (Exception ex)
         {

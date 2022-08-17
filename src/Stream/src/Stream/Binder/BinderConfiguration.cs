@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Stream.Config;
 
 namespace Steeltoe.Stream.Binder;
@@ -24,8 +25,11 @@ public class BinderConfiguration
 
     public BinderConfiguration(string binderType, string binderAssemblyPath, IBinderOptions options)
     {
-        ConfigureClass = binderType ?? throw new ArgumentNullException(nameof(binderType));
+        ArgumentGuard.NotNull(binderType);
+        ArgumentGuard.NotNull(options);
+
+        ConfigureClass = binderType;
         ConfigureAssembly = binderAssemblyPath;
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = options;
     }
 }

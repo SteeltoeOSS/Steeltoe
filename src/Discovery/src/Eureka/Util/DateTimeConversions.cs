@@ -8,19 +8,19 @@ public static class DateTimeConversions
 {
     private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-    public static long ToJavaMillis(DateTime dt)
+    public static long ToJavaMillis(DateTime dateTime)
     {
-        if (dt.Kind != DateTimeKind.Utc)
+        if (dateTime.Kind != DateTimeKind.Utc)
         {
-            throw new ArgumentException("Kind != UTC");
+            throw new ArgumentException("DateTime kind must be UTC.", nameof(dateTime));
         }
 
-        if (dt.Ticks <= 0)
+        if (dateTime.Ticks <= 0)
         {
             return 0;
         }
 
-        long javaTicks = dt.Ticks - BaseTime.Ticks;
+        long javaTicks = dateTime.Ticks - BaseTime.Ticks;
         return javaTicks / 10000;
     }
 

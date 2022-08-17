@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
@@ -32,7 +33,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     protected internal readonly List<SimpleConsumer> ConsumersToRestart = new();
 
     private int _consumersPerQueue = 1;
-    private long _monitorInterval = DefaultMonitorInterval;
     private volatile bool _started;
     private volatile bool _aborted;
     private volatile bool _hasStopped;
@@ -44,7 +44,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     public virtual int ConsumersPerQueue
     {
         get => _consumersPerQueue;
-
         set
         {
             if (IsRunning)
@@ -59,23 +58,18 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     public override bool Exclusive
     {
         get => base.Exclusive;
-
         set
         {
             if (value && ConsumersPerQueue != 1)
             {
-                throw new ArgumentException("When the consumer is exclusive, the consumers per queue must be 1");
+                throw new ArgumentException("When the consumer is exclusive, the number of consumers per queue must be 1.", nameof(value));
             }
 
             base.Exclusive = value;
         }
     }
 
-    public virtual long MonitorInterval
-    {
-        get => _monitorInterval;
-        set => _monitorInterval = value;
-    }
+    public virtual long MonitorInterval { get; set; } = DefaultMonitorInterval;
 
     public virtual int MessagesPerAck { get; set; }
 
@@ -110,15 +104,12 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
     public override void AddQueueNames(params string[] queueNames)
     {
-        if (queueNames == null)
-        {
-            throw new ArgumentNullException(nameof(queueNames));
-        }
+        ArgumentGuard.NotNull(queueNames);
+        ArgumentGuard.ElementsNotNull(queueNames);
 
         try
         {
-            IEnumerable<string> names = queueNames.Select(n => n ?? throw new ArgumentNullException("queue names cannot be null"));
-            AddQueues(names);
+            AddQueues(queueNames);
         }
         catch (Exception e)
         {
@@ -131,15 +122,13 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
     public override void AddQueues(params IQueue[] queues)
     {
-        if (queues == null)
-        {
-            throw new ArgumentNullException(nameof(queues));
-        }
+        ArgumentGuard.NotNull(queues);
+        ArgumentGuard.ElementsNotNull(queues);
 
         try
         {
-            IEnumerable<string> names = queues.Select(q => q != null ? q.QueueName : throw new ArgumentNullException("queues cannot contain nulls"));
-            AddQueues(names);
+            IEnumerable<string> queueNames = queues.Select(queue => queue.QueueName);
+            AddQueues(queueNames);
         }
         catch (Exception e)
         {
@@ -171,7 +160,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
         if (MessagesPerAck > 0 && IsChannelTransacted)
         {
-            throw new ArgumentException("'messagesPerAck' is not allowed with transactions");
+            throw new InvalidOperationException("'messagesPerAck' is not allowed with transactions.");
         }
     }
 
@@ -198,14 +187,14 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         string[] queueNames = GetQueueNames();
         CheckMissingQueues(queueNames);
 
-        if (IdleEventInterval > 0 && _monitorInterval > IdleEventInterval)
+        if (IdleEventInterval > 0 && MonitorInterval > IdleEventInterval)
         {
-            _monitorInterval = IdleEventInterval / 2;
+            MonitorInterval = IdleEventInterval / 2;
         }
 
         if (FailedDeclarationRetryInterval < MonitorInterval)
         {
-            _monitorInterval = FailedDeclarationRetryInterval;
+            MonitorInterval = FailedDeclarationRetryInterval;
         }
 
         Dictionary<string, IQueue> namesToQueues = GetQueueNamesToQueues();
@@ -548,7 +537,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                                 {
                                     if (!ConsumersByQueue.ContainsKey(consumer.Queue))
                                     {
-                                        Logger?.LogDebug("Skipping restart of consumer {consumer} ", consumer);
+                                        Logger?.LogDebug("Skipping restart of consumer {consumer}", consumer);
                                         continue;
                                     }
 
@@ -703,7 +692,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
             //    this.taskScheduler.schedule(this::stop, new Date());
             // }
             ConsumersToRestart.AddRange(restartableConsumers);
-            Logger?.LogTrace("After restart exception, consumers to restart now: {consumersToRestart}", ConsumersToRestart.Count);
+            Logger?.LogTrace(e, "After restart exception, consumers to restart now: {consumersToRestart}", ConsumersToRestart.Count);
             return false;
         }
     }
@@ -821,7 +810,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                 {
                     if (current.Contains(name))
                     {
-                        Logger?.LogWarning("Queue " + name + " is already configured for this container: " + this + ", ignoring add");
+                        Logger?.LogWarning("Queue {name} is already configured for this container: {container}, ignoring add", name, this);
                     }
                     else
                     {
@@ -1135,7 +1124,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
             {
                 if (_container.CauseChainHasImmediateAcknowledgeRabbitException(e))
                 {
-                    _logger?.LogDebug("User requested ack for failed delivery: {tag}", deliveryTag);
+                    _logger?.LogDebug(e, "User requested ack for failed delivery: {tag}", deliveryTag);
                     HandleAck(deliveryTag, channelLocallyTransacted);
                 }
                 else

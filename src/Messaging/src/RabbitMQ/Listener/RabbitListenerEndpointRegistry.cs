@@ -4,6 +4,7 @@
 
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
@@ -34,10 +35,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 
     public IMessageListenerContainer GetListenerContainer(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException(nameof(id));
-        }
+        ArgumentGuard.NotNullOrEmpty(id);
 
         _listenerContainers.TryGetValue(id, out IMessageListenerContainer messageListenerContainer);
         return messageListenerContainer;
@@ -60,32 +58,23 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 
     public void RegisterListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory, bool startImmediately)
     {
-        if (endpoint == null)
-        {
-            throw new ArgumentNullException(nameof(endpoint));
-        }
+        ArgumentGuard.NotNull(endpoint);
+        ArgumentGuard.NotNull(factory);
 
-        if (factory == null)
+        if (string.IsNullOrEmpty(endpoint.Id))
         {
-            throw new ArgumentNullException(nameof(factory));
-        }
-
-        string id = endpoint.Id;
-
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException("Endpoint id must not be empty");
+            throw new ArgumentException($"{nameof(endpoint.Id)} in {nameof(endpoint)} must not be null or empty.", nameof(endpoint));
         }
 
         lock (_listenerContainers)
         {
-            if (_listenerContainers.ContainsKey(id))
+            if (_listenerContainers.ContainsKey(endpoint.Id))
             {
-                throw new InvalidOperationException($"Another endpoint is already registered with id '{id}'");
+                throw new InvalidOperationException($"Another endpoint is already registered with id '{endpoint.Id}'");
             }
 
             IMessageListenerContainer container = CreateListenerContainer(endpoint, factory);
-            _listenerContainers.TryAdd(id, container);
+            _listenerContainers.TryAdd(endpoint.Id, container);
 
             if (!string.IsNullOrEmpty(endpoint.Group) && ApplicationContext != null &&
                 ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) is MessageListenerContainerCollection containerCollection)
@@ -130,7 +119,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
                     }
                     catch (Exception ex)
                     {
-                        _logger?.LogWarning("Failed to destroy listener container [" + listenerContainer + "]", ex);
+                        _logger?.LogWarning(ex, "Failed to destroy listener container [{container}]", listenerContainer);
                     }
                 }
             }
@@ -165,7 +154,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogWarning("Failed to stop listener container [" + listenerContainer + "]", e);
+                    _logger?.LogWarning(e, "Failed to stop listener container [{container}]", listenerContainer);
                 }
             }
         }
@@ -185,7 +174,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
             }
             catch (Exception e)
             {
-                _logger?.LogWarning("Failed to stop listener container [" + listenerContainer + "]", e);
+                _logger?.LogWarning(e, "Failed to stop listener container [{container}]", listenerContainer);
             }
         }
     }

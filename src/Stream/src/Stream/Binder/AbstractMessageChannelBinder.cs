@@ -55,7 +55,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
     {
         if (outboundTarget is not ISubscribableChannel subscribableChannel)
         {
-            throw new ArgumentException("Binding is supported only for ISubscribableChannel instances");
+            throw new ArgumentException($"Binding is supported only for {nameof(ISubscribableChannel)} instances.", nameof(outboundTarget));
         }
 
         IMessageHandler producerMessageHandler;
@@ -222,9 +222,9 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
             }
             else
             {
-                _logger?.LogWarning("The provided errorChannel '" + errorChannelName + "' is an instance of DirectChannel, " +
-                    "so no more subscribers could be added which may affect DLQ processing. " + "Resolution: Configure your own errorChannel as " +
-                    "an instance of PublishSubscribeChannel");
+                _logger?.LogWarning(
+                    "The provided errorChannel '{channel}' is an instance of DirectChannel, so no more subscribers could be added " +
+                    "which may affect DLQ processing. Resolution: Configure your own errorChannel as an instance of PublishSubscribeChannel", errorChannelName);
             }
         }
 
@@ -245,9 +245,10 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
             }
             else
             {
-                _logger?.LogWarning("The provided errorChannel '" + errorChannelName + "' is an instance of DirectChannel, " +
-                    "so no more subscribers could be added and no error messages will be sent to global error channel. " +
-                    "Resolution: Configure your own errorChannel as " + "an instance of PublishSubscribeChannel");
+                _logger?.LogWarning(
+                    "The provided errorChannel '{channel}' is an instance of DirectChannel, so no more subscribers could be added " +
+                    "and no error messages will be sent to global error channel. Resolution: Configure your own errorChannel as an instance of PublishSubscribeChannel",
+                    errorChannelName);
             }
         }
 
@@ -341,7 +342,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         {
             if (errorChannelObject is not ISubscribableChannel subscribableChannel)
             {
-                throw new ArgumentException($"Error channel '{errorChannelName}' must be a ISubscribableChannel");
+                throw new InvalidOperationException($"Error channel '{errorChannelName}' must be a {nameof(ISubscribableChannel)}.");
             }
 
             errorChannel = subscribableChannel;

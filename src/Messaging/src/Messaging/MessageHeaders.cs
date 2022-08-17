@@ -39,7 +39,6 @@ public class MessageHeaders : IMessageHeaders
     internal static IIdGenerator IdGenerator
     {
         get => _idGenerator ?? DefaultIdGenerator;
-
         set => _idGenerator = value;
     }
 
@@ -136,7 +135,6 @@ public class MessageHeaders : IMessageHeaders
 
             return null;
         }
-
         set => throw new InvalidOperationException();
     }
 

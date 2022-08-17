@@ -13,7 +13,6 @@ public class AbstractDestination
     internal ISubscribableChannel Channel
     {
         get => _channel;
-
         set
         {
             _channel = value;

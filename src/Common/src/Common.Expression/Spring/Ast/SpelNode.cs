@@ -95,7 +95,7 @@ public abstract class SpelNode : ISpelNode
 
     public abstract string ToStringAst();
 
-    protected internal virtual bool NextChildIs(params Type[] classes)
+    protected internal virtual bool NextChildIs(params Type[] types)
     {
         if (_parent != null)
         {
@@ -112,9 +112,9 @@ public abstract class SpelNode : ISpelNode
 
                     Type peerClass = peers[i + 1].GetType();
 
-                    foreach (Type desiredClass in classes)
+                    foreach (Type desiredType in types)
                     {
-                        if (peerClass == desiredClass)
+                        if (peerClass == desiredType)
                         {
                             return true;
                         }

@@ -32,8 +32,8 @@ public class HealthCountsStream : BucketedRollingCounterStream<HystrixCommandCom
 
         if (healthCountBucketSizeInMs == 0)
         {
-            throw new ArgumentOutOfRangeException(
-                "You have set the bucket size to 0ms.  Please set a positive number, so that the metric stream can be properly consumed");
+            throw new ArgumentException(
+                "You have set the bucket size to 0ms. Please set a positive number, so that the metric stream can be properly consumed.", nameof(properties));
         }
 
         int numHealthCountBuckets = properties.MetricsRollingStatisticalWindowInMilliseconds / healthCountBucketSizeInMs;

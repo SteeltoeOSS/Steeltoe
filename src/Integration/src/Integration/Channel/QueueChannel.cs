@@ -4,6 +4,7 @@
 
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 
@@ -59,7 +60,9 @@ public class QueueChannel : AbstractPollableChannel, IQueueChannelOperations
     public QueueChannel(IApplicationContext context, Channel<IMessage> channel, string name, ILogger logger = null)
         : base(context, name, logger)
     {
-        _channel = channel ?? throw new ArgumentNullException(nameof(channel));
+        ArgumentGuard.NotNull(channel);
+
+        _channel = channel;
         Writer = new QueueChannelWriter(this, logger);
         Reader = new QueueChannelReader(this, logger);
     }

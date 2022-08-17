@@ -21,17 +21,17 @@ public static class BindingHelpers
         return context.GetService<IMessageChannel>(name);
     }
 
-    public static IDictionary<string, Bindable> CollectBindables(Type binding)
+    public static IDictionary<string, Bindable> CollectBindables(Type bindingType)
     {
         IDictionary<string, Bindable> bindables = new Dictionary<string, Bindable>();
-        CollectFromProperties(binding, bindables);
-        CollectFromMethods(binding, bindables);
+        CollectFromProperties(bindingType, bindables);
+        CollectFromMethods(bindingType, bindables);
         return bindables;
     }
 
-    internal static void CollectFromProperties(Type binding, IDictionary<string, Bindable> targets)
+    internal static void CollectFromProperties(Type bindingType, IDictionary<string, Bindable> targets)
     {
-        PropertyInfo[] infos = binding.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+        PropertyInfo[] infos = bindingType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
         foreach (PropertyInfo info in infos)
         {
@@ -67,15 +67,15 @@ public static class BindingHelpers
             }
         }
 
-        foreach (Type @interface in binding.GetInterfaces())
+        foreach (Type @interface in bindingType.GetInterfaces())
         {
             CollectFromProperties(@interface, targets);
         }
     }
 
-    internal static void CollectFromMethods(Type binding, IDictionary<string, Bindable> components)
+    internal static void CollectFromMethods(Type bindingType, IDictionary<string, Bindable> components)
     {
-        MethodInfo[] methods = binding.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+        MethodInfo[] methods = bindingType.GetMethods(BindingFlags.Instance | BindingFlags.Public);
 
         foreach (MethodInfo method in methods)
         {
@@ -106,7 +106,7 @@ public static class BindingHelpers
             }
         }
 
-        foreach (Type @interface in binding.GetInterfaces())
+        foreach (Type @interface in bindingType.GetInterfaces())
         {
             CollectFromMethods(@interface, components);
         }

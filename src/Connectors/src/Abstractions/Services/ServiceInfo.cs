@@ -19,10 +19,7 @@ public abstract class ServiceInfo : IServiceInfo
 
     protected ServiceInfo(string id, IApplicationInstanceInfo info)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentNullException(nameof(id));
-        }
+        ArgumentGuard.NotNullOrEmpty(id);
 
         Id = id;
         ApplicationInfo = info;

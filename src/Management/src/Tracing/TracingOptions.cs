@@ -54,10 +54,7 @@ public class TracingOptions : ITracingOptions
 
     public TracingOptions(IApplicationInstanceInfo appInfo, IConfiguration config)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         IConfigurationSection section = config.GetSection(ConfigPrefix);
 

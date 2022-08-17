@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Support;
@@ -57,49 +58,42 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
     public virtual event EventHandler<BasicAckEventArgs> BasicAcks
     {
         add => Channel.BasicAcks += value;
-
         remove => Channel.BasicAcks -= value;
     }
 
     public virtual event EventHandler<BasicNackEventArgs> BasicNacks
     {
         add => Channel.BasicNacks += value;
-
         remove => Channel.BasicNacks -= value;
     }
 
     public virtual event EventHandler<EventArgs> BasicRecoverOk
     {
         add => Channel.BasicRecoverOk += value;
-
         remove => Channel.BasicRecoverOk -= value;
     }
 
     public virtual event EventHandler<BasicReturnEventArgs> BasicReturn
     {
         add => Channel.BasicReturn += value;
-
         remove => Channel.BasicReturn -= value;
     }
 
     public virtual event EventHandler<CallbackExceptionEventArgs> CallbackException
     {
         add => Channel.CallbackException += value;
-
         remove => Channel.CallbackException -= value;
     }
 
     public virtual event EventHandler<FlowControlEventArgs> FlowControl
     {
         add => Channel.FlowControl += value;
-
         remove => Channel.FlowControl -= value;
     }
 
     public virtual event EventHandler<RC.ShutdownEventArgs> ModelShutdown
     {
         add => Channel.ModelShutdown += value;
-
         remove => Channel.ModelShutdown -= value;
     }
 
@@ -175,10 +169,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
 
     public virtual void AddListener(IListener listener)
     {
-        if (listener == null)
-        {
-            throw new ArgumentNullException(nameof(listener));
-        }
+        ArgumentGuard.NotNull(listener);
 
         if (_listeners.Count == 0)
         {
@@ -200,7 +191,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
         {
             if (!_pendingConfirms.TryGetValue(listener, out SortedDictionary<ulong, PendingConfirm> pendingConfirmsForListener))
             {
-                throw new ArgumentException(nameof(listener));
+                throw new ArgumentException("Listener not found in pending confirms.", nameof(listener));
             }
 
             pendingConfirmsForListener[sequence] = pendingConfirm;
@@ -498,7 +489,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
                 foreach (KeyValuePair<ulong, PendingConfirm> confirmEntry in entry.Value)
                 {
                     confirmEntry.Value.Cause = cause;
-                    _logger?.LogDebug("{channel} PC:Nack:(close):{confirmEntry}", ToString(), confirmEntry.Key);
+                    _logger?.LogDebug("{channel} PC:Nack:(close):{confirmEntry}", this, confirmEntry.Key);
                     ProcessAck(confirmEntry.Key, false, false, false);
                 }
 
@@ -560,13 +551,13 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
 
     private void HandleAck(object sender, BasicAckEventArgs args)
     {
-        _logger?.LogDebug("{channel} PC:Ack: {deliveryTag}:{multiple}", ToString(), args.DeliveryTag, args.Multiple);
+        _logger?.LogDebug("{channel} PC:Ack: {deliveryTag}:{multiple}", this, args.DeliveryTag, args.Multiple);
         ProcessAck(args.DeliveryTag, true, args.Multiple, true);
     }
 
     private void HandleNack(object sender, BasicNackEventArgs args)
     {
-        _logger?.LogDebug("{channel} PC:Nack: {deliveryTag}:{multiple}", ToString(), args.DeliveryTag, args.Multiple);
+        _logger?.LogDebug("{channel} PC:Nack: {deliveryTag}:{multiple}", this, args.DeliveryTag, args.Multiple);
         ProcessAck(args.DeliveryTag, false, args.Multiple, true);
     }
 
@@ -701,7 +692,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
                     //    this.logger
                     //            .error("Return callback failed to execute in " + RETURN_CALLBACK_TIMEOUT + " seconds");
                     // }
-                    _logger?.LogDebug("Sending confirm {confirm} ", pendingConfirm);
+                    _logger?.LogDebug("Sending confirm {confirm}", pendingConfirm);
                     listener.HandleConfirm(pendingConfirm, ack);
                 }
             }

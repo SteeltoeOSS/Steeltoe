@@ -26,10 +26,7 @@ public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
 
     public new static CloudFoundryServiceInfoCreator Instance(IConfiguration configuration)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         if (configuration != _me?.Configuration)
         {

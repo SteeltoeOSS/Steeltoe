@@ -90,7 +90,7 @@ public class ConfigServerConfigurationProviderTest
 
         var provider = new ConfigServerConfigurationProvider(settings);
 
-        Assert.Throws<ArgumentException>(() => provider.GetConfigServerUri(null, null));
+        Assert.Throws<ArgumentNullException>(() => provider.GetConfigServerUri(null, null));
     }
 
     [Fact]

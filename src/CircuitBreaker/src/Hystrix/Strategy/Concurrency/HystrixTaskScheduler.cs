@@ -39,21 +39,18 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
     public virtual int CorePoolSize
     {
         get => corePoolSize;
-
         set => throw new NotImplementedException();
     }
 
     public virtual int MaximumPoolSize
     {
         get => maximumPoolSize;
-
         set => throw new NotImplementedException();
     }
 
     public virtual TimeSpan KeepAliveTime
     {
         get => keepAliveTime;
-
         set => throw new NotImplementedException();
     }
 
@@ -67,12 +64,12 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
     {
         if (options.MaximumSize < 1)
         {
-            throw new ArgumentOutOfRangeException("maximumPoolSize");
+            throw new ArgumentException($"{nameof(options.MaximumSize)} in {nameof(options)} must not be negative.", nameof(options));
         }
 
         if (options.CoreSize < 0)
         {
-            throw new ArgumentOutOfRangeException("corePoolSize");
+            throw new ArgumentException($"{nameof(options.CoreSize)} in {nameof(options)} must not be negative.", nameof(options));
         }
 
         allowMaxToDivergeFromCore = options.AllowMaximumSizeToDivergeFromCoreSize;

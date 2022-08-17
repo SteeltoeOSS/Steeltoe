@@ -9,15 +9,23 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test;
 
 public class MyMiddleware : IMiddleware
 {
+    private static readonly ISet<string> KeyNames = new[]
+    {
+        "name",
+        "healthUrl",
+        "managementUrl",
+        "serviceUrl",
+        "metadata"
+    }.ToHashSet();
+
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (context.Request.Path.Value.EndsWith("instances"))
         {
-            var kvp = await JsonSerializer.DeserializeAsync<Dictionary<string, object>>(context.Request.Body);
+            var dictionary = await JsonSerializer.DeserializeAsync<Dictionary<string, object>>(context.Request.Body);
             context.Response.Headers.Add("Content-Type", "application/json");
 
-            bool isValid = kvp.ContainsKey("name") && kvp.ContainsKey("healthUrl") && kvp.ContainsKey("managementUrl") && kvp.ContainsKey("serviceUrl") &&
-                kvp.ContainsKey("metadata");
+            bool isValid = dictionary != null && KeyNames.All(dictionary.ContainsKey);
 
             // Registration response
             await context.Response.WriteAsync(isValid ? "{\"Id\":\"1234567\"}" : "{\"SerializationError: invalid keys in Application object.\"}");

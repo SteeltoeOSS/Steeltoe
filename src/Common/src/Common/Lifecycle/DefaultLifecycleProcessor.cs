@@ -246,15 +246,20 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
 
         private async Task DoStartAsync(ILifecycle bean)
         {
-            if (bean != null && !bean.IsRunning && (!_autoStartupOnly || bean is not ISmartLifecycle lifecycle || lifecycle.IsAutoStartup))
+            if (bean is { IsRunning: false })
             {
-                try
+                bool canStart = !_autoStartupOnly || bean is not ISmartLifecycle lifecycle || lifecycle.IsAutoStartup;
+
+                if (canStart)
                 {
-                    await bean.StartAsync();
-                }
-                catch (Exception ex)
-                {
-                    throw new LifecycleException($"Failed to start bean(service) '{bean}'", ex);
+                    try
+                    {
+                        await bean.StartAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new LifecycleException($"Failed to start bean(service) '{bean}'", ex);
+                    }
                 }
             }
         }

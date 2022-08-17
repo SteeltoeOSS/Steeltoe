@@ -5,6 +5,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.EntityFrameworkCore;
 using Steeltoe.Connector.Services;
@@ -60,15 +61,8 @@ public static class MySqlDbContextOptionsExtensions
     public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object serverVersion,
         object mySqlOptionsAction = null)
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
 
         string connection = GetConnection(config);
 
@@ -129,20 +123,9 @@ public static class MySqlDbContextOptionsExtensions
     public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, object serverVersion,
         object mySqlOptionsAction = null)
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         string connection = GetConnection(config, serviceName);
 
@@ -174,15 +157,8 @@ public static class MySqlDbContextOptionsExtensions
         object mySqlOptionsAction = null, object serverVersion = null)
         where TContext : DbContext
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
 
         string connection = GetConnection(config);
 
@@ -217,20 +193,9 @@ public static class MySqlDbContextOptionsExtensions
         string serviceName, object mySqlOptionsAction = null, object serverVersion = null)
         where TContext : DbContext
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         string connection = GetConnection(config, serviceName);
 
@@ -329,22 +294,25 @@ public static class MySqlDbContextOptionsExtensions
         return (DbContextOptionsBuilder<TContext>)DoUseMySql((DbContextOptionsBuilder)builder, connection, mySqlOptionsAction, serverVersion);
     }
 
-    private static MethodInfo FindUseSqlMethod(Type type, Type[] parameterTypes)
+    private static MethodInfo FindUseSqlMethod(Type type, IReadOnlyList<Type> parameterTypes)
     {
-        TypeInfo typeInfo = type.GetTypeInfo();
-        IEnumerable<MethodInfo> declaredMethods = typeInfo.DeclaredMethods;
+        return type.GetMethods().FirstOrDefault(method => MatchesSignature(method, parameterTypes));
+    }
 
-        foreach (MethodInfo ci in declaredMethods.Where(method => method.Name.Equals("UseMySQL", StringComparison.InvariantCultureIgnoreCase)))
+    private static bool MatchesSignature(MethodBase method, IReadOnlyList<Type> parameterTypes)
+    {
+        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseMySQL", StringComparison.InvariantCultureIgnoreCase))
         {
-            ParameterInfo[] parameters = ci.GetParameters();
+            ParameterInfo[] parameters = method.GetParameters();
 
-            if (parameters.Length == parameterTypes.Length && parameters[0].ParameterType == parameterTypes[0] &&
-                parameters[1].ParameterType == parameterTypes[1] && ci.IsPublic && ci.IsStatic)
+            if (parameters.Length != parameterTypes.Count)
             {
-                return ci;
+                return false;
             }
+
+            return parameters.Length >= 2 && parameters[0].ParameterType == parameterTypes[0] && parameters[1].ParameterType == parameterTypes[1];
         }
 
-        return null;
+        return false;
     }
 }

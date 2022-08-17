@@ -136,10 +136,7 @@ public static class DiscoveryServiceCollectionExtensions
     /// </exception>
     public static IServiceCollection AddServiceDiscovery(this IServiceCollection serviceCollection, Action<DiscoveryClientBuilder> builderAction = null)
     {
-        if (serviceCollection is null)
-        {
-            throw new ArgumentNullException(nameof(serviceCollection));
-        }
+        ArgumentGuard.NotNull(serviceCollection);
 
         builderAction ??= builder => builder.Extensions.Add(new NoOpDiscoveryClientExtension());
 

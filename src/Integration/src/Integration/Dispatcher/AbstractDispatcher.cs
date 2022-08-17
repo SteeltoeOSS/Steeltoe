@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Order;
 using Steeltoe.Common.Util;
@@ -58,7 +59,6 @@ public abstract class AbstractDispatcher : IMessageDispatcher
 
             return _errorHandler;
         }
-
         set => _errorHandler = value;
     }
 
@@ -76,16 +76,13 @@ public abstract class AbstractDispatcher : IMessageDispatcher
 
     public virtual bool AddHandler(IMessageHandler handler)
     {
-        if (handler == null)
-        {
-            throw new ArgumentNullException(nameof(handler));
-        }
+        ArgumentGuard.NotNull(handler);
 
         lock (_lock)
         {
             if (handlers.Count == MaxSubscribers)
             {
-                throw new ArgumentException("Maximum subscribers exceeded");
+                throw new InvalidOperationException("Maximum number of subscribers exceeded.");
             }
 
             var newHandlers = new List<IMessageHandler>(handlers);
@@ -107,10 +104,7 @@ public abstract class AbstractDispatcher : IMessageDispatcher
 
     public virtual bool RemoveHandler(IMessageHandler handler)
     {
-        if (handler == null)
-        {
-            throw new ArgumentNullException(nameof(handler));
-        }
+        ArgumentGuard.NotNull(handler);
 
         lock (_lock)
         {

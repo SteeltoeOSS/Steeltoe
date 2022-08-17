@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Management;
 
 public abstract class AbstractEndpoint : IEndpoint
@@ -18,7 +20,9 @@ public abstract class AbstractEndpoint : IEndpoint
 
     protected AbstractEndpoint(IEndpointOptions options)
     {
-        this.options = options ?? throw new ArgumentNullException(nameof(options));
+        ArgumentGuard.NotNull(options);
+
+        this.options = options;
     }
 }
 

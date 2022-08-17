@@ -162,7 +162,7 @@ public class DataTypeChannelTest
 
     private sealed class BoolToIntConverter : IGenericConverter
     {
-        public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>
+        public ISet<(Type SourceType, Type TargetType)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>
         {
             (typeof(bool), typeof(int))
         };
@@ -188,7 +188,7 @@ public class DataTypeChannelTest
 
     private sealed class StringToBarConverter : IGenericConverter
     {
-        public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>
+        public ISet<(Type SourceType, Type TargetType)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>
         {
             (typeof(string), typeof(Foo)),
             (typeof(string), typeof(Bar))
@@ -202,7 +202,7 @@ public class DataTypeChannelTest
 
     private sealed class IntegerToBazConverter : IGenericConverter
     {
-        public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>
+        public ISet<(Type SourceType, Type TargetType)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>
         {
             (typeof(int), typeof(Foo)),
             (typeof(int), typeof(Baz))

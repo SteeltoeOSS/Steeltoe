@@ -25,7 +25,9 @@ public class LoadBalancerDelegatingHandler : DelegatingHandler
     /// </param>
     public LoadBalancerDelegatingHandler(ILoadBalancer loadBalancer)
     {
-        _loadBalancer = loadBalancer ?? throw new ArgumentNullException(nameof(loadBalancer));
+        ArgumentGuard.NotNull(loadBalancer);
+
+        _loadBalancer = loadBalancer;
     }
 
     /// <summary>
@@ -42,7 +44,9 @@ public class LoadBalancerDelegatingHandler : DelegatingHandler
     [Obsolete("Please remove ILogger parameter")]
     public LoadBalancerDelegatingHandler(ILoadBalancer loadBalancer, ILogger logger)
     {
-        _loadBalancer = loadBalancer ?? throw new ArgumentNullException(nameof(loadBalancer));
+        ArgumentGuard.NotNull(loadBalancer);
+
+        _loadBalancer = loadBalancer;
     }
 
     /// <inheritdoc />

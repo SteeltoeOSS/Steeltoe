@@ -4,6 +4,7 @@
 
 using System.Reflection;
 using System.Text;
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 
 namespace Steeltoe.Messaging;
@@ -105,8 +106,11 @@ public class Message<TPayload> : AbstractMessage, IMessage<TPayload>
 
     protected internal Message(TPayload payload, IMessageHeaders headers)
     {
-        InnerPayload = payload ?? throw new ArgumentNullException(nameof(payload));
-        InnerHeaders = headers ?? throw new ArgumentNullException(nameof(headers));
+        ArgumentGuard.NotNull(payload);
+        ArgumentGuard.NotNull(headers);
+
+        InnerPayload = payload;
+        InnerHeaders = headers;
     }
 
     public override bool Equals(object obj)

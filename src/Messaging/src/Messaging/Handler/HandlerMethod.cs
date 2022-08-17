@@ -5,6 +5,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 
 namespace Steeltoe.Messaging.Handler;
@@ -45,12 +46,11 @@ public class HandlerMethod
 
     public HandlerMethod(object handler, MethodInfo handlerMethod)
     {
-        if (handlerMethod == null)
-        {
-            throw new ArgumentNullException(nameof(handlerMethod));
-        }
+        ArgumentGuard.NotNull(handlerMethod);
 
-        InnerHandler = handler ?? throw new ArgumentNullException(nameof(handler));
+        ArgumentGuard.NotNull(handler);
+
+        InnerHandler = handler;
         HandlerType = handler.GetType();
         Method = handlerMethod;
         InnerArgCount = Method.GetParameters().Length;
@@ -59,12 +59,10 @@ public class HandlerMethod
 
     public HandlerMethod(object handler, string handlerMethodName, params Type[] parameterTypes)
     {
-        if (string.IsNullOrEmpty(nameof(handlerMethodName)))
-        {
-            throw new ArgumentNullException(nameof(handlerMethodName));
-        }
+        ArgumentGuard.NotNullOrEmpty(handlerMethodName);
+        ArgumentGuard.NotNull(handler);
 
-        InnerHandler = handler ?? throw new ArgumentNullException(nameof(handler));
+        InnerHandler = handler;
         HandlerType = handler.GetType();
         Method = HandlerType.GetMethod(handlerMethodName, parameterTypes);
         InnerArgCount = Method.GetParameters().Length;
@@ -73,10 +71,7 @@ public class HandlerMethod
 
     protected HandlerMethod(HandlerMethod handlerMethod)
     {
-        if (handlerMethod == null)
-        {
-            throw new ArgumentNullException(nameof(handlerMethod));
-        }
+        ArgumentGuard.NotNull(handlerMethod);
 
         InnerHandler = handlerMethod.Handler;
         HandlerType = handlerMethod.HandlerType;
@@ -87,12 +82,10 @@ public class HandlerMethod
 
     private HandlerMethod(HandlerMethod handlerMethod, object handler)
     {
-        if (handlerMethod == null)
-        {
-            throw new ArgumentNullException(nameof(handlerMethod));
-        }
+        ArgumentGuard.NotNull(handlerMethod);
+        ArgumentGuard.NotNull(handler);
 
-        InnerHandler = handler ?? throw new ArgumentNullException(nameof(handler));
+        InnerHandler = handler;
         HandlerType = handlerMethod.HandlerType;
         Method = handlerMethod.Method;
         InnerInvoker = handlerMethod.HandlerInvoker;

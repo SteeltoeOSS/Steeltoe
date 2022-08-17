@@ -35,15 +35,25 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     public DynamicLoggerProviderBase(Func<ILoggerProvider> getDelegateLogger, InitialLevels initialLevels,
         IEnumerable<IDynamicMessageProcessor> messageProcessors)
     {
-        _delegate = getDelegateLogger?.Invoke() ?? throw new ArgumentNullException(nameof(getDelegateLogger));
+        if (initialLevels.OriginalLevels == null)
+        {
+            throw new ArgumentException($"{nameof(initialLevels.OriginalLevels)} in {nameof(initialLevels)} must not be null.", nameof(initialLevels));
+        }
 
-        _originalLevels =
-            new ConcurrentDictionary<string, LogLevel>(initialLevels.OriginalLevels ?? throw new ArgumentNullException(nameof(initialLevels.OriginalLevels)));
+        if (initialLevels.RunningLevelFilters == null)
+        {
+            throw new ArgumentException($"{nameof(initialLevels.RunningLevelFilters)} in {nameof(initialLevels)} must not be null.", nameof(initialLevels));
+        }
 
-        _runningFilters =
-            new ConcurrentDictionary<string, Filter>(initialLevels.RunningLevelFilters ??
-                throw new ArgumentNullException(nameof(initialLevels.RunningLevelFilters)));
+        _delegate = getDelegateLogger?.Invoke();
 
+        if (_delegate == null)
+        {
+            throw new ArgumentException($"Callback for {nameof(ILoggerProvider)} must not return null.", nameof(getDelegateLogger));
+        }
+
+        _originalLevels = new ConcurrentDictionary<string, LogLevel>(initialLevels.OriginalLevels);
+        _runningFilters = new ConcurrentDictionary<string, Filter>(initialLevels.RunningLevelFilters);
         _messageProcessors = messageProcessors;
         _filter = initialLevels.DefaultLevelFilter ?? FalseFilter;
     }

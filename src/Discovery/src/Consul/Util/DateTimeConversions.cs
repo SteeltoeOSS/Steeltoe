@@ -2,16 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Discovery.Consul.Util;
 
 public static class DateTimeConversions
 {
     public static TimeSpan ToTimeSpan(string time)
     {
-        if (string.IsNullOrWhiteSpace(time))
-        {
-            throw new ArgumentNullException(nameof(time));
-        }
+        ArgumentGuard.NotNullOrWhiteSpace(time);
 
         time = time.ToLower();
 
@@ -40,10 +39,7 @@ public static class DateTimeConversions
 
     public static TimeSpan ToTimeSpan(int value, string unit)
     {
-        if (string.IsNullOrWhiteSpace(unit))
-        {
-            throw new ArgumentNullException(nameof(unit));
-        }
+        ArgumentGuard.NotNullOrWhiteSpace(unit);
 
         return unit switch
         {

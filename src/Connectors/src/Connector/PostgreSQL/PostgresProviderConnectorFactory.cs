@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 
@@ -16,8 +17,10 @@ public class PostgresProviderConnectorFactory
 
     public PostgresProviderConnectorFactory(PostgresServiceInfo serviceInfo, PostgresProviderConnectorOptions options, Type type)
     {
+        ArgumentGuard.NotNull(options);
+
         _info = serviceInfo;
-        _config = options ?? throw new ArgumentNullException(nameof(options));
+        _config = options;
         _type = type;
     }
 

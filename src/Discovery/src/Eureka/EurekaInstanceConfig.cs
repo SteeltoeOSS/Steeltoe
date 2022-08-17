@@ -19,7 +19,6 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
     public const string DefaultHealthCheckUrlPath = "/healthcheck";
 
     protected string thisHostAddress;
-    protected string thisHostName;
 
     // eureka:instance:instanceId, spring:application:instance_id, null
     public virtual string InstanceId { get; set; }
@@ -70,12 +69,7 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
     public virtual bool PreferIpAddress { get; set; }
 
     // eureka:instance:hostName
-    public virtual string HostName
-    {
-        get => thisHostName;
-
-        set => thisHostName = value;
-    }
+    public virtual string HostName { get; set; }
 
     public virtual string IpAddress { get; set; }
 
@@ -102,7 +96,7 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
     public EurekaInstanceConfig()
     {
 #pragma warning disable S1699 // Constructors should only call non-overridable methods
-        thisHostName = GetHostName(true);
+        HostName = GetHostName(true);
         thisHostAddress = GetHostAddress(true);
 #pragma warning restore S1699 // Constructors should only call non-overridable methods
 
@@ -113,8 +107,8 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
         SecurePortEnabled = false;
         LeaseRenewalIntervalInSeconds = DefaultLeaseRenewalIntervalInSeconds;
         LeaseExpirationDurationInSeconds = DefaultLeaseExpirationDurationInSeconds;
-        VirtualHostName = $"{thisHostName}:{NonSecurePort}";
-        SecureVirtualHostName = $"{thisHostName}:{SecurePort}";
+        VirtualHostName = $"{HostName}:{NonSecurePort}";
+        SecureVirtualHostName = $"{HostName}:{SecurePort}";
         IpAddress = thisHostAddress;
         AppName = DefaultAppName;
         StatusPageUrlPath = DefaultStatusPageUrlPath;
@@ -133,7 +127,7 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
 
             if (host.Hostname != null)
             {
-                thisHostName = host.Hostname;
+                HostName = host.Hostname;
             }
 
             IpAddress = host.IpAddress;
@@ -142,17 +136,17 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
 
     public virtual string GetHostName(bool refresh)
     {
-        if (refresh || string.IsNullOrEmpty(thisHostName))
+        if (refresh || string.IsNullOrEmpty(HostName))
         {
             if (UseNetUtils && NetUtils != null)
             {
                 return NetUtils.FindFirstNonLoopbackHostInfo().Hostname;
             }
 
-            thisHostName = DnsTools.ResolveHostName();
+            HostName = DnsTools.ResolveHostName();
         }
 
-        return thisHostName;
+        return HostName;
     }
 
     internal virtual string GetHostAddress(bool refresh)

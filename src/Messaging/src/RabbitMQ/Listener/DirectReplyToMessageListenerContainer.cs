@@ -26,22 +26,6 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
         {
             return base.ConsumersPerQueue;
         }
-
-        set
-        {
-            throw new NotSupportedException();
-        }
-    }
-
-    public override long MonitorInterval
-    {
-#pragma warning disable S4275 // Getters and setters should access the expected fields
-        get
-#pragma warning restore S4275 // Getters and setters should access the expected fields
-        {
-            return base.MonitorInterval;
-        }
-
         set
         {
             throw new NotSupportedException();
@@ -51,7 +35,6 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
     public override IMessageListener MessageListener
     {
         get => base.MessageListener;
-
         set => base.MessageListener = new ChannelAwareMessageListener(this, value);
     }
 
@@ -140,7 +123,7 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
                 {
                     if (message == null)
                     {
-                        throw new ArgumentNullException("A 'message' is required when 'cancelConsumer' is 'true'");
+                        throw new InvalidOperationException("A 'message' is required when 'cancelConsumer' is 'true'.");
                     }
 
                     consumer.CancelConsumer($"Consumer {this} canceled due to {message}");
@@ -235,7 +218,6 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
         public AcknowledgeMode ContainerAckMode
         {
             get => AcknowledgeMode.None;
-
             set
             {
                 // Do nothing

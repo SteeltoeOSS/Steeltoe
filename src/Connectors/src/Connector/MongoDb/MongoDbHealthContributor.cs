@@ -5,6 +5,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
@@ -30,10 +31,7 @@ public class MongoDbHealthContributor : IHealthContributor
 
     public static IHealthContributor GetMongoDbHealthContributor(IConfiguration configuration, ILogger<MongoDbHealthContributor> logger = null)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         var info = configuration.GetSingletonServiceInfo<MongoDbServiceInfo>();
         var mongoOptions = new MongoDbConnectorOptions(configuration);
@@ -78,7 +76,7 @@ public class MongoDbHealthContributor : IHealthContributor
                 e = e.InnerException;
             }
 
-            _logger?.LogError("MongoDb connection is down! {HealthCheckException}", e.Message);
+            _logger?.LogError(e, "MongoDb connection is down! {HealthCheckException}", e.Message);
             result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
             result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Down;

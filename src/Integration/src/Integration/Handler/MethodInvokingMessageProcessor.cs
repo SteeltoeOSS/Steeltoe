@@ -30,7 +30,6 @@ public class MethodInvokingMessageProcessor<T> : AbstractMessageProcessor<T>, IL
             _conversionService ??= IntegrationServices.ConversionService;
             return _conversionService;
         }
-
         set => _conversionService = value;
     }
 

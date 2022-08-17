@@ -22,7 +22,6 @@ public class RabbitListenerAttribute : Attribute
 
             return Queues[0];
         }
-
         set
         {
             Queues = new[]
@@ -45,7 +44,6 @@ public class RabbitListenerAttribute : Attribute
 
             return Bindings[0];
         }
-
         set
         {
             Bindings = new[]

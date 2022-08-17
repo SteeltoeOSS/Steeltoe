@@ -5,6 +5,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Attributes;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
@@ -18,10 +19,7 @@ public static class RabbitListenerDeclareAttributeProcessor
 
     internal static void ProcessDeclareAttributes(IServiceCollection services, IConfiguration configuration, Type targetClass)
     {
-        if (targetClass == null)
-        {
-            throw new ArgumentNullException(nameof(targetClass));
-        }
+        ArgumentGuard.NotNull(targetClass);
 
         List<DeclareQueueAttribute> declareQueues = GetAllAttributes<DeclareQueueAttribute>(targetClass);
         List<Queue> queues = ProcessDeclareQueues(services, configuration, declareQueues);

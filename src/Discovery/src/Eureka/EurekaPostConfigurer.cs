@@ -29,26 +29,17 @@ public static class EurekaPostConfigurer
     /// <summary>
     /// Update <see cref="EurekaClientOptions" /> with information from the runtime environment.
     /// </summary>
-    /// <param name="config">
-    /// Application Configuration.
-    /// </param>
     /// <param name="si">
     /// <see cref="EurekaServiceInfo" /> for bound Eureka server(s).
     /// </param>
     /// <param name="clientOptions">
     /// Eureka client configuration (for interacting with the Eureka Server).
     /// </param>
-    public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaClientOptions clientOptions)
+    public static void UpdateConfiguration(EurekaServiceInfo si, EurekaClientOptions clientOptions)
     {
         EurekaClientOptions clientOpts = clientOptions ?? new EurekaClientOptions();
 
-        if (clientOpts.Enabled && (Platform.IsContainerized || Platform.IsCloudHosted) && si == null &&
-            clientOpts.EurekaServerServiceUrls.Contains(EurekaClientConfig.DefaultServerServiceUrl.TrimEnd('/')) &&
-            (clientOpts.ShouldRegisterWithEureka || clientOpts.ShouldFetchRegistry))
-        {
-            throw new InvalidOperationException(
-                $"Eureka URL {EurekaClientConfig.DefaultServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
-        }
+        AssertValid(si, clientOpts);
 
         if (clientOptions == null || si == null)
         {
@@ -189,6 +180,37 @@ public static class EurekaPostConfigurer
         {
             UpdateWithDefaultsForHost(si, instOptions, instOptions.HostName);
         }
+    }
+
+    private static void AssertValid(EurekaServiceInfo serviceInfo, EurekaClientOptions clientOptions)
+    {
+        if (!clientOptions.Enabled)
+        {
+            return;
+        }
+
+        if (!Platform.IsContainerized && !Platform.IsCloudHosted)
+        {
+            return;
+        }
+
+        if (serviceInfo != null)
+        {
+            return;
+        }
+
+        if (!clientOptions.EurekaServerServiceUrls.Contains(EurekaClientConfig.DefaultServerServiceUrl.TrimEnd('/')))
+        {
+            return;
+        }
+
+        if (!clientOptions.ShouldRegisterWithEureka && !clientOptions.ShouldFetchRegistry)
+        {
+            return;
+        }
+
+        throw new InvalidOperationException(
+            $"Eureka URL {EurekaClientConfig.DefaultServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
     }
 
     private static void UpdateWithDefaultsForHost(EurekaServiceInfo si, EurekaInstanceOptions instOptions, string hostName)

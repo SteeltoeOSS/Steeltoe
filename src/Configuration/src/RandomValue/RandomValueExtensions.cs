@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.RandomValue;
 
@@ -21,10 +22,7 @@ public static class RandomValueExtensions
     /// <returns>builder.</returns>
     public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, ILoggerFactory loggerFactory = null)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         var resolver = new RandomValueSource(loggerFactory);
         builder.Add(resolver);
@@ -47,15 +45,8 @@ public static class RandomValueExtensions
     /// <returns>builder.</returns>
     public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string prefix, ILoggerFactory loggerFactory = null)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
-
-        if (string.IsNullOrEmpty(prefix))
-        {
-            throw new ArgumentException(nameof(prefix));
-        }
+        ArgumentGuard.NotNull(builder);
+        ArgumentGuard.NotNullOrEmpty(prefix);
 
         if (!prefix.EndsWith(":"))
         {

@@ -34,7 +34,9 @@ public class RandomLoadBalancer : ILoadBalancer
     public RandomLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache distributedCache = null,
         DistributedCacheEntryOptions cacheEntryOptions = null, ILogger logger = null)
     {
-        _serviceInstanceProvider = serviceInstanceProvider ?? throw new ArgumentNullException(nameof(serviceInstanceProvider));
+        ArgumentGuard.NotNull(serviceInstanceProvider);
+
+        _serviceInstanceProvider = serviceInstanceProvider;
         _distributedCache = distributedCache;
         _cacheOptions = cacheEntryOptions;
         _logger = logger;

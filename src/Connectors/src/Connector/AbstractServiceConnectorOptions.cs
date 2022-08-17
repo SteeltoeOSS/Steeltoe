@@ -4,6 +4,7 @@
 
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Connector;
 
@@ -17,10 +18,7 @@ public abstract class AbstractServiceConnectorOptions
     protected AbstractServiceConnectorOptions(IConfiguration config, char terminator = DefaultTerminator, char separator = DefaultSeparator)
         : this(terminator, separator)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         config.Bind(this);
     }

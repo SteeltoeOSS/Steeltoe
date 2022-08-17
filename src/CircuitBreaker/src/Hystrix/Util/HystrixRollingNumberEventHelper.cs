@@ -53,7 +53,7 @@ internal static class HystrixRollingNumberEventHelper
             HystrixEventType.Success => HystrixRollingNumberEvent.Success,
             HystrixEventType.ThreadPoolRejected => HystrixRollingNumberEvent.ThreadPoolRejected,
             HystrixEventType.Timeout => HystrixRollingNumberEvent.Timeout,
-            _ => throw new ArgumentOutOfRangeException($"Unknown HystrixEventType : {eventType}")
+            _ => throw new ArgumentOutOfRangeException(nameof(eventType), eventType, $"Value cannot be converted to {nameof(HystrixRollingNumberEvent)}.")
         };
     }
 

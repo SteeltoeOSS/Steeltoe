@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Info;
 
@@ -21,10 +22,7 @@ public abstract class AbstractConfigurationContributor
 
     protected virtual void Contribute(IInfoBuilder builder, string prefix, bool keepPrefix)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         builder.WithInfo(CreateDictionary(prefix, keepPrefix));
     }

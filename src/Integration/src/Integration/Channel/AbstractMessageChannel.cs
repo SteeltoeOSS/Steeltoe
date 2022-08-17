@@ -4,6 +4,7 @@
 
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Order;
 using Steeltoe.Integration.Support;
@@ -51,14 +52,12 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
             _messageConverter ??= ApplicationContext.GetService<DefaultDataTypeChannelMessageConverter>();
             return _messageConverter;
         }
-
         set => _messageConverter = value;
     }
 
     public virtual List<IChannelInterceptor> ChannelInterceptors
     {
         get => Interceptors.Interceptors;
-
         set
         {
             value.Sort(new OrderComparer());
@@ -106,14 +105,11 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
     public virtual bool Send(IMessage message, int timeout)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentGuard.NotNull(message);
 
         if (message.Payload == null)
         {
-            throw new ArgumentNullException(nameof(message), "Message payload is null!");
+            throw new ArgumentException("Message payload must not be null.", nameof(message));
         }
 
         return DoSend(message, timeout);
@@ -148,7 +144,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
                 message = ConvertPayloadIfNecessary(message);
             }
 
-            Logger?.LogDebug("PreSend on channel '" + ServiceName + "', message: " + message);
+            Logger?.LogDebug("PreSend on channel '{channel}', message: {message}", ServiceName, message);
 
             if (Interceptors.Count > 0)
             {
@@ -163,7 +159,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
             sent = DoSendInternal(message, cancellationToken);
 
-            Logger?.LogDebug("PostSend (sent=" + sent + ") on channel '" + ServiceName + "', message: " + message);
+            Logger?.LogDebug("PostSend (sent={sent}) on channel '{channel}', message: {message}", sent, ServiceName, message);
 
             if (interceptorStack != null)
             {

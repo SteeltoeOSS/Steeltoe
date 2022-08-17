@@ -20,10 +20,7 @@ public static class ServiceCollectionExtensions
     /// </param>
     public static IServiceCollection AddKubernetesApplicationInstanceInfo(this IServiceCollection serviceCollection)
     {
-        if (serviceCollection is null)
-        {
-            throw new ArgumentNullException(nameof(serviceCollection));
-        }
+        ArgumentGuard.NotNull(serviceCollection);
 
         ServiceDescriptor appInfo = serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
 
@@ -56,10 +53,7 @@ public static class ServiceCollectionExtensions
     [Obsolete("This method builds a temporary service provider and should not be used")]
     public static IApplicationInstanceInfo GetKubernetesApplicationOptions(this IServiceCollection serviceCollection)
     {
-        if (serviceCollection is null)
-        {
-            throw new ArgumentNullException(nameof(serviceCollection));
-        }
+        ArgumentGuard.NotNull(serviceCollection);
 
         serviceCollection.AddKubernetesApplicationInstanceInfo();
         ServiceProvider sp = serviceCollection.BuildServiceProvider();
@@ -82,10 +76,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddKubernetesClient(this IServiceCollection serviceCollection,
         Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null)
     {
-        if (serviceCollection is null)
-        {
-            throw new ArgumentNullException(nameof(serviceCollection));
-        }
+        ArgumentGuard.NotNull(serviceCollection);
 
         serviceCollection.AddKubernetesApplicationInstanceInfo();
 

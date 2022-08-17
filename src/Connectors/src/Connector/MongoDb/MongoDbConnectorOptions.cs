@@ -4,6 +4,7 @@
 
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Connector.MongoDb;
 
@@ -37,10 +38,7 @@ public class MongoDbConnectorOptions : AbstractServiceConnectorOptions
     public MongoDbConnectorOptions(IConfiguration config)
         : base('&', '=')
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         IConfigurationSection section = config.GetSection(MongodbClientSectionPrefix);
         section.Bind(this);

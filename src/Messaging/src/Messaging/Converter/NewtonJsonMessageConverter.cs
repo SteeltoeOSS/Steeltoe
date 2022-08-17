@@ -195,7 +195,7 @@ public class NewtonJsonMessageConverter : AbstractMessageConverter
         return payload;
     }
 
-    protected override bool Supports(Type clazz)
+    protected override bool Supports(Type type)
     {
         throw new InvalidOperationException();
     }

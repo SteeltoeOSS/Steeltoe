@@ -67,8 +67,10 @@ public class JsonMessageConverter : AbstractMessageConverter
         {
             string contentType = properties.ContentType();
 
-            if ((AssumeSupportedContentType && (contentType == null || contentType.Equals(RabbitHeaderAccessor.DefaultContentType))) ||
-                (contentType != null && contentType.Contains(SupportedContentType.Subtype)))
+            bool isDefault = AssumeSupportedContentType && contentType is null or RabbitHeaderAccessor.DefaultContentType;
+            bool isSupported = contentType != null && contentType.Contains(SupportedContentType.Subtype);
+
+            if (isDefault || isSupported)
             {
                 Encoding encoding = EncodingUtils.GetEncoding(properties.ContentEncoding()) ?? DefaultCharset;
 
@@ -76,8 +78,8 @@ public class JsonMessageConverter : AbstractMessageConverter
             }
             else
             {
-                Logger?.LogWarning("Could not convert incoming message with content-type [" + contentType + "], '" + SupportedContentType.Subtype +
-                    "' keyword missing.");
+                Logger?.LogWarning("Could not convert incoming message with content-type [{contentType}], '{keyword}' keyword missing.", contentType,
+                    SupportedContentType.Subtype);
             }
         }
 

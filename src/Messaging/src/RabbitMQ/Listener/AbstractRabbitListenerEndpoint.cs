@@ -4,6 +4,7 @@
 
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Contexts;
@@ -87,10 +88,7 @@ public abstract class AbstractRabbitListenerEndpoint : IRabbitListenerEndpoint
 
     public void SetQueues(params IQueue[] queues)
     {
-        if (queues == null)
-        {
-            throw new ArgumentNullException(nameof(queues));
-        }
+        ArgumentGuard.NotNull(queues);
 
         Queues.Clear();
         Queues.AddRange(queues);
@@ -98,10 +96,7 @@ public abstract class AbstractRabbitListenerEndpoint : IRabbitListenerEndpoint
 
     public void SetQueueNames(params string[] queueNames)
     {
-        if (queueNames == null)
-        {
-            throw new ArgumentNullException(nameof(queueNames));
-        }
+        ArgumentGuard.NotNull(queueNames);
 
         QueueNames.Clear();
         QueueNames.AddRange(queueNames);

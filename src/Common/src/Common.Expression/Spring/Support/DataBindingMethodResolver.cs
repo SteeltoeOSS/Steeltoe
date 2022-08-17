@@ -21,7 +21,7 @@ public class DataBindingMethodResolver : ReflectiveMethodResolver
     {
         if (targetObject is Type)
         {
-            throw new ArgumentException("DataBindingMethodResolver does not support Class targets");
+            throw new ArgumentException($"{nameof(DataBindingMethodResolver)} does not support {typeof(Type)} targets.", nameof(targetObject));
         }
 
         return base.Resolve(context, targetObject, name, argumentTypes);
@@ -34,7 +34,7 @@ public class DataBindingMethodResolver : ReflectiveMethodResolver
             return false;
         }
 
-        Type clazz = method.DeclaringType;
-        return clazz != typeof(object) && clazz != typeof(Type);
+        Type type = method.DeclaringType;
+        return type != typeof(object) && type != typeof(Type);
     }
 }

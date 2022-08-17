@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 public class Base64UrlNamingStrategy : INamingStrategy
@@ -17,7 +19,9 @@ public class Base64UrlNamingStrategy : INamingStrategy
 
     public Base64UrlNamingStrategy(string prefix)
     {
-        Prefix = prefix ?? throw new ArgumentNullException(nameof(prefix));
+        ArgumentGuard.NotNull(prefix);
+
+        Prefix = prefix;
     }
 
     public string GenerateName()

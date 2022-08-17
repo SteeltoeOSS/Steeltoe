@@ -5,6 +5,7 @@
 using System.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
@@ -33,10 +34,7 @@ public class RelationalDbHealthContributor : IHealthContributor
 
     public static IHealthContributor GetMySqlContributor(IConfiguration configuration, ILogger<RelationalDbHealthContributor> logger = null)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         var info = configuration.GetSingletonServiceInfo<MySqlServiceInfo>();
         Type mySqlConnection = ReflectionHelpers.FindType(MySqlTypeLocator.Assemblies, MySqlTypeLocator.ConnectionTypeNames);
@@ -48,10 +46,7 @@ public class RelationalDbHealthContributor : IHealthContributor
 
     public static IHealthContributor GetPostgreSqlContributor(IConfiguration configuration, ILogger<RelationalDbHealthContributor> logger = null)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         var info = configuration.GetSingletonServiceInfo<PostgresServiceInfo>();
         Type postgresConnection = ReflectionHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
@@ -63,10 +58,7 @@ public class RelationalDbHealthContributor : IHealthContributor
 
     public static IHealthContributor GetSqlServerContributor(IConfiguration configuration, ILogger<RelationalDbHealthContributor> logger = null)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         var info = configuration.GetSingletonServiceInfo<SqlServerServiceInfo>();
         Type sqlServerConnection = SqlServerTypeLocator.SqlConnection;
@@ -78,10 +70,7 @@ public class RelationalDbHealthContributor : IHealthContributor
 
     public static IHealthContributor GetOracleContributor(IConfiguration configuration, ILogger<RelationalDbHealthContributor> logger = null)
     {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(configuration);
 
         var info = configuration.GetSingletonServiceInfo<OracleServiceInfo>();
         Type oracleConnection = ReflectionHelpers.FindType(OracleTypeLocator.Assemblies, OracleTypeLocator.ConnectionTypeNames);
@@ -109,7 +98,7 @@ public class RelationalDbHealthContributor : IHealthContributor
         }
         catch (Exception e)
         {
-            _logger?.LogError("{DbConnection} down! {HealthCheckException}", Id, e.Message);
+            _logger?.LogError(e, "{DbConnection} down! {HealthCheckException}", Id, e.Message);
             result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
             result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Down;

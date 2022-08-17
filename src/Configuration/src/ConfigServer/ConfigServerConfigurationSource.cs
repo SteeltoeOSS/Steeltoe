@@ -60,8 +60,11 @@ public class ConfigServerConfigurationSource : IConfigurationSource
     /// </param>
     public ConfigServerConfigurationSource(ConfigServerClientSettings defaultSettings, IConfiguration configuration, ILoggerFactory logFactory = null)
     {
-        Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        DefaultSettings = defaultSettings ?? throw new ArgumentNullException(nameof(defaultSettings));
+        ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(defaultSettings);
+
+        Configuration = configuration;
+        DefaultSettings = defaultSettings;
         LogFactory = logFactory;
     }
 
@@ -102,10 +105,8 @@ public class ConfigServerConfigurationSource : IConfigurationSource
     public ConfigServerConfigurationSource(ConfigServerClientSettings defaultSettings, IList<IConfigurationSource> sources,
         IDictionary<string, object> properties = null, ILoggerFactory logFactory = null)
     {
-        if (sources == null)
-        {
-            throw new ArgumentNullException(nameof(sources));
-        }
+        ArgumentGuard.NotNull(sources);
+        ArgumentGuard.NotNull(defaultSettings);
 
         Sources = new List<IConfigurationSource>(sources);
 
@@ -114,7 +115,7 @@ public class ConfigServerConfigurationSource : IConfigurationSource
             Properties = new Dictionary<string, object>(properties);
         }
 
-        DefaultSettings = defaultSettings ?? throw new ArgumentNullException(nameof(defaultSettings));
+        DefaultSettings = defaultSettings;
         LogFactory = logFactory;
     }
 

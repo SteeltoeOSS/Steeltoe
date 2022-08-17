@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
@@ -123,7 +124,9 @@ public class BindingBuilder
 
             public HeadersExchangeSingleValueBindingCreator(HeadersExchangeMapConfigurer configurer, string key)
             {
-                _key = key ?? throw new ArgumentNullException(nameof(key));
+                ArgumentGuard.NotNull(key);
+
+                _key = key;
                 _configurer = configurer;
             }
 
@@ -156,10 +159,7 @@ public class BindingBuilder
 
             public HeadersExchangeKeysBindingCreator(HeadersExchangeMapConfigurer configurer, string[] headerKeys, bool matchAll)
             {
-                if (headerKeys == null || headerKeys.Length == 0)
-                {
-                    throw new ArgumentException(nameof(headerKeys));
-                }
+                ArgumentGuard.NotNullOrEmpty(headerKeys);
 
                 _headerMap = CreateMapForKeys(headerKeys);
                 _headerMap["x-match"] = matchAll ? "all" : "any";
@@ -182,10 +182,7 @@ public class BindingBuilder
 
             public HeadersExchangeMapBindingCreator(HeadersExchangeMapConfigurer configurer, Dictionary<string, object> headerMap, bool matchAll)
             {
-                if (headerMap == null || headerMap.Count == 0)
-                {
-                    throw new ArgumentException(nameof(headerMap));
-                }
+                ArgumentGuard.NotNullOrEmpty(headerMap);
 
                 _headerMap = new Dictionary<string, object>(headerMap)
                 {

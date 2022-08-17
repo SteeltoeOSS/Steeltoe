@@ -22,7 +22,7 @@ public static class ThreadPoolEventTypeHelper
         {
             HystrixRollingNumberEvent.ThreadExecution => ThreadPoolEventType.Executed,
             HystrixRollingNumberEvent.ThreadPoolRejected => ThreadPoolEventType.Rejected,
-            _ => throw new ArgumentOutOfRangeException($"Not an event that can be converted to HystrixEventType.ThreadPool : {@event}")
+            _ => throw new ArgumentOutOfRangeException(nameof(@event), @event, $"Value cannot be converted to {nameof(ThreadPoolEventType)}.")
         };
     }
 

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
@@ -38,20 +39,15 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
 
             return _outputChannel;
         }
-
         set => _outputChannel = value;
     }
 
     public virtual string OutputChannelName
     {
         get => _outputChannelName;
-
         set
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new ArgumentException("outputChannelName must not be empty");
-            }
+            ArgumentGuard.NotNullOrEmpty(value);
 
             _outputChannelName = value;
         }
@@ -82,6 +78,9 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
 
     protected virtual void UpdateNotPropagatedHeaders(IList<string> headers, bool merge)
     {
+        ArgumentGuard.NotNull(headers);
+        ArgumentGuard.ElementsNotNullOrEmpty(headers);
+
         var headerPatterns = new HashSet<string>();
 
         if (merge && _notPropagatedHeaders.Count > 0)
@@ -94,14 +93,9 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
 
         if (headers.Count > 0)
         {
-            foreach (string h in headers)
+            foreach (string header in headers)
             {
-                if (string.IsNullOrEmpty(h))
-                {
-                    throw new ArgumentException("null or empty elements are not allowed in 'headers'");
-                }
-
-                headerPatterns.Add(h);
+                headerPatterns.Add(header);
             }
 
             _notPropagatedHeaders = headerPatterns.ToList();

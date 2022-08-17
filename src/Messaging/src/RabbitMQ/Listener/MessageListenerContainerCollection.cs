@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class MessageListenerContainerCollection : IMessageListenerContainerCollection
@@ -16,10 +18,7 @@ public class MessageListenerContainerCollection : IMessageListenerContainerColle
 
     public MessageListenerContainerCollection(string groupName)
     {
-        if (string.IsNullOrEmpty(groupName))
-        {
-            throw new ArgumentException(nameof(groupName));
-        }
+        ArgumentGuard.NotNullOrEmpty(groupName);
 
         ServiceName = groupName;
     }

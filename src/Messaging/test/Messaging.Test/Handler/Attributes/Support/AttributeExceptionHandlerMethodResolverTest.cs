@@ -21,7 +21,7 @@ public class AttributeExceptionHandlerMethodResolverTest
     [Fact]
     public void ResolveMethodFromArgument()
     {
-        var exception = new ArgumentException();
+        var exception = new ArgumentException("Example message.");
         Assert.Equal("HandleArgumentException", _resolver.ResolveMethod(exception).Name);
     }
 

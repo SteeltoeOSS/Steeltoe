@@ -1432,7 +1432,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         }
         catch (Exception e)
         {
-            Assert.IsType<ArgumentException>(e.InnerException);
+            Assert.IsType<InvalidOperationException>(e.InnerException);
         }
     }
 
@@ -1750,7 +1750,6 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         public event EventHandler<ConsumerEventArgs> ConsumerCancelled
         {
             add => Delegate.ConsumerCancelled += value;
-
             remove => Delegate.ConsumerCancelled -= value;
         }
 

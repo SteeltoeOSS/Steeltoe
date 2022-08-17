@@ -38,7 +38,7 @@ public class InfoEndpoint : AbstractEndpoint<Dictionary<string, object>>, IInfoE
             }
             catch (Exception e)
             {
-                _logger?.LogError("Exception: {0}", e);
+                _logger?.LogError(e, "Operation failed.");
             }
         }
 

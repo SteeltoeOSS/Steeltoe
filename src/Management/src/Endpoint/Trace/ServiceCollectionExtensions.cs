@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -30,15 +31,8 @@ public static class ServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddTraceActuatorServices(this IServiceCollection services, IConfiguration configuration, MediaTypeVersion version)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(configuration);
 
         switch (version)
         {

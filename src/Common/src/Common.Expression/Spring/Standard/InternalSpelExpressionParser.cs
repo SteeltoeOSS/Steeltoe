@@ -497,37 +497,20 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private SpelNode EatStartNode()
     {
-        if (MaybeEatLiteral())
-        {
-            return Pop();
-        }
+        bool hasEaten = MaybeEatLiteral();
+        hasEaten = hasEaten || MaybeEatParenExpression();
+        hasEaten = hasEaten || MaybeEatTypeReference();
+        hasEaten = hasEaten || MaybeEatNullReference();
+        hasEaten = hasEaten || MaybeEatConstructorReference();
+        hasEaten = hasEaten || MaybeEatMethodOrProperty(false);
+        hasEaten = hasEaten || MaybeEatFunctionOrVar();
+        hasEaten = hasEaten || MaybeEatServiceReference();
+        hasEaten = hasEaten || MaybeEatProjection(false);
+        hasEaten = hasEaten || MaybeEatSelection(false);
+        hasEaten = hasEaten || MaybeEatIndexer();
+        hasEaten = hasEaten || MaybeEatInlineListOrMap();
 
-        if (MaybeEatParenExpression())
-        {
-            return Pop();
-        }
-
-        if (MaybeEatTypeReference() || MaybeEatNullReference() || MaybeEatConstructorReference() || MaybeEatMethodOrProperty(false) || MaybeEatFunctionOrVar())
-        {
-            return Pop();
-        }
-
-        if (MaybeEatServiceReference())
-        {
-            return Pop();
-        }
-
-        if (MaybeEatProjection(false) || MaybeEatSelection(false) || MaybeEatIndexer())
-        {
-            return Pop();
-        }
-
-        if (MaybeEatInlineListOrMap())
-        {
-            return Pop();
-        }
-
-        return null;
+        return hasEaten ? Pop() : null;
     }
 
     private bool MaybeEatServiceReference()

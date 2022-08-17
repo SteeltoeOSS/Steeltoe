@@ -224,7 +224,7 @@ public class HystrixCommandOptions : HystrixBaseOptions, IHystrixCommandOptions
             return ExecutionIsolationStrategy.Semaphore;
         }
 
-        throw new ArgumentOutOfRangeException("execution.isolation.strategy");
+        throw new InvalidOperationException($"Invalid value '{isolation}' for execution.isolation.strategy.");
     }
 
     private string GetThreadPoolKeyOverride(string prefix, string key, string property, string globalDefault, string instanceDefaultFromCode)

@@ -28,10 +28,7 @@ public static class LoadBalancerHttpClientBuilderExtensions
     /// </returns>
     public static IHttpClientBuilder AddRandomLoadBalancer(this IHttpClientBuilder httpClientBuilder)
     {
-        if (httpClientBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(httpClientBuilder));
-        }
+        ArgumentGuard.NotNull(httpClientBuilder);
 
         httpClientBuilder.Services.TryAddSingleton(typeof(RandomLoadBalancer));
         return httpClientBuilder.AddLoadBalancer<RandomLoadBalancer>();
@@ -54,10 +51,7 @@ public static class LoadBalancerHttpClientBuilderExtensions
     /// </returns>
     public static IHttpClientBuilder AddRoundRobinLoadBalancer(this IHttpClientBuilder httpClientBuilder)
     {
-        if (httpClientBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(httpClientBuilder));
-        }
+        ArgumentGuard.NotNull(httpClientBuilder);
 
         httpClientBuilder.Services.TryAddSingleton(typeof(RoundRobinLoadBalancer));
         return httpClientBuilder.AddLoadBalancer<RoundRobinLoadBalancer>();
@@ -80,10 +74,7 @@ public static class LoadBalancerHttpClientBuilderExtensions
     public static IHttpClientBuilder AddLoadBalancer<T>(this IHttpClientBuilder httpClientBuilder)
         where T : ILoadBalancer
     {
-        if (httpClientBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(httpClientBuilder));
-        }
+        ArgumentGuard.NotNull(httpClientBuilder);
 
         httpClientBuilder.AddHttpMessageHandler(services => new LoadBalancerDelegatingHandler(services.GetRequiredService<T>()));
         return httpClientBuilder;

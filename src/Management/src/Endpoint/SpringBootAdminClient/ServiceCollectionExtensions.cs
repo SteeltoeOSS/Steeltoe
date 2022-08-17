@@ -22,10 +22,7 @@ public static class ServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddSpringBootAdminClient(this IServiceCollection services)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.RegisterDefaultApplicationInstanceInfo();
         services.TryAddSingleton<ManagementEndpointOptions>();

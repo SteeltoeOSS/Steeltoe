@@ -108,7 +108,7 @@ public static class PropertyPlaceholderHelper
 
                 if (!visitedPlaceHolders.Add(originalPlaceholder))
                 {
-                    throw new ArgumentException($"Circular placeholder reference '{originalPlaceholder}' in property definitions");
+                    throw new InvalidOperationException($"Found circular placeholder reference '{originalPlaceholder}' in property definitions.");
                 }
 
                 // Recursive invocation, parsing placeholders contained in the placeholder key.

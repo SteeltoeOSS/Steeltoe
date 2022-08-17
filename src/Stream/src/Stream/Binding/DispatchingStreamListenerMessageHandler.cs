@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Integration.Handler;
@@ -21,10 +22,7 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
         IEvaluationContext evaluationContext = null)
         : base(context)
     {
-        if (handlerMethods == null || handlerMethods.Count == 0)
-        {
-            throw new ArgumentException(nameof(handlerMethods));
-        }
+        ArgumentGuard.NotNullOrEmpty(handlerMethods);
 
         _handlerMethods = new List<ConditionalStreamListenerMessageHandlerWrapper>(handlerMethods);
         bool evaluateExpressions = false;
@@ -42,7 +40,7 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
 
         if (evaluateExpressions && evaluationContext == null)
         {
-            throw new ArgumentNullException(nameof(evaluationContext));
+            throw new InvalidOperationException("Evaluation context must be provided when evaluating expressions.");
         }
 
         _evaluationContext = evaluationContext;
@@ -111,14 +109,11 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
 
         internal ConditionalStreamListenerMessageHandlerWrapper(IExpression condition, StreamListenerMessageHandler streamListenerMessageHandler)
         {
-            if (streamListenerMessageHandler == null)
-            {
-                throw new ArgumentNullException(nameof(streamListenerMessageHandler));
-            }
+            ArgumentGuard.NotNull(streamListenerMessageHandler);
 
             if (!(condition == null || streamListenerMessageHandler.IsVoid))
             {
-                throw new ArgumentException("cannot specify a condition and a return value at the same time");
+                throw new ArgumentException("Cannot specify a condition and a return value at the same time.");
             }
 
             Condition = condition;

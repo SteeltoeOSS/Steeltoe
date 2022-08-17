@@ -658,7 +658,7 @@ public class CredHubClientTests
     {
         var client = new CredHubClient();
 
-        await Assert.ThrowsAsync<ArgumentException>(() => client.AddPermissionsAsync("user", null));
+        await Assert.ThrowsAsync<ArgumentNullException>(() => client.AddPermissionsAsync("user", null));
     }
 
     [Fact]

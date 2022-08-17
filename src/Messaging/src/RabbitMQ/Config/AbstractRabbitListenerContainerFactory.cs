@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Transaction;
@@ -131,36 +132,16 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
 
     public void SetAfterReceivePostProcessors(params IMessagePostProcessor[] postProcessors)
     {
-        if (postProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(postProcessors));
-        }
-
-        foreach (IMessagePostProcessor p in postProcessors)
-        {
-            if (p == null)
-            {
-                throw new ArgumentNullException("'postProcessors' cannot have null elements");
-            }
-        }
+        ArgumentGuard.NotNull(postProcessors);
+        ArgumentGuard.ElementsNotNull(postProcessors);
 
         AfterReceivePostProcessors = new List<IMessagePostProcessor>(postProcessors);
     }
 
     public void SetBeforeSendReplyPostProcessors(params IMessagePostProcessor[] postProcessors)
     {
-        if (postProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(postProcessors));
-        }
-
-        foreach (IMessagePostProcessor p in postProcessors)
-        {
-            if (p == null)
-            {
-                throw new ArgumentNullException("'postProcessors' cannot have null elements");
-            }
-        }
+        ArgumentGuard.NotNull(postProcessors);
+        ArgumentGuard.ElementsNotNull(postProcessors);
 
         BeforeSendReplyPostProcessors = new List<IMessagePostProcessor>(postProcessors);
     }

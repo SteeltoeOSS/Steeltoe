@@ -57,6 +57,6 @@ public class StringToBooleanConverter : AbstractGenericConditionalConverter
             return false;
         }
 
-        throw new ArgumentException($"Invalid boolean value '{source}'");
+        throw new ArgumentException($"Invalid boolean value '{source}'.", nameof(source));
     }
 }

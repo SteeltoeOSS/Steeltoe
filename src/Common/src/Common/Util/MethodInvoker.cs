@@ -89,7 +89,7 @@ public class MethodInvoker
 
             if (lastDotIndex == -1 || lastDotIndex == StaticMethod.Length)
             {
-                throw new ArgumentException("staticMethod must be a fully qualified class plus method name: " +
+                throw new InvalidOperationException($"{nameof(StaticMethod)} must be a fully qualified type plus method name: " +
                     "e.g. 'example.MyExampleClass.myExampleMethod'");
             }
 
@@ -104,12 +104,12 @@ public class MethodInvoker
 
         if (targetClass == null)
         {
-            throw new ArgumentNullException("Either 'targetClass' or 'targetObject' is required");
+            throw new InvalidOperationException($"{nameof(TargetClass)} must be set first.");
         }
 
         if (targetMethod == null)
         {
-            throw new ArgumentNullException("Property 'targetMethod' is required");
+            throw new InvalidOperationException($"{nameof(TargetMethod)} must be set first.");
         }
 
         object[] arguments = Arguments;

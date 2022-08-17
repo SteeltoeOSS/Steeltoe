@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Common;
 
 namespace Steeltoe.Messaging.Support;
 
@@ -49,15 +50,8 @@ public static class MessageBuilder
 
     public static IMessage CreateMessage(object payload, IMessageHeaders messageHeaders, Type payloadType = null)
     {
-        if (payload == null)
-        {
-            throw new ArgumentNullException(nameof(payload));
-        }
-
-        if (messageHeaders == null)
-        {
-            throw new ArgumentNullException(nameof(messageHeaders));
-        }
+        ArgumentGuard.NotNull(payload);
+        ArgumentGuard.NotNull(messageHeaders);
 
         return Message.Create(payload, messageHeaders, payloadType);
     }
@@ -128,7 +122,9 @@ public class MessageBuilder<TPayload> : AbstractMessageBuilder
 
     public override AbstractMessageBuilder SetHeaders(MessageHeaderAccessor accessor)
     {
-        headerAccessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+        ArgumentGuard.NotNull(accessor);
+
+        headerAccessor = accessor;
         return this;
     }
 

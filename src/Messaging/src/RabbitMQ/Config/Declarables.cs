@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Services;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
@@ -14,24 +15,20 @@ public class Declarables : IServiceNameAware
 
     public Declarables(string name, params IDeclarable[] declarables)
     {
-        if (declarables == null)
-        {
-            throw new ArgumentNullException(nameof(declarables));
-        }
+        ArgumentGuard.NotNull(declarables);
+        ArgumentGuard.NotNull(name);
 
         DeclarableList = new List<IDeclarable>(declarables);
-        ServiceName = name ?? throw new ArgumentNullException(nameof(name));
+        ServiceName = name;
     }
 
     public Declarables(string name, List<IDeclarable> declarables)
     {
-        if (declarables == null)
-        {
-            throw new ArgumentNullException(nameof(declarables));
-        }
+        ArgumentGuard.NotNull(declarables);
+        ArgumentGuard.NotNull(name);
 
         DeclarableList = new List<IDeclarable>(declarables);
-        ServiceName = name ?? throw new ArgumentNullException(nameof(name));
+        ServiceName = name;
     }
 
     public IEnumerable<T> GetDeclarablesByType<T>()

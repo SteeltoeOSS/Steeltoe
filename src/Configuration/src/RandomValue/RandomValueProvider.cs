@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.RandomValue;
 
@@ -27,7 +28,9 @@ public class RandomValueProvider : ConfigurationProvider
     /// </param>
     public RandomValueProvider(string prefix, ILoggerFactory logFactory = null)
     {
-        Prefix = prefix ?? throw new ArgumentNullException(nameof(prefix));
+        ArgumentGuard.NotNull(prefix);
+
+        Prefix = prefix;
         Logger = logFactory?.CreateLogger<RandomValueProvider>();
         Random = new Random();
     }

@@ -453,7 +453,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         };
 
         var client = new DiscoveryClient(config);
-        var ex = Assert.Throws<ArgumentException>(() => client.GetNextServerFromEureka(null, false));
+        var ex = Assert.Throws<ArgumentNullException>(() => client.GetNextServerFromEureka(null, false));
         Assert.Contains("virtualHostname", ex.Message);
     }
 
@@ -467,7 +467,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         };
 
         var client = new DiscoveryClient(config);
-        var ex = Assert.Throws<ArgumentException>(() => client.GetInstancesByVipAddress(null, false));
+        var ex = Assert.Throws<ArgumentNullException>(() => client.GetInstancesByVipAddress(null, false));
         Assert.Contains("vipAddress", ex.Message);
     }
 
@@ -625,7 +625,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         };
 
         var client = new DiscoveryClient(config);
-        var ex = Assert.Throws<ArgumentException>(() => client.GetInstanceById(null));
+        var ex = Assert.Throws<ArgumentNullException>(() => client.GetInstanceById(null));
         Assert.Contains("id", ex.Message);
     }
 
@@ -724,7 +724,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         };
 
         var client = new DiscoveryClient(config);
-        var ex = Assert.Throws<ArgumentException>(() => client.GetApplication(null));
+        var ex = Assert.Throws<ArgumentNullException>(() => client.GetApplication(null));
         Assert.Contains("appName", ex.Message);
     }
 
@@ -804,7 +804,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         };
 
         var client = new DiscoveryClient(config);
-        var ex = Assert.Throws<ArgumentNullException>(() => client.GetInstancesByVipAddressAndAppName(null, null, false));
+        var ex = Assert.Throws<ArgumentException>(() => client.GetInstancesByVipAddressAndAppName(null, null, false));
         Assert.Contains("appName", ex.Message);
     }
 
@@ -938,6 +938,6 @@ public class DiscoveryClientTest : AbstractBaseTest
     private void TimerFuncThrows()
     {
         ++_timerFuncCount;
-        throw new ArgumentException();
+        throw new FormatException();
     }
 }

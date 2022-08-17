@@ -32,12 +32,13 @@ public class CertificateGenerationRequest : CredHubGenerateRequest
 
         if (!AtLeastOneProvided(subjects))
         {
-            throw new ArgumentException("At least one subject value, such as common name or organization must be defined to generate the certificate");
+            throw new ArgumentException("At least one subject value, such as the common name or organization, must be defined to generate the certificate.",
+                nameof(parameters));
         }
 
         if (string.IsNullOrEmpty(parameters.CertificateAuthority) && !parameters.IsCertificateAuthority && !parameters.SelfSign)
         {
-            throw new ArgumentException("At least one signing parameter must be specified");
+            throw new ArgumentException("At least one signing parameter must be specified.", nameof(parameters));
         }
 
         Name = credentialName;

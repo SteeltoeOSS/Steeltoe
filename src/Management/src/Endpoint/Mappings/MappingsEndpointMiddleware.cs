@@ -39,7 +39,7 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
 
     public Task InvokeAsync(HttpContext context)
     {
-        if (endpoint.ShouldInvoke(managementOptions, logger))
+        if (Endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleMappingsRequestAsync(context);
         }
@@ -52,7 +52,7 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
         ApplicationMappings result = GetApplicationMappings(context);
         string serialInfo = Serialize(result);
 
-        logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);

@@ -12,6 +12,16 @@ public abstract class AbstractTypeMapper
     public const string DefaultContentClassIdFieldName = MessageHeaders.ContentTypeId;
     public const string DefaultKeyClassIdFieldName = MessageHeaders.KeyTypeId;
 
+    private static readonly ISet<Type> ContainerTypes = new[]
+    {
+        typeof(Dictionary<,>),
+        typeof(List<>),
+        typeof(HashSet<>),
+        typeof(LinkedList<>),
+        typeof(Stack<>),
+        typeof(Queue<>)
+    }.ToHashSet();
+
     private readonly Dictionary<Type, string> _classIdMapping = new();
 
     public Dictionary<string, Type> IdClassMapping { get; } = new();
@@ -32,10 +42,10 @@ public abstract class AbstractTypeMapper
         CreateReverseMap();
     }
 
-    protected virtual void AddHeader(IMessageHeaders headers, string headerName, Type clazz)
+    protected virtual void AddHeader(IMessageHeaders headers, string headerName, Type type)
     {
         MessageHeaderAccessor accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
-        accessor.SetHeader(headerName, _classIdMapping.ContainsKey(clazz) ? _classIdMapping[clazz] : GetClassName(clazz));
+        accessor.SetHeader(headerName, _classIdMapping.ContainsKey(type) ? _classIdMapping[type] : GetClassName(type));
     }
 
     protected virtual string RetrieveHeader(IMessageHeaders headers, string headerName)
@@ -94,13 +104,8 @@ public abstract class AbstractTypeMapper
     {
         if (type.IsGenericType)
         {
-            Type typedef = type.GetGenericTypeDefinition();
-
-            if (typeof(Dictionary<,>) == typedef || typeof(List<>) == typedef || typeof(HashSet<>) == typedef || typeof(LinkedList<>) == typedef ||
-                typeof(Stack<>) == typedef || typeof(Queue<>) == typedef)
-            {
-                return true;
-            }
+            Type genericType = type.GetGenericTypeDefinition();
+            return ContainerTypes.Contains(genericType);
         }
 
         return false;
@@ -138,8 +143,8 @@ public abstract class AbstractTypeMapper
         foreach (KeyValuePair<string, Type> entry in IdClassMapping)
         {
             string id = entry.Key;
-            Type clazz = entry.Value;
-            _classIdMapping[clazz] = id;
+            Type type = entry.Value;
+            _classIdMapping[type] = id;
         }
     }
 }

@@ -30,7 +30,6 @@ public class IntegrationServices : IIntegrationServices
             messageBuilderFactory ??= context?.GetService<IMessageBuilderFactory>() ?? new DefaultMessageBuilderFactory();
             return messageBuilderFactory;
         }
-
         set => messageBuilderFactory = value;
     }
 
@@ -41,7 +40,6 @@ public class IntegrationServices : IIntegrationServices
             expressionParser ??= context?.GetService<IExpressionParser>() ?? new SpelExpressionParser();
             return expressionParser;
         }
-
         set => expressionParser = value;
     }
 
@@ -52,7 +50,6 @@ public class IntegrationServices : IIntegrationServices
             channelResolver ??= context?.GetService<IDestinationResolver<IMessageChannel>>() ?? new DefaultMessageChannelResolver(context);
             return channelResolver;
         }
-
         set => channelResolver = value;
     }
 
@@ -63,7 +60,6 @@ public class IntegrationServices : IIntegrationServices
             conversionService ??= context?.GetService<IConversionService>() ?? DefaultConversionService.Singleton;
             return conversionService;
         }
-
         set => conversionService = value;
     }
 
@@ -74,7 +70,6 @@ public class IntegrationServices : IIntegrationServices
             idGenerator ??= context?.GetService<IIdGenerator>() ?? new DefaultIdGenerator();
             return idGenerator;
         }
-
         set => idGenerator = value;
     }
 

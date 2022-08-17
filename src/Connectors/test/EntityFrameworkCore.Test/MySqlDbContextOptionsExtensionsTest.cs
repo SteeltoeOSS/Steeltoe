@@ -71,10 +71,10 @@ public class MySqlDbContextOptionsExtensionsTest
         IConfigurationRoot config = new ConfigurationBuilder().Build();
         const string serviceName = null;
 
-        var ex2 = Assert.Throws<ArgumentException>(() => optionsBuilder.UseMySql(config, serviceName));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(config, serviceName));
         Assert.Contains(nameof(serviceName), ex2.Message);
 
-        var ex4 = Assert.Throws<ArgumentException>(() => goodBuilder.UseMySql(config, serviceName));
+        var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(config, serviceName));
         Assert.Contains(nameof(serviceName), ex4.Message);
     }
 

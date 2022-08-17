@@ -30,8 +30,9 @@ public class DefaultExceptionStrategy : IFatalExceptionStrategy
         switch (exception)
         {
             case ListenerExecutionFailedException listenerExecution when IsCauseFatal(cause):
-                _logger?.LogWarning("Fatal message conversion error; message rejected; " +
-                    "it will be dropped or routed to a dead letter exchange, if so configured: " + listenerExecution.FailedMessage);
+                _logger?.LogWarning(
+                    "Fatal message conversion error; message rejected; it will be dropped or routed to a dead letter exchange, if so configured: {message}",
+                    listenerExecution.FailedMessage);
 
                 return true;
             default:
@@ -44,9 +45,15 @@ public class DefaultExceptionStrategy : IFatalExceptionStrategy
         return false;
     }
 
-    private bool IsCauseFatal(Exception cause)
+    private bool IsCauseFatal(Exception exception)
     {
-        return cause is MessageConversionException || cause is MethodArgumentResolutionException || cause is MissingMethodException ||
-            cause is InvalidCastException || IsUserCauseFatal(cause);
+        return exception switch
+        {
+            MessageConversionException => true,
+            MethodArgumentResolutionException => true,
+            MissingMethodException => true,
+            InvalidCastException => true,
+            _ => IsUserCauseFatal(exception)
+        };
     }
 }

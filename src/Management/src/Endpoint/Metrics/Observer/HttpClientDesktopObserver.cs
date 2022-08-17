@@ -32,10 +32,7 @@ public class HttpClientDesktopObserver : MetricsObserver
     public HttpClientDesktopObserver(IMetricsObserverOptions options, ILogger<HttpClientDesktopObserver> logger, IViewRegistry viewRegistry)
         : base(DefaultObserverName, DiagnosticName, options, logger)
     {
-        if (viewRegistry == null)
-        {
-            throw new ArgumentNullException(nameof(viewRegistry));
-        }
+        ArgumentGuard.NotNull(viewRegistry);
 
         SetPathMatcher(new Regex(options.EgressIgnorePattern));
 

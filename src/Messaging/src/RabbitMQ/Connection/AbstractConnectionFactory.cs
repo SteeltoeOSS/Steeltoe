@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client.Events;
+using Steeltoe.Common;
 using Steeltoe.Common.Net;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using RC = RabbitMQ.Client;
@@ -108,9 +109,11 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
     protected AbstractConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, AbstractConnectionFactory publisherConnectionFactory,
         ILoggerFactory loggerFactory = null)
     {
+        ArgumentGuard.NotNull(rabbitConnectionFactory);
+
         LoggerFactory = loggerFactory;
         Logger = LoggerFactory?.CreateLogger(GetType());
-        InnerRabbitConnectionFactory = rabbitConnectionFactory ?? throw new ArgumentNullException(nameof(rabbitConnectionFactory));
+        InnerRabbitConnectionFactory = rabbitConnectionFactory;
         _connectionListener = new CompositeConnectionListener(LoggerFactory?.CreateLogger<CompositeConnectionListener>());
         _channelListener = new CompositeChannelListener(LoggerFactory?.CreateLogger<CompositeConnectionListener>());
         PublisherConnectionFactory = publisherConnectionFactory;
@@ -300,7 +303,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
         }
         catch (Exception e)
         {
-            Logger?.LogWarning("Could not get host name, using 'localhost' as default value", e);
+            Logger?.LogWarning(e, "Could not get host name, using 'localhost' as default value");
             temp = "localhost";
         }
 
@@ -327,7 +330,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
                 addressesToConnect = list.ToList();
             }
 
-            Logger?.LogInformation("Attempting to connect to: {address} ", addressesToConnect);
+            Logger?.LogInformation("Attempting to connect to: {address}", addressesToConnect);
 
             rabbitConnection = InnerRabbitConnectionFactory.CreateConnection(addressesToConnect);
         }
@@ -367,7 +370,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
 
         public void HandleUnblocked(object sender, EventArgs args)
         {
-            _logger?.LogInformation("Connection unblocked: {args}", args.ToString());
+            _logger?.LogInformation("Connection unblocked: {args}", args);
         }
     }
 

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Stream.Binder.Rabbit.Config;
 
@@ -25,10 +26,7 @@ public class RabbitBindingsOptions
 
     public RabbitBindingsOptions(IConfiguration config)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         config.Bind(this);
         PostProcess();

@@ -4,6 +4,7 @@
 
 using System.Reflection;
 using Castle.DynamicProxy;
+using Steeltoe.Common;
 
 namespace Steeltoe.Stream.Binding;
 
@@ -16,10 +17,7 @@ public class BindingProxyGenerator
 
     internal static object GenerateProxy(IBindableProxyFactory factory)
     {
-        if (factory == null)
-        {
-            throw new ArgumentNullException(nameof(factory));
-        }
+        ArgumentGuard.NotNull(factory);
 
         var generator = new ProxyGenerator();
         Func<MethodInfo, object> del = factory.Invoke;

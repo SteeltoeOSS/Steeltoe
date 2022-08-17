@@ -5,6 +5,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.EntityFrameworkCore;
 using Steeltoe.Connector.Services;
@@ -15,15 +16,8 @@ public static class PostgresDbContextOptionsExtensions
 {
     public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object npgsqlOptionsAction = null)
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
 
         string connection = GetConnection(config);
 
@@ -33,20 +27,9 @@ public static class PostgresDbContextOptionsExtensions
     public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName,
         object npgsqlOptionsAction = null)
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         string connection = GetConnection(config, serviceName);
 
@@ -57,15 +40,8 @@ public static class PostgresDbContextOptionsExtensions
         object npgsqlOptionsAction = null)
         where TContext : DbContext
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
 
         string connection = GetConnection(config);
 
@@ -76,43 +52,29 @@ public static class PostgresDbContextOptionsExtensions
         string serviceName, object npgsqlOptionsAction = null)
         where TContext : DbContext
     {
-        if (optionsBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(optionsBuilder));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentException(nameof(serviceName));
-        }
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNullOrEmpty(serviceName);
 
         string connection = GetConnection(config, serviceName);
 
         return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
     }
 
-    public static MethodInfo FindUseNpgsqlMethod(Type type, Type[] parameterTypes)
+    private static MethodInfo FindUseNpgsqlMethod(Type type, IReadOnlyList<Type> parameterTypes)
     {
-        TypeInfo typeInfo = type.GetTypeInfo();
-        IEnumerable<MethodInfo> declaredMethods = typeInfo.DeclaredMethods;
+        return type.GetMethods().FirstOrDefault(method => MatchesSignature(method, parameterTypes));
+    }
 
-        foreach (MethodInfo ci in declaredMethods)
+    private static bool MatchesSignature(MethodBase method, IReadOnlyList<Type> parameterTypes)
+    {
+        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseNpgsql", StringComparison.InvariantCulture))
         {
-            ParameterInfo[] parameters = ci.GetParameters();
-
-            if (parameters.Length == 3 && ci.Name.Equals("UseNpgsql") && parameters[0].ParameterType.Equals(parameterTypes[0]) &&
-                parameters[1].ParameterType.Equals(parameterTypes[1]) && ci.IsPublic && ci.IsStatic)
-            {
-                return ci;
-            }
+            ParameterInfo[] parameters = method.GetParameters();
+            return parameters.Length == 3 && parameters[0].ParameterType == parameterTypes[0] && parameters[1].ParameterType == parameterTypes[1];
         }
 
-        return null;
+        return false;
     }
 
     private static string GetConnection(IConfiguration config, string serviceName = null)

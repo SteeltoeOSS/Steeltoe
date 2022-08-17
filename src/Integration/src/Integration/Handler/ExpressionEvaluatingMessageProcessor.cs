@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Messaging;
@@ -22,7 +23,9 @@ public class ExpressionEvaluatingMessageProcessor<T> : AbstractMessageProcessor<
     public ExpressionEvaluatingMessageProcessor(IApplicationContext context, IExpression expression, Type expectedType)
         : base(context)
     {
-        Expression = expression ?? throw new ArgumentNullException(nameof(expression));
+        ArgumentGuard.NotNull(expression);
+
+        Expression = expression;
         ExpectedType = expectedType;
     }
 
@@ -34,9 +37,9 @@ public class ExpressionEvaluatingMessageProcessor<T> : AbstractMessageProcessor<
             Expression = ExpressionParser.ParseExpression(expression);
             ExpectedType = typeof(T);
         }
-        catch (ParseException ex)
+        catch (ParseException exception)
         {
-            throw new ArgumentException("Failed to parse expression.", ex);
+            throw new ArgumentException($"Failed to parse expression '{expression}'.", nameof(expression), exception);
         }
     }
 
@@ -48,9 +51,9 @@ public class ExpressionEvaluatingMessageProcessor<T> : AbstractMessageProcessor<
             Expression = ExpressionParser.ParseExpression(expression);
             ExpectedType = expectedType;
         }
-        catch (ParseException ex)
+        catch (ParseException exception)
         {
-            throw new ArgumentException("Failed to parse expression.", ex);
+            throw new ArgumentException($"Failed to parse expression '{expression}'.", nameof(expression), exception);
         }
     }
 

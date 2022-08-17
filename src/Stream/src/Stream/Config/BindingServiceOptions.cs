@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Stream.Config;
 
@@ -39,10 +40,7 @@ public class BindingServiceOptions // : IBindingServiceOptions
 
     internal BindingServiceOptions(IConfiguration config)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         config.Bind(this);
         PostProcess();
@@ -127,10 +125,7 @@ public class BindingServiceOptions // : IBindingServiceOptions
 
     public ConsumerOptions GetConsumerOptions(string inputBindingName)
     {
-        if (inputBindingName == null)
-        {
-            throw new ArgumentNullException(nameof(inputBindingName));
-        }
+        ArgumentGuard.NotNull(inputBindingName);
 
         BindingOptions bindingOptions = GetBindingOptions(inputBindingName);
         ConsumerOptions consumerOptions = bindingOptions.Consumer;
@@ -158,10 +153,7 @@ public class BindingServiceOptions // : IBindingServiceOptions
 
     public ProducerOptions GetProducerOptions(string outputBindingName)
     {
-        if (outputBindingName == null)
-        {
-            throw new ArgumentNullException(nameof(outputBindingName));
-        }
+        ArgumentGuard.NotNull(outputBindingName);
 
         BindingOptions bindingOptions = GetBindingOptions(outputBindingName);
         ProducerOptions producerOptions = bindingOptions.Producer;

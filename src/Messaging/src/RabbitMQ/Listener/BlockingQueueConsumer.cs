@@ -168,13 +168,13 @@ public class BlockingQueueConsumer
 
     public IMessage NextMessage()
     {
-        Logger?.LogTrace("Retrieving delivery for: {me}", ToString());
+        Logger?.LogTrace("Retrieving delivery for: {consumer}", this);
         return Handle(Queue.Take());
     }
 
     public IMessage NextMessage(int timeout)
     {
-        Logger?.LogTrace("Retrieving delivery for: {me}", ToString());
+        Logger?.LogTrace("Retrieving delivery for: {consumer}", this);
         CheckShutdown();
 
         if (MissingQueues.Count > 0)
@@ -195,7 +195,7 @@ public class BlockingQueueConsumer
 
     public void Start()
     {
-        Logger?.LogDebug("Starting consumer {consumer}", ToString());
+        Logger?.LogDebug("Starting consumer {consumer}", this);
 
         try
         {
@@ -230,7 +230,7 @@ public class BlockingQueueConsumer
             }
             catch (Exception e)
             {
-                Logger?.LogDebug(e, "Error closing consumer: {consumer}", ToString());
+                Logger?.LogDebug(e, "Error closing consumer: {consumer}", this);
             }
         }
 
@@ -434,7 +434,7 @@ public class BlockingQueueConsumer
         }
         else if (e.FailedQueues.Count < Queues.Count)
         {
-            Logger?.LogWarning("Not all queues are available; only listening on those that are - configured: {queues}; not available: {notAvailable}",
+            Logger?.LogWarning(e, "Not all queues are available; only listening on those that are - configured: {queues}; not available: {notAvailable}",
                 string.Join(',', Queues), string.Join(',', e.FailedQueues));
 
             lock (MissingQueues)
@@ -466,7 +466,7 @@ public class BlockingQueueConsumer
 
         if (consumerTag != null)
         {
-            Logger?.LogDebug("Started on queue '{queue}' with tag {consumerTag} : {consumer}", queue, consumerTag, ToString());
+            Logger?.LogDebug("Started on queue '{queue}' with tag {consumerTag} : {consumer}", queue, consumerTag, this);
         }
         else
         {
@@ -505,7 +505,7 @@ public class BlockingQueueConsumer
             }
             catch (RabbitMQClientException e)
             {
-                Logger?.LogWarning("Failed to declare queue: {name} ", queueName);
+                Logger?.LogWarning(e, "Failed to declare queue: {name} ", queueName);
 
                 if (!Channel.IsOpen)
                 {
@@ -654,7 +654,7 @@ public class BlockingQueueConsumer
         {
             base.HandleBasicConsumeOk(consumerTag);
             ConsumerTag = consumerTag;
-            Logger?.LogDebug("ConsumeOK: {consumer} {consumerTag}", Consumer.ToString(), consumerTag);
+            Logger?.LogDebug("ConsumeOK: {consumer} {consumerTag}", Consumer, consumerTag);
             Consumer.Consumers.TryAdd(QueueName, this);
 
             // if (BlockingQueueConsumer.this.applicationEventPublisher != null) {
@@ -675,7 +675,7 @@ public class BlockingQueueConsumer
 
         public override void HandleBasicCancel(string consumerTag)
         {
-            Logger?.LogWarning("Cancel received for {consumerTag} : {queueName} : {consumer}", consumerTag, QueueName, ToString());
+            Logger?.LogWarning("Cancel received for {consumerTag} : {queueName} : {consumer}", consumerTag, QueueName, this);
             Consumer.Consumers.Remove(QueueName, out _);
 
             if (Consumer.Consumers.Count != 0)
@@ -690,7 +690,7 @@ public class BlockingQueueConsumer
 
         public override void HandleBasicCancelOk(string consumerTag)
         {
-            Logger?.LogDebug("Received CancelOk for {consumerTag} : {queueName} : {consumer}", consumerTag, QueueName, ToString());
+            Logger?.LogDebug("Received CancelOk for {consumerTag} : {queueName} : {consumer}", consumerTag, QueueName, this);
             Canceled = true;
         }
 
@@ -698,7 +698,7 @@ public class BlockingQueueConsumer
             RC.IBasicProperties properties, byte[] body)
         {
             Logger?.LogDebug("Storing delivery for consumer tag: {tag} with deliveryTag: {deliveryTag} for consumer: {consumer}", ConsumerTag, deliveryTag,
-                ToString());
+                this);
 
             try
             {

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Common;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Invocation;
 
@@ -20,7 +21,9 @@ public class PayloadMethodArgumentResolver : IHandlerMethodArgumentResolver
 
     public PayloadMethodArgumentResolver(IMessageConverter messageConverter, bool useDefaultResolution)
     {
-        Converter = messageConverter ?? throw new ArgumentNullException(nameof(messageConverter));
+        ArgumentGuard.NotNull(messageConverter);
+
+        Converter = messageConverter;
         UseDefaultResolution = useDefaultResolution;
     }
 

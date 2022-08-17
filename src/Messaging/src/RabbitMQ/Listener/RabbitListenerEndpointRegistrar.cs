@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 
@@ -39,10 +40,7 @@ public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
 
     public void RegisterEndpoint(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory)
     {
-        if (endpoint == null)
-        {
-            throw new ArgumentNullException(nameof(endpoint));
-        }
+        ArgumentGuard.NotNull(endpoint);
 
         if (string.IsNullOrEmpty(endpoint.Id))
         {

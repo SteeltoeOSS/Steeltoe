@@ -41,9 +41,12 @@ public class ExpressionState
 
     public ExpressionState(IEvaluationContext context, ITypedValue rootObject, SpelParserOptions configuration)
     {
-        EvaluationContext = context ?? throw new ArgumentNullException(nameof(context));
+        ArgumentGuard.NotNull(context);
+        ArgumentGuard.NotNull(configuration);
+
+        EvaluationContext = context;
         RootContextObject = rootObject;
-        Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        Configuration = configuration;
     }
 
     public ITypedValue GetActiveContextObject()

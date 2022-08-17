@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Logging;
 using Steeltoe.Discovery;
@@ -24,8 +25,11 @@ internal sealed class ConfigServerDiscoveryService
 
     internal ConfigServerDiscoveryService(IConfiguration configuration, ConfigServerClientSettings settings, ILoggerFactory logFactory = null)
     {
-        Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(settings);
+
+        Configuration = configuration;
+        Settings = settings;
         LogFactory = logFactory ?? BootstrapLoggerFactory.Instance;
         Logger = LogFactory.CreateLogger<ConfigServerDiscoveryService>();
         SetupDiscoveryClient();

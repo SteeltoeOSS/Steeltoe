@@ -5,17 +5,24 @@
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 
 public static class WavefrontTraceExtensions
 {
-    public static TracerProviderBuilder AddWavefrontExporter(this TracerProviderBuilder builder, IWavefrontExporterOptions exporterOptions,
+    public static TracerProviderBuilder AddWavefrontExporter(this TracerProviderBuilder builder, IWavefrontExporterOptions options,
         ILogger<WavefrontTraceExporter> logger = null)
     {
-        WavefrontExporterOptions options = exporterOptions as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(exporterOptions));
+        ArgumentGuard.NotNull(options);
+
+        if (options is not WavefrontExporterOptions exporterOptions)
+        {
+            throw new ArgumentException($"Options must be convertible to {nameof(WavefrontExporterOptions)}.", nameof(options));
+        }
+
         var exporter = new WavefrontTraceExporter(exporterOptions, logger);
 
-        return builder.AddProcessor(new BatchActivityExportProcessor(exporter, options.MaxQueueSize, options.Step));
+        return builder.AddProcessor(new BatchActivityExportProcessor(exporter, exporterOptions.MaxQueueSize, exporterOptions.Step));
     }
 }

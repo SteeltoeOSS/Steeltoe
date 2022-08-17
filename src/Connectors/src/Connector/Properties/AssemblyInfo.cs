@@ -10,7 +10,7 @@ using Steeltoe.Connector;
 [assembly: InternalsVisibleTo("Steeltoe.Connector.CloudFoundry.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Connector.EntityFrameworkCore.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Connector.EntityFramework6.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.GemFireConnector.Test")]
 [assembly: InternalsVisibleTo("External.Connector.Test")]
+
 [assembly: ServiceInfoFactoryAssembly]
 [assembly: ConnectionInfoAssembly]

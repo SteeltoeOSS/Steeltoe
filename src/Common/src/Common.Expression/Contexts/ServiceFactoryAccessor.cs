@@ -37,7 +37,7 @@ public class ServiceFactoryAccessor : IPropertyAccessor
     {
         if (target is not IApplicationContext targetContext)
         {
-            throw new InvalidOperationException("target must be of type IApplicationContext");
+            throw new InvalidOperationException($"{nameof(target)} must be of type {nameof(IApplicationContext)}.");
         }
 
         Type serviceType = ServiceFactoryResolver.GetServiceNameAndType(context, name, out string lookupName);
@@ -52,6 +52,6 @@ public class ServiceFactoryAccessor : IPropertyAccessor
 
     public void Write(IEvaluationContext context, object target, string name, object newValue)
     {
-        throw new AccessException("Services in a IApplicationContext are read-only");
+        throw new AccessException($"Services in an {nameof(IApplicationContext)} are read-only.");
     }
 }

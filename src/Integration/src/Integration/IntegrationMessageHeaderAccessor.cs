@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Integration.Acks;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
@@ -43,13 +44,8 @@ public class IntegrationMessageHeaderAccessor : MessageHeaderAccessor
 
     public void SetReadOnlyHeaders(IList<string> readOnlyHeaders)
     {
-        foreach (string h in readOnlyHeaders)
-        {
-            if (h == null)
-            {
-                throw new ArgumentException("'readOnlyHeaders' must not be contain null items.");
-            }
-        }
+        ArgumentGuard.NotNull(readOnlyHeaders);
+        ArgumentGuard.ElementsNotNull(readOnlyHeaders);
 
         if (readOnlyHeaders.Count > 0)
         {
@@ -105,7 +101,7 @@ public class IntegrationMessageHeaderAccessor : MessageHeaderAccessor
 
         if (value is not T typedValue)
         {
-            throw new ArgumentException($"Incorrect type specified for header '{key}'. Expected [{typeof(T)}] but actual type is [{value.GetType()}]");
+            throw new InvalidOperationException($"Incorrect type specified for header '{key}'. Expected [{typeof(T)}] but actual type is [{value.GetType()}].");
         }
 
         return typedValue;
@@ -143,26 +139,26 @@ public class IntegrationMessageHeaderAccessor : MessageHeaderAccessor
             {
                 if (!(headerValue is DateTime || headerValue is long))
                 {
-                    throw new ArgumentException($"The '{headerName}' header value must be a Date or Long.");
+                    throw new ArgumentException($"The '{headerName}' header value must be a {typeof(DateTime)} or {typeof(long)}.", nameof(headerValue));
                 }
             }
             else if (SequenceNumber.Equals(headerName) || SequenceSize.Equals(headerName) || Priority.Equals(headerName))
             {
                 if (headerValue is not int)
                 {
-                    throw new ArgumentException($"The '{headerName}' header value must be a integer.");
+                    throw new ArgumentException($"The '{headerName}' header value must be a {typeof(int)}.", nameof(headerValue));
                 }
             }
             else if (RoutingSlip.Equals(headerName))
             {
                 if (headerValue is not IDictionary<string, object>)
                 {
-                    throw new ArgumentException($"The '{headerName}' header value must be a IDictionary<string,object>.");
+                    throw new ArgumentException($"The '{headerName}' header value must be a IDictionary<string, object>.", nameof(headerValue));
                 }
             }
             else if (DuplicateMessage.Equals(headerName) && headerValue is not bool)
             {
-                throw new ArgumentException($"The '{headerName}' header value must be a boolean.");
+                throw new ArgumentException($"The '{headerName}' header value must be a {typeof(bool)}.", nameof(headerValue));
             }
         }
     }

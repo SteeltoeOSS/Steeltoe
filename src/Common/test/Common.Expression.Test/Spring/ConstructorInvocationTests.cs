@@ -185,7 +185,7 @@ public class ConstructorInvocationTests : AbstractExpressionTests
 
             if (i == 1)
             {
-                throw new ArgumentException("ArgumentException for 1");
+                throw new ArgumentException("ArgumentException for 1", nameof(i));
             }
 
             if (i == 2)

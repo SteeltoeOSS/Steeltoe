@@ -14,7 +14,7 @@ public abstract class AbstractToCollectionConverter : AbstractGenericConditional
         ConversionService = conversionService;
     }
 
-    protected AbstractToCollectionConverter(ISet<(Type Source, Type Target)> convertableTypes, IConversionService conversionService)
+    protected AbstractToCollectionConverter(ISet<(Type SourceType, Type TargetType)> convertableTypes, IConversionService conversionService)
         : base(convertableTypes)
     {
         ConversionService = conversionService;

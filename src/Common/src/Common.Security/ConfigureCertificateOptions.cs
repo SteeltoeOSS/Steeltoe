@@ -15,15 +15,14 @@ public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOpt
 
     public ConfigureCertificateOptions(IConfiguration config)
     {
-        _config = config ?? throw new ArgumentNullException(nameof(config));
+        ArgumentGuard.NotNull(config);
+
+        _config = config;
     }
 
     public void Configure(string name, CertificateOptions options)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
+        ArgumentGuard.NotNull(options);
 
         options.Name = name;
 

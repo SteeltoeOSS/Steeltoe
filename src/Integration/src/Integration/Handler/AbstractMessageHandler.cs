@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Order;
 using Steeltoe.Integration.Support;
@@ -41,14 +42,11 @@ public abstract class AbstractMessageHandler : IMessageHandler, IOrdered
 
     public virtual void HandleMessage(IMessage message)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentGuard.NotNull(message);
 
         if (message.Payload == null)
         {
-            throw new ArgumentNullException("Message payload is null");
+            throw new ArgumentException("Message payload must not be null.", nameof(message));
         }
 
         try

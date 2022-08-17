@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
@@ -17,20 +18,9 @@ public static class ConfigurationSettingsHelper
 
     public static void Initialize(string configPrefix, ConfigServerClientSettings settings, IConfiguration config)
     {
-        if (configPrefix == null)
-        {
-            throw new ArgumentNullException(nameof(configPrefix));
-        }
-
-        if (settings == null)
-        {
-            throw new ArgumentNullException(nameof(settings));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(configPrefix);
+        ArgumentGuard.NotNull(settings);
+        ArgumentGuard.NotNull(config);
 
         IConfigurationSection configurationSection = config.GetSection(configPrefix);
 

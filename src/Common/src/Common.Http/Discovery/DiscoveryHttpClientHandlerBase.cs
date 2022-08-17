@@ -16,14 +16,16 @@ public class DiscoveryHttpClientHandlerBase
 
     public DiscoveryHttpClientHandlerBase(IDiscoveryClient client, ILogger logger = null, ILoadBalancer loadBalancer = null)
     {
-        this.client = client ?? throw new ArgumentNullException(nameof(client));
+        ArgumentGuard.NotNull(client);
+
+        this.client = client;
         this.loadBalancer = loadBalancer ?? new RandomLoadBalancer(client);
         this.logger = logger;
     }
 
     public virtual Uri LookupService(Uri current)
     {
-        logger?.LogDebug("LookupService({0})", current.ToString());
+        logger?.LogDebug("LookupService({uri})", current);
 
         if (!current.IsDefaultPort)
         {
@@ -35,7 +37,7 @@ public class DiscoveryHttpClientHandlerBase
 
     public virtual async Task<Uri> LookupServiceAsync(Uri current)
     {
-        logger?.LogDebug("LookupService({0})", current.ToString());
+        logger?.LogDebug("LookupService({uri})", current);
 
         if (!current.IsDefaultPort)
         {

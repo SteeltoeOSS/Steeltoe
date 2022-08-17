@@ -19,15 +19,8 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
 
     protected DiagnosticObserver(string name, string listenerName, ILogger logger = null)
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentException(nameof(name));
-        }
-
-        if (string.IsNullOrEmpty(listenerName))
-        {
-            throw new ArgumentException(nameof(listenerName));
-        }
+        ArgumentGuard.NotNullOrEmpty(name);
+        ArgumentGuard.NotNullOrEmpty(listenerName);
 
         ObserverName = name;
         ListenerName = listenerName;

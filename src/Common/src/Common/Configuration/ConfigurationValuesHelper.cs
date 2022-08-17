@@ -131,15 +131,8 @@ public static class ConfigurationValuesHelper
 
     public static string GetString(string key, IConfiguration config, IConfiguration resolve, string def)
     {
-        if (string.IsNullOrEmpty(key))
-        {
-            throw new ArgumentException(nameof(key));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNullOrEmpty(key);
+        ArgumentGuard.NotNull(config);
 
         string val = config[key];
 

@@ -121,10 +121,7 @@ public static class MimeTypeUtils
 
     public static void SortBySpecificity(List<MimeType> mimeTypes)
     {
-        if (mimeTypes == null)
-        {
-            throw new ArgumentNullException(nameof(mimeTypes));
-        }
+        ArgumentGuard.NotNull(mimeTypes);
 
         if (mimeTypes.Count > 1)
         {
@@ -153,18 +150,12 @@ public static class MimeTypeUtils
 
     private static MimeType ParseMimeTypeInternal(string mimeType)
     {
-        if (string.IsNullOrEmpty(mimeType))
-        {
-            throw new ArgumentException("'mimeType' must not be empty");
-        }
+        ArgumentGuard.NotNullOrEmpty(mimeType);
 
         int index = mimeType.IndexOf(';');
         string fullType = (index >= 0 ? mimeType.Substring(0, index) : mimeType).Trim();
 
-        if (string.IsNullOrEmpty(fullType))
-        {
-            throw new ArgumentException(mimeType, "'mimeType' must not be empty");
-        }
+        ArgumentGuard.NotNullOrEmpty(fullType, nameof(mimeType));
 
         if (MimeType.WildcardType.Equals(fullType))
         {
@@ -175,12 +166,12 @@ public static class MimeTypeUtils
 
         if (subIndex == -1)
         {
-            throw new ArgumentException($"{mimeType} does not contain '/'");
+            throw new ArgumentException($"{mimeType} does not contain '/'", nameof(mimeType));
         }
 
         if (subIndex == fullType.Length - 1)
         {
-            throw new ArgumentException($"{mimeType} does not contain subtype after '/'");
+            throw new ArgumentException($"{mimeType} does not contain subtype after '/'", nameof(mimeType));
         }
 
         string type = fullType.Substring(0, subIndex);
@@ -188,7 +179,7 @@ public static class MimeTypeUtils
 
         if (MimeType.WildcardType.Equals(type) && !MimeType.WildcardType.Equals(subtype))
         {
-            throw new ArgumentException($"{mimeType} wildcard type is legal only in '*/*' (all mime types)");
+            throw new ArgumentException($"{mimeType} wildcard type is legal only in '*/*' (all mime types)", nameof(mimeType));
         }
 
         Dictionary<string, string> parameters = null;
@@ -243,7 +234,7 @@ public static class MimeTypeUtils
         }
         catch (Exception ex)
         {
-            throw new ArgumentException($"{mimeType} {ex.Message}");
+            throw new ArgumentException($"The specified value '{mimeType}' is invalid.", ex);
         }
     }
 

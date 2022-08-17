@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Trace;
@@ -26,7 +27,9 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
     public HttpTraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
         : base(DefaultObserverName, DiagnosticName, logger)
     {
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        ArgumentGuard.NotNull(options);
+
+        _options = options;
         _logger = logger;
     }
 

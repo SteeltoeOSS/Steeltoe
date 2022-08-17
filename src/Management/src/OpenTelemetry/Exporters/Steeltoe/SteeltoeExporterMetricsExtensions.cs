@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using OpenTelemetry.Metrics;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters;
 
@@ -10,8 +11,10 @@ public static class SteeltoeExporterMetricsExtensions
 {
     public static MeterProviderBuilder AddSteeltoeExporter(this MeterProviderBuilder builder, SteeltoeExporter exporter)
     {
-        SteeltoeExporter steeltoeExporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
-        var reader = new BaseExportingMetricReader(steeltoeExporter);
-        return builder?.AddReader(reader) ?? throw new ArgumentNullException(nameof(builder));
+        ArgumentGuard.NotNull(builder);
+        ArgumentGuard.NotNull(exporter);
+
+        var reader = new BaseExportingMetricReader(exporter);
+        return builder.AddReader(reader);
     }
 }

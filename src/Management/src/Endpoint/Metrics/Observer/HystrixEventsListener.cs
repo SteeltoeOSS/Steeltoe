@@ -4,6 +4,7 @@
 
 using System.Diagnostics.Tracing;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
@@ -29,10 +30,7 @@ public class HystrixEventsListener : EventSourceListener
 
     protected override void OnEventWritten(EventWrittenEventArgs eventData)
     {
-        if (eventData == null)
-        {
-            throw new ArgumentNullException(nameof(eventData));
-        }
+        ArgumentGuard.NotNull(eventData);
 
         try
         {

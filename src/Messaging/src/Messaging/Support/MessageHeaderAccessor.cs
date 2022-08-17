@@ -41,7 +41,6 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     public virtual bool LeaveMutable
     {
         get => _leaveMutable;
-
         set
         {
             if (!headers.IsMutable)
@@ -111,7 +110,6 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
 
             return value.ToString();
         }
-
         set => SetHeader(Messaging.MessageHeaders.ContentType, value);
     }
 
@@ -250,7 +248,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     {
         if (IsReadOnly(name))
         {
-            throw new ArgumentException($"'{name}' header is read-only");
+            throw new ArgumentException($"'{name}' header is read-only.", nameof(name));
         }
 
         VerifyType(name, value);
@@ -369,7 +367,8 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     {
         if (messageHeaders is not MessageHeaders asHeaders)
         {
-            throw new InvalidOperationException("Unable to create mutable accessor, message has no headers or headers are not of type MessageHeaders");
+            throw new InvalidOperationException(
+                $"Unable to create mutable accessor, message has no headers or headers are not of type {nameof(MessageHeaders)}.");
         }
 
         return new MessageHeaderAccessor(asHeaders);
@@ -382,10 +381,20 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
 
     protected virtual void VerifyType(string headerName, object headerValue)
     {
-        if (headerName != null && headerValue != null && (Messaging.MessageHeaders.ErrorChannelName.Equals(headerName) ||
-            Messaging.MessageHeaders.ReplyChannelName.EndsWith(headerName)) && !(headerValue is IMessageChannel || headerValue is string))
+        if (headerName == null || headerValue == null)
         {
-            throw new ArgumentException($"'{headerName}' header value must be a MessageChannel or string");
+            return;
+        }
+
+        if (!Messaging.MessageHeaders.ErrorChannelName.Equals(headerName) &&
+            !Messaging.MessageHeaders.ReplyChannelName.EndsWith(headerName, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        if (headerValue is not (IMessageChannel or string))
+        {
+            throw new ArgumentException($"'{headerName}' header value must be a {nameof(IMessageChannel)} or {nameof(String)}.", nameof(headerValue));
         }
     }
 

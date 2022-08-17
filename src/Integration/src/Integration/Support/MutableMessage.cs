@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 
@@ -32,8 +33,11 @@ public class MutableMessage : IMessage
 
     public MutableMessage(object payload, MutableMessageHeaders headers)
     {
-        InnerPayload = payload ?? throw new ArgumentNullException(nameof(payload));
-        InnerHeaders = headers ?? throw new ArgumentNullException(nameof(headers));
+        ArgumentGuard.NotNull(payload);
+        ArgumentGuard.NotNull(headers);
+
+        InnerPayload = payload;
+        InnerHeaders = headers;
     }
 
     public override string ToString()

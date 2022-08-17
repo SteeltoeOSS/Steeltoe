@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging;
@@ -17,7 +18,9 @@ public class ReplyProducingMessageHandlerWrapper : AbstractReplyProducingMessage
     public ReplyProducingMessageHandlerWrapper(IApplicationContext context, IMessageHandler target)
         : base(context)
     {
-        _target = target ?? throw new ArgumentNullException(nameof(target));
+        ArgumentGuard.NotNull(target);
+
+        _target = target;
     }
 
     public Task StartAsync()

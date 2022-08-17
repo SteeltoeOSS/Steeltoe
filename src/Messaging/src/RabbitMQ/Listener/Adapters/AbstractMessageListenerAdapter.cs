@@ -4,6 +4,7 @@
 
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Contexts;
@@ -93,18 +94,8 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     public virtual void SetBeforeSendReplyPostProcessors(params IMessagePostProcessor[] beforeSendReplyPostProcessors)
     {
-        if (beforeSendReplyPostProcessors == null)
-        {
-            throw new ArgumentNullException(nameof(beforeSendReplyPostProcessors));
-        }
-
-        foreach (IMessagePostProcessor elem in beforeSendReplyPostProcessors)
-        {
-            if (elem == null)
-            {
-                throw new ArgumentNullException("'replyPostProcessors' must not have any null elements");
-            }
-        }
+        ArgumentGuard.NotNull(beforeSendReplyPostProcessors);
+        ArgumentGuard.ElementsNotNull(beforeSendReplyPostProcessors);
 
         BeforeSendReplyPostProcessors = new List<IMessagePostProcessor>(beforeSendReplyPostProcessors);
     }
@@ -197,7 +188,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
         }
         else
         {
-            Logger?.LogWarning("Listener method returned result [" + resultArg + "]: not generating response message for it because no Rabbit Channel given");
+            Logger?.LogWarning("Listener method returned result [{result}]: not generating response message for it because no Rabbit Channel given", resultArg);
         }
     }
 
@@ -371,8 +362,8 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
         Address replyTo = value switch
         {
-            not string and not Address => throw new ArgumentException("response expression must evaluate to a String or Address"),
-            string sValue => new Address(sValue),
+            not string and not Address => throw new InvalidOperationException($"Response expression must be of type {nameof(String)} or {nameof(Address)}."),
+            string stringValue => new Address(stringValue),
             _ => (Address)value
         };
 

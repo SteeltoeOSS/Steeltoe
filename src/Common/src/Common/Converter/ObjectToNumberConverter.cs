@@ -11,9 +11,9 @@ public class ObjectToNumberConverter : AbstractToNumberConverter
     {
     }
 
-    private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
+    private static ISet<(Type SourceType, Type TargetType)> GetConvertiblePairs()
     {
-        return new HashSet<(Type Source, Type Target)>
+        return new HashSet<(Type SourceType, Type TargetType)>
         {
             (typeof(object), typeof(int)),
             (typeof(object), typeof(float)),

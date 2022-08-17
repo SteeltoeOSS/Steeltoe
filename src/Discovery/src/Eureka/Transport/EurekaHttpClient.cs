@@ -53,8 +53,10 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> config, IHttpClientHandlerProvider handlerProvider = null, ILoggerFactory logFactory = null)
     {
+        ArgumentGuard.NotNull(config);
+
         this.config = null;
-        _configOptions = config ?? throw new ArgumentNullException(nameof(config));
+        _configOptions = config;
         this.handlerProvider = handlerProvider;
         Initialize(new Dictionary<string, string>(), logFactory);
     }
@@ -73,7 +75,9 @@ public class EurekaHttpClient : IEurekaHttpClient
     public EurekaHttpClient(IEurekaClientConfig config, IDictionary<string, string> headers, ILoggerFactory logFactory = null,
         IHttpClientHandlerProvider handlerProvider = null)
     {
-        this.config = config ?? throw new ArgumentNullException(nameof(config));
+        ArgumentGuard.NotNull(config);
+
+        this.config = config;
         this.handlerProvider = handlerProvider;
         Initialize(headers, logFactory);
     }
@@ -84,10 +88,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public virtual Task<EurekaHttpResponse> RegisterAsync(InstanceInfo info)
     {
-        if (info == null)
-        {
-            throw new ArgumentNullException(nameof(info));
-        }
+        ArgumentGuard.NotNull(info);
 
         return RegisterInternalAsync(info);
     }
@@ -160,20 +161,10 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public virtual Task<EurekaHttpResponse<InstanceInfo>> SendHeartBeatAsync(string appName, string id, InstanceInfo info, InstanceStatus overriddenStatus)
     {
-        if (info == null)
-        {
-            throw new ArgumentNullException(nameof(info));
-        }
+        ArgumentGuard.NotNull(info);
 
-        if (string.IsNullOrEmpty(appName))
-        {
-            throw new ArgumentException(nameof(appName));
-        }
-
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException(nameof(id));
-        }
+        ArgumentGuard.NotNullOrEmpty(appName);
+        ArgumentGuard.NotNullOrEmpty(id);
 
         return SendHeartBeatInternalAsync(appName, id, info, overriddenStatus);
     }
@@ -283,10 +274,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public virtual Task<EurekaHttpResponse<Applications>> GetVipAsync(string vipAddress, ISet<string> regions = null)
     {
-        if (string.IsNullOrEmpty(vipAddress))
-        {
-            throw new ArgumentException(nameof(vipAddress));
-        }
+        ArgumentGuard.NotNullOrEmpty(vipAddress);
 
         return GetVipInternalAsync(vipAddress, regions);
     }
@@ -298,10 +286,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public virtual Task<EurekaHttpResponse<Applications>> GetSecureVipAsync(string secureVipAddress, ISet<string> regions = null)
     {
-        if (string.IsNullOrEmpty(secureVipAddress))
-        {
-            throw new ArgumentException(nameof(secureVipAddress));
-        }
+        ArgumentGuard.NotNullOrEmpty(secureVipAddress);
 
         return GetSecureVipInternalAsync(secureVipAddress, regions);
     }
@@ -313,10 +298,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public virtual Task<EurekaHttpResponse<Application>> GetApplicationAsync(string appName)
     {
-        if (string.IsNullOrEmpty(appName))
-        {
-            throw new ArgumentException(nameof(appName));
-        }
+        ArgumentGuard.NotNullOrEmpty(appName);
 
         return GetApplicationInternalAsync(appName);
     }
@@ -387,25 +369,15 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public virtual Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsync(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException(nameof(id));
-        }
+        ArgumentGuard.NotNullOrEmpty(id);
 
         return GetInstanceInternalAsync(id);
     }
 
     public virtual Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsync(string appName, string id)
     {
-        if (string.IsNullOrEmpty(appName))
-        {
-            throw new ArgumentException(nameof(appName));
-        }
-
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException(nameof(id));
-        }
+        ArgumentGuard.NotNullOrEmpty(appName);
+        ArgumentGuard.NotNullOrEmpty(id);
 
         return GetInstanceInternalAsync(appName, id);
     }
@@ -422,15 +394,8 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public virtual Task<EurekaHttpResponse> CancelAsync(string appName, string id)
     {
-        if (string.IsNullOrEmpty(appName))
-        {
-            throw new ArgumentException(nameof(appName));
-        }
-
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException(nameof(id));
-        }
+        ArgumentGuard.NotNullOrEmpty(appName);
+        ArgumentGuard.NotNullOrEmpty(id);
 
         return CancelInternalAsync(appName, id);
     }
@@ -484,20 +449,10 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public virtual Task<EurekaHttpResponse> DeleteStatusOverrideAsync(string appName, string id, InstanceInfo info)
     {
-        if (string.IsNullOrEmpty(appName))
-        {
-            throw new ArgumentException(nameof(appName));
-        }
+        ArgumentGuard.NotNullOrEmpty(appName);
+        ArgumentGuard.NotNullOrEmpty(id);
 
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException(nameof(id));
-        }
-
-        if (info == null)
-        {
-            throw new ArgumentNullException(nameof(info));
-        }
+        ArgumentGuard.NotNull(info);
 
         return DeleteStatusOverrideInternalAsync(appName, id, info);
     }
@@ -564,20 +519,10 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     public virtual Task<EurekaHttpResponse> StatusUpdateAsync(string appName, string id, InstanceStatus newStatus, InstanceInfo info)
     {
-        if (string.IsNullOrEmpty(appName))
-        {
-            throw new ArgumentException(nameof(appName));
-        }
+        ArgumentGuard.NotNullOrEmpty(appName);
+        ArgumentGuard.NotNullOrEmpty(id);
 
-        if (string.IsNullOrEmpty(id))
-        {
-            throw new ArgumentException(nameof(id));
-        }
-
-        if (info == null)
-        {
-            throw new ArgumentNullException(nameof(info));
-        }
+        ArgumentGuard.NotNull(info);
 
         return StatusUpdateInternalAsync(appName, id, newStatus, info);
     }
@@ -812,8 +757,10 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     protected void Initialize(IDictionary<string, string> headers, ILoggerFactory logFactory)
     {
+        ArgumentGuard.NotNull(headers);
+
         logger = logFactory?.CreateLogger<EurekaHttpClient>();
-        this.headers = headers ?? throw new ArgumentNullException(nameof(headers));
+        this.headers = headers;
         JsonSerializerOptions.Converters.Add(new JsonInstanceInfoConverter());
 
         // Validate serviceUrls

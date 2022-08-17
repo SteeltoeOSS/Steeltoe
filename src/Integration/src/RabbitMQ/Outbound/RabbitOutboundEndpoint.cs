@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.RabbitMQ.Support;
 using Steeltoe.Integration.Support;
@@ -28,7 +29,9 @@ public class RabbitOutboundEndpoint : AbstractRabbitOutboundEndpoint, IConfirmCa
     public RabbitOutboundEndpoint(IApplicationContext context, RabbitTemplate rabbitTemplate, ILogger logger)
         : base(context, logger)
     {
-        Template = rabbitTemplate ?? throw new ArgumentNullException(nameof(rabbitTemplate));
+        ArgumentGuard.NotNull(rabbitTemplate);
+
+        Template = rabbitTemplate;
         ConnectionFactory = Template.ConnectionFactory;
     }
 

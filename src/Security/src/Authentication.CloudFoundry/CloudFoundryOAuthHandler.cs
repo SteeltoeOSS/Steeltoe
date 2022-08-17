@@ -115,7 +115,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
         if (!response.IsSuccessStatusCode)
         {
             _logger?.LogDebug("CreateTicketAsync() failure getting token info from {requestUri}", request.RequestUri);
-            throw new HttpRequestException($"An error occurred when retrieving token information ({response.StatusCode}).");
+            throw new HttpRequestException($"An error occurred while retrieving token information ({response.StatusCode}).");
         }
 
         string resp = await response.Content.ReadAsStringAsync().ConfigureAwait(false);

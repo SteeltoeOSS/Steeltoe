@@ -6,6 +6,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Util;
@@ -66,10 +67,7 @@ public static class IntegrationServicesExtensions
 
     public static IServiceCollection AddQueueChannel(this IServiceCollection services, string channelName, Action<IServiceProvider, QueueChannel> configure)
     {
-        if (string.IsNullOrEmpty(channelName))
-        {
-            throw new ArgumentNullException(nameof(channelName));
-        }
+        ArgumentGuard.NotNullOrEmpty(channelName);
 
         services.RegisterService(channelName, typeof(IMessageChannel));
 
@@ -105,10 +103,7 @@ public static class IntegrationServicesExtensions
 
     public static IServiceCollection AddDirectChannel(this IServiceCollection services, string channelName, Action<IServiceProvider, DirectChannel> configure)
     {
-        if (string.IsNullOrEmpty(channelName))
-        {
-            throw new ArgumentNullException(nameof(channelName));
-        }
+        ArgumentGuard.NotNullOrEmpty(channelName);
 
         services.RegisterService(channelName, typeof(IMessageChannel));
 

@@ -166,16 +166,16 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
         return endpoint;
     }
 
-    private object CreateTargetService(Type implementation)
+    private object CreateTargetService(Type implementationType)
     {
         try
         {
-            return ApplicationContext.GetService(implementation);
+            return ApplicationContext.GetService(implementationType);
         }
         catch (Exception e)
         {
             // Log
-            throw new InvalidOperationException($"Unable to CreateInstance of type containing StreamListener method, Type: {implementation}", e);
+            throw new InvalidOperationException($"Unable to CreateInstance of type containing StreamListener method, Type: {implementationType}", e);
         }
     }
 }

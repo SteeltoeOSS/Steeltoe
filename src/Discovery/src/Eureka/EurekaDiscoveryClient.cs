@@ -94,8 +94,10 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
         public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null,
             IHttpClientHandlerProvider handlerProvider = null, HttpClient httpClient = null)
         {
+            ArgumentGuard.NotNull(config);
+
             this.config = null;
-            _configOptions = config ?? throw new ArgumentNullException(nameof(config));
+            _configOptions = config;
             this.handlerProvider = handlerProvider;
             Initialize(new Dictionary<string, string>(), logFactory);
             this.httpClient = httpClient;

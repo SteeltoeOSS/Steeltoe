@@ -60,7 +60,7 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
     {
         if (collapserKey == null || string.IsNullOrWhiteSpace(collapserKey.Name))
         {
-            string defaultKeyName = GetDefaultNameFromClass(GetType());
+            string defaultKeyName = GetDefaultNameFromType(GetType());
             collapserKey = HystrixCollapserKeyDefault.AsKey(defaultKeyName);
         }
 
@@ -232,19 +232,18 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
     {
         string message = $"{GetType()} HystrixCollapser failed while executing.";
 
-        // logger.debug(message, e); // debug only since we're throwing the exception and someone higher will do something with it
         return new HystrixRuntimeException(FailureType.CommandException, GetType(), message, e, null);
     }
 
-    private static string GetDefaultNameFromClass(Type cls)
+    private static string GetDefaultNameFromType(Type type)
     {
-        if (DefaultNameCache.TryGetValue(cls, out string fromCache))
+        if (DefaultNameCache.TryGetValue(type, out string fromCache))
         {
             return fromCache;
         }
 
-        string name = cls.Name;
-        DefaultNameCache.TryAdd(cls, name);
+        string name = type.Name;
+        DefaultNameCache.TryAdd(type, name);
         return name;
     }
 }

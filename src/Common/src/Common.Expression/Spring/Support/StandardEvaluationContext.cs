@@ -38,7 +38,6 @@ public class StandardEvaluationContext : IEvaluationContext
             _propertyAccessors = InitPropertyAccessors();
             return _propertyAccessors;
         }
-
         set => _propertyAccessors = value;
     }
 
@@ -49,7 +48,6 @@ public class StandardEvaluationContext : IEvaluationContext
             _constructorResolvers = InitConstructorResolvers();
             return _constructorResolvers;
         }
-
         set => _constructorResolvers = value;
     }
 
@@ -60,7 +58,6 @@ public class StandardEvaluationContext : IEvaluationContext
             _methodResolvers = InitMethodResolvers();
             return _methodResolvers;
         }
-
         set => _methodResolvers = value;
     }
 
@@ -71,8 +68,12 @@ public class StandardEvaluationContext : IEvaluationContext
             _typeLocator ??= new StandardTypeLocator();
             return _typeLocator;
         }
+        set
+        {
+            ArgumentGuard.NotNull(value);
 
-        set => _typeLocator = value ?? throw new ArgumentNullException("TypeLocator can not be null");
+            _typeLocator = value;
+        }
     }
 
     public ITypeConverter TypeConverter
@@ -82,22 +83,34 @@ public class StandardEvaluationContext : IEvaluationContext
             _typeConverter ??= new StandardTypeConverter();
             return _typeConverter;
         }
+        set
+        {
+            ArgumentGuard.NotNull(value);
 
-        set => _typeConverter = value ?? throw new ArgumentNullException("TypeConverter can not be null");
+            _typeConverter = value;
+        }
     }
 
     public ITypeComparator TypeComparator
     {
         get => _typeComparator;
+        set
+        {
+            ArgumentGuard.NotNull(value);
 
-        set => _typeComparator = value ?? throw new ArgumentNullException("TypeComparator can not be null");
+            _typeComparator = value;
+        }
     }
 
     public IOperatorOverloader OperatorOverloader
     {
         get => _operatorOverloader;
+        set
+        {
+            ArgumentGuard.NotNull(value);
 
-        set => _operatorOverloader = value ?? throw new ArgumentNullException("OperatorOverloader can not be null");
+            _operatorOverloader = value;
+        }
     }
 
     public StandardEvaluationContext()

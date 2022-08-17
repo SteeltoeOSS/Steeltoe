@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Logging;
 
@@ -19,10 +20,7 @@ public static class DynamicLoggerHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddDynamicLogging(this IHostBuilder hostBuilder)
     {
-        if (hostBuilder is null)
-        {
-            throw new ArgumentNullException(nameof(hostBuilder));
-        }
+        ArgumentGuard.NotNull(hostBuilder);
 
         return hostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole());
     }
@@ -37,10 +35,7 @@ public static class DynamicLoggerHostBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddDynamicLogging(this WebApplicationBuilder hostBuilder)
     {
-        if (hostBuilder is null)
-        {
-            throw new ArgumentNullException(nameof(hostBuilder));
-        }
+        ArgumentGuard.NotNull(hostBuilder);
 
         hostBuilder.Logging.AddDynamicConsole();
         return hostBuilder;

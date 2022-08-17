@@ -89,9 +89,9 @@ public static class EndPointExtensions
 
             return managementOptions.First(option => option is ActuatorManagementOptions);
         }
-        catch (InvalidOperationException)
+        catch (InvalidOperationException exception)
         {
-            logger?.LogError("Could not find IManagementOptions to match this request, returning first or default ActuatorManagementOptions");
+            logger?.LogError(exception, "Could not find IManagementOptions to match this request, returning first or default ActuatorManagementOptions");
             return managementOptions.FirstOrDefault() ?? new ActuatorManagementOptions();
         }
     }

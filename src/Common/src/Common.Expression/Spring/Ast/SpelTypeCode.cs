@@ -45,9 +45,9 @@ public class SpelTypeCode
         return result;
     }
 
-    public static SpelTypeCode ForType(Type clazz)
+    public static SpelTypeCode ForType(Type type)
     {
-        if (!Types.TryGetValue(clazz, out SpelTypeCode result))
+        if (!Types.TryGetValue(type, out SpelTypeCode result))
         {
             return Object;
         }

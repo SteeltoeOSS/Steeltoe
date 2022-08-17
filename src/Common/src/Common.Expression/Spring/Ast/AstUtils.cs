@@ -26,14 +26,14 @@ public static class AstUtils
                 {
                     int pos = 0;
 
-                    foreach (Type clazz in targets)
+                    foreach (Type type in targets)
                     {
-                        if (clazz == targetType)
+                        if (type == targetType)
                         {
                             // put exact matches on the front to be tried first?
                             specificAccessors.Insert(pos++, resolver);
                         }
-                        else if (clazz.IsAssignableFrom(targetType))
+                        else if (type.IsAssignableFrom(targetType))
                         {
                             // put supertype matches at the end of the
                             // specificAccessor list

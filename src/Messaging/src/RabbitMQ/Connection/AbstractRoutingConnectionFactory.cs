@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
+using Steeltoe.Common;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
@@ -42,16 +43,13 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
 
     public virtual void SetTargetConnectionFactories(Dictionary<object, IConnectionFactory> targetConnectionFactories)
     {
-        if (targetConnectionFactories == null)
-        {
-            throw new ArgumentNullException(nameof(targetConnectionFactories));
-        }
+        ArgumentGuard.NotNull(targetConnectionFactories);
 
         foreach (IConnectionFactory factory in targetConnectionFactories.Values)
         {
             if (factory == null)
             {
-                throw new ArgumentException("'targetConnectionFactories' cannot have null values.");
+                throw new ArgumentException($"Values in {nameof(targetConnectionFactories)} cannot contain nulls.", nameof(targetConnectionFactories));
             }
 
             foreach (KeyValuePair<object, IConnectionFactory> kvp in targetConnectionFactories)

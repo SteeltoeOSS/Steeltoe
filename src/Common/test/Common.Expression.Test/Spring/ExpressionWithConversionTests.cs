@@ -40,14 +40,14 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
         var tcs = new TypeConvertorUsingConversionService();
 
         // ArrayList containing List<Integer> to List<String>
-        Type clazz = _typeDescriptorForListOfString.GetGenericArguments()[0];
-        Assert.Equal(typeof(string), clazz);
+        Type type = _typeDescriptorForListOfString.GetGenericArguments()[0];
+        Assert.Equal(typeof(string), type);
         var l = tcs.ConvertValue(ListOfInteger, ListOfInteger.GetType(), _typeDescriptorForListOfString) as List<string>;
         Assert.NotNull(l);
 
         // ArrayList containing List<String> to List<Integer>
-        clazz = _typeDescriptorForListOfInteger.GetGenericArguments()[0];
-        Assert.Equal(typeof(int), clazz);
+        type = _typeDescriptorForListOfInteger.GetGenericArguments()[0];
+        Assert.Equal(typeof(int), type);
 
         var l2 = tcs.ConvertValue(ListOfString, ListOfString.GetType(), _typeDescriptorForListOfString) as List<string>;
         Assert.NotNull(l2);
@@ -68,8 +68,8 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
         Assert.Equal(3, e.GetValue(context, typeof(int)));
 
         // element type correctly Integer
-        object clazz = Parser.ParseExpression("ListOfInteger[1].GetType()").GetValue(context, typeof(Type));
-        Assert.Equal(typeof(int), clazz);
+        object objectType = Parser.ParseExpression("ListOfInteger[1].GetType()").GetValue(context, typeof(Type));
+        Assert.Equal(typeof(int), objectType);
     }
 
     [Fact]

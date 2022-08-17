@@ -8,11 +8,11 @@ namespace Steeltoe.Stream.Converter;
 
 public class ObjectSupportingByteArrayMessageConverter : ByteArrayMessageConverter
 {
-    protected override bool Supports(Type clazz)
+    protected override bool Supports(Type type)
     {
-        if (!base.Supports(clazz))
+        if (!base.Supports(type))
         {
-            return typeof(object) == clazz;
+            return typeof(object) == type;
         }
 
         return true;

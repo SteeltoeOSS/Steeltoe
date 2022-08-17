@@ -10,7 +10,9 @@ public class SimpleRouteMatcher : IRouteMatcher
 
     public SimpleRouteMatcher(IPathMatcher pathMatcher)
     {
-        PathMatcher = pathMatcher ?? throw new ArgumentNullException(nameof(pathMatcher));
+        ArgumentGuard.NotNull(pathMatcher);
+
+        PathMatcher = pathMatcher;
     }
 
     public IRoute ParseRoute(string routeValue)

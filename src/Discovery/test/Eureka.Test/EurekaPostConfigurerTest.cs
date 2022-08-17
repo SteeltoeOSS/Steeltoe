@@ -195,7 +195,7 @@ public class EurekaPostConfigurerTest
         IConfigurationSection clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         clientSection.Bind(clientOpts);
 
-        EurekaPostConfigurer.UpdateConfiguration(config, null, clientOpts);
+        EurekaPostConfigurer.UpdateConfiguration(null, clientOpts);
 
         EurekaClientOptions co = clientOpts;
         Assert.NotNull(co);
@@ -257,7 +257,7 @@ public class EurekaPostConfigurerTest
     {
         Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
 
-        var exception = Assert.Throws<InvalidOperationException>(() => EurekaPostConfigurer.UpdateConfiguration(null, null, new EurekaClientOptions()));
+        var exception = Assert.Throws<InvalidOperationException>(() => EurekaPostConfigurer.UpdateConfiguration(null, new EurekaClientOptions()));
         Assert.Contains(EurekaClientConfig.DefaultServerServiceUrl, exception.Message);
         Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", null);
     }
@@ -413,7 +413,7 @@ public class EurekaPostConfigurerTest
         IConfigurationSection clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         clientSection.Bind(clientOpts);
 
-        EurekaPostConfigurer.UpdateConfiguration(config, si, clientOpts);
+        EurekaPostConfigurer.UpdateConfiguration(si, clientOpts);
 
         EurekaClientOptions co = clientOpts;
         Assert.NotNull(co);
@@ -621,7 +621,7 @@ public class EurekaPostConfigurerTest
         IConfigurationSection clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         clientSection.Bind(clientOpts);
 
-        EurekaPostConfigurer.UpdateConfiguration(config, si, clientOpts);
+        EurekaPostConfigurer.UpdateConfiguration(si, clientOpts);
 
         EurekaClientOptions co = clientOpts;
         Assert.NotNull(co);
@@ -830,7 +830,7 @@ public class EurekaPostConfigurerTest
         IConfigurationSection clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         clientSection.Bind(clientOpts);
 
-        EurekaPostConfigurer.UpdateConfiguration(config, si, clientOpts);
+        EurekaPostConfigurer.UpdateConfiguration(si, clientOpts);
 
         EurekaClientOptions co = clientOpts;
 
@@ -932,7 +932,7 @@ public class EurekaPostConfigurerTest
         EurekaServiceInfo si = config.GetServiceInfos<EurekaServiceInfo>().First();
 
         var clientOptions = new EurekaClientOptions();
-        EurekaPostConfigurer.UpdateConfiguration(config, si, clientOptions);
+        EurekaPostConfigurer.UpdateConfiguration(si, clientOptions);
 
         var instanceOptions = new EurekaInstanceOptions();
         IConfigurationSection instanceConfigSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
@@ -976,7 +976,7 @@ public class EurekaPostConfigurerTest
 
         Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
 
-        Exception ex = Record.Exception(() => EurekaPostConfigurer.UpdateConfiguration(null, null, clientOptions));
+        Exception ex = Record.Exception(() => EurekaPostConfigurer.UpdateConfiguration(null, clientOptions));
         Assert.Null(ex);
 
         Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", null);

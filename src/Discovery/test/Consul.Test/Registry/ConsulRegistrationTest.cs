@@ -208,7 +208,7 @@ public class ConsulRegistrationTest
         Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout), result.DeregisterCriticalServiceAfter);
 
         options.Heartbeat = null;
-        Assert.Throws<ArgumentException>(() => ConsulRegistration.CreateCheck(0, options));
+        Assert.Throws<ArgumentOutOfRangeException>(() => ConsulRegistration.CreateCheck(0, options));
 
         const int port = 1234;
         result = ConsulRegistration.CreateCheck(port, options);

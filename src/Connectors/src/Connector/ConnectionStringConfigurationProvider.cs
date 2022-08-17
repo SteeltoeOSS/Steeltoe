@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common;
 using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector;
@@ -20,10 +21,7 @@ internal sealed class ConnectionStringConfigurationProvider : ConfigurationProvi
 
     public ConnectionStringConfigurationProvider(IEnumerable<IConfigurationProvider> providers)
     {
-        if (providers is null)
-        {
-            throw new ArgumentNullException(nameof(providers));
-        }
+        ArgumentGuard.NotNull(providers);
 
         Providers = providers.ToList();
         Configuration = new Lazy<IConfiguration>(() => new ConfigurationRoot(Providers));

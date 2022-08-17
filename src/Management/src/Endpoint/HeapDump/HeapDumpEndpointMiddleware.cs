@@ -21,7 +21,7 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 
     public Task InvokeAsync(HttpContext context)
     {
-        if (endpoint.ShouldInvoke(managementOptions, logger))
+        if (Endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleHeapDumpRequestAsync(context);
         }
@@ -31,30 +31,30 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 
     protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)
     {
-        string filename = endpoint.Invoke();
-        logger?.LogDebug("Returning: {0}", filename);
+        string fileName = Endpoint.Invoke();
+        logger?.LogDebug("Returning: {fileName}", fileName);
         context.Response.Headers.Add("Content-Type", "application/octet-stream");
 
-        if (!File.Exists(filename))
+        if (!File.Exists(fileName))
         {
             context.Response.StatusCode = StatusCodes.Status404NotFound;
             return;
         }
 
-        string gzFilename = $"{filename}.gz";
-        Stream result = await Utils.CompressFileAsync(filename, gzFilename).ConfigureAwait(false);
+        string gzFileName = $"{fileName}.gz";
+        Stream result = await Utils.CompressFileAsync(fileName, gzFileName).ConfigureAwait(false);
 
         if (result != null)
         {
             await using (result)
             {
-                context.Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{Path.GetFileName(gzFilename)}\"");
+                context.Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{Path.GetFileName(gzFileName)}\"");
                 context.Response.StatusCode = StatusCodes.Status200OK;
                 context.Response.ContentLength = result.Length;
                 await result.CopyToAsync(context.Response.Body).ConfigureAwait(false);
             }
 
-            File.Delete(gzFilename);
+            File.Delete(gzFileName);
         }
         else
         {

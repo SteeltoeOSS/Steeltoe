@@ -153,7 +153,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
                 defaultMethod = method;
             }
 
-            _logger?.LogDebug("Adding RabbitHandler method {handlerMethod} from type {type}", method.ToString(), method.DeclaringType);
+            _logger?.LogDebug("Adding RabbitHandler method {handlerMethod} from type {type}", method, method.DeclaringType);
             checkedMethods.Add(method);
         }
 
@@ -202,7 +202,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
 
     private void ProcessAmqpListener(RabbitListenerAttribute rabbitListener, MethodInfo method, object bean, string beanName)
     {
-        _logger?.LogDebug("Adding RabbitListener method {method} from type {type}", method.ToString(), method.DeclaringType);
+        _logger?.LogDebug("Adding RabbitListener method {method} from type {type}", method, method.DeclaringType);
 
         var endpoint = new MethodRabbitListenerEndpoint(ApplicationContext, method, bean, _loggerFactory)
         {
@@ -507,18 +507,18 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         return $"Steeltoe.Messaging.Rabbit.RabbitListenerEndpointContainer#{Interlocked.Increment(ref _counter)}";
     }
 
-    private object CreateTargetBean(Type implementation)
+    private object CreateTargetBean(Type implementationType)
     {
         try
         {
-            _logger?.LogDebug("Creating RabbitListener service {serviceType}.", implementation.ToString());
-            return ApplicationContext.ServiceProvider.GetService(implementation);
+            _logger?.LogDebug("Creating RabbitListener service {serviceType}.", implementationType);
+            return ApplicationContext.ServiceProvider.GetService(implementationType);
         }
         catch (Exception e)
         {
             // Log
-            _logger?.LogError(e, "Error creating RabbitListener service {serviceType}.", implementation);
-            throw new InvalidOperationException($"Unable to CreateInstance of type containing RabbitListener method, Type: {implementation}", e);
+            _logger?.LogError(e, "Error creating RabbitListener service {serviceType}.", implementationType);
+            throw new InvalidOperationException($"Unable to CreateInstance of type containing RabbitListener method, Type: {implementationType}", e);
         }
     }
 }

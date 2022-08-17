@@ -4,6 +4,7 @@
 
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using Steeltoe.Common;
 using Steeltoe.Common.Expression.Internal;
 
 namespace Steeltoe.Integration.Expression;
@@ -49,10 +50,7 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
 
     public static ExpressionEvalDictionaryBuilder From(IDictionary<string, IExpression> expressions)
     {
-        if (expressions == null)
-        {
-            throw new ArgumentNullException(nameof(expressions));
-        }
+        ArgumentGuard.NotNull(expressions);
 
         return new ExpressionEvalDictionaryBuilder(expressions);
     }

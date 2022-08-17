@@ -68,7 +68,7 @@ public class MessageConverterConfigurer : IMessageChannelAndSourceConfigurer
     {
         if (channel is not AbstractMessageChannel messageChannel)
         {
-            throw new ArgumentException($"{nameof(channel)} not an AbstractMessageChannel");
+            throw new ArgumentException($"{nameof(channel)} must be of type {nameof(AbstractMessageChannel)}.", nameof(channel));
         }
 
         IBindingOptions bindingOptions = Options.GetBindingOptions(channelName);

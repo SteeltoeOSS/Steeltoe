@@ -26,20 +26,10 @@ public static class ConfigurationExtensions
     /// </param>
     public static IConfigurationBuilder AddPemFiles(this IConfigurationBuilder builder, string certFilePath, string keyFilePath, bool optional = false)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
-        if (string.IsNullOrEmpty(certFilePath))
-        {
-            throw new ArgumentException(nameof(certFilePath));
-        }
-
-        if (string.IsNullOrEmpty(keyFilePath))
-        {
-            throw new ArgumentException(nameof(keyFilePath));
-        }
+        ArgumentGuard.NotNullOrEmpty(certFilePath);
+        ArgumentGuard.NotNullOrEmpty(keyFilePath);
 
         if (optional && (!File.Exists(certFilePath) || !File.Exists(keyFilePath)))
         {
@@ -68,15 +58,8 @@ public static class ConfigurationExtensions
     /// </remarks>
     public static IConfigurationBuilder AddCertificateFile(this IConfigurationBuilder builder, string certFilePath, bool optional = false)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
-
-        if (string.IsNullOrEmpty(certFilePath))
-        {
-            throw new ArgumentException(nameof(certFilePath));
-        }
+        ArgumentGuard.NotNull(builder);
+        ArgumentGuard.NotNullOrEmpty(certFilePath);
 
         if (optional && !File.Exists(certFilePath))
         {

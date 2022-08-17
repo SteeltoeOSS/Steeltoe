@@ -12,6 +12,21 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public abstract class Operator : SpelNode
 {
+    private static readonly ISet<TypeCode> NumericTypeCodes = new[]
+    {
+        TypeCode.Byte,
+        TypeCode.Decimal,
+        TypeCode.Double,
+        TypeCode.Int16,
+        TypeCode.Int32,
+        TypeCode.Int64,
+        TypeCode.SByte,
+        TypeCode.Single,
+        TypeCode.UInt16,
+        TypeCode.UInt32,
+        TypeCode.UInt64
+    }.ToHashSet();
+
     protected static readonly MethodInfo EqualityCheckMethod = typeof(Operator).GetMethod("EqualityCheck", new[]
     {
         typeof(IEvaluationContext),
@@ -49,10 +64,7 @@ public abstract class Operator : SpelNode
         }
 
         TypeCode typeCode = targetConv.GetTypeCode();
-
-        return typeCode == TypeCode.Byte || typeCode == TypeCode.Decimal || typeCode == TypeCode.Double || typeCode == TypeCode.Int16 ||
-            typeCode == TypeCode.Int32 || typeCode == TypeCode.Int64 || typeCode == TypeCode.SByte || typeCode == TypeCode.Single ||
-            typeCode == TypeCode.UInt16 || typeCode == TypeCode.UInt32 || typeCode == TypeCode.UInt64;
+        return NumericTypeCodes.Contains(typeCode);
     }
 
     public static bool EqualityCheck(IEvaluationContext context, object left, object right)

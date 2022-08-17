@@ -59,46 +59,46 @@ public static class EncodingUtils
             return Utf16BigEndian;
         }
 
-        throw new ArgumentException("Invalid encoding name");
+        throw new ArgumentException("Invalid encoding name.", nameof(name));
     }
 
-    public static string GetEncoding(Encoding name)
+    public static string GetEncoding(Encoding encoding)
     {
-        if (name == null)
+        if (encoding == null)
         {
             return "utf-8";
         }
 
-        if (name.Equals(Utf8))
+        if (encoding.Equals(Utf8))
         {
             return "utf-8";
         }
 
-        if (name.Equals(Utf16))
+        if (encoding.Equals(Utf16))
         {
             return "utf-16";
         }
 
-        if (name.Equals(Utf7))
+        if (encoding.Equals(Utf7))
         {
             return "utf-7";
         }
 
-        if (name.Equals(Utf32))
+        if (encoding.Equals(Utf32))
         {
             return "utf-32";
         }
 
-        if (name.Equals(Utf32BigEndian))
+        if (encoding.Equals(Utf32BigEndian))
         {
             return "utf-32be";
         }
 
-        if (name.Equals(Utf16BigEndian))
+        if (encoding.Equals(Utf16BigEndian))
         {
             return "utf-16be";
         }
 
-        throw new ArgumentException("Invalid encoding");
+        throw new ArgumentException("Invalid encoding.", nameof(encoding));
     }
 }

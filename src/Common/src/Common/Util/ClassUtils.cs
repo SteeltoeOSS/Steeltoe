@@ -20,25 +20,15 @@ public static class ClassUtils
 
     public static bool IsAssignableValue(Type type, object value)
     {
-        if (type == null)
-        {
-            throw new ArgumentNullException(nameof(type));
-        }
+        ArgumentGuard.NotNull(type);
 
         return value != null ? IsAssignable(type, value.GetType()) : !type.IsPrimitive;
     }
 
     public static bool IsAssignable(Type lhsType, Type rhsType)
     {
-        if (lhsType == null)
-        {
-            throw new ArgumentNullException(nameof(lhsType));
-        }
-
-        if (rhsType == null)
-        {
-            throw new ArgumentNullException(nameof(rhsType));
-        }
+        ArgumentGuard.NotNull(lhsType);
+        ArgumentGuard.NotNull(rhsType);
 
         if (lhsType.IsAssignableFrom(rhsType))
         {
@@ -102,20 +92,14 @@ public static class ClassUtils
 
     public static string GetQualifiedMethodName(MethodInfo method)
     {
-        if (method == null)
-        {
-            throw new ArgumentNullException(nameof(method));
-        }
+        ArgumentGuard.NotNull(method);
 
         return $"{method.DeclaringType.FullName}.{method.Name}";
     }
 
     public static Type[] GetParameterTypes(MethodBase method)
     {
-        if (method == null)
-        {
-            throw new ArgumentNullException(nameof(method));
-        }
+        ArgumentGuard.NotNull(method);
 
         var results = new Type[method.GetParameters().Length];
         int index = 0;
@@ -141,29 +125,29 @@ public static class ClassUtils
         return paramsAttributes;
     }
 
-    public static Type DetermineCommonAncestor(Type clazz1, Type clazz2)
+    public static Type DetermineCommonAncestor(Type type1, Type type2)
     {
-        if (clazz1 == null)
+        if (type1 == null)
         {
-            return clazz2;
+            return type2;
         }
 
-        if (clazz2 == null)
+        if (type2 == null)
         {
-            return clazz1;
+            return type1;
         }
 
-        if (clazz1.IsAssignableFrom(clazz2))
+        if (type1.IsAssignableFrom(type2))
         {
-            return clazz1;
+            return type1;
         }
 
-        if (clazz2.IsAssignableFrom(clazz1))
+        if (type2.IsAssignableFrom(type1))
         {
-            return clazz2;
+            return type2;
         }
 
-        Type ancestor = clazz1;
+        Type ancestor = type1;
 
         do
         {
@@ -174,7 +158,7 @@ public static class ClassUtils
                 return null;
             }
         }
-        while (!ancestor.IsAssignableFrom(clazz2));
+        while (!ancestor.IsAssignableFrom(type2));
 
         return ancestor;
     }

@@ -50,9 +50,9 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
         return true;
     }
 
-    private void InvokeStreamListenerResultAdapter(MethodInfo method, Type implementation, string outboundName, params object[] arguments)
+    private void InvokeStreamListenerResultAdapter(MethodInfo method, Type implementationType, string outboundName, params object[] arguments)
     {
-        object bean = ActivatorUtilities.CreateInstance(Context.ServiceProvider, implementation);
+        object bean = ActivatorUtilities.CreateInstance(Context.ServiceProvider, implementationType);
 
         if (typeof(void).Equals(method.ReturnType))
         {
@@ -91,11 +91,11 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
     }
 
     private void RegisterHandlerMethodOnListenedChannel(StreamListenerMethodValidator streamListenerMethod, StreamListenerAttribute streamListener,
-        Type implementation)
+        Type implementationType)
     {
         if (string.IsNullOrEmpty(streamListener.Target))
         {
-            throw new ArgumentException("The binding target name cannot be null");
+            throw new ArgumentException($"{nameof(streamListener.Target)} in {nameof(streamListener)} must not be null or empty.", nameof(streamListener));
         }
 
         MethodInfo method = streamListenerMethod.Method;
@@ -106,20 +106,20 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
         {
             if (!string.IsNullOrEmpty(defaultOutputChannel))
             {
-                throw new ArgumentException("An output channel cannot be specified for a method that does not return a value");
+                throw new InvalidOperationException("An output channel cannot be specified for a method that does not return a value.");
             }
         }
         else
         {
             if (string.IsNullOrEmpty(defaultOutputChannel))
             {
-                throw new ArgumentException("An output channel must be specified for a method that can return a value");
+                throw new InvalidOperationException("An output channel must be specified for a method that can return a value.");
             }
         }
 
         streamListenerMethod.ValidateStreamListenerMessageHandler();
 
         _processor.AddMappedListenerMethod(streamListener.Target,
-            new StreamListenerHandlerMethodMapping(implementation, method, streamListener.Condition, defaultOutputChannel, streamListener.CopyHeaders));
+            new StreamListenerHandlerMethodMapping(implementationType, method, streamListener.Condition, defaultOutputChannel, streamListener.CopyHeaders));
     }
 }

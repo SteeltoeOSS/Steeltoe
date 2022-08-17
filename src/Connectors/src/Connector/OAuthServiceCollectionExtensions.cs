@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.OAuth;
@@ -25,15 +26,8 @@ public static class OAuthServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration config)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(config);
 
         var oauthConfig = new OAuthConnectorOptions(config);
         var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
@@ -59,20 +53,9 @@ public static class OAuthServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration config, string serviceName)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentNullException(nameof(serviceName));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNullOrEmpty(serviceName);
+        ArgumentGuard.NotNull(config);
 
         var oauthConfig = new OAuthConnectorOptions(config);
         var info = config.GetRequiredServiceInfo<SsoServiceInfo>(serviceName);

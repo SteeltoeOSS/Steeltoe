@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
+using Steeltoe.Common;
 using Steeltoe.Messaging.RabbitMQ.Core;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
@@ -30,7 +31,6 @@ public class Queue : AbstractDeclarable, IQueue, ICloneable
             Arguments.TryGetValue(XQueueMasterLocator, out object result);
             return result as string;
         }
-
         set
         {
             if (value == null)
@@ -62,7 +62,9 @@ public class Queue : AbstractDeclarable, IQueue, ICloneable
     public Queue(string queueName, bool durable, bool exclusive, bool autoDelete, Dictionary<string, object> arguments)
         : base(arguments)
     {
-        QueueName = queueName ?? throw new ArgumentNullException(nameof(queueName));
+        ArgumentGuard.NotNull(queueName);
+
+        QueueName = queueName;
         ServiceName = !string.IsNullOrEmpty(queueName) ? queueName : $"queue@{RuntimeHelpers.GetHashCode(this)}";
         ActualName = !string.IsNullOrEmpty(queueName) ? queueName : Base64UrlNamingStrategy.Default.GenerateName() + "_awaiting_declaration";
         IsDurable = durable;

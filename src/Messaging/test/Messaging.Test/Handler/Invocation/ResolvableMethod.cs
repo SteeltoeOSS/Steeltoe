@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Common;
 using static Steeltoe.Messaging.Handler.Attributes.Test.MessagingPredicates;
 
 namespace Steeltoe.Messaging.Handler.Invocation.Test;
@@ -15,10 +16,7 @@ internal sealed class ResolvableMethod
 
     public ResolvableMethod(MethodInfo method)
     {
-        if (method == null)
-        {
-            throw new ArgumentNullException(nameof(method));
-        }
+        ArgumentGuard.NotNull(method);
 
         Method = method;
     }
@@ -270,7 +268,9 @@ internal sealed class ResolvableMethod
 
         public ArgResolver(ResolvableMethod resolvable, params IPredicate<ParameterInfo>[] filters)
         {
-            _resolvable = resolvable ?? throw new ArgumentNullException(nameof(resolvable));
+            ArgumentGuard.NotNull(resolvable);
+
+            _resolvable = resolvable;
             _filters.AddRange(filters);
         }
 
@@ -389,7 +389,9 @@ internal sealed class ResolvableMethod
 
             public FuncPredicate(Func<ParameterInfo, bool> func)
             {
-                _func = func ?? throw new ArgumentNullException(nameof(func));
+                ArgumentGuard.NotNull(func);
+
+                _func = func;
             }
 
             public bool Test(ParameterInfo t)

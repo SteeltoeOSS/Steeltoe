@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Env;
@@ -22,8 +23,11 @@ public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
     public EnvEndpoint(IEnvOptions options, IConfiguration configuration, IHostEnvironment env, ILogger<EnvEndpoint> logger = null)
         : base(options)
     {
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        _env = env ?? throw new ArgumentNullException(nameof(env));
+        ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(env);
+
+        _configuration = configuration;
+        _env = env;
         _logger = logger;
         _sanitizer = new Sanitizer(options.KeysToSanitize);
     }

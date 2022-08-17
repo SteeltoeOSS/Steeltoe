@@ -11,7 +11,9 @@ public class DateTimeConversionsTest
     [Fact]
     public void ToTimeSpan_ReturnsExpected()
     {
-        Assert.Throws<ArgumentNullException>(() => DateTimeConversions.ToTimeSpan(string.Empty));
+        Assert.Throws<ArgumentNullException>(() => DateTimeConversions.ToTimeSpan(null));
+        Assert.Throws<ArgumentException>(() => DateTimeConversions.ToTimeSpan(string.Empty));
+        Assert.Throws<ArgumentException>(() => DateTimeConversions.ToTimeSpan(" "));
         Assert.Throws<InvalidOperationException>(() => DateTimeConversions.ToTimeSpan("foobar"));
         Assert.Equal(TimeSpan.FromMilliseconds(1000), DateTimeConversions.ToTimeSpan("1000ms"));
         Assert.Equal(TimeSpan.FromSeconds(1000), DateTimeConversions.ToTimeSpan("1000s"));

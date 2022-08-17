@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 
@@ -47,20 +48,14 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
     public void SetRequestHeaderNames(params string[] requestHeaderNames)
     {
-        if (requestHeaderNames == null)
-        {
-            throw new ArgumentNullException(nameof(requestHeaderNames));
-        }
+        ArgumentGuard.NotNull(requestHeaderNames);
 
         RequestHeaderMatcher = CreateHeaderMatcher(requestHeaderNames);
     }
 
     public void SetReplyHeaderNames(params string[] replyHeaderNames)
     {
-        if (replyHeaderNames == null)
-        {
-            throw new ArgumentNullException(nameof(replyHeaderNames));
-        }
+        ArgumentGuard.NotNull(replyHeaderNames);
 
         ReplyHeaderMatcher = CreateHeaderMatcher(replyHeaderNames);
     }
@@ -288,8 +283,10 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
         public ContentBasedHeaderMatcher(bool match, List<string> content)
         {
+            ArgumentGuard.NotNull(content);
+
             Match = match;
-            Content = content ?? throw new ArgumentNullException(nameof(content));
+            Content = content;
         }
 
         public bool MatchHeader(string headerName)
@@ -320,15 +317,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
         public PatternBasedHeaderMatcher(List<string> patterns)
         {
-            if (patterns == null)
-            {
-                throw new ArgumentNullException(nameof(patterns));
-            }
-
-            if (patterns.Count == 0)
-            {
-                throw new ArgumentException("At least one pattern must be specified");
-            }
+            ArgumentGuard.NotNullOrEmpty(patterns);
 
             foreach (string pattern in patterns)
             {
@@ -367,10 +356,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
         public SinglePatternBasedHeaderMatcher(string pattern, bool negate)
         {
-            if (pattern == null)
-            {
-                throw new ArgumentNullException(nameof(pattern));
-            }
+            ArgumentGuard.NotNull(pattern);
 
             Pattern = pattern.ToLower();
             Negate = negate;

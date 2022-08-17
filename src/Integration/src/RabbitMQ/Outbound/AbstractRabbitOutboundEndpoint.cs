@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Lifecycle;
@@ -87,30 +88,21 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
 
     public void SetExchangeNameExpressionString(string exchangeNameExpression)
     {
-        if (string.IsNullOrEmpty(exchangeNameExpression))
-        {
-            throw new ArgumentNullException(nameof(exchangeNameExpression));
-        }
+        ArgumentGuard.NotNullOrEmpty(exchangeNameExpression);
 
         ExchangeNameExpression = IntegrationServices.ExpressionParser.ParseExpression(exchangeNameExpression);
     }
 
     public void SetRoutingKeyExpressionString(string routingKeyExpression)
     {
-        if (string.IsNullOrEmpty(routingKeyExpression))
-        {
-            throw new ArgumentNullException(nameof(routingKeyExpression));
-        }
+        ArgumentGuard.NotNullOrEmpty(routingKeyExpression);
 
         RoutingKeyExpression = IntegrationServices.ExpressionParser.ParseExpression(routingKeyExpression);
     }
 
     public void SetConfirmCorrelationExpressionString(string confirmCorrelationExpression)
     {
-        if (string.IsNullOrEmpty(confirmCorrelationExpression))
-        {
-            throw new ArgumentNullException(nameof(confirmCorrelationExpression));
-        }
+        ArgumentGuard.NotNullOrEmpty(confirmCorrelationExpression);
 
         ConfirmCorrelationExpression = IntegrationServices.ExpressionParser.ParseExpression(confirmCorrelationExpression);
     }
@@ -149,7 +141,7 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogError("Failed to eagerly establish the connection.", e);
+                        _logger?.LogError(e, "Failed to eagerly establish the connection.");
                     }
                 }
 
@@ -196,12 +188,12 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
         EndpointInit();
     }
 
-    Task ILifecycle.StartAsync()
+    public Task StartAsync()
     {
         return Task.Run(Start);
     }
 
-    Task ILifecycle.StopAsync()
+    public Task StopAsync()
     {
         Stop();
         return Task.CompletedTask;
@@ -353,7 +345,7 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
 
         if (correlationData == null)
         {
-            _logger.LogDebug("No correlation data provided for ack: " + ack + " cause:" + cause);
+            _logger.LogDebug("No correlation data provided for ack: {ack} cause:{cause}", ack, cause);
             return;
         }
 
@@ -371,7 +363,7 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
         }
         else
         {
-            _logger.LogInformation("Nowhere to send publisher confirm " + (ack ? "ack" : "nack") + " for " + userCorrelationData);
+            _logger.LogInformation("Nowhere to send publisher confirm {confirm} for {user}", ack ? "ack" : "nack", userCorrelationData);
         }
     }
 
@@ -514,7 +506,6 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
 
                 return base.ReturnedMessage;
             }
-
             set
             {
                 if (UserData is CorrelationData data)

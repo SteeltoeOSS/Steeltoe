@@ -10,7 +10,9 @@ public class RoundRobinLoadBalancingStrategy : ILoadBalancingStrategy
 {
     private int _currentHandlerIndex = -1;
 
+#pragma warning disable S2292 // Trivial properties should be auto-implemented
     internal int CurrentHandlerIndex
+#pragma warning restore S2292 // Trivial properties should be auto-implemented
     {
         get => _currentHandlerIndex;
         set => _currentHandlerIndex = value;

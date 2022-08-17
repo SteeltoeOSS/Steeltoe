@@ -12,7 +12,6 @@ public class TestResponse : IHttpResponseFeature
     public Stream Body
     {
         get => throw new NotImplementedException();
-
         set => throw new NotImplementedException();
     }
 
@@ -21,21 +20,18 @@ public class TestResponse : IHttpResponseFeature
     public IHeaderDictionary Headers
     {
         get => throw new NotImplementedException();
-
         set => throw new NotImplementedException();
     }
 
     public string ReasonPhrase
     {
         get => throw new NotImplementedException();
-
         set => throw new NotImplementedException();
     }
 
     public int StatusCode
     {
         get => throw new NotImplementedException();
-
         set => throw new NotImplementedException();
     }
 

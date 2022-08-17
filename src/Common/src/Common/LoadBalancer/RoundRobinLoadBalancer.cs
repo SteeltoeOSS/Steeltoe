@@ -21,7 +21,9 @@ public class RoundRobinLoadBalancer : ILoadBalancer
     public RoundRobinLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache distributedCache = null,
         DistributedCacheEntryOptions cacheEntryOptions = null, ILogger logger = null)
     {
-        ServiceInstanceProvider = serviceInstanceProvider ?? throw new ArgumentNullException(nameof(serviceInstanceProvider));
+        ArgumentGuard.NotNull(serviceInstanceProvider);
+
+        ServiceInstanceProvider = serviceInstanceProvider;
         DistributedCache = distributedCache;
         _cacheOptions = cacheEntryOptions;
         _logger = logger;

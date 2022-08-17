@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health.Contributor;
@@ -52,10 +53,7 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddHealthActuator(this IServiceCollection services, IConfiguration config = null, params Type[] contributors)
     {
-        if (services is null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddHealthActuator(config, new HealthRegistrationsAggregator(), contributors);
     }
@@ -78,22 +76,10 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, IHealthAggregator aggregator, params Type[] contributors)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(aggregator);
 
-        config ??= services.BuildServiceProvider().GetService<IConfiguration>();
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        if (aggregator == null)
-        {
-            throw new ArgumentNullException(nameof(aggregator));
-        }
+        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.AddActuatorManagementOptions(config);
         services.AddHealthActuatorServices(config);

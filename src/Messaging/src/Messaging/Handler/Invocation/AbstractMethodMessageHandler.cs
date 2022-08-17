@@ -5,6 +5,7 @@
 using System.Collections.Concurrent;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Messaging.Support;
 
 namespace Steeltoe.Messaging.Handler.Invocation;
@@ -52,7 +53,6 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
     public virtual IList<string> DestinationPrefixes
     {
         get => _destinationPrefixes;
-
         set
         {
             _destinationPrefixes.Clear();
@@ -70,7 +70,6 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
     public virtual IList<IHandlerMethodArgumentResolver> CustomArgumentResolvers
     {
         get => _customArgumentResolvers;
-
         set
         {
             _customArgumentResolvers.Clear();
@@ -85,7 +84,6 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
     public virtual IList<IHandlerMethodArgumentResolver> ArgumentResolvers
     {
         get => MethodArgumentResolvers.Resolvers;
-
         set
         {
             if (value == null)
@@ -101,7 +99,6 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
     public virtual IList<IHandlerMethodReturnValueHandler> ReturnValueHandlers
     {
         get => MethodReturnValueHandlers.ReturnValueHandlers;
-
         set
         {
             if (value == null)
@@ -117,7 +114,6 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
     public virtual IList<IHandlerMethodReturnValueHandler> CustomReturnValueHandlers
     {
         get => _customReturnValueHandlers;
-
         set
         {
             _customReturnValueHandlers.Clear();
@@ -245,10 +241,7 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
 
     protected virtual void RegisterHandlerMethod(object handler, MethodInfo method, T mapping)
     {
-        if (mapping == null)
-        {
-            throw new ArgumentNullException(nameof(mapping));
-        }
+        ArgumentGuard.NotNull(mapping);
 
         HandlerMethod newHandlerMethod = CreateHandlerMethod(handler, method);
         _handlerMethods.TryGetValue(mapping, out HandlerMethod oldHandlerMethod);

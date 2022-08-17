@@ -3,23 +3,17 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management;
 
 public abstract class AbstractEndpointOptions : IEndpointOptions
 {
-    protected bool? enabled;
-
     protected bool? sensitive;
 
     protected string path;
 
-    public virtual bool? Enabled
-    {
-        get => enabled;
-
-        set => enabled = value;
-    }
+    public virtual bool? Enabled { get; set; }
 
     public virtual string Id { get; set; }
 
@@ -34,7 +28,6 @@ public abstract class AbstractEndpointOptions : IEndpointOptions
 
             return Id;
         }
-
         set => path = value;
     }
 
@@ -54,15 +47,8 @@ public abstract class AbstractEndpointOptions : IEndpointOptions
 
     protected AbstractEndpointOptions(string sectionName, IConfiguration config)
     {
-        if (sectionName == null)
-        {
-            throw new ArgumentNullException(nameof(sectionName));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(sectionName);
+        ArgumentGuard.NotNull(config);
 
         IConfigurationSection section = config.GetSection(sectionName);
 

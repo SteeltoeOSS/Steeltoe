@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression.Internal;
 
@@ -18,7 +19,9 @@ public class BeanFactoryTypeConverter : ITypeConverter
 
     public BeanFactoryTypeConverter(IConversionService conversionService)
     {
-        ConversionService = conversionService ?? throw new ArgumentNullException(nameof(conversionService));
+        ArgumentGuard.NotNull(conversionService);
+
+        ConversionService = conversionService;
     }
 
     public bool CanConvert(Type sourceType, Type targetType)

@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Services;
 
@@ -29,15 +30,8 @@ public static class HystrixProviderServiceCollectionExtensions
     public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(config);
 
         var info = config.GetSingletonServiceInfo<HystrixRabbitMQServiceInfo>();
 
@@ -66,20 +60,9 @@ public static class HystrixProviderServiceCollectionExtensions
     public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (string.IsNullOrEmpty(serviceName))
-        {
-            throw new ArgumentNullException(nameof(serviceName));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNullOrEmpty(serviceName);
+        ArgumentGuard.NotNull(config);
 
         var info = config.GetRequiredServiceInfo<HystrixRabbitMQServiceInfo>(serviceName);
 

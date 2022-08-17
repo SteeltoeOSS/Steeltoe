@@ -4,6 +4,7 @@
 
 using System.Collections.ObjectModel;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
@@ -43,7 +44,7 @@ public static class SimpleResourceHolder
 
         if (value != null)
         {
-            logger?.LogTrace("Retrieved value [{value}]" + ForKey + "{key}" + BoundToThread + "{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
+            logger?.LogTrace("Retrieved value [{value}]] for key [{key}] bound to thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
         }
 
         return value;
@@ -51,10 +52,7 @@ public static class SimpleResourceHolder
 
     public static void Bind(object key, object value, ILogger logger = null)
     {
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        ArgumentGuard.NotNull(value);
 
         Dictionary<object, object> map = Resources.Value;
 
@@ -73,7 +71,7 @@ public static class SimpleResourceHolder
             throw new InvalidOperationException($"Already value [{oldValue}{ForKey}{key}{BoundToThread}{Thread.CurrentThread.ManagedThreadId}]");
         }
 
-        logger?.LogTrace("Bound value [{value}" + ForKey + "{key}] to thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
+        logger?.LogTrace("Bound value [{value}] for key [{key}] to thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
     }
 
     public static void Push(object key, object value, ILogger logger = null)
@@ -165,7 +163,7 @@ public static class SimpleResourceHolder
 
         if (value != null)
         {
-            logger?.LogTrace("Removed value [{value}" + ForKey + "{key}] from thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
+            logger?.LogTrace("Removed value [{value}] for key [{key}] from thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
         }
 
         return value;

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Lifecycle;
 
 namespace Steeltoe.Stream.Binder;
@@ -52,10 +53,7 @@ public class DefaultBinding<T> : AbstractBinding
 
     public DefaultBinding(string name, string group, T target, ILifecycle lifecycle)
     {
-        if (target == null)
-        {
-            throw new ArgumentNullException(nameof(target));
-        }
+        ArgumentGuard.NotNull(target);
 
         Name = name;
         Group = group;

@@ -23,7 +23,6 @@ public class BroadcastingDispatcher : AbstractDispatcher
             _messageBuilderFactory ??= IntegrationServices.MessageBuilderFactory;
             return _messageBuilderFactory;
         }
-
         set => _messageBuilderFactory = value;
     }
 
@@ -133,7 +132,7 @@ public class BroadcastingDispatcher : AbstractDispatcher
                 throw;
             }
 
-            InnerLogger?.LogWarning("Suppressing Exception since 'ignoreFailures' is set to TRUE.", e);
+            InnerLogger?.LogWarning(e, "Suppressing Exception since 'ignoreFailures' is set to TRUE.");
         }
     }
 

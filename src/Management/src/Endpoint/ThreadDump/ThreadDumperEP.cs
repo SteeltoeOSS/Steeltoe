@@ -10,6 +10,7 @@ using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Etlx;
 using Microsoft.Diagnostics.Tracing.Stacks;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
@@ -37,7 +38,9 @@ public class ThreadDumperEp : IThreadDumper
 
     public ThreadDumperEp(IThreadDumpOptions options, ILogger<ThreadDumperEp> logger = null)
     {
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        ArgumentGuard.NotNull(options);
+
+        _options = options;
         _logger = logger;
     }
 
@@ -72,7 +75,7 @@ public class ThreadDumperEp : IThreadDumper
         finally
         {
             long totalMemory = GC.GetTotalMemory(true);
-            _logger?.LogDebug("Total Memory {0}", totalMemory);
+            _logger?.LogDebug("Total Memory {memory}", totalMemory);
         }
 
         return results;
@@ -134,7 +137,7 @@ public class ThreadDumperEp : IThreadDumper
 
                 foreach ((int threadId, List<StackSourceSample> samples) in samplesForThread)
                 {
-                    _logger?.LogDebug("Found {0} stacks for thread {1}", samples.Count, threadId);
+                    _logger?.LogDebug("Found {stacks} stacks for thread {thread}", samples.Count, threadId);
 
                     var threadInfo = new ThreadInfo
                     {
@@ -193,7 +196,7 @@ public class ThreadDumperEp : IThreadDumper
     private List<StackTraceElement> GetStackTrace(int threadId, StackSourceSample stackSourceSample, TraceEventStackSource stackSource,
         SymbolReader symbolReader)
     {
-        _logger?.LogDebug("Processing thread with ID: {0}", threadId);
+        _logger?.LogDebug("Processing thread with ID: {thread}", threadId);
 
         var result = new List<StackTraceElement>();
 
@@ -407,8 +410,8 @@ public class ThreadDumperEp : IThreadDumper
             {
                 if (moduleFile.PdbSignature != Guid.Empty && symbolReaderModule.PdbGuid != moduleFile.PdbSignature)
                 {
-                    _logger?.LogTrace("ERROR: the PDB we opened does not match the PDB desired.  PDB GUID = " + symbolReaderModule.PdbGuid +
-                        " DESIRED GUID = " + moduleFile.PdbSignature);
+                    _logger?.LogTrace("ERROR: the PDB we opened does not match the PDB desired. PDB GUID = {pdbGuid}, DESIRED GUID = {desiredGuid}",
+                        symbolReaderModule.PdbGuid, moduleFile.PdbSignature);
 
                     return null;
                 }

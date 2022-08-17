@@ -6,9 +6,9 @@ namespace Steeltoe.Common.Converter;
 
 public abstract class AbstractToNumberConverter : AbstractGenericConditionalConverter
 {
-    protected ISet<(Type Source, Type Target)> convertableTypes;
+    protected ISet<(Type SourceType, Type TargetType)> convertableTypes;
 
-    protected AbstractToNumberConverter(ISet<(Type Source, Type Target)> convertableTypes)
+    protected AbstractToNumberConverter(ISet<(Type SourceType, Type TargetType)> convertableTypes)
         : base(null)
     {
         this.convertableTypes = convertableTypes;
@@ -16,8 +16,8 @@ public abstract class AbstractToNumberConverter : AbstractGenericConditionalConv
 
     public override bool Matches(Type sourceType, Type targetType)
     {
-        Type targetCheck = ConversionUtils.GetNullableElementType(targetType);
-        return convertableTypes.Contains((sourceType, targetCheck));
+        Type targetTypeCheck = ConversionUtils.GetNullableElementType(targetType);
+        return convertableTypes.Contains((sourceType, targetTypeCheck));
     }
 
     public override object Convert(object source, Type sourceType, Type targetType)
@@ -79,6 +79,6 @@ public abstract class AbstractToNumberConverter : AbstractGenericConditionalConv
             return System.Convert.ToSByte(source);
         }
 
-        throw new ArgumentException(nameof(targetType));
+        throw new ArgumentException($"Target type '{targetType.Name}' is not supported.", nameof(targetType));
     }
 }

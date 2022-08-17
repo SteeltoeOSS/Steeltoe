@@ -51,10 +51,7 @@ public static class TracingBaseServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddDistributedTracing(this IServiceCollection services, Action<TracerProviderBuilder> action)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentGuard.NotNull(services);
 
         services.AddOptions();
         services.RegisterDefaultApplicationInstanceInfo();

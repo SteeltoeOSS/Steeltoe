@@ -4,6 +4,7 @@
 
 using k8s;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Kubernetes.Discovery;
 
 namespace Steeltoe.Discovery.Kubernetes;
@@ -12,15 +13,8 @@ public static class KubernetesDiscoveryClientFactory
 {
     public static IDiscoveryClient CreateClient(IOptionsMonitor<KubernetesDiscoveryOptions> options, IKubernetes kubernetes)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
-
-        if (kubernetes == null)
-        {
-            throw new ArgumentNullException(nameof(kubernetes));
-        }
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(kubernetes);
 
         var isServicePortSecureResolver = new DefaultIsServicePortSecureResolver(options.CurrentValue);
 

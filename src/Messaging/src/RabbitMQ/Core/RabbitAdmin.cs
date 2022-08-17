@@ -5,6 +5,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client.Exceptions;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
 using Steeltoe.Messaging.RabbitMQ.Config;
@@ -59,9 +60,11 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
     [ActivatorUtilitiesConstructor]
     public RabbitAdmin(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILogger logger = null)
     {
+        ArgumentGuard.NotNull(connectionFactory);
+
         _logger = logger;
         ApplicationContext = applicationContext;
-        ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+        ConnectionFactory = connectionFactory;
         RabbitTemplate = new RabbitTemplate(connectionFactory, logger);
         DoInitialize();
     }
@@ -73,9 +76,14 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
     public RabbitAdmin(RabbitTemplate template, ILogger logger = null)
     {
+        ArgumentGuard.NotNull(template);
+
         _logger = logger;
-        RabbitTemplate = template ?? throw new ArgumentNullException(nameof(template));
-        ConnectionFactory = template.ConnectionFactory ?? throw new ArgumentNullException("RabbitTemplate's ConnectionFactory must not be null");
+        RabbitTemplate = template;
+
+        ConnectionFactory = template.ConnectionFactory ??
+            throw new ArgumentException($"{nameof(template.ConnectionFactory)} in {nameof(template)} must not be null.", nameof(template));
+
         DoInitialize();
     }
 
@@ -193,10 +201,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
     public QueueInformation GetQueueInfo(string queueName)
     {
-        if (string.IsNullOrEmpty(queueName))
-        {
-            throw new ArgumentNullException(nameof(queueName));
-        }
+        ArgumentGuard.NotNullOrEmpty(queueName);
 
         if (queueName.Length > 255)
         {
@@ -301,7 +306,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
     public void OnCreate(IConnection connection)
     {
-        _logger?.LogDebug("OnCreate for connection: {connection}", connection?.ToString());
+        _logger?.LogDebug("OnCreate for connection: {connection}", connection);
 
         if (Interlocked.CompareExchange(ref _initializing, 1, 0) != 0)
         {
@@ -337,12 +342,12 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
     public void OnClose(IConnection connection)
     {
-        _logger?.LogDebug("OnClose for connection: {connection}", connection?.ToString());
+        _logger?.LogDebug("OnClose for connection: {connection}", connection);
     }
 
     public void OnShutDown(RC.ShutdownEventArgs args)
     {
-        _logger?.LogDebug("OnShutDown for connection: {args}", args.ToString());
+        _logger?.LogDebug("OnShutDown for connection: {args}", args);
     }
 
     public void Initialize()
@@ -471,8 +476,17 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
             return false;
         }
 
-        return (declarable.DeclaringAdmins.Count == 0 && !ExplicitDeclarationsOnly) || declarable.DeclaringAdmins.Contains(this) ||
-            (ServiceName != null && declarable.DeclaringAdmins.Contains(ServiceName));
+        if (declarable.DeclaringAdmins.Count == 0 && !ExplicitDeclarationsOnly)
+        {
+            return true;
+        }
+
+        if (declarable.DeclaringAdmins.Contains(this))
+        {
+            return true;
+        }
+
+        return ServiceName != null && declarable.DeclaringAdmins.Contains(ServiceName);
     }
 
     private void DeclareExchanges(RC.IModel channel, params IExchange[] exchanges)
@@ -521,7 +535,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
                 if (queue.QueueName.Length > 255)
                 {
-                    throw new ArgumentException("Queue names limited to < 255 characters");
+                    throw new ArgumentException("Queue names cannot be longer than 255 characters.", nameof(queues));
                 }
 
                 try
@@ -569,9 +583,9 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
                 proxy.TargetChannel.Close();
             }
         }
-        catch (Exception e1)
+        catch (Exception exception)
         {
-            _logger?.LogError(e1, "Failed to close {channel} after illegal argument", channel);
+            _logger?.LogError(exception, "Failed to close {channel} after illegal argument", channel);
         }
     }
 
@@ -609,18 +623,13 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
         if (IgnoreDeclarationExceptions || (element != null && element.IgnoreDeclarationExceptions))
         {
-            _logger?.LogDebug(exception,
-                "Failed to declare " + elementType + ": " + (element == null ? "broker-generated" : element.ToString()) + ", continuing...");
+            string elementText = element == null ? "broker-generated" : element.ToString();
 
-            Exception cause = exception;
+            _logger?.LogDebug(exception, "Failed to declare {elementType}: {elementText}, continuing...", elementType, elementText);
 
-            if (exception.InnerException != null)
-            {
-                cause = exception.InnerException;
-            }
+            Exception cause = exception.InnerException ?? exception;
 
-            _logger?.LogWarning(exception, "Failed to declare {elementType}: {element}, continuing... {cause} ", elementType,
-                element == null ? "broker-generated" : element.ToString(), cause);
+            _logger?.LogWarning(exception, "Failed to declare {elementType}: {element}, continuing... {cause}", elementType, elementText, cause);
         }
         else
         {

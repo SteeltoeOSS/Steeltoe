@@ -6,6 +6,7 @@ using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.Kubernetes.Discovery;
@@ -52,10 +53,7 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
     public IList<IServiceInstance> GetInstances(string serviceId)
     {
-        if (serviceId == null)
-        {
-            throw new ArgumentNullException(nameof(serviceId));
-        }
+        ArgumentGuard.NotNull(serviceId);
 
         IList<V1Endpoints> endpoints = _discoveryOptions.CurrentValue.AllNamespaces
             ? KubernetesClient.ListEndpointsForAllNamespaces(fieldSelector: $"metadata.name={serviceId}").Items

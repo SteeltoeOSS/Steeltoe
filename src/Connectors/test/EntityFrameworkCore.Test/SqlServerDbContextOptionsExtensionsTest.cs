@@ -69,10 +69,10 @@ public class SqlServerDbContextOptionsExtensionsTest
         IConfigurationRoot config = new ConfigurationBuilder().Build();
         const string serviceName = null;
 
-        var ex2 = Assert.Throws<ArgumentException>(() => optionsBuilder.UseSqlServer(config, serviceName));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(config, serviceName));
         Assert.Contains(nameof(serviceName), ex2.Message);
 
-        var ex4 = Assert.Throws<ArgumentException>(() => goodBuilder.UseSqlServer(config, serviceName));
+        var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(config, serviceName));
         Assert.Contains(nameof(serviceName), ex4.Message);
     }
 

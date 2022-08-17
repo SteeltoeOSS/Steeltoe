@@ -74,28 +74,28 @@ public static class ReflectionHelper
             }
             else
             {
-                Type paramTypeClazz = paramType;
+                Type currentParamType = paramType;
 
-                if (!ClassUtils.IsAssignable(paramTypeClazz, argType))
+                if (!ClassUtils.IsAssignable(currentParamType, argType))
                 {
                     return int.MaxValue;
                 }
 
-                if (paramTypeClazz.IsPrimitive)
+                if (currentParamType.IsPrimitive)
                 {
-                    paramTypeClazz = typeof(object);
+                    currentParamType = typeof(object);
                 }
 
                 Type superClass = argType.BaseType;
 
                 while (superClass != null)
                 {
-                    if (paramTypeClazz.Equals(superClass))
+                    if (currentParamType.Equals(superClass))
                     {
                         result += 2;
                         superClass = null;
                     }
-                    else if (ClassUtils.IsAssignable(paramTypeClazz, superClass))
+                    else if (ClassUtils.IsAssignable(currentParamType, superClass))
                     {
                         result += 2;
                         superClass = superClass.BaseType;
@@ -106,7 +106,7 @@ public static class ReflectionHelper
                     }
                 }
 
-                if (paramTypeClazz.IsInterface)
+                if (currentParamType.IsInterface)
                 {
                     result++;
                 }
@@ -234,11 +234,11 @@ public static class ReflectionHelper
         return match != null ? new ArgumentsMatchInfo(match.Value) : null;
     }
 
-    public static ConstructorInfo GetAccessibleConstructor(Type clazz, params Type[] paramTypes)
+    public static ConstructorInfo GetAccessibleConstructor(Type type, params Type[] paramTypes)
     {
         paramTypes ??= Type.EmptyTypes;
 
-        return clazz.GetConstructor(paramTypes);
+        return type.GetConstructor(paramTypes);
     }
 
     public static bool ConvertAllArguments(ITypeConverter converter, object[] arguments, MethodInfo method)

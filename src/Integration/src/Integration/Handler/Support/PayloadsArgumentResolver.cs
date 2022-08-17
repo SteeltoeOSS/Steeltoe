@@ -32,7 +32,7 @@ public class PayloadsArgumentResolver : AbstractExpressionEvaluator, IHandlerMet
 
         if (payload is not ICollection<IMessage> messages)
         {
-            throw new ArgumentException("This Argument Resolver support only messages with payload as ICollection<IMessage>");
+            throw new ArgumentException("This Argument Resolver supports only messages with payload of type ICollection<IMessage>.", nameof(message));
         }
 
         if (!_expressionCache.ContainsKey(parameter))

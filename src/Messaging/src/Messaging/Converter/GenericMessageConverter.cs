@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Converter;
 
 namespace Steeltoe.Messaging.Converter;
@@ -17,7 +18,9 @@ public class GenericMessageConverter : SimpleMessageConverter
 
     public GenericMessageConverter(IConversionService conversionService)
     {
-        _conversionService = conversionService ?? throw new ArgumentNullException(nameof(conversionService));
+        ArgumentGuard.NotNull(conversionService);
+
+        _conversionService = conversionService;
     }
 
     public override object FromMessage(IMessage message, Type targetType)

@@ -4,6 +4,7 @@
 
 using System.IO.Compression;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Stream.Binder.Rabbit.Config;
 
@@ -25,10 +26,7 @@ public class RabbitBinderOptions
 
     internal RabbitBinderOptions(IConfiguration config)
     {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
+        ArgumentGuard.NotNull(config);
 
         config.Bind(this);
     }

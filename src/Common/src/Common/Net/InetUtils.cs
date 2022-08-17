@@ -113,7 +113,7 @@ public class InetUtils
 
             if (!siteLocalAddress)
             {
-                _logger?.LogTrace("Ignoring address: {address} [UseOnlySiteLocalInterfaces=true, this address is not]", address.ToString());
+                _logger?.LogTrace("Ignoring address: {address} [UseOnlySiteLocalInterfaces=true, this address is not]", address);
             }
 
             return siteLocalAddress;
@@ -137,7 +137,7 @@ public class InetUtils
             }
         }
 
-        _logger?.LogTrace("Ignoring address: {address}", address.ToString());
+        _logger?.LogTrace("Ignoring address: {address}", address);
         return false;
     }
 

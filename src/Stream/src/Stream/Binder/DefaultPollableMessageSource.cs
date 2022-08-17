@@ -31,7 +31,6 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
     public RetryTemplate RetryTemplate
     {
         get => _retryTemplate;
-
         set
         {
             _retryTemplate = value;
@@ -42,7 +41,6 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
     public IRecoveryCallback RecoveryCallback
     {
         get => _recoveryCallback;
-
         set => _recoveryCallback = new RecoveryCallbackWrapper(value);
     }
 

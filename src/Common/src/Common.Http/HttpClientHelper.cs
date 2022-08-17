@@ -206,15 +206,8 @@ public static class HttpClientHelper
     /// </param>
     public static HttpRequestMessage GetRequestMessage(HttpMethod method, string requestUri, string userName, string password)
     {
-        if (method == null)
-        {
-            throw new ArgumentNullException(nameof(method));
-        }
-
-        if (requestUri == null)
-        {
-            throw new ArgumentNullException(nameof(requestUri));
-        }
+        ArgumentGuard.NotNull(method);
+        ArgumentGuard.NotNull(requestUri);
 
         var request = new HttpRequestMessage(method, requestUri);
 
@@ -230,10 +223,7 @@ public static class HttpClientHelper
     public static Task<string> GetAccessTokenAsync(string accessTokenUri, string clientId, string clientSecret, int timeout = DefaultGetAccessTokenTimeout,
         bool validateCertificates = DefaultValidateCertificates, HttpClient httpClient = null, ILogger logger = null)
     {
-        if (string.IsNullOrEmpty(accessTokenUri))
-        {
-            throw new ArgumentException(nameof(accessTokenUri));
-        }
+        ArgumentGuard.NotNullOrEmpty(accessTokenUri);
 
         var parsedUri = new Uri(accessTokenUri);
         return GetAccessTokenAsync(parsedUri, clientId, clientSecret, timeout, validateCertificates, null, httpClient, logger);
@@ -243,24 +233,13 @@ public static class HttpClientHelper
         bool validateCertificates = DefaultValidateCertificates, Dictionary<string, string> additionalParams = null, HttpClient httpClient = null,
         ILogger logger = null)
     {
-        if (accessTokenUri is null)
-        {
-            throw new ArgumentException(nameof(accessTokenUri));
-        }
-
-        if (string.IsNullOrEmpty(clientId))
-        {
-            throw new ArgumentException(nameof(clientId));
-        }
-
-        if (string.IsNullOrEmpty(clientSecret))
-        {
-            throw new ArgumentException(nameof(clientSecret));
-        }
+        ArgumentGuard.NotNull(accessTokenUri);
+        ArgumentGuard.NotNullOrEmpty(clientId);
+        ArgumentGuard.NotNullOrEmpty(clientSecret);
 
         if (!accessTokenUri.IsWellFormedOriginalString())
         {
-            throw new ArgumentException("Access token Uri is not well formed", nameof(accessTokenUri));
+            throw new ArgumentException("Access token Uri is not well-formed.", nameof(accessTokenUri));
         }
 
         return GetAccessTokenInternalAsync(accessTokenUri, clientId, clientSecret, timeout, validateCertificates, httpClient, additionalParams, logger);
@@ -297,7 +276,7 @@ public static class HttpClientHelper
 
             if (!response.IsSuccessStatusCode)
             {
-                logger?.LogInformation("GetAccessTokenAsync returned status: {0} while obtaining access token from: {1}", response.StatusCode,
+                logger?.LogInformation("GetAccessTokenAsync returned status: {statusCode} while obtaining access token from: {uri}", response.StatusCode,
                     WebUtility.UrlEncode(accessTokenUri.OriginalString));
 
                 return null;
@@ -315,7 +294,7 @@ public static class HttpClientHelper
         }
         catch (Exception e)
         {
-            logger?.LogError("GetAccessTokenAsync exception: {0}, obtaining access token from: {1}", e, WebUtility.UrlEncode(accessTokenUri.OriginalString));
+            logger?.LogError(e, "GetAccessTokenAsync exception obtaining access token from: {uri}", WebUtility.UrlEncode(accessTokenUri.OriginalString));
         }
         finally
         {

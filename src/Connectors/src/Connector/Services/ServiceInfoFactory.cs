@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration;
 
 namespace Steeltoe.Connector.Services;
@@ -46,15 +47,14 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
             scheme
         })
     {
-        if (string.IsNullOrEmpty(scheme))
-        {
-            throw new ArgumentNullException(nameof(scheme));
-        }
+        ArgumentGuard.NotNullOrEmpty(scheme);
     }
 
     protected ServiceInfoFactory(Tags tags, IEnumerable<string> schemes)
     {
-        ServiceInfoTags = tags ?? throw new ArgumentNullException(nameof(tags));
+        ArgumentGuard.NotNull(tags);
+
+        ServiceInfoTags = tags;
         UriSchemes = schemes;
 
         if (schemes != null)

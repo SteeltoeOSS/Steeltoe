@@ -21,7 +21,6 @@ public abstract class AbstractDestinationResolvingMessagingTemplate<TDestination
             _destinationResolver ??= (IDestinationResolver<TDestination>)ApplicationContext?.GetService(typeof(IDestinationResolver<TDestination>));
             return _destinationResolver;
         }
-
         set => _destinationResolver = value;
     }
 

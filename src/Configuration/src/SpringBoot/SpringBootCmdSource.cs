@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
+using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot;
 
@@ -22,7 +23,9 @@ public class SpringBootCmdSource : IConfigurationSource
     /// </param>
     public SpringBootCmdSource(IConfiguration configuration)
     {
-        Config = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        ArgumentGuard.NotNull(configuration);
+
+        Config = configuration;
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)

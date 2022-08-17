@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Converter;
 
 public abstract class AbstractGenericConditionalConverter : AbstractGenericConverter, IConditionalGenericConverter
 {
-    protected AbstractGenericConditionalConverter(ISet<(Type Source, Type Target)> convertableTypes)
+    protected AbstractGenericConditionalConverter(ISet<(Type SourceType, Type TargetType)> convertableTypes)
         : base(convertableTypes)
     {
     }

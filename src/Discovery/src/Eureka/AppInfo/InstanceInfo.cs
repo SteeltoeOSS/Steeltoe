@@ -31,7 +31,6 @@ public class InstanceInfo
     public string Sid
     {
         get => _sid;
-
         internal set
         {
             _sid = value;
@@ -64,7 +63,6 @@ public class InstanceInfo
     public InstanceStatus Status
     {
         get => _status;
-
         internal set
         {
             if (value != _status)
@@ -84,7 +82,6 @@ public class InstanceInfo
     public Dictionary<string, string> Metadata
     {
         get => _metaData;
-
         internal set
         {
             _metaData = value;
@@ -107,7 +104,6 @@ public class InstanceInfo
     public bool IsDirty
     {
         get => _isDirty;
-
         internal set
         {
             if (value)

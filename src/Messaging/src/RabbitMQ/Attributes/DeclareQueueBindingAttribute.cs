@@ -20,7 +20,6 @@ public class DeclareQueueBindingAttribute : Attribute
 
             return _bindingName;
         }
-
         set => _bindingName = value;
     }
 
@@ -39,7 +38,6 @@ public class DeclareQueueBindingAttribute : Attribute
 
             return RoutingKeys[0];
         }
-
         set
         {
             RoutingKeys = new[]
@@ -66,7 +64,6 @@ public class DeclareQueueBindingAttribute : Attribute
 
             return Admins[0];
         }
-
         set
         {
             Admins = new[]

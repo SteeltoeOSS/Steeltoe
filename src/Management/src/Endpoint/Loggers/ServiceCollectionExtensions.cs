@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
@@ -27,15 +28,8 @@ public static class ServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddLoggersActuatorServices(this IServiceCollection services, IConfiguration configuration)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(configuration);
 
         var options = new LoggersEndpointOptions(configuration);
         services.TryAddSingleton<ILoggersOptions>(options);

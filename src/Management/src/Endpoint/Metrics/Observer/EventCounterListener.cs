@@ -27,7 +27,9 @@ public class EventCounterListener : EventListener
 
     public EventCounterListener(IMetricsObserverOptions options, ILogger<EventCounterListener> logger = null)
     {
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        ArgumentGuard.NotNull(options);
+
+        _options = options;
         _logger = logger;
     }
 
@@ -39,10 +41,7 @@ public class EventCounterListener : EventListener
     /// </param>
     protected override void OnEventWritten(EventWrittenEventArgs eventData)
     {
-        if (eventData == null)
-        {
-            throw new ArgumentNullException(nameof(eventData));
-        }
+        ArgumentGuard.NotNull(eventData);
 
         try
         {
@@ -62,10 +61,7 @@ public class EventCounterListener : EventListener
 
     protected override void OnEventSourceCreated(EventSource eventSource)
     {
-        if (eventSource == null)
-        {
-            throw new ArgumentNullException(nameof(eventSource));
-        }
+        ArgumentGuard.NotNull(eventSource);
 
         if (EventSourceName.Equals(eventSource.Name, StringComparison.OrdinalIgnoreCase))
         {

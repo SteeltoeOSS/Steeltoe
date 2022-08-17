@@ -59,7 +59,8 @@ public class HandlerMethodArgumentResolverComposite : IHandlerMethodArgumentReso
 
         if (resolver == null)
         {
-            throw new InvalidOperationException($"Unsupported parameter type [{parameter.ParameterType.Name}]. supportsParameter should be called first.");
+            throw new InvalidOperationException(
+                $"Unsupported parameter type [{parameter.ParameterType.Name}]. {nameof(SupportsParameter)} should be called first.");
         }
 
         return resolver.ResolveArgument(parameter, message);

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Messaging.Support;
@@ -27,10 +28,7 @@ public class TaskSchedulerChannel : AbstractTaskSchedulerChannel
         ILogger logger = null)
         : base(context, new UnicastingDispatcher(context, executor, logger), executor, name, logger)
     {
-        if (executor == null)
-        {
-            throw new ArgumentNullException(nameof(executor));
-        }
+        ArgumentGuard.NotNull(executor);
 
         Dispatcher.MessageHandlingDecorator = new MessageHandlingDecorator(this);
         Dispatcher.LoadBalancingStrategy = loadBalancingStrategy;
