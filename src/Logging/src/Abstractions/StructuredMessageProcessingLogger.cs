@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Logging;
 
@@ -27,11 +25,11 @@ public class StructuredMessageProcessingLogger : MessageProcessingLogger
             throw new ArgumentNullException(nameof(formatter));
         }
 
-        var processorMessage = string.Empty;
+        string processorMessage = string.Empty;
 
         if (MessageProcessors != null)
         {
-            foreach (var processor in MessageProcessors)
+            foreach (IDynamicMessageProcessor processor in MessageProcessors)
             {
                 processorMessage = processor.Process(processorMessage);
             }

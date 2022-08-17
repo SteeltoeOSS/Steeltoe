@@ -10,17 +10,16 @@ namespace Steeltoe.Extensions.Logging;
 
 public class DynamicLoggerProviderBase : IDynamicLoggerProvider
 {
-    private protected readonly IEnumerable<IDynamicMessageProcessor> MessageProcessors;
-
-    private protected ILoggerProvider DelegateProvider { get; set; }
-
     private static readonly Filter FalseFilter = (_, _) => false;
 
     private readonly ConcurrentDictionary<string, LogLevel> _originalLevels;
     private readonly ConcurrentDictionary<string, Filter> _runningFilters;
+    private protected readonly IEnumerable<IDynamicMessageProcessor> MessageProcessors;
 
     private Func<string, LogLevel, bool> _filter;
-    private ConcurrentDictionary<string, MessageProcessingLogger> _loggers = new ();
+    private ConcurrentDictionary<string, MessageProcessingLogger> _loggers = new();
+
+    private protected ILoggerProvider DelegateProvider { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamicLoggerProviderBase" /> class. Contains base functionality for DynamicLoggerProvider.
@@ -207,8 +206,12 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     /// <summary>
     /// Get or create the most applicable logging filter.
     /// </summary>
-    /// <param name="name">Fully qualified logger name.</param>
-    /// <returns>A filter function for log level.</returns>
+    /// <param name="name">
+    /// Fully qualified logger name.
+    /// </param>
+    /// <returns>
+    /// A filter function for log level.
+    /// </returns>
     private protected Func<string, LogLevel, bool> GetFilter(string name)
     {
         // check if there are any applicable filters

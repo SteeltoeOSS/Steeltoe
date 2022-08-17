@@ -32,8 +32,13 @@ public class SerilogDynamicProvider : DynamicLoggerProviderBase
 
     private protected override MessageProcessingLogger CreateLoggerImplementation(string name)
     {
-        var logger = DelegateProvider.CreateLogger(name);
-        return new StructuredMessageProcessingLogger(logger, MessageProcessors) { Filter = GetFilter(name), Name = name };
+        ILogger logger = DelegateProvider.CreateLogger(name);
+
+        return new StructuredMessageProcessingLogger(logger, MessageProcessors)
+        {
+            Filter = GetFilter(name),
+            Name = name
+        };
     }
 
     private static ILoggerProvider GetDelegateLogger(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)
