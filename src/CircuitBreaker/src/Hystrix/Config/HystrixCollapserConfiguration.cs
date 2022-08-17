@@ -51,7 +51,7 @@ public class HystrixCollapserConfiguration
         public CollapserMetricsConfig(int rollingPercentileNumberOfBuckets, int rollingPercentileBucketSizeInMilliseconds, bool rollingPercentileEnabled,
             int rollingCounterNumberOfBuckets, int rollingCounterBucketSizeInMilliseconds)
         {
-            RollingPercentileNumberOfBuckets = rollingCounterNumberOfBuckets;
+            RollingPercentileNumberOfBuckets = rollingPercentileNumberOfBuckets;
             RollingPercentileBucketSizeInMilliseconds = rollingPercentileBucketSizeInMilliseconds;
             IsRollingPercentileEnabled = rollingPercentileEnabled;
             RollingCounterNumberOfBuckets = rollingCounterNumberOfBuckets;

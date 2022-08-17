@@ -6,7 +6,6 @@ using System.Diagnostics.Tracing;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.EventSources;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
-using Steeltoe.CircuitBreaker.Hystrix.Strategy.EventNotifier;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Xunit;
 
@@ -48,8 +47,7 @@ public class HystrixEventSourceServiceTests : HystrixTestBase
         var tpKey = new HystrixThreadPoolKeyDefault("threadPool");
         var collapserKey = new HystrixCollapserKeyDefault("collapser");
 
-        var commandMetric = new HystrixCommandMetrics(commandKey, new HystrixCommandGroupKeyDefault("group"), tpKey, new HystrixCommandOptions(),
-            HystrixEventNotifierDefault.GetInstance());
+        var commandMetric = new HystrixCommandMetrics(commandKey, new HystrixCommandGroupKeyDefault("group"), tpKey, new HystrixCommandOptions());
 
         var threadPoolMetric = HystrixThreadPoolMetrics.GetInstance(
             tpKey, new HystrixSyncTaskScheduler(new HystrixThreadPoolOptions()), new HystrixThreadPoolOptions());

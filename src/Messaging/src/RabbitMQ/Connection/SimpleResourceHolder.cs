@@ -34,7 +34,7 @@ public static class SimpleResourceHolder
 
     public static bool Has(object key, ILogger logger = null)
     {
-        object value = DoGet(key, logger);
+        object value = DoGet(key);
         return value != null;
     }
 
@@ -175,7 +175,7 @@ public static class SimpleResourceHolder
         Stack.Value = null;
     }
 
-    private static object DoGet(object actualKey, ILogger logger = null)
+    private static object DoGet(object actualKey)
     {
         Dictionary<object, object> map = Resources.Value;
 

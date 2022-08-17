@@ -2332,7 +2332,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestSemaphoreExecutionWithTimeout()
     {
-        TestHystrixCommand<bool> cmd = new InterruptibleCommand(new TestCircuitBreaker(), false);
+        TestHystrixCommand<bool> cmd = new InterruptibleCommand(new TestCircuitBreaker());
 
         _output.WriteLine("Starting command");
         long timeMillis = DateTime.Now.Ticks / 10000;
@@ -2604,7 +2604,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     public void TestInterruptFutureOnTimeout()
     {
         // given
-        var cmd = new InterruptibleCommand(new TestCircuitBreaker(), true);
+        var cmd = new InterruptibleCommand(new TestCircuitBreaker());
 
         // when
         _ = cmd.ExecuteAsync();
@@ -2618,7 +2618,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     public void TestInterruptObserveOnTimeout()
     {
         // given
-        var cmd = new InterruptibleCommand(new TestCircuitBreaker(), true);
+        var cmd = new InterruptibleCommand(new TestCircuitBreaker());
 
         // when
         cmd.Observe().Subscribe();
@@ -2632,7 +2632,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     public void TestInterruptToObservableOnTimeout()
     {
         // given
-        var cmd = new InterruptibleCommand(new TestCircuitBreaker(), true);
+        var cmd = new InterruptibleCommand(new TestCircuitBreaker());
 
         // when
         cmd.ToObservable().Subscribe();
@@ -2646,7 +2646,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     public void TestCancelFutureWithInterruption()
     {
         // given
-        var cmd = new InterruptibleCommand(new TestCircuitBreaker(), true, true, 1000);
+        var cmd = new InterruptibleCommand(new TestCircuitBreaker(), 1000);
 
         // when
         var cts = new CancellationTokenSource();
