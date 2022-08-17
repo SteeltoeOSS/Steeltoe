@@ -307,25 +307,13 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         {
             foreach (string label in GetLabels())
             {
-                Task<ConfigEnvironment> task = null;
-
                 if (uris.Length > 1)
                 {
                     logger.LogInformation("Multiple Config Server Uris listed.");
-
-                    // Invoke config servers
-                    task = RemoteLoadAsync(uris, label);
                 }
-                else
-                {
-                    // Single, server make Config Server URI from settings
-#pragma warning disable CS0618 // Type or member is obsolete
-                    string path = GetConfigServerUri(label);
 
-                    // Invoke config server
-                    task = RemoteLoadAsync(path);
-#pragma warning restore CS0618 // Type or member is obsolete
-                }
+                // Invoke config servers
+                Task<ConfigEnvironment> task = RemoteLoadAsync(uris, label);
 
                 // Wait for results from server
                 ConfigEnvironment env = task.GetAwaiter().GetResult();
@@ -517,21 +505,6 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Create the HttpRequestMessage that will be used in accessing the Spring Cloud Configuration server.
-    /// </summary>
-    /// <param name="requestUri">
-    /// the Uri used when accessing the server.
-    /// </param>
-    /// <returns>
-    /// The HttpRequestMessage built from the path.
-    /// </returns>
-    [Obsolete("Will be removed in next release. See GetRequestMessage(string, string, string)")]
-    protected internal virtual HttpRequestMessage GetRequestMessage(string requestUri)
-    {
-        return GetRequestMessage(requestUri, settings.Username, settings.Password);
-    }
-
-    /// <summary>
     /// Adds the client settings for the Configuration Server to the Data dictionary.
     /// </summary>
     protected internal virtual void AddConfigServerClientSettings()
@@ -665,68 +638,6 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Asynchronously calls the Spring Cloud Configuration Server using the provided Uri and returning a a task that can be used to obtain the results.
-    /// </summary>
-    /// <param name="requestUri">
-    /// the Uri used in accessing the Spring Cloud Configuration Server.
-    /// </param>
-    /// <returns>
-    /// The task object representing the asynchronous operation.
-    /// </returns>
-    [Obsolete("Will be removed in next release. See RemoteLoadAsync(string[], string)")]
-    protected internal virtual async Task<ConfigEnvironment> RemoteLoadAsync(string requestUri)
-    {
-        // Get client if not already set
-        httpClient ??= GetHttpClient(settings);
-
-        // Get the request message
-        HttpRequestMessage request = GetRequestMessage(requestUri);
-
-        // If certificate validation is disabled, inject a callback to handle properly
-        HttpClientHelper.ConfigureCertificateValidation(settings.ValidateCertificates, out SecurityProtocolType prevProtocols,
-            out RemoteCertificateValidationCallback prevValidator);
-
-        // Invoke config server
-        try
-        {
-            using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
-
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                    return null;
-                }
-
-                // Log status
-                string message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
-
-                logger.LogInformation(WebUtility.UrlEncode(message));
-
-                // Throw if status >= 400
-                if (response.StatusCode >= HttpStatusCode.BadRequest)
-                {
-                    throw new HttpRequestException(message);
-                }
-
-                return null;
-            }
-
-            return await response.Content.ReadFromJsonAsync<ConfigEnvironment>(SerializerOptions).ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            // Log and rethrow
-            logger.LogError(e, "Config Server exception at path: {uri}", WebUtility.UrlEncode(requestUri));
-            throw;
-        }
-        finally
-        {
-            HttpClientHelper.RestoreCertificateValidation(settings.ValidateCertificates, prevProtocols, prevValidator);
-        }
-    }
-
-    /// <summary>
     /// Create the Uri that will be used in accessing the Configuration Server.
     /// </summary>
     /// <param name="baseRawUri">
@@ -761,33 +672,6 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         }
 
         return baseRawUri + path;
-    }
-
-    /// <summary>
-    /// Create the Uri that will be used in accessing the Configuration Server.
-    /// </summary>
-    /// <param name="label">
-    /// a label to add.
-    /// </param>
-    /// <returns>
-    /// The request URI for the Configuration Server.
-    /// </returns>
-    [Obsolete("Will be removed in next release. See GetConfigServerUri(string, string)")]
-    protected internal virtual string GetConfigServerUri(string label)
-    {
-        return GetConfigServerUri(settings.RawUri, label);
-    }
-
-    /// <summary>
-    /// Adds values from a PropertySource to the Configuration Data dictionary managed by this provider.
-    /// </summary>
-    /// <param name="source">
-    /// a property source to add.
-    /// </param>
-    [Obsolete("Will be removed in next release.")]
-    protected internal virtual void AddPropertySource(PropertySource source)
-    {
-        AddPropertySource(source, Data);
     }
 
     /// <summary>

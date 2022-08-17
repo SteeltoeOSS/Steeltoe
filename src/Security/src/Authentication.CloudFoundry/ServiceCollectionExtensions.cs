@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
@@ -16,21 +15,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry;
 
 public static class ServiceCollectionExtensions
 {
-    /// <summary>
-    /// Adds options and services to use Cloud Foundry container identity certificates.
-    /// </summary>
-    /// <param name="services">
-    /// Service collection.
-    /// </param>
-    /// <param name="configuration">
-    /// Application Configuration.
-    /// </param>
-    [Obsolete("The IConfiguration parameter is not used")]
-    public static void AddCloudFoundryContainerIdentity(this IServiceCollection services, IConfiguration configuration)
-    {
-        AddCloudFoundryContainerIdentity(services);
-    }
-
     /// <summary>
     /// Adds options and services to use Cloud Foundry container identity certificates.
     /// </summary>
@@ -49,21 +33,6 @@ public static class ServiceCollectionExtensions
         services.AddHostedService<CertificateRotationHostedService>();
         services.AddSingleton<IAuthorizationHandler, CloudFoundryCertificateIdentityAuthorizationHandler>();
         services.AddCertificateForwarding(opt => opt.CertificateHeader = "X-Forwarded-Client-Cert");
-    }
-
-    /// <summary>
-    /// Adds options and services for Cloud Foundry container identity certificates along with certificate-based authentication and authorization.
-    /// </summary>
-    /// <param name="services">
-    /// Service collection.
-    /// </param>
-    /// <param name="configuration">
-    /// Application Configuration.
-    /// </param>
-    [Obsolete("The IConfiguration parameter is not used")]
-    public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, IConfiguration configuration)
-    {
-        AddCloudFoundryCertificateAuth(services);
     }
 
     /// <summary>

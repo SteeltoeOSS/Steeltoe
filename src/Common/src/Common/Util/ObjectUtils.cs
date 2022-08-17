@@ -9,12 +9,6 @@ public static class ObjectUtils
     private const int InitialHash = 7;
     private const int Multiplier = 31;
 
-    [Obsolete("Use IsNullOrEmpty instead.")]
-    public static bool IsEmpty(object[] array)
-    {
-        return IsNullOrEmpty(array);
-    }
-
     public static bool IsNullOrEmpty<T>(IEnumerable<T> source)
     {
         return source == null || !source.Any();

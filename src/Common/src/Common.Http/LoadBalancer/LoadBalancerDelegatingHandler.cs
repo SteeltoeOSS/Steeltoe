@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Steeltoe.Common.LoadBalancer;
 
 namespace Steeltoe.Common.Http.LoadBalancer;
@@ -24,25 +23,6 @@ public class LoadBalancerDelegatingHandler : DelegatingHandler
     /// Load balancer to use.
     /// </param>
     public LoadBalancerDelegatingHandler(ILoadBalancer loadBalancer)
-    {
-        ArgumentGuard.NotNull(loadBalancer);
-
-        _loadBalancer = loadBalancer;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler" /> class.
-    /// <para />
-    /// For use with <see cref="IHttpClientBuilder" />.
-    /// </summary>
-    /// <param name="loadBalancer">
-    /// Load balancer to use.
-    /// </param>
-    /// <param name="logger">
-    /// For logging.
-    /// </param>
-    [Obsolete("Please remove ILogger parameter")]
-    public LoadBalancerDelegatingHandler(ILoadBalancer loadBalancer, ILogger logger)
     {
         ArgumentGuard.NotNull(loadBalancer);
 
