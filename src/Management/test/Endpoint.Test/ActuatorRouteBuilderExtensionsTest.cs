@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -51,25 +50,7 @@ public class ActuatorRouteBuilderExtensionsTest
                 return t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
             }
 
-            static bool SupportedOnPlatform(Type type)
-            {
-                bool isThreadDump = type.Name.StartsWith("ThreadDump", StringComparison.Ordinal);
-                bool isHeapDump = type.Name.StartsWith("HeapDump", StringComparison.Ordinal);
-
-                if (!(isThreadDump || isHeapDump))
-                {
-                    return true;
-                }
-
-                if (isThreadDump && Platform.IsWindows)
-                {
-                    return true;
-                }
-
-                return isHeapDump;
-            }
-
-            List<Type> types = Assembly.Load("Steeltoe.Management.Endpoint").GetTypes().Where(Query).Where(SupportedOnPlatform).ToList();
+            List<Type> types = Assembly.Load("Steeltoe.Management.Endpoint").GetTypes().Where(Query).ToList();
 
             return
                 from t in types
