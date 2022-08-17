@@ -20,7 +20,7 @@ public class ContainerShutDownTest : AbstractTest
     [Fact]
     public void TestUninterruptibleListenerDmlc()
     {
-        var cf = new CachingConnectionFactory("localhost");
+        using var cf = new CachingConnectionFactory("localhost");
         var admin = new RabbitAdmin(cf);
         admin.DeclareQueue(new Queue("test.shutdown"));
 
@@ -29,24 +29,29 @@ public class ContainerShutDownTest : AbstractTest
             ShutdownTimeout = 500
         };
 
-        container.SetQueueNames("test.shutdown");
-        var latch = new CountdownEvent(1);
         var testEnded = new CountdownEvent(1);
-        var listener = new TestListener(latch, testEnded);
-        container.MessageListener = listener;
-        var connection = cf.CreateConnection() as ChannelCachingConnectionProxy;
-
-        // var channels = TestUtils.getPropertyValue(connection, "target.delegate._channelManager._channelMap");
-        FieldInfo field = typeof(global::RabbitMQ.Client.Framing.Impl.Connection).GetField("m_sessionManager", BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.NotNull(field);
-        var channels = (SessionManager)field.GetValue(connection.Target.Connection);
-        Assert.NotNull(channels);
-
-        container.StartAsync();
-        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
+        SessionManager channels = null;
 
         try
         {
+            container.SetQueueNames("test.shutdown");
+            var latch = new CountdownEvent(1);
+
+            var listener = new TestListener(latch, testEnded);
+            container.MessageListener = listener;
+            var connection = cf.CreateConnection() as ChannelCachingConnectionProxy;
+
+            // var channels = TestUtils.getPropertyValue(connection, "target.delegate._channelManager._channelMap");
+            FieldInfo field =
+                typeof(global::RabbitMQ.Client.Framing.Impl.Connection).GetField("m_sessionManager", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            Assert.NotNull(field);
+            channels = (SessionManager)field.GetValue(connection.Target.Connection);
+            Assert.NotNull(channels);
+
+            container.StartAsync();
+            Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
+
             var template = new RabbitTemplate(cf);
 
             template.Execute(c =>
@@ -63,12 +68,16 @@ public class ContainerShutDownTest : AbstractTest
         finally
         {
             container.StopAsync();
-            Assert.Equal(1, channels.Count);
+
+            if (channels != null)
+            {
+                Assert.Equal(1, channels.Count);
+            }
+
             container.Dispose();
 
             testEnded.Signal();
             admin.DeleteQueue("test.shutdown");
-            cf.Dispose();
         }
     }
 
