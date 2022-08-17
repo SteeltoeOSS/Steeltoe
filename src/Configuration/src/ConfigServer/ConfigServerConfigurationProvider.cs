@@ -26,7 +26,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 /// <summary>
 /// A Spring Cloud Config Server based <see cref="ConfigurationProvider" />.
 /// </summary>
-public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigurationSource
+public class ConfigServerConfigurationProvider : ConfigurationProvider
 {
     private const string ArrayPattern = @"(\[[0-9]+\])*$";
     private const string VaultRenewPath = "vault/v1/auth/token/renew-self";
@@ -220,26 +220,6 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     public override void Load()
     {
         LoadInternal();
-    }
-
-    [Obsolete("Will be removed in next release, use the ConfigServerConfigurationSource")]
-    public virtual IConfigurationProvider Build(IConfigurationBuilder builder)
-    {
-        var config = new ConfigurationBuilder();
-
-        foreach (IConfigurationSource s in builder.Sources)
-        {
-            if (s == this)
-            {
-                break;
-            }
-
-            config.Add(s);
-        }
-
-        configuration = WrapWithPlaceholderResolver(config.Build());
-        ConfigurationSettingsHelper.Initialize(Prefix, settings, configuration);
-        return this;
     }
 
     internal ConfigEnvironment LoadInternal(bool updateDictionary = true)
