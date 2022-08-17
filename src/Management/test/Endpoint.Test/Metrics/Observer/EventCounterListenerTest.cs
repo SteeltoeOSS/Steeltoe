@@ -72,7 +72,11 @@ public class EventCounterListenerTest : BaseTest
             "gen-1-size"
         };
 
-        var options = new MetricsObserverOptions { ExcludedMetrics = exclusions };
+        var options = new MetricsObserverOptions
+        {
+            ExcludedMetrics = exclusions
+        };
+
         using var listener = new EventCounterListener(options);
 
         var exporter = new SteeltoeExporter(_scraperOptions);

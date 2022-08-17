@@ -71,7 +71,7 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
 
     protected override bool DoSendInternal(IMessage message, CancellationToken cancellationToken)
     {
-        var interceptors = schedulerInterceptors;
+        List<ITaskSchedulerChannelInterceptor> interceptors = schedulerInterceptors;
         HashSet<IMessageHandler> handlers = Handlers;
 
         foreach (IMessageHandler handler in handlers)

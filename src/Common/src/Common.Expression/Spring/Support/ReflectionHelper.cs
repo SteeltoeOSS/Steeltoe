@@ -116,7 +116,8 @@ public static class ReflectionHelper
         return result;
     }
 
-    public static ArgumentsMatchInfo CompareArgumentsVarargs(IReadOnlyList<Type> expectedArgTypes, IReadOnlyList<Type> suppliedArgTypes, ITypeConverter typeConverter)
+    public static ArgumentsMatchInfo CompareArgumentsVarargs(IReadOnlyList<Type> expectedArgTypes, IReadOnlyList<Type> suppliedArgTypes,
+        ITypeConverter typeConverter)
     {
         if (expectedArgTypes == null || expectedArgTypes.Count == 0)
         {

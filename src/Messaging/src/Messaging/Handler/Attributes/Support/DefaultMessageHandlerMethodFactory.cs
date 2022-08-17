@@ -44,8 +44,8 @@ public class DefaultMessageHandlerMethodFactory : IMessageHandlerMethodFactory
         MessageConverter = converter;
     }
 
-    public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter, ICollection<IHandlerMethodArgumentResolver> resolvers,
-        IApplicationContext context = null)
+    public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter,
+        ICollection<IHandlerMethodArgumentResolver> resolvers, IApplicationContext context = null)
     {
         ConversionService = conversionService;
         MessageConverter = converter;

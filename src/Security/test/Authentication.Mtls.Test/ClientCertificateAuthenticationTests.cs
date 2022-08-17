@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Security.Authentication.Mtls;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.Mtls.Test;

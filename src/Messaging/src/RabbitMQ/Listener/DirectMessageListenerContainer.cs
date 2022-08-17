@@ -26,11 +26,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     protected const int StartWaitTime = 60;
     protected const int DefaultMonitorInterval = 10_000;
     protected const int DefaultAckTimeout = 20_000;
-
-#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
-    protected internal readonly List<SimpleConsumer> Consumers = new();
-    protected internal readonly List<SimpleConsumer> ConsumersToRestart = new();
-#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
     protected internal readonly Dictionary<string, List<SimpleConsumer>> ConsumersByQueue = new();
     protected internal readonly ActiveObjectCounter<SimpleConsumer> CancellationLock = new();
 
@@ -1247,4 +1242,9 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
             _container.ConsumerRemoved(this);
         }
     }
+
+#pragma warning disable S3956 // "Generic.List" instances should not be part of public APIs
+    protected internal readonly List<SimpleConsumer> Consumers = new();
+    protected internal readonly List<SimpleConsumer> ConsumersToRestart = new();
+#pragma warning restore S3956 // "Generic.List" instances should not be part of public APIs
 }

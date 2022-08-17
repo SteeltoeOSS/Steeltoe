@@ -20,7 +20,7 @@ public class ConfigServerHealthContributorTest
     [Fact]
     public void Constructor_FindsConfigServerProvider()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -42,7 +42,7 @@ public class ConfigServerHealthContributorTest
     [Fact]
     public void FindProvider_FindsProvider()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -63,7 +63,7 @@ public class ConfigServerHealthContributorTest
     [Fact]
     public void GetTimeToLive_ReturnsExpected()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -85,7 +85,7 @@ public class ConfigServerHealthContributorTest
     [Fact]
     public void IsEnabled_ReturnsExpected()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -107,7 +107,7 @@ public class ConfigServerHealthContributorTest
     [Fact]
     public void IsCacheStale_ReturnsExpected()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -135,7 +135,7 @@ public class ConfigServerHealthContributorTest
     public void GetPropertySources_ReturnsExpected()
     {
         // this test does NOT expect to find a running config server
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8887/" },
             { "spring:cloud:config:name", "myName" },
@@ -192,7 +192,7 @@ public class ConfigServerHealthContributorTest
     [Fact]
     public void Health_NotEnabled_ReturnsExpected()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -218,7 +218,7 @@ public class ConfigServerHealthContributorTest
     public void Health_NoPropertySources_ReturnsExpected()
     {
         // this test does NOT expect to find a running config server
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8887/" },
             { "spring:cloud:config:name", "myName" },
@@ -244,7 +244,7 @@ public class ConfigServerHealthContributorTest
     [Fact]
     public void UpdateHealth_WithPropertySources_ReturnsExpected()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },

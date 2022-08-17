@@ -76,8 +76,7 @@ public static class SerialHystrixDashboardData
 
     public static IEnumerable<string> ToMultipleJsonStrings(HystrixDashboardStream.DashboardData dashboardData)
     {
-        IEnumerable<string> jsonStrings = dashboardData.CommandMetrics.Select(ToJsonString)
-            .Union(dashboardData.ThreadPoolMetrics.Select(ToJsonString))
+        IEnumerable<string> jsonStrings = dashboardData.CommandMetrics.Select(ToJsonString).Union(dashboardData.ThreadPoolMetrics.Select(ToJsonString))
             .Union(dashboardData.CollapserMetrics.Select(ToJsonString));
 
         return jsonStrings;

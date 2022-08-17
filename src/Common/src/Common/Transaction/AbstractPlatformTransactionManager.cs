@@ -705,8 +705,8 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
             SuspendedResources = suspendedResources;
         }
 
-        public SuspendedResourcesHolder(object suspendedResources, ICollection<ITransactionSynchronization> suspendedSynchronizations, string name, bool readOnly,
-            int? isolationLevel, bool wasActive)
+        public SuspendedResourcesHolder(object suspendedResources, ICollection<ITransactionSynchronization> suspendedSynchronizations, string name,
+            bool readOnly, int? isolationLevel, bool wasActive)
         {
             SuspendedResources = suspendedResources;
             SuspendedSynchronizations = suspendedSynchronizations;

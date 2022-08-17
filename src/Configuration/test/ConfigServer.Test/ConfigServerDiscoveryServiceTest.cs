@@ -27,7 +27,7 @@ public class ConfigServerDiscoveryServiceTest
     [Fact]
     public void ConfigServerDiscoveryService_FindsDiscoveryClient()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration);
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration);
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         IConfigurationRoot config = builder.Build();
@@ -126,7 +126,7 @@ public class ConfigServerDiscoveryServiceTest
     public async Task RuntimeReplacementsCanBeProvided()
     {
         // arrange a basic ConfigServerDiscoveryService w/o logging
-        var appSettings = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var appSettings = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "eureka:client:anything", "true" }
         };

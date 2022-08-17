@@ -362,6 +362,7 @@ public class MimeTypeTest
         IReadOnlyCollection<MimeType> actual = MimeTypeUtils.ParseMimeTypes(s);
         Assert.Equal(mimeTypes.Length, actual.Count);
         IList<string> actualStrings = actual.Select(m => m.ToString()).ToList();
+
         foreach (string mimeType in mimeTypes)
         {
             Assert.Contains(mimeType, actualStrings);
