@@ -189,7 +189,7 @@ public class RabbitAdminTest : AbstractTest
     }
 
     [Fact]
-    public void TestMultiEntities()
+    public async Task TestMultiEntities()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
@@ -215,39 +215,44 @@ public class RabbitAdminTest : AbstractTest
             new Binding("b3", "q4", DestinationType.Queue, "e4", "k4", null));
 
         serviceCollection.AddSingleton(ds);
-        ServiceProvider provider = serviceCollection.BuildServiceProvider();
-        RabbitAdmin admin = provider.GetRabbitAdmin();
-        RabbitTemplate template = admin.RabbitTemplate;
-        template.ConvertAndSend("e1", "k1", "foo");
-        template.ConvertAndSend("e2", "k2", "bar");
-        template.ConvertAndSend("e3", "k3", "baz");
-        template.ConvertAndSend("e4", "k4", "qux");
-        Assert.Equal("foo", template.ReceiveAndConvert<string>("q1"));
-        Assert.Equal("bar", template.ReceiveAndConvert<string>("q2"));
-        Assert.Equal("baz", template.ReceiveAndConvert<string>("q3"));
-        Assert.Equal("qux", template.ReceiveAndConvert<string>("q4"));
-        admin.DeleteQueue("q1");
-        admin.DeleteQueue("q2");
-        admin.DeleteQueue("q3");
-        admin.DeleteQueue("q4");
-        admin.DeleteExchange("e1");
-        admin.DeleteExchange("e2");
-        admin.DeleteExchange("e3");
-        admin.DeleteExchange("e4");
 
-        var ctx = provider.GetService<IApplicationContext>();
-        var mixedDeclarables = ctx.GetService<Declarables>("ds");
-        Assert.NotNull(mixedDeclarables);
-        IEnumerable<IQueue> queues = mixedDeclarables.GetDeclarablesByType<IQueue>();
-        Assert.Single(queues);
-        Assert.Equal("q4", queues.Single().QueueName);
-        IEnumerable<IExchange> exchanges = mixedDeclarables.GetDeclarablesByType<IExchange>();
-        Assert.Single(exchanges);
-        Assert.Equal("e4", exchanges.Single().ExchangeName);
-        IEnumerable<IBinding> bindings = mixedDeclarables.GetDeclarablesByType<IBinding>();
-        Assert.Single(bindings);
-        Assert.Equal("q4", bindings.Single().Destination);
-        provider.Dispose();
+        await using (ServiceProvider provider = serviceCollection.BuildServiceProvider())
+        {
+            RabbitAdmin admin = provider.GetRabbitAdmin();
+            RabbitTemplate template = admin.RabbitTemplate;
+            template.ConvertAndSend("e1", "k1", "foo");
+            template.ConvertAndSend("e2", "k2", "bar");
+            template.ConvertAndSend("e3", "k3", "baz");
+            template.ConvertAndSend("e4", "k4", "qux");
+            Assert.Equal("foo", template.ReceiveAndConvert<string>("q1"));
+            Assert.Equal("bar", template.ReceiveAndConvert<string>("q2"));
+            Assert.Equal("baz", template.ReceiveAndConvert<string>("q3"));
+            Assert.Equal("qux", template.ReceiveAndConvert<string>("q4"));
+            admin.DeleteQueue("q1");
+            admin.DeleteQueue("q2");
+            admin.DeleteQueue("q3");
+            admin.DeleteQueue("q4");
+            admin.DeleteExchange("e1");
+            admin.DeleteExchange("e2");
+            admin.DeleteExchange("e3");
+            admin.DeleteExchange("e4");
+        }
+
+        await using (ServiceProvider provider = serviceCollection.BuildServiceProvider())
+        {
+            var ctx = provider.GetService<IApplicationContext>();
+            var mixedDeclarables = ctx.GetService<Declarables>("ds");
+            Assert.NotNull(mixedDeclarables);
+            IEnumerable<IQueue> queues = mixedDeclarables.GetDeclarablesByType<IQueue>();
+            Assert.Single(queues);
+            Assert.Equal("q4", queues.Single().QueueName);
+            IEnumerable<IExchange> exchanges = mixedDeclarables.GetDeclarablesByType<IExchange>();
+            Assert.Single(exchanges);
+            Assert.Equal("e4", exchanges.Single().ExchangeName);
+            IEnumerable<IBinding> bindings = mixedDeclarables.GetDeclarablesByType<IBinding>();
+            Assert.Single(bindings);
+            Assert.Equal("q4", bindings.Single().Destination);
+        }
     }
 
     [Fact]

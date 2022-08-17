@@ -26,15 +26,21 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
         services.AddRabbitAdmin();
         services.AddSingleton<MyLifecycle>();
         services.AddSingleton<ILifecycle>(p => p.GetService<MyLifecycle>());
-        ServiceProvider provider = services.BuildServiceProvider();
 
-        var hostService = provider.GetRequiredService<IHostedService>();
-        await hostService.StartAsync(default);
-        var myLifecycle = provider.GetService<MyLifecycle>();
-        var cf = provider.GetService<IConnectionFactory>() as CachingConnectionFactory;
-        await provider.DisposeAsync();
+        MyLifecycle myLifecycle;
+        CachingConnectionFactory cf;
 
+        await using (ServiceProvider provider = services.BuildServiceProvider())
+        {
+            var hostService = provider.GetRequiredService<IHostedService>();
+            await hostService.StartAsync(default);
+            myLifecycle = provider.GetService<MyLifecycle>();
+            cf = provider.GetService<IConnectionFactory>() as CachingConnectionFactory;
+        }
+
+        Assert.NotNull(myLifecycle);
         Assert.False(myLifecycle.IsRunning);
+        Assert.NotNull(cf);
         Assert.True(cf.Stopped);
         Assert.Throws<RabbitApplicationContextClosedException>(() => cf.CreateConnection());
     }
@@ -51,7 +57,7 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
         });
 
         services.AddRabbitAdmin();
-        ServiceProvider provider = services.BuildServiceProvider();
+        await using ServiceProvider provider = services.BuildServiceProvider();
 
         var hostService = provider.GetRequiredService<IHostedService>();
         await hostService.StartAsync(default);
@@ -66,7 +72,6 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
         Assert.True(blockedConnectionLatch.Wait(TimeSpan.FromSeconds(10)));
         amqConnection.HandleConnectionUnblocked();
         Assert.True(unblockedConnectionLatch.Wait(TimeSpan.FromSeconds(10)));
-        await provider.DisposeAsync();
     }
 
     public class TestBlockedListener : IBlockedListener

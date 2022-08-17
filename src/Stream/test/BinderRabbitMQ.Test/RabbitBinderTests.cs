@@ -339,28 +339,35 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         ConsumerOptions consumerProperties = GetConsumerOptions(string.Empty, rabbitBindingsOptions);
-        var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
+        RabbitProxy proxy = null;
 
-        using var ccf = new CachingConnectionFactory("localhost", proxy.Port);
-
-        var bindingsOptionsMonitor = new TestOptionsMonitor<RabbitBindingsOptions>(rabbitBindingsOptions);
-
-        var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, bindingsOptionsMonitor,
-            GetBinder(rabbitBindingsOptions).ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
-
-        consumerProperties.Multiplex = true;
-        consumerProperties.Partitioned = true;
-
-        consumerProperties.InstanceIndexList = new[]
+        try
         {
-            1,
-            2,
-            3
-        }.ToList();
+            proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
+            using var ccf = new CachingConnectionFactory("localhost", proxy.Port);
 
-        IConsumerDestination consumerDestination = rabbitExchangeQueueProvisioner.ProvisionConsumerDestination("foo", "boo", consumerProperties);
-        Assert.Equal("foo.boo-1,foo.boo-2,foo.boo-3", consumerDestination.Name);
-        proxy.Stop();
+            var bindingsOptionsMonitor = new TestOptionsMonitor<RabbitBindingsOptions>(rabbitBindingsOptions);
+
+            var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, bindingsOptionsMonitor,
+                GetBinder(rabbitBindingsOptions).ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
+
+            consumerProperties.Multiplex = true;
+            consumerProperties.Partitioned = true;
+
+            consumerProperties.InstanceIndexList = new[]
+            {
+                1,
+                2,
+                3
+            }.ToList();
+
+            IConsumerDestination consumerDestination = rabbitExchangeQueueProvisioner.ProvisionConsumerDestination("foo", "boo", consumerProperties);
+            Assert.Equal("foo.boo-1,foo.boo-2,foo.boo-3", consumerDestination.Name);
+        }
+        finally
+        {
+            proxy?.Stop();
+        }
     }
 
     [Fact]
@@ -368,27 +375,35 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         ConsumerOptions consumerProperties = GetConsumerOptions(string.Empty, rabbitBindingsOptions);
-        var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
-        using var ccf = new CachingConnectionFactory("localhost", proxy.Port);
-        var bindingsOptionsMonitor = new TestOptionsMonitor<RabbitBindingsOptions>(rabbitBindingsOptions);
+        RabbitProxy proxy = null;
 
-        var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, bindingsOptionsMonitor,
-            GetBinder(rabbitBindingsOptions).ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
-
-        consumerProperties.Multiplex = true;
-        consumerProperties.Partitioned = true;
-
-        consumerProperties.InstanceIndexList = new[]
+        try
         {
-            1,
-            2,
-            3
-        }.ToList();
+            proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
+            using var ccf = new CachingConnectionFactory("localhost", proxy.Port);
+            var bindingsOptionsMonitor = new TestOptionsMonitor<RabbitBindingsOptions>(rabbitBindingsOptions);
 
-        IConsumerDestination consumerDestination = rabbitExchangeQueueProvisioner.ProvisionConsumerDestination("foo,qaa", "boo", consumerProperties);
+            var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, bindingsOptionsMonitor,
+                GetBinder(rabbitBindingsOptions).ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
 
-        Assert.Equal("foo.boo-1,foo.boo-2,foo.boo-3,qaa.boo-1,qaa.boo-2,qaa.boo-3", consumerDestination.Name);
-        proxy.Stop();
+            consumerProperties.Multiplex = true;
+            consumerProperties.Partitioned = true;
+
+            consumerProperties.InstanceIndexList = new[]
+            {
+                1,
+                2,
+                3
+            }.ToList();
+
+            IConsumerDestination consumerDestination = rabbitExchangeQueueProvisioner.ProvisionConsumerDestination("foo,qaa", "boo", consumerProperties);
+
+            Assert.Equal("foo.boo-1,foo.boo-2,foo.boo-3,qaa.boo-1,qaa.boo-2,qaa.boo-3", consumerDestination.Name);
+        }
+        finally
+        {
+            proxy?.Stop();
+        }
     }
 
     [Fact]
@@ -1516,133 +1531,144 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     [Trait("Category", "SkipOnLinux")]
     public void TestLateBinding()
     {
-        var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
-        var cf = new CachingConnectionFactory("127.0.0.1", proxy.Port, LoggerFactory);
-        IApplicationContext context = RabbitTestBinder.GetApplicationContext();
+        RabbitProxy proxy = null;
+        CachingConnectionFactory cf = null;
 
-        var rabbitBindingsOptions = new TestOptionsMonitor<RabbitBindingsOptions>(new RabbitBindingsOptions());
-        RabbitBindingsOptions currentRabbitBindings = rabbitBindingsOptions.CurrentValue;
-        var rabbitOptions = new TestOptionsMonitor<RabbitOptions>(new RabbitOptions());
-        var provisioner = new RabbitExchangeQueueProvisioner(cf, rabbitBindingsOptions, context, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
-        var binderOptions = new TestOptionsMonitor<RabbitBinderOptions>(new RabbitBinderOptions());
+        try
+        {
+            proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
+            cf = new CachingConnectionFactory("127.0.0.1", proxy.Port, LoggerFactory);
+            IApplicationContext context = RabbitTestBinder.GetApplicationContext();
 
-        var rabbitBinder = new RabbitMessageChannelBinder(context, LoggerFactory.CreateLogger<RabbitMessageChannelBinder>(), cf, rabbitOptions, binderOptions,
-            rabbitBindingsOptions, provisioner);
+            var rabbitBindingsOptions = new TestOptionsMonitor<RabbitBindingsOptions>(new RabbitBindingsOptions());
+            RabbitBindingsOptions currentRabbitBindings = rabbitBindingsOptions.CurrentValue;
+            var rabbitOptions = new TestOptionsMonitor<RabbitOptions>(new RabbitOptions());
 
-        var binder = new RabbitTestBinder(cf, rabbitBinder, LoggerFactory.CreateLogger<RabbitTestBinder>());
-        testBinder = binder;
+            var provisioner =
+                new RabbitExchangeQueueProvisioner(cf, rabbitBindingsOptions, context, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
 
-        ProducerOptions producerProperties = GetProducerOptions("output", currentRabbitBindings);
-        RabbitProducerOptions rabbitProducerOptions = currentRabbitBindings.GetRabbitProducerOptions("output");
-        rabbitProducerOptions.Prefix = "latebinder.";
-        rabbitProducerOptions.AutoBindDlq = true;
-        rabbitProducerOptions.Transacted = true;
+            var binderOptions = new TestOptionsMonitor<RabbitBinderOptions>(new RabbitBinderOptions());
 
-        DirectChannel moduleOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
-        IBinding late0ProducerBinding = binder.BindProducer("late.0", moduleOutputChannel, producerProperties);
+            var rabbitBinder = new RabbitMessageChannelBinder(context, LoggerFactory.CreateLogger<RabbitMessageChannelBinder>(), cf, rabbitOptions,
+                binderOptions, rabbitBindingsOptions, provisioner);
 
-        var moduleInputChannel = new QueueChannel();
-        ConsumerOptions consumerOptions = GetConsumerOptions("input", currentRabbitBindings);
-        RabbitConsumerOptions rabbitConsumerOptions = currentRabbitBindings.GetRabbitConsumerOptions("input");
-        rabbitConsumerOptions.Prefix = "latebinder.";
-        IBinding late0ConsumerBinding = binder.BindConsumer("late.0", "test", moduleInputChannel, consumerOptions);
-        producerProperties.PartitionKeyExpression = "Payload.Equals('0') ? 0 : 1";
-        producerProperties.PartitionSelectorExpression = "GetHashCode()";
-        producerProperties.PartitionCount = 2;
+            var binder = new RabbitTestBinder(cf, rabbitBinder, LoggerFactory.CreateLogger<RabbitTestBinder>());
+            testBinder = binder;
 
-        DirectChannel partOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
-        IBinding partlate0ProducerBinding = binder.BindProducer("partlate.0", partOutputChannel, producerProperties);
+            ProducerOptions producerProperties = GetProducerOptions("output", currentRabbitBindings);
+            RabbitProducerOptions rabbitProducerOptions = currentRabbitBindings.GetRabbitProducerOptions("output");
+            rabbitProducerOptions.Prefix = "latebinder.";
+            rabbitProducerOptions.AutoBindDlq = true;
+            rabbitProducerOptions.Transacted = true;
 
-        var partInputChannel0 = new QueueChannel();
-        var partInputChannel1 = new QueueChannel();
+            DirectChannel moduleOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
+            IBinding late0ProducerBinding = binder.BindProducer("late.0", moduleOutputChannel, producerProperties);
 
-        ConsumerOptions partLateConsumerProperties = GetConsumerOptions("partLate", currentRabbitBindings);
-        RabbitConsumerOptions partLateRabbitConsumerOptions = currentRabbitBindings.GetRabbitConsumerOptions("partLate");
-        partLateRabbitConsumerOptions.Prefix = "latebinder.";
-        partLateConsumerProperties.Partitioned = true;
-        partLateConsumerProperties.InstanceIndex = 0;
+            var moduleInputChannel = new QueueChannel();
+            ConsumerOptions consumerOptions = GetConsumerOptions("input", currentRabbitBindings);
+            RabbitConsumerOptions rabbitConsumerOptions = currentRabbitBindings.GetRabbitConsumerOptions("input");
+            rabbitConsumerOptions.Prefix = "latebinder.";
+            IBinding late0ConsumerBinding = binder.BindConsumer("late.0", "test", moduleInputChannel, consumerOptions);
+            producerProperties.PartitionKeyExpression = "Payload.Equals('0') ? 0 : 1";
+            producerProperties.PartitionSelectorExpression = "GetHashCode()";
+            producerProperties.PartitionCount = 2;
 
-        IBinding partlate0Consumer0Binding = binder.BindConsumer("partlate.0", "test", partInputChannel0, partLateConsumerProperties);
-        partLateConsumerProperties.InstanceIndex = 1;
-        IBinding partlate0Consumer1Binding = binder.BindConsumer("partlate.0", "test", partInputChannel1, partLateConsumerProperties);
+            DirectChannel partOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
+            IBinding partlate0ProducerBinding = binder.BindProducer("partlate.0", partOutputChannel, producerProperties);
 
-        ProducerOptions noDlqProducerProperties = GetProducerOptions("noDlq", currentRabbitBindings);
-        RabbitProducerOptions noDlqRabbitProducerOptions = currentRabbitBindings.GetRabbitProducerOptions("noDlq");
-        noDlqRabbitProducerOptions.Prefix = "latebinder.";
-        DirectChannel noDlqOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(noDlqProducerProperties));
-        IBinding noDlqProducerBinding = binder.BindProducer("lateNoDLQ.0", noDlqOutputChannel, noDlqProducerProperties);
+            var partInputChannel0 = new QueueChannel();
+            var partInputChannel1 = new QueueChannel();
 
-        var noDlqInputChannel = new QueueChannel();
-        ConsumerOptions noDlqConsumerProperties = GetConsumerOptions("noDlqConsumer", currentRabbitBindings);
-        RabbitConsumerOptions noDlqRabbitConsumerOptions = currentRabbitBindings.GetRabbitConsumerOptions("noDlqConsumer");
-        noDlqRabbitConsumerOptions.Prefix = "latebinder.";
-        IBinding noDlqConsumerBinding = binder.BindConsumer("lateNoDLQ.0", "test", noDlqInputChannel, noDlqConsumerProperties);
+            ConsumerOptions partLateConsumerProperties = GetConsumerOptions("partLate", currentRabbitBindings);
+            RabbitConsumerOptions partLateRabbitConsumerOptions = currentRabbitBindings.GetRabbitConsumerOptions("partLate");
+            partLateRabbitConsumerOptions.Prefix = "latebinder.";
+            partLateConsumerProperties.Partitioned = true;
+            partLateConsumerProperties.InstanceIndex = 0;
 
-        DirectChannel outputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(noDlqProducerProperties));
-        IBinding pubSubProducerBinding = binder.BindProducer("latePubSub", outputChannel, noDlqProducerProperties);
-        var pubSubInputChannel = new QueueChannel();
-        noDlqRabbitConsumerOptions.DurableSubscription = false;
-        IBinding nonDurableConsumerBinding = binder.BindConsumer("latePubSub", "lategroup", pubSubInputChannel, noDlqConsumerProperties);
+            IBinding partlate0Consumer0Binding = binder.BindConsumer("partlate.0", "test", partInputChannel0, partLateConsumerProperties);
+            partLateConsumerProperties.InstanceIndex = 1;
+            IBinding partlate0Consumer1Binding = binder.BindConsumer("partlate.0", "test", partInputChannel1, partLateConsumerProperties);
 
-        var durablePubSubInputChannel = new QueueChannel();
-        noDlqRabbitConsumerOptions.DurableSubscription = true;
-        IBinding durableConsumerBinding = binder.BindConsumer("latePubSub", "lateDurableGroup", durablePubSubInputChannel, noDlqConsumerProperties);
+            ProducerOptions noDlqProducerProperties = GetProducerOptions("noDlq", currentRabbitBindings);
+            RabbitProducerOptions noDlqRabbitProducerOptions = currentRabbitBindings.GetRabbitProducerOptions("noDlq");
+            noDlqRabbitProducerOptions.Prefix = "latebinder.";
+            DirectChannel noDlqOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(noDlqProducerProperties));
+            IBinding noDlqProducerBinding = binder.BindProducer("lateNoDLQ.0", noDlqOutputChannel, noDlqProducerProperties);
 
-        proxy.Start();
+            var noDlqInputChannel = new QueueChannel();
+            ConsumerOptions noDlqConsumerProperties = GetConsumerOptions("noDlqConsumer", currentRabbitBindings);
+            RabbitConsumerOptions noDlqRabbitConsumerOptions = currentRabbitBindings.GetRabbitConsumerOptions("noDlqConsumer");
+            noDlqRabbitConsumerOptions.Prefix = "latebinder.";
+            IBinding noDlqConsumerBinding = binder.BindConsumer("lateNoDLQ.0", "test", noDlqInputChannel, noDlqConsumerProperties);
 
-        Thread.Sleep(5000);
+            DirectChannel outputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(noDlqProducerProperties));
+            IBinding pubSubProducerBinding = binder.BindProducer("latePubSub", outputChannel, noDlqProducerProperties);
+            var pubSubInputChannel = new QueueChannel();
+            noDlqRabbitConsumerOptions.DurableSubscription = false;
+            IBinding nonDurableConsumerBinding = binder.BindConsumer("latePubSub", "lategroup", pubSubInputChannel, noDlqConsumerProperties);
 
-        moduleOutputChannel.Send(MessageBuilder.WithPayload("foo").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build());
+            var durablePubSubInputChannel = new QueueChannel();
+            noDlqRabbitConsumerOptions.DurableSubscription = true;
+            IBinding durableConsumerBinding = binder.BindConsumer("latePubSub", "lateDurableGroup", durablePubSubInputChannel, noDlqConsumerProperties);
 
-        IMessage message = moduleInputChannel.Receive(20000);
-        Assert.NotNull(message);
-        Assert.NotNull(message.Payload);
+            proxy.Start();
 
-        noDlqOutputChannel.Send(MessageBuilder.WithPayload("bar").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build());
+            Thread.Sleep(5000);
 
-        message = noDlqInputChannel.Receive(10000);
-        Assert.NotNull(message);
-        Assert.Equal("bar".GetBytes(), message.Payload);
+            moduleOutputChannel.Send(MessageBuilder.WithPayload("foo").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build());
 
-        outputChannel.Send(MessageBuilder.WithPayload("baz").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build());
-        message = pubSubInputChannel.Receive(10000);
-        Assert.NotNull(message);
-        Assert.Equal("baz".GetBytes(), message.Payload);
-        message = durablePubSubInputChannel.Receive(10000);
-        Assert.NotNull(message);
-        Assert.Equal("baz".GetBytes(), message.Payload);
+            IMessage message = moduleInputChannel.Receive(20000);
+            Assert.NotNull(message);
+            Assert.NotNull(message.Payload);
 
-        partOutputChannel.Send(MessageBuilder.WithPayload("0").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build());
-        partOutputChannel.Send(MessageBuilder.WithPayload("1").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build());
+            noDlqOutputChannel.Send(MessageBuilder.WithPayload("bar").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build());
 
-        message = partInputChannel0.Receive(10000);
-        Assert.NotNull(message);
+            message = noDlqInputChannel.Receive(10000);
+            Assert.NotNull(message);
+            Assert.Equal("bar".GetBytes(), message.Payload);
 
-        Assert.Equal("0".GetBytes(), message.Payload);
-        message = partInputChannel1.Receive(10000);
-        Assert.NotNull(message);
-        Assert.Equal("1".GetBytes(), message.Payload);
+            outputChannel.Send(MessageBuilder.WithPayload("baz").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build());
+            message = pubSubInputChannel.Receive(10000);
+            Assert.NotNull(message);
+            Assert.Equal("baz".GetBytes(), message.Payload);
+            message = durablePubSubInputChannel.Receive(10000);
+            Assert.NotNull(message);
+            Assert.Equal("baz".GetBytes(), message.Payload);
 
-        late0ProducerBinding.UnbindAsync();
-        late0ConsumerBinding.UnbindAsync();
-        partlate0ProducerBinding.UnbindAsync();
-        partlate0Consumer0Binding.UnbindAsync();
-        partlate0Consumer1Binding.UnbindAsync();
-        noDlqProducerBinding.UnbindAsync();
-        noDlqConsumerBinding.UnbindAsync();
-        pubSubProducerBinding.UnbindAsync();
-        nonDurableConsumerBinding.UnbindAsync();
-        durableConsumerBinding.UnbindAsync();
+            partOutputChannel.Send(MessageBuilder.WithPayload("0").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build());
+            partOutputChannel.Send(MessageBuilder.WithPayload("1").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build());
 
-        // Reset timeouts so cleanup happens
-        testBinder.ResetConnectionFactoryTimeout();
+            message = partInputChannel0.Receive(10000);
+            Assert.NotNull(message);
 
-        Cleanup();
+            Assert.Equal("0".GetBytes(), message.Payload);
+            message = partInputChannel1.Receive(10000);
+            Assert.NotNull(message);
+            Assert.Equal("1".GetBytes(), message.Payload);
 
-        proxy.Stop();
-        cf.Dispose();
+            late0ProducerBinding.UnbindAsync();
+            late0ConsumerBinding.UnbindAsync();
+            partlate0ProducerBinding.UnbindAsync();
+            partlate0Consumer0Binding.UnbindAsync();
+            partlate0Consumer1Binding.UnbindAsync();
+            noDlqProducerBinding.UnbindAsync();
+            noDlqConsumerBinding.UnbindAsync();
+            pubSubProducerBinding.UnbindAsync();
+            nonDurableConsumerBinding.UnbindAsync();
+            durableConsumerBinding.UnbindAsync();
 
-        GetResource().Dispose();
+            // Reset timeouts so cleanup happens
+            testBinder.ResetConnectionFactoryTimeout();
+
+            Cleanup();
+        }
+        finally
+        {
+            proxy?.Stop();
+            cf?.Dispose();
+
+            GetResource().Dispose();
+        }
     }
 
     [Fact]
