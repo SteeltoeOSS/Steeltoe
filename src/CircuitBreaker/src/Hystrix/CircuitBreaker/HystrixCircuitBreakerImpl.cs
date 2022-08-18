@@ -80,8 +80,7 @@ internal sealed class HystrixCircuitBreakerImpl : ICircuitBreaker
         }
     }
 
-    public HystrixCircuitBreakerImpl(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixCommandOptions options,
-        HystrixCommandMetrics metrics)
+    public HystrixCircuitBreakerImpl(IHystrixCommandOptions options, HystrixCommandMetrics metrics)
     {
         _options = options;
         _metrics = metrics;

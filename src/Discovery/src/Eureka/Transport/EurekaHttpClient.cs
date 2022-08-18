@@ -166,11 +166,10 @@ public class EurekaHttpClient : IEurekaHttpClient
         ArgumentGuard.NotNullOrEmpty(appName);
         ArgumentGuard.NotNullOrEmpty(id);
 
-        return SendHeartBeatInternalAsync(appName, id, info, overriddenStatus);
+        return SendHeartBeatInternalAsync(id, info, overriddenStatus);
     }
 
-    private async Task<EurekaHttpResponse<InstanceInfo>> SendHeartBeatInternalAsync(string appName, string id, InstanceInfo info,
-        InstanceStatus overriddenStatus)
+    private async Task<EurekaHttpResponse<InstanceInfo>> SendHeartBeatInternalAsync(string id, InstanceInfo info, InstanceStatus overriddenStatus)
     {
         var queryArgs = new Dictionary<string, string>
         {

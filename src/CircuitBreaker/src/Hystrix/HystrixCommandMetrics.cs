@@ -5,8 +5,6 @@
 using System.Collections.Concurrent;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using Steeltoe.CircuitBreaker.Hystrix.Strategy;
-using Steeltoe.CircuitBreaker.Hystrix.Strategy.EventNotifier;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.Common;
 using Steeltoe.Common.Util;
@@ -95,7 +93,7 @@ public class HystrixCommandMetrics : HystrixMetrics
     public HealthCounts HealthCounts => _healthCountsStream.Latest;
 
     internal HystrixCommandMetrics(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixThreadPoolKey threadPoolKey,
-        IHystrixCommandOptions properties, HystrixEventNotifier eventNotifier)
+        IHystrixCommandOptions properties)
         : base(null)
     {
         CommandKey = key;
@@ -123,7 +121,7 @@ public class HystrixCommandMetrics : HystrixMetrics
         // attempt to retrieve from cache first
         IHystrixThreadPoolKey nonNullThreadPoolKey = threadPoolKey ?? HystrixThreadPoolKeyDefault.AsKey(commandGroup.Name);
 
-        return Metrics.GetOrAddEx(key.Name, _ => new HystrixCommandMetrics(key, commandGroup, nonNullThreadPoolKey, properties, HystrixPlugins.EventNotifier));
+        return Metrics.GetOrAddEx(key.Name, _ => new HystrixCommandMetrics(key, commandGroup, nonNullThreadPoolKey, properties));
     }
 
     public static HystrixCommandMetrics GetInstance(IHystrixCommandKey key)

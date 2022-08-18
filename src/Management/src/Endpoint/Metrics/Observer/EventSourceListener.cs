@@ -57,7 +57,7 @@ public class EventSourceListener : EventListener
         {
             payloadEnumerator.MoveNext();
             string metricName = $"{eventSourceName}.{eventData.EventName}.{nameEnumerator.Current}";
-            RecordMetricsWithLabels(metricName, nameEnumerator.Current, payloadEnumerator.Current, currentLabels, counterNames);
+            RecordMetricsWithLabels(metricName, payloadEnumerator.Current, currentLabels);
         }
     }
 
@@ -97,7 +97,7 @@ public class EventSourceListener : EventListener
         return labels;
     }
 
-    private void RecordMetricsWithLabels(string metricName, string payLoadName, object payloadValue, IDictionary<string, object> labels, string[] counterNames)
+    private void RecordMetricsWithLabels(string metricName, object payloadValue, IDictionary<string, object> labels)
     {
         long? longValue = null;
         double? doubleValue = null;

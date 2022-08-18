@@ -5753,7 +5753,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     private void AssertGetValueFail(IExpression expression)
     {
-        Assert.Throws<SpelEvaluationException>(() => _expression.GetValue());
+        Assert.Throws<SpelEvaluationException>(expression.GetValue);
     }
 
     private IExpression Parse(string expression)
@@ -5865,12 +5865,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     private static class SomeCompareMethod
     {
+#pragma warning disable S1172 // Unused method parameters should be removed
         public static int PublicCompare(object o1, object o2)
         {
             return -1;
         }
 
         private static int PrivateCompare(object o1, object o2)
+#pragma warning restore S1172 // Unused method parameters should be removed
         {
             return -1;
         }
@@ -6774,10 +6776,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class Person3
     {
+        public string Name { get; }
         public object Age { get; }
 
         public Person3(string name, int age)
         {
+            Name = name;
             Age = age;
         }
     }

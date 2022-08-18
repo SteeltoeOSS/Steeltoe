@@ -39,10 +39,10 @@ public class HystrixQueuedTaskSchedulerTest
         var tc2 = new TaskActionClass(_output, 2);
         var tc3 = new TaskActionClass(_output, 3);
         var tc4 = new TaskActionClass(_output, 4);
-        var t1 = new Task<int>(o => tc1.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
-        var t2 = new Task<int>(o => tc2.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
-        var t3 = new Task<int>(o => tc3.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
-        var t4 = new Task<int>(o => tc4.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+        var t1 = new Task<int>(_ => tc1.Run(), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+        var t2 = new Task<int>(_ => tc2.Run(), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+        var t3 = new Task<int>(_ => tc3.Run(), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+        var t4 = new Task<int>(_ => tc4.Run(), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
 
         // Fill up to CoreSize
         t1.Start(scheduler);
@@ -96,7 +96,7 @@ public class HystrixQueuedTaskSchedulerTest
             Value = val;
         }
 
-        public int Run(object cmd)
+        public int Run()
         {
             int result = RunAsync().GetAwaiter().GetResult();
             return result;

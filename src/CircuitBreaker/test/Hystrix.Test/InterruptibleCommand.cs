@@ -12,15 +12,14 @@ internal sealed class InterruptibleCommand : TestHystrixCommand<bool>
 
     public bool HasBeenInterrupted => _hasBeenInterrupted;
 
-    public InterruptibleCommand(TestCircuitBreaker circuitBreaker, bool shouldInterrupt, bool shouldInterruptOnCancel, int timeoutInMillis)
+    public InterruptibleCommand(TestCircuitBreaker circuitBreaker, int timeoutInMillis)
         : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
-            .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions(), shouldInterrupt, shouldInterruptOnCancel,
-                timeoutInMillis)))
+            .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions(), timeoutInMillis)))
     {
     }
 
-    public InterruptibleCommand(TestCircuitBreaker circuitBreaker, bool shouldInterrupt)
-        : this(circuitBreaker, shouldInterrupt, false, 100)
+    public InterruptibleCommand(TestCircuitBreaker circuitBreaker)
+        : this(circuitBreaker, 100)
     {
     }
 
@@ -41,8 +40,7 @@ internal sealed class InterruptibleCommand : TestHystrixCommand<bool>
         return _hasBeenInterrupted;
     }
 
-    private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions, bool shouldInterrupt, bool shouldInterruptOnCancel,
-        int timeoutInMillis)
+    private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions, int timeoutInMillis)
     {
         hystrixCommandOptions.ExecutionTimeoutInMilliseconds = timeoutInMillis;
         return hystrixCommandOptions;

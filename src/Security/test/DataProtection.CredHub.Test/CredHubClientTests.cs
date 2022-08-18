@@ -800,7 +800,7 @@ public class CredHubClientTests
         }, httpClient: new HttpClient(mockHttpMessageHandler));
     }
 
-    private MockHttpMessageHandler InitializedHandlerWithLogin(MockedRequest authRequest = null)
+    private MockHttpMessageHandler InitializedHandlerWithLogin()
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
         string infoUrl = CredHubBase.Replace("/api", "/info");

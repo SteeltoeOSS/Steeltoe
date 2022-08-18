@@ -197,7 +197,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
         var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
-        SetupTestView(exporter);
+        SetupTestView();
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/test", "?tag=a:v1");
 
@@ -244,7 +244,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         return context;
     }
 
-    private void SetupTestView(SteeltoeExporter exporter)
+    private void SetupTestView()
     {
         Counter<double> counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test");
 

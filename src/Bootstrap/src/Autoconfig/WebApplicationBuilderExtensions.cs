@@ -5,7 +5,6 @@
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
@@ -140,7 +139,7 @@ public static class WebApplicationBuilderExtensions
         return false;
     }
 
-    private static void Log(this IServiceCollection obj, string message)
+    private static void Log(string message)
     {
         _logger.LogInformation(message);
     }
@@ -150,14 +149,14 @@ public static class WebApplicationBuilderExtensions
     {
         webApplicationBuilder.Configuration.AddConfigServer(webApplicationBuilder.Environment.EnvironmentName, _loggerFactory);
         webApplicationBuilder.Services.AddConfigServerServices();
-        webApplicationBuilder.Services.Log(LogMessages.WireConfigServer);
+        Log(LogMessages.WireConfigServer);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireCloudFoundryConfiguration(this WebApplicationBuilder webApplicationBuilder)
     {
         webApplicationBuilder.Configuration.AddCloudFoundry();
-        webApplicationBuilder.Services.Log(LogMessages.WireCloudFoundryConfiguration);
+        Log(LogMessages.WireCloudFoundryConfiguration);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -165,88 +164,98 @@ public static class WebApplicationBuilderExtensions
     {
         webApplicationBuilder.Configuration.AddKubernetes(loggerFactory: _loggerFactory);
         webApplicationBuilder.Services.AddKubernetesConfigurationServices();
-        webApplicationBuilder.Services.Log(LogMessages.WireKubernetesConfiguration);
+        Log(LogMessages.WireKubernetesConfiguration);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireRandomValueProvider(this WebApplicationBuilder webApplicationBuilder)
     {
         webApplicationBuilder.Configuration.AddRandomValueSource(_loggerFactory);
-        webApplicationBuilder.Services.Log(LogMessages.WireRandomValueProvider);
+        Log(LogMessages.WireRandomValueProvider);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WirePlaceholderResolver(this WebApplicationBuilder webApplicationBuilder)
     {
         ((IConfigurationBuilder)webApplicationBuilder.Configuration).AddPlaceholderResolver(_loggerFactory);
-        webApplicationBuilder.Services.Log(LogMessages.WirePlaceholderResolver);
+        Log(LogMessages.WirePlaceholderResolver);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireConnectorConfiguration(this WebApplicationBuilder webApplicationBuilder)
     {
         webApplicationBuilder.Configuration.AddConnectionStrings();
-        webApplicationBuilder.Services.Log(LogMessages.WireConnectorsConfiguration);
+        Log(LogMessages.WireConnectorsConfiguration);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireMySqlConnection(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddMySqlConnection(webApplicationBuilder.Configuration).Log(LogMessages.WireMySqlConnection);
+        webApplicationBuilder.Services.AddMySqlConnection(webApplicationBuilder.Configuration);
+        Log(LogMessages.WireMySqlConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireMongoClient(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddMongoClient(webApplicationBuilder.Configuration).Log(LogMessages.WireMongoClient);
+        webApplicationBuilder.Services.AddMongoClient(webApplicationBuilder.Configuration);
+        Log(LogMessages.WireMongoClient);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireOracleConnection(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddOracleConnection(webApplicationBuilder.Configuration).Log(LogMessages.WireOracleConnection);
+        webApplicationBuilder.Services.AddOracleConnection(webApplicationBuilder.Configuration);
+        Log(LogMessages.WireOracleConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WirePostgresConnection(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddPostgresConnection(webApplicationBuilder.Configuration).Log(LogMessages.WirePostgresConnection);
+        webApplicationBuilder.Services.AddPostgresConnection(webApplicationBuilder.Configuration);
+        Log(LogMessages.WirePostgresConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireRabbitMqConnection(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddRabbitMQConnection(webApplicationBuilder.Configuration).Log(LogMessages.WireRabbitMqConnection);
+        webApplicationBuilder.Services.AddRabbitMQConnection(webApplicationBuilder.Configuration);
+        Log(LogMessages.WireRabbitMqConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireRedisConnectionMultiplexer(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddRedisConnectionMultiplexer(webApplicationBuilder.Configuration).Log(LogMessages.WireRedisConnectionMultiplexer);
+        webApplicationBuilder.Services.AddRedisConnectionMultiplexer(webApplicationBuilder.Configuration);
+        Log(LogMessages.WireRedisConnectionMultiplexer);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDistributedRedisCache(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddDistributedRedisCache(webApplicationBuilder.Configuration).Log(LogMessages.WireDistributedRedisCache);
+        webApplicationBuilder.Services.AddDistributedRedisCache(webApplicationBuilder.Configuration);
+        Log(LogMessages.WireDistributedRedisCache);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireSqlServerConnection(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddSqlServerConnection(webApplicationBuilder.Configuration).Log(LogMessages.WireSqlServerConnection);
+        webApplicationBuilder.Services.AddSqlServerConnection(webApplicationBuilder.Configuration);
+        Log(LogMessages.WireSqlServerConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDiscoveryClient(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddDiscoveryClient(webApplicationBuilder.Configuration).Log(LogMessages.WireDiscoveryClient);
+        webApplicationBuilder.Services.AddDiscoveryClient(webApplicationBuilder.Configuration);
+        Log(LogMessages.WireDiscoveryClient);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDistributedTracing(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddDistributedTracingAspNetCore().Log(LogMessages.WireDistributedTracing);
+        webApplicationBuilder.Services.AddDistributedTracingAspNetCore();
+        Log(LogMessages.WireDistributedTracing);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -254,7 +263,7 @@ public static class WebApplicationBuilderExtensions
     {
         webApplicationBuilder.Services.AddKubernetesActuators(webApplicationBuilder.Configuration);
         webApplicationBuilder.Services.ActivateActuatorEndpoints();
-        webApplicationBuilder.Services.Log(LogMessages.WireKubernetesActuators);
+        Log(LogMessages.WireKubernetesActuators);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -262,7 +271,7 @@ public static class WebApplicationBuilderExtensions
     {
         webApplicationBuilder.Services.AddAllActuators(webApplicationBuilder.Configuration);
         webApplicationBuilder.Services.ActivateActuatorEndpoints();
-        webApplicationBuilder.Services.Log(LogMessages.WireAllActuators);
+        Log(LogMessages.WireAllActuators);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -274,14 +283,14 @@ public static class WebApplicationBuilderExtensions
         }
 
         webApplicationBuilder.AddWavefrontMetrics();
-        webApplicationBuilder.Services.Log(LogMessages.WireWavefrontMetrics);
+        Log(LogMessages.WireWavefrontMetrics);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDynamicSerilog(this WebApplicationBuilder webApplicationBuilder)
     {
         webApplicationBuilder.Logging.AddDynamicSerilog();
-        webApplicationBuilder.Services.Log(LogMessages.WireDynamicSerilog);
+        Log(LogMessages.WireDynamicSerilog);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -289,6 +298,6 @@ public static class WebApplicationBuilderExtensions
     {
         webApplicationBuilder.Configuration.AddCloudFoundryContainerIdentity();
         webApplicationBuilder.Services.AddCloudFoundryCertificateAuth();
-        webApplicationBuilder.Services.Log(LogMessages.WireCloudFoundryContainerIdentity);
+        Log(LogMessages.WireCloudFoundryContainerIdentity);
     }
 }

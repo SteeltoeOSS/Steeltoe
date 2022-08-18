@@ -195,7 +195,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         ResolveAdmin(endpoint, rabbitListener, target);
         ResolveAckMode(endpoint, rabbitListener);
         ResolvePostProcessor(endpoint, rabbitListener, target, beanName);
-        IRabbitListenerContainerFactory factory = ResolveContainerFactory(rabbitListener, target, beanName);
+        IRabbitListenerContainerFactory factory = ResolveContainerFactory(rabbitListener, target);
 
         Registrar.RegisterEndpoint(endpoint, factory);
     }
@@ -235,7 +235,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         }
     }
 
-    private IRabbitListenerContainerFactory ResolveContainerFactory(RabbitListenerAttribute rabbitListener, object factoryTarget, string name)
+    private IRabbitListenerContainerFactory ResolveContainerFactory(RabbitListenerAttribute rabbitListener, object factoryTarget)
     {
         IRabbitListenerContainerFactory factory = null;
         string containerFactoryBeanName = Resolve(rabbitListener.ContainerFactory);
@@ -284,7 +284,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     {
         if (!string.IsNullOrEmpty(rabbitListener.ErrorHandler))
         {
-            object errorHandler = ResolveExpression(rabbitListener.ErrorHandler, typeof(IRabbitListenerErrorHandler), "ErrorHandler");
+            object errorHandler = ResolveExpression(rabbitListener.ErrorHandler);
 
             switch (errorHandler)
             {
@@ -315,7 +315,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     {
         if (!string.IsNullOrEmpty(rabbitListener.AckMode))
         {
-            object ackMode = ResolveExpression(rabbitListener.AckMode, typeof(AcknowledgeMode), "AckMode");
+            object ackMode = ResolveExpression(rabbitListener.AckMode);
 
             if (ackMode is AcknowledgeMode mode)
             {
@@ -336,7 +336,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     {
         if (!string.IsNullOrEmpty(value))
         {
-            object resolved = ResolveExpression(value, typeof(bool), propertyName);
+            object resolved = ResolveExpression(value);
 
             if (resolved is bool boolean)
             {
@@ -361,7 +361,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     {
         if (!string.IsNullOrEmpty(value))
         {
-            object resolved = ResolveExpression(value, typeof(int), propertyName);
+            object resolved = ResolveExpression(value);
 
             if (resolved is int resolvedInt)
             {
@@ -409,7 +409,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     {
         string qRef = queueExpression;
 
-        if (ResolveExpression(queueExpression, typeof(IQueue), "Queue(s)") is not IQueue queue)
+        if (ResolveExpression(queueExpression) is not IQueue queue)
         {
             qRef = Resolve(queueExpression);
             queue = ApplicationContext.GetService<IQueue>(qRef);
@@ -427,7 +427,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     {
         foreach (string bindingExpression in rabbitListener.Bindings)
         {
-            if (ResolveExpression(bindingExpression, typeof(IBinding), "Binding(s)") is not IBinding binding)
+            if (ResolveExpression(bindingExpression) is not IBinding binding)
             {
                 string bindingName = Resolve(bindingExpression);
                 binding = ApplicationContext.GetService<IBinding>(bindingName);
@@ -474,7 +474,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         }
     }
 
-    private object ResolveExpression(string value, Type expectedType, string propertyName)
+    private object ResolveExpression(string value)
     {
         string resolvedValue = Resolve(value);
         return Resolver.Evaluate(resolvedValue, ExpressionContext);

@@ -101,7 +101,7 @@ public class DictionaryToDictionaryConverter : AbstractToCollectionConverter
             return sourceKey;
         }
 
-        return ConversionService.Convert(sourceKey, sourceKey.GetType(), targetType);
+        return ConversionService.Convert(sourceKey, sourceType, targetType);
     }
 
     private object ConvertValue(object sourceValue, Type sourceType, Type targetType)
