@@ -14,24 +14,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 /// </summary>
 public static class ConfigServerConfigurationBuilderExtensionsCore
 {
-    [Obsolete("IHostingEnvironment is obsolete")]
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostingEnvironment environment,
-        ILoggerFactory logFactory = null)
-    {
-        ArgumentGuard.NotNull(environment);
-
-        return DoAddConfigServer(configurationBuilder, environment.ApplicationName, environment.EnvironmentName, logFactory);
-    }
-
-    [Obsolete("IHostingEnvironment is obsolete")]
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder,
-        Microsoft.AspNetCore.Hosting.IHostingEnvironment environment, ILoggerFactory logFactory = null)
-    {
-        ArgumentGuard.NotNull(environment);
-
-        return DoAddConfigServer(configurationBuilder, environment.ApplicationName, environment.EnvironmentName, logFactory);
-    }
-
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostEnvironment environment,
         ILoggerFactory logFactory = null)
     {

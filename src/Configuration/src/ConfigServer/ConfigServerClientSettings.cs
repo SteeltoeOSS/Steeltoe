@@ -215,12 +215,6 @@ public class ConfigServerClientSettings
     public virtual long HealthTimeToLive { get; set; }
 
     /// <summary>
-    /// Gets returns the HttpRequestUrl, unescaped.
-    /// </summary>
-    [Obsolete("Will be removed, use RawUris instead")]
-    public virtual string RawUri => GetRawUri();
-
-    /// <summary>
     /// Gets returns HttpRequestUrls, unescaped.
     /// </summary>
     public virtual string[] RawUris => GetRawUris();
@@ -297,25 +291,6 @@ public class ConfigServerClientSettings
     internal static bool IsMultiServerConfig(string uris)
     {
         return uris.Contains(",");
-    }
-
-    [Obsolete("Will be removed, use GetRawUris() instead")]
-    internal string GetRawUri()
-    {
-        try
-        {
-            if (!string.IsNullOrEmpty(Uri))
-            {
-                var uri = new Uri(Uri);
-                return uri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
-            }
-        }
-        catch (UriFormatException)
-        {
-            // Intentionally left empty.
-        }
-
-        return Uri;
     }
 
     internal string GetRawUri(string uri)

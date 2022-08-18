@@ -99,21 +99,6 @@ public static class ActuatorRouteBuilderExtensions
         }
     }
 
-    /// <summary>
-    /// Maps all actuators that have been registered in <see cref="IServiceCollection" />.
-    /// </summary>
-    /// <param name="endpoints">
-    /// The endpoint builder.
-    /// </param>
-    /// <param name="version">
-    /// Media Version.
-    /// </param>
-    [Obsolete("MediaTypeVersion parameter is not used")]
-    public static void MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version)
-    {
-        endpoints.MapAllActuators(null);
-    }
-
     internal static void MapActuatorEndpoint(this IEndpointRouteBuilder endpoints, Type typeEndpoint, Action<IEndpointConventionBuilder> convention)
     {
         ArgumentGuard.NotNull(endpoints);

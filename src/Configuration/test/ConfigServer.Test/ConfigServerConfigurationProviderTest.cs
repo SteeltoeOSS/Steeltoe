@@ -252,34 +252,6 @@ public class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    [Obsolete("To be removed in the next major version.")]
-    public void AddPropertySource_ChangesDataDictionary()
-    {
-        var properties = new Dictionary<string, object>
-        {
-            ["a.b.c.d"] = "value1",
-            ["a"] = "value2",
-            ["b"] = 10
-        };
-
-        var source = new PropertySource("test", properties)
-        {
-            Name = "test"
-        };
-
-        var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
-
-        provider.AddPropertySource(source);
-
-        Assert.True(provider.TryGet("a:b:c:d", out string value));
-        Assert.Equal("value1", value);
-        Assert.True(provider.TryGet("a", out value));
-        Assert.Equal("value2", value);
-        Assert.True(provider.TryGet("b", out value));
-        Assert.Equal("10", value);
-    }
-
-    [Fact]
     public void ConvertArray_NotArrayValue()
     {
         var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());

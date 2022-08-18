@@ -42,26 +42,6 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Retrieves <see cref="KubernetesApplicationOptions" /> from the service collection.
-    /// </summary>
-    /// <param name="serviceCollection">
-    /// Collection of configured services.
-    /// </param>
-    /// <returns>
-    /// Relevant <see cref="KubernetesApplicationOptions" />.
-    /// </returns>
-    [Obsolete("This method builds a temporary service provider and should not be used")]
-    public static IApplicationInstanceInfo GetKubernetesApplicationOptions(this IServiceCollection serviceCollection)
-    {
-        ArgumentGuard.NotNull(serviceCollection);
-
-        serviceCollection.AddKubernetesApplicationInstanceInfo();
-        ServiceProvider sp = serviceCollection.BuildServiceProvider();
-
-        return sp.GetRequiredService<IApplicationInstanceInfo>();
-    }
-
-    /// <summary>
     /// Add a <see cref="IKubernetes" /> client to the service collection.
     /// </summary>
     /// <param name="serviceCollection">

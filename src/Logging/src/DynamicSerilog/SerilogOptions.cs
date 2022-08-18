@@ -24,12 +24,6 @@ public class SerilogOptions : ISerilogOptions
     /// </summary>
     public MinimumLevel MinimumLevel { get; set; }
 
-    [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
-    public IEnumerable<string> SubLoggerConfigKeyExclusions { get; set; }
-
-    [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
-    public IEnumerable<string> FullNameExclusions => new List<string>();
-
     public void SetSerilogOptions(IConfiguration configuration)
     {
         IConfigurationSection section = configuration.GetSection(ConfigPath);

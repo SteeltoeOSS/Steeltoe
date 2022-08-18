@@ -240,21 +240,4 @@ public static class DiscoveryServiceCollectionExtensions
     {
         return info is EurekaServiceInfo;
     }
-
-    [Obsolete("This functionality is now performed by DiscoveryClientService")]
-    public class ApplicationLifecycle : IDiscoveryLifecycle
-    {
-        public CancellationToken ApplicationStopping { get; set; }
-
-        public ApplicationLifecycle(IHostApplicationLifetime lifeCycle, IDiscoveryClient client)
-        {
-            ApplicationStopping = lifeCycle.ApplicationStopping;
-
-            // hook things up so that that things are unregistered when the application terminates
-            ApplicationStopping.Register(() =>
-            {
-                client.ShutdownAsync().GetAwaiter().GetResult();
-            });
-        }
-    }
 }
