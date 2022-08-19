@@ -8,12 +8,12 @@ namespace Steeltoe.Stream.Attributes;
 /// Indicates that an input binding target will be created by the framework.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method)]
-public class InputAttribute : Attribute
+public sealed class InputAttribute : Attribute
 {
     /// <summary>
     /// Gets or sets the binding target name; used as a name for binding target and as a destination name by default.
     /// </summary>
-    public virtual string Name { get; set; }
+    public string Name { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InputAttribute" /> class.

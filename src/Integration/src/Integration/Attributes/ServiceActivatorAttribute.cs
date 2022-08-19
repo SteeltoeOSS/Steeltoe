@@ -5,7 +5,7 @@
 namespace Steeltoe.Integration.Attributes;
 
 [AttributeUsage(AttributeTargets.Method)]
-public class ServiceActivatorAttribute : Attribute
+public sealed class ServiceActivatorAttribute : Attribute
 {
     public string InputChannel { get; set; } = string.Empty;
 

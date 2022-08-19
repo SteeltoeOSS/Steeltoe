@@ -8,12 +8,12 @@ namespace Steeltoe.Messaging.Handler.Attributes;
 /// Attribute that indicates a method's return value should be converted to a message if necessary and sent to the specified destination.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-public class SendToAttribute : Attribute
+public sealed class SendToAttribute : Attribute
 {
     /// <summary>
     /// Gets the destinations for any messages created by the method.
     /// </summary>
-    public virtual string[] Destinations { get; }
+    public string[] Destinations { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SendToAttribute" /> class.

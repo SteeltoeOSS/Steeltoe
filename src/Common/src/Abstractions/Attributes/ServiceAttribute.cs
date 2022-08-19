@@ -5,7 +5,7 @@
 namespace Steeltoe.Common.Attributes;
 
 [AttributeUsage(AttributeTargets.Method)]
-public class ServiceAttribute : Attribute
+public sealed class ServiceAttribute : Attribute
 {
     public string Name { get; } = string.Empty;
 

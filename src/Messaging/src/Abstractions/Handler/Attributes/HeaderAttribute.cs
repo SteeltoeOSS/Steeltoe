@@ -8,22 +8,22 @@ namespace Steeltoe.Messaging.Handler.Attributes;
 /// Attribute which indicates that a method parameter should be bound to a message header.
 /// </summary>
 [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true)]
-public class HeaderAttribute : Attribute
+public sealed class HeaderAttribute : Attribute
 {
     /// <summary>
     /// Gets or sets the name of the header to bind to.
     /// </summary>
-    public virtual string Name { get; set; }
+    public string Name { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the header binding is required.
     /// </summary>
-    public virtual bool Required { get; set; }
+    public bool Required { get; set; }
 
     /// <summary>
     /// Gets or sets the default value to use if header is missing.
     /// </summary>
-    public virtual string DefaultValue { get; set; }
+    public string DefaultValue { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HeaderAttribute" /> class.
