@@ -2,10 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
+
 namespace Steeltoe.Common.Discovery;
 
-[Serializable]
-public class SerializableIServiceInstance : IServiceInstance
+public class JsonSerializableServiceInstance : IServiceInstance
 {
     public string ServiceId { get; set; }
 
@@ -20,13 +21,13 @@ public class SerializableIServiceInstance : IServiceInstance
     public IDictionary<string, string> Metadata { get; set; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SerializableIServiceInstance" /> class. For use with JsonSerializer.
+    /// Initializes a new instance of the <see cref="JsonSerializableServiceInstance" /> class. For use with <see cref="JsonSerializer" />.
     /// </summary>
-    public SerializableIServiceInstance()
+    public JsonSerializableServiceInstance()
     {
     }
 
-    public SerializableIServiceInstance(IServiceInstance instance)
+    public JsonSerializableServiceInstance(IServiceInstance instance)
     {
         ServiceId = instance.ServiceId;
         Host = instance.Host;

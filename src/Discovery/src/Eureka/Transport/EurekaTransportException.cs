@@ -2,29 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Runtime.Serialization;
-
 namespace Steeltoe.Discovery.Eureka.Transport;
 
-[Serializable]
 public class EurekaTransportException : Exception
 {
+    public EurekaTransportException()
+    {
+    }
+
     public EurekaTransportException(string message)
         : base(message)
     {
     }
 
-    public EurekaTransportException(string message, Exception cause)
-        : base(message, cause)
-    {
-    }
-
-    public EurekaTransportException()
-    {
-    }
-
-    protected EurekaTransportException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
+    public EurekaTransportException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

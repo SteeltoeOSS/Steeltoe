@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
-using System.Runtime.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -581,18 +580,13 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
     {
         public List<Readings> ReadingsList { get; set; }
 
-        public class Readings : ISerializable
+        public class Readings
         {
             public string StationId { get; set; }
 
             public string CustomerId { get; set; }
 
             public string TimeStamp { get; set; }
-
-            public void GetObjectData(SerializationInfo info, StreamingContext context)
-            {
-                throw new NotImplementedException();
-            }
         }
     }
 

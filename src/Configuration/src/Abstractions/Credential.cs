@@ -3,11 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.ComponentModel;
-using System.Runtime.Serialization;
 
 namespace Steeltoe.Extensions.Configuration;
 
-[Serializable]
 [TypeConverter(typeof(CredentialConverter))]
 public class Credential : Dictionary<string, Credential>
 {
@@ -20,10 +18,5 @@ public class Credential : Dictionary<string, Credential>
     public Credential(string value)
     {
         Value = value;
-    }
-
-    protected Credential(SerializationInfo info, StreamingContext context)
-        : base(info, context)
-    {
     }
 }

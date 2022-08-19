@@ -2,11 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Runtime.Serialization;
-
 namespace Steeltoe.Connector;
 
-[Serializable]
 public class ConnectorException : Exception
 {
     public ConnectorException()
@@ -18,13 +15,8 @@ public class ConnectorException : Exception
     {
     }
 
-    public ConnectorException(string message, Exception nested)
-        : base(message, nested)
-    {
-    }
-
-    protected ConnectorException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
+    public ConnectorException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }
