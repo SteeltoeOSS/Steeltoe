@@ -8,8 +8,8 @@ public class InternalParseException : Exception
 {
     public SpelParseException Cause => (SpelParseException)InnerException;
 
-    public InternalParseException(SpelParseException cause)
-        : base("Internal Parse Error", cause)
+    public InternalParseException(SpelParseException innerException)
+        : base("Internal Parse Error", innerException)
     {
     }
 }

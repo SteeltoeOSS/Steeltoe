@@ -8,8 +8,8 @@ public class InvalidTimeoutException : TransactionUsageException
 {
     public int Timeout { get; }
 
-    public InvalidTimeoutException(string msg, int timeout)
-        : base(msg)
+    public InvalidTimeoutException(string message, int timeout)
+        : base(message)
     {
         Timeout = timeout;
     }

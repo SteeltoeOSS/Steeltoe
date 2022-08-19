@@ -8,23 +8,23 @@ namespace Steeltoe.Integration;
 
 public class MessageDispatchingException : MessageDeliveryException
 {
-    public MessageDispatchingException(string description)
-        : base(description)
+    public MessageDispatchingException(string message)
+        : base(message)
     {
     }
 
-    public MessageDispatchingException(IMessage undeliveredMessage, string description, Exception cause)
-        : base(undeliveredMessage, description, cause)
+    public MessageDispatchingException(IMessage failedMessage)
+        : base(failedMessage)
     {
     }
 
-    public MessageDispatchingException(IMessage undeliveredMessage, string description)
-        : base(undeliveredMessage, description)
+    public MessageDispatchingException(IMessage failedMessage, string message)
+        : base(failedMessage, message)
     {
     }
 
-    public MessageDispatchingException(IMessage undeliveredMessage)
-        : base(undeliveredMessage)
+    public MessageDispatchingException(IMessage failedMessage, string message, Exception innerException)
+        : base(failedMessage, message, innerException)
     {
     }
 }

@@ -11,13 +11,13 @@ public class ImmediateAcknowledgeException : RabbitException
     {
     }
 
-    public ImmediateAcknowledgeException(Exception cause)
-        : base(cause)
+    public ImmediateAcknowledgeException(Exception innerException)
+        : base(innerException)
     {
     }
 
-    public ImmediateAcknowledgeException(string message, Exception cause)
-        : base(message, cause)
+    public ImmediateAcknowledgeException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

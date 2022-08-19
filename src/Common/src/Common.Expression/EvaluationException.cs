@@ -11,8 +11,8 @@ public class EvaluationException : ExpressionException
     {
     }
 
-    public EvaluationException(string message, Exception cause)
-        : base(message, cause)
+    public EvaluationException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 
@@ -26,8 +26,8 @@ public class EvaluationException : ExpressionException
     {
     }
 
-    public EvaluationException(int position, string message, Exception cause)
-        : base(position, message, cause)
+    public EvaluationException(int position, string message, Exception innerException)
+        : base(position, message, innerException)
     {
     }
 }

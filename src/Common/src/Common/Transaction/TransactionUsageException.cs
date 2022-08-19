@@ -6,13 +6,13 @@ namespace Steeltoe.Common.Transaction;
 
 public class TransactionUsageException : TransactionException
 {
-    public TransactionUsageException(string msg)
-        : base(msg)
+    public TransactionUsageException(string message)
+        : base(message)
     {
     }
 
-    public TransactionUsageException(string msg, Exception cause)
-        : base(msg, cause)
+    public TransactionUsageException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

@@ -8,13 +8,13 @@ namespace Steeltoe.Integration;
 
 public class MessageRejectedException : MessageHandlingException
 {
-    public MessageRejectedException(IMessage failedMessage, string description)
-        : base(failedMessage, description)
+    public MessageRejectedException(IMessage failedMessage, string message)
+        : base(failedMessage, message)
     {
     }
 
-    public MessageRejectedException(IMessage failedMessage, string description, Exception cause)
-        : base(failedMessage, description, cause)
+    public MessageRejectedException(IMessage failedMessage, string message, Exception innerException)
+        : base(failedMessage, message, innerException)
     {
     }
 }

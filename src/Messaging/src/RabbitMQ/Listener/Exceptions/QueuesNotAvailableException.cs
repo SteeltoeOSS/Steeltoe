@@ -6,8 +6,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 
 public class QueuesNotAvailableException : FatalListenerStartupException
 {
-    public QueuesNotAvailableException(string message, Exception cause)
-        : base(message, cause)
+    public QueuesNotAvailableException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

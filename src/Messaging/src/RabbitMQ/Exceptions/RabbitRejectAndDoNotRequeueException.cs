@@ -13,18 +13,18 @@ public class RabbitRejectAndDoNotRequeueException : RabbitException
     {
     }
 
-    public RabbitRejectAndDoNotRequeueException(Exception cause)
-        : this(null, false, cause)
+    public RabbitRejectAndDoNotRequeueException(Exception innerException)
+        : this(null, false, innerException)
     {
     }
 
-    public RabbitRejectAndDoNotRequeueException(string message, Exception cause)
-        : this(message, false, cause)
+    public RabbitRejectAndDoNotRequeueException(string message, Exception innerException)
+        : this(message, false, innerException)
     {
     }
 
-    public RabbitRejectAndDoNotRequeueException(string message, bool rejectManual, Exception cause)
-        : base(message, cause)
+    public RabbitRejectAndDoNotRequeueException(string message, bool rejectManual, Exception innerException)
+        : base(message, innerException)
     {
         IsRejectManual = rejectManual;
     }

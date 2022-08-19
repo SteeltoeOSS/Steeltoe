@@ -7,9 +7,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 public class HystrixRuntimeException : Exception
 {
     public FailureType FailureType { get; }
-
     public Exception FallbackException { get; }
-
     public Type ImplementingType { get; }
 
     public HystrixRuntimeException()

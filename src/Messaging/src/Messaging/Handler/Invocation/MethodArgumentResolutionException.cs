@@ -10,14 +10,14 @@ public class MethodArgumentResolutionException : MessagingException
 {
     public ParameterInfo Parameter { get; }
 
-    public MethodArgumentResolutionException(IMessage message, ParameterInfo parameter)
-        : base(message, GetMethodParameterMessage(parameter))
+    public MethodArgumentResolutionException(IMessage failedMessage, ParameterInfo parameter)
+        : base(failedMessage, GetMethodParameterMessage(parameter))
     {
         Parameter = parameter;
     }
 
-    public MethodArgumentResolutionException(IMessage message, ParameterInfo parameter, string description)
-        : base(message, $"{GetMethodParameterMessage(parameter)}: {description}")
+    public MethodArgumentResolutionException(IMessage failedMessage, ParameterInfo parameter, string message)
+        : base(failedMessage, $"{GetMethodParameterMessage(parameter)}: {message}")
     {
         Parameter = parameter;
     }

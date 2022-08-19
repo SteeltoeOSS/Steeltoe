@@ -30,8 +30,8 @@ public class AggregateMessageDeliveryException : MessageDeliveryException
         }
     }
 
-    public AggregateMessageDeliveryException(IMessage undeliveredMessage, string description, List<Exception> aggregatedExceptions)
-        : base(undeliveredMessage, description, aggregatedExceptions[0])
+    public AggregateMessageDeliveryException(IMessage failedMessage, string message, List<Exception> aggregatedExceptions)
+        : base(failedMessage, message, aggregatedExceptions[0])
     {
         _aggregatedExceptions = new List<Exception>(aggregatedExceptions);
     }
@@ -43,7 +43,7 @@ public class AggregateMessageDeliveryException : MessageDeliveryException
             return string.Empty;
         }
 
-        if (!baseMessage.EndsWith("."))
+        if (!baseMessage.EndsWith(".", StringComparison.Ordinal))
         {
             return $"{baseMessage}.";
         }

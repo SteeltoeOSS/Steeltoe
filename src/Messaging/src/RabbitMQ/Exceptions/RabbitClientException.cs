@@ -8,13 +8,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
 
 public class RabbitClientException : RabbitException
 {
-    public RabbitClientException(RabbitMQClientException cause)
-        : base(cause)
+    public RabbitClientException(RabbitMQClientException innerException)
+        : base(innerException)
     {
     }
 
-    public RabbitClientException(string message, RabbitMQClientException cause)
-        : base(message, cause)
+    public RabbitClientException(string message, RabbitMQClientException innerException)
+        : base(message, innerException)
     {
     }
 }

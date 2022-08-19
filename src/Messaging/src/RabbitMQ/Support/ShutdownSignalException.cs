@@ -8,18 +8,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Support;
 
 public class ShutdownSignalException : Exception
 {
-    public ushort ClassId => Args.ClassId;
-
-    public ushort MethodId => Args.MethodId;
-
-    public ushort ReplyCode => Args.ReplyCode;
-
-    public string ReplyText => Args.ReplyText;
-
-    public RC.ShutdownInitiator Initiator => Args.Initiator;
-
-    public object Cause => Args.Cause;
-
     public RC.ShutdownEventArgs Args { get; }
 
     public ShutdownSignalException(RC.ShutdownEventArgs args)

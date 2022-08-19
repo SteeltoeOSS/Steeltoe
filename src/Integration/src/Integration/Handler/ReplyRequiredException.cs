@@ -8,13 +8,13 @@ namespace Steeltoe.Integration.Handler;
 
 public class ReplyRequiredException : MessagingException
 {
-    public ReplyRequiredException(IMessage failedMessage, string description)
-        : base(failedMessage, description)
+    public ReplyRequiredException(IMessage failedMessage, string message)
+        : base(failedMessage, message)
     {
     }
 
-    public ReplyRequiredException(IMessage failedMessage, string description, Exception e)
-        : base(failedMessage, description, e)
+    public ReplyRequiredException(IMessage failedMessage, string message, Exception innerException)
+        : base(failedMessage, message, innerException)
     {
     }
 }

@@ -6,13 +6,13 @@ namespace Steeltoe.Common.Transaction;
 
 public class TransactionTimedOutException : TransactionException
 {
-    public TransactionTimedOutException(string msg)
-        : base(msg)
+    public TransactionTimedOutException(string message)
+        : base(message)
     {
     }
 
-    public TransactionTimedOutException(string msg, Exception cause)
-        : base(msg, cause)
+    public TransactionTimedOutException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

@@ -21,8 +21,8 @@ public class ListenerExecutionFailedException : Exception
 
     public List<IMessage> FailedMessages { get; } = new();
 
-    public ListenerExecutionFailedException(string message, Exception cause, params IMessage[] failedMessages)
-        : base(message, cause)
+    public ListenerExecutionFailedException(string message, Exception innerException, params IMessage[] failedMessages)
+        : base(message, innerException)
     {
         FailedMessages.AddRange(failedMessages);
     }

@@ -745,17 +745,18 @@ public class BlockingQueueConsumer
 
     private sealed class DeclarationException : RabbitException
     {
-        public List<string> FailedQueues { get; } = new();
+        private const string MessageText = "Failed to declare queue(s):";
 
+        public List<string> FailedQueues { get; } = new();
         public override string Message => base.Message + string.Join(',', FailedQueues);
 
         public DeclarationException()
-            : base("Failed to declare queue(s):")
+            : base(MessageText)
         {
         }
 
-        public DeclarationException(Exception e)
-            : base("Failed to declare queue(s):", e)
+        public DeclarationException(Exception innerException)
+            : base(MessageText, innerException)
         {
         }
 

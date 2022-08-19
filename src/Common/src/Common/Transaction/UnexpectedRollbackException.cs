@@ -6,13 +6,13 @@ namespace Steeltoe.Common.Transaction;
 
 public class UnexpectedRollbackException : TransactionException
 {
-    public UnexpectedRollbackException(string msg)
-        : base(msg)
+    public UnexpectedRollbackException(string message)
+        : base(message)
     {
     }
 
-    public UnexpectedRollbackException(string msg, Exception cause)
-        : base(msg, cause)
+    public UnexpectedRollbackException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

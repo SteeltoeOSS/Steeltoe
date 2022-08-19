@@ -7,13 +7,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
 public class RabbitMessageReturnedException : RabbitException
 {
     public IMessage ReturnedMessage { get; }
-
     public int ReplyCode { get; }
-
     public string ReplyText { get; }
-
     public string Exchange { get; }
-
     public string RoutingKey { get; }
 
     public RabbitMessageReturnedException(string message, IMessage returnedMessage, int replyCode, string replyText, string exchange, string routingKey)

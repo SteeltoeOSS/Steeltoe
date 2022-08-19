@@ -11,13 +11,13 @@ public class RabbitResourceNotAvailableException : RabbitException
     {
     }
 
-    public RabbitResourceNotAvailableException(Exception cause)
-        : base(cause)
+    public RabbitResourceNotAvailableException(Exception innerException)
+        : base(innerException)
     {
     }
 
-    public RabbitResourceNotAvailableException(string message, Exception cause)
-        : base(message, cause)
+    public RabbitResourceNotAvailableException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

@@ -7,7 +7,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 public class SpelEvaluationException : EvaluationException
 {
     public SpelMessage MessageCode { get; }
-
     public object[] Inserts { get; }
 
     public SpelEvaluationException(SpelMessage message, params object[] inserts)
@@ -24,15 +23,15 @@ public class SpelEvaluationException : EvaluationException
         Inserts = inserts;
     }
 
-    public SpelEvaluationException(int position, Exception cause, SpelMessage message, params object[] inserts)
-        : base(position, message.FormatMessage(inserts), cause)
+    public SpelEvaluationException(int position, Exception innerException, SpelMessage message, params object[] inserts)
+        : base(position, message.FormatMessage(inserts), innerException)
     {
         MessageCode = message;
         Inserts = inserts;
     }
 
-    public SpelEvaluationException(Exception cause, SpelMessage message, params object[] inserts)
-        : base(message.FormatMessage(inserts), cause)
+    public SpelEvaluationException(Exception innerException, SpelMessage message, params object[] inserts)
+        : base(message.FormatMessage(inserts), innerException)
     {
         MessageCode = message;
         Inserts = inserts;

@@ -7,16 +7,15 @@ namespace Steeltoe.Common.Transaction;
 public class TransactionSystemException : TransactionException
 {
     public Exception ApplicationException { get; private set; }
-
     public Exception OriginalException => ApplicationException ?? InnerException;
 
-    public TransactionSystemException(string msg)
-        : base(msg)
+    public TransactionSystemException(string message)
+        : base(message)
     {
     }
 
-    public TransactionSystemException(string msg, Exception cause)
-        : base(msg, cause)
+    public TransactionSystemException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 
