@@ -19,7 +19,7 @@ public static class EnableBindingsExtensions
         ArgumentGuard.NotNull(services);
 
         Type type = typeof(T);
-        object attr = type.GetCustomAttributes(true).SingleOrDefault(attr => attr.GetType() == typeof(EnableBindingAttribute));
+        object attr = type.GetCustomAttributes(true).SingleOrDefault(attr => attr is EnableBindingAttribute);
 
         if (attr != null)
         {

@@ -8,17 +8,17 @@ namespace Steeltoe.Messaging.Handler.Attributes;
 /// Attribute that binds a method parameter to the payload of a message. Can also be used to associate a payload to a method invocation.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter)]
-public class PayloadAttribute : Attribute
+public sealed class PayloadAttribute : Attribute
 {
     /// <summary>
     /// Gets or sets the expression to be evaluated against the payload.
     /// </summary>
-    public virtual string Expression { get; set; }
+    public string Expression { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the payload content is required.
     /// </summary>
-    public virtual bool Required { get; set; }
+    public bool Required { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PayloadAttribute" /> class.

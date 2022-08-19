@@ -9,12 +9,12 @@ namespace Steeltoe.Messaging.Handler.Attributes;
 /// methods such as those attributed with MessageMapping.
 /// </summary>
 [AttributeUsage(AttributeTargets.Parameter)]
-public class DestinationVariableAttribute : Attribute
+public sealed class DestinationVariableAttribute : Attribute
 {
     /// <summary>
     /// Gets or sets the name of the destination template variable.
     /// </summary>
-    public virtual string Name { get; set; }
+    public string Name { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DestinationVariableAttribute" /> class.

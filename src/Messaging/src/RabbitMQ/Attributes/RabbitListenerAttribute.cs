@@ -5,7 +5,7 @@
 namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
-public class RabbitListenerAttribute : Attribute
+public sealed class RabbitListenerAttribute : Attribute
 {
     public string Id { get; set; } = string.Empty;
 

@@ -8,22 +8,22 @@ namespace Steeltoe.Stream.Attributes;
 /// Annotation that marks a method to be a listener to inputs declared via EnableBinding.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method)]
-public class StreamListenerAttribute : Attribute
+public sealed class StreamListenerAttribute : Attribute
 {
     /// <summary>
     /// Gets or sets the binding target (e.g. channel).
     /// </summary>
-    public virtual string Target { get; set; }
+    public string Target { get; set; }
 
     /// <summary>
     /// Gets or sets the expression language condition that must be met by all items dispatched to this method.
     /// </summary>
-    public virtual string Condition { get; set; }
+    public string Condition { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether to copy incoming headers to outgoing messages.
     /// </summary>
-    public virtual bool CopyHeaders { get; set; }
+    public bool CopyHeaders { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="StreamListenerAttribute" /> class.

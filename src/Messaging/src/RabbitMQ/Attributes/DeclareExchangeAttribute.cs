@@ -7,7 +7,7 @@ using Steeltoe.Messaging.RabbitMQ.Config;
 namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
-public class DeclareExchangeAttribute : Attribute
+public sealed class DeclareExchangeAttribute : Attribute
 {
     public string Name { get; set; }
 

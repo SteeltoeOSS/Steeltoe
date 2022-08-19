@@ -296,7 +296,8 @@ public class MethodInvocationTests : AbstractExpressionTests
         }
     }
 
-    public class AnnotationAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Method)]
+    public sealed class AnnotationAttribute : Attribute
     {
     }
 
