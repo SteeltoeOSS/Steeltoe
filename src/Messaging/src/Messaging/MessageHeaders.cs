@@ -24,7 +24,7 @@ public class MessageHeaders : IMessageHeaders
     public const string ContentTypeJsonAlt = "text/x-json";
     public const string ContentTypeXml = "application/xml";
     public const string ContentTypeJavaSerializedObject = "application/x-java-serialized-object";
-    public const string ContentTypeDotnetSerializedObject = "application/x-dotnet-serialized-object";
+    public const string ContentTypeDotNetSerializedObject = "application/x-dotnet-serialized-object";
 
     public const string TypeId = "__TypeId__";
     public const string ContentTypeId = "__ContentTypeId__";

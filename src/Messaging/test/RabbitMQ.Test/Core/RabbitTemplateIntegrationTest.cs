@@ -946,7 +946,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
                 var messageHeaders = new RabbitHeaderAccessor(new MessageHeaders())
                 {
-                    ContentType = MessageHeaders.ContentTypeDotnetSerializedObject
+                    ContentType = MessageHeaders.ContentTypeDotNetSerializedObject
                 };
 
                 var formatter = new BinaryFormatter();

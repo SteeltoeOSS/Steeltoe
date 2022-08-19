@@ -52,7 +52,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
                     throw new MessageConversionException("failed to convert text-based Message content", e);
                 }
             }
-            else if (contentType != null && contentType.Equals(MessageHeaders.ContentTypeDotnetSerializedObject))
+            else if (contentType != null && contentType.Equals(MessageHeaders.ContentTypeDotNetSerializedObject))
             {
                 try
                 {
@@ -115,7 +115,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
                 if (payload != null && payload.GetType().IsSerializable)
                 {
                     bytes = SerializeObject(payload);
-                    accessor.ContentType = MessageHeaders.ContentTypeDotnetSerializedObject;
+                    accessor.ContentType = MessageHeaders.ContentTypeDotNetSerializedObject;
                 }
 
                 break;
