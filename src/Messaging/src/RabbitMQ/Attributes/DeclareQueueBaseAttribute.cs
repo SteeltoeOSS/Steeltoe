@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 
-[AttributeUsage(AttributeTargets.Class)]
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public abstract class DeclareQueueBaseAttribute : Attribute
 {
     public virtual string Durable { get; set; } = string.Empty;
