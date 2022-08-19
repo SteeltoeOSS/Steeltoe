@@ -950,15 +950,17 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
                 };
 
                 var formatter = new BinaryFormatter();
-                var stream = new MemoryStream(512);
+                using var requestStream = new MemoryStream(512);
 
                 // TODO: [BREAKING] Don't use binary serialization, it's insecure! https://aka.ms/binaryformatter
+                // Tracked at: https://github.com/SteeltoeOSS/Steeltoe/issues/487.
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
-                formatter.Serialize(stream, request);
-                byte[] bytes = stream.ToArray();
+                formatter.Serialize(requestStream, request);
+                byte[] bytes = requestStream.ToArray();
                 IMessage reply = rabbitTemplate.SendAndReceive(Message.Create(bytes, messageHeaders.MessageHeaders));
-                stream = new MemoryStream((byte[])reply.Payload);
-                object obj = formatter.Deserialize(stream);
+
+                using var replyStream = new MemoryStream((byte[])reply.Payload);
+                object obj = formatter.Deserialize(replyStream);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
                 results.TryAdd(request, obj);
             }));
