@@ -58,7 +58,7 @@ public class DiscoveryClient : IEurekaClient
 
     public IHealthCheckHandler HealthCheckHandler { get; set; }
 
-    public event EventHandler<Applications> OnApplicationsChange;
+    public event EventHandler<ApplicationsEventArgs> OnApplicationsChange;
 
     public DiscoveryClient(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
         : this(ApplicationInfoManager.Instance, logFactory)
@@ -461,7 +461,7 @@ public class DiscoveryClient : IEurekaClient
         {
             // Log
             LastGoodFullRegistryFetchTimestamp = DateTime.UtcNow.Ticks;
-            OnApplicationsChange?.Invoke(this, fetched);
+            OnApplicationsChange?.Invoke(this, new ApplicationsEventArgs(fetched));
             return fetched;
         }
 
@@ -503,7 +503,7 @@ public class DiscoveryClient : IEurekaClient
 
             localRegionApps.AppsHashCode = delta.AppsHashCode;
             LastGoodDeltaRegistryFetchTimestamp = DateTime.UtcNow.Ticks;
-            OnApplicationsChange?.Invoke(this, delta);
+            OnApplicationsChange?.Invoke(this, new ApplicationsEventArgs(delta));
             return localRegionApps;
         }
 
