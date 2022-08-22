@@ -6,13 +6,13 @@ namespace Steeltoe.Common.Transaction;
 
 public class NestedTransactionNotSupportedException : CannotCreateTransactionException
 {
-    public NestedTransactionNotSupportedException(string msg)
-        : base(msg)
+    public NestedTransactionNotSupportedException(string message)
+        : base(message)
     {
     }
 
-    public NestedTransactionNotSupportedException(string msg, Exception cause)
-        : base(msg, cause)
+    public NestedTransactionNotSupportedException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

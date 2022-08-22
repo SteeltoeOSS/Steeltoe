@@ -6,8 +6,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
 
 public class RabbitAuthenticationException : RabbitException
 {
-    public RabbitAuthenticationException(Exception cause)
-        : base(cause)
+    public RabbitAuthenticationException(Exception innerException)
+        : base(innerException)
     {
     }
 }

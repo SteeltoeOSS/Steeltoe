@@ -6,8 +6,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 
 public class FatalListenerStartupException : Exception
 {
-    public FatalListenerStartupException(string msg, Exception cause)
-        : base(msg, cause)
+    public FatalListenerStartupException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

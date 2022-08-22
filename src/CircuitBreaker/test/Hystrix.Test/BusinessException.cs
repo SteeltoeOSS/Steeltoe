@@ -6,8 +6,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class BusinessException : Exception
 {
-    public BusinessException(string msg)
-        : base(msg)
+    public BusinessException(string message)
+        : base(message)
     {
     }
 }

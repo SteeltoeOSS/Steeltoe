@@ -9,11 +9,8 @@ namespace Steeltoe.Common.Expression.Internal;
 public class ExpressionException : Exception
 {
     public string ExpressionString { get; }
-
     public int Position { get; set; }
-
     public override string Message => ToDetailedString();
-
     public string SimpleMessage => base.Message;
 
     public ExpressionException(string message)
@@ -23,8 +20,8 @@ public class ExpressionException : Exception
         Position = 0;
     }
 
-    public ExpressionException(string message, Exception cause)
-        : base(message, cause)
+    public ExpressionException(string message, Exception innerException)
+        : base(message, innerException)
     {
         ExpressionString = null;
         Position = 0;
@@ -51,8 +48,8 @@ public class ExpressionException : Exception
         Position = position;
     }
 
-    public ExpressionException(int position, string message, Exception cause)
-        : base(message, cause)
+    public ExpressionException(int position, string message, Exception innerException)
+        : base(message, innerException)
     {
         ExpressionString = null;
         Position = position;

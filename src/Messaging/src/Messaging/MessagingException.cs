@@ -8,40 +8,39 @@ public class MessagingException : Exception
 {
     public IMessage FailedMessage { get; }
 
-    public MessagingException(IMessage message)
-        : base(null, null)
+    public MessagingException(IMessage failedMessage)
     {
-        FailedMessage = message;
+        FailedMessage = failedMessage;
     }
 
-    public MessagingException(string description)
-        : base(description)
+    public MessagingException(string message)
+        : base(message)
     {
         FailedMessage = null;
     }
 
-    public MessagingException(string description, Exception cause)
-        : base(description, cause)
+    public MessagingException(string message, Exception innerException)
+        : base(message, innerException)
     {
         FailedMessage = null;
     }
 
-    public MessagingException(IMessage message, string description)
-        : base(description)
+    public MessagingException(IMessage failedMessage, string message)
+        : base(message)
     {
-        FailedMessage = message;
+        FailedMessage = failedMessage;
     }
 
-    public MessagingException(IMessage message, Exception cause)
-        : base(null, cause)
+    public MessagingException(IMessage failedMessage, Exception innerException)
+        : base(null, innerException)
     {
-        FailedMessage = message;
+        FailedMessage = failedMessage;
     }
 
-    public MessagingException(IMessage message, string description, Exception cause)
-        : base(description, cause)
+    public MessagingException(IMessage failedMessage, string message, Exception innerException)
+        : base(message, innerException)
     {
-        FailedMessage = message;
+        FailedMessage = failedMessage;
     }
 
     public override string ToString()

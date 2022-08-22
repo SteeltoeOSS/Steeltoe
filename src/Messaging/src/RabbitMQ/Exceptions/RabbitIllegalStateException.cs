@@ -11,8 +11,8 @@ public class RabbitIllegalStateException : RabbitException
     {
     }
 
-    public RabbitIllegalStateException(string message, Exception cause)
-        : base(message, cause)
+    public RabbitIllegalStateException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

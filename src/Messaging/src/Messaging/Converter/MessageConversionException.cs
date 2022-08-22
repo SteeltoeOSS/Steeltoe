@@ -6,23 +6,23 @@ namespace Steeltoe.Messaging.Converter;
 
 public class MessageConversionException : MessagingException
 {
-    public MessageConversionException(string description)
-        : base(description)
+    public MessageConversionException(string message)
+        : base(message)
     {
     }
 
-    public MessageConversionException(string description, Exception cause)
-        : base(description, cause)
+    public MessageConversionException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 
-    public MessageConversionException(IMessage failedMessage, string description)
-        : base(failedMessage, description)
+    public MessageConversionException(IMessage failedMessage, string message)
+        : base(failedMessage, message)
     {
     }
 
-    public MessageConversionException(IMessage failedMessage, string description, Exception cause)
-        : base(failedMessage, description, cause)
+    public MessageConversionException(IMessage failedMessage, string message, Exception innerException)
+        : base(failedMessage, message, innerException)
     {
     }
 }

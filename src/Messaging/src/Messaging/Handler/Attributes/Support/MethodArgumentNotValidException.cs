@@ -9,13 +9,13 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
 public class MethodArgumentNotValidException : MethodArgumentResolutionException
 {
-    public MethodArgumentNotValidException(IMessage message, ParameterInfo parameter)
-        : base(message, parameter)
+    public MethodArgumentNotValidException(IMessage failedMessage, ParameterInfo parameter)
+        : base(failedMessage, parameter)
     {
     }
 
-    public MethodArgumentNotValidException(IMessage message, ParameterInfo parameter, string description)
-        : base(message, parameter, description)
+    public MethodArgumentNotValidException(IMessage failedMessage, ParameterInfo parameter, string message)
+        : base(failedMessage, parameter, message)
     {
     }
 }

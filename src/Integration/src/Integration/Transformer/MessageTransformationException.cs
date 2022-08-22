@@ -8,23 +8,23 @@ namespace Steeltoe.Integration.Transformer;
 
 public class MessageTransformationException : MessagingException
 {
-    public MessageTransformationException(IMessage message, string description, Exception cause)
-        : base(message, description, cause)
+    public MessageTransformationException(string message)
+        : base(message)
     {
     }
 
-    public MessageTransformationException(IMessage message, string description)
-        : base(message, description)
+    public MessageTransformationException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 
-    public MessageTransformationException(string description, Exception cause)
-        : base(description, cause)
+    public MessageTransformationException(IMessage failedMessage, string message)
+        : base(failedMessage, message)
     {
     }
 
-    public MessageTransformationException(string description)
-        : base(description)
+    public MessageTransformationException(IMessage failedMessage, string message, Exception innerException)
+        : base(failedMessage, message, innerException)
     {
     }
 }

@@ -492,32 +492,32 @@ public class MimeType : IComparable<MimeType>
 
     private Encoding GetEncoding(string name)
     {
-        if (name.Equals("utf-16", StringComparison.InvariantCultureIgnoreCase))
-        {
-            return EncodingUtils.Utf16;
-        }
-
-        if (name.Equals("utf-16be", StringComparison.InvariantCultureIgnoreCase))
-        {
-            return EncodingUtils.Utf16BigEndian;
-        }
-
-        if (name.Equals("utf-7", StringComparison.InvariantCultureIgnoreCase))
+        if (name.Equals("utf-7", StringComparison.OrdinalIgnoreCase))
         {
             return EncodingUtils.Utf7;
         }
 
-        if (name.Equals("utf-8", StringComparison.InvariantCultureIgnoreCase))
+        if (name.Equals("utf-8", StringComparison.OrdinalIgnoreCase))
         {
             return EncodingUtils.Utf8;
         }
 
-        if (name.Equals("utf-32", StringComparison.InvariantCultureIgnoreCase))
+        if (name.Equals("utf-16", StringComparison.OrdinalIgnoreCase))
+        {
+            return EncodingUtils.Utf16;
+        }
+
+        if (name.Equals("utf-16be", StringComparison.OrdinalIgnoreCase))
+        {
+            return EncodingUtils.Utf16BigEndian;
+        }
+
+        if (name.Equals("utf-32", StringComparison.OrdinalIgnoreCase))
         {
             return EncodingUtils.Utf32;
         }
 
-        if (name.Equals("utf-32BE", StringComparison.InvariantCultureIgnoreCase))
+        if (name.Equals("utf-32BE", StringComparison.OrdinalIgnoreCase))
         {
             return EncodingUtils.Utf32BigEndian;
         }

@@ -7,7 +7,6 @@ namespace Steeltoe.Common.Converter;
 public class ConverterNotFoundException : ConversionException
 {
     public Type SourceType { get; }
-
     public Type TargetType { get; }
 
     public ConverterNotFoundException(Type sourceType, Type targetType)

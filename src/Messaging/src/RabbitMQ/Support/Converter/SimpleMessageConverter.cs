@@ -52,14 +52,15 @@ public class SimpleMessageConverter : AbstractMessageConverter
                     throw new MessageConversionException("failed to convert text-based Message content", e);
                 }
             }
-            else if (contentType != null && contentType.Equals(MessageHeaders.ContentTypeDotnetSerializedObject))
+            else if (contentType != null && contentType.Equals(MessageHeaders.ContentTypeDotNetSerializedObject))
             {
                 try
                 {
                     var formatter = new BinaryFormatter();
-                    var stream = new MemoryStream(bytesMessage.Payload);
+                    using var stream = new MemoryStream(bytesMessage.Payload);
 
                     // TODO: [BREAKING] Don't use binary serialization, it's insecure! https://aka.ms/binaryformatter
+                    // Tracked at: https://github.com/SteeltoeOSS/Steeltoe/issues/487.
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
                     content = formatter.Deserialize(stream);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
@@ -115,7 +116,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
                 if (payload != null && payload.GetType().IsSerializable)
                 {
                     bytes = SerializeObject(payload);
-                    accessor.ContentType = MessageHeaders.ContentTypeDotnetSerializedObject;
+                    accessor.ContentType = MessageHeaders.ContentTypeDotNetSerializedObject;
                 }
 
                 break;
@@ -138,9 +139,10 @@ public class SimpleMessageConverter : AbstractMessageConverter
         try
         {
             var formatter = new BinaryFormatter();
-            var stream = new MemoryStream(512);
+            using var stream = new MemoryStream(512);
 
             // TODO: [BREAKING] Don't use binary serialization, it's insecure! https://aka.ms/binaryformatter
+            // Tracked at: https://github.com/SteeltoeOSS/Steeltoe/issues/487.
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
             formatter.Serialize(stream, payload);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete

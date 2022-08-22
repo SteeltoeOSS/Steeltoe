@@ -6,8 +6,8 @@ namespace Steeltoe.Common.Transaction;
 
 public class InvalidIsolationLevelException : TransactionUsageException
 {
-    public InvalidIsolationLevelException(string msg)
-        : base(msg)
+    public InvalidIsolationLevelException(string message)
+        : base(message)
     {
     }
 }

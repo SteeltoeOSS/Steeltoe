@@ -11,11 +11,10 @@ namespace Steeltoe.Integration.Rabbit.Support;
 public class ManualAckListenerExecutionFailedException : ListenerExecutionFailedException
 {
     public IModel Channel { get; }
-
     public ulong DeliveryTag { get; }
 
-    public ManualAckListenerExecutionFailedException(string message, Exception cause, IMessage failedMessage, IModel channel, ulong deliveryTag)
-        : base(message, cause, failedMessage)
+    public ManualAckListenerExecutionFailedException(string message, Exception innerException, IMessage failedMessage, IModel channel, ulong deliveryTag)
+        : base(message, innerException, failedMessage)
     {
         Channel = channel;
         DeliveryTag = deliveryTag;

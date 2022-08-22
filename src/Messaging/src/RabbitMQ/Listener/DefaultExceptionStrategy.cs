@@ -40,7 +40,7 @@ public class DefaultExceptionStrategy : IFatalExceptionStrategy
         }
     }
 
-    protected virtual bool IsUserCauseFatal(Exception cause)
+    protected virtual bool IsUserCauseFatal(Exception exception)
     {
         return false;
     }

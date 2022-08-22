@@ -6,13 +6,13 @@ namespace Steeltoe.Common.Transaction;
 
 public class CannotCreateTransactionException : TransactionException
 {
-    public CannotCreateTransactionException(string msg)
-        : base(msg)
+    public CannotCreateTransactionException(string message)
+        : base(message)
     {
     }
 
-    public CannotCreateTransactionException(string msg, Exception cause)
-        : base(msg, cause)
+    public CannotCreateTransactionException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

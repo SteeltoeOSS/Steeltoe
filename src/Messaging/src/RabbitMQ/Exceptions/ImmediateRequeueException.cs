@@ -11,13 +11,13 @@ public class ImmediateRequeueException : RabbitException
     {
     }
 
-    public ImmediateRequeueException(Exception cause)
-        : base(cause)
+    public ImmediateRequeueException(Exception innerException)
+        : base(innerException)
     {
     }
 
-    public ImmediateRequeueException(string message, Exception cause)
-        : base(message, cause)
+    public ImmediateRequeueException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

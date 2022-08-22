@@ -7,13 +7,11 @@ namespace Steeltoe.Common.Converter;
 public class ConversionFailedException : ConversionException
 {
     public Type SourceType { get; }
-
     public Type TargetType { get; }
-
     public object Value { get; }
 
-    public ConversionFailedException(Type sourceType, Type targetType, object value, Exception cause)
-        : base($"Failed to convert from type [{sourceType}] to type [{targetType}] for value '{(value == null ? "null" : value.ToString())}'", cause)
+    public ConversionFailedException(Type sourceType, Type targetType, object value, Exception innerException)
+        : base($"Failed to convert from type [{sourceType}] to type [{targetType}] for value '{(value == null ? "null" : value.ToString())}'", innerException)
     {
         SourceType = sourceType;
         TargetType = targetType;

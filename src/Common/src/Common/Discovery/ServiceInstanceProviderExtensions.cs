@@ -12,44 +12,48 @@ public static class ServiceInstanceProviderExtensions
     public static async Task<IList<IServiceInstance>> GetInstancesWithCacheAsync(this IServiceInstanceProvider serviceInstanceProvider, string serviceId,
         IDistributedCache distributedCache = null, DistributedCacheEntryOptions cacheOptions = null, string serviceInstancesKeyPrefix = "ServiceInstances:")
     {
-        // if distributed cache was provided, just make the call back to the provider
+        string cacheKey = $"{serviceInstancesKeyPrefix}{serviceId}";
+
         if (distributedCache != null)
         {
-            // check the cache for existing service instances
-            byte[] instanceData = await distributedCache.GetAsync(serviceInstancesKeyPrefix + serviceId).ConfigureAwait(false);
+            byte[] cacheValue = await distributedCache.GetAsync(cacheKey).ConfigureAwait(false);
+            IList<IServiceInstance> instancesFromCache = FromCacheValue(cacheValue);
 
-            if (instanceData != null && instanceData.Length > 0)
+            if (instancesFromCache != null)
             {
-                return DeserializeFromCache<List<SerializableIServiceInstance>>(instanceData).ToList<IServiceInstance>();
+                return instancesFromCache;
             }
         }
 
-        // cache not found or instances not found, call out to the provider
         IList<IServiceInstance> instances = serviceInstanceProvider.GetInstances(serviceId);
 
-        if (distributedCache != null)
+        if (distributedCache != null && instances != null)
         {
-            await distributedCache.SetAsync(serviceInstancesKeyPrefix + serviceId, SerializeForCache(MapToSerializable(instances)),
-                cacheOptions ?? new DistributedCacheEntryOptions()).ConfigureAwait(false);
+            byte[] cacheValue = ToCacheValue(instances);
+            await distributedCache.SetAsync(cacheKey, cacheValue, cacheOptions ?? new DistributedCacheEntryOptions()).ConfigureAwait(false);
         }
 
         return instances;
     }
 
-    private static List<SerializableIServiceInstance> MapToSerializable(IList<IServiceInstance> instances)
+    private static IList<IServiceInstance> FromCacheValue(byte[] cacheValue)
     {
-        IEnumerable<SerializableIServiceInstance> inst = instances.Select(i => new SerializableIServiceInstance(i));
-        return inst.ToList();
+        if (cacheValue != null && cacheValue.Length > 0)
+        {
+            var serializableInstances = JsonSerializer.Deserialize<List<JsonSerializableServiceInstance>>(cacheValue);
+
+            if (serializableInstances != null)
+            {
+                return serializableInstances.ToList<IServiceInstance>();
+            }
+        }
+
+        return null;
     }
 
-    private static byte[] SerializeForCache(object data)
+    private static byte[] ToCacheValue(IEnumerable<IServiceInstance> instances)
     {
-        return JsonSerializer.SerializeToUtf8Bytes(data);
-    }
-
-    private static T DeserializeFromCache<T>(byte[] data)
-        where T : class
-    {
-        return JsonSerializer.Deserialize<T>(data);
+        List<JsonSerializableServiceInstance> serializableInstances = instances.Select(instance => new JsonSerializableServiceInstance(instance)).ToList();
+        return JsonSerializer.SerializeToUtf8Bytes(serializableInstances);
     }
 }

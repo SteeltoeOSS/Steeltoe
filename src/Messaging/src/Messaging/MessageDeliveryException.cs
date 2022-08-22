@@ -6,28 +6,28 @@ namespace Steeltoe.Messaging;
 
 public class MessageDeliveryException : MessagingException
 {
-    public MessageDeliveryException(string description)
-        : base(description)
+    public MessageDeliveryException(string message)
+        : base(message)
     {
     }
 
-    public MessageDeliveryException(IMessage undeliveredMessage)
-        : base(undeliveredMessage)
+    public MessageDeliveryException(IMessage failedMessage)
+        : base(failedMessage)
     {
     }
 
-    public MessageDeliveryException(IMessage undeliveredMessage, string description)
-        : base(undeliveredMessage, description)
+    public MessageDeliveryException(IMessage failedMessage, string message)
+        : base(failedMessage, message)
     {
     }
 
-    public MessageDeliveryException(IMessage message, Exception cause)
-        : base(message, cause)
+    public MessageDeliveryException(IMessage failedMessage, Exception innerException)
+        : base(failedMessage, innerException)
     {
     }
 
-    public MessageDeliveryException(IMessage undeliveredMessage, string description, Exception cause)
-        : base(undeliveredMessage, description, cause)
+    public MessageDeliveryException(IMessage failedMessage, string message, Exception innerException)
+        : base(failedMessage, message, innerException)
     {
     }
 }

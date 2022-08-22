@@ -6,13 +6,13 @@ namespace Steeltoe.Common.Retry;
 
 public class RetryException : Exception
 {
-    public RetryException(string msg)
-        : base(msg)
+    public RetryException(string message)
+        : base(message)
     {
     }
 
-    public RetryException(string msg, Exception cause)
-        : base(msg, cause)
+    public RetryException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }
