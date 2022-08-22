@@ -11,13 +11,13 @@ public class ParseException : ExpressionException
     {
     }
 
-    public ParseException(string expressionString, int position, string message)
-        : base(expressionString, position, message)
+    public ParseException(int position, string message, Exception innerException)
+        : base(position, message, innerException)
     {
     }
 
-    public ParseException(int position, string message, Exception innerException)
-        : base(position, message, innerException)
+    public ParseException(string expressionString, int position, string message)
+        : base(expressionString, position, message)
     {
     }
 }
