@@ -29,4 +29,9 @@
   <ItemGroup Condition="'$(BUILD_PACKAGES)' == 'true'">
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All" />
   </ItemGroup>
+
+  <ItemGroup Condition="$(MSBuildProjectName.StartsWith('Steeltoe.Extensions.Configuration'))">
+    <!-- Widen the condition above as we're completing more public API reviews -->
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="$(PublicApiAnalyzersVersion)" PrivateAssets="All" />
+  </ItemGroup>
 </Project>

@@ -38,6 +38,7 @@
     <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
     <EFCoreTestVersion>6.0.*</EFCoreTestVersion>
     <EFCoreOracleTestVersion>6.21.*</EFCoreOracleTestVersion>
+    <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
 
     <!--
       Exposed dependencies, observable by Steeltoe consumers.
