@@ -8,6 +8,9 @@ namespace Steeltoe.Common.Util;
 
 public static class EncodingUtils
 {
+#pragma warning disable SYSLIB0001 // Type or member is obsolete
+    public static readonly Encoding Utf7 = new UTF7Encoding(true);
+#pragma warning restore SYSLIB0001 // Type or member is obsolete
     public static readonly Encoding Utf8 = new UTF8Encoding(false);
     public static readonly Encoding Utf16 = new UnicodeEncoding(false, false);
     public static readonly Encoding Utf16BigEndian = new UnicodeEncoding(true, false);
@@ -28,7 +31,7 @@ public static class EncodingUtils
 
         if (name.Equals("utf-7", StringComparison.OrdinalIgnoreCase))
         {
-            throw new NotSupportedException("The UTF-7 encoding is insecure and should not be used. Consider using UTF-8 instead.");
+            return Utf7;
         }
 
         if (name.Equals("utf-8", StringComparison.OrdinalIgnoreCase))
@@ -64,6 +67,11 @@ public static class EncodingUtils
         if (encoding == null || encoding.Equals(Utf8))
         {
             return "utf-8";
+        }
+
+        if (encoding.Equals(Utf7))
+        {
+            return "utf-7";
         }
 
         if (encoding.Equals(Utf16))
