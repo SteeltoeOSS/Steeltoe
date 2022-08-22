@@ -16,20 +16,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 /// </summary>
 public static class ConfigServerServiceCollectionExtensions
 {
-    [Obsolete("IConfiguration parameter is not needed anymore")]
-    public static IServiceCollection ConfigureConfigServerClientOptions(this IServiceCollection services, IConfiguration config)
-    {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
-
-        services.AddOptions();
-
-        IConfigurationSection section = config.GetSection(ConfigServerClientSettingsOptions.ConfigurationPrefix);
-        services.Configure<ConfigServerClientSettingsOptions>(section);
-
-        return services;
-    }
-
     public static IServiceCollection ConfigureConfigServerClientOptions(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);

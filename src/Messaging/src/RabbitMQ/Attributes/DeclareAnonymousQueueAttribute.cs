@@ -8,7 +8,7 @@ using Steeltoe.Messaging.RabbitMQ.Core;
 namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
-public class DeclareAnonymousQueueAttribute : DeclareQueueBaseAttribute
+public sealed class DeclareAnonymousQueueAttribute : DeclareQueueBaseAttribute
 {
     internal string Name { get; }
 

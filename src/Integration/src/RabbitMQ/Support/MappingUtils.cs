@@ -26,11 +26,10 @@ public static class MappingUtils
     public static IMessage MapMessage(IMessage requestMessage, IMessageConverter converter, IRabbitHeaderMapper headerMapper,
         MessageDeliveryMode defaultDeliveryMode, bool headersMappedLast)
     {
-        return DoMapMessage(requestMessage, converter, headerMapper, defaultDeliveryMode, headersMappedLast, false);
+        return DoMapMessage(requestMessage, converter, headerMapper, headersMappedLast, false);
     }
 
-    private static IMessage DoMapMessage(IMessage message, IMessageConverter converter, IRabbitHeaderMapper headerMapper,
-        MessageDeliveryMode defaultDeliveryMode, bool headersMappedLast, bool reply)
+    private static IMessage DoMapMessage(IMessage message, IMessageConverter converter, IRabbitHeaderMapper headerMapper, bool headersMappedLast, bool reply)
     {
         var targetHeaders = new MessageHeaders();
         IMessage amqpMessage;

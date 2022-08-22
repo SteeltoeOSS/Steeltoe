@@ -5,7 +5,7 @@
 namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 
 [AttributeUsage(AttributeTargets.Method)]
-public class RabbitHandlerAttribute : Attribute
+public sealed class RabbitHandlerAttribute : Attribute
 {
     public bool IsDefault { get; set; }
 

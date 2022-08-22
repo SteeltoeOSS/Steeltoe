@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="Steeltoe Release" Description="Code quality rules for Steeltoe release builds" ToolsVersion="17.0">
   <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
     <Rule Id="S100" Action="Warning" />
@@ -10,7 +10,6 @@
     <Rule Id="S1144" Action="Warning" />
     <Rule Id="S1151" Action="Warning" />
     <Rule Id="S1168" Action="None" />
-    <Rule Id="S1172" Action="None" />
     <Rule Id="S1186" Action="None" />
     <Rule Id="S1244" Action="Warning" />
     <Rule Id="S125" Action="None" />
@@ -37,15 +36,18 @@
     <Rule Id="S3598" Action="None" />
     <Rule Id="S3884" Action="None" />
     <Rule Id="S3889" Action="None" />
+    <Rule Id="S3906" Action="Warning" />
     <Rule Id="S3908" Action="Warning" />
     <Rule Id="S3925" Action="None" />
     <Rule Id="S3926" Action="None" />
     <Rule Id="S3927" Action="None" />
     <Rule Id="S3937" Action="Warning" />
     <Rule Id="S3962" Action="Warning" />
+    <Rule Id="S3993" Action="Warning" />
     <Rule Id="S3998" Action="None" />
     <Rule Id="S4022" Action="Warning" />
     <Rule Id="S4039" Action="Warning" />
+    <Rule Id="S4060" Action="Warning" />
     <Rule Id="S4061" Action="None" />
     <Rule Id="S4159" Action="None" />
     <Rule Id="S4210" Action="None" />

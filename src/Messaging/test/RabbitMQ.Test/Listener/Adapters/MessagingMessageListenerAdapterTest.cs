@@ -348,6 +348,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         return adapter;
     }
 
+#pragma warning disable S1172 // Unused method parameters should be removed
     private sealed class SampleBean
     {
         public object Payload;
@@ -423,6 +424,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
             throw new ArgumentException("Expected test exception");
         }
     }
+#pragma warning restore S1172 // Unused method parameters should be removed
 
     private sealed class Foo
     {

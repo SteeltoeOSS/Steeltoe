@@ -31,12 +31,6 @@ public static class HystrixServiceCollectionExtensions
         services.TryAddSingleton<IHostedService, HystrixMetricStreamService>();
     }
 
-    [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
-    public static void AddHystrixRequestEventStream(this IServiceCollection services, IConfiguration config)
-    {
-        AddHystrixRequestEventStream(services);
-    }
-
     public static void AddHystrixRequestEventStream(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
@@ -44,23 +38,11 @@ public static class HystrixServiceCollectionExtensions
         services.AddSingleton(HystrixRequestEventsStream.GetInstance());
     }
 
-    [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
-    public static void AddHystrixUtilizationStream(this IServiceCollection services, IConfiguration config)
-    {
-        AddHystrixUtilizationStream(services);
-    }
-
     public static void AddHystrixUtilizationStream(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
 
         services.AddSingleton(HystrixUtilizationStream.GetInstance());
-    }
-
-    [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
-    public static void AddHystrixConfigStream(this IServiceCollection services, IConfiguration config)
-    {
-        AddHystrixConfigStream(services);
     }
 
     public static void AddHystrixConfigStream(this IServiceCollection services)

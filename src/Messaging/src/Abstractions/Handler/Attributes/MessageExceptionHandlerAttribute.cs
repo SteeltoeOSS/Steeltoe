@@ -8,12 +8,12 @@ namespace Steeltoe.Messaging.Handler.Attributes;
 /// Attribute for handling exceptions thrown from message-handling methods within a specific handler class.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method)]
-public class MessageExceptionHandlerAttribute : Attribute
+public sealed class MessageExceptionHandlerAttribute : Attribute
 {
     /// <summary>
     /// Gets the exceptions handled by this method.
     /// </summary>
-    public virtual Type[] Exceptions { get; }
+    public Type[] Exceptions { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageExceptionHandlerAttribute" /> class.

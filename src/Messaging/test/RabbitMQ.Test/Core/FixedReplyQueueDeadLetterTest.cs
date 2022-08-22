@@ -260,7 +260,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
             services.AddRabbitAdmin();
 
             // Add RabbitTemplate named fixedReplyQRabbitTemplate
-            services.AddRabbitTemplate((p, t) =>
+            services.AddRabbitTemplate((_, t) =>
             {
                 t.DefaultSendDestination = new RabbitDestination(ex.ExchangeName, "dlx.reply.test");
                 t.ReplyAddress = replyQueue.QueueName;

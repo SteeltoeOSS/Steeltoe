@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using Steeltoe.Common.LoadBalancer;
 
 namespace Steeltoe.Common.Http.LoadBalancer;
@@ -23,25 +22,6 @@ public class LoadBalancerHttpClientHandler : HttpClientHandler
     /// Load balancer to use.
     /// </param>
     public LoadBalancerHttpClientHandler(ILoadBalancer loadBalancer)
-    {
-        ArgumentGuard.NotNull(loadBalancer);
-
-        _loadBalancer = loadBalancer;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LoadBalancerHttpClientHandler" /> class.
-    /// <para />
-    /// For use with <see cref="HttpClient" /> without <see cref="IHttpClientFactory" />.
-    /// </summary>
-    /// <param name="loadBalancer">
-    /// Load balancer to use.
-    /// </param>
-    /// <param name="logger">
-    /// For logging.
-    /// </param>
-    [Obsolete("Please remove ILogger parameter")]
-    public LoadBalancerHttpClientHandler(ILoadBalancer loadBalancer, ILogger logger)
     {
         ArgumentGuard.NotNull(loadBalancer);
 

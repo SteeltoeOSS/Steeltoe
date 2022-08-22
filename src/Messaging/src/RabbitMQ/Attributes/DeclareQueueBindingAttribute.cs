@@ -5,7 +5,7 @@
 namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
-public class DeclareQueueBindingAttribute : Attribute
+public sealed class DeclareQueueBindingAttribute : Attribute
 {
     private string _bindingName;
 

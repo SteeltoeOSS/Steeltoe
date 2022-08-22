@@ -34,8 +34,8 @@ public class HystrixSyncTaskSchedulerTest
 
         var tc1 = new TaskActionClass(_output, 1);
         var tc2 = new TaskActionClass(_output, 2);
-        var t1 = new Task<int>(o => tc1.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
-        var t2 = new Task<int>(o => tc2.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+        var t1 = new Task<int>(_ => tc1.Run(), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+        var t2 = new Task<int>(_ => tc2.Run(), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
 
         // Fill up to CoreSize
         t1.Start(scheduler);
@@ -79,7 +79,7 @@ public class HystrixSyncTaskSchedulerTest
             Value = val;
         }
 
-        public int Run(object cmd)
+        public int Run()
         {
             int result = RunAsync().GetAwaiter().GetResult();
             return result;

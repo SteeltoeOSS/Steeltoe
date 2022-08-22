@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -158,8 +158,7 @@ public class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:customjsonconverters:0", typeof(HealthConverterV3).FullName }
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
-            .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();

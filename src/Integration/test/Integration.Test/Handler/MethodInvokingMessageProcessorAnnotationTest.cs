@@ -419,7 +419,8 @@ public class MethodInvokingMessageProcessorAnnotationTest
         }
     }
 
-    public class BogusAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Parameter)]
+    public sealed class BogusAttribute : Attribute
     {
     }
 

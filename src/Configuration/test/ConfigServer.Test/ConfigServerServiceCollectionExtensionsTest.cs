@@ -23,17 +23,6 @@ public class ConfigServerServiceCollectionExtensionsTest
     }
 
     [Fact]
-    [Obsolete("To be removed in the next major version.")]
-    public void ConfigureConfigServerClientOptions_ThrowsIfConfigurationNull()
-    {
-        IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureConfigServerClientOptions(config));
-        Assert.Contains(nameof(config), ex.Message);
-    }
-
-    [Fact]
     public void ConfigureConfigServerClientOptions_ConfiguresConfigServerClientSettingsOptions_WithDefaults()
     {
         var services = new ServiceCollection();

@@ -10,6 +10,7 @@ namespace Steeltoe.Connector;
 /// <summary>
 /// Identifies an assembly that contains one or more <see cref="IServiceInfoFactory" />.
 /// </summary>
+[AttributeUsage(AttributeTargets.Assembly)]
 public sealed class ServiceInfoFactoryAssemblyAttribute : AssemblyContainsTypeAttribute
 {
     public ServiceInfoFactoryAssemblyAttribute()

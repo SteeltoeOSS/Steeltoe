@@ -5,9 +5,9 @@
 namespace Steeltoe.Stream.Attributes;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class EnableBindingAttribute : Attribute
+public sealed class EnableBindingAttribute : Attribute
 {
-    public virtual Type[] BindingTypes { get; set; }
+    public Type[] BindingTypes { get; set; }
 
     public EnableBindingAttribute(params Type[] bindingTypes)
     {

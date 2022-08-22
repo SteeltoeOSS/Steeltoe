@@ -9,6 +9,7 @@ namespace Steeltoe.Connector;
 /// <summary>
 /// Identifies an assembly that contains one or more <see cref="IConnectionInfo" />.
 /// </summary>
+[AttributeUsage(AttributeTargets.Assembly)]
 public sealed class ConnectionInfoAssemblyAttribute : AssemblyContainsTypeAttribute
 {
     public ConnectionInfoAssemblyAttribute()

@@ -2002,7 +2002,7 @@ public class HystrixCollapserTest : HystrixTestBase
     {
         private readonly ITestOutputHelper _output;
 
-        public FireAndForgetCommand(ITestOutputHelper output, List<int> values)
+        public FireAndForgetCommand(ITestOutputHelper output)
             : base(GetCommandOptions())
         {
             _output = output;
@@ -2191,14 +2191,7 @@ public class HystrixCollapserTest : HystrixTestBase
 
         protected override HystrixCommand<object> CreateCommand(ICollection<ICollapsedRequest<object, int>> requests)
         {
-            var args = new List<int>();
-
-            foreach (ICollapsedRequest<object, int> request in requests)
-            {
-                args.Add(request.Argument);
-            }
-
-            return new FireAndForgetCommand(_output, args);
+            return new FireAndForgetCommand(_output);
         }
 
         protected override void MapResponseToRequests(object batchResponse, ICollection<ICollapsedRequest<object, int>> requests)
@@ -2225,14 +2218,7 @@ public class HystrixCollapserTest : HystrixTestBase
 
         protected override HystrixCommand<object> CreateCommand(ICollection<ICollapsedRequest<object, int>> requests)
         {
-            var args = new List<int>();
-
-            foreach (ICollapsedRequest<object, int> request in requests)
-            {
-                args.Add(request.Argument);
-            }
-
-            return new FireAndForgetCommand(_output, args);
+            return new FireAndForgetCommand(_output);
         }
 
         protected override void MapResponseToRequests(object batchResponse, ICollection<ICollapsedRequest<object, int>> requests)

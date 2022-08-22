@@ -16,30 +16,6 @@ public static class CloudFoundryHostBuilderExtensions
     /// <param name="hostBuilder">
     /// Your HostBuilder.
     /// </param>
-    [Obsolete("This method has been removed, please use AddCloudFoundryConfiguration instead", true)]
-    public static IWebHostBuilder AddCloudFoundry(this IWebHostBuilder hostBuilder)
-    {
-        return hostBuilder.AddCloudFoundryConfiguration();
-    }
-
-    /// <summary>
-    /// Add Cloud Foundry Configuration Provider.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// Your WebHostBuilder.
-    /// </param>
-    [Obsolete("This method has been removed, please use AddCloudFoundryConfiguration instead", true)]
-    public static IHostBuilder AddCloudFoundry(this IHostBuilder hostBuilder)
-    {
-        return hostBuilder.AddCloudFoundryConfiguration();
-    }
-
-    /// <summary>
-    /// Add Cloud Foundry Configuration Provider.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
-    /// </param>
     public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder hostBuilder)
     {
         return hostBuilder.ConfigureAppConfiguration((_, config) =>

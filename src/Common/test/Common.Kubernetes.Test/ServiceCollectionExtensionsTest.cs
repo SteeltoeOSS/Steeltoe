@@ -37,30 +37,6 @@ public class ServiceCollectionExtensionsTest
     }
 
     [Fact]
-    [Obsolete("To be removed in the next major version.")]
-    public void GetKubernetesApplicationOptions_ThrowsOnNull()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.GetKubernetesApplicationOptions(null));
-        Assert.Equal("serviceCollection", ex.ParamName);
-    }
-
-    [Fact]
-    [Obsolete("To be removed in the next major version.")]
-    public void GetKubernetesApplicationOptions_ReturnsAndAddsOptions()
-    {
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-
-        IApplicationInstanceInfo options = serviceCollection.GetKubernetesApplicationOptions();
-        IEnumerable<IApplicationInstanceInfo> appInfos = serviceCollection.BuildServiceProvider().GetServices<IApplicationInstanceInfo>();
-
-        Assert.NotNull(options);
-        Assert.Single(appInfos);
-        Assert.IsType<KubernetesApplicationOptions>(options);
-        Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, options.ApplicationName);
-    }
-
-    [Fact]
     public void AddKubernetesClient_ThrowsOnNulls()
     {
         var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddKubernetesClient(null));

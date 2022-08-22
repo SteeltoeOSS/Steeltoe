@@ -104,55 +104,34 @@ public class HostBuilderExtensionsTest
     public async Task AddKubernetesActuators_WebApplicationBuilder_AddsAndActivatesActuators()
     {
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
-        WebApplication host = hostBuilder.AddKubernetesActuators().Build();
+        await using WebApplication host = hostBuilder.AddKubernetesActuators().Build();
 
-        try
-        {
-            host.UseRouting();
-            await host.StartAsync();
-            HttpClient testClient = host.GetTestServer().CreateClient();
-            await AssertActuatorResponsesAsync(testClient);
-        }
-        finally
-        {
-            await host.DisposeAsync();
-        }
+        host.UseRouting();
+        await host.StartAsync();
+        HttpClient testClient = host.GetTestServer().CreateClient();
+        await AssertActuatorResponsesAsync(testClient);
     }
 
     [Fact]
     public async Task AddKubernetesActuators_WebApplicationBuilder_AddsAndActivatesActuators_MediaV1()
     {
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
-        WebApplication host = hostBuilder.AddKubernetesActuators(MediaTypeVersion.V1).Build();
+        await using WebApplication host = hostBuilder.AddKubernetesActuators(MediaTypeVersion.V1).Build();
 
-        try
-        {
-            host.UseRouting();
-            await host.StartAsync();
-            HttpClient testClient = host.GetTestServer().CreateClient();
-            await AssertActuatorResponsesAsync(testClient, MediaTypeVersion.V1);
-        }
-        finally
-        {
-            await host.DisposeAsync();
-        }
+        host.UseRouting();
+        await host.StartAsync();
+        HttpClient testClient = host.GetTestServer().CreateClient();
+        await AssertActuatorResponsesAsync(testClient, MediaTypeVersion.V1);
     }
 
     [Fact]
     public async Task AddKubernetesActuatorsWithConventions_WebApplicationBuilder_AddsAndActivatesActuatorsAddAllActuators()
     {
-        WebApplication host = GetTestWebAppWithSecureRouting(b => b.AddKubernetesActuators(ep => ep.RequireAuthorization("TestAuth")));
+        await using WebApplication host = GetTestWebAppWithSecureRouting(b => b.AddKubernetesActuators(ep => ep.RequireAuthorization("TestAuth")));
 
-        try
-        {
-            await host.StartAsync();
-            HttpClient testClient = host.GetTestServer().CreateClient();
-            await AssertActuatorResponsesAsync(testClient);
-        }
-        finally
-        {
-            await host.DisposeAsync();
-        }
+        await host.StartAsync();
+        HttpClient testClient = host.GetTestServer().CreateClient();
+        await AssertActuatorResponsesAsync(testClient);
     }
 
     private WebApplication GetTestWebAppWithSecureRouting(Action<WebApplicationBuilder> customizeBuilder = null)

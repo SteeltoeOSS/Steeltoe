@@ -5,11 +5,11 @@
 namespace Steeltoe.Stream.Attributes;
 
 [AttributeUsage(AttributeTargets.Assembly)]
-public class BinderAttribute : Attribute
+public sealed class BinderAttribute : Attribute
 {
-    public virtual string Name { get; set; }
+    public string Name { get; set; }
 
-    public virtual string ConfigureType { get; set; }
+    public string ConfigureType { get; set; }
 
     public BinderAttribute()
     {

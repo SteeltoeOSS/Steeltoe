@@ -8,6 +8,6 @@ namespace Steeltoe.Messaging.Handler.Attributes;
 /// Attribute which indicates that a method parameter should be bound to the headers of a message.
 /// </summary>
 [AttributeUsage(AttributeTargets.Parameter)]
-public class HeadersAttribute : Attribute
+public sealed class HeadersAttribute : Attribute
 {
 }
