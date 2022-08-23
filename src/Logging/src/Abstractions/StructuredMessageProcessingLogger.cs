@@ -9,7 +9,7 @@ namespace Steeltoe.Extensions.Logging;
 public class StructuredMessageProcessingLogger : MessageProcessingLogger
 {
     public StructuredMessageProcessingLogger(ILogger logger)
-        : base(logger, null)
+        : base(logger)
     {
     }
 
