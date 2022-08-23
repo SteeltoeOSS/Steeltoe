@@ -21,16 +21,16 @@ public class MessageProcessingLogger : ILogger
     /// Initializes a new instance of the <see cref="MessageProcessingLogger" /> class. Wraps an ILogger and decorates log messages via
     /// <see cref="IDynamicMessageProcessor" />.
     /// </summary>
-    /// <param name="iLogger">
+    /// <param name="logger">
     /// The <see cref="ILogger" /> being wrapped.
     /// </param>
     /// <param name="messageProcessors">
     /// The list of <see cref="IDynamicMessageProcessor" />s.
     /// </param>
-    public MessageProcessingLogger(ILogger iLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
+    public MessageProcessingLogger(ILogger logger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
     {
         MessageProcessors = messageProcessors;
-        Delegate = iLogger;
+        Delegate = logger;
     }
 
     public IDisposable BeginScope<TState>(TState state)
