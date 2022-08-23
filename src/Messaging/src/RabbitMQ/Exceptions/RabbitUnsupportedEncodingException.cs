@@ -6,8 +6,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
 
 public class RabbitUnsupportedEncodingException : RabbitException
 {
-    public RabbitUnsupportedEncodingException(Exception cause)
-        : base(cause)
+    public RabbitUnsupportedEncodingException(Exception innerException)
+        : base(innerException)
     {
     }
 }

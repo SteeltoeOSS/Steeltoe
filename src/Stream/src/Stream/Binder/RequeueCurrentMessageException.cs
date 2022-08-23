@@ -10,18 +10,18 @@ public class RequeueCurrentMessageException : Exception
     {
     }
 
-    public RequeueCurrentMessageException(string message, Exception cause)
-        : base(message, cause)
-    {
-    }
-
     public RequeueCurrentMessageException(string message)
         : base(message)
     {
     }
 
-    public RequeueCurrentMessageException(Exception cause)
-        : base(string.Empty, cause)
+    public RequeueCurrentMessageException(Exception innerException)
+        : base(null, innerException)
+    {
+    }
+
+    public RequeueCurrentMessageException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

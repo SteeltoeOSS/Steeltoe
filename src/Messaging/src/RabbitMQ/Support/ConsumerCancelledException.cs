@@ -10,8 +10,8 @@ public class ConsumerCancelledException : Exception
     {
     }
 
-    public ConsumerCancelledException(Exception cause)
-        : base(null, cause)
+    public ConsumerCancelledException(Exception innerException)
+        : base(null, innerException)
     {
     }
 }

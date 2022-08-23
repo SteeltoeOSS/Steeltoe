@@ -6,8 +6,13 @@ namespace Steeltoe.Common.Expression.Internal;
 
 public class ExpressionInvocationTargetException : EvaluationException
 {
-    public ExpressionInvocationTargetException(int position, string message, Exception cause)
-        : base(position, message, cause)
+    public ExpressionInvocationTargetException(string message)
+        : base(message)
+    {
+    }
+
+    public ExpressionInvocationTargetException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 
@@ -16,18 +21,13 @@ public class ExpressionInvocationTargetException : EvaluationException
     {
     }
 
+    public ExpressionInvocationTargetException(int position, string message, Exception innerException)
+        : base(position, message, innerException)
+    {
+    }
+
     public ExpressionInvocationTargetException(string expressionString, string message)
         : base(expressionString, message)
-    {
-    }
-
-    public ExpressionInvocationTargetException(string message, Exception cause)
-        : base(message, cause)
-    {
-    }
-
-    public ExpressionInvocationTargetException(string message)
-        : base(message)
     {
     }
 }

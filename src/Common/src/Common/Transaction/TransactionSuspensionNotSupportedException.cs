@@ -6,13 +6,13 @@ namespace Steeltoe.Common.Transaction;
 
 public class TransactionSuspensionNotSupportedException : CannotCreateTransactionException
 {
-    public TransactionSuspensionNotSupportedException(string msg)
-        : base(msg)
+    public TransactionSuspensionNotSupportedException(string message)
+        : base(message)
     {
     }
 
-    public TransactionSuspensionNotSupportedException(string msg, Exception cause)
-        : base(msg, cause)
+    public TransactionSuspensionNotSupportedException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

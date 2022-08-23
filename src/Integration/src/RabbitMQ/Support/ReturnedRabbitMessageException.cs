@@ -9,15 +9,12 @@ namespace Steeltoe.Integration.Rabbit.Support;
 public class ReturnedRabbitMessageException : MessagingException
 {
     public int ReplyCode { get; }
-
     public string ReplyText { get; }
-
     public string Exchange { get; }
-
     public string RoutingKey { get; }
 
-    public ReturnedRabbitMessageException(IMessage message, int replyCode, string replyText, string exchange, string routingKey)
-        : base(message)
+    public ReturnedRabbitMessageException(IMessage failedMessage, int replyCode, string replyText, string exchange, string routingKey)
+        : base(failedMessage)
     {
         ReplyCode = replyCode;
         ReplyText = replyText;

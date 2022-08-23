@@ -6,13 +6,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 
 public class FatalListenerExecutionException : Exception
 {
-    public FatalListenerExecutionException(string msg, Exception cause)
-        : base(msg, cause)
+    public FatalListenerExecutionException(string message)
+        : base(message)
     {
     }
 
-    public FatalListenerExecutionException(string msg)
-        : base(msg)
+    public FatalListenerExecutionException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

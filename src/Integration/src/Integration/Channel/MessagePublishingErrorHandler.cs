@@ -79,7 +79,7 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
     {
         Exception actualThrowable = exception;
 
-        if (exception is MessagingExceptionWrapperException)
+        if (exception is MessagingWrapperException)
         {
             actualThrowable = exception.InnerException;
         }
@@ -121,7 +121,7 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
     {
         public ErrorMessage BuildErrorMessage(Exception exception, IAttributeAccessor attributeAccessor)
         {
-            return exception is MessagingExceptionWrapperException wrapperException
+            return exception is MessagingWrapperException wrapperException
                 ? new ErrorMessage(exception.InnerException, wrapperException.FailedMessage)
                 : new ErrorMessage(exception);
         }

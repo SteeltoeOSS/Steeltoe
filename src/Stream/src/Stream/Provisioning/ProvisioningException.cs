@@ -6,13 +6,13 @@ namespace Steeltoe.Stream.Provisioning;
 
 public class ProvisioningException : Exception
 {
-    public ProvisioningException(string msg)
-        : base(msg)
+    public ProvisioningException(string message)
+        : base(message)
     {
     }
 
-    public ProvisioningException(string msg, Exception cause)
-        : base(msg, cause)
+    public ProvisioningException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

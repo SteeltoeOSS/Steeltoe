@@ -155,7 +155,7 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
 
                 if (ex is MessagingException exception)
                 {
-                    throw new MessagingExceptionWrapperException(message, exception);
+                    throw new MessagingWrapperException(message, exception);
                 }
 
                 string description = $"Failed to handle {message} to {this} in {messageHandler}";

@@ -11,8 +11,8 @@ public class AccessException : Exception
     {
     }
 
-    public AccessException(string message, Exception cause)
-        : base(message, cause)
+    public AccessException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

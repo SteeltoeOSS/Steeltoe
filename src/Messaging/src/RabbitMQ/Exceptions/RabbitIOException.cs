@@ -6,13 +6,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
 
 public class RabbitIOException : RabbitException
 {
-    public RabbitIOException(Exception cause)
-        : base(cause)
+    public RabbitIOException(Exception innerException)
+        : base(innerException)
     {
     }
 
-    public RabbitIOException(string message, Exception cause)
-        : base(message, cause)
+    public RabbitIOException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

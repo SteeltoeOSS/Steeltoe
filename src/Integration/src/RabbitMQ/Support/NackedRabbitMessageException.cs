@@ -9,11 +9,10 @@ namespace Steeltoe.Integration.Rabbit.Support;
 public class NackedRabbitMessageException : MessagingException
 {
     public object CorrelationData { get; }
-
     public string NackReason { get; }
 
-    public NackedRabbitMessageException(IMessage message, object correlationData, string nackReason)
-        : base(message)
+    public NackedRabbitMessageException(IMessage failedMessage, object correlationData, string nackReason)
+        : base(failedMessage)
     {
         CorrelationData = correlationData;
         NackReason = nackReason;

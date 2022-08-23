@@ -9,8 +9,8 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
 public class MethodArgumentTypeMismatchException : MethodArgumentResolutionException
 {
-    public MethodArgumentTypeMismatchException(IMessage message, ParameterInfo parameter, string description)
-        : base(message, parameter, description)
+    public MethodArgumentTypeMismatchException(IMessage failedMessage, ParameterInfo parameter, string message)
+        : base(failedMessage, parameter, message)
     {
     }
 }

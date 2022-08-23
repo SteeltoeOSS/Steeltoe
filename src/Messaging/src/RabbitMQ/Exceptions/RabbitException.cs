@@ -11,13 +11,13 @@ public class RabbitException : Exception
     {
     }
 
-    public RabbitException(Exception cause)
-        : base(null, cause)
+    public RabbitException(Exception innerException)
+        : base(null, innerException)
     {
     }
 
-    public RabbitException(string message, Exception cause)
-        : base(message, cause)
+    public RabbitException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

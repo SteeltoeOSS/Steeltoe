@@ -11,8 +11,8 @@ public class BinderException : Exception
     {
     }
 
-    public BinderException(string message, Exception cause)
-        : base(message, cause)
+    public BinderException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

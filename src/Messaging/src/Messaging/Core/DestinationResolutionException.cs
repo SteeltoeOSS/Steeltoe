@@ -6,13 +6,13 @@ namespace Steeltoe.Messaging.Core;
 
 public class DestinationResolutionException : MessagingException
 {
-    public DestinationResolutionException(string description)
-        : base(description)
+    public DestinationResolutionException(string message)
+        : base(message)
     {
     }
 
-    public DestinationResolutionException(string description, Exception cause)
-        : base(description, cause)
+    public DestinationResolutionException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

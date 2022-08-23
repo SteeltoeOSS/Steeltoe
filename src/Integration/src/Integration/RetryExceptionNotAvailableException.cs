@@ -8,13 +8,13 @@ namespace Steeltoe.Integration;
 
 public class RetryExceptionNotAvailableException : MessagingException
 {
-    public RetryExceptionNotAvailableException(IMessage message, string description)
-        : base(message, description)
+    public RetryExceptionNotAvailableException(IMessage failedMessage, string message)
+        : base(failedMessage, message)
     {
     }
 
-    internal RetryExceptionNotAvailableException(string description)
-        : base(description)
+    internal RetryExceptionNotAvailableException(string message)
+        : base(message)
     {
     }
 }

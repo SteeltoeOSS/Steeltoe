@@ -6,10 +6,10 @@ using Steeltoe.Messaging;
 
 namespace Steeltoe.Integration.Support;
 
-public class MessagingExceptionWrapperException : MessagingException
+public class MessagingWrapperException : MessagingException
 {
-    public MessagingExceptionWrapperException(IMessage originalMessage, MessagingException cause)
-        : base(originalMessage, cause)
+    public MessagingWrapperException(IMessage failedMessage, MessagingException innerException)
+        : base(failedMessage, innerException)
     {
     }
 }

@@ -8,12 +8,12 @@ namespace Steeltoe.Common.Util;
 
 public static class EncodingUtils
 {
-    public static readonly Encoding Utf16 = new UnicodeEncoding(false, false);
-    public static readonly Encoding Utf16BigEndian = new UnicodeEncoding(true, false);
 #pragma warning disable SYSLIB0001 // Type or member is obsolete
     public static readonly Encoding Utf7 = new UTF7Encoding(true);
 #pragma warning restore SYSLIB0001 // Type or member is obsolete
     public static readonly Encoding Utf8 = new UTF8Encoding(false);
+    public static readonly Encoding Utf16 = new UnicodeEncoding(false, false);
+    public static readonly Encoding Utf16BigEndian = new UnicodeEncoding(true, false);
     public static readonly Encoding Utf32 = new UTF32Encoding(false, false);
     public static readonly Encoding Utf32BigEndian = new UTF32Encoding(true, false);
 
@@ -29,49 +29,49 @@ public static class EncodingUtils
             return Utf8;
         }
 
-        if (name.Equals("utf-8", StringComparison.InvariantCultureIgnoreCase))
-        {
-            return Utf8;
-        }
-
-        if (name.Equals("utf-16", StringComparison.InvariantCultureIgnoreCase))
-        {
-            return Utf16;
-        }
-
-        if (name.Equals("utf-7", StringComparison.InvariantCultureIgnoreCase))
+        if (name.Equals("utf-7", StringComparison.OrdinalIgnoreCase))
         {
             return Utf7;
         }
 
-        if (name.Equals("utf-32", StringComparison.InvariantCultureIgnoreCase))
+        if (name.Equals("utf-8", StringComparison.OrdinalIgnoreCase))
         {
-            return Utf32;
+            return Utf8;
         }
 
-        if (name.Equals("utf-32be", StringComparison.InvariantCultureIgnoreCase))
+        if (name.Equals("utf-16", StringComparison.OrdinalIgnoreCase))
         {
-            return Utf32BigEndian;
+            return Utf16;
         }
 
-        if (name.Equals("utf-16be", StringComparison.InvariantCultureIgnoreCase))
+        if (name.Equals("utf-16be", StringComparison.OrdinalIgnoreCase))
         {
             return Utf16BigEndian;
         }
 
-        throw new ArgumentException("Invalid encoding name.", nameof(name));
+        if (name.Equals("utf-32", StringComparison.OrdinalIgnoreCase))
+        {
+            return Utf32;
+        }
+
+        if (name.Equals("utf-32be", StringComparison.OrdinalIgnoreCase))
+        {
+            return Utf32BigEndian;
+        }
+
+        throw new ArgumentException($"Invalid encoding name '{name}'.", nameof(name));
     }
 
     public static string GetEncoding(Encoding encoding)
     {
-        if (encoding == null)
+        if (encoding == null || encoding.Equals(Utf8))
         {
             return "utf-8";
         }
 
-        if (encoding.Equals(Utf8))
+        if (encoding.Equals(Utf7))
         {
-            return "utf-8";
+            return "utf-7";
         }
 
         if (encoding.Equals(Utf16))
@@ -79,9 +79,9 @@ public static class EncodingUtils
             return "utf-16";
         }
 
-        if (encoding.Equals(Utf7))
+        if (encoding.Equals(Utf16BigEndian))
         {
-            return "utf-7";
+            return "utf-16be";
         }
 
         if (encoding.Equals(Utf32))
@@ -94,11 +94,6 @@ public static class EncodingUtils
             return "utf-32be";
         }
 
-        if (encoding.Equals(Utf16BigEndian))
-        {
-            return "utf-16be";
-        }
-
-        throw new ArgumentException("Invalid encoding.", nameof(encoding));
+        throw new ArgumentException($"Invalid encoding '{encoding.WebName}'.", nameof(encoding));
     }
 }

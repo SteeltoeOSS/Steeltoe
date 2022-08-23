@@ -6,8 +6,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public class ReplyFailureException : Exception
 {
-    public ReplyFailureException(string message, Exception cause)
-        : base(message, cause)
+    public ReplyFailureException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

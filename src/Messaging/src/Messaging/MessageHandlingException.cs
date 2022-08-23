@@ -11,18 +11,18 @@ public class MessageHandlingException : MessagingException
     {
     }
 
-    public MessageHandlingException(IMessage message, string description)
-        : base(message, description)
+    public MessageHandlingException(IMessage failedMessage, string message)
+        : base(failedMessage, message)
     {
     }
 
-    public MessageHandlingException(IMessage failedMessage, Exception cause)
-        : base(failedMessage, cause)
+    public MessageHandlingException(IMessage failedMessage, Exception innerException)
+        : base(failedMessage, innerException)
     {
     }
 
-    public MessageHandlingException(IMessage message, string description, Exception cause)
-        : base(message, description, cause)
+    public MessageHandlingException(IMessage failedMessage, string message, Exception innerException)
+        : base(failedMessage, message, innerException)
     {
     }
 }

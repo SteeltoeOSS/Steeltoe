@@ -11,8 +11,8 @@ public class ConversionException : Exception
     {
     }
 
-    public ConversionException(string message, Exception cause)
-        : base(message, cause)
+    public ConversionException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }
