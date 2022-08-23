@@ -1,12 +1,13 @@
 pr:
   paths:
     exclude:
-    - /
+    - build
+    - src
     include:
-    - /.editorconfig
-    - /stylecop.json
-    - /*.props
-    - /*.ruleset
+    - .editorconfig
+    - stylecop.json
+    - '*.props'
+    - '*.ruleset'
     - build/templates
     - build/integration.yml
     - src/Integration

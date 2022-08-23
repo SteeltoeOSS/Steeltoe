@@ -6,7 +6,6 @@ trigger:
     exclude:
     - README.md
     - build/*
-    - project-docs/*
     - roadmaps/*
 
 jobs:
