@@ -3,20 +3,19 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Logging;
 
 public class StructuredMessageProcessingLogger : MessageProcessingLogger
 {
     public StructuredMessageProcessingLogger(ILogger logger)
-        : base(logger, messageProcessors: null)
+        : base(logger, null)
     {
     }
-    public StructuredMessageProcessingLogger(ILogger logger, IEnumerable<IDynamicMessageProcessor> messageProcessors)
-        :base(logger, messageProcessors)
-    {
 
+    public StructuredMessageProcessingLogger(ILogger logger, IEnumerable<IDynamicMessageProcessor> messageProcessors)
+        : base(logger, messageProcessors)
+    {
     }
 
     public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
