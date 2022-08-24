@@ -14,49 +14,50 @@ namespace Steeltoe.Connector.PostgreSql.EntityFrameworkCore;
 
 public static class PostgresDbContextOptionsExtensions
 {
-    public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object npgsqlOptionsAction = null)
-    {
-        ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
-
-        string connection = GetConnection(config);
-
-        return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
-    }
-
-    public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName,
+    public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IConfiguration configuration,
         object npgsqlOptionsAction = null)
     {
         ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
-        ArgumentGuard.NotNullOrEmpty(serviceName);
+        ArgumentGuard.NotNull(configuration);
 
-        string connection = GetConnection(config, serviceName);
+        string connection = GetConnection(configuration);
 
         return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
     }
 
-    public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config,
+    public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IConfiguration configuration, string serviceName,
+        object npgsqlOptionsAction = null)
+    {
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNullOrEmpty(serviceName);
+
+        string connection = GetConnection(configuration, serviceName);
+
+        return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
+    }
+
+    public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration configuration,
         object npgsqlOptionsAction = null)
         where TContext : DbContext
     {
         ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        string connection = GetConnection(config);
+        string connection = GetConnection(configuration);
 
         return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
     }
 
-    public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config,
+    public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration configuration,
         string serviceName, object npgsqlOptionsAction = null)
         where TContext : DbContext
     {
         ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNullOrEmpty(serviceName);
 
-        string connection = GetConnection(config, serviceName);
+        string connection = GetConnection(configuration, serviceName);
 
         return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
     }
@@ -77,15 +78,15 @@ public static class PostgresDbContextOptionsExtensions
         return false;
     }
 
-    private static string GetConnection(IConfiguration config, string serviceName = null)
+    private static string GetConnection(IConfiguration configuration, string serviceName = null)
     {
         PostgresServiceInfo info = string.IsNullOrEmpty(serviceName)
-            ? config.GetSingletonServiceInfo<PostgresServiceInfo>()
-            : config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+            ? configuration.GetSingletonServiceInfo<PostgresServiceInfo>()
+            : configuration.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
 
-        var postgresConfig = new PostgresProviderConnectorOptions(config);
+        var options = new PostgresProviderConnectorOptions(configuration);
 
-        var factory = new PostgresProviderConnectorFactory(info, postgresConfig, null);
+        var factory = new PostgresProviderConnectorFactory(info, options, null);
         return factory.CreateConnectionString();
     }
 

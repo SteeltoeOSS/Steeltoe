@@ -246,7 +246,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
 
             do
             {
-                logger.LogInformation("Fetching config from server at: {uri}", settings.Uri);
+                logger.LogInformation("Fetching configuration from server at: {uri}", settings.Uri);
 
                 try
                 {
@@ -254,7 +254,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
                 }
                 catch (ConfigServerException e)
                 {
-                    logger.LogInformation(e, "Failed fetching config from server at: {uri}.", settings.Uri);
+                    logger.LogInformation(e, "Failed fetching configuration from server at: {uri}.", settings.Uri);
                     attempts++;
 
                     if (attempts < settings.RetryAttempts)
@@ -272,7 +272,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
             while (true);
         }
 
-        logger.LogInformation("Fetching config from server at: {uri}", settings.Uri);
+        logger.LogInformation("Fetching configuration from server at: {uri}", settings.Uri);
         return DoLoad(updateDictionary);
     }
 
@@ -280,7 +280,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
     {
         Exception error = null;
 
-        // Get arrays of config server uris to check
+        // Get arrays of Config Server uris to check
         string[] uris = settings.GetUris();
 
         try
@@ -292,13 +292,13 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
                     logger.LogInformation("Multiple Config Server Uris listed.");
                 }
 
-                // Invoke config servers
+                // Invoke Config Servers
                 Task<ConfigEnvironment> task = RemoteLoadAsync(uris, label);
 
                 // Wait for results from server
                 ConfigEnvironment env = task.GetAwaiter().GetResult();
 
-                // Update config Data dictionary with any results
+                // Update configuration Data dictionary with any results
                 if (env != null)
                 {
                     logger.LogInformation("Located environment: {name}, {profiles}, {label}, {version}, {state}", env.Name, env.Profiles, env.Label,
@@ -384,7 +384,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
         {
             if (settings.FailFast)
             {
-                throw new ConfigServerException("Could not locate config server via discovery, are you missing a Discovery service assembly?");
+                throw new ConfigServerException("Could not locate Config Server via discovery, are you missing a Discovery service assembly?");
             }
 
             return;
@@ -547,7 +547,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
         {
             error = null;
 
-            // Get a config server uri and username passwords to use
+            // Get a Config Server uri and username passwords to use
             string trimUri = requestUri.Trim();
             string serverUri = settings.GetRawUri(trimUri);
             string username = settings.GetUserName(trimUri);
@@ -563,7 +563,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
             HttpClientHelper.ConfigureCertificateValidation(settings.ValidateCertificates, out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
 
-            // Invoke config server
+            // Invoke Config Server
             try
             {
                 using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);

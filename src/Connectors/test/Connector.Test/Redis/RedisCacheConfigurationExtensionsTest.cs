@@ -19,53 +19,53 @@ public class RedisCacheConfigurationExtensionsTest
     [Fact]
     public void CreateRedisServiceConnectorFactory_ThrowsIfConfigurationNull()
     {
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
         IConfigurationRoot connectorConfiguration = new ConfigurationBuilder().Build();
-        var connectorOptions = new RedisCacheConnectorOptions();
+        var options = new RedisCacheConnectorOptions();
 
-        var ex = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory("foobar"));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => configuration.CreateRedisServiceConnectorFactory("foobar"));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory(connectorConfiguration, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => configuration.CreateRedisServiceConnectorFactory(connectorConfiguration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
 
-        var ex3 = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory(connectorOptions, "foobar"));
-        Assert.Contains(nameof(config), ex3.Message);
+        var ex3 = Assert.Throws<ArgumentNullException>(() => configuration.CreateRedisServiceConnectorFactory(options, "foobar"));
+        Assert.Contains(nameof(configuration), ex3.Message);
     }
 
     [Fact]
     public void CreateRedisServiceConnectorFactory_ThrowsIfConnectorConfigurationNull()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         const IConfigurationRoot connectorConfiguration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory(connectorConfiguration, "foobar"));
+        var ex = Assert.Throws<ArgumentNullException>(() => configurationRoot.CreateRedisServiceConnectorFactory(connectorConfiguration, "foobar"));
         Assert.Contains(nameof(connectorConfiguration), ex.Message);
     }
 
     [Fact]
     public void CreateRedisServiceConnectorFactory_ThrowsIfConnectorOptionsNull()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         const RedisCacheConnectorOptions connectorOptions = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory(connectorOptions, "foobar"));
+        var ex = Assert.Throws<ArgumentNullException>(() => configurationRoot.CreateRedisServiceConnectorFactory(connectorOptions, "foobar"));
         Assert.Contains(nameof(connectorOptions), ex.Message);
     }
 
     [Fact]
     public void CreateRedisServiceConnectorFactory_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        var connectorOptions = new RedisCacheConnectorOptions();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        var options = new RedisCacheConnectorOptions();
 
-        var ex = Assert.Throws<ConnectorException>(() => config.CreateRedisServiceConnectorFactory("foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => configurationRoot.CreateRedisServiceConnectorFactory("foobar"));
         Assert.Contains("foobar", ex.Message);
 
-        var ex2 = Assert.Throws<ConnectorException>(() => config.CreateRedisServiceConnectorFactory(config, "foobar"));
+        var ex2 = Assert.Throws<ConnectorException>(() => configurationRoot.CreateRedisServiceConnectorFactory(configurationRoot, "foobar"));
         Assert.Contains("foobar", ex2.Message);
 
-        var ex3 = Assert.Throws<ConnectorException>(() => config.CreateRedisServiceConnectorFactory(connectorOptions, "foobar"));
+        var ex3 = Assert.Throws<ConnectorException>(() => configurationRoot.CreateRedisServiceConnectorFactory(options, "foobar"));
         Assert.Contains("foobar", ex3.Message);
     }
 
@@ -82,12 +82,12 @@ public class RedisCacheConfigurationExtensionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
-        var connectorOptions = new RedisCacheConnectorOptions(config);
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        var options = new RedisCacheConnectorOptions(configurationRoot);
 
-        Assert.NotNull(config.CreateRedisServiceConnectorFactory());
-        Assert.NotNull(new ConfigurationBuilder().Build().CreateRedisServiceConnectorFactory(config));
-        Assert.NotNull(new ConfigurationBuilder().Build().CreateRedisServiceConnectorFactory(connectorOptions));
+        Assert.NotNull(configurationRoot.CreateRedisServiceConnectorFactory());
+        Assert.NotNull(new ConfigurationBuilder().Build().CreateRedisServiceConnectorFactory(configurationRoot));
+        Assert.NotNull(new ConfigurationBuilder().Build().CreateRedisServiceConnectorFactory(options));
     }
 
     [Fact]
@@ -98,16 +98,16 @@ public class RedisCacheConfigurationExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
-        var connectorOptions = new RedisCacheConnectorOptions();
+        IConfigurationRoot configurationRoot = builder.Build();
+        var options = new RedisCacheConnectorOptions();
 
-        var ex = Assert.Throws<ConnectorException>(() => config.CreateRedisServiceConnectorFactory());
+        var ex = Assert.Throws<ConnectorException>(() => configurationRoot.CreateRedisServiceConnectorFactory());
         Assert.Contains("Multiple", ex.Message);
 
-        var ex2 = Assert.Throws<ConnectorException>(() => config.CreateRedisServiceConnectorFactory(config));
+        var ex2 = Assert.Throws<ConnectorException>(() => configurationRoot.CreateRedisServiceConnectorFactory(configurationRoot));
         Assert.Contains("Multiple", ex2.Message);
 
-        var ex3 = Assert.Throws<ConnectorException>(() => config.CreateRedisServiceConnectorFactory(connectorOptions));
+        var ex3 = Assert.Throws<ConnectorException>(() => configurationRoot.CreateRedisServiceConnectorFactory(options));
         Assert.Contains("Multiple", ex3.Message);
     }
 }

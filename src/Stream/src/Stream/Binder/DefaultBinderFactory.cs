@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Util;
 
 namespace Steeltoe.Stream.Binder;
@@ -97,11 +97,11 @@ public class DefaultBinderFactory : IBinderFactory, IDisposable
 
             if (string.IsNullOrEmpty(DefaultBinder))
             {
-                foreach (KeyValuePair<string, BinderConfiguration> config in _binderConfigurations.Configurations)
+                foreach (KeyValuePair<string, BinderConfiguration> configuration in _binderConfigurations.Configurations)
                 {
-                    if (config.Value.IsDefaultCandidate)
+                    if (configuration.Value.IsDefaultCandidate)
                     {
-                        defaultCandidateConfigurations.Add(config.Key);
+                        defaultCandidateConfigurations.Add(configuration.Key);
                     }
                 }
 

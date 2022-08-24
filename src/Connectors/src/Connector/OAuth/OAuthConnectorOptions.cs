@@ -37,15 +37,15 @@ public class OAuthConnectorOptions : AbstractServiceConnectorOptions
     {
     }
 
-    public OAuthConnectorOptions(IConfiguration config)
+    public OAuthConnectorOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(SecurityClientSectionPrefix);
+        IConfigurationSection section = configuration.GetSection(SecurityClientSectionPrefix);
         section.Bind(this);
-        ValidateCertificates = GetCertificateValidation(section, config, ValidateCertificates);
+        ValidateCertificates = GetCertificateValidation(section, configuration, ValidateCertificates);
 
-        section = config.GetSection(SecurityResourceSectionPrefix);
+        section = configuration.GetSection(SecurityResourceSectionPrefix);
         section.Bind(this);
     }
 

@@ -39,8 +39,8 @@ public class TraceEndpointOptions : AbstractEndpointOptions, ITraceOptions
         Capacity = DefaultCapacity;
     }
 
-    public TraceEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
+    public TraceEndpointOptions(IConfiguration configuration)
+        : base(ManagementInfoPrefix, configuration)
     {
         if (string.IsNullOrEmpty(Id))
         {

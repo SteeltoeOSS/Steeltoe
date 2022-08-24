@@ -22,8 +22,8 @@ public class ManagementEndpointOptionsTest : BaseTest
     [Fact]
     public void ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
-        Assert.Throws<ArgumentNullException>(() => new ManagementEndpointOptions(config));
+        const IConfiguration configuration = null;
+        Assert.Throws<ArgumentNullException>(() => new ManagementEndpointOptions(configuration));
     }
 
     [Fact]
@@ -39,9 +39,9 @@ public class ManagementEndpointOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new ManagementEndpointOptions(config);
+        var opts = new ManagementEndpointOptions(configurationRoot);
         Assert.False(opts.Enabled);
         Assert.Equal("/management", opts.Path);
     }

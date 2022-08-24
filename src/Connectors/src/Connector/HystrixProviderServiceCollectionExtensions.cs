@@ -18,7 +18,7 @@ public static class HystrixProviderServiceCollectionExtensions
     /// <param name="services">
     /// Your Service Collection.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application Configuration.
     /// </param>
     /// <param name="contextLifetime">
@@ -27,15 +27,15 @@ public static class HystrixProviderServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config,
+    public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetSingletonServiceInfo<HystrixRabbitMQServiceInfo>();
+        var info = configuration.GetSingletonServiceInfo<HystrixRabbitMQServiceInfo>();
 
-        DoAdd(services, info, config, contextLifetime);
+        DoAdd(services, info, configuration, contextLifetime);
         return services;
     }
 
@@ -45,7 +45,7 @@ public static class HystrixProviderServiceCollectionExtensions
     /// <param name="services">
     /// Your Service Collection.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application Configuration.
     /// </param>
     /// <param name="serviceName">
@@ -57,24 +57,24 @@ public static class HystrixProviderServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, string serviceName,
+    public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetRequiredServiceInfo<HystrixRabbitMQServiceInfo>(serviceName);
+        var info = configuration.GetRequiredServiceInfo<HystrixRabbitMQServiceInfo>(serviceName);
 
-        DoAdd(services, info, config, contextLifetime);
+        DoAdd(services, info, configuration, contextLifetime);
         return services;
     }
 
-    private static void DoAdd(IServiceCollection services, HystrixRabbitMQServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
+    private static void DoAdd(IServiceCollection services, HystrixRabbitMQServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime)
     {
         Type rabbitFactory = RabbitMQTypeLocator.ConnectionFactory;
-        var hystrixConfig = new HystrixProviderConnectorOptions(config);
-        var factory = new HystrixProviderConnectorFactory(info, hystrixConfig, rabbitFactory);
+        var options = new HystrixProviderConnectorOptions(configuration);
+        var factory = new HystrixProviderConnectorFactory(info, options, rabbitFactory);
         services.Add(new ServiceDescriptor(typeof(HystrixConnectionFactory), factory.Create, contextLifetime));
     }
 }

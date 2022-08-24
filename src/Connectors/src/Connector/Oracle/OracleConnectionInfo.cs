@@ -36,8 +36,8 @@ public class OracleConnectionInfo : IConnectionInfo
 
     private Connection GetConnection(OracleServiceInfo info, IConfiguration configuration)
     {
-        var oracleConfig = new OracleProviderConnectorOptions(configuration);
+        var options = new OracleProviderConnectorOptions(configuration);
         var configurer = new OracleProviderConfigurer();
-        return new Connection(configurer.Configure(info, oracleConfig), "Oracle", info);
+        return new Connection(configurer.Configure(info, options), "Oracle", info);
     }
 }

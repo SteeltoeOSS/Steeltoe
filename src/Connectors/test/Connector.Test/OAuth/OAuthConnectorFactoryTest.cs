@@ -14,9 +14,9 @@ public class OAuthConnectorFactoryTest
     public void Create_ReturnsOAuthOptions()
     {
         var si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "https://foo.bar");
-        var config = new OAuthConnectorOptions();
+        var options = new OAuthConnectorOptions();
 
-        var factory = new OAuthConnectorFactory(si, config);
+        var factory = new OAuthConnectorFactory(si, options);
         IOptions<OAuthServiceOptions> result = factory.Create(null);
 
         Assert.NotNull(result);

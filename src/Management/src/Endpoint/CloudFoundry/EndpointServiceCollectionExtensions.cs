@@ -10,13 +10,13 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 public static class EndpointServiceCollectionExtensions
 {
-    public static void AddCloudFoundryActuator(this IServiceCollection services, IConfiguration config = null)
+    public static void AddCloudFoundryActuator(this IServiceCollection services, IConfiguration configuration = null)
     {
         ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddCloudFoundryActuatorServices(config);
+        services.AddCloudFoundryActuatorServices(configuration);
         services.AddActuatorEndpointMapping<CloudFoundryEndpoint>();
     }
 }

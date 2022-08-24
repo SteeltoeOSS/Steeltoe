@@ -569,8 +569,8 @@ public class EvaluationTests : AbstractExpressionTests
     {
         var person = new TestPerson();
         var context = new StandardEvaluationContext(person);
-        var config = new SpelParserOptions(true, true);
-        var parser = new SpelExpressionParser(config);
+        var configuration = new SpelParserOptions(true, true);
+        var parser = new SpelExpressionParser(configuration);
         IExpression e = parser.ParseExpression("Name");
         e.SetValue(context, "Oleg");
         Assert.Equal("Oleg", person.Name);

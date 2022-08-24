@@ -27,12 +27,12 @@ public static class DiscoveryServiceCollectionExtensions
     /// <param name="services">
     /// <see cref="IServiceCollection" /> to configure.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration.
     /// </param>
-    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config = null)
+    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration = null)
     {
-        return services.AddDiscoveryClient(config, null);
+        return services.AddDiscoveryClient(configuration, null);
     }
 
     /// <summary>
@@ -42,15 +42,15 @@ public static class DiscoveryServiceCollectionExtensions
     /// <param name="services">
     /// <see cref="IServiceCollection" /> to configure.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration.
     /// </param>
     /// <param name="lifecycle">
     /// Add custom code for app shutdown events.
     /// </param>
-    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle = null)
+    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration, IDiscoveryLifecycle lifecycle = null)
     {
-        return services.AddDiscoveryClient(config, null, lifecycle);
+        return services.AddDiscoveryClient(configuration, null, lifecycle);
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public static class DiscoveryServiceCollectionExtensions
     /// <param name="services">
     /// <see cref="IServiceCollection" /> to configure.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration.
     /// </param>
     /// <param name="serviceName">
@@ -69,13 +69,16 @@ public static class DiscoveryServiceCollectionExtensions
     /// <param name="lifecycle">
     /// Add custom code for app shutdown events.
     /// </param>
-    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, string serviceName = null,
+    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration, string serviceName = null,
         IDiscoveryLifecycle lifecycle = null)
     {
         Action<DiscoveryClientBuilder> builderAction = null;
 
-        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-        IServiceInfo info = string.IsNullOrEmpty(serviceName) ? GetSingletonDiscoveryServiceInfo(config) : GetNamedDiscoveryServiceInfo(config, serviceName);
+        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+
+        IServiceInfo info = string.IsNullOrEmpty(serviceName)
+            ? GetSingletonDiscoveryServiceInfo(configuration)
+            : GetNamedDiscoveryServiceInfo(configuration, serviceName);
 
         // iterate assemblies for implementations of IDiscoveryClientExtension
         var implementations = new List<IDiscoveryClientExtension>();
@@ -94,7 +97,7 @@ public static class DiscoveryServiceCollectionExtensions
         else if (implementations.Count > 1)
         {
             // if none configured, that's ok because AddServiceDiscovery has a plan
-            IEnumerable<IDiscoveryClientExtension> configured = implementations.Where(client => client.IsConfigured(config, info));
+            IEnumerable<IDiscoveryClientExtension> configured = implementations.Where(client => client.IsConfigured(configuration, info));
 
             if (configured.Count() == 1)
             {
@@ -154,7 +157,7 @@ public static class DiscoveryServiceCollectionExtensions
     /// <summary>
     /// Retrieve a single, named <see cref="IServiceInfo" /> that is expected to work with Service Discovery.
     /// </summary>
-    /// <param name="config">
+    /// <param name="configuration">
     /// The <see cref="IConfiguration" /> to search.
     /// </param>
     /// <param name="serviceName">
@@ -163,9 +166,9 @@ public static class DiscoveryServiceCollectionExtensions
     /// <exception cref="ConnectorException">
     /// Thrown if no service info with expected name or type are found.
     /// </exception>
-    public static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration config, string serviceName)
+    public static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration configuration, string serviceName)
     {
-        IServiceInfo info = config.GetServiceInfo(serviceName);
+        IServiceInfo info = configuration.GetServiceInfo(serviceName);
 
         if (info == null)
         {
@@ -183,16 +186,16 @@ public static class DiscoveryServiceCollectionExtensions
     /// <summary>
     /// Retrieve a single <see cref="IServiceInfo" /> that is expected to work with Service Discovery.
     /// </summary>
-    /// <param name="config">
+    /// <param name="configuration">
     /// The <see cref="IConfiguration" /> to search.
     /// </param>
     /// <exception cref="ConnectorException">
     /// Thrown if multiple service infos are found.
     /// </exception>
-    public static IServiceInfo GetSingletonDiscoveryServiceInfo(IConfiguration config)
+    public static IServiceInfo GetSingletonDiscoveryServiceInfo(IConfiguration configuration)
     {
         // Note: Could be other discovery type services in future
-        IEnumerable<EurekaServiceInfo> eurekaInfos = config.GetServiceInfos<EurekaServiceInfo>();
+        IEnumerable<EurekaServiceInfo> eurekaInfos = configuration.GetServiceInfos<EurekaServiceInfo>();
 
         if (eurekaInfos.Any())
         {
@@ -216,10 +219,10 @@ public static class DiscoveryServiceCollectionExtensions
         if (builder.Extensions.Count > 1)
         {
             // TODO: don't BuildServiceProvider() here
-            var config = serviceCollection.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            var configuration = serviceCollection.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
             IEnumerable<IDiscoveryClientExtension> configured =
-                builder.Extensions.Where(ext => ext.IsConfigured(config, GetSingletonDiscoveryServiceInfo(config)));
+                builder.Extensions.Where(ext => ext.IsConfigured(configuration, GetSingletonDiscoveryServiceInfo(configuration)));
 
             if (!configured.Any() || configured.Count() > 1)
             {

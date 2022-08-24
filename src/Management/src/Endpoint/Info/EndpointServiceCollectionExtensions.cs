@@ -20,20 +20,20 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add info to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
     /// management:endpoints:info).
     /// </param>
-    public static void AddInfoActuator(this IServiceCollection services, IConfiguration config = null)
+    public static void AddInfoActuator(this IServiceCollection services, IConfiguration configuration = null)
     {
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        config ??= serviceProvider.GetRequiredService<IConfiguration>();
+        configuration ??= serviceProvider.GetRequiredService<IConfiguration>();
         IEnumerable<IInfoContributor> otherInfoContributors = serviceProvider.GetServices<IInfoContributor>();
 
         var allContributors = new List<IInfoContributor>
         {
             new GitInfoContributor(),
-            new AppSettingsInfoContributor(config),
+            new AppSettingsInfoContributor(configuration),
             new BuildInfoContributor()
         };
 
@@ -42,7 +42,7 @@ public static class EndpointServiceCollectionExtensions
             allContributors.Add(o);
         }
 
-        services.AddInfoActuator(config, allContributors.ToArray());
+        services.AddInfoActuator(configuration, allContributors.ToArray());
     }
 
     /// <summary>
@@ -51,21 +51,21 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add info to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
     /// management:endpoints:info).
     /// </param>
     /// <param name="contributors">
     /// Contributors to application information.
     /// </param>
-    public static void AddInfoActuator(this IServiceCollection services, IConfiguration config = null, params IInfoContributor[] contributors)
+    public static void AddInfoActuator(this IServiceCollection services, IConfiguration configuration = null, params IInfoContributor[] contributors)
     {
         ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddActuatorManagementOptions(config);
-        services.AddInfoActuatorServices(config);
+        services.AddActuatorManagementOptions(configuration);
+        services.AddInfoActuatorServices(configuration);
         services.AddActuatorEndpointMapping<InfoEndpoint>();
 
         AddContributors(services, contributors);

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.CircuitBreaker.Hystrix.Config;
+using Steeltoe.CircuitBreaker.Hystrix.Configuration;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
@@ -20,13 +20,13 @@ public static class HystrixServiceCollectionExtensions
 {
     private const string HystrixStreamPrefix = "hystrix:stream";
 
-    public static void AddHystrixMetricsStream(this IServiceCollection services, IConfiguration config)
+    public static void AddHystrixMetricsStream(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentGuard.NotNull(services);
 
         services.AddSingleton(HystrixDashboardStream.GetInstance());
-        services.AddHystrixConnection(config);
-        services.Configure<HystrixMetricsStreamOptions>(config.GetSection(HystrixStreamPrefix));
+        services.AddHystrixConnection(configuration);
+        services.Configure<HystrixMetricsStreamOptions>(configuration.GetSection(HystrixStreamPrefix));
         services.AddSingleton<RabbitMetricsStreamPublisher>();
         services.TryAddSingleton<IHostedService, HystrixMetricStreamService>();
     }
@@ -52,11 +52,11 @@ public static class HystrixServiceCollectionExtensions
         services.AddSingleton(HystrixConfigurationStream.GetInstance());
     }
 
-    public static void AddHystrixMonitoringStreams(this IServiceCollection services, IConfiguration config)
+    public static void AddHystrixMonitoringStreams(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentGuard.NotNull(services);
 
-        services.AddHystrixMetricsStream(config);
+        services.AddHystrixMetricsStream(configuration);
         services.AddHystrixConfigStream();
         services.AddHystrixRequestEventStream();
         services.AddHystrixUtilizationStream();

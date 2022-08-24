@@ -22,12 +22,12 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
     public void AddDbContext_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
     }
 
@@ -35,23 +35,23 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
     public void AddDbContext_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(config, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
     }
 
     [Fact]
     public void AddDbContext_ThrowsIfServiceNameNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
         const string serviceName = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(config, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -59,9 +59,9 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
     public void AddDbContext_NoVCAPs_AddsDbContext()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        services.AddDbContext<GoodSqlServerDbContext>(config);
+        services.AddDbContext<GoodSqlServerDbContext>(configurationRoot);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var service = serviceProvider.GetService<GoodSqlServerDbContext>();
@@ -75,9 +75,9 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
     public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodSqlServerDbContext>(config, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodSqlServerDbContext>(configurationRoot, "foobar"));
         Assert.Contains("foobar", ex.Message);
     }
 
@@ -91,9 +91,9 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodSqlServerDbContext>(config));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodSqlServerDbContext>(configurationRoot));
         Assert.Contains("Multiple", ex.Message);
     }
 
@@ -106,10 +106,10 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddDbContext<GoodSqlServerDbContext>(config);
-        services.AddDbContext<Good2SqlServerDbContext>(config);
+        services.AddDbContext<GoodSqlServerDbContext>(configurationRoot);
+        services.AddDbContext<Good2SqlServerDbContext>(configurationRoot);
 
         ServiceProvider built = services.BuildServiceProvider();
         var service = built.GetService<GoodSqlServerDbContext>();

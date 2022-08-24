@@ -18,9 +18,9 @@ internal sealed class TestServiceInfoCreator : ServiceInfoCreator
     {
     }
 
-    public new static TestServiceInfoCreator Instance(IConfiguration config)
+    public new static TestServiceInfoCreator Instance(IConfiguration configuration)
     {
-        var creator = new TestServiceInfoCreator(config);
+        var creator = new TestServiceInfoCreator(configuration);
         creator.BuildServiceInfoFactories();
         creator.BuildServiceInfos();
         return creator;

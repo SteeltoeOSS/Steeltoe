@@ -11,7 +11,7 @@ using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Binder;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Util;
 using Xunit;
 

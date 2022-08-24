@@ -35,15 +35,15 @@ public class MongoDbConnectorOptions : AbstractServiceConnectorOptions
     {
     }
 
-    public MongoDbConnectorOptions(IConfiguration config)
+    public MongoDbConnectorOptions(IConfiguration configuration)
         : base('&', '=')
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(MongodbClientSectionPrefix);
+        IConfigurationSection section = configuration.GetSection(MongodbClientSectionPrefix);
         section.Bind(this);
 
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+        _cloudFoundryConfigFound = configuration.HasCloudFoundryServiceConfigurations();
     }
 
     public override string ToString()

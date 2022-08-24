@@ -14,7 +14,7 @@ public class HystrixProviderConfigurerTest
     {
         var configurer = new HystrixProviderConfigurer();
 
-        var config = new HystrixProviderConnectorOptions
+        var options = new HystrixProviderConnectorOptions
         {
             Server = "localhost",
             Port = 1234,
@@ -23,14 +23,14 @@ public class HystrixProviderConfigurerTest
             VirtualHost = "vhost"
         };
 
-        configurer.UpdateConfiguration(null, config);
+        configurer.UpdateConfiguration(null, options);
 
-        Assert.Equal("localhost", config.Server);
-        Assert.Equal(1234, config.Port);
-        Assert.Equal("username", config.Username);
-        Assert.Equal("password", config.Password);
-        Assert.Equal("vhost", config.VirtualHost);
-        Assert.Null(config.Uri);
+        Assert.Equal("localhost", options.Server);
+        Assert.Equal(1234, options.Port);
+        Assert.Equal("username", options.Username);
+        Assert.Equal("password", options.Password);
+        Assert.Equal("vhost", options.VirtualHost);
+        Assert.Null(options.Uri);
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class HystrixProviderConfigurerTest
     {
         var configurer = new HystrixProviderConfigurer();
 
-        var config = new HystrixProviderConnectorOptions
+        var options = new HystrixProviderConnectorOptions
         {
             Server = "localhost",
             Port = 1234,
@@ -49,14 +49,14 @@ public class HystrixProviderConfigurerTest
 
         var si = new HystrixRabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost", false);
 
-        configurer.UpdateConfiguration(si, config);
+        configurer.UpdateConfiguration(si, options);
 
-        Assert.False(config.SslEnabled);
-        Assert.Equal("example.com", config.Server);
-        Assert.Equal(5672, config.Port);
-        Assert.Equal("si_username", config.Username);
-        Assert.Equal("si_password", config.Password);
-        Assert.Equal("si_vhost", config.VirtualHost);
+        Assert.False(options.SslEnabled);
+        Assert.Equal("example.com", options.Server);
+        Assert.Equal(5672, options.Port);
+        Assert.Equal("si_username", options.Username);
+        Assert.Equal("si_password", options.Password);
+        Assert.Equal("si_vhost", options.VirtualHost);
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class HystrixProviderConfigurerTest
     {
         var configurer = new HystrixProviderConfigurer();
 
-        var config = new HystrixProviderConnectorOptions
+        var options = new HystrixProviderConnectorOptions
         {
             Server = "localhost",
             Port = 1234,
@@ -75,20 +75,20 @@ public class HystrixProviderConfigurerTest
 
         var si = new HystrixRabbitMQServiceInfo("MyId", "amqps://si_username:si_password@example.com:5671/si_vhost", false);
 
-        configurer.UpdateConfiguration(si, config);
+        configurer.UpdateConfiguration(si, options);
 
-        Assert.True(config.SslEnabled);
-        Assert.Equal("example.com", config.Server);
-        Assert.Equal(5671, config.SslPort);
-        Assert.Equal("si_username", config.Username);
-        Assert.Equal("si_password", config.Password);
-        Assert.Equal("si_vhost", config.VirtualHost);
+        Assert.True(options.SslEnabled);
+        Assert.Equal("example.com", options.Server);
+        Assert.Equal(5671, options.SslPort);
+        Assert.Equal("si_username", options.Username);
+        Assert.Equal("si_password", options.Password);
+        Assert.Equal("si_vhost", options.VirtualHost);
     }
 
     [Fact]
     public void Configure_NoServiceInfo_ReturnsProvidedConnectorOptions()
     {
-        var config = new HystrixProviderConnectorOptions
+        var options = new HystrixProviderConnectorOptions
         {
             Server = "localhost",
             Port = 1234,
@@ -98,10 +98,10 @@ public class HystrixProviderConfigurerTest
         };
 
         var configurer = new HystrixProviderConfigurer();
-        string opts = configurer.Configure(null, config);
+        string opts = configurer.Configure(null, options);
         var uri = new UriInfo(opts);
 
-        Assert.False(config.SslEnabled);
+        Assert.False(options.SslEnabled);
         Assert.Equal("localhost", uri.Host);
         Assert.Equal(1234, uri.Port);
         Assert.Equal("username", uri.UserName);
@@ -112,7 +112,7 @@ public class HystrixProviderConfigurerTest
     [Fact]
     public void Configure_ServiceInfoOverridesConfig_ReturnsOverriddenConnectionString()
     {
-        var config = new HystrixProviderConnectorOptions
+        var options = new HystrixProviderConnectorOptions
         {
             Server = "localhost",
             Port = 1234,
@@ -124,7 +124,7 @@ public class HystrixProviderConfigurerTest
         var configurer = new HystrixProviderConfigurer();
         var si = new HystrixRabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost", false);
 
-        string opts = configurer.Configure(si, config);
+        string opts = configurer.Configure(si, options);
         var uri = new UriInfo(opts);
 
         Assert.Equal("example.com", uri.Host);
@@ -137,7 +137,7 @@ public class HystrixProviderConfigurerTest
     [Fact]
     public void Configure_SSLServiceInfoOverridesConfig_ReturnsOverriddenConnectionString()
     {
-        var config = new HystrixProviderConnectorOptions
+        var options = new HystrixProviderConnectorOptions
         {
             Server = "localhost",
             Port = 1234,
@@ -149,7 +149,7 @@ public class HystrixProviderConfigurerTest
         var configurer = new HystrixProviderConfigurer();
         var si = new HystrixRabbitMQServiceInfo("MyId", "amqps://si_username:si_password@example.com/si_vhost", false);
 
-        string opts = configurer.Configure(si, config);
+        string opts = configurer.Configure(si, options);
         var uri = new UriInfo(opts);
 
         Assert.Equal("example.com", uri.Host);

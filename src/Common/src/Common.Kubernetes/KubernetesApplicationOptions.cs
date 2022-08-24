@@ -8,9 +8,9 @@ namespace Steeltoe.Common.Kubernetes;
 
 public class KubernetesApplicationOptions : ApplicationInstanceInfo
 {
-    public static string PlatformConfigRoot => "spring:cloud:kubernetes";
+    public static string PlatformConfigurationRoot => "spring:cloud:kubernetes";
 
-    protected override string PlatformRoot => PlatformConfigRoot;
+    protected override string PlatformRoot => PlatformConfigurationRoot;
 
     public bool Enabled { get; set; } = true;
 
@@ -19,7 +19,7 @@ public class KubernetesApplicationOptions : ApplicationInstanceInfo
     public string NameSpace { get; set; } = "default";
 
     /// <summary>
-    /// Gets or sets properties for if/how reloading config data.
+    /// Gets or sets properties for if/how reloading configuration data.
     /// </summary>
     public ReloadSettings Reload { get; set; }
 
@@ -34,7 +34,7 @@ public class KubernetesApplicationOptions : ApplicationInstanceInfo
     public WatchableResource Secrets { get; set; }
 
     /// <summary>
-    /// Gets or sets the character used to separate the app and environment names when used for retrieving config maps or secrets.
+    /// Gets or sets the character used to separate the app and environment names when used for retrieving configuration maps or secrets.
     /// </summary>
     public string NameEnvironmentSeparator { get; set; } = ".";
 
@@ -42,11 +42,11 @@ public class KubernetesApplicationOptions : ApplicationInstanceInfo
     {
     }
 
-    public KubernetesApplicationOptions(IConfiguration config)
-        : base(config.GetSection(PlatformConfigRoot))
+    public KubernetesApplicationOptions(IConfiguration configuration)
+        : base(configuration.GetSection(PlatformConfigurationRoot))
     {
-        // override base class's use of config sub-section so that we can find spring:application:name
-        configuration = config;
+        // override base class's use of configuration sub-section so that we can find spring:application:name
+        this.configuration = configuration;
 
         Name ??= ApplicationNameInContext(SteeltoeComponent.Kubernetes);
         Config ??= new KubernetesConfiguration();

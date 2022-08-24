@@ -25,15 +25,15 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddDistributedRedisCache_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
 
-        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(config, config, "foobar"));
+        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(configurationRoot, configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex3.Message);
     }
 
@@ -41,16 +41,16 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddDistributedRedisCache_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
         IConfigurationRoot connectionConfig = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(config, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
 
-        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(config, connectionConfig, "foobar"));
+        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(configuration, connectionConfig, "foobar"));
         Assert.Contains("applicationConfiguration", ex3.Message);
     }
 
@@ -58,10 +58,10 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddDistributedRedisCache_ThrowsIfServiceNameNull()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         const string serviceName = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(config, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -69,9 +69,9 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddDistributedRedisCache_NoVCAPs_AddsDistributedCache()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        services.AddDistributedRedisCache(config);
+        services.AddDistributedRedisCache(configurationRoot);
         var service = services.BuildServiceProvider().GetService<IDistributedCache>();
 
         Assert.NotNull(service);
@@ -84,9 +84,9 @@ public class RedisCacheServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddDistributedRedisCache(config);
+        services.AddDistributedRedisCache(configurationRoot);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
 
         Assert.NotNull(healthContributor);
@@ -98,13 +98,13 @@ public class RedisCacheServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var cm = new ConnectionStringManager(config);
+        var cm = new ConnectionStringManager(configurationRoot);
         Connection ci = cm.Get<RedisConnectionInfo>();
         services.AddHealthChecks().AddRedis(ci.ConnectionString, ci.Name);
 
-        services.AddDistributedRedisCache(config);
+        services.AddDistributedRedisCache(configurationRoot);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
 
         Assert.Null(healthContributor);
@@ -116,13 +116,13 @@ public class RedisCacheServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var cm = new ConnectionStringManager(config);
+        var cm = new ConnectionStringManager(configurationRoot);
         Connection ci = cm.Get<RedisConnectionInfo>();
         services.AddHealthChecks().AddRedis(ci.ConnectionString, ci.Name);
 
-        services.AddDistributedRedisCache(config, true);
+        services.AddDistributedRedisCache(configurationRoot, true);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
 
         Assert.NotNull(healthContributor);
@@ -132,12 +132,12 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddDistributedRedisCache_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddDistributedRedisCache(config, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddDistributedRedisCache(configurationRoot, "foobar"));
         Assert.Contains("foobar", ex.Message);
 
-        var ex2 = Assert.Throws<ConnectorException>(() => services.AddDistributedRedisCache(config, config, "foobar"));
+        var ex2 = Assert.Throws<ConnectorException>(() => services.AddDistributedRedisCache(configurationRoot, configurationRoot, "foobar"));
         Assert.Contains("foobar", ex2.Message);
     }
 
@@ -151,12 +151,12 @@ public class RedisCacheServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddDistributedRedisCache(config));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddDistributedRedisCache(configurationRoot));
         Assert.Contains("Multiple", ex.Message);
 
-        var ex2 = Assert.Throws<ConnectorException>(() => services.AddDistributedRedisCache(config, config, null));
+        var ex2 = Assert.Throws<ConnectorException>(() => services.AddDistributedRedisCache(configurationRoot, configurationRoot, null));
         Assert.Contains("Multiple", ex2.Message);
     }
 
@@ -164,15 +164,15 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddRedisConnectionMultiplexer_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
 
-        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(config, config, "foobar"));
+        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(configurationRoot, configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex3.Message);
     }
 
@@ -180,16 +180,16 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddRedisConnectionMultiplexer_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
         IConfigurationRoot connectionConfig = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(config, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
 
-        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(config, connectionConfig, "foobar"));
+        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(configuration, connectionConfig, "foobar"));
         Assert.Contains("applicationConfiguration", ex3.Message);
     }
 
@@ -197,10 +197,10 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddRedisConnectionMultiplexer_ThrowsIfServiceNameNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
         const string serviceName = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(config, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -218,15 +218,15 @@ public class RedisCacheServiceCollectionExtensionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
         IServiceCollection services2 = new ServiceCollection();
 
-        services.AddRedisConnectionMultiplexer(config);
+        services.AddRedisConnectionMultiplexer(configurationRoot);
         var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
 
-        services2.AddRedisConnectionMultiplexer(config, config, null);
+        services2.AddRedisConnectionMultiplexer(configurationRoot, configurationRoot, null);
         var service2 = services2.BuildServiceProvider().GetService<IConnectionMultiplexer>();
 
         Assert.NotNull(service);
@@ -243,9 +243,9 @@ public class RedisCacheServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddRedisConnectionMultiplexer(config);
+        services.AddRedisConnectionMultiplexer(configurationRoot);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
 
         Assert.NotNull(healthContributor);
@@ -267,9 +267,9 @@ public class RedisCacheServiceCollectionExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddRedisConnectionMultiplexer(config);
+        services.AddRedisConnectionMultiplexer(configurationRoot);
         var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
 
         Assert.NotNull(service);
@@ -294,9 +294,9 @@ public class RedisCacheServiceCollectionExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddRedisConnectionMultiplexer(config);
+        services.AddRedisConnectionMultiplexer(configurationRoot);
         var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
 
         Assert.NotNull(service);
@@ -322,9 +322,9 @@ public class RedisCacheServiceCollectionExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddRedisConnectionMultiplexer(config);
+        services.AddRedisConnectionMultiplexer(configurationRoot);
         var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
 
         Assert.NotNull(service);
@@ -349,9 +349,9 @@ public class RedisCacheServiceCollectionExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddRedisConnectionMultiplexer(config);
+        services.AddRedisConnectionMultiplexer(configurationRoot);
         var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
 
         Assert.NotNull(service);
@@ -366,12 +366,12 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddRedisConnectionMultiplexer_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddRedisConnectionMultiplexer(config, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddRedisConnectionMultiplexer(configurationRoot, "foobar"));
         Assert.Contains("foobar", ex.Message);
 
-        var ex2 = Assert.Throws<ConnectorException>(() => services.AddRedisConnectionMultiplexer(config, config, "foobar"));
+        var ex2 = Assert.Throws<ConnectorException>(() => services.AddRedisConnectionMultiplexer(configurationRoot, configurationRoot, "foobar"));
         Assert.Contains("foobar", ex2.Message);
     }
 }

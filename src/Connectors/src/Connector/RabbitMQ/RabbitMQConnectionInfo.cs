@@ -35,8 +35,8 @@ public class RabbitMQConnectionInfo : IConnectionInfo
 
     private Connection GetConnection(RabbitMQServiceInfo info, IConfiguration configuration)
     {
-        var rabbitConfig = new RabbitMQProviderConnectorOptions(configuration);
+        var options = new RabbitMQProviderConnectorOptions(configuration);
         var configurer = new RabbitMQProviderConfigurer();
-        return new Connection(configurer.Configure(info, rabbitConfig), "RabbitMQ", info);
+        return new Connection(configurer.Configure(info, options), "RabbitMQ", info);
     }
 }

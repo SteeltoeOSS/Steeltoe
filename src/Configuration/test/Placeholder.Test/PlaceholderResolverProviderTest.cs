@@ -161,9 +161,9 @@ public class PlaceholderResolverProviderTest
 
         configurationBuilder.AddJsonFile(fileName, false, true);
 
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var holder = new PlaceholderResolverProvider(new List<IConfigurationProvider>(config.Providers));
+        var holder = new PlaceholderResolverProvider(new List<IConfigurationProvider>(configurationRoot.Providers));
         IChangeToken token = holder.GetReloadToken();
         Assert.NotNull(token);
         Assert.False(token.HasChanged);
@@ -246,9 +246,9 @@ public class PlaceholderResolverProviderTest
 
         configurationBuilder.AddJsonFile(fileName, false, true);
 
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var holder = new PlaceholderResolverProvider(config);
+        var holder = new PlaceholderResolverProvider(configurationRoot);
         Assert.True(holder.TryGet("spring:cloud:config:name", out string val));
         Assert.Equal("myName", val);
 

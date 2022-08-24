@@ -62,7 +62,7 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task CloudFoundryEndpointMiddleware_ReturnsExpectedData()
     {
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
@@ -81,7 +81,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         // arrange a server and client
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
@@ -99,7 +99,7 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task CloudFoundryOptions_UseDefaultJsonSerializerOptions()
     {
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
@@ -117,7 +117,8 @@ public class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" }
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();

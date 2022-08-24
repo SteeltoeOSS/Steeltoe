@@ -13,10 +13,10 @@ public class PemConfigureCertificateOptionsTest
     [Fact]
     public void AddPemFiles_ReadsFiles_CreatesCertificate()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().AddPemFiles("instance.crt", "instance.key").Build();
-        Assert.NotNull(config["certificate"]);
-        Assert.NotNull(config["privateKey"]);
-        var pemConfig = new PemConfigureCertificateOptions(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddPemFiles("instance.crt", "instance.key").Build();
+        Assert.NotNull(configurationRoot["certificate"]);
+        Assert.NotNull(configurationRoot["privateKey"]);
+        var pemConfig = new PemConfigureCertificateOptions(configurationRoot);
         var opts = new CertificateOptions();
         pemConfig.Configure(opts);
         Assert.NotNull(opts.Certificate);

@@ -33,8 +33,8 @@ public class RandomValueExtensionsTest
             { "foo:bar", "value" }
         });
 
-        IConfigurationRoot config = builder.Build();
-        string value = config["foo:bar"];
+        IConfigurationRoot configurationRoot = builder.Build();
+        string value = configurationRoot["foo:bar"];
         Assert.Equal("value", value);
     }
 
@@ -46,8 +46,8 @@ public class RandomValueExtensionsTest
             { "foo:bar", "value" }
         });
 
-        IConfigurationRoot config = builder.Build();
-        string value = config["random:string"];
+        IConfigurationRoot configurationRoot = builder.Build();
+        string value = configurationRoot["random:string"];
         Assert.NotNull(value);
     }
 
@@ -59,8 +59,8 @@ public class RandomValueExtensionsTest
             { "foo:bar", "value" }
         });
 
-        IConfigurationRoot config = builder.Build();
-        string value = config["random:uuid"];
+        IConfigurationRoot configurationRoot = builder.Build();
+        string value = configurationRoot["random:uuid"];
         Assert.NotNull(value);
     }
 
@@ -72,8 +72,8 @@ public class RandomValueExtensionsTest
             { "foo:bar", "value" }
         });
 
-        IConfigurationRoot config = builder.Build();
-        string value = config["random:int"];
+        IConfigurationRoot configurationRoot = builder.Build();
+        string value = configurationRoot["random:int"];
         Assert.NotNull(value);
     }
 
@@ -85,8 +85,8 @@ public class RandomValueExtensionsTest
             { "foo:bar", "value" }
         });
 
-        IConfigurationRoot config = builder.Build();
-        string value = config["random:int[4,10]"];
+        IConfigurationRoot configurationRoot = builder.Build();
+        string value = configurationRoot["random:int[4,10]"];
         Assert.NotNull(value);
         int val = int.Parse(value);
         Assert.InRange(val, 4, 10);
@@ -100,8 +100,8 @@ public class RandomValueExtensionsTest
             { "foo:bar", "value" }
         });
 
-        IConfigurationRoot config = builder.Build();
-        string value = config["random:int(10)"];
+        IConfigurationRoot configurationRoot = builder.Build();
+        string value = configurationRoot["random:int(10)"];
         Assert.NotNull(value);
         int val = int.Parse(value);
         Assert.InRange(val, 0, 10);
@@ -115,8 +115,8 @@ public class RandomValueExtensionsTest
             { "foo:bar", "value" }
         });
 
-        IConfigurationRoot config = builder.Build();
-        string value = config["random:long"];
+        IConfigurationRoot configurationRoot = builder.Build();
+        string value = configurationRoot["random:long"];
         Assert.NotNull(value);
     }
 
@@ -128,8 +128,8 @@ public class RandomValueExtensionsTest
             { "foo:bar", "value" }
         });
 
-        IConfigurationRoot config = builder.Build();
-        string value = config["random:long[4,10]"];
+        IConfigurationRoot configurationRoot = builder.Build();
+        string value = configurationRoot["random:long[4,10]"];
         Assert.NotNull(value);
         int val = int.Parse(value);
         Assert.InRange(val, 4, 10);
@@ -143,8 +143,8 @@ public class RandomValueExtensionsTest
             { "foo:bar", "value" }
         });
 
-        IConfigurationRoot config = builder.Build();
-        string value = config["random:long(10)"];
+        IConfigurationRoot configurationRoot = builder.Build();
+        string value = configurationRoot["random:long(10)"];
         Assert.NotNull(value);
         int val = int.Parse(value);
         Assert.InRange(val, 0, 10);

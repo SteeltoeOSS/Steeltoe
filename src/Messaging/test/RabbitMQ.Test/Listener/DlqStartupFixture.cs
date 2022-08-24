@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 
@@ -25,11 +25,11 @@ public sealed class DlqStartupFixture : IDisposable
         Provider.GetRequiredService<IHostedService>().StartAsync(default).Wait();
     }
 
-    public ServiceCollection CreateContainer(IConfiguration config = null)
+    public ServiceCollection CreateContainer(IConfiguration configuration = null)
     {
         var services = new ServiceCollection();
 
-        config ??= new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        configuration ??= new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
             { "spring:rabbitmq:listener:direct:PossibleAuthenticationFailureFatal", "False" }
         }).Build();
@@ -41,8 +41,8 @@ public sealed class DlqStartupFixture : IDisposable
             b.AddConsole();
         });
 
-        services.ConfigureRabbitOptions(config);
-        services.AddSingleton(config);
+        services.ConfigureRabbitOptions(configuration);
+        services.AddSingleton(configuration);
         services.AddRabbitHostingServices();
         services.AddRabbitJsonMessageConverter();
         services.AddRabbitMessageHandlerMethodFactory();
@@ -80,7 +80,7 @@ public sealed class DlqStartupFixture : IDisposable
         });
 
         services.AddSingleton<Listener>();
-        services.AddRabbitListeners<Listener>(config);
+        services.AddRabbitListeners<Listener>(configuration);
         services.AddRabbitTemplate();
 
         return services;

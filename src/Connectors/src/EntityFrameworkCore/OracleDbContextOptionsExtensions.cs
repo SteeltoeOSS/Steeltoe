@@ -14,49 +14,50 @@ namespace Steeltoe.Connector.Oracle.EntityFrameworkCore;
 
 public static class OracleDbContextOptionsExtensions
 {
-    public static DbContextOptionsBuilder UseOracle(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object oracleOptionsAction = null)
-    {
-        ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
-
-        string connection = GetConnection(config);
-
-        return DoUseOracle(optionsBuilder, connection, oracleOptionsAction);
-    }
-
-    public static DbContextOptionsBuilder UseOracle(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName,
+    public static DbContextOptionsBuilder UseOracle(this DbContextOptionsBuilder optionsBuilder, IConfiguration configuration,
         object oracleOptionsAction = null)
     {
         ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
-        ArgumentGuard.NotNullOrEmpty(serviceName);
+        ArgumentGuard.NotNull(configuration);
 
-        string connection = GetConnection(config, serviceName);
+        string connection = GetConnection(configuration);
 
         return DoUseOracle(optionsBuilder, connection, oracleOptionsAction);
     }
 
-    public static DbContextOptionsBuilder<TContext> UseOracle<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config,
+    public static DbContextOptionsBuilder UseOracle(this DbContextOptionsBuilder optionsBuilder, IConfiguration configuration, string serviceName,
+        object oracleOptionsAction = null)
+    {
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNullOrEmpty(serviceName);
+
+        string connection = GetConnection(configuration, serviceName);
+
+        return DoUseOracle(optionsBuilder, connection, oracleOptionsAction);
+    }
+
+    public static DbContextOptionsBuilder<TContext> UseOracle<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration configuration,
         object oracleOptionsAction = null)
         where TContext : DbContext
     {
         ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        string connection = GetConnection(config);
+        string connection = GetConnection(configuration);
 
         return DoUseOracle(optionsBuilder, connection, oracleOptionsAction);
     }
 
-    public static DbContextOptionsBuilder<TContext> UseOracle<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config,
+    public static DbContextOptionsBuilder<TContext> UseOracle<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration configuration,
         string serviceName, object oracleOptionsAction = null)
         where TContext : DbContext
     {
         ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNullOrEmpty(serviceName);
 
-        string connection = GetConnection(config, serviceName);
+        string connection = GetConnection(configuration, serviceName);
 
         return DoUseOracle(optionsBuilder, connection, oracleOptionsAction);
     }
@@ -114,15 +115,15 @@ public static class OracleDbContextOptionsExtensions
         return false;
     }
 
-    private static string GetConnection(IConfiguration config, string serviceName = null)
+    private static string GetConnection(IConfiguration configuration, string serviceName = null)
     {
         OracleServiceInfo info = string.IsNullOrEmpty(serviceName)
-            ? config.GetSingletonServiceInfo<OracleServiceInfo>()
-            : config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
+            ? configuration.GetSingletonServiceInfo<OracleServiceInfo>()
+            : configuration.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
 
-        var oracleConfig = new OracleProviderConnectorOptions(config);
+        var options = new OracleProviderConnectorOptions(configuration);
 
-        var factory = new OracleProviderConnectorFactory(info, oracleConfig, null);
+        var factory = new OracleProviderConnectorFactory(info, options, null);
 
         return factory.CreateConnectionString();
     }

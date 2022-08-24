@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Tracing;
 
 public class TracingOptions : ITracingOptions
 {
-    internal const string ConfigPrefix = "management:tracing";
+    internal const string ConfigurationPrefix = "management:tracing";
 
     internal const string DefaultIngressIgnorePattern =
         "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
@@ -20,7 +20,7 @@ public class TracingOptions : ITracingOptions
     private readonly IApplicationInstanceInfo _applicationInstanceInfo;
 
     /// <inheritdoc />
-    public string Name => _applicationInstanceInfo?.ApplicationNameInContext(SteeltoeComponent.Management, $"{ConfigPrefix}:name");
+    public string Name => _applicationInstanceInfo?.ApplicationNameInContext(SteeltoeComponent.Management, $"{ConfigurationPrefix}:name");
 
     /// <inheritdoc />
     public string IngressIgnorePattern { get; set; }
@@ -52,11 +52,11 @@ public class TracingOptions : ITracingOptions
     /// <inheritdoc />
     public Uri ExporterEndpoint { get; set; }
 
-    public TracingOptions(IApplicationInstanceInfo appInfo, IConfiguration config)
+    public TracingOptions(IApplicationInstanceInfo appInfo, IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(ConfigPrefix);
+        IConfigurationSection section = configuration.GetSection(ConfigurationPrefix);
 
         if (section != null)
         {

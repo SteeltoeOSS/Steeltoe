@@ -11,7 +11,7 @@ using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Support;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Host;
@@ -228,9 +228,9 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection ConfigureRabbitOptions(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection ConfigureRabbitOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddOptions<RabbitOptions>().Bind(config.GetSection(RabbitOptions.Prefix)).Configure<IServiceProvider>((options, provider) =>
+        services.AddOptions<RabbitOptions>().Bind(configuration.GetSection(RabbitOptions.Prefix)).Configure<IServiceProvider>((options, provider) =>
         {
             using IServiceScope scope = provider.CreateScope();
             var connectionFactory = scope.ServiceProvider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;

@@ -10,7 +10,7 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Attributes;
-using Steeltoe.Integration.Config;
+using Steeltoe.Integration.Configuration;
 using Steeltoe.Integration.Extensions;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
@@ -375,8 +375,8 @@ public class MethodInvokingMessageProcessorTest
     private IServiceCollection GetDefaultContainer()
     {
         var serviceCollection = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        serviceCollection.AddSingleton<IConfiguration>(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
         serviceCollection.AddLogging();
 
         serviceCollection.AddGenericApplicationContext((_, context) =>

@@ -333,10 +333,10 @@ public class DynamicLoggerProviderTest
         logger.LogTrace("Trace message");
     }
 
-    private ILoggerProvider GetLoggerProvider(IConfiguration config)
+    private ILoggerProvider GetLoggerProvider(IConfiguration configuration)
     {
         ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
-                builder.AddConfiguration(config.GetSection("Logging")).AddDynamicConsole().AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace))
+                builder.AddConfiguration(configuration.GetSection("Logging")).AddDynamicConsole().AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace))
             .BuildServiceProvider();
 
         return serviceProvider.GetRequiredService<ILoggerProvider>();

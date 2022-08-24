@@ -23,7 +23,7 @@ public static class MySqlDbContextServiceCollectionExtensions
     /// <param name="services">
     /// Service Collection.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application Configuration.
     /// </param>
     /// <param name="contextLifetime">
@@ -32,14 +32,14 @@ public static class MySqlDbContextServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config,
+    public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
-        DoAdd(services, config, info, typeof(TContext), contextLifetime);
+        var info = configuration.GetSingletonServiceInfo<MySqlServiceInfo>();
+        DoAdd(services, configuration, info, typeof(TContext), contextLifetime);
 
         return services;
     }
@@ -53,7 +53,7 @@ public static class MySqlDbContextServiceCollectionExtensions
     /// <param name="services">
     /// Service Collection.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application Configuration.
     /// </param>
     /// <param name="serviceName">
@@ -65,26 +65,27 @@ public static class MySqlDbContextServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName,
+    public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
-        DoAdd(services, config, info, typeof(TContext), contextLifetime);
+        var info = configuration.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+        DoAdd(services, configuration, info, typeof(TContext), contextLifetime);
 
         return services;
     }
 
-    private static void DoAdd(IServiceCollection services, IConfiguration config, MySqlServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
+    private static void DoAdd(IServiceCollection services, IConfiguration configuration, MySqlServiceInfo info, Type dbContextType,
+        ServiceLifetime contextLifetime)
     {
-        var mySqlConfig = new MySqlProviderConnectorOptions(config);
+        var options = new MySqlProviderConnectorOptions(configuration);
 
-        var factory = new MySqlDbContextConnectorFactory(info, mySqlConfig, dbContextType);
+        var factory = new MySqlDbContextConnectorFactory(info, options, dbContextType);
         services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
-        var healthFactory = new MySqlProviderConnectorFactory(info, mySqlConfig, MySqlTypeLocator.MySqlConnection);
+        var healthFactory = new MySqlProviderConnectorFactory(info, options, MySqlTypeLocator.MySqlConnection);
 
         services.Add(new ServiceDescriptor(typeof(IHealthContributor),
             ctx => new RelationalDbHealthContributor((IDbConnection)healthFactory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),

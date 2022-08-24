@@ -14,7 +14,7 @@ public class SpringBootAdminClientOptionsTest
     public void Constructor_ThrowsOnNulls()
     {
         var ex1 = Assert.Throws<ArgumentNullException>(() => new SpringBootAdminClientOptions(null, new ApplicationInstanceInfo()));
-        Assert.Equal("config", ex1.ParamName);
+        Assert.Equal("configuration", ex1.ParamName);
         var ex2 = Assert.Throws<ArgumentNullException>(() => new SpringBootAdminClientOptions(new ConfigurationBuilder().Build(), null));
         Assert.Equal("appInfo", ex2.ParamName);
     }
@@ -36,10 +36,10 @@ public class SpringBootAdminClientOptionsTest
             { "application:Uris:0", "http://somehost" }
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        var appInfo = new ApplicationInstanceInfo(config, string.Empty);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        var appInfo = new ApplicationInstanceInfo(configurationRoot, string.Empty);
 
-        var opts = new SpringBootAdminClientOptions(config, appInfo);
+        var opts = new SpringBootAdminClientOptions(configurationRoot, appInfo);
 
         Assert.NotNull(opts);
         Assert.Equal("http://somehost", opts.BasePath);
@@ -60,9 +60,9 @@ public class SpringBootAdminClientOptionsTest
             ["ApplicationName"] = "OtherApplicationName"
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        var opts = new SpringBootAdminClientOptions(config, new ApplicationInstanceInfo(config));
+        var opts = new SpringBootAdminClientOptions(configurationRoot, new ApplicationInstanceInfo(configurationRoot));
 
         Assert.NotNull(opts);
         Assert.Equal("MySteeltoeApplication", opts.ApplicationName);
@@ -81,9 +81,9 @@ public class SpringBootAdminClientOptionsTest
             { "spring:boot:admin:client:basepath", "http://somehost" }
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        var opts = new SpringBootAdminClientOptions(config, new ApplicationInstanceInfo(config));
+        var opts = new SpringBootAdminClientOptions(configurationRoot, new ApplicationInstanceInfo(configurationRoot));
 
         Assert.NotNull(opts);
         Assert.NotEmpty(opts.ApplicationName);

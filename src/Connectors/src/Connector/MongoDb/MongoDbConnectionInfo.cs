@@ -35,8 +35,8 @@ public class MongoDbConnectionInfo : IConnectionInfo
 
     private Connection GetConnection(MongoDbServiceInfo info, IConfiguration configuration)
     {
-        var mongoConfig = new MongoDbConnectorOptions(configuration);
+        var options = new MongoDbConnectorOptions(configuration);
         var configurer = new MongoDbProviderConfigurer();
-        return new Connection(configurer.Configure(info, mongoConfig), "MongoDb", info);
+        return new Connection(configurer.Configure(info, options), "MongoDb", info);
     }
 }

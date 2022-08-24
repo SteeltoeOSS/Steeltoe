@@ -56,11 +56,11 @@ public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
     {
     }
 
-    public SqlServerProviderConnectorOptions(IConfiguration config)
+    public SqlServerProviderConnectorOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(SqlClientSectionPrefix);
+        IConfigurationSection section = configuration.GetSection(SqlClientSectionPrefix);
 
         section.Bind(this);
 
@@ -75,7 +75,7 @@ public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
 
         section.Bind(this);
 
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+        _cloudFoundryConfigFound = configuration.HasCloudFoundryServiceConfigurations();
     }
 
     public override string ToString()

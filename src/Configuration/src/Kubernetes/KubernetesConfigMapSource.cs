@@ -11,16 +11,16 @@ internal sealed class KubernetesConfigMapSource : IConfigurationSource
 {
     private IKubernetes KubernetesClient { get; }
 
-    private KubernetesConfigSourceSettings ConfigSettings { get; }
+    private KubernetesConfigSourceSettings ConfigurationSettings { get; }
 
     internal KubernetesConfigMapSource(IKubernetes kubernetesClient, KubernetesConfigSourceSettings settings)
     {
         KubernetesClient = kubernetesClient;
-        ConfigSettings = settings;
+        ConfigurationSettings = settings;
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        return new KubernetesConfigMapProvider(KubernetesClient, ConfigSettings);
+        return new KubernetesConfigMapProvider(KubernetesClient, ConfigurationSettings);
     }
 }

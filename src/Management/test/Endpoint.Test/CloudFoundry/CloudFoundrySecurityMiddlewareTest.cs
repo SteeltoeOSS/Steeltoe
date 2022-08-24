@@ -39,7 +39,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         };
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings));
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         // Application Id Missing
         using (var server = new TestServer(builder))
@@ -66,7 +66,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         };
 
         IWebHostBuilder builder2 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings2));
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings2));
 
         // CloudFoundry Api missing
         using (var server = new TestServer(builder2))
@@ -94,7 +94,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         };
 
         IWebHostBuilder builder3 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings3));
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings3));
 
         // Endpoint not configured
         using (var server = new TestServer(builder3))
@@ -122,7 +122,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         };
 
         IWebHostBuilder builder4 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings4));
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings4));
 
         using (var server = new TestServer(builder4))
         {
@@ -152,7 +152,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         };
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings));
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using (var server = new TestServer(builder))
         {
@@ -180,7 +180,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         };
 
         IWebHostBuilder builder3 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings3));
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings3));
 
         using (var server = new TestServer(builder3))
         {
@@ -213,7 +213,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         };
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings));
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
@@ -262,7 +262,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         };
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupWithSecurity>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings));
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
@@ -292,10 +292,10 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupWithSecurity>().ConfigureAppConfiguration((_, config) =>
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupWithSecurity>().ConfigureAppConfiguration((_, configuration) =>
         {
-            config.AddInMemoryCollection(appSettings);
-            config.AddEnvironmentVariables();
+            configuration.AddInMemoryCollection(appSettings);
+            configuration.AddEnvironmentVariables();
         });
 
         using var server = new TestServer(builder);

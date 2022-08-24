@@ -4,7 +4,7 @@
 
 using System.Reactive.Observable.Aliases;
 using Microsoft.AspNetCore.Mvc;
-using Steeltoe.CircuitBreaker.Hystrix.Config;
+using Steeltoe.CircuitBreaker.Hystrix.Configuration;
 using Steeltoe.CircuitBreaker.Hystrix.Serial;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers;

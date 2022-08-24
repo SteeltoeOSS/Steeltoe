@@ -38,8 +38,8 @@ public class RelationalDbHealthContributor : IHealthContributor
 
         var info = configuration.GetSingletonServiceInfo<MySqlServiceInfo>();
         Type mySqlConnection = ReflectionHelpers.FindType(MySqlTypeLocator.Assemblies, MySqlTypeLocator.ConnectionTypeNames);
-        var mySqlConfig = new MySqlProviderConnectorOptions(configuration);
-        var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
+        var options = new MySqlProviderConnectorOptions(configuration);
+        var factory = new MySqlProviderConnectorFactory(info, options, mySqlConnection);
         var connection = factory.Create(null) as IDbConnection;
         return new RelationalDbHealthContributor(connection, logger);
     }
@@ -50,8 +50,8 @@ public class RelationalDbHealthContributor : IHealthContributor
 
         var info = configuration.GetSingletonServiceInfo<PostgresServiceInfo>();
         Type postgresConnection = ReflectionHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
-        var postgresConfig = new PostgresProviderConnectorOptions(configuration);
-        var factory = new PostgresProviderConnectorFactory(info, postgresConfig, postgresConnection);
+        var options = new PostgresProviderConnectorOptions(configuration);
+        var factory = new PostgresProviderConnectorFactory(info, options, postgresConnection);
         var connection = factory.Create(null) as IDbConnection;
         return new RelationalDbHealthContributor(connection, logger);
     }
@@ -62,8 +62,8 @@ public class RelationalDbHealthContributor : IHealthContributor
 
         var info = configuration.GetSingletonServiceInfo<SqlServerServiceInfo>();
         Type sqlServerConnection = SqlServerTypeLocator.SqlConnection;
-        var sqlServerConfig = new SqlServerProviderConnectorOptions(configuration);
-        var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
+        var options = new SqlServerProviderConnectorOptions(configuration);
+        var factory = new SqlServerProviderConnectorFactory(info, options, sqlServerConnection);
         var connection = factory.Create(null) as IDbConnection;
         return new RelationalDbHealthContributor(connection, logger);
     }
@@ -74,8 +74,8 @@ public class RelationalDbHealthContributor : IHealthContributor
 
         var info = configuration.GetSingletonServiceInfo<OracleServiceInfo>();
         Type oracleConnection = ReflectionHelpers.FindType(OracleTypeLocator.Assemblies, OracleTypeLocator.ConnectionTypeNames);
-        var oracleConfig = new OracleProviderConnectorOptions(configuration);
-        var factory = new OracleProviderConnectorFactory(info, oracleConfig, oracleConnection);
+        var options = new OracleProviderConnectorOptions(configuration);
+        var factory = new OracleProviderConnectorFactory(info, options, oracleConnection);
         var connection = factory.Create(null) as IDbConnection;
         return new RelationalDbHealthContributor(connection, logger);
     }

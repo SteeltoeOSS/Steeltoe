@@ -46,13 +46,13 @@ public class BootstrapperLoggerFactoryTests
             It.Is<It.IsAnyType>((o, t) => string.Equals("Test", o.ToString(), StringComparison.InvariantCultureIgnoreCase)), It.IsAny<Exception>(),
             It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)));
 
-        // test change to log levels after updated with config
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        // test change to log levels after updated with configuration
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
             { "Logging:LogLevel:Default", nameof(LogLevel.Warning) }
         }).Build();
 
-        sut.Update(config);
+        sut.Update(configurationRoot);
         logger.LogInformation("Test2");
 
         mockLogger.Verify(

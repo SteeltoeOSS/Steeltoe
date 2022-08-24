@@ -33,11 +33,11 @@ public class WavefrontExporterOptions : IWavefrontExporterOptions
 
     public string Cluster { get; set; }
 
-    public WavefrontExporterOptions(IConfiguration config)
+    public WavefrontExporterOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(WavefrontPrefix);
+        IConfigurationSection section = configuration.GetSection(WavefrontPrefix);
 
         if (section == null)
         {
@@ -45,6 +45,6 @@ public class WavefrontExporterOptions : IWavefrontExporterOptions
         }
 
         section.Bind(this);
-        ApplicationOptions = new WavefrontApplicationOptions(config);
+        ApplicationOptions = new WavefrontApplicationOptions(configuration);
     }
 }

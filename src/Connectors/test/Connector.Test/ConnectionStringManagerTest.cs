@@ -38,9 +38,9 @@ public class ConnectionStringManagerTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
-        IConfigurationRoot config = new ConfigurationBuilder().AddCloudFoundry().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCloudFoundry().Build();
 
-        var cm = new ConnectionStringManager(config);
+        var cm = new ConnectionStringManager(configurationRoot);
         Connection connInfo = cm.Get<MySqlConnectionInfo>("spring-cloud-broker-db");
 
         Assert.NotNull(connInfo);

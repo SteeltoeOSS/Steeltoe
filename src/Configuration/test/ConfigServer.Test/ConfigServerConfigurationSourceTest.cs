@@ -49,14 +49,14 @@ public class ConfigServerConfigurationSourceTest
         Assert.Single(source.Properties);
         Assert.Equal("bar", source.Properties["foo"]);
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        source = new ConfigServerConfigurationSource(settings, config, factory);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection().Build();
+        source = new ConfigServerConfigurationSource(settings, configurationRoot, factory);
         Assert.Equal(settings, source.DefaultSettings);
         Assert.Equal(factory, source.LogFactory);
         Assert.NotNull(source.Configuration);
         var root = source.Configuration as IConfigurationRoot;
         Assert.NotNull(root);
-        Assert.Same(config, root);
+        Assert.Same(configurationRoot, root);
     }
 
     [Fact]

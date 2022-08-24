@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
@@ -69,7 +68,7 @@ public class CloudFoundryHostBuilderExtensionsTest
         hostbuilder.AddCloudFoundryConfiguration();
         WebApplication host = hostbuilder.Build();
 
-        var config = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
-        Assert.Contains(config.Providers, provider => provider is CloudFoundryConfigurationProvider);
+        var configurationRoot = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
+        Assert.Contains(configurationRoot.Providers, provider => provider is CloudFoundryConfigurationProvider);
     }
 }

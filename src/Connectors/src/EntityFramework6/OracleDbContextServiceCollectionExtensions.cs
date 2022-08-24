@@ -25,7 +25,7 @@ public static class OracleDbContextServiceCollectionExtensions
     /// <param name="services">
     /// Service Collection.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application Configuration.
     /// </param>
     /// <param name="contextLifetime">
@@ -37,14 +37,14 @@ public static class OracleDbContextServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config,
+    public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetSingletonServiceInfo<OracleServiceInfo>();
-        DoAdd(services, config, info, typeof(TContext), contextLifetime, logFactory?.CreateLogger("OracleDbContextServiceCollectionExtensions"));
+        var info = configuration.GetSingletonServiceInfo<OracleServiceInfo>();
+        DoAdd(services, configuration, info, typeof(TContext), contextLifetime, logFactory?.CreateLogger("OracleDbContextServiceCollectionExtensions"));
 
         return services;
     }
@@ -58,7 +58,7 @@ public static class OracleDbContextServiceCollectionExtensions
     /// <param name="services">
     /// Service Collection.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application Configuration.
     /// </param>
     /// <param name="serviceName">
@@ -73,30 +73,30 @@ public static class OracleDbContextServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName,
+    public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
-        DoAdd(services, config, info, typeof(TContext), contextLifetime, logFactory?.CreateLogger("OracleDbContextServiceCollectionExtensions"));
+        var info = configuration.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
+        DoAdd(services, configuration, info, typeof(TContext), contextLifetime, logFactory?.CreateLogger("OracleDbContextServiceCollectionExtensions"));
 
         return services;
     }
 
-    private static void DoAdd(IServiceCollection services, IConfiguration config, OracleServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime,
-        ILogger logger = null)
+    private static void DoAdd(IServiceCollection services, IConfiguration configuration, OracleServiceInfo info, Type dbContextType,
+        ServiceLifetime contextLifetime, ILogger logger = null)
     {
-        var oracleConfig = new OracleProviderConnectorOptions(config);
+        var options = new OracleProviderConnectorOptions(configuration);
 
-        var factory = new OracleDbContextConnectorFactory(info, oracleConfig, dbContextType);
+        var factory = new OracleDbContextConnectorFactory(info, options, dbContextType);
         services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
 
         try
         {
-            var healthFactory = new OracleProviderConnectorFactory(info, oracleConfig, OracleTypeLocator.OracleConnection);
+            var healthFactory = new OracleProviderConnectorFactory(info, options, OracleTypeLocator.OracleConnection);
 
             services.Add(new ServiceDescriptor(typeof(IHealthContributor),
                 ctx => new RelationalDbHealthContributor((IDbConnection)healthFactory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),

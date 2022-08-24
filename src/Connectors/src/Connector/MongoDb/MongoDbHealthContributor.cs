@@ -34,11 +34,11 @@ public class MongoDbHealthContributor : IHealthContributor
         ArgumentGuard.NotNull(configuration);
 
         var info = configuration.GetSingletonServiceInfo<MongoDbServiceInfo>();
-        var mongoOptions = new MongoDbConnectorOptions(configuration);
-        var factory = new MongoDbConnectorFactory(info, mongoOptions, MongoDbTypeLocator.MongoClient);
+        var options = new MongoDbConnectorOptions(configuration);
+        var factory = new MongoDbConnectorFactory(info, options, MongoDbTypeLocator.MongoClient);
         int timeout = 5000;
 
-        if (mongoOptions.Options.TryGetValue("connectTimeoutMS", out string value))
+        if (options.Options.TryGetValue("connectTimeoutMS", out string value))
         {
             int.TryParse(value, out timeout);
         }

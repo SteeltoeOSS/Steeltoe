@@ -14,16 +14,16 @@ public class EurekaApplicationHealthContributorTest
     public void GetApplicationsFromConfig_ReturnsExpected()
     {
         var contrib = new EurekaApplicationsHealthContributor();
-        var config = new EurekaClientConfig();
-        IList<string> apps = contrib.GetApplicationsFromConfig(config);
+        var configuration = new EurekaClientConfiguration();
+        IList<string> apps = contrib.GetApplicationsFromConfig(configuration);
         Assert.Null(apps);
 
-        config = new EurekaClientConfig
+        configuration = new EurekaClientConfiguration
         {
             HealthMonitoredApps = "foo,bar, boo "
         };
 
-        apps = contrib.GetApplicationsFromConfig(config);
+        apps = contrib.GetApplicationsFromConfig(configuration);
         Assert.NotEmpty(apps);
         Assert.Equal(3, apps.Count);
         Assert.Contains("foo", apps);

@@ -25,8 +25,8 @@ public class HealthEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
-        Assert.Throws<ArgumentNullException>(() => new HealthEndpointOptions(config));
+        const IConfiguration configuration = null;
+        Assert.Throws<ArgumentNullException>(() => new HealthEndpointOptions(configuration));
     }
 
     [Fact]
@@ -47,10 +47,10 @@ public class HealthEndpointOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new HealthEndpointOptions(config);
-        var cloudOpts = new CloudFoundryEndpointOptions(config);
+        var opts = new HealthEndpointOptions(configurationRoot);
+        var cloudOpts = new CloudFoundryEndpointOptions(configurationRoot);
 
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);
@@ -79,9 +79,9 @@ public class HealthEndpointOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new HealthEndpointOptions(config);
+        var opts = new HealthEndpointOptions(configurationRoot);
         Assert.NotNull(opts.Claim);
         Assert.Equal("claimtype", opts.Claim.Type);
         Assert.Equal("claimvalue", opts.Claim.Value);
@@ -97,9 +97,9 @@ public class HealthEndpointOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new HealthEndpointOptions(config);
+        var opts = new HealthEndpointOptions(configurationRoot);
         Assert.NotNull(opts.Claim);
         Assert.Equal(ClaimTypes.Role, opts.Claim.Type);
         Assert.Equal("roleclaimvalue", opts.Claim.Value);

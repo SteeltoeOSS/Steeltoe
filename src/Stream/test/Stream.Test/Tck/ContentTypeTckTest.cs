@@ -10,7 +10,7 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Channel;
-using Steeltoe.Integration.Config;
+using Steeltoe.Integration.Configuration;
 using Steeltoe.Integration.Extensions;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;

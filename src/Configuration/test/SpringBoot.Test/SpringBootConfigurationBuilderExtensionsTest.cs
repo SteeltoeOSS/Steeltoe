@@ -23,8 +23,8 @@ public class SpringBootConfigurationBuilderExtensionsTest
         Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootEnv();
-        IConfigurationRoot config = builder.Build();
-        string value = config["foo:bar"];
+        IConfigurationRoot configurationRoot = builder.Build();
+        string value = configurationRoot["foo:bar"];
         Assert.Equal("value", value);
     }
 
@@ -51,13 +51,13 @@ public class SpringBootConfigurationBuilderExtensionsTest
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootCmd(config1);
 
-        IConfigurationRoot config = builder.Build();
-        string value = config["spring:foo:bar"];
+        IConfigurationRoot configurationRoot = builder.Build();
+        string value = configurationRoot["spring:foo:bar"];
         Assert.Equal("value", value);
 
-        value = config["spring:bar:foo"];
+        value = configurationRoot["spring:bar:foo"];
         Assert.Equal("value2", value);
 
-        Assert.Null(config["bar:foo"]);
+        Assert.Null(configurationRoot["bar:foo"]);
     }
 }

@@ -23,9 +23,9 @@ public class ActuatorManagementOptionsTest : BaseTest
     public void Constructor_InitializesWithDefaultsOnCF()
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var opts = new ActuatorManagementOptions(config);
+        var opts = new ActuatorManagementOptions(configurationRoot);
         Assert.Equal("/actuator", opts.Path);
         Assert.Contains("health", opts.Exposure.Include);
         Assert.Contains("info", opts.Exposure.Include);
@@ -36,8 +36,8 @@ public class ActuatorManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
-        Assert.Throws<ArgumentNullException>(() => new ActuatorManagementOptions(config));
+        const IConfiguration configuration = null;
+        Assert.Throws<ArgumentNullException>(() => new ActuatorManagementOptions(configuration));
     }
 
     [Fact]
@@ -51,9 +51,9 @@ public class ActuatorManagementOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new ActuatorManagementOptions(config);
+        var opts = new ActuatorManagementOptions(configurationRoot);
 
         Assert.Equal("/management", opts.Path);
         Assert.False(opts.Enabled);
@@ -75,9 +75,9 @@ public class ActuatorManagementOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new ActuatorManagementOptions(config);
+        var opts = new ActuatorManagementOptions(configurationRoot);
 
         Assert.Equal("/management", opts.Path);
         Assert.False(opts.Enabled);
@@ -99,9 +99,9 @@ public class ActuatorManagementOptionsTest : BaseTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new ActuatorManagementOptions(config);
+        var opts = new ActuatorManagementOptions(configurationRoot);
 
         Assert.Equal("/actuator", opts.Path);
 

@@ -18,21 +18,21 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
     public void AddHystrixStreams_ThrowsIfServiceContainerNull()
     {
         const IServiceCollection services = null;
-        IConfiguration config = new ConfigurationBuilder().Build();
+        IConfiguration configuration = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConfigStream());
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMetricsStream(config));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMetricsStream(configuration));
         Assert.Contains(nameof(services), ex2.Message);
 
-        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams(config));
+        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams(configuration));
         Assert.Contains(nameof(services), ex3.Message);
 
         var ex4 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixRequestEventStream());
         Assert.Contains(nameof(services), ex4.Message);
 
-        var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams(config));
+        var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams(configuration));
         Assert.Contains(nameof(services), ex5.Message);
     }
 
@@ -40,9 +40,9 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
     public void AddHystrixMetricsStream_AddsExpectedServices()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfiguration config = new ConfigurationBuilder().Build();
+        IConfiguration configuration = new ConfigurationBuilder().Build();
         services.AddOptions();
-        services.AddHystrixMetricsStream(config);
+        services.AddHystrixMetricsStream(configuration);
         ServiceProvider provider = services.BuildServiceProvider();
 
         var dashStream = provider.GetService<HystrixDashboardStream>();

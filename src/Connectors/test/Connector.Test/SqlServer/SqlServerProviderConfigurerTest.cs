@@ -9,8 +9,8 @@ namespace Steeltoe.Connector.SqlServer.Test;
 
 public class SqlServerProviderConfigurerTest
 {
-    // shared variable to hold config (like from a source such as appsettings)
-    private readonly SqlServerProviderConnectorOptions _config = new()
+    // shared variable to hold configuration (like from a source such as appsettings)
+    private readonly SqlServerProviderConnectorOptions _options = new()
     {
         Server = "localhost",
         Port = 1433,
@@ -23,13 +23,13 @@ public class SqlServerProviderConfigurerTest
     public void UpdateConfiguration_WithNullSqlServerServiceInfo_ReturnsExpected()
     {
         var configurer = new SqlServerProviderConfigurer();
-        configurer.UpdateConfiguration(null, _config);
+        configurer.UpdateConfiguration(null, _options);
 
-        Assert.Equal("localhost", _config.Server);
-        Assert.Equal("username", _config.Username);
-        Assert.Equal("password", _config.Password);
-        Assert.Equal("database", _config.Database);
-        Assert.Null(_config.ConnectionString);
+        Assert.Equal("localhost", _options.Server);
+        Assert.Equal("username", _options.Username);
+        Assert.Equal("password", _options.Password);
+        Assert.Equal("database", _options.Database);
+        Assert.Null(_options.ConnectionString);
     }
 
     [Fact]
@@ -38,12 +38,12 @@ public class SqlServerProviderConfigurerTest
         var configurer = new SqlServerProviderConfigurer();
         var si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://updatedserver:1433/databaseName=updateddb", "updateduser", "updatedpassword");
 
-        configurer.UpdateConfiguration(si, _config);
+        configurer.UpdateConfiguration(si, _options);
 
-        Assert.Equal("updatedserver", _config.Server);
-        Assert.Equal("updateddb", _config.Database);
-        Assert.Equal("updateduser", _config.Username);
-        Assert.Equal("updatedpassword", _config.Password);
+        Assert.Equal("updatedserver", _options.Server);
+        Assert.Equal("updateddb", _options.Database);
+        Assert.Equal("updateduser", _options.Username);
+        Assert.Equal("updatedpassword", _options.Password);
     }
 
     [Fact]
@@ -52,19 +52,19 @@ public class SqlServerProviderConfigurerTest
         var configurer = new SqlServerProviderConfigurer();
         var si = new SqlServerServiceInfo("MyId", "sqlserver://updateduser:updatedpassword@updatedserver:1433;databaseName=updateddb");
 
-        configurer.UpdateConfiguration(si, _config);
+        configurer.UpdateConfiguration(si, _options);
 
-        Assert.Equal("updatedserver", _config.Server);
-        Assert.Equal("updateddb", _config.Database);
-        Assert.Equal("updateduser", _config.Username);
-        Assert.Equal("updatedpassword", _config.Password);
+        Assert.Equal("updatedserver", _options.Server);
+        Assert.Equal("updateddb", _options.Database);
+        Assert.Equal("updateduser", _options.Username);
+        Assert.Equal("updatedpassword", _options.Password);
     }
 
     [Fact]
     public void Configure_Without_ServiceInfo_Returns_Config()
     {
         var configurer = new SqlServerProviderConfigurer();
-        string opts = configurer.Configure(null, _config);
+        string opts = configurer.Configure(null, _options);
         Assert.Contains("Data Source=localhost,1433", opts);
         Assert.Contains("User Id=username;", opts);
         Assert.Contains("Password=password;", opts);
@@ -81,7 +81,7 @@ public class SqlServerProviderConfigurerTest
             "7E1LxXnlH2hhlPVt");
 
         // apply override
-        string opts = configurer.Configure(si, _config);
+        string opts = configurer.Configure(si, _options);
 
         // resulting options should contain values parsed from environment
         Assert.Contains("Data Source=servername,1433", opts);
@@ -100,7 +100,7 @@ public class SqlServerProviderConfigurerTest
             "jdbc:sqlserver://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@servername:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e");
 
         // apply override
-        string opts = configurer.Configure(si, _config);
+        string opts = configurer.Configure(si, _options);
 
         // resulting options should contain values parsed from environment
         Assert.Contains("Data Source=servername,1433", opts);
@@ -119,7 +119,7 @@ public class SqlServerProviderConfigurerTest
             "jdbc:sqlserver://servername/databaseName=de5aa3a747c134b3d8780f8cc80be519e;instanceName=someInstance;integratedSecurity=true");
 
         // apply override
-        string opts = configurer.Configure(si, _config);
+        string opts = configurer.Configure(si, _options);
 
         // resulting options should contain values parsed from environment
         Assert.Contains("Data Source=servername\\someInstance", opts);

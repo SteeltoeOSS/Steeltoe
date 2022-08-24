@@ -33,9 +33,9 @@ public class TestApplicationFactory<TStartup> : WebApplicationFactory<TStartup>
         IHostBuilder builder = Host.CreateDefaultBuilder().ConfigureWebHostDefaults(webHostBuilder =>
         {
             webHostBuilder.UseStartup<TStartup>().UseTestServer();
-        }).ConfigureAppConfiguration((_, config) =>
+        }).ConfigureAppConfiguration((_, configuration) =>
         {
-            config.AddInMemoryCollection(_configuration);
+            configuration.AddInMemoryCollection(_configuration);
         });
 
         return builder;

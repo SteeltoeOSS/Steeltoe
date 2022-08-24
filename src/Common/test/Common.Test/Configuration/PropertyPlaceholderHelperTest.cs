@@ -22,9 +22,9 @@ public class PropertyPlaceholderHelperTest
         };
 
         builder.AddInMemoryCollection(dic1);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, configurationRoot);
         Assert.Equal("foo=bar", result);
     }
 
@@ -40,9 +40,9 @@ public class PropertyPlaceholderHelperTest
         };
 
         builder.AddInMemoryCollection(dic1);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, configurationRoot);
         Assert.Equal("foo=bar", result);
     }
 
@@ -95,9 +95,9 @@ public class PropertyPlaceholderHelperTest
         };
 
         builder.AddInMemoryCollection(dic1);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, configurationRoot);
         Assert.Equal("foo=bar", result);
     }
 
@@ -114,9 +114,9 @@ public class PropertyPlaceholderHelperTest
         };
 
         builder.AddInMemoryCollection(dic1);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, configurationRoot);
         Assert.Equal("foo=bar", result);
     }
 
@@ -202,9 +202,9 @@ public class PropertyPlaceholderHelperTest
         };
 
         builder.AddInMemoryCollection(dic1);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, configurationRoot);
         Assert.Equal("foo=bar,bar=${bar}", result);
     }
 
@@ -247,11 +247,11 @@ public class PropertyPlaceholderHelperTest
         builder.SetBasePath(directory);
 
         builder.AddJsonFile(fileName);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
         const string text = "foo=${vcap:application:uris[1]}";
 
-        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, configurationRoot);
         Assert.Equal("foo=my-app2.10.244.0.34.xip.io", result);
     }
 

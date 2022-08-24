@@ -20,7 +20,7 @@ using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Stream.Binding;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Converter;
 
 namespace Steeltoe.Stream.Extensions;

@@ -32,11 +32,11 @@ public class HystrixMetricsStreamOptionsTest : HystrixTestBase
         var builder = new ConfigurationBuilder();
         builder.SetBasePath(directory);
         builder.AddJsonFile(fileName);
-        IConfiguration config = builder.Build();
+        IConfiguration configuration = builder.Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddOptions();
-        services.Configure<HystrixMetricsStreamOptions>(config.GetSection("hystrix:stream"));
+        services.Configure<HystrixMetricsStreamOptions>(configuration.GetSection("hystrix:stream"));
         ServiceProvider provider = services.BuildServiceProvider();
 
         var options = provider.GetService<IOptions<HystrixMetricsStreamOptions>>();

@@ -23,12 +23,12 @@ public class MongoDbProviderServiceCollectionExtensionsTest
     public void AddMongoClient_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
     }
 
@@ -36,23 +36,23 @@ public class MongoDbProviderServiceCollectionExtensionsTest
     public void AddMongoClient_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(config, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
     }
 
     [Fact]
     public void AddMongoClient_ThrowsIfServiceNameNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
         const string serviceName = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(config, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMongoClient(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -60,9 +60,9 @@ public class MongoDbProviderServiceCollectionExtensionsTest
     public void AddMongoClient_NoVCAPs_AddsMongoClient()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        services.AddMongoClient(config);
+        services.AddMongoClient(configurationRoot);
         var service = services.BuildServiceProvider().GetService<MongoClient>();
 
         Assert.NotNull(service);
@@ -72,9 +72,9 @@ public class MongoDbProviderServiceCollectionExtensionsTest
     public void AddMongoClient_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddMongoClient(config, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddMongoClient(configurationRoot, "foobar"));
         Assert.Contains("foobar", ex.Message);
     }
 
@@ -88,9 +88,9 @@ public class MongoDbProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddMongoClient(config));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddMongoClient(configurationRoot));
         Assert.Contains("Multiple", ex.Message);
     }
 
@@ -102,9 +102,9 @@ public class MongoDbProviderServiceCollectionExtensionsTest
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleServerEnterpriseVcap);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddMongoClient(config);
+        services.AddMongoClient(configurationRoot);
         var service = services.BuildServiceProvider().GetService<MongoClient>();
         var serviceByInterface = services.BuildServiceProvider().GetService<IMongoClient>();
 
@@ -124,9 +124,9 @@ public class MongoDbProviderServiceCollectionExtensionsTest
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBindingA9SSingleServerVcap);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddMongoClient(config);
+        services.AddMongoClient(configurationRoot);
         var service = services.BuildServiceProvider().GetService<MongoClient>();
 
         Assert.NotNull(service);
@@ -145,9 +145,9 @@ public class MongoDbProviderServiceCollectionExtensionsTest
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBindingA9SWithReplicasVcap);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddMongoClient(config);
+        services.AddMongoClient(configurationRoot);
         var service = services.BuildServiceProvider().GetService<MongoClient>();
 
         Assert.NotNull(service);
@@ -166,9 +166,9 @@ public class MongoDbProviderServiceCollectionExtensionsTest
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleUserProvidedService);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddMongoClient(config);
+        services.AddMongoClient(configurationRoot);
         var service = services.BuildServiceProvider().GetService<MongoClient>();
         var serviceByInterface = services.BuildServiceProvider().GetService<IMongoClient>();
 
@@ -186,9 +186,9 @@ public class MongoDbProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddMongoClient(config);
+        services.AddMongoClient(configurationRoot);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as MongoDbHealthContributor;
 
         Assert.NotNull(healthContributor);
@@ -204,13 +204,13 @@ public class MongoDbProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var cm = new ConnectionStringManager(config);
+        var cm = new ConnectionStringManager(configurationRoot);
         Connection ci = cm.Get<MongoDbConnectionInfo>();
         services.AddHealthChecks().AddMongoDb(ci.ConnectionString, name: ci.Name);
 
-        services.AddMongoClient(config, "steeltoe");
+        services.AddMongoClient(configurationRoot, "steeltoe");
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as MongoDbHealthContributor;
 
         Assert.Null(healthContributor);
@@ -226,13 +226,13 @@ public class MongoDbProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var cm = new ConnectionStringManager(config);
+        var cm = new ConnectionStringManager(configurationRoot);
         Connection ci = cm.Get<MongoDbConnectionInfo>();
         services.AddHealthChecks().AddMongoDb(ci.ConnectionString, name: ci.Name);
 
-        services.AddMongoClient(config, "steeltoe", addSteeltoeHealthChecks: true);
+        services.AddMongoClient(configurationRoot, "steeltoe", addSteeltoeHealthChecks: true);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as MongoDbHealthContributor;
 
         Assert.NotNull(healthContributor);

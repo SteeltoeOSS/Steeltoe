@@ -48,22 +48,22 @@ public class WebApplicationBuilderExtensionsTest
         WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServer,
             SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundry);
 
-        var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
+        var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
         // WebApplication.CreateBuilder() automatically includes a few builders
-        Assert.Equal(9, config.Providers.Count());
-        Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
-        Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
+        Assert.Equal(9, configurationRoot.Providers.Count());
+        Assert.Single(configurationRoot.Providers.OfType<CloudFoundryConfigurationProvider>());
+        Assert.Single(configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>());
     }
 
     [Fact]
     public void CloudFoundryConfiguration_IsAutowired()
     {
         WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundry);
-        var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
+        var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
-        Assert.Equal(8, config.Providers.Count());
-        Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
+        Assert.Equal(8, configurationRoot.Providers.Count());
+        Assert.Single(configurationRoot.Providers.OfType<CloudFoundryConfigurationProvider>());
     }
 
     [Fact(Skip = "Requires Kubernetes")]
@@ -71,40 +71,40 @@ public class WebApplicationBuilderExtensionsTest
     {
         Environment.SetEnvironmentVariable("KUBERNETES_SERVICE_HOST", "TEST");
         WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetes);
-        var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
+        var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
-        Assert.Equal(11, config.Providers.Count());
-        Assert.Equal(2, config.Providers.OfType<KubernetesConfigMapProvider>().Count());
-        Assert.Equal(2, config.Providers.OfType<KubernetesSecretProvider>().Count());
+        Assert.Equal(11, configurationRoot.Providers.Count());
+        Assert.Equal(2, configurationRoot.Providers.OfType<KubernetesConfigMapProvider>().Count());
+        Assert.Equal(2, configurationRoot.Providers.OfType<KubernetesSecretProvider>().Count());
     }
 
     [Fact]
     public void RandomValueConfiguration_IsAutowired()
     {
         WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValue);
-        var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
+        var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
-        Assert.Equal(8, config.Providers.Count());
-        Assert.Single(config.Providers.OfType<RandomValueProvider>());
+        Assert.Equal(8, configurationRoot.Providers.Count());
+        Assert.Single(configurationRoot.Providers.OfType<RandomValueProvider>());
     }
 
     [Fact]
     public void PlaceholderResolver_IsAutowired()
     {
         WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholder);
-        var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
-        Assert.Single(config.Providers.OfType<PlaceholderResolverProvider>());
+        var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
+        Assert.Single(configurationRoot.Providers.OfType<PlaceholderResolverProvider>());
     }
 
     [Fact]
     public void Connectors_AreAutowired()
     {
         WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeConnector);
-        var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
+        var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
         IServiceProvider services = host.Services;
 
-        Assert.Equal(8, config.Providers.Count());
-        Assert.Single(config.Providers.OfType<ConnectionStringConfigurationProvider>());
+        Assert.Equal(8, configurationRoot.Providers.Count());
+        Assert.Single(configurationRoot.Providers.OfType<ConnectionStringConfigurationProvider>());
         Assert.NotNull(services.GetService<MySqlConnection>());
         Assert.NotNull(services.GetService<MongoClient>());
         Assert.NotNull(services.GetService<OracleConnection>());
@@ -241,10 +241,10 @@ public class WebApplicationBuilderExtensionsTest
     public void CloudFoundryContainerSecurity_IsAutowired()
     {
         WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeSecurityAuthenticationCloudFoundry);
-        var config = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
+        var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
-        Assert.Equal(8, config.Providers.Count());
-        Assert.Single(config.Providers.OfType<PemCertificateProvider>());
+        Assert.Equal(8, configurationRoot.Providers.Count());
+        Assert.Single(configurationRoot.Providers.OfType<PemCertificateProvider>());
         Assert.NotNull(host.Services.GetRequiredService<IOptions<CertificateOptions>>());
         Assert.NotNull(host.Services.GetRequiredService<ICertificateRotationService>());
         Assert.NotNull(host.Services.GetRequiredService<IAuthorizationHandler>());

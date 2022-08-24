@@ -10,7 +10,7 @@ public abstract class AbstractBaseTest
     {
         ApplicationInfoManager.Instance.InstanceInfo = null;
         ApplicationInfoManager.Instance.InstanceConfig = null;
-        DiscoveryManager.Instance.ClientConfig = null;
+        DiscoveryManager.Instance.ClientConfiguration = null;
         DiscoveryManager.Instance.Client = null;
         DiscoveryManager.Instance.InstanceConfig = null;
     }

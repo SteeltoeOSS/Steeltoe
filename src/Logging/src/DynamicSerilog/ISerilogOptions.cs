@@ -6,7 +6,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog;
 
 public interface ISerilogOptions
 {
-    string ConfigPath { get; }
+    string ConfigurationPath { get; }
 
     MinimumLevel MinimumLevel { get; set; }
 }

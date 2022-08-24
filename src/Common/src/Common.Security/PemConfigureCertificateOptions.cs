@@ -14,13 +14,13 @@ namespace Steeltoe.Common.Security;
 
 public class PemConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
 {
-    private readonly IConfiguration _config;
+    private readonly IConfiguration _configuration;
 
-    public PemConfigureCertificateOptions(IConfiguration config)
+    public PemConfigureCertificateOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        _config = config;
+        _configuration = configuration;
     }
 
     public void Configure(string name, CertificateOptions options)
@@ -29,8 +29,8 @@ public class PemConfigureCertificateOptions : IConfigureNamedOptions<Certificate
 
         options.Name = name;
 
-        string pemCert = _config["certificate"];
-        string pemKey = _config["privateKey"];
+        string pemCert = _configuration["certificate"];
+        string pemKey = _configuration["privateKey"];
 
         if (string.IsNullOrEmpty(pemCert) || string.IsNullOrEmpty(pemKey))
         {

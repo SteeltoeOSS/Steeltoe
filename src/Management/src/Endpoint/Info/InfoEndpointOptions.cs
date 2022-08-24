@@ -16,8 +16,8 @@ public class InfoEndpointOptions : AbstractEndpointOptions, IInfoOptions
         RequiredPermissions = Permissions.Restricted;
     }
 
-    public InfoEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
+    public InfoEndpointOptions(IConfiguration configuration)
+        : base(ManagementInfoPrefix, configuration)
     {
         if (string.IsNullOrEmpty(Id))
         {

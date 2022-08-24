@@ -9,14 +9,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.Support;
 using Xunit;
-using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
+using static Steeltoe.Messaging.RabbitMQ.Configuration.Binding;
 using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core;
@@ -30,7 +30,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     public RabbitAdminIntegrationTest()
     {
         _services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         _services.AddLogging(b =>
         {
@@ -38,7 +38,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
             b.AddConsole();
         });
 
-        _services.AddSingleton<IConfiguration>(config);
+        _services.AddSingleton<IConfiguration>(configurationRoot);
         _services.AddRabbitHostingServices();
         _services.AddRabbitConnectionFactory((_, f) => f.Host = "localhost");
         _services.AddRabbitAdmin((_, a) => a.AutoStartup = true);
@@ -441,9 +441,9 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         long t2 = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         long dif = t2 - t1;
         Assert.InRange(dif, 950, 1250);
-        IConfiguration config = await GetExchangeAsync(exchangeName);
-        Assert.Equal("direct", config.GetValue<string>("x-delayed-type") ?? config.GetValue<string>("arguments:x-delayed-type"));
-        Assert.Equal("x-delayed-message", config.GetValue<string>("type"));
+        IConfiguration configuration = await GetExchangeAsync(exchangeName);
+        Assert.Equal("direct", configuration.GetValue<string>("x-delayed-type") ?? configuration.GetValue<string>("arguments:x-delayed-type"));
+        Assert.Equal("x-delayed-message", configuration.GetValue<string>("type"));
     }
 
     public void Dispose()
@@ -463,8 +463,8 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         HttpResponseMessage result = await client.GetAsync($"http://localhost:15672/api/exchanges/%2F/{exchangeName}");
 
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        IConfigurationRoot config = new ConfigurationBuilder().AddJsonStream(await result.Content.ReadAsStreamAsync()).Build();
-        return config;
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddJsonStream(await result.Content.ReadAsStreamAsync()).Build();
+        return configurationRoot;
     }
 
     private bool QueueExists(Queue queue)

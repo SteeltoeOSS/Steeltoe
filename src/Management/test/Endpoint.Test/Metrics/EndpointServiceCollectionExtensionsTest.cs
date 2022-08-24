@@ -29,12 +29,12 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
     public void AddMetricsActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
-        IConfiguration config = GetConfiguration();
+        IConfiguration configuration = GetConfiguration();
 
         services.AddOptions();
         services.AddLogging();
         services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-        services.AddSingleton(config);
+        services.AddSingleton(configuration);
         services.AddMetricsActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();

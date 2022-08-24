@@ -17,8 +17,8 @@ public class ThreadDumpEndpointOptions : AbstractEndpointOptions, IThreadDumpOpt
         Id = "dump";
     }
 
-    public ThreadDumpEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
+    public ThreadDumpEndpointOptions(IConfiguration configuration)
+        : base(ManagementInfoPrefix, configuration)
     {
         if (string.IsNullOrEmpty(Id))
         {

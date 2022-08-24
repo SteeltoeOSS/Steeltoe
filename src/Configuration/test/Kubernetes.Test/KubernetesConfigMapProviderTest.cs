@@ -17,8 +17,8 @@ public class KubernetesConfigMapProviderTest
     [Fact]
     public void KubernetesConfigMapProvider_ThrowsOnNulls()
     {
-        var config = KubernetesClientConfiguration.BuildDefaultConfig();
-        var client = new k8s.Kubernetes(config);
+        var configuration = KubernetesClientConfiguration.BuildDefaultConfig();
+        var client = new k8s.Kubernetes(configuration);
         var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings());
 
         var ex1 = Assert.Throws<ArgumentNullException>(() => new KubernetesConfigMapProvider(null, settings));

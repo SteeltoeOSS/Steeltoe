@@ -21,7 +21,7 @@ public static class MongoDbProviderServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="contextLifetime">
@@ -33,15 +33,15 @@ public static class MongoDbProviderServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddMongoClient(this IServiceCollection services, IConfiguration config,
+    public static IServiceCollection AddMongoClient(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton, bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetSingletonServiceInfo<MongoDbServiceInfo>();
+        var info = configuration.GetSingletonServiceInfo<MongoDbServiceInfo>();
 
-        DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
+        DoAdd(services, info, configuration, contextLifetime, addSteeltoeHealthChecks);
         return services;
     }
 
@@ -51,7 +51,7 @@ public static class MongoDbProviderServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="serviceName">
@@ -66,25 +66,25 @@ public static class MongoDbProviderServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddMongoClient(this IServiceCollection services, IConfiguration config, string serviceName,
+    public static IServiceCollection AddMongoClient(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton, bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetRequiredServiceInfo<MongoDbServiceInfo>(serviceName);
+        var info = configuration.GetRequiredServiceInfo<MongoDbServiceInfo>(serviceName);
 
-        DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
+        DoAdd(services, info, configuration, contextLifetime, addSteeltoeHealthChecks);
         return services;
     }
 
-    private static void DoAdd(IServiceCollection services, MongoDbServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime,
+    private static void DoAdd(IServiceCollection services, MongoDbServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime,
         bool addSteeltoeHealthChecks = false)
     {
         Type mongoClient = MongoDbTypeLocator.MongoClient;
-        var mongoOptions = new MongoDbConnectorOptions(config);
-        var clientFactory = new MongoDbConnectorFactory(info, mongoOptions, mongoClient);
+        var options = new MongoDbConnectorOptions(configuration);
+        var clientFactory = new MongoDbConnectorFactory(info, options, mongoClient);
         services.Add(new ServiceDescriptor(MongoDbTypeLocator.MongoClientInterface, clientFactory.Create, contextLifetime));
         services.Add(new ServiceDescriptor(mongoClient, clientFactory.Create, contextLifetime));
 
@@ -95,7 +95,7 @@ public static class MongoDbProviderServiceCollectionExtensions
         }
 
         Type mongoInfo = ReflectionHelpers.FindType(MongoDbTypeLocator.Assemblies, MongoDbTypeLocator.MongoConnectionInfo);
-        var urlFactory = new MongoDbConnectorFactory(info, mongoOptions, mongoInfo);
+        var urlFactory = new MongoDbConnectorFactory(info, options, mongoInfo);
         services.Add(new ServiceDescriptor(mongoInfo, urlFactory.Create, contextLifetime));
     }
 }

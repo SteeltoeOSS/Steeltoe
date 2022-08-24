@@ -12,10 +12,10 @@ public class HystrixProviderConfigurationTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
+        const IConfiguration configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new HystrixProviderConnectorOptions(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new HystrixProviderConnectorOptions(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
     }
 
     [Fact]
@@ -32,9 +32,9 @@ public class HystrixProviderConfigurationTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new HystrixProviderConnectorOptions(config);
+        var options = new HystrixProviderConnectorOptions(configurationRoot);
         Assert.Equal("localhost", options.Server);
         Assert.Equal(1234, options.Port);
         Assert.Equal("password", options.Password);
@@ -59,9 +59,9 @@ public class HystrixProviderConfigurationTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new HystrixProviderConnectorOptions(config);
+        var options = new HystrixProviderConnectorOptions(configurationRoot);
         string result = options.ToString();
         Assert.Equal("amqps://username:password@localhost:5671/foobar", result);
     }

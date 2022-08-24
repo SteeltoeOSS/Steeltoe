@@ -56,9 +56,9 @@ public class KubernetesApplicationOptionsTest
                 }
             }";
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(json))).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(json))).Build();
 
-        var appInfo = new KubernetesApplicationOptions(config);
+        var appInfo = new KubernetesApplicationOptions(configurationRoot);
 
         Assert.Equal("testapp", appInfo.Name);
         Assert.Equal("not-default", appInfo.NameSpace);
@@ -81,12 +81,12 @@ public class KubernetesApplicationOptionsTest
     [Fact]
     public void Spring_Application_Name__UsedInAppName()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
             { "spring:application:name", "springappname" }
         }).Build();
 
-        var appInfo = new KubernetesApplicationOptions(config);
+        var appInfo = new KubernetesApplicationOptions(configurationRoot);
 
         Assert.Equal("springappname", appInfo.Name);
     }
@@ -94,9 +94,9 @@ public class KubernetesApplicationOptionsTest
     [Fact]
     public void AssemblyNameIsDefaultAppName()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var appInfo = new KubernetesApplicationOptions(config);
+        var appInfo = new KubernetesApplicationOptions(configurationRoot);
 
         Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, appInfo.Name);
     }

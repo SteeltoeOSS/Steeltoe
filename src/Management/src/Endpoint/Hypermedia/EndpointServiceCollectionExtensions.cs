@@ -11,24 +11,24 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 
 public static class EndpointServiceCollectionExtensions
 {
-    public static void AddHypermediaActuator(this IServiceCollection services, IConfiguration config = null)
+    public static void AddHypermediaActuator(this IServiceCollection services, IConfiguration configuration = null)
     {
         ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddActuatorManagementOptions(config);
-        services.AddHypermediaActuatorServices(config);
+        services.AddActuatorManagementOptions(configuration);
+        services.AddHypermediaActuatorServices(configuration);
         services.AddActuatorEndpointMapping<ActuatorEndpoint>();
     }
 
-    public static void AddActuatorManagementOptions(this IServiceCollection services, IConfiguration config = null)
+    public static void AddActuatorManagementOptions(this IServiceCollection services, IConfiguration configuration = null)
     {
         ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(configuration)));
         services.TryAddSingleton(provider => provider.GetServices<IManagementOptions>().OfType<ActuatorManagementOptions>().First());
     }
 }

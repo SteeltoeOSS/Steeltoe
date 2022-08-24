@@ -23,7 +23,7 @@ public class PostgresProviderConnectorFactoryTest
     [Fact]
     public void Create_ReturnsPostgresConnection()
     {
-        var config = new PostgresProviderConnectorOptions
+        var options = new PostgresProviderConnectorOptions
         {
             Host = "localhost",
             Port = 3306,
@@ -33,7 +33,7 @@ public class PostgresProviderConnectorFactoryTest
         };
 
         var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
-        var factory = new PostgresProviderConnectorFactory(si, config, typeof(NpgsqlConnection));
+        var factory = new PostgresProviderConnectorFactory(si, options, typeof(NpgsqlConnection));
         object connection = factory.Create(null);
         Assert.NotNull(connection);
     }

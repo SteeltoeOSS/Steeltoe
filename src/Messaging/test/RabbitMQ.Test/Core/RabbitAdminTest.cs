@@ -11,12 +11,12 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Xunit;
-using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
+using static Steeltoe.Messaging.RabbitMQ.Configuration.Binding;
 using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core;

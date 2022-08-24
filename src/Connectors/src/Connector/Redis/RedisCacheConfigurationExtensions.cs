@@ -12,28 +12,28 @@ namespace Steeltoe.Connector.Redis;
 
 public static class RedisCacheConfigurationExtensions
 {
-    public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration config, string serviceName = null)
+    public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration configuration, string serviceName = null)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var redisConfig = new RedisCacheConnectorOptions(config);
-        return config.CreateRedisServiceConnectorFactory(redisConfig, serviceName);
+        var options = new RedisCacheConnectorOptions(configuration);
+        return configuration.CreateRedisServiceConnectorFactory(options, serviceName);
     }
 
-    public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration config, IConfiguration connectorConfiguration,
+    public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration configuration, IConfiguration connectorConfiguration,
         string serviceName = null)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(connectorConfiguration);
 
-        var connectorOptions = new RedisCacheConnectorOptions(connectorConfiguration);
-        return config.CreateRedisServiceConnectorFactory(connectorOptions, serviceName);
+        var options = new RedisCacheConnectorOptions(connectorConfiguration);
+        return configuration.CreateRedisServiceConnectorFactory(options, serviceName);
     }
 
-    public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration config, RedisCacheConnectorOptions connectorOptions,
-        string serviceName = null)
+    public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration configuration,
+        RedisCacheConnectorOptions connectorOptions, string serviceName = null)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(connectorOptions);
 
         string[] redisAssemblies =
@@ -60,8 +60,8 @@ public static class RedisCacheConfigurationExtensions
         MethodInfo initializer = ReflectionHelpers.FindMethod(redisConnection, "Connect");
 
         RedisServiceInfo info = serviceName == null
-            ? config.GetSingletonServiceInfo<RedisServiceInfo>()
-            : config.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
+            ? configuration.GetSingletonServiceInfo<RedisServiceInfo>()
+            : configuration.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
 
         return new RedisServiceConnectorFactory(info, connectorOptions, redisConnection, redisOptions, initializer);
     }

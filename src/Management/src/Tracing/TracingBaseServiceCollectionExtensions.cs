@@ -85,7 +85,7 @@ public static class TracingBaseServiceCollectionExtensions
             builder.Configure((serviceProvider, deferredBuilder) =>
             {
                 string appName = serviceProvider.GetRequiredService<IApplicationInstanceInfo>()
-                    .ApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.ConfigPrefix}:name");
+                    .ApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.ConfigurationPrefix}:name");
 
                 var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
                 ILogger logger = serviceProvider.GetService<ILoggerFactory>()?.CreateLogger("Steeltoe.Management.Tracing.Setup");
@@ -207,8 +207,8 @@ public static class TracingBaseServiceCollectionExtensions
 
         deferredTracerProviderBuilder.Configure(delegate(IServiceProvider sp, TracerProviderBuilder builder)
         {
-            var config = sp.GetService<IConfiguration>();
-            var wavefrontOptions = new WavefrontExporterOptions(config);
+            var configuration = sp.GetService<IConfiguration>();
+            var wavefrontOptions = new WavefrontExporterOptions(configuration);
 
             // Only add if wavefront is configured
             if (!string.IsNullOrEmpty(wavefrontOptions.Uri))

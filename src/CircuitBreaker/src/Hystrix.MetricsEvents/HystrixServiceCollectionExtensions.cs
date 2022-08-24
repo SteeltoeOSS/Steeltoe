@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.CircuitBreaker.Hystrix.Config;
+using Steeltoe.CircuitBreaker.Hystrix.Configuration;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
@@ -16,8 +16,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public static class HystrixServiceCollectionExtensions
 {
-    // this config param is still here to share the signature used in MetricsStream
-    public static void AddHystrixMetricsStream(this IServiceCollection services, IConfiguration config)
+    // this configuration param is still here to share the signature used in MetricsStream
+    public static void AddHystrixMetricsStream(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentGuard.NotNull(services);
 
@@ -53,12 +53,12 @@ public static class HystrixServiceCollectionExtensions
         services.AddSingleton(HystrixConfigurationStream.GetInstance());
     }
 
-    // this config param is still here to share the signature used in MetricsStream
-    public static void AddHystrixMonitoringStreams(this IServiceCollection services, IConfiguration config)
+    // this configuration param is still here to share the signature used in MetricsStream
+    public static void AddHystrixMonitoringStreams(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentGuard.NotNull(services);
 
-        services.AddHystrixMetricsStream(config);
+        services.AddHystrixMetricsStream(configuration);
         services.AddHystrixConfigStream();
         services.AddHystrixRequestEventStream();
         services.AddHystrixUtilizationStream();

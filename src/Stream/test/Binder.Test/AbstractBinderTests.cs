@@ -17,9 +17,9 @@ using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.Support;
-using Steeltoe.Stream.Binder.Rabbit.Config;
+using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
 using Steeltoe.Stream.Binding;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Converter;
 using Xunit;
 using Xunit.Abstractions;
@@ -38,7 +38,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
 
     protected virtual ServiceCollection Services { get; set; }
 
-    protected virtual ConfigurationBuilder ConfigBuilder { get; set; }
+    protected virtual ConfigurationBuilder ConfigurationBuilder { get; set; }
 
     protected CachingConnectionFactory CachingConnectionFactory { get; set; }
 
@@ -50,7 +50,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         LoggerFactory = loggerFactory;
         Output = output;
         Services = new ServiceCollection();
-        ConfigBuilder = new ConfigurationBuilder();
+        ConfigurationBuilder = new ConfigurationBuilder();
     }
 
     [Fact]

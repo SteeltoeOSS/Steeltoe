@@ -26,8 +26,8 @@ public class EurekaDiscoveryClientTest : AbstractBaseTest
         var appMgr = new EurekaApplicationInfoManager(instanceWrapper);
         var client = new EurekaDiscoveryClient(clientWrapper, instanceWrapper, appMgr);
 
-        Assert.NotNull(client.ClientConfig);
-        Assert.Equal(clientConfig, client.ClientConfig);
+        Assert.NotNull(client.ClientConfiguration);
+        Assert.Equal(clientConfig, client.ClientConfiguration);
         Assert.NotNull(client.HttpClient);
         Assert.NotNull(client.Description);
         Assert.NotNull(client.Services);

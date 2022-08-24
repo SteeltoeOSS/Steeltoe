@@ -38,17 +38,17 @@ public class ServiceInfoCreator
         Configuration = configuration;
     }
 
-    public static ServiceInfoCreator Instance(IConfiguration config)
+    public static ServiceInfoCreator Instance(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        if (config != _me?.Configuration)
+        if (configuration != _me?.Configuration)
         {
             lock (Lock)
             {
-                if (config != _me?.Configuration)
+                if (configuration != _me?.Configuration)
                 {
-                    _me = new ServiceInfoCreator(config);
+                    _me = new ServiceInfoCreator(configuration);
                     _me.BuildServiceInfoFactories();
                     _me.BuildServiceInfos();
                 }

@@ -35,7 +35,7 @@ internal sealed class NoOpDiscoveryClient : IDiscoveryClient
             throw new InvalidOperationException("IsConfigured must be called before GetConfiguredClients");
         }
 
-        // clients (and their config base paths) shipped with Steeltoe
+        // clients (and their configuration base paths) shipped with Steeltoe
         var configurableClients = new List<Tuple<string, string, bool>>
         {
             new("Consul", "consul", true),
@@ -47,7 +47,7 @@ internal sealed class NoOpDiscoveryClient : IDiscoveryClient
         configurableClients.AddRange(configuration.GetSection("DiscoveryClients").GetChildren()
             .Select(x => new Tuple<string, string, bool>(x.Key, x.Value, false)));
 
-        // iterate through the clients to see if any of them have config values
+        // iterate through the clients to see if any of them have configuration values
         var clientsWithConfig = new Dictionary<string, string>();
 
         foreach (Tuple<string, string, bool> potentialClient in configurableClients)

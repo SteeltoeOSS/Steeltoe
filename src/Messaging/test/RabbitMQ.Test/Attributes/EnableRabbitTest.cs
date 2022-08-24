@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
@@ -298,8 +298,8 @@ public class EnableRabbitTest
                 .Callback<string>(name => queueName.Value = name);
 
             var services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
-            services.AddSingleton<IConfiguration>(config);
+            IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(configurationRoot);
             services.AddRabbitHostingServices();
             services.AddRabbitMessageHandlerMethodFactory();
             services.AddRabbitListenerAttributeProcessor();
@@ -319,7 +319,7 @@ public class EnableRabbitTest
             services.AddRabbitQueues(myQueue, anotherQueue, class1, class2);
             services.AddSingleton<RabbitListenersBean>();
             services.AddSingleton<ClassLevelListenersBean>();
-            services.AddRabbitListeners(config, typeof(RabbitListenersBean), typeof(ClassLevelListenersBean));
+            services.AddRabbitListeners(configurationRoot, typeof(RabbitListenersBean), typeof(ClassLevelListenersBean));
 
             ServiceProvider container = services.BuildServiceProvider();
             await container.GetRequiredService<IHostedService>().StartAsync(default);
@@ -345,8 +345,8 @@ public class EnableRabbitTest
                 .Callback<string>(name => queueName.Value = name);
 
             var services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
-            services.AddSingleton<IConfiguration>(config);
+            IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(configurationRoot);
             services.AddRabbitHostingServices();
             services.AddRabbitMessageHandlerMethodFactory();
             services.AddRabbitListenerAttributeProcessor();
@@ -380,7 +380,7 @@ public class EnableRabbitTest
             services.AddSingleton(listenerBeanType);
             services.AddSingleton<Listener>();
 
-            services.AddRabbitListeners(config, listenerBeanType, typeof(Listener));
+            services.AddRabbitListeners(configurationRoot, listenerBeanType, typeof(Listener));
             ServiceProvider container = services.BuildServiceProvider();
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
@@ -413,8 +413,8 @@ public class EnableRabbitTest
                 .Callback<string>(name => queueName.Value = name);
 
             var services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
-            services.AddSingleton<IConfiguration>(config);
+            IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(configurationRoot);
             services.AddRabbitHostingServices();
             services.AddRabbitMessageHandlerMethodFactory();
             services.AddRabbitListenerAttributeProcessor();
@@ -468,9 +468,9 @@ public class EnableRabbitTest
                 { "rabbit.listener.admin", "rabbitAdmin" }
             });
 
-            IConfigurationRoot config = configBuilder.Build();
+            IConfigurationRoot configurationRoot = configBuilder.Build();
 
-            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IConfiguration>(configurationRoot);
             services.AddRabbitHostingServices();
             services.AddRabbitMessageHandlerMethodFactory();
             services.AddRabbitListenerAttributeProcessor();
@@ -501,9 +501,9 @@ public class EnableRabbitTest
             var mockConnection = new Mock<IConnectionFactory>();
             var services = new ServiceCollection();
             var configBuilder = new ConfigurationBuilder();
-            IConfigurationRoot config = configBuilder.Build();
+            IConfigurationRoot configurationRoot = configBuilder.Build();
 
-            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IConfiguration>(configurationRoot);
             services.AddRabbitHostingServices();
             services.AddRabbitMessageHandlerMethodFactory();
             services.AddRabbitListenerAttributeProcessor();
@@ -523,7 +523,7 @@ public class EnableRabbitTest
                 services.AddSingleton(listener);
             }
 
-            services.AddRabbitListeners(config, listeners);
+            services.AddRabbitListeners(configurationRoot, listeners);
             ServiceProvider container = services.BuildServiceProvider();
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
@@ -558,9 +558,9 @@ public class EnableRabbitTest
 
             var services = new ServiceCollection();
             var configBuilder = new ConfigurationBuilder();
-            IConfigurationRoot config = configBuilder.Build();
+            IConfigurationRoot configurationRoot = configBuilder.Build();
 
-            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IConfiguration>(configurationRoot);
             services.AddRabbitHostingServices();
             services.AddRabbitMessageHandlerMethodFactory();
             services.AddRabbitListenerAttributeProcessor();
@@ -612,9 +612,9 @@ public class EnableRabbitTest
             var mockConnection = new Mock<IConnectionFactory>();
             var services = new ServiceCollection();
             var configBuilder = new ConfigurationBuilder();
-            IConfigurationRoot config = configBuilder.Build();
+            IConfigurationRoot configurationRoot = configBuilder.Build();
 
-            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IConfiguration>(configurationRoot);
             services.AddRabbitHostingServices();
             services.AddRabbitMessageHandlerMethodFactory();
             services.AddRabbitListenerAttributeProcessor();

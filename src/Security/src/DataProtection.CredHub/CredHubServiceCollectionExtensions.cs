@@ -19,7 +19,7 @@ public static class CredHubServiceCollectionExtensions
     /// <param name="services">
     /// Service collection.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="loggerFactory">
@@ -28,7 +28,7 @@ public static class CredHubServiceCollectionExtensions
     /// <returns>
     /// Service collection with CredHubClient added in.
     /// </returns>
-    public static IServiceCollection AddCredHubClient(this IServiceCollection services, IConfiguration config, ILoggerFactory loggerFactory = null)
+    public static IServiceCollection AddCredHubClient(this IServiceCollection services, IConfiguration configuration, ILoggerFactory loggerFactory = null)
     {
         ILogger startupLogger = null;
         ILogger credHubLogger = null;
@@ -39,7 +39,7 @@ public static class CredHubServiceCollectionExtensions
             credHubLogger = loggerFactory.CreateLogger<CredHubClient>();
         }
 
-        var credHubOptions = config.GetSection("CredHubClient").Get<CredHubOptions>();
+        var credHubOptions = configuration.GetSection("CredHubClient").Get<CredHubOptions>();
         credHubOptions.Validate();
 
         CredHubClient credHubClient;

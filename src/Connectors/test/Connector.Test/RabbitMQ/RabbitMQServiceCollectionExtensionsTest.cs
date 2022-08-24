@@ -23,12 +23,12 @@ public class RabbitMQServiceCollectionExtensionsTest
     public void AddRabbitMQConnection_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
     }
 
@@ -36,23 +36,23 @@ public class RabbitMQServiceCollectionExtensionsTest
     public void AddRabbitMQConnection_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(config, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
     }
 
     [Fact]
     public void AddRabbitMQConnection_ThrowsIfServiceNameNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
         const string serviceName = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(config, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -60,9 +60,9 @@ public class RabbitMQServiceCollectionExtensionsTest
     public void AddRabbitMQConnection_NoVCAPs_AddsConfiguredConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        services.AddRabbitMQConnection(config);
+        services.AddRabbitMQConnection(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IConnectionFactory>();
         Assert.NotNull(service);
@@ -72,9 +72,9 @@ public class RabbitMQServiceCollectionExtensionsTest
     public void AddRabbitMQConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddRabbitMQConnection(config, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddRabbitMQConnection(configurationRoot, "foobar"));
         Assert.Contains("foobar", ex.Message);
     }
 
@@ -120,9 +120,9 @@ public class RabbitMQServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddRabbitMQConnection(config));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddRabbitMQConnection(configurationRoot));
         Assert.Contains("Multiple", ex.Message);
     }
 
@@ -168,9 +168,9 @@ public class RabbitMQServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddRabbitMQConnection(config, "myRabbitMQService2");
+        services.AddRabbitMQConnection(configurationRoot, "myRabbitMQService2");
         var service = services.BuildServiceProvider().GetService<IConnectionFactory>() as ConnectionFactory;
         Assert.NotNull(service);
         Assert.Equal("asdf", service.VirtualHost);
@@ -208,9 +208,9 @@ public class RabbitMQServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddRabbitMQConnection(config);
+        services.AddRabbitMQConnection(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IConnectionFactory>() as ConnectionFactory;
         Assert.NotNull(service);
@@ -227,9 +227,9 @@ public class RabbitMQServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddRabbitMQConnection(config);
+        services.AddRabbitMQConnection(configurationRoot);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RabbitMQHealthContributor;
 
         Assert.NotNull(healthContributor);
@@ -241,13 +241,13 @@ public class RabbitMQServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var cm = new ConnectionStringManager(config);
+        var cm = new ConnectionStringManager(configurationRoot);
         Connection ci = cm.Get<RabbitMQConnectionInfo>();
         services.AddHealthChecks().AddRabbitMQ(ci.ConnectionString, name: ci.Name);
 
-        services.AddRabbitMQConnection(config);
+        services.AddRabbitMQConnection(configurationRoot);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RabbitMQHealthContributor;
 
         Assert.Null(healthContributor);
@@ -259,13 +259,13 @@ public class RabbitMQServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var cm = new ConnectionStringManager(config);
+        var cm = new ConnectionStringManager(configurationRoot);
         Connection ci = cm.Get<RabbitMQConnectionInfo>();
         services.AddHealthChecks().AddRabbitMQ(ci.ConnectionString, name: ci.Name);
 
-        services.AddRabbitMQConnection(config, addSteeltoeHealthChecks: true);
+        services.AddRabbitMQConnection(configurationRoot, addSteeltoeHealthChecks: true);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RabbitMQHealthContributor;
 
         Assert.NotNull(healthContributor);

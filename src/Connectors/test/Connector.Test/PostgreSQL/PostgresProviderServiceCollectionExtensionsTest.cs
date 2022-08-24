@@ -26,12 +26,12 @@ public class PostgresProviderServiceCollectionExtensionsTest
     public void AddPostgresConnection_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
     }
 
@@ -39,23 +39,23 @@ public class PostgresProviderServiceCollectionExtensionsTest
     public void AddPostgresConnection_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(config, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
     }
 
     [Fact]
     public void AddPostgresConnection_ThrowsIfServiceNameNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
         const string serviceName = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(config, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresConnection(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -63,9 +63,9 @@ public class PostgresProviderServiceCollectionExtensionsTest
     public void AddPostgresConnection_NoVCAPs_AddsPostgresConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        services.AddPostgresConnection(config);
+        services.AddPostgresConnection(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
@@ -75,9 +75,9 @@ public class PostgresProviderServiceCollectionExtensionsTest
     public void AddPostgresConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddPostgresConnection(config, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddPostgresConnection(configurationRoot, "foobar"));
         Assert.Contains("foobar", ex.Message);
     }
 
@@ -90,9 +90,9 @@ public class PostgresProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddPostgresConnection(config));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddPostgresConnection(configurationRoot));
         Assert.Contains("Multiple", ex.Message);
     }
 
@@ -105,9 +105,9 @@ public class PostgresProviderServiceCollectionExtensionsTest
         Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVcapEdb);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddPostgresConnection(config);
+        services.AddPostgresConnection(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
@@ -131,9 +131,9 @@ public class PostgresProviderServiceCollectionExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddPostgresConnection(config);
+        services.AddPostgresConnection(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
@@ -157,9 +157,9 @@ public class PostgresProviderServiceCollectionExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddPostgresConnection(config);
+        services.AddPostgresConnection(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
@@ -179,9 +179,9 @@ public class PostgresProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddPostgresConnection(config);
+        services.AddPostgresConnection(configurationRoot);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
         Assert.NotNull(healthContributor);
@@ -193,13 +193,13 @@ public class PostgresProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var cm = new ConnectionStringManager(config);
+        var cm = new ConnectionStringManager(configurationRoot);
         Connection ci = cm.Get<PostgresConnectionInfo>();
         services.AddHealthChecks().AddNpgSql(ci.ConnectionString, name: ci.Name);
 
-        services.AddPostgresConnection(config);
+        services.AddPostgresConnection(configurationRoot);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
         Assert.Null(healthContributor);
@@ -211,13 +211,13 @@ public class PostgresProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var cm = new ConnectionStringManager(config);
+        var cm = new ConnectionStringManager(configurationRoot);
         Connection ci = cm.Get<PostgresConnectionInfo>();
         services.AddHealthChecks().AddNpgSql(ci.ConnectionString, name: ci.Name);
 
-        services.AddPostgresConnection(config, addSteeltoeHealthChecks: true);
+        services.AddPostgresConnection(configurationRoot, addSteeltoeHealthChecks: true);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
         Assert.NotNull(healthContributor);

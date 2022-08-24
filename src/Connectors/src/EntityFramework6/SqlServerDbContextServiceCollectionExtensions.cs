@@ -23,7 +23,7 @@ public static class SqlServerDbContextServiceCollectionExtensions
     /// <param name="services">
     /// Service Collection.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application Configuration.
     /// </param>
     /// <param name="contextLifetime">
@@ -32,14 +32,14 @@ public static class SqlServerDbContextServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config,
+    public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
-        DoAdd(services, config, info, typeof(TContext), contextLifetime);
+        var info = configuration.GetSingletonServiceInfo<SqlServerServiceInfo>();
+        DoAdd(services, configuration, info, typeof(TContext), contextLifetime);
 
         return services;
     }
@@ -53,7 +53,7 @@ public static class SqlServerDbContextServiceCollectionExtensions
     /// <param name="services">
     /// Service Collection.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application Configuration.
     /// </param>
     /// <param name="serviceName">
@@ -65,27 +65,27 @@ public static class SqlServerDbContextServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName,
+    public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
-        DoAdd(services, config, info, typeof(TContext), contextLifetime);
+        var info = configuration.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+        DoAdd(services, configuration, info, typeof(TContext), contextLifetime);
 
         return services;
     }
 
-    private static void DoAdd(IServiceCollection services, IConfiguration config, SqlServerServiceInfo info, Type dbContextType,
+    private static void DoAdd(IServiceCollection services, IConfiguration configuration, SqlServerServiceInfo info, Type dbContextType,
         ServiceLifetime contextLifetime)
     {
-        var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
+        var options = new SqlServerProviderConnectorOptions(configuration);
 
-        var factory = new SqlServerDbContextConnectorFactory(info, sqlServerConfig, dbContextType);
+        var factory = new SqlServerDbContextConnectorFactory(info, options, dbContextType);
         services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
-        var healthFactory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, SqlServerTypeLocator.SqlConnection);
+        var healthFactory = new SqlServerProviderConnectorFactory(info, options, SqlServerTypeLocator.SqlConnection);
 
         services.Add(new ServiceDescriptor(typeof(IHealthContributor),
             ctx => new RelationalDbHealthContributor((IDbConnection)healthFactory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),

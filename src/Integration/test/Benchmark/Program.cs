@@ -34,8 +34,8 @@ public sealed class Program
     public void DirectChannel_Send_10_000_000_SingleHandler()
     {
         var services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        services.AddSingleton<IConfiguration>(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         ServiceProvider provider = services.BuildServiceProvider();

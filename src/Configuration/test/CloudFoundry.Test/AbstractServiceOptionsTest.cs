@@ -12,10 +12,10 @@ public class AbstractServiceOptionsTest
     [Fact]
     public void Bind_ThrowsWithBadArguments()
     {
-        var opt = new MySqlServiceOption();
-        Assert.Throws<ArgumentNullException>(() => opt.Bind(null, "foobar"));
-        Assert.Throws<ArgumentNullException>(() => opt.Bind(new ConfigurationBuilder().Build(), null));
-        Assert.Throws<ArgumentException>(() => opt.Bind(new ConfigurationBuilder().Build(), string.Empty));
+        var options = new MySqlServiceOption();
+        Assert.Throws<ArgumentNullException>(() => options.Bind(null, "foobar"));
+        Assert.Throws<ArgumentNullException>(() => options.Bind(new ConfigurationBuilder().Build(), null));
+        Assert.Throws<ArgumentException>(() => options.Bind(new ConfigurationBuilder().Build(), string.Empty));
     }
 
     [Fact]
@@ -68,17 +68,17 @@ public class AbstractServiceOptionsTest
         MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot root = builder.Build();
 
-        var opt = new MySqlServiceOption();
-        opt.Bind(config, "mySql2");
-        Assert.Equal("mySql2", opt.Name);
-        Assert.Equal("p-mysql", opt.Label);
+        var options1 = new MySqlServiceOption();
+        options1.Bind(root, "mySql2");
+        Assert.Equal("mySql2", options1.Name);
+        Assert.Equal("p-mysql", options1.Label);
 
-        var opt2 = new MySqlServiceOption();
-        opt2.Bind(config, "mySql1");
-        Assert.Equal("mySql1", opt2.Name);
-        Assert.Equal("p-mysql", opt2.Label);
+        var options2 = new MySqlServiceOption();
+        options2.Bind(root, "mySql1");
+        Assert.Equal("mySql1", options2.Name);
+        Assert.Equal("p-mysql", options2.Label);
     }
 
     [Fact]

@@ -98,14 +98,14 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
                     string name = prefix;
                     LogLevel? configured = GetConfiguredLevel(name);
                     LogLevel effective = GetEffectiveLevel(name);
-                    var config = new DynamicLoggerConfiguration(name, configured, effective);
+                    var configuration = new DynamicLoggerConfiguration(name, configured, effective);
 
-                    if (results.ContainsKey(name) && !results[name].Equals(config))
+                    if (results.ContainsKey(name) && !results[name].Equals(configuration))
                     {
                         throw new InvalidProgramException("Shouldn't happen");
                     }
 
-                    results[name] = config;
+                    results[name] = configuration;
                 }
             }
         }

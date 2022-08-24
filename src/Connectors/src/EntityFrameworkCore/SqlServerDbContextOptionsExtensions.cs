@@ -14,49 +14,50 @@ namespace Steeltoe.Connector.SqlServer.EntityFrameworkCore;
 
 public static class SqlServerDbContextOptionsExtensions
 {
-    public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object sqlServerOptionsAction = null)
-    {
-        ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
-
-        string connection = GetConnection(config);
-
-        return DoUseSqlServer(optionsBuilder, connection, sqlServerOptionsAction);
-    }
-
-    public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName,
+    public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration configuration,
         object sqlServerOptionsAction = null)
     {
         ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
-        ArgumentGuard.NotNullOrEmpty(serviceName);
+        ArgumentGuard.NotNull(configuration);
 
-        string connection = GetConnection(config, serviceName);
+        string connection = GetConnection(configuration);
 
         return DoUseSqlServer(optionsBuilder, connection, sqlServerOptionsAction);
     }
 
-    public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config,
+    public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration configuration, string serviceName,
+        object sqlServerOptionsAction = null)
+    {
+        ArgumentGuard.NotNull(optionsBuilder);
+        ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNullOrEmpty(serviceName);
+
+        string connection = GetConnection(configuration, serviceName);
+
+        return DoUseSqlServer(optionsBuilder, connection, sqlServerOptionsAction);
+    }
+
+    public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration configuration,
         object sqlServerOptionsAction = null)
         where TContext : DbContext
     {
         ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        string connection = GetConnection(config);
+        string connection = GetConnection(configuration);
 
         return DoUseSqlServer(optionsBuilder, connection, sqlServerOptionsAction);
     }
 
-    public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config,
+    public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration configuration,
         string serviceName, object sqlServerOptionsAction = null)
         where TContext : DbContext
     {
         ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNullOrEmpty(serviceName);
 
-        string connection = GetConnection(config, serviceName);
+        string connection = GetConnection(configuration, serviceName);
 
         return DoUseSqlServer(optionsBuilder, connection, sqlServerOptionsAction);
     }
@@ -77,15 +78,15 @@ public static class SqlServerDbContextOptionsExtensions
         return false;
     }
 
-    private static string GetConnection(IConfiguration config, string serviceName = null)
+    private static string GetConnection(IConfiguration configuration, string serviceName = null)
     {
         SqlServerServiceInfo info = string.IsNullOrEmpty(serviceName)
-            ? config.GetSingletonServiceInfo<SqlServerServiceInfo>()
-            : config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+            ? configuration.GetSingletonServiceInfo<SqlServerServiceInfo>()
+            : configuration.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
 
-        var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
+        var options = new SqlServerProviderConnectorOptions(configuration);
 
-        var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, null);
+        var factory = new SqlServerProviderConnectorFactory(info, options, null);
 
         return factory.CreateConnectionString();
     }

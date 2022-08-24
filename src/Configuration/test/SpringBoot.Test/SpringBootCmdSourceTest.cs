@@ -12,18 +12,18 @@ public class SpringBootCmdSourceTest
     [Fact]
     public void Constructors__InitializesDefaults()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().AddCommandLine(Array.Empty<string>()).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCommandLine(Array.Empty<string>()).Build();
 
-        var source = new SpringBootCmdSource(config);
-        Assert.Equal(config, source.Config);
+        var source = new SpringBootCmdSource(configurationRoot);
+        Assert.Equal(configurationRoot, source.InnerConfiguration);
     }
 
     [Fact]
     public void Build__ReturnsProvider()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().AddCommandLine(Array.Empty<string>()).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCommandLine(Array.Empty<string>()).Build();
 
-        var source = new SpringBootCmdSource(config);
+        var source = new SpringBootCmdSource(configurationRoot);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<SpringBootCmdProvider>(provider);
     }

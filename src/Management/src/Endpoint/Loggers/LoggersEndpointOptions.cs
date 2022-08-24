@@ -23,8 +23,8 @@ public class LoggersEndpointOptions : AbstractEndpointOptions, ILoggersOptions
         ExactMatch = false;
     }
 
-    public LoggersEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
+    public LoggersEndpointOptions(IConfiguration configuration)
+        : base(ManagementInfoPrefix, configuration)
     {
         if (string.IsNullOrEmpty(Id))
         {

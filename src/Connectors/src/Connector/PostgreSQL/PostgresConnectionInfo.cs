@@ -36,12 +36,12 @@ public class PostgresConnectionInfo : IConnectionInfo
 
     private Connection GetConnection(PostgresServiceInfo info, IConfiguration configuration)
     {
-        var postgresConfig = new PostgresProviderConnectorOptions(configuration);
+        var options = new PostgresProviderConnectorOptions(configuration);
         var configurer = new PostgresProviderConfigurer();
-        var connection = new Connection(configurer.Configure(info, postgresConfig), "Postgres", info);
-        connection.Properties.Add("ClientCertificate", postgresConfig.ClientCertificate);
-        connection.Properties.Add("ClientKey", postgresConfig.ClientKey);
-        connection.Properties.Add("SslRootCertificate", postgresConfig.SslRootCertificate);
+        var connection = new Connection(configurer.Configure(info, options), "Postgres", info);
+        connection.Properties.Add("ClientCertificate", options.ClientCertificate);
+        connection.Properties.Add("ClientKey", options.ClientKey);
+        connection.Properties.Add("SslRootCertificate", options.SslRootCertificate);
 
         return connection;
     }

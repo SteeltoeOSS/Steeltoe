@@ -12,26 +12,26 @@ public class EurekaInstanceConfigTest : AbstractBaseTest
     [Fact]
     public void DefaultConstructor_InitializedWithDefaults()
     {
-        var config = new EurekaInstanceConfig();
+        var configuration = new EurekaInstanceConfiguration();
 
-        string thisHostName = config.GetHostName(false);
-        string thisHostAddress = config.GetHostAddress(false);
+        string thisHostName = configuration.GetHostName(false);
+        string thisHostAddress = configuration.GetHostAddress(false);
 
-        Assert.False(config.IsInstanceEnabledOnInit);
-        Assert.Equal(EurekaInstanceConfig.DefaultNonSecurePort, config.NonSecurePort);
-        Assert.Equal(EurekaInstanceConfig.DefaultSecurePort, config.SecurePort);
-        Assert.True(config.IsNonSecurePortEnabled);
-        Assert.False(config.SecurePortEnabled);
-        Assert.Equal(EurekaInstanceConfig.DefaultLeaseRenewalIntervalInSeconds, config.LeaseRenewalIntervalInSeconds);
-        Assert.Equal(EurekaInstanceConfig.DefaultLeaseExpirationDurationInSeconds, config.LeaseExpirationDurationInSeconds);
-        Assert.Equal($"{thisHostName}:{config.SecurePort}", config.SecureVirtualHostName);
-        Assert.Equal(thisHostAddress, config.IpAddress);
-        Assert.Equal(EurekaInstanceConfig.DefaultAppName, config.AppName);
-        Assert.Equal(EurekaInstanceConfig.DefaultStatusPageUrlPath, config.StatusPageUrlPath);
-        Assert.Equal(EurekaInstanceConfig.DefaultHomePageUrlPath, config.HomePageUrlPath);
-        Assert.Equal(EurekaInstanceConfig.DefaultHealthCheckUrlPath, config.HealthCheckUrlPath);
-        Assert.NotNull(config.MetadataMap);
-        Assert.Empty(config.MetadataMap);
-        Assert.Equal(DataCenterName.MyOwn, config.DataCenterInfo.Name);
+        Assert.False(configuration.IsInstanceEnabledOnInit);
+        Assert.Equal(EurekaInstanceConfiguration.DefaultNonSecurePort, configuration.NonSecurePort);
+        Assert.Equal(EurekaInstanceConfiguration.DefaultSecurePort, configuration.SecurePort);
+        Assert.True(configuration.IsNonSecurePortEnabled);
+        Assert.False(configuration.SecurePortEnabled);
+        Assert.Equal(EurekaInstanceConfiguration.DefaultLeaseRenewalIntervalInSeconds, configuration.LeaseRenewalIntervalInSeconds);
+        Assert.Equal(EurekaInstanceConfiguration.DefaultLeaseExpirationDurationInSeconds, configuration.LeaseExpirationDurationInSeconds);
+        Assert.Equal($"{thisHostName}:{configuration.SecurePort}", configuration.SecureVirtualHostName);
+        Assert.Equal(thisHostAddress, configuration.IpAddress);
+        Assert.Equal(EurekaInstanceConfiguration.DefaultAppName, configuration.AppName);
+        Assert.Equal(EurekaInstanceConfiguration.DefaultStatusPageUrlPath, configuration.StatusPageUrlPath);
+        Assert.Equal(EurekaInstanceConfiguration.DefaultHomePageUrlPath, configuration.HomePageUrlPath);
+        Assert.Equal(EurekaInstanceConfiguration.DefaultHealthCheckUrlPath, configuration.HealthCheckUrlPath);
+        Assert.NotNull(configuration.MetadataMap);
+        Assert.Empty(configuration.MetadataMap);
+        Assert.Equal(DataCenterName.MyOwn, configuration.DataCenterInfo.Name);
     }
 }

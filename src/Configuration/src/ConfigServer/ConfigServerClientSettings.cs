@@ -155,7 +155,7 @@ public class ConfigServerClientSettings
     public virtual string Label { get; set; }
 
     /// <summary>
-    /// Gets or sets the frequency with which app should check config server for changes in configuration.
+    /// Gets or sets the frequency with which app should check Config Server for changes in configuration.
     /// </summary>
     public virtual TimeSpan PollingInterval { get; set; }
 
@@ -259,7 +259,7 @@ public class ConfigServerClientSettings
     public virtual bool DisableTokenRenewal { get; set; } = DefaultDisableTokenRenewal;
 
     /// <summary>
-    /// Gets or sets headers that will be added to the config server request.
+    /// Gets or sets headers that will be added to the Config Server request.
     /// </summary>
     public virtual Dictionary<string, string> Headers { get; set; }
 

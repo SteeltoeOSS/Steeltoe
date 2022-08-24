@@ -20,9 +20,9 @@ public static class ConfigServerServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services.AddOptions<ConfigServerClientSettingsOptions>().Configure<IConfiguration>((options, config) =>
+        services.AddOptions<ConfigServerClientSettingsOptions>().Configure<IConfiguration>((options, configuration) =>
         {
-            config.GetSection(ConfigServerClientSettingsOptions.ConfigurationPrefix).Bind(options);
+            configuration.GetSection(ConfigServerClientSettingsOptions.ConfigurationPrefix).Bind(options);
         });
 
         return services;

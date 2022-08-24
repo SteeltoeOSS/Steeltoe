@@ -1226,7 +1226,7 @@ public class ConfigServerConfigurationProviderTest
         var provider = new ConfigServerConfigurationProvider(source);
 
         var exception = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
-        Assert.StartsWith("Could not locate config server via discovery", exception.Message);
+        Assert.StartsWith("Could not locate Config Server via discovery", exception.Message);
     }
 
     [Fact]

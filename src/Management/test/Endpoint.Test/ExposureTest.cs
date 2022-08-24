@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -14,9 +13,9 @@ public class ExposureTest
     public void ExposureReturnsDefaults()
     {
         var appSettings = new Dictionary<string, string>();
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        var exp = new Exposure(config);
+        var exp = new Exposure(configurationRoot);
 
         Assert.Contains("health", exp.Include);
         Assert.Contains("info", exp.Include);
@@ -34,9 +33,9 @@ public class ExposureTest
             ["management:endpoints:actuator:exposure:exclude:1"] = "env"
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        var exp = new Exposure(config);
+        var exp = new Exposure(configurationRoot);
 
         Assert.Contains("httptrace", exp.Include);
         Assert.Contains("dbmigrations", exp.Include);
@@ -53,9 +52,9 @@ public class ExposureTest
             ["management:endpoints:web:exposure:exclude"] = "dbmigrations,info"
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        var exp = new Exposure(config);
+        var exp = new Exposure(configurationRoot);
 
         Assert.Contains("heapdump", exp.Include);
         Assert.Contains("env", exp.Include);
@@ -71,9 +70,9 @@ public class ExposureTest
             ["management:endpoints:web:exposure:include"] = "heapdump;env"
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        var exp = new Exposure(config);
+        var exp = new Exposure(configurationRoot);
 
         Assert.Contains("heapdump;env", exp.Include);
         Assert.Null(exp.Exclude);

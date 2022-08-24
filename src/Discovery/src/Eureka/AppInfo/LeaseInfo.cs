@@ -50,12 +50,12 @@ public class LeaseInfo
         return info;
     }
 
-    internal static LeaseInfo FromConfig(IEurekaInstanceConfig config)
+    internal static LeaseInfo FromConfig(IEurekaInstanceConfig configuration)
     {
         var info = new LeaseInfo
         {
-            RenewalIntervalInSecs = config.LeaseRenewalIntervalInSeconds,
-            DurationInSecs = config.LeaseExpirationDurationInSeconds
+            RenewalIntervalInSecs = configuration.LeaseRenewalIntervalInSeconds,
+            DurationInSecs = configuration.LeaseExpirationDurationInSeconds
         };
 
         return info;

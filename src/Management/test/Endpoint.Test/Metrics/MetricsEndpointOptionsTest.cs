@@ -21,8 +21,8 @@ public class MetricsEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
-        Assert.Throws<ArgumentNullException>(() => new MetricsEndpointOptions(config));
+        const IConfiguration configuration = null;
+        Assert.Throws<ArgumentNullException>(() => new MetricsEndpointOptions(configuration));
     }
 
     [Fact]
@@ -38,9 +38,9 @@ public class MetricsEndpointOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new MetricsEndpointOptions(config);
+        var opts = new MetricsEndpointOptions(configurationRoot);
         Assert.False(opts.Enabled);
         Assert.Equal("metricsmanagement", opts.Id);
     }

@@ -22,7 +22,7 @@ public static class KubernetesConfigurationBuilderExtensions
     /// Kubernetes client configuration customization.
     /// </param>
     /// <param name="loggerFactory">
-    /// <see cref="ILoggerFactory" /> for logging within config providers.
+    /// <see cref="ILoggerFactory" /> for logging within configuration providers.
     /// </param>
     public static IConfigurationBuilder AddKubernetes(this IConfigurationBuilder configurationBuilder,
         Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)

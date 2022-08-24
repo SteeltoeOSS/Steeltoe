@@ -38,14 +38,14 @@ public class RabbitMQProviderConnectorOptions : AbstractServiceConnectorOptions
     {
     }
 
-    public RabbitMQProviderConnectorOptions(IConfiguration config)
+    public RabbitMQProviderConnectorOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(RabbitClientSectionPrefix);
+        IConfigurationSection section = configuration.GetSection(RabbitClientSectionPrefix);
         section.Bind(this);
 
-        IConfigurationSection sectionMQ = config.GetSection(RabbitMQClientSectionPrefix);
+        IConfigurationSection sectionMQ = configuration.GetSection(RabbitMQClientSectionPrefix);
         sectionMQ.Bind(this);
     }
 

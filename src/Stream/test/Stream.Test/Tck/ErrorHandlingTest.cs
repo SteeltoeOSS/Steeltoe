@@ -26,7 +26,7 @@ public class ErrorHandlingTest : AbstractTest
     [Fact]
     public async Task TestGlobalErrorWithMessage()
     {
-        _container.AddStreamListeners<GlobalErrorHandlerWithErrorMessageConfig>();
+        _container.AddStreamListeners<GlobalErrorHandlerWithErrorMessageConfiguration>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
@@ -36,8 +36,8 @@ public class ErrorHandlingTest : AbstractTest
         IMessage<byte[]> message = Message.Create(Encoding.UTF8.GetBytes("foo"));
         DoSend(provider, message);
 
-        var config = provider.GetService<GlobalErrorHandlerWithErrorMessageConfig>();
-        Assert.True(config.GlobalErrorInvoked);
+        var errorHandler = provider.GetService<GlobalErrorHandlerWithErrorMessageConfiguration>();
+        Assert.True(errorHandler.GlobalErrorInvoked);
     }
 
     [Fact]
@@ -53,8 +53,8 @@ public class ErrorHandlingTest : AbstractTest
         IMessage<byte[]> message = Message.Create(Encoding.UTF8.GetBytes("foo"));
         DoSend(provider, message);
 
-        var config = provider.GetService<GlobalErrorHandlerWithExceptionConfig>();
-        Assert.True(config.GlobalErrorInvoked);
+        var errorHandler = provider.GetService<GlobalErrorHandlerWithExceptionConfig>();
+        Assert.True(errorHandler.GlobalErrorInvoked);
     }
 
     private void DoSend(ServiceProvider provider, IMessage<byte[]> message)

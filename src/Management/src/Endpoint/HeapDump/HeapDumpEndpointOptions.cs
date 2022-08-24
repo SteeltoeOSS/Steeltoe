@@ -21,8 +21,8 @@ public class HeapDumpEndpointOptions : AbstractEndpointOptions, IHeapDumpOptions
         Id = "heapdump";
     }
 
-    public HeapDumpEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
+    public HeapDumpEndpointOptions(IConfiguration configuration)
+        : base(ManagementInfoPrefix, configuration)
     {
         if (string.IsNullOrEmpty(Id))
         {

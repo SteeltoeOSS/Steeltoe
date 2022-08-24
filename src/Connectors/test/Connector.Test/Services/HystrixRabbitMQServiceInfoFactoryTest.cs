@@ -270,8 +270,8 @@ public class HystrixRabbitMQServiceInfoFactoryTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
-        var opt = new CloudFoundryServicesOptions(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        var opt = new CloudFoundryServicesOptions(configurationRoot);
 
         Assert.Single(opt.Services);
 

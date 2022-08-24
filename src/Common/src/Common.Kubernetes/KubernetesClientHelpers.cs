@@ -35,8 +35,8 @@ public static class KubernetesClientHelpers
         }
         catch (KubeConfigException e)
         {
-            // couldn't locate .kube\config or user-identified files. use an empty config object and fall back on user-defined Action to set the configuration
-            logger?.LogWarning(e, "Failed to build KubernetesClientConfiguration, creating an empty config...");
+            // couldn't locate .kube\config or user-identified files. use an empty configuration object and fall back on user-defined Action to set the configuration
+            logger?.LogWarning(e, "Failed to build KubernetesClientConfiguration, creating an empty configuration...");
         }
 
         // BuildDefaultConfig() doesn't set a host if KubeConfigException is thrown

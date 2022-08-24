@@ -26,12 +26,12 @@ public class SqlServerProviderServiceCollectionExtensionsTest
     public void AddSqlServerConnection_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
     }
 
@@ -39,23 +39,23 @@ public class SqlServerProviderServiceCollectionExtensionsTest
     public void AddSqlServerConnection_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(config, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
     }
 
     [Fact]
     public void AddSqlServerConnection_ThrowsIfServiceNameNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
         const string serviceName = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(config, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -63,9 +63,9 @@ public class SqlServerProviderServiceCollectionExtensionsTest
     public void AddSqlServerConnection_NoVCAPs_AddsSqlServerConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        services.AddSqlServerConnection(config);
+        services.AddSqlServerConnection(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
@@ -75,9 +75,9 @@ public class SqlServerProviderServiceCollectionExtensionsTest
     public void AddSqlServerConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddSqlServerConnection(config, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddSqlServerConnection(configurationRoot, "foobar"));
         Assert.Contains("foobar", ex.Message);
     }
 
@@ -91,9 +91,9 @@ public class SqlServerProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddSqlServerConnection(config));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddSqlServerConnection(configurationRoot));
         Assert.Contains("Multiple", ex.Message);
     }
 
@@ -107,9 +107,9 @@ public class SqlServerProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddSqlServerConnection(config);
+        services.AddSqlServerConnection(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
@@ -131,9 +131,9 @@ public class SqlServerProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddSqlServerConnection(config);
+        services.AddSqlServerConnection(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
@@ -153,9 +153,9 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddSqlServerConnection(config);
+        services.AddSqlServerConnection(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
@@ -176,9 +176,9 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddSqlServerConnection(config);
+        services.AddSqlServerConnection(configurationRoot);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
         Assert.NotNull(healthContributor);
@@ -190,13 +190,13 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var cm = new ConnectionStringManager(config);
+        var cm = new ConnectionStringManager(configurationRoot);
         Connection ci = cm.Get<SqlServerConnectionInfo>();
         services.AddHealthChecks().AddSqlServer(ci.ConnectionString, name: ci.Name);
 
-        services.AddSqlServerConnection(config);
+        services.AddSqlServerConnection(configurationRoot);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
         Assert.Null(healthContributor);
@@ -208,13 +208,13 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var cm = new ConnectionStringManager(config);
+        var cm = new ConnectionStringManager(configurationRoot);
         Connection ci = cm.Get<SqlServerConnectionInfo>();
         services.AddHealthChecks().AddSqlServer(ci.ConnectionString, name: ci.Name);
 
-        services.AddSqlServerConnection(config, addSteeltoeHealthChecks: true);
+        services.AddSqlServerConnection(configurationRoot, addSteeltoeHealthChecks: true);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
         Assert.NotNull(healthContributor);

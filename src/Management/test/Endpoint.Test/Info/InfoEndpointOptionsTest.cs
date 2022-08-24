@@ -21,8 +21,8 @@ public class InfoEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
-        Assert.Throws<ArgumentNullException>(() => new InfoEndpointOptions(config));
+        const IConfiguration configuration = null;
+        Assert.Throws<ArgumentNullException>(() => new InfoEndpointOptions(configuration));
     }
 
     [Fact]
@@ -38,9 +38,9 @@ public class InfoEndpointOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new InfoEndpointOptions(config);
+        var opts = new InfoEndpointOptions(configurationRoot);
         Assert.False(opts.Enabled);
         Assert.Equal("infomanagement", opts.Id);
     }

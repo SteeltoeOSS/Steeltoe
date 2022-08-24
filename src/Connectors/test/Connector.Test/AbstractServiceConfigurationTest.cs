@@ -12,10 +12,10 @@ public class AbstractServiceConfigurationTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
+        const IConfiguration configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceConfiguration(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceOptions(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
     }
 
     [Fact]
@@ -28,9 +28,9 @@ public class AbstractServiceConfigurationTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var configuration = new TestServiceConfiguration(config);
-        Assert.Equal("myString", configuration.Test);
+        var options = new TestServiceOptions(configurationRoot);
+        Assert.Equal("myString", options.Test);
     }
 }

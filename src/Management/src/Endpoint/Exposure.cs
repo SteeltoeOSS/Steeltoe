@@ -26,16 +26,16 @@ public class Exposure
         Include = DefaultInclude;
     }
 
-    public Exposure(IConfiguration config)
+    public Exposure(IConfiguration configuration)
     {
-        IConfigurationSection section = config.GetSection(ExposurePrefix);
+        IConfigurationSection section = configuration.GetSection(ExposurePrefix);
 
         if (section != null)
         {
             section.Bind(this);
         }
 
-        IConfigurationSection secondSection = config.GetSection(ExposureSecondChancePrefix);
+        IConfigurationSection secondSection = configuration.GetSection(ExposureSecondChancePrefix);
 
         if (secondSection.Exists())
         {

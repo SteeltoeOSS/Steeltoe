@@ -26,12 +26,12 @@ public class MySqlProviderServiceCollectionExtensionsTest
     public void AddMySqlConnection_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
     }
 
@@ -39,23 +39,23 @@ public class MySqlProviderServiceCollectionExtensionsTest
     public void AddMySqlConnection_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(config, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
     }
 
     [Fact]
     public void AddMySqlConnection_ThrowsIfServiceNameNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
         const string serviceName = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(config, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -63,9 +63,9 @@ public class MySqlProviderServiceCollectionExtensionsTest
     public void AddMySqlConnection_NoVCAPs_AddsMySqlConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        services.AddMySqlConnection(config);
+        services.AddMySqlConnection(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
@@ -75,9 +75,9 @@ public class MySqlProviderServiceCollectionExtensionsTest
     public void AddMySqlConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddMySqlConnection(config, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddMySqlConnection(configurationRoot, "foobar"));
         Assert.Contains("foobar", ex.Message);
     }
 
@@ -91,9 +91,9 @@ public class MySqlProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddMySqlConnection(config));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddMySqlConnection(configurationRoot));
         Assert.Contains("Multiple", ex.Message);
     }
 
@@ -106,9 +106,9 @@ public class MySqlProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddMySqlConnection(config, "spring-cloud-broker-db");
+        services.AddMySqlConnection(configurationRoot, "spring-cloud-broker-db");
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
@@ -126,9 +126,9 @@ public class MySqlProviderServiceCollectionExtensionsTest
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddMySqlConnection(config);
+        services.AddMySqlConnection(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
@@ -150,9 +150,9 @@ public class MySqlProviderServiceCollectionExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddMySqlConnection(config);
+        services.AddMySqlConnection(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
@@ -170,9 +170,9 @@ public class MySqlProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddMySqlConnection(config);
+        services.AddMySqlConnection(configurationRoot);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
         Assert.NotNull(healthContributor);
@@ -184,13 +184,13 @@ public class MySqlProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var cm = new ConnectionStringManager(config);
+        var cm = new ConnectionStringManager(configurationRoot);
         Connection ci = cm.Get<MySqlConnectionInfo>();
         services.AddHealthChecks().AddMySql(ci.ConnectionString, ci.Name);
 
-        services.AddMySqlConnection(config);
+        services.AddMySqlConnection(configurationRoot);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
         Assert.Null(healthContributor);
@@ -202,13 +202,13 @@ public class MySqlProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var cm = new ConnectionStringManager(config);
+        var cm = new ConnectionStringManager(configurationRoot);
         Connection ci = cm.Get<MySqlConnectionInfo>();
         services.AddHealthChecks().AddMySql(ci.ConnectionString, ci.Name);
 
-        services.AddMySqlConnection(config, addSteeltoeHealthChecks: true);
+        services.AddMySqlConnection(configurationRoot, addSteeltoeHealthChecks: true);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
         Assert.NotNull(healthContributor);

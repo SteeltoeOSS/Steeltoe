@@ -20,23 +20,25 @@ public static class CloudFoundryServiceCollectionExtensions
     /// <param name="services">
     /// the service container.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// the applications configuration.
     /// </param>
     /// <returns>
     /// service container.
     /// </returns>
-    public static IServiceCollection ConfigureCloudFoundryOptions(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection ConfigureCloudFoundryOptions(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
         services.AddOptions();
 
-        IConfigurationSection appSection = config.GetSection($"{CloudFoundryApplicationOptions.PlatformConfigRoot}:{ApplicationInstanceInfo.ApplicationRoot}");
+        IConfigurationSection appSection =
+            configuration.GetSection($"{CloudFoundryApplicationOptions.PlatformConfigurationRoot}:{ApplicationInstanceInfo.ApplicationRoot}");
+
         services.Configure<CloudFoundryApplicationOptions>(appSection);
 
-        IConfigurationSection serviceSection = config.GetSection(CloudFoundryServicesOptions.ServicesConfigRoot);
+        IConfigurationSection serviceSection = configuration.GetSection(CloudFoundryServicesOptions.ServicesConfigRoot);
         services.Configure<CloudFoundryServicesOptions>(serviceSection);
 
         return services;
@@ -44,8 +46,8 @@ public static class CloudFoundryServiceCollectionExtensions
 
     /// <summary>
     /// Find the Cloud Foundry service with the <paramref name="serviceName" /> in VCAP_SERVICES and bind the configuration data from the provided
-    /// <paramref name="config" /> into the options type and add it to the provided service container as a configured named TOption. The name of the TOption
-    /// will be the <paramref name="serviceName" />. You can then inject the option using the normal Options pattern.
+    /// <paramref name="configuration" /> into the options type and add it to the provided service container as a configured named TOption. The name of the
+    /// TOption will be the <paramref name="serviceName" />. You can then inject the option using the normal Options pattern.
     /// </summary>
     /// <typeparam name="TOption">
     /// the options type.
@@ -53,7 +55,7 @@ public static class CloudFoundryServiceCollectionExtensions
     /// <param name="services">
     /// the service container.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// the applications configuration.
     /// </param>
     /// <param name="serviceName">
@@ -62,16 +64,16 @@ public static class CloudFoundryServiceCollectionExtensions
     /// <returns>
     /// service container.
     /// </returns>
-    public static IServiceCollection ConfigureCloudFoundryService<TOption>(this IServiceCollection services, IConfiguration config, string serviceName)
+    public static IServiceCollection ConfigureCloudFoundryService<TOption>(this IServiceCollection services, IConfiguration configuration, string serviceName)
         where TOption : CloudFoundryServicesOptions
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNullOrEmpty(serviceName);
 
         services.Configure<TOption>(serviceName, option =>
         {
-            option.Bind(config, serviceName);
+            option.Bind(configuration, serviceName);
         });
 
         return services;
@@ -79,8 +81,8 @@ public static class CloudFoundryServiceCollectionExtensions
 
     /// <summary>
     /// Find all of the Cloud Foundry services with the <paramref name="serviceLabel" /> in VCAP_SERVICES and bind the configuration data from the provided
-    /// <paramref name="config" /> into the options type and add them all to the provided service container as a configured named TOptions. The name of each
-    /// TOption will be the the name of the Cloud Foundry service binding. You can then inject all the options using the normal Options pattern.
+    /// <paramref name="configuration" /> into the options type and add them all to the provided service container as a configured named TOptions. The name
+    /// of each TOption will be the the name of the Cloud Foundry service binding. You can then inject all the options using the normal Options pattern.
     /// </summary>
     /// <typeparam name="TOption">
     /// the options type.
@@ -88,7 +90,7 @@ public static class CloudFoundryServiceCollectionExtensions
     /// <param name="services">
     /// the service container.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// the applications configuration.
     /// </param>
     /// <param name="serviceLabel">
@@ -97,34 +99,34 @@ public static class CloudFoundryServiceCollectionExtensions
     /// <returns>
     /// service container.
     /// </returns>
-    public static IServiceCollection ConfigureCloudFoundryServices<TOption>(this IServiceCollection services, IConfiguration config, string serviceLabel)
+    public static IServiceCollection ConfigureCloudFoundryServices<TOption>(this IServiceCollection services, IConfiguration configuration, string serviceLabel)
         where TOption : CloudFoundryServicesOptions
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNullOrEmpty(serviceLabel);
 
-        CloudFoundryServicesOptions servicesOptions = GetServiceOptionsFromConfiguration(config);
+        CloudFoundryServicesOptions servicesOptions = GetServiceOptionsFromConfiguration(configuration);
         servicesOptions.Services.TryGetValue(serviceLabel, out IEnumerable<Service> cfServices);
 
         if (cfServices != null)
         {
             foreach (Service s in cfServices)
             {
-                services.ConfigureCloudFoundryService<TOption>(config, s.Name);
+                services.ConfigureCloudFoundryService<TOption>(configuration, s.Name);
             }
         }
 
         return services;
     }
 
-    private static CloudFoundryServicesOptions GetServiceOptionsFromConfiguration(IConfiguration config)
+    private static CloudFoundryServicesOptions GetServiceOptionsFromConfiguration(IConfiguration configuration)
     {
-        if (config is IConfigurationRoot asRoot)
+        if (configuration is IConfigurationRoot asRoot)
         {
             return new CloudFoundryServicesOptions(asRoot);
         }
 
-        return new CloudFoundryServicesOptions(config);
+        return new CloudFoundryServicesOptions(configuration);
     }
 }

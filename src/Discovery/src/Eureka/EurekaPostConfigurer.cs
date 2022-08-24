@@ -62,7 +62,7 @@ public static class EurekaPostConfigurer
     /// <summary>
     /// Update <see cref="EurekaInstanceOptions" /> with information from the runtime environment.
     /// </summary>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application Configuration.
     /// </param>
     /// <param name="options">
@@ -71,11 +71,11 @@ public static class EurekaPostConfigurer
     /// <param name="instanceInfo">
     /// Information about this application instance.
     /// </param>
-    public static void UpdateConfiguration(IConfiguration config, EurekaInstanceOptions options, IApplicationInstanceInfo instanceInfo)
+    public static void UpdateConfiguration(IConfiguration configuration, EurekaInstanceOptions options, IApplicationInstanceInfo instanceInfo)
     {
-        string defaultIdEnding = $":{EurekaInstanceConfig.DefaultAppName}:{EurekaInstanceConfig.DefaultNonSecurePort}";
+        string defaultIdEnding = $":{EurekaInstanceConfiguration.DefaultAppName}:{EurekaInstanceConfiguration.DefaultNonSecurePort}";
 
-        if (EurekaInstanceConfig.DefaultAppName.Equals(options.AppName))
+        if (EurekaInstanceConfiguration.DefaultAppName.Equals(options.AppName))
         {
             string springAppName = instanceInfo?.ApplicationNameInContext(SteeltoeComponent.Discovery);
 
@@ -102,7 +102,7 @@ public static class EurekaPostConfigurer
 
         if (string.IsNullOrEmpty(options.RegistrationMethod))
         {
-            string springRegMethod = config.GetValue<string>(SpringCloudDiscoveryRegistrationMethodKey);
+            string springRegMethod = configuration.GetValue<string>(SpringCloudDiscoveryRegistrationMethodKey);
 
             if (!string.IsNullOrEmpty(springRegMethod))
             {
@@ -110,7 +110,7 @@ public static class EurekaPostConfigurer
             }
         }
 
-        options.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
+        options.ApplyConfigUrls(configuration.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
 
         if (options.InstanceId.EndsWith(defaultIdEnding))
         {
@@ -132,7 +132,7 @@ public static class EurekaPostConfigurer
     /// <summary>
     /// Update <see cref="EurekaInstanceOptions" /> with information from the runtime environment.
     /// </summary>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application Configuration.
     /// </param>
     /// <param name="si">
@@ -144,21 +144,22 @@ public static class EurekaPostConfigurer
     /// <param name="appInfo">
     /// Information about this application instance.
     /// </param>
-    public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaInstanceOptions instOptions, IApplicationInstanceInfo appInfo)
+    public static void UpdateConfiguration(IConfiguration configuration, EurekaServiceInfo si, EurekaInstanceOptions instOptions,
+        IApplicationInstanceInfo appInfo)
     {
         if (instOptions == null)
         {
             return;
         }
 
-        UpdateConfiguration(config, instOptions, appInfo);
+        UpdateConfiguration(configuration, instOptions, appInfo);
 
         if (si == null)
         {
             return;
         }
 
-        if (EurekaInstanceConfig.DefaultAppName.Equals(instOptions.AppName))
+        if (EurekaInstanceConfiguration.DefaultAppName.Equals(instOptions.AppName))
         {
             instOptions.AppName = si.ApplicationInfo.ApplicationName;
         }
@@ -199,7 +200,7 @@ public static class EurekaPostConfigurer
             return;
         }
 
-        if (!clientOptions.EurekaServerServiceUrls.Contains(EurekaClientConfig.DefaultServerServiceUrl.TrimEnd('/')))
+        if (!clientOptions.EurekaServerServiceUrls.Contains(EurekaClientConfiguration.DefaultServerServiceUrl.TrimEnd('/')))
         {
             return;
         }
@@ -210,7 +211,7 @@ public static class EurekaPostConfigurer
         }
 
         throw new InvalidOperationException(
-            $"Eureka URL {EurekaClientConfig.DefaultServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
+            $"Eureka URL {EurekaClientConfiguration.DefaultServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
     }
 
     private static void UpdateWithDefaultsForHost(EurekaServiceInfo si, EurekaInstanceOptions instOptions, string hostName)
@@ -232,8 +233,8 @@ public static class EurekaPostConfigurer
     private static void UpdateWithDefaultsForRoute(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
     {
         UpdateWithDefaults(si, instOptions);
-        instOptions.NonSecurePort = EurekaInstanceConfig.DefaultNonSecurePort;
-        instOptions.SecurePort = EurekaInstanceConfig.DefaultSecurePort;
+        instOptions.NonSecurePort = EurekaInstanceConfiguration.DefaultNonSecurePort;
+        instOptions.SecurePort = EurekaInstanceConfiguration.DefaultSecurePort;
 
         if (si.ApplicationInfo.Uris?.Any() == true)
         {

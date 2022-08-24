@@ -38,8 +38,8 @@ public class AppSettingsInfoContributorTest : BaseTest
     {
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(_appSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
-        var settings = new AppSettingsInfoContributor(config);
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        var settings = new AppSettingsInfoContributor(configurationRoot);
 
         Assert.Throws<ArgumentNullException>(() => settings.Contribute(null));
     }
@@ -51,8 +51,8 @@ public class AppSettingsInfoContributorTest : BaseTest
         _appSettings.Add("info:NET:ASPNET:version", "2.0.0");
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(_appSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
-        var settings = new AppSettingsInfoContributor(config);
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        var settings = new AppSettingsInfoContributor(configurationRoot);
 
         var builder = new InfoBuilder();
         settings.Contribute(builder);

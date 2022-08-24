@@ -39,10 +39,10 @@ public class EndpointServiceCollectionTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
-        services.AddSingleton<IConfiguration>(config);
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        services.AddSingleton<IConfiguration>(configurationRoot);
 
-        services.AddEnvActuator(config);
+        services.AddEnvActuator(configurationRoot);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IEnvOptions>();

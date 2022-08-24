@@ -28,18 +28,18 @@ public class MySqlDbContextOptionsExtensionsTest
     {
         const DbContextOptionsBuilder optionsBuilder = null;
         const DbContextOptionsBuilder<GoodDbContext> goodBuilder = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(configurationRoot));
         Assert.Contains(nameof(optionsBuilder), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(configurationRoot, "foobar"));
         Assert.Contains(nameof(optionsBuilder), ex2.Message);
 
-        var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(config));
+        var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(configurationRoot));
         Assert.Contains(nameof(optionsBuilder), ex3.Message);
 
-        var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(config, "foobar"));
+        var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(configurationRoot, "foobar"));
         Assert.Contains(nameof(optionsBuilder), ex4.Message);
     }
 
@@ -48,19 +48,19 @@ public class MySqlDbContextOptionsExtensionsTest
     {
         var optionsBuilder = new DbContextOptionsBuilder();
         var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(config, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
 
-        var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(config));
-        Assert.Contains(nameof(config), ex3.Message);
+        var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(configuration));
+        Assert.Contains(nameof(configuration), ex3.Message);
 
-        var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(config, "foobar"));
-        Assert.Contains(nameof(config), ex4.Message);
+        var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex4.Message);
     }
 
     [Fact]
@@ -68,13 +68,13 @@ public class MySqlDbContextOptionsExtensionsTest
     {
         var optionsBuilder = new DbContextOptionsBuilder();
         var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         const string serviceName = null;
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(config, serviceName));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex2.Message);
 
-        var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(config, serviceName));
+        var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex4.Message);
     }
 
@@ -92,9 +92,9 @@ public class MySqlDbContextOptionsExtensionsTest
     {
         using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnectionType);
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        AddMySqlDbContext(services, config);
+        AddMySqlDbContext(services, configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<GoodDbContext>();
         Assert.NotNull(service);
@@ -107,9 +107,9 @@ public class MySqlDbContextOptionsExtensionsTest
     public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "foobar"));
+        services.AddDbContext<GoodDbContext>(options => options.UseMySql(configurationRoot, "foobar"));
 
         var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
         Assert.Contains("foobar", ex.Message);
@@ -125,9 +125,9 @@ public class MySqlDbContextOptionsExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseMySql(configurationRoot));
 
         var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
         Assert.Contains("Multiple", ex.Message);
@@ -153,9 +153,9 @@ public class MySqlDbContextOptionsExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        AddMySqlDbContext(services, config, "spring-cloud-broker-db2");
+        AddMySqlDbContext(services, configurationRoot, "spring-cloud-broker-db2");
 
         ServiceProvider built = services.BuildServiceProvider();
         var service = built.GetService<GoodDbContext>();
@@ -193,9 +193,9 @@ public class MySqlDbContextOptionsExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        AddMySqlDbContext(services, config);
+        AddMySqlDbContext(services, configurationRoot);
 
         ServiceProvider built = services.BuildServiceProvider();
         var service = built.GetService<GoodDbContext>();
@@ -231,14 +231,14 @@ public class MySqlDbContextOptionsExtensionsTest
         using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnectionType);
         IServiceCollection services = new ServiceCollection();
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
             { "mysql:client:database", "steeltoe2" },
             { "mysql:client:username", "root" },
             { "mysql:client:password", "steeltoe" }
         }).Build();
 
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseMySql(configurationRoot));
 
         var service = services.BuildServiceProvider().GetService<GoodDbContext>();
         Assert.NotNull(service);
@@ -247,16 +247,16 @@ public class MySqlDbContextOptionsExtensionsTest
         Assert.True(con.GetType() == mySqlConnectionType);
     }
 
-    private static void AddMySqlDbContext(IServiceCollection services, IConfigurationRoot config, string serviceName = null)
+    private static void AddMySqlDbContext(IServiceCollection services, IConfigurationRoot configuration, string serviceName = null)
     {
         if (serviceName == null)
         {
-            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(configuration, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
         }
         else
         {
             services.AddDbContext<GoodDbContext>(options =>
-                options.UseMySql(config, serviceName, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+                options.UseMySql(configuration, serviceName, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
         }
     }
 

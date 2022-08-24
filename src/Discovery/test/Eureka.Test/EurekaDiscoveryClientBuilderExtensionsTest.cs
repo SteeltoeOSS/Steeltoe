@@ -17,9 +17,9 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
     [Fact]
     public void ApplyServicesNoExceptionWithoutManagementOptions()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(config);
+        serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
         var extension = new EurekaDiscoveryClientExtension();
 
@@ -40,11 +40,11 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
             { "management:endpoints:health:path", "/non-default" }
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(config);
+        serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
-        serviceCollection.AddAllActuators(config);
+        serviceCollection.AddAllActuators(configurationRoot);
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
@@ -65,11 +65,11 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
             { "Eureka:Client:EurekaServer:RetryCount", "1" }
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(config);
+        serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
-        serviceCollection.AddAllActuators(config);
+        serviceCollection.AddAllActuators(configurationRoot);
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
@@ -116,11 +116,11 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
             { "management:endpoints:health:path", "/non-default" }
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(config);
+        serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
-        serviceCollection.AddAllActuators(config);
+        serviceCollection.AddAllActuators(configurationRoot);
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
@@ -141,11 +141,11 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
             { "eureka:instance:statuspageurlpath", "/customStatus" }
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(config);
+        serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
-        serviceCollection.AddAllActuators(config);
+        serviceCollection.AddAllActuators(configurationRoot);
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);

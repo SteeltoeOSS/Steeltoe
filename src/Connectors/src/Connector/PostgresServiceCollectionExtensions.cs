@@ -20,7 +20,7 @@ public static class PostgresServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="contextLifetime">
@@ -29,15 +29,15 @@ public static class PostgresServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddPostgresHealthContributor(this IServiceCollection services, IConfiguration config,
+    public static IServiceCollection AddPostgresHealthContributor(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
+        var info = configuration.GetSingletonServiceInfo<PostgresServiceInfo>();
 
-        DoAdd(services, info, config, contextLifetime);
+        DoAdd(services, info, configuration, contextLifetime);
         return services;
     }
 
@@ -47,7 +47,7 @@ public static class PostgresServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="serviceName">
@@ -59,23 +59,23 @@ public static class PostgresServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddPostgresHealthContributor(this IServiceCollection services, IConfiguration config, string serviceName,
+    public static IServiceCollection AddPostgresHealthContributor(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+        var info = configuration.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
 
-        DoAdd(services, info, config, contextLifetime);
+        DoAdd(services, info, configuration, contextLifetime);
         return services;
     }
 
-    private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
+    private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime)
     {
-        var postgresConfig = new PostgresProviderConnectorOptions(config);
-        var factory = new PostgresProviderConnectorFactory(info, postgresConfig, PostgreSqlTypeLocator.NpgsqlConnection);
+        var options = new PostgresProviderConnectorOptions(configuration);
+        var factory = new PostgresProviderConnectorFactory(info, options, PostgreSqlTypeLocator.NpgsqlConnection);
 
         services.Add(new ServiceDescriptor(typeof(IHealthContributor),
             ctx => new RelationalDbHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),

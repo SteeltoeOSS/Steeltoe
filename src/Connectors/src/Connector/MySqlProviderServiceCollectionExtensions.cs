@@ -22,7 +22,7 @@ public static class MySqlProviderServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="contextLifetime">
@@ -37,15 +37,15 @@ public static class MySqlProviderServiceCollectionExtensions
     /// <remarks>
     /// MySqlConnection is retrievable as both MySqlConnection and IDbConnection.
     /// </remarks>
-    public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config,
+    public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
+        var info = configuration.GetSingletonServiceInfo<MySqlServiceInfo>();
 
-        DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
+        DoAdd(services, info, configuration, contextLifetime, addSteeltoeHealthChecks);
         return services;
     }
 
@@ -55,7 +55,7 @@ public static class MySqlProviderServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="serviceName">
@@ -73,25 +73,25 @@ public static class MySqlProviderServiceCollectionExtensions
     /// <remarks>
     /// MySqlConnection is retrievable as both MySqlConnection and IDbConnection.
     /// </remarks>
-    public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration config, string serviceName,
+    public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+        var info = configuration.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
 
-        DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
+        DoAdd(services, info, configuration, contextLifetime, addSteeltoeHealthChecks);
         return services;
     }
 
-    private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime,
+    private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime,
         bool addSteeltoeHealthChecks)
     {
         Type mySqlConnection = ReflectionHelpers.FindType(MySqlTypeLocator.Assemblies, MySqlTypeLocator.ConnectionTypeNames);
-        var mySqlConfig = new MySqlProviderConnectorOptions(config);
-        var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
+        var options = new MySqlProviderConnectorOptions(configuration);
+        var factory = new MySqlProviderConnectorFactory(info, options, mySqlConnection);
         services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
         services.Add(new ServiceDescriptor(mySqlConnection, factory.Create, contextLifetime));
 
