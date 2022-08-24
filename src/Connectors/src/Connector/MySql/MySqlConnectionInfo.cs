@@ -25,7 +25,7 @@ public class MySqlConnectionInfo : IConnectionInfo
 
     public bool IsSameType(string serviceType)
     {
-        return serviceType.Equals("mysql", StringComparison.InvariantCultureIgnoreCase);
+        return serviceType.Equals("mysql", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsSameType(IServiceInfo serviceInfo)

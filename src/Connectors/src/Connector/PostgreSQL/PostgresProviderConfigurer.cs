@@ -39,7 +39,7 @@ public class PostgresProviderConfigurer
             {
                 foreach (KeyValuePair<string, string> kvp in UriExtensions.ParseQuerystring(si.Query))
                 {
-                    if (kvp.Key.Equals("sslmode", StringComparison.InvariantCultureIgnoreCase))
+                    if (kvp.Key.Equals("sslmode", StringComparison.OrdinalIgnoreCase))
                     {
                         // Npgsql parses SSL Mode into an enum, the first character must be capitalized
                         configuration.SslMode = FirstCharToUpper(kvp.Value);

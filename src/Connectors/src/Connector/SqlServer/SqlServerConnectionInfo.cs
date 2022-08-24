@@ -25,8 +25,7 @@ public class SqlServerConnectionInfo : IConnectionInfo
 
     public bool IsSameType(string serviceType)
     {
-        return serviceType.Equals("sqlserver", StringComparison.InvariantCultureIgnoreCase) ||
-            serviceType.Equals("mssql", StringComparison.InvariantCultureIgnoreCase);
+        return serviceType.Equals("sqlserver", StringComparison.OrdinalIgnoreCase) || serviceType.Equals("mssql", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsSameType(IServiceInfo serviceInfo)

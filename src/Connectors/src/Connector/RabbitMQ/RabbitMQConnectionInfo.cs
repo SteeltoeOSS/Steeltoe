@@ -25,7 +25,7 @@ public class RabbitMQConnectionInfo : IConnectionInfo
 
     public bool IsSameType(string serviceType)
     {
-        return serviceType.Equals("rabbitmq", StringComparison.InvariantCultureIgnoreCase);
+        return serviceType.Equals("rabbitmq", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsSameType(IServiceInfo serviceInfo)

@@ -166,7 +166,7 @@ public class ConnectionStringManagerTest
     public void ConnectionInfoTypeFoundByName(string value)
     {
         var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        Assert.StartsWith(value, manager.GetByTypeName(value).Name, StringComparison.InvariantCultureIgnoreCase);
+        Assert.StartsWith(value, manager.GetByTypeName(value).Name, StringComparison.OrdinalIgnoreCase);
     }
 
     [Theory]

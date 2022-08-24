@@ -299,7 +299,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
         {
             foreach (string headerName in Content)
             {
-                if (headerName.Equals(name, StringComparison.InvariantCultureIgnoreCase))
+                if (headerName.Equals(name, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }

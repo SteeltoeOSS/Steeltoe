@@ -100,7 +100,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
         foreach (KeyValuePair<string, StringValues> q in query)
         {
-            if (q.Key.Equals("tag", StringComparison.InvariantCultureIgnoreCase))
+            if (q.Key.Equals("tag", StringComparison.OrdinalIgnoreCase))
             {
                 foreach (string kvp in q.Value)
                 {

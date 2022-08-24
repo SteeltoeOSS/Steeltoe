@@ -69,7 +69,7 @@ public static class PostgresDbContextOptionsExtensions
 
     private static bool MatchesSignature(MethodBase method, IReadOnlyList<Type> parameterTypes)
     {
-        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseNpgsql", StringComparison.InvariantCulture))
+        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseNpgsql", StringComparison.Ordinal))
         {
             ParameterInfo[] parameters = method.GetParameters();
             return parameters.Length == 3 && parameters[0].ParameterType == parameterTypes[0] && parameters[1].ParameterType == parameterTypes[1];

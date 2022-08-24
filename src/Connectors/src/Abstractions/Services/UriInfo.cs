@@ -181,7 +181,7 @@ public class UriInfo
 
             if (firstEquals > 0 && (firstEquals < firstAmp || firstAmp == -1))
             {
-                int dbNameIndex = uriString.IndexOf("databasename=", StringComparison.InvariantCultureIgnoreCase);
+                int dbNameIndex = uriString.IndexOf("databasename=", StringComparison.OrdinalIgnoreCase);
 
                 if (dbNameIndex > 0)
                 {

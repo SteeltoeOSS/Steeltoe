@@ -132,7 +132,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
             return;
         }
 
-        var configMapContents = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        var configMapContents = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         if (item?.Data != null)
         {
@@ -160,8 +160,8 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
 
     private bool IsAppsettingsKey(string key)
     {
-        return key.StartsWith(ConfigurationFileKeyPrefix, StringComparison.InvariantCultureIgnoreCase) &&
-            key.EndsWith(ConfigurationFileKeySuffix, StringComparison.InvariantCultureIgnoreCase);
+        return key.StartsWith(ConfigurationFileKeyPrefix, StringComparison.OrdinalIgnoreCase) &&
+            key.EndsWith(ConfigurationFileKeySuffix, StringComparison.OrdinalIgnoreCase);
     }
 
     private Stream GenerateStreamFromString(string s)

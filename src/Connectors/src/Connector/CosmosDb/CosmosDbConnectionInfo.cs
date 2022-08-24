@@ -25,7 +25,7 @@ public class CosmosDbConnectionInfo : IConnectionInfo
 
     public bool IsSameType(string serviceType)
     {
-        return serviceType.Equals("cosmosdb", StringComparison.InvariantCultureIgnoreCase);
+        return serviceType.Equals("cosmosdb", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsSameType(IServiceInfo serviceInfo)

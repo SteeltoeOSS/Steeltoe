@@ -252,9 +252,9 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
         // check the dictionary
         foreach (string prefix in prefixes)
         {
-            if (_runningFilters.Any(n => n.Key.Equals(prefix, StringComparison.InvariantCultureIgnoreCase)))
+            if (_runningFilters.Any(n => n.Key.Equals(prefix, StringComparison.OrdinalIgnoreCase)))
             {
-                Filter filter = _runningFilters.First(n => n.Key.Equals(prefix, StringComparison.InvariantCultureIgnoreCase)).Value;
+                Filter filter = _runningFilters.First(n => n.Key.Equals(prefix, StringComparison.OrdinalIgnoreCase)).Value;
                 return GetLogLevelFromFilter(name, filter);
             }
         }

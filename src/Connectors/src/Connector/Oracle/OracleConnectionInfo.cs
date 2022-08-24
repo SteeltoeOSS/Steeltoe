@@ -25,8 +25,7 @@ public class OracleConnectionInfo : IConnectionInfo
 
     public bool IsSameType(string serviceType)
     {
-        return serviceType.Equals("oracle", StringComparison.InvariantCultureIgnoreCase) ||
-            serviceType.Equals("oracledb", StringComparison.InvariantCultureIgnoreCase);
+        return serviceType.Equals("oracle", StringComparison.OrdinalIgnoreCase) || serviceType.Equals("oracledb", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsSameType(IServiceInfo serviceInfo)

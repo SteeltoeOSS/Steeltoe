@@ -96,7 +96,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     private async Task<EurekaHttpResponse> RegisterInternalAsync(InstanceInfo info)
     {
-        if ((Platform.IsContainerized || Platform.IsCloudHosted) && info.HostName?.Equals("localhost", StringComparison.InvariantCultureIgnoreCase) == true)
+        if ((Platform.IsContainerized || Platform.IsCloudHosted) && info.HostName?.Equals("localhost", StringComparison.OrdinalIgnoreCase) == true)
         {
             logger?.LogWarning(
                 "Registering with hostname 'localhost' in containerized or cloud environments may not be valid. Please configure Eureka:Instance:HostName with a non-localhost address");

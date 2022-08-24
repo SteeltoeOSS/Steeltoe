@@ -112,10 +112,10 @@ public class MySqlProviderServiceCollectionExtensionsTest
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
-        Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString, StringComparison.InvariantCultureIgnoreCase);
-        Assert.Contains("Server=192.168.0.90;Port=3306", connString, StringComparison.InvariantCultureIgnoreCase);
-        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString, StringComparison.InvariantCultureIgnoreCase);
-        Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString, StringComparison.InvariantCultureIgnoreCase);
+        Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Server=192.168.0.90;Port=3306", connString, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

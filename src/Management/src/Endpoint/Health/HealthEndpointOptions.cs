@@ -18,7 +18,7 @@ public class HealthEndpointOptions : AbstractEndpointOptions, IHealthOptions
 
     public string Role { get; set; }
 
-    public Dictionary<string, HealthGroupOptions> Groups { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
+    public Dictionary<string, HealthGroupOptions> Groups { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     public HealthEndpointOptions()
     {

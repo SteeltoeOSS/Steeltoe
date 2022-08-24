@@ -25,7 +25,7 @@ public class MongoDbConnectionInfo : IConnectionInfo
 
     public bool IsSameType(string serviceType)
     {
-        return serviceType.Equals("mongodb", StringComparison.InvariantCultureIgnoreCase);
+        return serviceType.Equals("mongodb", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsSameType(IServiceInfo serviceInfo)

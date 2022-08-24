@@ -25,7 +25,7 @@ public class RedisConnectionInfo : IConnectionInfo
 
     public bool IsSameType(string serviceType)
     {
-        return serviceType.Equals("redis", StringComparison.InvariantCultureIgnoreCase);
+        return serviceType.Equals("redis", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsSameType(IServiceInfo serviceInfo)

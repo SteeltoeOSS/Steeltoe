@@ -101,7 +101,7 @@ public static class TracingBaseServiceCollectionExtensions
                     options.Filter += req => !pathMatcher.IsMatch(req.RequestUri.PathAndQuery);
                 });
 
-                if (traceOpts.PropagationType.Equals("B3", StringComparison.InvariantCultureIgnoreCase))
+                if (traceOpts.PropagationType.Equals("B3", StringComparison.OrdinalIgnoreCase))
                 {
                     // TODO: Investigate alternatives and remove suppression.
 #pragma warning disable CS0618 // Type or member is obsolete

@@ -69,7 +69,7 @@ public static class SqlServerDbContextOptionsExtensions
 
     private static bool MatchesSignature(IReadOnlyList<Type> parameterTypes, MethodInfo method)
     {
-        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseSqlServer", StringComparison.InvariantCultureIgnoreCase))
+        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseSqlServer", StringComparison.OrdinalIgnoreCase))
         {
             ParameterInfo[] parameters = method.GetParameters();
             return parameters.Length == 3 && parameters[0].ParameterType == parameterTypes[0] && parameters[1].ParameterType == parameterTypes[1];

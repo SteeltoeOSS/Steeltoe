@@ -106,7 +106,7 @@ public static class OracleDbContextOptionsExtensions
 
     private static bool MatchesSignature(MethodBase method, IReadOnlyList<Type> parameterTypes)
     {
-        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseOracle", StringComparison.InvariantCultureIgnoreCase))
+        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseOracle", StringComparison.OrdinalIgnoreCase))
         {
             ParameterInfo[] parameters = method.GetParameters();
             return parameters.Length == 3 && parameters[0].ParameterType == parameterTypes[0] && parameters[1].ParameterType == parameterTypes[1];

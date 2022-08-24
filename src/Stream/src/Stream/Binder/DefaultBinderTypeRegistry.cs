@@ -121,7 +121,7 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
     {
         string fileName = Path.GetFileNameWithoutExtension(file.Name);
 
-        if (fileName.Equals(ThisAssemblyName, StringComparison.InvariantCultureIgnoreCase))
+        if (fileName.Equals(ThisAssemblyName, StringComparison.OrdinalIgnoreCase))
         {
             return false;
         }

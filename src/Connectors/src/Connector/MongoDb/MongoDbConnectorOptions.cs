@@ -29,7 +29,7 @@ public class MongoDbConnectorOptions : AbstractServiceConnectorOptions
 
     public string Database { get; set; }
 
-    public Dictionary<string, string> Options { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
+    public Dictionary<string, string> Options { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     public MongoDbConnectorOptions()
     {

@@ -40,7 +40,7 @@ public class SecurityBase
     public bool IsCloudFoundryRequest(string requestPath)
     {
         string contextPath = _managementOptions == null ? _options.Path : _managementOptions.Path;
-        return requestPath.StartsWith(contextPath, StringComparison.InvariantCultureIgnoreCase);
+        return requestPath.StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
     }
 
     public string Serialize(SecurityResult error)

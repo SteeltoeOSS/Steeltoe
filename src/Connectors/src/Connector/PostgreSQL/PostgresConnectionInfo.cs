@@ -25,8 +25,7 @@ public class PostgresConnectionInfo : IConnectionInfo
 
     public bool IsSameType(string serviceType)
     {
-        return serviceType.Equals("postgres", StringComparison.InvariantCultureIgnoreCase) ||
-            serviceType.Equals("postgresql", StringComparison.InvariantCultureIgnoreCase);
+        return serviceType.Equals("postgres", StringComparison.OrdinalIgnoreCase) || serviceType.Equals("postgresql", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsSameType(IServiceInfo serviceInfo)

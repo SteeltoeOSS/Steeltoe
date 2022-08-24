@@ -168,11 +168,11 @@ public class MySqlDbContextOptionsExtensionsTest
 
         string connString = con.ConnectionString;
         Assert.NotNull(connString);
-        Assert.Contains("Server=192.168.0.91", connString, StringComparison.InvariantCultureIgnoreCase);
-        Assert.Contains("Port=3306", connString, StringComparison.InvariantCultureIgnoreCase);
-        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd0407903550", connString, StringComparison.InvariantCultureIgnoreCase);
-        Assert.Contains("User Id=Dd6O1BPXUHdrmzbP0", connString, StringComparison.InvariantCultureIgnoreCase);
-        Assert.Contains("Password=7E1LxXnlH2hhlPVt0", connString, StringComparison.InvariantCultureIgnoreCase);
+        Assert.Contains("Server=192.168.0.91", connString, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Port=3306", connString, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd0407903550", connString, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("User Id=Dd6O1BPXUHdrmzbP0", connString, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Password=7E1LxXnlH2hhlPVt0", connString, StringComparison.OrdinalIgnoreCase);
     }
 
     [Theory]
@@ -208,11 +208,11 @@ public class MySqlDbContextOptionsExtensionsTest
 
         string connString = con.ConnectionString;
         Assert.NotNull(connString);
-        Assert.Contains("Server=192.168.0.90", connString, StringComparison.InvariantCultureIgnoreCase);
-        Assert.Contains("Port=3306", connString, StringComparison.InvariantCultureIgnoreCase);
-        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString, StringComparison.InvariantCultureIgnoreCase);
-        Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString, StringComparison.InvariantCultureIgnoreCase);
-        Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString, StringComparison.InvariantCultureIgnoreCase);
+        Assert.Contains("Server=192.168.0.90", connString, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Port=3306", connString, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString, StringComparison.OrdinalIgnoreCase);
     }
 
     // Run a MySQL server with Docker to match credentials below with this command

@@ -301,7 +301,7 @@ public static class MySqlDbContextOptionsExtensions
 
     private static bool MatchesSignature(MethodBase method, IReadOnlyList<Type> parameterTypes)
     {
-        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseMySQL", StringComparison.InvariantCultureIgnoreCase))
+        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseMySQL", StringComparison.OrdinalIgnoreCase))
         {
             ParameterInfo[] parameters = method.GetParameters();
 

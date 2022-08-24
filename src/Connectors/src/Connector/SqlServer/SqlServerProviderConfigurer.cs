@@ -36,16 +36,16 @@ public class SqlServerProviderConfigurer
             {
                 foreach (KeyValuePair<string, string> kvp in UriExtensions.ParseQuerystring(si.Query))
                 {
-                    if (kvp.Key.EndsWith("database", StringComparison.InvariantCultureIgnoreCase) ||
-                        kvp.Key.EndsWith("databaseName", StringComparison.InvariantCultureIgnoreCase))
+                    if (kvp.Key.EndsWith("database", StringComparison.OrdinalIgnoreCase) ||
+                        kvp.Key.EndsWith("databaseName", StringComparison.OrdinalIgnoreCase))
                     {
                         configuration.Database = kvp.Value;
                     }
-                    else if (kvp.Key.EndsWith("instancename", StringComparison.InvariantCultureIgnoreCase))
+                    else if (kvp.Key.EndsWith("instancename", StringComparison.OrdinalIgnoreCase))
                     {
                         configuration.InstanceName = kvp.Value;
                     }
-                    else if (kvp.Key.StartsWith("hostnameincertificate", StringComparison.InvariantCultureIgnoreCase))
+                    else if (kvp.Key.StartsWith("hostnameincertificate", StringComparison.OrdinalIgnoreCase))
                     {
                         // adding this key could result in "System.ArgumentException : Keyword not supported: 'hostnameincertificate'" later
                     }
