@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Package for automatically configuring Steeltoe packages that have separately been added to a project.</Description>
@@ -32,6 +32,9 @@
     <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Connectors\src\EntityFrameworkCore\Steeltoe.Connector.EntityFrameworkCore.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\Connectors\src\Connector\**\*TypeLocator.cs" LinkBase="TypeLocators" />
   </ItemGroup>
   <ItemDefinitionGroup>
     <Reference>
