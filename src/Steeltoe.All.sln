@@ -270,9 +270,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bootstrap", "Bootstrap", "{EA9C3A73-3F31-4DC9-982C-963CE613E119}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Bootstrap.Autoconfig", "Bootstrap\src\Autoconfig\Steeltoe.Bootstrap.Autoconfig.csproj", "{38EFC635-0C56-442D-8CA3-20AEC1930D7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Bootstrap.AutoConfiguration", "Bootstrap\src\AutoConfiguration\Steeltoe.Bootstrap.AutoConfiguration.csproj", "{38EFC635-0C56-442D-8CA3-20AEC1930D7B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Bootstrap.Autoconfig.Test", "Bootstrap\test\Autoconfig.Test\Steeltoe.Bootstrap.Autoconfig.Test.csproj", "{6499285A-88CF-426A-909D-307382B91AA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Bootstrap.AutoConfiguration.Test", "Bootstrap\test\AutoConfiguration.Test\Steeltoe.Bootstrap.AutoConfiguration.Test.csproj", "{6499285A-88CF-426A-909D-307382B91AA3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benchmark", "Integration\test\Benchmark\Benchmark.csproj", "{267B24D5-1460-42D4-AEE7-438094164345}"
 EndProject

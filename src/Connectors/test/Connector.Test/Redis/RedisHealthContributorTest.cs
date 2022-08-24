@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Bootstrap.AutoConfiguration.TypeLocators;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Services;
 using Xunit;

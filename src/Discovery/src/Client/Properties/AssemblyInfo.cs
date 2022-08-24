@@ -4,6 +4,6 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.Autoconfig")]
+[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Client.Test")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

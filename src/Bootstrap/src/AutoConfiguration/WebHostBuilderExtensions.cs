@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Bootstrap.AutoConfiguration.TypeLocators;
 using Steeltoe.Common;
 using Steeltoe.Connector;
 using Steeltoe.Connector.MongoDb;
@@ -30,11 +31,11 @@ using Steeltoe.Management.Kubernetes;
 using Steeltoe.Management.Tracing;
 using Steeltoe.Security.Authentication.CloudFoundry;
 
-namespace Steeltoe.Bootstrap.Autoconfig;
+namespace Steeltoe.Bootstrap.AutoConfiguration;
 
 public static class WebHostBuilderExtensions
 {
-    private const string LoggerName = "Steeltoe.Autoconfig";
+    private const string LoggerName = "Steeltoe.AutoConfiguration";
     private static ILoggerFactory _loggerFactory;
     private static ILogger _logger;
 

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Azure.Cosmos;
+using Steeltoe.Bootstrap.AutoConfiguration.TypeLocators;
 using Steeltoe.Connector.Services;
 using Xunit;
 

@@ -4,8 +4,9 @@
 
 using System.Reflection;
 using Steeltoe.Common.Reflection;
+using Steeltoe.Connector;
 
-namespace Steeltoe.Connector.Redis;
+namespace Steeltoe.Bootstrap.AutoConfiguration.TypeLocators;
 
 public static class RedisTypeLocator
 {

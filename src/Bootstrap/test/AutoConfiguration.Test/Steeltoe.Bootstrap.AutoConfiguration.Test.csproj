@@ -22,7 +22,7 @@
     <ProjectReference Include="..\..\..\Management\src\Kubernetes\Steeltoe.Management.Kubernetes.csproj" />
     <ProjectReference Include="..\..\..\Management\src\Tracing\Steeltoe.Management.Tracing.csproj" />
     <ProjectReference Include="..\..\..\Security\src\Authentication.CloudFoundry\Steeltoe.Security.Authentication.CloudFoundry.csproj" />
-    <ProjectReference Include="..\..\src\Autoconfig\Steeltoe.Bootstrap.Autoconfig.csproj" />
+    <ProjectReference Include="..\..\src\AutoConfiguration\Steeltoe.Bootstrap.AutoConfiguration.csproj" />
   </ItemGroup>
 
   <ItemGroup>

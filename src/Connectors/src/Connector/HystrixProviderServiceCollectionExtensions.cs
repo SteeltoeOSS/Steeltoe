@@ -4,8 +4,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Bootstrap.AutoConfiguration.TypeLocators;
 using Steeltoe.Common;
-using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.Hystrix;

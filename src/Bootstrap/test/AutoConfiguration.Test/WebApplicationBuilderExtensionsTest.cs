@@ -38,7 +38,7 @@ using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Trace;
 using Xunit;
 
-namespace Steeltoe.Bootstrap.Autoconfig.Test;
+namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
 
 public class WebApplicationBuilderExtensionsTest
 {

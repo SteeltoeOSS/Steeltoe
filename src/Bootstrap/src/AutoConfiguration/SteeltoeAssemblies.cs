@@ -4,7 +4,7 @@
 
 // ReSharper disable MemberCanBeInternal
 
-namespace Steeltoe.Bootstrap.Autoconfig;
+namespace Steeltoe.Bootstrap.AutoConfiguration;
 
 public static class SteeltoeAssemblies
 {

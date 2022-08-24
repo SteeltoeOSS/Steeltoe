@@ -4,4 +4,4 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.Autoconfig.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration.Test")]

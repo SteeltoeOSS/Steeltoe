@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 
-namespace Steeltoe.Bootstrap.Autoconfig;
+namespace Steeltoe.Bootstrap.AutoConfiguration;
 
 internal static class ConfigurationExtensions
 {

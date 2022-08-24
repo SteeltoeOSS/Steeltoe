@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Steeltoe.Common.Reflection;
 
-namespace Steeltoe.Bootstrap.Autoconfig;
+namespace Steeltoe.Bootstrap.AutoConfiguration;
 
 internal static class AssemblyExtensions
 {

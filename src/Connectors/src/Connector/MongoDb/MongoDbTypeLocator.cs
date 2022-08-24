@@ -4,8 +4,9 @@
 
 using System.Reflection;
 using Steeltoe.Common.Reflection;
+using Steeltoe.Connector;
 
-namespace Steeltoe.Connector.MongoDb;
+namespace Steeltoe.Bootstrap.AutoConfiguration.TypeLocators;
 
 /// <summary>
 /// Assemblies and types used for interacting with MongoDB.

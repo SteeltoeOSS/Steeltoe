@@ -3,8 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Reflection;
+using Steeltoe.Connector;
 
-namespace Steeltoe.Connector.SqlServer;
+namespace Steeltoe.Bootstrap.AutoConfiguration.TypeLocators;
 
 /// <summary>
 /// Assemblies and types used for interacting with Microsoft SQL Server.
