@@ -24,7 +24,7 @@
       },
       {
         "Name": "ToMaximumStringLength",
-        "Args": { "maximumStringLength": 4 }
+        "Args": { "maximumStringLength": 25 }
       },
       {
         "Name": "ToMaximumCollectionCount",

@@ -14,11 +14,12 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
 
     private readonly ConcurrentDictionary<string, LogLevel> _originalLevels;
     private readonly ConcurrentDictionary<string, Filter> _runningFilters;
+    private protected readonly IEnumerable<IDynamicMessageProcessor> MessageProcessors;
 
-    private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
     private Func<string, LogLevel, bool> _filter;
     private ConcurrentDictionary<string, MessageProcessingLogger> _loggers = new();
-    private ILoggerProvider _delegate;
+
+    private protected ILoggerProvider DelegateProvider { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamicLoggerProviderBase" /> class. Contains base functionality for DynamicLoggerProvider.
@@ -45,16 +46,16 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
             throw new ArgumentException($"{nameof(initialLevels.RunningLevelFilters)} in {nameof(initialLevels)} must not be null.", nameof(initialLevels));
         }
 
-        _delegate = getDelegateLogger?.Invoke();
+        DelegateProvider = getDelegateLogger?.Invoke();
 
-        if (_delegate == null)
+        if (DelegateProvider == null)
         {
             throw new ArgumentException($"Callback for {nameof(ILoggerProvider)} must not return null.", nameof(getDelegateLogger));
         }
 
         _originalLevels = new ConcurrentDictionary<string, LogLevel>(initialLevels.OriginalLevels);
         _runningFilters = new ConcurrentDictionary<string, Filter>(initialLevels.RunningLevelFilters);
-        _messageProcessors = messageProcessors;
+        MessageProcessors = messageProcessors;
         _filter = initialLevels.DefaultLevelFilter ?? FalseFilter;
     }
 
@@ -184,18 +185,18 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     {
         if (disposing)
         {
-            _delegate?.Dispose();
-            _delegate = null;
+            DelegateProvider?.Dispose();
+            DelegateProvider = null;
 
             _loggers = null;
         }
     }
 
-    private MessageProcessingLogger CreateLoggerImplementation(string name)
+    private protected virtual MessageProcessingLogger CreateLoggerImplementation(string name)
     {
-        ILogger logger = _delegate.CreateLogger(name);
+        ILogger logger = DelegateProvider.CreateLogger(name);
 
-        return new MessageProcessingLogger(logger, _messageProcessors)
+        return new MessageProcessingLogger(logger, MessageProcessors)
         {
             Filter = GetFilter(name),
             Name = name
@@ -211,7 +212,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     /// <returns>
     /// A filter function for log level.
     /// </returns>
-    private Func<string, LogLevel, bool> GetFilter(string name)
+    private protected Func<string, LogLevel, bool> GetFilter(string name)
     {
         // check if there are any applicable filters
         if (_runningFilters.Any())

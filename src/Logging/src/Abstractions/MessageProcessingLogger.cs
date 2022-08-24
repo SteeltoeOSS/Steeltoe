@@ -9,7 +9,7 @@ namespace Steeltoe.Extensions.Logging;
 
 public class MessageProcessingLogger : ILogger
 {
-    private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
+    private protected readonly IEnumerable<IDynamicMessageProcessor> MessageProcessors;
 
     public ILogger Delegate { get; }
 
@@ -21,16 +21,16 @@ public class MessageProcessingLogger : ILogger
     /// Initializes a new instance of the <see cref="MessageProcessingLogger" /> class. Wraps an ILogger and decorates log messages via
     /// <see cref="IDynamicMessageProcessor" />.
     /// </summary>
-    /// <param name="iLogger">
+    /// <param name="logger">
     /// The <see cref="ILogger" /> being wrapped.
     /// </param>
     /// <param name="messageProcessors">
     /// The list of <see cref="IDynamicMessageProcessor" />s.
     /// </param>
-    public MessageProcessingLogger(ILogger iLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
+    public MessageProcessingLogger(ILogger logger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
     {
-        _messageProcessors = messageProcessors;
-        Delegate = iLogger;
+        MessageProcessors = messageProcessors;
+        Delegate = logger;
     }
 
     public IDisposable BeginScope<TState>(TState state)
@@ -43,7 +43,7 @@ public class MessageProcessingLogger : ILogger
         return Filter.Invoke(Name, logLevel);
     }
 
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+    public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
         if (!IsEnabled(logLevel))
         {
@@ -54,9 +54,9 @@ public class MessageProcessingLogger : ILogger
 
         string message = formatter(state, exception);
 
-        if (_messageProcessors != null)
+        if (MessageProcessors != null)
         {
-            foreach (IDynamicMessageProcessor processor in _messageProcessors)
+            foreach (IDynamicMessageProcessor processor in MessageProcessors)
             {
                 message = processor.Process(message);
             }
