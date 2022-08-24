@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using StackExchange.Redis;
-using Steeltoe.Bootstrap.AutoConfiguration.TypeLocators;
+using Steeltoe.Connector.CosmosDb;
 using Steeltoe.Connector.Services;
 using Xunit;
 

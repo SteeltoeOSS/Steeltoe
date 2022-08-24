@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Bootstrap.AutoConfiguration.TypeLocators;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;

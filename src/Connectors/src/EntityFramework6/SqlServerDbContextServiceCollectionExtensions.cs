@@ -6,9 +6,9 @@ using System.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Bootstrap.AutoConfiguration.TypeLocators;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connector.CosmosDb;
 using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.SqlServer.EntityFramework6;

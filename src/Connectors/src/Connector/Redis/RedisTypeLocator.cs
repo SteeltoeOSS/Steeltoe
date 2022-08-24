@@ -4,9 +4,8 @@
 
 using System.Reflection;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector;
 
-namespace Steeltoe.Bootstrap.AutoConfiguration.TypeLocators;
+namespace Steeltoe.Connector.CosmosDb;
 
 public static class RedisTypeLocator
 {

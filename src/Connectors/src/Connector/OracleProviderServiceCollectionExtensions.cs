@@ -7,10 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Bootstrap.AutoConfiguration.TypeLocators;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.CosmosDb;
 using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.Oracle;

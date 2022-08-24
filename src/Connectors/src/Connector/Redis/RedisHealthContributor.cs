@@ -5,11 +5,11 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Bootstrap.AutoConfiguration.TypeLocators;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
+using Steeltoe.Connector.CosmosDb;
 using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.Redis;
