@@ -42,16 +42,14 @@ public class CloudFoundrySecurityMiddleware
                 _logger?.LogCritical(
                     "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
 
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.ApplicationIdMissingMessage))
-                    .ConfigureAwait(false);
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.ApplicationIdMissingMessage));
 
                 return;
             }
 
             if (string.IsNullOrEmpty(_options.CloudFoundryApi))
             {
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.CloudfoundryApiMissingMessage))
-                    .ConfigureAwait(false);
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.CloudfoundryApiMissingMessage));
 
                 return;
             }
@@ -60,17 +58,16 @@ public class CloudFoundrySecurityMiddleware
 
             if (target == null)
             {
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.EndpointNotConfiguredMessage))
-                    .ConfigureAwait(false);
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.EndpointNotConfiguredMessage));
 
                 return;
             }
 
-            SecurityResult sr = await GetPermissionsAsync(context).ConfigureAwait(false);
+            SecurityResult sr = await GetPermissionsAsync(context);
 
             if (sr.Code != HttpStatusCode.OK)
             {
-                await ReturnErrorAsync(context, sr).ConfigureAwait(false);
+                await ReturnErrorAsync(context, sr);
                 return;
             }
 
@@ -78,12 +75,12 @@ public class CloudFoundrySecurityMiddleware
 
             if (!target.IsAccessAllowed(permissions))
             {
-                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, SecurityBase.AccessDeniedMessage)).ConfigureAwait(false);
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, SecurityBase.AccessDeniedMessage));
                 return;
             }
         }
 
-        await _next(context).ConfigureAwait(false);
+        await _next(context);
     }
 
     internal string GetAccessToken(HttpRequest request)

@@ -234,7 +234,7 @@ public class DiscoveryClient : IEurekaClient
             if (info != null)
             {
                 info.Status = InstanceStatus.Down;
-                bool result = await UnregisterAsync().ConfigureAwait(false);
+                bool result = await UnregisterAsync();
 
                 if (!result)
                 {
@@ -262,7 +262,7 @@ public class DiscoveryClient : IEurekaClient
             {
                 try
                 {
-                    bool result = await RegisterAsync().ConfigureAwait(false);
+                    bool result = await RegisterAsync();
 
                     if (result)
                     {
@@ -294,11 +294,11 @@ public class DiscoveryClient : IEurekaClient
             if (fullUpdate || !string.IsNullOrEmpty(ClientConfiguration.RegistryRefreshSingleVipAddress) || ClientConfiguration.ShouldDisableDelta ||
                 localRegionApps.GetRegisteredApplications().Count == 0)
             {
-                fetched = await FetchFullRegistryAsync().ConfigureAwait(false);
+                fetched = await FetchFullRegistryAsync();
             }
             else
             {
-                fetched = await FetchRegistryDeltaAsync().ConfigureAwait(false);
+                fetched = await FetchRegistryDeltaAsync();
             }
         }
         catch (Exception e)
@@ -341,7 +341,7 @@ public class DiscoveryClient : IEurekaClient
 
         try
         {
-            EurekaHttpResponse resp = await HttpClient.CancelAsync(inst.AppName, inst.InstanceId).ConfigureAwait(false);
+            EurekaHttpResponse resp = await HttpClient.CancelAsync(inst.AppName, inst.InstanceId);
             logger.LogDebug("Unregister {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
             return resp.StatusCode == HttpStatusCode.OK;
         }
@@ -365,7 +365,7 @@ public class DiscoveryClient : IEurekaClient
 
         try
         {
-            EurekaHttpResponse resp = await HttpClient.RegisterAsync(inst).ConfigureAwait(false);
+            EurekaHttpResponse resp = await HttpClient.RegisterAsync(inst);
             bool result = resp.StatusCode == HttpStatusCode.NoContent;
             logger.LogDebug("Register {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
 
@@ -398,13 +398,12 @@ public class DiscoveryClient : IEurekaClient
 
         if (inst.IsDirty)
         {
-            await RegisterDirtyInstanceInfoAsync(inst).ConfigureAwait(false);
+            await RegisterDirtyInstanceInfoAsync(inst);
         }
 
         try
         {
-            EurekaHttpResponse<InstanceInfo> resp = await HttpClient.SendHeartBeatAsync(inst.AppName, inst.InstanceId, inst, InstanceStatus.Unknown)
-                .ConfigureAwait(false);
+            EurekaHttpResponse<InstanceInfo> resp = await HttpClient.SendHeartBeatAsync(inst.AppName, inst.InstanceId, inst, InstanceStatus.Unknown);
 
             logger.LogDebug("Renew {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
 
@@ -413,7 +412,7 @@ public class DiscoveryClient : IEurekaClient
                 logger.LogWarning(
                     "Eureka heartbeat came back with 404 status. This could happen if Eureka was offline during app startup. Attempting to (re)register now.");
 
-                return await RegisterAsync().ConfigureAwait(false);
+                return await RegisterAsync();
             }
 
             bool result = resp.StatusCode == HttpStatusCode.OK;
@@ -443,11 +442,11 @@ public class DiscoveryClient : IEurekaClient
 
         if (string.IsNullOrEmpty(ClientConfiguration.RegistryRefreshSingleVipAddress))
         {
-            resp = await HttpClient.GetApplicationsAsync().ConfigureAwait(false);
+            resp = await HttpClient.GetApplicationsAsync();
         }
         else
         {
-            resp = await HttpClient.GetVipAsync(ClientConfiguration.RegistryRefreshSingleVipAddress).ConfigureAwait(false);
+            resp = await HttpClient.GetVipAsync(ClientConfiguration.RegistryRefreshSingleVipAddress);
         }
 
         logger.LogDebug("FetchFullRegistry returned: {StatusCode}, {Response}", resp.StatusCode, resp.Response != null ? resp.Response.ToString() : "null");
@@ -476,7 +475,7 @@ public class DiscoveryClient : IEurekaClient
         long startingCounter = registryFetchCounter;
         Applications delta = null;
 
-        EurekaHttpResponse<Applications> resp = await HttpClient.GetDeltaAsync().ConfigureAwait(false);
+        EurekaHttpResponse<Applications> resp = await HttpClient.GetDeltaAsync();
         logger.LogDebug("FetchRegistryDelta returned: {StatusCode}", resp.StatusCode);
 
         if (resp.StatusCode == HttpStatusCode.OK)
@@ -487,7 +486,7 @@ public class DiscoveryClient : IEurekaClient
         if (delta == null)
         {
             // Log
-            return await FetchFullRegistryAsync().ConfigureAwait(false);
+            return await FetchFullRegistryAsync();
         }
 
         if (Interlocked.CompareExchange(ref registryFetchCounter, (startingCounter + 1) % long.MaxValue, startingCounter) == startingCounter)
@@ -498,7 +497,7 @@ public class DiscoveryClient : IEurekaClient
             if (!hashCode.Equals(delta.AppsHashCode))
             {
                 logger.LogWarning($"FetchRegistryDelta discarding delta, hash codes mismatch: {hashCode}!={delta.AppsHashCode}");
-                return await FetchFullRegistryAsync().ConfigureAwait(false);
+                return await FetchFullRegistryAsync();
             }
 
             localRegionApps.AppsHashCode = delta.AppsHashCode;
@@ -548,7 +547,7 @@ public class DiscoveryClient : IEurekaClient
 
     protected internal async Task<bool> RegisterDirtyInstanceInfoAsync(InstanceInfo inst)
     {
-        bool regResult = await RegisterAsync().ConfigureAwait(false);
+        bool regResult = await RegisterAsync();
         logger.LogDebug("Register dirty InstanceInfo returned {status}", regResult);
 
         if (regResult)
@@ -583,7 +582,7 @@ public class DiscoveryClient : IEurekaClient
 
         if (ClientConfiguration.ShouldRegisterWithEureka && appInfoManager.InstanceInfo != null)
         {
-            if (!await RegisterAsync().ConfigureAwait(false))
+            if (!await RegisterAsync())
             {
                 logger.LogInformation("Initial Registration failed.");
             }
@@ -600,7 +599,7 @@ public class DiscoveryClient : IEurekaClient
 
         if (ClientConfiguration.ShouldFetchRegistry)
         {
-            await FetchRegistryAsync(true).ConfigureAwait(false);
+            await FetchRegistryAsync(true);
             int intervalInMilliseconds = ClientConfiguration.RegistryFetchIntervalSeconds * 1000;
             cacheRefreshTimer = StartTimer("Query", intervalInMilliseconds, CacheRefreshTask);
         }
@@ -651,7 +650,7 @@ public class DiscoveryClient : IEurekaClient
             return;
         }
 
-        bool result = await RenewAsync().ConfigureAwait(false);
+        bool result = await RenewAsync();
 
         if (!result)
         {
@@ -666,7 +665,7 @@ public class DiscoveryClient : IEurekaClient
             return;
         }
 
-        bool result = await FetchRegistryAsync(false).ConfigureAwait(false);
+        bool result = await FetchRegistryAsync(false);
 
         if (!result)
         {

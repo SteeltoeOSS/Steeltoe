@@ -25,7 +25,7 @@ public class HystrixRequestContextMiddleware
     {
         HystrixRequestContext hystrix = HystrixRequestContext.InitializeContext();
 
-        await _next.Invoke(context).ConfigureAwait(false);
+        await _next.Invoke(context);
 
         hystrix.Dispose();
     }

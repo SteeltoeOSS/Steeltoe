@@ -566,7 +566,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
             // Invoke Config Server
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
 
                 // Log status
                 string message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
@@ -589,7 +589,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
                     return null;
                 }
 
-                return await response.Content.ReadFromJsonAsync<ConfigEnvironment>(SerializerOptions).ConfigureAwait(false);
+                return await response.Content.ReadFromJsonAsync<ConfigEnvironment>(SerializerOptions);
             }
             catch (Exception e)
             {
@@ -820,7 +820,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
 
             logger.LogInformation("Renewing Vault token {token} for {ttl} milliseconds at Uri {uri}", obscuredToken, Settings.TokenTtl, uri);
 
-            using HttpResponseMessage response = await httpClient.SendAsync(message).ConfigureAwait(false);
+            using HttpResponseMessage response = await httpClient.SendAsync(message);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {

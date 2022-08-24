@@ -42,8 +42,8 @@ public class DiscoveryHttpMessageHandler : DelegatingHandler
 
         try
         {
-            request.RequestUri = await _discoveryBase.LookupServiceAsync(current).ConfigureAwait(false);
-            return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            request.RequestUri = await _discoveryBase.LookupServiceAsync(current);
+            return await base.SendAsync(request, cancellationToken);
         }
         catch (Exception e)
         {

@@ -57,7 +57,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
             if (serialInfo != null)
             {
                 response.StatusCode = (int)HttpStatusCode.OK;
-                await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+                await context.Response.WriteAsync(serialInfo);
             }
             else
             {
@@ -72,7 +72,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
             context.HandleContentNegotiation(logger);
             context.Response.StatusCode = (int)HttpStatusCode.OK;
-            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+            await context.Response.WriteAsync(serialInfo);
         }
     }
 

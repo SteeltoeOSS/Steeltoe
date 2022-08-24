@@ -99,7 +99,7 @@ public class QueueChannel : AbstractPollableChannel, IQueueChannelOperations
 
         try
         {
-            IMessage message = _channel.Reader.ReadAsync(cancellationToken).AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
+            IMessage message = _channel.Reader.ReadAsync(cancellationToken).AsTask().GetAwaiter().GetResult();
 
             if (message != null)
             {
@@ -129,7 +129,7 @@ public class QueueChannel : AbstractPollableChannel, IQueueChannelOperations
 
         try
         {
-            _channel.Writer.WriteAsync(message, cancellationToken).AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
+            _channel.Writer.WriteAsync(message, cancellationToken).AsTask().GetAwaiter().GetResult();
             Interlocked.Increment(ref _size);
             return true;
         }

@@ -125,7 +125,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                     Instance = info.ToJsonInstance()
                 });
 
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
                 logger?.LogDebug("RegisterAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                 int statusCode = (int)response.StatusCode;
 
@@ -141,7 +141,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
 
-                string jsonError = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                string jsonError = await response.Content.ReadAsStringAsync();
                 logger?.LogInformation("Failure during RegisterAsync: {jsonError}", jsonError);
             }
             catch (Exception e)
@@ -200,7 +200,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
                 JsonInstanceInfo instanceInfo = null;
 
                 try
@@ -322,10 +322,9 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
 
-                JsonApplicationRoot applicationRoot =
-                    await response.Content.ReadFromJsonAsync<JsonApplicationRoot>(JsonSerializerOptions).ConfigureAwait(false);
+                var applicationRoot = await response.Content.ReadFromJsonAsync<JsonApplicationRoot>(JsonSerializerOptions);
 
                 Application appResp = null;
 
@@ -420,7 +419,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
                 logger?.LogDebug("CancelAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                 Interlocked.Exchange(ref ServiceUrl, serviceUrl);
 
@@ -482,7 +481,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
 
                 logger?.LogDebug("DeleteStatusOverrideAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(),
                     response.StatusCode, retry);
@@ -553,7 +552,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
 
                 logger?.LogDebug("StatusUpdateAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode,
                     retry);
@@ -787,8 +786,8 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
-                JsonInstanceInfoRoot infoRoot = await response.Content.ReadFromJsonAsync<JsonInstanceInfoRoot>(JsonSerializerOptions).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                var infoRoot = await response.Content.ReadFromJsonAsync<JsonInstanceInfoRoot>(JsonSerializerOptions);
 
                 InstanceInfo infoResp = null;
 
@@ -859,12 +858,12 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
                 JsonApplicationsRoot root = null;
 
                 try
                 {
-                    root = await response.Content.ReadFromJsonAsync<JsonApplicationsRoot>(JsonSerializerOptions).ConfigureAwait(false);
+                    root = await response.Content.ReadFromJsonAsync<JsonApplicationsRoot>(JsonSerializerOptions);
                 }
                 catch (Exception e)
                 {
