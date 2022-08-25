@@ -224,10 +224,10 @@ public static class EurekaPostConfigurer
     private static void UpdateWithDefaultsForDirect(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
     {
         UpdateWithDefaults(si, instOptions);
-        instOptions.PreferIpAddress = true;
+        instOptions.PreferIPAddress = true;
         instOptions.NonSecurePort = si.ApplicationInfo.Port;
         instOptions.SecurePort = si.ApplicationInfo.Port;
-        instOptions.InstanceId = $"{si.ApplicationInfo.InternalIp}:{si.ApplicationInfo.InstanceId}";
+        instOptions.InstanceId = $"{si.ApplicationInfo.InternalIP}:{si.ApplicationInfo.InstanceId}";
     }
 
     private static void UpdateWithDefaultsForRoute(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
@@ -249,7 +249,7 @@ public static class EurekaPostConfigurer
             instOptions.HostName = si.ApplicationInfo.Uris.First();
         }
 
-        instOptions.IpAddress = si.ApplicationInfo.InternalIp;
+        instOptions.IPAddress = si.ApplicationInfo.InternalIP;
 
         IDictionary<string, string> map = instOptions.MetadataMap;
         map[CFAppGuid] = si.ApplicationInfo.ApplicationId;

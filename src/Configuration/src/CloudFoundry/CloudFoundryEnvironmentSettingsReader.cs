@@ -8,8 +8,8 @@ public class CloudFoundryEnvironmentSettingsReader : ICloudFoundrySettingsReader
 {
     private const string CfInstanceGuid = "CF_INSTANCE_GUID";
     private const string CfInstanceIndex = "CF_INSTANCE_INDEX";
-    private const string CfInstanceInternalIp = "CF_INSTANCE_INTERNAL_IP";
-    private const string CfInstanceIp = "CF_INSTANCE_IP";
+    private const string CfInstanceInternalIP = "CF_INSTANCE_INTERNAL_IP";
+    private const string CfInstanceIP = "CF_INSTANCE_IP";
     private const string CfInstancePort = "CF_INSTANCE_PORT";
     private const string VcapApplication = "VCAP_APPLICATION";
     private const string VcapServices = "VCAP_SERVICES";
@@ -20,9 +20,9 @@ public class CloudFoundryEnvironmentSettingsReader : ICloudFoundrySettingsReader
 
     public string InstanceIndex => Environment.GetEnvironmentVariable(CfInstanceIndex);
 
-    public string InstanceInternalIp => Environment.GetEnvironmentVariable(CfInstanceInternalIp);
+    public string InstanceInternalIP => Environment.GetEnvironmentVariable(CfInstanceInternalIP);
 
-    public string InstanceIp => Environment.GetEnvironmentVariable(CfInstanceIp);
+    public string InstanceIP => Environment.GetEnvironmentVariable(CfInstanceIP);
 
     public string InstancePort => Environment.GetEnvironmentVariable(CfInstancePort);
 

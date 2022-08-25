@@ -48,12 +48,12 @@ public class CloudFoundryApplicationOptions : ApplicationInstanceInfo
     // ReSharper disable once InconsistentNaming
     public string Instance_IP { get; set; }
 
-    public override string InstanceIp => Instance_IP;
+    public override string InstanceIP => Instance_IP;
 
     // ReSharper disable once InconsistentNaming
     public string Internal_IP { get; set; }
 
-    public override string InternalIp => Internal_IP;
+    public override string InternalIP => Internal_IP;
 
     public Limits Limits { get; set; }
 

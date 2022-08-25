@@ -125,7 +125,7 @@ public interface IEurekaInstanceConfig
     /// Gets or sets the IPAddress of the instance. This information is for academic purposes only as the communication from other instances primarily happen
     /// using the information supplied in <see cref="GetHostName(bool)" />.
     /// </summary>
-    string IpAddress { get; set; }
+    string IPAddress { get; set; }
 
     /// <summary>
     /// Gets or sets the relative status page <em>Path</em> for this instance. The status page URL is then constructed out of the
@@ -192,7 +192,7 @@ public interface IEurekaInstanceConfig
 
     /// <summary>
     /// Gets or sets an instance's network addresses should be fully expressed in it's <see cref="DataCenterInfo" /> For example for instances in AWS, this
-    /// will include the publicHostname, publicIp, privateHostname and privateIp, when available. The <see cref="InstanceInfo" /> will further express a
+    /// will include the publicHostname, publicIP, privateHostname and privateIP, when available. The <see cref="InstanceInfo" /> will further express a
     /// "default address", which is a field that can be configured by the registering instance to advertise it's default address. This configuration allowed
     /// for the expression of an ordered list of fields that can be used to resolve the default address. The exact field values will depend on the
     /// implementation details of the corresponding implementing DataCenterInfo types.
@@ -201,7 +201,7 @@ public interface IEurekaInstanceConfig
 
     string HostName { get; set; }
 
-    bool PreferIpAddress { get; set; }
+    bool PreferIPAddress { get; set; }
 
     /// <summary>
     /// Gets the hostname associated with this instance. This is the exact name that would be used by other instances to make calls.

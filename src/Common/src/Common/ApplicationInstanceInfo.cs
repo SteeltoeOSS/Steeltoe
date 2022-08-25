@@ -84,9 +84,9 @@ public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
 
     public virtual int FileDescriptorLimit { get; set; } = -1;
 
-    public virtual string InstanceIp { get; set; }
+    public virtual string InstanceIP { get; set; }
 
-    public virtual string InternalIp { get; set; }
+    public virtual string InternalIP { get; set; }
 
     public ApplicationInstanceInfo()
     {

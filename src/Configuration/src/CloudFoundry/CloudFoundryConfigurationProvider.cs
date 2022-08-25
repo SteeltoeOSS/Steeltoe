@@ -55,8 +55,8 @@ public class CloudFoundryConfigurationProvider : ConfigurationProvider
             data["vcap:application:port"] = !string.IsNullOrEmpty(_settingsReader.InstancePort) ? _settingsReader.InstancePort : "-1";
         }
 
-        data["vcap:application:instance_ip"] = _settingsReader.InstanceIp;
-        data["vcap:application:internal_ip"] = _settingsReader.InstanceInternalIp;
+        data["vcap:application:instance_ip"] = _settingsReader.InstanceIP;
+        data["vcap:application:internal_ip"] = _settingsReader.InstanceInternalIP;
     }
 
     private void Process()

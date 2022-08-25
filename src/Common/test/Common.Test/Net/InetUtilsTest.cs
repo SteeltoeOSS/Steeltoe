@@ -43,7 +43,7 @@ public class InetUtilsTest
     {
         var utils = new InetUtils(new InetOptions(), GetLogger());
         HostInfo info = utils.FindFirstNonLoopbackHostInfo();
-        Assert.NotNull(info.IpAddress);
+        Assert.NotNull(info.IPAddress);
     }
 
     [Fact]

@@ -100,14 +100,14 @@ public class ConsulDiscoveryOptions
     /// </summary>
     public string HostName
     {
-        get => PreferIpAddress ? IpAddress : _hostName;
+        get => PreferIPAddress ? IPAddress : _hostName;
         set => _hostName = value;
     }
 
     /// <summary>
-    /// Gets or sets IP address to use when accessing service (must also set preferIpAddress to use).
+    /// Gets or sets IP address to use when accessing service (must also set preferIPAddress to use).
     /// </summary>
-    public string IpAddress { get; set; }
+    public string IPAddress { get; set; }
 
     /// <summary>
     /// Gets or sets Port to register the service under.
@@ -117,7 +117,7 @@ public class ConsulDiscoveryOptions
     /// <summary>
     /// Gets or sets a value indicating whether gets or sets Use ip address rather than hostname during registration.
     /// </summary>
-    public bool PreferIpAddress { get; set; }
+    public bool PreferIPAddress { get; set; }
 
     /// <summary>
     /// Gets or sets Service name.
@@ -190,7 +190,7 @@ public class ConsulDiscoveryOptions
         if (!UseNetUtils)
         {
             _hostName = DnsTools.ResolveHostName();
-            IpAddress = DnsTools.ResolveHostAddress(_hostName);
+            IPAddress = DnsTools.ResolveHostAddress(_hostName);
         }
     }
 
@@ -205,7 +205,7 @@ public class ConsulDiscoveryOptions
                 _hostName = host.Hostname;
             }
 
-            IpAddress = host.IpAddress;
+            IPAddress = host.IPAddress;
         }
     }
 

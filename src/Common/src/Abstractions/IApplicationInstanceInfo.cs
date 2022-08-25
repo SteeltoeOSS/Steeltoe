@@ -56,12 +56,12 @@ public interface IApplicationInstanceInfo
     /// <summary>
     /// Gets the internal IP address of the container running the app instance instance.
     /// </summary>
-    string InternalIp { get; }
+    string InternalIP { get; }
 
     /// <summary>
     /// Gets the external IP address of the host running the app instance.
     /// </summary>
-    string InstanceIp { get; }
+    string InstanceIP { get; }
 
     /// <summary>
     /// Gets the name to use to represent the app instance in the context of a given Steeltoe component.

@@ -12,9 +12,9 @@ public interface ICloudFoundrySettingsReader
 
     string InstanceIndex { get; }
 
-    string InstanceInternalIp { get; }
+    string InstanceInternalIP { get; }
 
-    string InstanceIp { get; }
+    string InstanceIP { get; }
 
     string InstancePort { get; }
 

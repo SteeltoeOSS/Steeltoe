@@ -10,7 +10,7 @@ public class InetOptions
 
     public string DefaultHostname { get; set; } = "localhost";
 
-    public string DefaultIpAddress { get; set; } = "127.0.0.1";
+    public string DefaultIPAddress { get; set; } = "127.0.0.1";
 
     public string IgnoredInterfaces { get; set; }
 

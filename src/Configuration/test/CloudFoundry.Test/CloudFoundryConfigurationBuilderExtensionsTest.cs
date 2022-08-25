@@ -97,8 +97,8 @@ public class CloudFoundryConfigurationBuilderExtensionsTest
                     }",
             InstanceId = "7c19d892-21c2-496b-a42a-946bbaa0775e",
             InstanceIndex = "0",
-            InstanceInternalIp = "127.0.0.1",
-            InstanceIp = "10.41.1.1",
+            InstanceInternalIP = "127.0.0.1",
+            InstanceIP = "10.41.1.1",
             InstancePort = "8888"
         };
 

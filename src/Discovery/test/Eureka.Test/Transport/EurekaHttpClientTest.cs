@@ -277,7 +277,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
             Assert.Equal("localhost:foo", instance.InstanceId);
             Assert.Equal("foo", instance.VipAddress);
             Assert.Equal("localhost", instance.HostName);
-            Assert.Equal("192.168.56.1", instance.IpAddress);
+            Assert.Equal("192.168.56.1", instance.IPAddress);
             Assert.Equal(InstanceStatus.Up, instance.Status);
         }
     }
@@ -375,7 +375,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
             Assert.Equal("localhost:foo", instance.InstanceId);
             Assert.Equal("foo", instance.VipAddress);
             Assert.Equal("localhost", instance.HostName);
-            Assert.Equal("192.168.56.1", instance.IpAddress);
+            Assert.Equal("192.168.56.1", instance.IPAddress);
             Assert.Equal(InstanceStatus.Up, instance.Status);
         }
 
@@ -449,7 +449,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
             Assert.Equal("localhost:foo", instance.InstanceId);
             Assert.Equal("foo", instance.VipAddress);
             Assert.Equal("localhost", instance.HostName);
-            Assert.Equal("192.168.56.1", instance.IpAddress);
+            Assert.Equal("192.168.56.1", instance.IPAddress);
             Assert.Equal(InstanceStatus.Up, instance.Status);
         }
 
@@ -543,7 +543,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.InstanceId);
         Assert.Equal("DESKTOP-GNQ5SUT:80", resp.Response.VipAddress);
         Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.HostName);
-        Assert.Equal("192.168.0.147", resp.Response.IpAddress);
+        Assert.Equal("192.168.0.147", resp.Response.IPAddress);
         Assert.Equal(InstanceStatus.Up, resp.Response.Status);
 
         Assert.Equal("http://localhost:8888/", client.ServiceUrl);
@@ -610,7 +610,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.InstanceId);
         Assert.Equal("DESKTOP-GNQ5SUT:80", resp.Response.VipAddress);
         Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.HostName);
-        Assert.Equal("192.168.0.147", resp.Response.IpAddress);
+        Assert.Equal("192.168.0.147", resp.Response.IPAddress);
         Assert.Equal(InstanceStatus.Up, resp.Response.Status);
 
         Assert.Equal("http://localhost:8888/", client.ServiceUrl);

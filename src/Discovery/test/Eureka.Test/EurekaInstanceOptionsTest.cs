@@ -43,14 +43,14 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
         Assert.Null(opts.HealthCheckUrl);
         Assert.Null(opts.SecureHealthCheckUrl);
         Assert.Equal(DataCenterName.MyOwn, opts.DataCenterInfo.Name);
-        Assert.Equal(opts.GetHostAddress(false), opts.IpAddress);
+        Assert.Equal(opts.GetHostAddress(false), opts.IPAddress);
         Assert.Null(opts.DefaultAddressResolutionOrder);
         Assert.Null(opts.RegistrationMethod);
 
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
             // TODO: this is null on MacOS
-            Assert.NotNull(opts.IpAddress);
+            Assert.NotNull(opts.IPAddress);
         }
     }
 
@@ -164,7 +164,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
         mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo
         {
             Hostname = "FromMock",
-            IpAddress = "254.254.254.254"
+            IPAddress = "254.254.254.254"
         }).Verifiable();
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
@@ -187,7 +187,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
         mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo
         {
             Hostname = "FromMock",
-            IpAddress = "254.254.254.254"
+            IPAddress = "254.254.254.254"
         }).Verifiable();
 
         var appSettings = new Dictionary<string, string>
@@ -207,7 +207,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
         opts.ApplyNetUtils();
 
         Assert.Equal("FromMock", opts.HostName);
-        Assert.Equal("254.254.254.254", opts.IpAddress);
+        Assert.Equal("254.254.254.254", opts.IPAddress);
         mockNetUtils.Verify(n => n.FindFirstNonLoopbackHostInfo(), Times.Once);
     }
 

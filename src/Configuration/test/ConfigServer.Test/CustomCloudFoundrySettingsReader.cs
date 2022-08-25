@@ -14,9 +14,9 @@ internal sealed class CustomCloudFoundrySettingsReader : ICloudFoundrySettingsRe
 
     public string InstanceIndex => throw new NotImplementedException();
 
-    public string InstanceInternalIp => throw new NotImplementedException();
+    public string InstanceInternalIP => throw new NotImplementedException();
 
-    public string InstanceIp => throw new NotImplementedException();
+    public string InstanceIP => throw new NotImplementedException();
 
     public string InstancePort => throw new NotImplementedException();
 

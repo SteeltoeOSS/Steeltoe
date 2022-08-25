@@ -12,9 +12,9 @@ public class CloudFoundryMemorySettingsReader : ICloudFoundrySettingsReader
 
     public string InstanceIndex { get; set; }
 
-    public string InstanceInternalIp { get; set; }
+    public string InstanceInternalIP { get; set; }
 
-    public string InstanceIp { get; set; }
+    public string InstanceIP { get; set; }
 
     public string InstancePort { get; set; }
 

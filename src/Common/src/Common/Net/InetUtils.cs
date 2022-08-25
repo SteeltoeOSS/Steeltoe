@@ -33,7 +33,7 @@ public class InetUtils
         var hostInfo = new HostInfo
         {
             Hostname = _options.DefaultHostname,
-            IpAddress = _options.DefaultIpAddress
+            IPAddress = _options.DefaultIPAddress
         };
 
         return hostInfo;
@@ -189,7 +189,7 @@ public class InetUtils
             hostInfo.Hostname = _options.DefaultHostname;
         }
 
-        hostInfo.IpAddress = address.ToString();
+        hostInfo.IPAddress = address.ToString();
         return hostInfo;
     }
 

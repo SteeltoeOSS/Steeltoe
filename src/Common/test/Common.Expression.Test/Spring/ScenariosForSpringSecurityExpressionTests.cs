@@ -72,12 +72,12 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
 
         // Might be better with a as a variable although it would work as a property too...
         // Variable references using a '#'
-        IExpression expr = parser.ParseRaw("(HasRole('SUPERVISOR') or (#a <  1.042)) and HasIpAddress('10.10.0.0/16')");
+        IExpression expr = parser.ParseRaw("(HasRole('SUPERVISOR') or (#a <  1.042)) and HasIPAddress('10.10.0.0/16')");
 
         bool value;
 
         ctx.SetVariable("a", 1.0d); // referenced as #a in the expression
-        ctx.SetRootObject(new Supervisor("Ben")); // so non-qualified references 'hasRole()' 'hasIpAddress()' are invoked against it
+        ctx.SetRootObject(new Supervisor("Ben")); // so non-qualified references 'hasRole()' 'hasIPAddress()' are invoked against it
         value = expr.GetValue<bool>(ctx);
         Assert.True(value);
 
@@ -94,15 +94,15 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
         var parser = new SpelExpressionParser();
         var ctx = new StandardEvaluationContext();
 
-        ctx.SetRootObject(new Supervisor("Ben")); // so non-qualified references 'hasRole()' 'hasIpAddress()' are invoked against it);
+        ctx.SetRootObject(new Supervisor("Ben")); // so non-qualified references 'hasRole()' 'hasIPAddress()' are invoked against it);
 
         // NEEDS TO OVERRIDE THE REFLECTION ONE - SHOW REORDERING MECHANISM
         // Might be better with a as a variable although it would work as a property too...
         // Variable references using a '#'
-        // SpelExpression expr = parser.parseExpression("(hasRole('SUPERVISOR') or (#a <  1.042)) and hasIpAddress('10.10.0.0/16')");
+        // SpelExpression expr = parser.parseExpression("(hasRole('SUPERVISOR') or (#a <  1.042)) and hasIPAddress('10.10.0.0/16')");
         ctx.AddMethodResolver(new MyMethodResolver());
 
-        IExpression expr = parser.ParseRaw("(HasRole(3) or (#a <  1.042)) and HasIpAddress('10.10.0.0/16')");
+        IExpression expr = parser.ParseRaw("(HasRole(3) or (#a <  1.042)) and HasIPAddress('10.10.0.0/16')");
 
         bool value;
 
@@ -156,7 +156,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
             return HasAnyRole(role);
         }
 
-        public virtual bool HasIpAddress(string ipAddress)
+        public virtual bool HasIPAddress(string ipAddress)
         {
             return true;
         }
