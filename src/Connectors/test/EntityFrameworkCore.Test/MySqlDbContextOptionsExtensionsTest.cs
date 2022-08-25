@@ -6,7 +6,6 @@ using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Connector.CosmosDb;
 using Steeltoe.Connector.EntityFrameworkCore;
 using Steeltoe.Connector.EntityFrameworkCore.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;

@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.Reflection;
 
-namespace Steeltoe.Connector.CosmosDb;
+namespace Steeltoe.Connector.Oracle;
 
 /// <summary>
 /// Assemblies and types used for interacting with Oracle.

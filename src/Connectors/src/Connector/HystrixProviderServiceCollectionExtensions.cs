@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
-using Steeltoe.Connector.CosmosDb;
+using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.Hystrix;

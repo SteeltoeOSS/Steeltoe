@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using RabbitMQ.Client;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.CosmosDb;
 using Steeltoe.Connector.Services;
 using Xunit;
 

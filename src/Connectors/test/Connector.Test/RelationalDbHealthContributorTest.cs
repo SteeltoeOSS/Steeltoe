@@ -6,7 +6,6 @@ using System.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.CosmosDb;
 using Steeltoe.Connector.MySql;
 using Steeltoe.Connector.Oracle;
 using Steeltoe.Connector.PostgreSql;

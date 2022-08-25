@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.Reflection;
 
-namespace Steeltoe.Connector.CosmosDb;
+namespace Steeltoe.Connector.SqlServer;
 
 /// <summary>
 /// Assemblies and types used for interacting with Microsoft SQL Server.

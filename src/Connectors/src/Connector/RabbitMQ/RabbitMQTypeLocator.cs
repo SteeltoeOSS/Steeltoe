@@ -5,7 +5,7 @@
 using System.Reflection;
 using Steeltoe.Common.Reflection;
 
-namespace Steeltoe.Connector.CosmosDb;
+namespace Steeltoe.Connector.RabbitMQ;
 
 /// <summary>
 /// Assemblies and types used for interacting with RabbitMQ.

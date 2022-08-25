@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.CosmosDb;
 using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.MySql;

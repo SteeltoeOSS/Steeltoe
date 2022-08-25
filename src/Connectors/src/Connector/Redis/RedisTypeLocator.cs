@@ -5,7 +5,7 @@
 using System.Reflection;
 using Steeltoe.Common.Reflection;
 
-namespace Steeltoe.Connector.CosmosDb;
+namespace Steeltoe.Connector.Redis;
 
 public static class RedisTypeLocator
 {

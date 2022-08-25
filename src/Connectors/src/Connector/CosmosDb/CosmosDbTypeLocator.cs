@@ -12,7 +12,7 @@ namespace Steeltoe.Connector.CosmosDb;
 public static class CosmosDbTypeLocator
 {
     /// <summary>
-    /// Gets a list of supported CosmosDbDB assemblies.
+    /// Gets a list of supported CosmosDB assemblies.
     /// </summary>
     public static string[] Assemblies { get; internal set; } =
     {
@@ -20,7 +20,7 @@ public static class CosmosDbTypeLocator
     };
 
     /// <summary>
-    /// Gets a list of supported CosmosDbDB client types.
+    /// Gets a list of supported CosmosDB client types.
     /// </summary>
     public static string[] ConnectionTypeNames { get; internal set; } =
     {
@@ -33,7 +33,7 @@ public static class CosmosDbTypeLocator
     };
 
     /// <summary>
-    /// Gets CosmosDbClient from CosmosDbDB Library.
+    /// Gets CosmosDbClient from CosmosDB Library.
     /// </summary>
     /// <exception cref="ConnectorException">
     /// When type is not found.

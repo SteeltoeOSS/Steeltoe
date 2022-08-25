@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Connector;
-using Steeltoe.Connector.CosmosDb;
 using Steeltoe.Connector.MongoDb;
 using Steeltoe.Connector.MySql;
 using Steeltoe.Connector.Oracle;

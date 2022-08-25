@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.CosmosDb;
 using Steeltoe.Connector.Oracle;
 using Steeltoe.Connector.Oracle.EntityFramework6;
 using Steeltoe.Connector.Services;

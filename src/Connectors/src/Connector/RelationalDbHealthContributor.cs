@@ -9,7 +9,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
-using Steeltoe.Connector.CosmosDb;
 using Steeltoe.Connector.MySql;
 using Steeltoe.Connector.Oracle;
 using Steeltoe.Connector.PostgreSql;
