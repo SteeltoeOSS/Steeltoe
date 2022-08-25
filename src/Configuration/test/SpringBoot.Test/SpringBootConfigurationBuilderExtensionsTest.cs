@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
 
-public class SpringBootConfigurationBuilderExtensionsTest
+public sealed class SpringBootConfigurationBuilderExtensionsTest
 {
     [Fact]
     public void AddSpringBootEnv_ThrowsIfConfigBuilderNull()

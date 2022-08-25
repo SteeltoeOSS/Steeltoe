@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
 
-public class TestServerStartup1
+public sealed class TestServerStartup1
 {
     public static IServiceProvider ServiceProvider { get; set; }
 

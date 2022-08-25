@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
 
-public class SpringBootEnvProviderTest
+public sealed class SpringBootEnvProviderTest
 {
     [Fact]
     public void TryGet_Flat()

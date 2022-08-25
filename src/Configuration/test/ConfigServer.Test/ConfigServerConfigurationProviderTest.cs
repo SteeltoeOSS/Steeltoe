@@ -16,7 +16,7 @@ using Xunit.Sdk;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class ConfigServerConfigurationProviderTest
+public sealed class ConfigServerConfigurationProviderTest
 {
     private readonly ConfigServerClientSettings _commonSettings = new()
     {

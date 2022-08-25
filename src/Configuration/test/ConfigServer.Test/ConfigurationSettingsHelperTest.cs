@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class ConfigurationSettingsHelperTest
+public sealed class ConfigurationSettingsHelperTest
 {
     [Fact]
     public void Initialize_ThrowsOnNulls()

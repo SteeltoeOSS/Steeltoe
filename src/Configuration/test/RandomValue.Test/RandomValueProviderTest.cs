@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.RandomValue.Test;
 
-public class RandomValueProviderTest
+public sealed class RandomValueProviderTest
 {
     [Fact]
     public void Constructor__ThrowsIfPrefixNull()

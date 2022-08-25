@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class ConfigServerDataAsOptions
+public sealed class ConfigServerDataAsOptions
 {
     public string Bar { get; set; }
 

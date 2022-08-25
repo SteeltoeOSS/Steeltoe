@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
 
-public class SpringBootCmdProviderTest
+public sealed class SpringBootCmdProviderTest
 {
     [Fact]
     public void TryGet_Key()

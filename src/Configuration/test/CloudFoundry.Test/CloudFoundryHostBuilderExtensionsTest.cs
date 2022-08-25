@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
 
-public class CloudFoundryHostBuilderExtensionsTest
+public sealed class CloudFoundryHostBuilderExtensionsTest
 {
     [Fact]
     public void WebHostAddCloudConfigurationFoundry_Adds()

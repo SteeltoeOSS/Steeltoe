@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
 
-public class CloudFoundryServiceOptionsTest
+public sealed class CloudFoundryServiceOptionsTest
 {
     [Fact]
     public void Constructor_WithNoVcapServicesConfiguration()

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class TestConfigServerStartup
+public sealed class TestConfigServerStartup
 {
     public static CountdownEvent InitialRequestLatch = new(1);
 

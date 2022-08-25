@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class ConfigServerConfigurationBuilderExtensionsCoreTest
+public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
 {
     private readonly Dictionary<string, string> _quickTests = new()
     {

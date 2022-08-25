@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class TestDiscoveryClientOptions
+public sealed class TestDiscoveryClientOptions
 {
     public bool Enabled { get; set; }
 }

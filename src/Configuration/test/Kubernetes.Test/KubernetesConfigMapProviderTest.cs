@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
 
-public class KubernetesConfigMapProviderTest
+public sealed class KubernetesConfigMapProviderTest
 {
     [Fact]
     public void KubernetesConfigMapProvider_ThrowsOnNulls()

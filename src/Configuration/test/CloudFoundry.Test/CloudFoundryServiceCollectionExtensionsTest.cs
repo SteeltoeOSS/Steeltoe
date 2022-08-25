@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
 
-public class CloudFoundryServiceCollectionExtensionsTest
+public sealed class CloudFoundryServiceCollectionExtensionsTest
 {
     [Fact]
     public void ConfigureCloudFoundryOptions_ThrowsIfServiceCollectionNull()

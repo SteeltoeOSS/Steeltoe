@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
 
-public class CloudFoundryConfigurationBuilderExtensionsTest
+public sealed class CloudFoundryConfigurationBuilderExtensionsTest
 {
     [Fact]
     public void AddCloudFoundry_ThrowsIfConfigBuilderNull()

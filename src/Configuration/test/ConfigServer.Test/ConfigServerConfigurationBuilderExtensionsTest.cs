@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class ConfigServerConfigurationBuilderExtensionsTest
+public sealed class ConfigServerConfigurationBuilderExtensionsTest
 {
     private const string VcapApplication = @" 
                 {

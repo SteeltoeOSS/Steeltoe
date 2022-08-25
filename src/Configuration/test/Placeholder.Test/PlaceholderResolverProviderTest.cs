@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
 
-public class PlaceholderResolverProviderTest
+public sealed class PlaceholderResolverProviderTest
 {
     [Fact]
     public void Constructor_ThrowsIfConfigNull()

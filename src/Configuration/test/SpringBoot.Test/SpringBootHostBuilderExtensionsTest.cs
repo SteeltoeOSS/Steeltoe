@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
 
-public class SpringBootHostBuilderExtensionsTest
+public sealed class SpringBootHostBuilderExtensionsTest
 {
     [Fact]
     public void ConfigureSpringBoot_ThrowsIfNulls()

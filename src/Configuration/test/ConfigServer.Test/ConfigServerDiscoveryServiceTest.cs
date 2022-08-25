@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class ConfigServerDiscoveryServiceTest
+public sealed class ConfigServerDiscoveryServiceTest
 {
     [Fact]
     public void ThrowsOnNulls()

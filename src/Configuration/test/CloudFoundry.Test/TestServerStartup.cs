@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
 
-public class TestServerStartup
+public sealed class TestServerStartup
 {
     public void ConfigureServices(IServiceCollection services)
     {

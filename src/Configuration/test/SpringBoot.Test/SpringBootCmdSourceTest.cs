@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
 
-public class SpringBootCmdSourceTest
+public sealed class SpringBootCmdSourceTest
 {
     [Fact]
     public void Constructors__InitializesDefaults()

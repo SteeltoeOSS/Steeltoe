@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class ConfigServerHostBuilderExtensionsTest
+public sealed class ConfigServerHostBuilderExtensionsTest
 {
     [Fact]
     public void AddConfigServer_DefaultWebHost_AddsConfigServer()

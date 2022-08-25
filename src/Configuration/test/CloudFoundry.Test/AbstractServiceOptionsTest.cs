@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
 
-public class AbstractServiceOptionsTest
+public sealed class AbstractServiceOptionsTest
 {
     [Fact]
     public void Bind_ThrowsWithBadArguments()

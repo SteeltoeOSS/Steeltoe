@@ -20,7 +20,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 //          eg. git clone https://github.com/spring-cloud/spring-cloud-config.git
 //              cd spring-cloud-config\spring-cloud-config-server
 //              mvn spring-boot:run
-public class ConfigServerConfigurationExtensionsIntegrationTest
+public sealed class ConfigServerConfigurationExtensionsIntegrationTest
 {
     [Fact]
     [Trait("Category", "Integration")]

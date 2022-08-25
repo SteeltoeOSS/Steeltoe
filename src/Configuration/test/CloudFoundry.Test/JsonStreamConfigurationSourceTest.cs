@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
 
-public class JsonStreamConfigurationSourceTest
+public sealed class JsonStreamConfigurationSourceTest
 {
     [Fact]
     public void Constructor_Throws_StreamNull()

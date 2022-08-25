@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class ConfigServerClientSettingsOptionsTest
+public sealed class ConfigServerClientSettingsOptionsTest
 {
     [Fact]
     public void ConfigureConfigServerClientSettingsOptions_WithDefaults()

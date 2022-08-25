@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
 
-public class SpringBootEnvSourceTest
+public sealed class SpringBootEnvSourceTest
 {
     [Fact]
     public void Build__ReturnsProvider()

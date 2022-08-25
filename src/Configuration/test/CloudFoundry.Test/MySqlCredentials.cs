@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
 
-public class MySqlCredentials
+public sealed class MySqlCredentials
 {
     public string Hostname { get; set; }
 

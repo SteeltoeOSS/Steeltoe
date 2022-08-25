@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.RandomValue.Test;
 
-public class RandomValueSourceTest
+public sealed class RandomValueSourceTest
 {
     [Fact]
     public void Constructors__InitializesDefaults()

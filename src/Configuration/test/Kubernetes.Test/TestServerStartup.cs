@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
 
-public class TestServerStartup
+public sealed class TestServerStartup
 {
     public static string Response { get; set; }
 

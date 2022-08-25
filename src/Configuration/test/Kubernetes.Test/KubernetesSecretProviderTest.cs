@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
 
-public class KubernetesSecretProviderTest
+public sealed class KubernetesSecretProviderTest
 {
     [Fact]
     public void KubernetesSecretProvider_ThrowsOnNulls()

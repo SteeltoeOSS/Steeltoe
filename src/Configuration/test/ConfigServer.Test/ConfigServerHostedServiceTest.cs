@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class ConfigServerHostedServiceTest
+public sealed class ConfigServerHostedServiceTest
 {
     [Fact]
     public void Constructor_ThrowsOnNull()

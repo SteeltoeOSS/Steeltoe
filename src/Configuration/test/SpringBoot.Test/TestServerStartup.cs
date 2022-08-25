@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
 
-public class TestServerStartup
+public sealed class TestServerStartup
 {
     private readonly IConfiguration _configuration;
 

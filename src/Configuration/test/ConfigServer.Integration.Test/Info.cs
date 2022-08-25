@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class Info
+public sealed class Info
 {
     public string Description { get; set; }
 

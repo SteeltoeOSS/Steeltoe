@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
 
-public class JsonStreamConfigurationProviderTest
+public sealed class JsonStreamConfigurationProviderTest
 {
     [Fact]
     public void Load_LoadsProvidedStream()

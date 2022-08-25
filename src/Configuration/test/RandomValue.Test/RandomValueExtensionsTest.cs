@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.RandomValue.Test;
 
-public class RandomValueExtensionsTest
+public sealed class RandomValueExtensionsTest
 {
     [Fact]
     public void AddRandomValueSource_ThrowsIfConfigBuilderNull()
