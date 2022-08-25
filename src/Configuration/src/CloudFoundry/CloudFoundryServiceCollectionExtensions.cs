@@ -38,7 +38,7 @@ public static class CloudFoundryServiceCollectionExtensions
 
         services.Configure<CloudFoundryApplicationOptions>(appSection);
 
-        IConfigurationSection serviceSection = configuration.GetSection(CloudFoundryServicesOptions.ServicesConfigRoot);
+        IConfigurationSection serviceSection = configuration.GetSection(CloudFoundryServicesOptions.ServicesConfigurationRoot);
         services.Configure<CloudFoundryServicesOptions>(serviceSection);
 
         return services;

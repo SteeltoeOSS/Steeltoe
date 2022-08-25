@@ -19,10 +19,10 @@ public class PlaceholderResolverExtensionsTest
     public void ConfigurePlaceholderResolver_ThrowsIfNulls()
     {
         const IServiceCollection services = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        Assert.Throws<ArgumentNullException>(() => services.ConfigurePlaceholderResolver(config));
-        Assert.Throws<ArgumentNullException>(() => new ServiceCollection().ConfigurePlaceholderResolver(config));
+        Assert.Throws<ArgumentNullException>(() => services.ConfigurePlaceholderResolver(configuration));
+        Assert.Throws<ArgumentNullException>(() => new ServiceCollection().ConfigurePlaceholderResolver(configuration));
     }
 
     [Fact]
