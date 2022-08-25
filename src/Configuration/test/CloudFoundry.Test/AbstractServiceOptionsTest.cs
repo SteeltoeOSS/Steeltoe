@@ -12,7 +12,7 @@ public class AbstractServiceOptionsTest
     [Fact]
     public void Bind_ThrowsWithBadArguments()
     {
-        var options = new MySqlServiceOption();
+        var options = new MySqlServicesOptions();
         Assert.Throws<ArgumentNullException>(() => options.Bind(null, "foobar"));
         Assert.Throws<ArgumentNullException>(() => options.Bind(new ConfigurationBuilder().Build(), null));
         Assert.Throws<ArgumentException>(() => options.Bind(new ConfigurationBuilder().Build(), string.Empty));
@@ -70,12 +70,12 @@ public class AbstractServiceOptionsTest
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot root = builder.Build();
 
-        var options1 = new MySqlServiceOption();
+        var options1 = new MySqlServicesOptions();
         options1.Bind(root, "mySql2");
         Assert.Equal("mySql2", options1.Name);
         Assert.Equal("p-mysql", options1.Label);
 
-        var options2 = new MySqlServiceOption();
+        var options2 = new MySqlServicesOptions();
         options2.Bind(root, "mySql1");
         Assert.Equal("mySql1", options2.Name);
         Assert.Equal("p-mysql", options2.Label);
@@ -97,9 +97,9 @@ public class AbstractServiceOptionsTest
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot config = builder.Build();
 
-        var opt = new MySqlServiceOption();
-        opt.Bind(config, "mySql2");
-        Assert.NotEqual("mySql2", opt.Name);
-        Assert.NotEqual("p-mysql", opt.Label);
+        var options = new MySqlServicesOptions();
+        options.Bind(config, "mySql2");
+        Assert.NotEqual("mySql2", options.Name);
+        Assert.NotEqual("p-mysql", options.Label);
     }
 }
