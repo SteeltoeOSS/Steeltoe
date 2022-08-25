@@ -20,7 +20,7 @@ public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
     public const string KubernetesRoot = "spring:cloud:kubernetes";
     public const string ManagementRoot = "management";
 
-    protected IConfiguration configuration;
+    protected IConfiguration Configuration { get; set; }
 
     protected virtual string PlatformRoot => string.Empty;
 
@@ -62,7 +62,7 @@ public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
 
     public virtual string Name { get; set; }
 
-    public virtual string ApplicationName => Name ?? configuration?.GetValue(AppNameKey, DefaultAppName);
+    public virtual string ApplicationName => Name ?? Configuration?.GetValue(AppNameKey, DefaultAppName);
 
     public virtual string ApplicationVersion { get; set; }
 
@@ -96,22 +96,22 @@ public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
     public ApplicationInstanceInfo(IConfiguration configuration)
         : base(configuration)
     {
-        this.configuration = configuration;
-        SecondChanceSetIdProperties(this.configuration);
+        Configuration = configuration;
+        SecondChanceSetIdProperties(Configuration);
     }
 
     public ApplicationInstanceInfo(IConfiguration configuration, bool noPrefix)
         : base(configuration, ApplicationRoot)
     {
-        this.configuration = configuration;
-        SecondChanceSetIdProperties(this.configuration);
+        Configuration = configuration;
+        SecondChanceSetIdProperties(Configuration);
     }
 
     public ApplicationInstanceInfo(IConfiguration configuration, string configPrefix)
         : base(configuration, BuildConfigString(configPrefix, ApplicationRoot))
     {
-        this.configuration = configuration;
-        SecondChanceSetIdProperties(this.configuration);
+        Configuration = configuration;
+        SecondChanceSetIdProperties(Configuration);
     }
 
     protected void SecondChanceSetIdProperties(IConfiguration configuration = null)
@@ -137,15 +137,15 @@ public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
     {
         return steeltoeComponent switch
         {
-            SteeltoeComponent.Configuration => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath,
+            SteeltoeComponent.Configuration => ConfigurationValuesHelper.GetPreferredSetting(Configuration, DefaultAppName, additionalSearchPath,
                 ConfigServerNameKey, PlatformNameKey, AppNameKey),
-            SteeltoeComponent.Discovery => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath,
+            SteeltoeComponent.Discovery => ConfigurationValuesHelper.GetPreferredSetting(Configuration, DefaultAppName, additionalSearchPath,
                 EurekaInstanceNameKey, ConsulInstanceNameKey, PlatformNameKey, AppNameKey),
-            SteeltoeComponent.Kubernetes => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath,
+            SteeltoeComponent.Kubernetes => ConfigurationValuesHelper.GetPreferredSetting(Configuration, DefaultAppName, additionalSearchPath,
                 KubernetesNameKey, PlatformNameKey, AppNameKey),
-            SteeltoeComponent.Management => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath,
+            SteeltoeComponent.Management => ConfigurationValuesHelper.GetPreferredSetting(Configuration, DefaultAppName, additionalSearchPath,
                 ManagementNameKey, PlatformNameKey, AppNameKey),
-            _ => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath, PlatformNameKey, AppNameKey)
+            _ => ConfigurationValuesHelper.GetPreferredSetting(Configuration, DefaultAppName, additionalSearchPath, PlatformNameKey, AppNameKey)
         };
     }
 }

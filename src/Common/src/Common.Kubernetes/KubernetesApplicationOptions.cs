@@ -46,7 +46,7 @@ public class KubernetesApplicationOptions : ApplicationInstanceInfo
         : base(configuration.GetSection(PlatformConfigurationRoot))
     {
         // override base class's use of configuration sub-section so that we can find spring:application:name
-        this.configuration = configuration;
+        Configuration = configuration;
 
         Name ??= GetApplicationNameInContext(SteeltoeComponent.Kubernetes);
         Config ??= new KubernetesConfiguration();
