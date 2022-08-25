@@ -65,8 +65,8 @@ public class AbstractServiceOptionsTest
                 }
             }";
 
-        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        using Stream stream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(stream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot root = builder.Build();
 
@@ -82,7 +82,7 @@ public class AbstractServiceOptionsTest
     }
 
     [Fact]
-    public void Bind_DoesNotBindsConfiguration()
+    public void Bind_DoesNotBindConfiguration()
     {
         const string configJson = @"
             {
@@ -92,13 +92,13 @@ public class AbstractServiceOptionsTest
                 }
             }";
 
-        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        using Stream stream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(stream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot root = builder.Build();
 
         var options = new MySqlServicesOptions();
-        options.Bind(config, "mySql2");
+        options.Bind(root, "mySql2");
         Assert.NotEqual("mySql2", options.Name);
         Assert.NotEqual("p-mysql", options.Label);
     }

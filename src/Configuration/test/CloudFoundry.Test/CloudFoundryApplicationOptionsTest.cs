@@ -79,8 +79,8 @@ public class CloudFoundryApplicationOptionsTest
                 }
             }";
 
-        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        using Stream stream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(stream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot configurationRoot = builder.Build();
 

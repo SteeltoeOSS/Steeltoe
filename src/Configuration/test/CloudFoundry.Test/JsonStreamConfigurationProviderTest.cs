@@ -80,8 +80,8 @@ public class JsonStreamConfigurationProviderTest
                     }]
                 }";
 
-        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
-        var provider = new JsonStreamConfigurationProvider(new JsonStreamConfigurationSource(memStream));
+        using Stream stream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
+        var provider = new JsonStreamConfigurationProvider(new JsonStreamConfigurationSource(stream));
         provider.Load();
 
         Assert.True(provider.TryGet("p-config-server:0:name", out string value));
