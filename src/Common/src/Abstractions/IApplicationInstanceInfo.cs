@@ -75,5 +75,5 @@ public interface IApplicationInstanceInfo
     /// <returns>
     /// The name of the application.
     /// </returns>
-    string ApplicationNameInContext(SteeltoeComponent steeltoeComponent, string additionalSearchPath = null);
+    string GetApplicationNameInContext(SteeltoeComponent steeltoeComponent, string additionalSearchPath = null);
 }

@@ -135,7 +135,7 @@ public class ConsulRegistration : IConsulRegistration
             service.Address = options.HostName;
         }
 
-        string appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery,
+        string appName = applicationInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery,
             $"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:serviceName");
 
         service.Name = NormalizeForConsul(appName);
@@ -187,7 +187,7 @@ public class ConsulRegistration : IConsulRegistration
 
     internal static string GetDefaultInstanceId(IApplicationInstanceInfo applicationInfo)
     {
-        string appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery,
+        string appName = applicationInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery,
             $"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:serviceName");
 
         string instanceId = applicationInfo.InstanceId;

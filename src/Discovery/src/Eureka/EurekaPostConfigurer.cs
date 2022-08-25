@@ -77,9 +77,9 @@ public static class EurekaPostConfigurer
 
         if (EurekaInstanceConfiguration.DefaultAppName.Equals(options.AppName))
         {
-            string springAppName = instanceInfo?.ApplicationNameInContext(SteeltoeComponent.Discovery);
+            string springAppName = instanceInfo?.GetApplicationNameInContext(SteeltoeComponent.Discovery);
 
-            // this is a bit of a hack, but depending on how we got here, ApplicationNameInContext may or may not know about VCAP
+            // this is a bit of a hack, but depending on how we got here, GetApplicationNameInContext may or may not know about VCAP
             if (Platform.IsCloudFoundry && springAppName == Assembly.GetEntryAssembly().GetName().Name && !string.IsNullOrEmpty(instanceInfo?.ApplicationName))
             {
                 options.AppName = instanceInfo.ApplicationName;

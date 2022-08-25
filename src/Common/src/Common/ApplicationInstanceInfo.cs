@@ -133,7 +133,7 @@ public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
         return $"{prefix}:{key}";
     }
 
-    public string ApplicationNameInContext(SteeltoeComponent steeltoeComponent, string additionalSearchPath = null)
+    public string GetApplicationNameInContext(SteeltoeComponent steeltoeComponent, string additionalSearchPath = null)
     {
         return steeltoeComponent switch
         {

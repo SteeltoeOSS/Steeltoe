@@ -85,7 +85,7 @@ public static class TracingBaseServiceCollectionExtensions
             builder.Configure((serviceProvider, deferredBuilder) =>
             {
                 string appName = serviceProvider.GetRequiredService<IApplicationInstanceInfo>()
-                    .ApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.ConfigurationPrefix}:name");
+                    .GetApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.ConfigurationPrefix}:name");
 
                 var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
                 ILogger logger = serviceProvider.GetService<ILoggerFactory>()?.CreateLogger("Steeltoe.Management.Tracing.Setup");

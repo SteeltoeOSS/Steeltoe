@@ -48,7 +48,7 @@ public class KubernetesApplicationOptions : ApplicationInstanceInfo
         // override base class's use of configuration sub-section so that we can find spring:application:name
         this.configuration = configuration;
 
-        Name ??= ApplicationNameInContext(SteeltoeComponent.Kubernetes);
+        Name ??= GetApplicationNameInContext(SteeltoeComponent.Kubernetes);
         Config ??= new KubernetesConfiguration();
         Secrets ??= new WatchableResource();
         Reload ??= new ReloadSettings();
