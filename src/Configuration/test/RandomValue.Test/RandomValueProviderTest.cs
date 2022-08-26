@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.RandomValue.Test;
@@ -9,9 +10,12 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test;
 public sealed class RandomValueProviderTest
 {
     [Fact]
-    public void Constructor__ThrowsIfPrefixNull()
+    public void Constructor_ThrowsIfNulls()
     {
-        Assert.Throws<ArgumentNullException>(() => new RandomValueProvider(null));
+        var loggerFactory = NullLoggerFactory.Instance;
+
+        Assert.Throws<ArgumentNullException>(() => new RandomValueProvider(null, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => new RandomValueProvider("random:", null));
     }
 
     [Fact]

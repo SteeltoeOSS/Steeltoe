@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.RandomValue.Test;
@@ -10,19 +12,20 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test;
 public sealed class RandomValueExtensionsTest
 {
     [Fact]
-    public void AddRandomValueSource_ThrowsIfConfigBuilderNull()
+    public void AddRandomValueSource_ThrowsIfNulls()
     {
-        const IConfigurationBuilder configurationBuilder = null;
+        const IConfigurationBuilder nullConfigurationBuilder = null;
+        var configurationBuilder = new ConfigurationBuilder();
+        const string prefix = "prefix";
+        const ILoggerFactory nulLoggerFactory = null;
+        var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddRandomValueSource());
-    }
+        Assert.Throws<ArgumentNullException>(() => nullConfigurationBuilder.AddRandomValueSource(loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddRandomValueSource(nulLoggerFactory));
 
-    [Fact]
-    public void AddRandomValueSource_ThrowsIfPrefixNull()
-    {
-        const string prefix = null;
-
-        Assert.Throws<ArgumentNullException>(() => new ConfigurationBuilder().AddRandomValueSource(prefix));
+        Assert.Throws<ArgumentNullException>(() => nullConfigurationBuilder.AddRandomValueSource(prefix, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddRandomValueSource(null, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddRandomValueSource(prefix, null));
     }
 
     [Fact]
