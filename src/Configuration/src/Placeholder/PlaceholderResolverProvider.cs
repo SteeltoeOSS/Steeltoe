@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
@@ -11,71 +12,102 @@ using Steeltoe.Common.Configuration;
 namespace Steeltoe.Extensions.Configuration.Placeholder;
 
 /// <summary>
-/// Configuration provider that resolves placeholders A placeholder takes the form of: <code> ${some:config:reference?default_if_not_present}></code>
+/// Configuration provider that resolves placeholders. A placeholder takes the form of:
+/// <code><![CDATA[
+/// ${some:config:reference?default_if_not_present}
+/// ]]></code>
 /// </summary>
-public class PlaceholderResolverProvider : IPlaceholderResolverProvider
+public sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
 {
-    private IConfigurationRoot _configuration;
-    internal IList<IConfigurationProvider> InnerProviders = new List<IConfigurationProvider>();
-    internal ILogger<PlaceholderResolverProvider> Logger;
+    internal ILogger<PlaceholderResolverProvider> Logger { get; }
+
+    public IList<IConfigurationProvider> Providers { get; } = new List<IConfigurationProvider>();
+    public IList<string> ResolvedKeys { get; } = new List<string>();
 
     /// <summary>
     /// Gets the configuration this placeholder resolver wraps.
     /// </summary>
-    public IConfiguration Configuration => _configuration;
-
-    public IList<IConfigurationProvider> Providers => InnerProviders;
-
-    public IList<string> ResolvedKeys { get; } = new List<string>();
+    public IConfigurationRoot Configuration { get; private set; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PlaceholderResolverProvider" /> class. The new placeholder resolver wraps the provided configuration.
+    /// Initializes a new instance of the <see cref="PlaceholderResolverProvider" /> class. The new placeholder resolver wraps the provided configuration
+    /// root.
     /// </summary>
-    /// <param name="configuration">
-    /// the configuration the provider uses when resolving placeholders.
+    /// <param name="root">
+    /// The configuration the provider uses when resolving placeholders.
     /// </param>
-    /// <param name="logFactory">
-    /// the logger factory to use.
-    /// </param>
-    public PlaceholderResolverProvider(IConfigurationRoot configuration, ILoggerFactory logFactory = null)
+    public PlaceholderResolverProvider(IConfigurationRoot root)
+        : this(root, NullLoggerFactory.Instance)
     {
-        ArgumentGuard.NotNull(configuration);
-
-        _configuration = configuration;
-        Logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlaceholderResolverProvider" /> class. The new placeholder resolver wraps the provided configuration
-    /// providers.  The <see cref="Configuration" /> will be created from these providers.
+    /// root.
     /// </summary>
-    /// <param name="providers">
-    /// the configuration providers the resolver uses when resolving placeholders.
+    /// <param name="root">
+    /// The configuration the provider uses when resolving placeholders.
     /// </param>
-    /// <param name="logFactory">
-    /// the logger factory to use.
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
-    public PlaceholderResolverProvider(IList<IConfigurationProvider> providers, ILoggerFactory logFactory = null)
+    public PlaceholderResolverProvider(IConfigurationRoot root, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(providers);
+        ArgumentGuard.NotNull(root);
+        ArgumentGuard.NotNull(loggerFactory);
 
-        InnerProviders = providers;
-        Logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
+        Configuration = root;
+        Logger = loggerFactory.CreateLogger<PlaceholderResolverProvider>();
     }
 
     /// <summary>
-    /// Tries to get a configuration value for the specified key. If the value is a placeholder it will try to resolve the placeholder before returning it.
+    /// Initializes a new instance of the <see cref="PlaceholderResolverProvider" /> class. The new placeholder resolver wraps the provided configuration
+    /// providers. The <see cref="Configuration" /> will be created from these providers.
     /// </summary>
-    /// <param name="key">The key.</param>
+    /// <param name="providers">
+    /// The configuration providers the resolver uses when resolving placeholders.
+    /// </param>
+    public PlaceholderResolverProvider(IList<IConfigurationProvider> providers)
+        : this(providers, NullLoggerFactory.Instance)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlaceholderResolverProvider" /> class. The new placeholder resolver wraps the provided configuration
+    /// providers. The <see cref="Configuration" /> will be created from these providers.
+    /// </summary>
+    /// <param name="providers">
+    /// The configuration providers the resolver uses when resolving placeholders.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    public PlaceholderResolverProvider(IList<IConfigurationProvider> providers, ILoggerFactory loggerFactory)
+    {
+        ArgumentGuard.NotNull(providers);
+        ArgumentGuard.NotNull(loggerFactory);
+
+        Providers = providers;
+        Logger = loggerFactory.CreateLogger<PlaceholderResolverProvider>();
+    }
+
+    /// <summary>
+    /// Tries to get a configuration value for the specified key. If the value is a placeholder, it will try to resolve the placeholder before returning it.
+    /// </summary>
+    /// <param name="key">
+    /// The configuration key.
+    /// </param>
     /// <param name="value">
-    /// The value.
+    /// Contains the resolved configuration value, if this method returned <c>true</c>.
     /// </param>
     /// <returns>
-    /// <c>True</c> if a value for the specified key was found, otherwise <c>false</c>.
+    /// <c>true</c> if a value for the specified key was found, otherwise <c>false</c>.
     /// </returns>
     public bool TryGet(string key, out string value)
     {
+        ArgumentGuard.NotNull(key);
         EnsureInitialized();
+
         string originalValue = Configuration[key];
         value = PropertyPlaceholderHelper.ResolvePlaceholders(originalValue, Configuration);
 
@@ -90,40 +122,46 @@ public class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// <summary>
     /// Sets a configuration value for the specified key. No placeholder resolution is performed.
     /// </summary>
-    /// <param name="key">The key.</param>
+    /// <param name="key">
+    /// The configuration key whose value to set.
+    /// </param>
     /// <param name="value">
-    /// The value.
+    /// The configuration value to set at the specified key.
     /// </param>
     public void Set(string key, string value)
     {
+        ArgumentGuard.NotNull(key);
         EnsureInitialized();
+
         Configuration[key] = value;
     }
 
     /// <summary>
-    /// Returns a change token if this provider supports change tracking, null otherwise.
+    /// Returns a change token that can be used to observe when this configuration is reloaded.
     /// </summary>
     /// <returns>
-    /// changed token.
+    /// The change token.
     /// </returns>
     public IChangeToken GetReloadToken()
     {
         EnsureInitialized();
+
         return Configuration.GetReloadToken();
     }
 
     /// <summary>
-    /// Creates the <see cref="Configuration" /> from the providers if it has not done so already. If Configuration already exists, it will call Reload() on
-    /// the underlying configuration.
+    /// Creates the <see cref="Configuration" /> from the providers, if it has not done so already, and calls <see cref="IConfigurationRoot.Reload" /> on the
+    /// underlying configuration.
     /// </summary>
     public void Load()
     {
         EnsureInitialized();
-        _configuration?.Reload();
+
+        Configuration.Reload();
     }
 
     /// <summary>
-    /// Returns the immediate descendant configuration keys for a given parent path based on this <see cref="Configuration" />'s data and the set of keys
+    /// Returns the immediate descendant configuration keys for a given parent path, based on this <see cref="Configuration" />'s data and the set of keys
     /// returned by all the preceding providers.
     /// </summary>
     /// <param name="earlierKeys">
@@ -138,18 +176,15 @@ public class PlaceholderResolverProvider : IPlaceholderResolverProvider
     public IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
     {
         EnsureInitialized();
+
         IConfiguration section = parentPath == null ? Configuration : Configuration.GetSection(parentPath);
         IEnumerable<IConfigurationSection> children = section.GetChildren();
-        var keys = new List<string>();
-        keys.AddRange(children.Select(c => c.Key));
-        return keys.Concat(earlierKeys).OrderBy(k => k, ConfigurationKeyComparer.Instance);
+
+        return children.Select(childSection => childSection.Key).Concat(earlierKeys).OrderBy(key => key, ConfigurationKeyComparer.Instance);
     }
 
     private void EnsureInitialized()
     {
-        if (Configuration == null)
-        {
-            _configuration = new ConfigurationRoot(InnerProviders);
-        }
+        Configuration ??= new ConfigurationRoot(Providers);
     }
 }

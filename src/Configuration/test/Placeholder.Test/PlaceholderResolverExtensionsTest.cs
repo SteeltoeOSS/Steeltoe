@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
@@ -16,13 +17,62 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
 public sealed class PlaceholderResolverExtensionsTest
 {
     [Fact]
+    public void ConfigurePlaceholderResolver_WithServiceCollection_ThrowsIfNulls()
+    {
+        const IServiceCollection nullServiceCollection = null;
+        var serviceCollection = new ServiceCollection();
+        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
+        var loggerFactory = NullLoggerFactory.Instance;
+
+        Assert.Throws<ArgumentNullException>(() => nullServiceCollection.ConfigurePlaceholderResolver(configuration, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigurePlaceholderResolver(null, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigurePlaceholderResolver(configuration, null));
+    }
+
+    [Fact]
+    public void AddPlaceholderResolver_WithWebHostBuilder_ThrowsIfNulls()
+    {
+        const IWebHostBuilder nullWebHostBuilder = null;
+        var webHostBuilder = new WebHostBuilder();
+        var loggerFactory = NullLoggerFactory.Instance;
+
+        Assert.Throws<ArgumentNullException>(() => nullWebHostBuilder.AddPlaceholderResolver(loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => webHostBuilder.AddPlaceholderResolver(null));
+    }
+
+    [Fact]
+    public void AddPlaceholderResolver_WithHostBuilder_ThrowsIfNulls()
+    {
+        const IHostBuilder nullHostBuilder = null;
+        var hostBuilder = new HostBuilder();
+        var loggerFactory = NullLoggerFactory.Instance;
+
+        Assert.Throws<ArgumentNullException>(() => nullHostBuilder.AddPlaceholderResolver(loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => hostBuilder.AddPlaceholderResolver(null));
+    }
+
+    [Fact]
+    public void AddPlaceholderResolver_WebApplicationBuilder_ThrowsIfNulls()
+    {
+        const WebApplicationBuilder nullWebApplicationBuilder = null;
+        WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
+        var loggerFactory = NullLoggerFactory.Instance;
+
+        Assert.Throws<ArgumentNullException>(() => nullWebApplicationBuilder.AddPlaceholderResolver(loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => webApplicationBuilder.AddPlaceholderResolver(null));
+    }
+
+    [Fact]
     public void ConfigurePlaceholderResolver_ThrowsIfNulls()
     {
-        const IServiceCollection services = null;
-        const IConfigurationRoot configuration = null;
+        const IServiceCollection nullServices = null;
+        var serviceCollection = new ServiceCollection();
+        var loggerFactory = NullLoggerFactory.Instance;
+        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
 
-        Assert.Throws<ArgumentNullException>(() => services.ConfigurePlaceholderResolver(configuration));
-        Assert.Throws<ArgumentNullException>(() => new ServiceCollection().ConfigurePlaceholderResolver(configuration));
+        Assert.Throws<ArgumentNullException>(() => nullServices.ConfigurePlaceholderResolver(configuration, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigurePlaceholderResolver(null, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigurePlaceholderResolver(configuration, null));
     }
 
     [Fact]
@@ -40,10 +90,10 @@ public sealed class PlaceholderResolverExtensionsTest
         builder.AddInMemoryCollection(settings);
         IConfigurationRoot config1 = builder.Build();
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseConfiguration(config1);
+        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<StartupForConfigurePlaceholderResolver>().UseConfiguration(config1);
 
         using var server = new TestServer(hostBuilder);
-        IServiceProvider services = TestServerStartup.ServiceProvider;
+        IServiceProvider services = StartupForConfigurePlaceholderResolver.ServiceProvider;
         IConfiguration config2 = services.GetServices<IConfiguration>().SingleOrDefault();
         Assert.NotSame(config1, config2);
 
@@ -100,7 +150,7 @@ public sealed class PlaceholderResolverExtensionsTest
 
         string directory = Path.GetDirectoryName(jsonPath);
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup1>().ConfigureAppConfiguration(configurationBuilder =>
+        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<StartupForAddPlaceholderResolver>().ConfigureAppConfiguration(configurationBuilder =>
         {
             configurationBuilder.SetBasePath(directory);
             configurationBuilder.AddJsonFile(jsonFileName);
@@ -110,7 +160,7 @@ public sealed class PlaceholderResolverExtensionsTest
         }).AddPlaceholderResolver();
 
         using var server = new TestServer(hostBuilder);
-        IServiceProvider services = TestServerStartup1.ServiceProvider;
+        IServiceProvider services = StartupForAddPlaceholderResolver.ServiceProvider;
         IConfiguration configuration = services.GetServices<IConfiguration>().SingleOrDefault();
         Assert.Equal("myName", configuration["spring:cloud:config:name"]);
     }

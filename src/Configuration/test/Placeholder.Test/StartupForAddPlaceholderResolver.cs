@@ -7,9 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
 
-public sealed class TestServerStartup1
+public sealed class StartupForAddPlaceholderResolver
 {
-    public static IServiceProvider ServiceProvider { get; set; }
+    internal static IServiceProvider ServiceProvider { get; private set; }
 
     public void ConfigureServices(IServiceCollection services)
     {

@@ -9,7 +9,7 @@ using Steeltoe.Common;
 namespace Steeltoe.Extensions.Configuration.Placeholder;
 
 /// <summary>
-/// Specialized implementation of ConfigurationRoot that does not call load on providers.
+/// Specialized implementation of <see cref="IConfigurationRoot" /> that does not call <see cref="Reload" /> on providers.
 /// </summary>
 internal sealed class ConfigurationView : IConfigurationRoot
 {
@@ -37,7 +37,7 @@ internal sealed class ConfigurationView : IConfigurationRoot
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigurationView" /> class. Initializes a Configuration root with a list of providers.
+    /// Initializes a new instance of the <see cref="ConfigurationView" /> class from a list of providers.
     /// </summary>
     /// <param name="providers">
     /// The <see cref="IConfigurationProvider" />s for this configuration.
@@ -50,7 +50,7 @@ internal sealed class ConfigurationView : IConfigurationRoot
     }
 
     /// <summary>
-    /// Gets the immediate children sub-sections.
+    /// Gets the immediate child sub-sections.
     /// </summary>
     /// <returns>
     /// The children.
@@ -75,16 +75,16 @@ internal sealed class ConfigurationView : IConfigurationRoot
     /// <summary>
     /// Gets a configuration sub-section with the specified key.
     /// </summary>
+    /// <remarks>
+    /// This method will never return <c>null</c>. If no matching sub-section is found with the specified key, an empty <see cref="IConfigurationSection" />
+    /// will be returned.
+    /// </remarks>
     /// <param name="key">
     /// The key of the configuration section.
     /// </param>
     /// <returns>
     /// The <see cref="IConfigurationSection" />.
     /// </returns>
-    /// <remarks>
-    /// This method will never return <c>null</c>. If no matching sub-section is found with the specified key, an empty <see cref="IConfigurationSection" />
-    /// will be returned.
-    /// </remarks>
     public IConfigurationSection GetSection(string key)
     {
         return new ConfigurationSection(this, key);
@@ -97,9 +97,9 @@ internal sealed class ConfigurationView : IConfigurationRoot
 
     private static string GetConfiguration(IList<IConfigurationProvider> providers, string key)
     {
-        for (int i = providers.Count - 1; i >= 0; i--)
+        for (int index = providers.Count - 1; index >= 0; index--)
         {
-            IConfigurationProvider provider = providers[i];
+            IConfigurationProvider provider = providers[index];
 
             if (provider.TryGet(key, out string value))
             {

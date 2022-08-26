@@ -8,13 +8,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
 
-public sealed class TestServerStartup
+public sealed class StartupForConfigurePlaceholderResolver
 {
     private readonly IConfiguration _configuration;
 
-    public static IServiceProvider ServiceProvider { get; set; }
+    internal static IServiceProvider ServiceProvider { get; private set; }
 
-    public TestServerStartup(IConfiguration configuration)
+    public StartupForConfigurePlaceholderResolver(IConfiguration configuration)
     {
         _configuration = configuration;
     }

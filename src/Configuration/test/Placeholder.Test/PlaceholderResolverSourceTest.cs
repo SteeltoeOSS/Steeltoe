@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
@@ -12,11 +13,25 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
 public sealed class PlaceholderResolverSourceTest
 {
     [Fact]
-    public void Constructor_ThrowsIfNulls()
+    public void Constructor_WithSources_ThrowsIfNulls()
     {
-        const IList<IConfigurationSource> sources = null;
+        const IList<IConfigurationSource> nullSources = null;
+        var sources = new List<IConfigurationSource>();
+        var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(sources));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(nullSources, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(sources, null));
+    }
+
+    [Fact]
+    public void Constructor_WithConfiguration_ThrowsIfNulls()
+    {
+        const IConfigurationRoot nullConfiguration = null;
+        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
+        var loggerFactory = NullLoggerFactory.Instance;
+
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(nullConfiguration, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(configuration, null));
     }
 
     [Fact]

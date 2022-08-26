@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
@@ -13,48 +14,61 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
 public sealed class PlaceholderResolverProviderTest
 {
     [Fact]
-    public void Constructor_ThrowsIfConfigNull()
+    public void Constructor_WithConfiguration_ThrowsIfNulls()
     {
-        const IConfigurationRoot configuration = null;
+        const IConfigurationRoot nullConfiguration = null;
+        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
+        var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(configuration));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(nullConfiguration, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(configuration, null));
     }
 
     [Fact]
-    public void Constructor_ThrowsIfListIConfigurationProviderNull()
+    public void Constructor_WithProviders_ThrowsIfNulls()
     {
-        const IList<IConfigurationProvider> providers = null;
+        const IList<IConfigurationProvider> nullProviders = null;
+        var providers = new List<IConfigurationProvider>();
+        var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(providers));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(nullProviders, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(providers, null));
     }
 
     [Fact]
     public void Constructor_WithConfiguration()
     {
-        var holder = new PlaceholderResolverProvider(new ConfigurationBuilder().Build());
-        Assert.NotNull(holder.Configuration);
-        Assert.Empty(holder.InnerProviders);
+        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
+
+        var provider = new PlaceholderResolverProvider(configuration, NullLoggerFactory.Instance);
+
+        Assert.NotNull(provider.Configuration);
+        Assert.Empty(provider.Providers);
     }
 
     [Fact]
-    public void Constructor_WithListIConfigurationProvider()
+    public void Constructor_WithProviders()
     {
         var providers = new List<IConfigurationProvider>();
-        var holder = new PlaceholderResolverProvider(providers);
-        Assert.Null(holder.Configuration);
-        Assert.Same(providers, holder.InnerProviders);
+
+        var provider = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
+
+        Assert.Null(provider.Configuration);
+        Assert.Same(providers, provider.Providers);
     }
 
     [Fact]
     public void Constructor_WithLoggerFactory()
     {
+        var providers = new List<IConfigurationProvider>();
+        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
         var loggerFactory = new LoggerFactory();
 
-        var holder = new PlaceholderResolverProvider(new List<IConfigurationProvider>(), loggerFactory);
-        Assert.NotNull(holder.Logger);
+        var provider = new PlaceholderResolverProvider(providers, loggerFactory);
+        Assert.NotNull(provider.Logger);
 
-        holder = new PlaceholderResolverProvider(new ConfigurationBuilder().Build(), loggerFactory);
-        Assert.NotNull(holder.Logger);
+        provider = new PlaceholderResolverProvider(configuration, loggerFactory);
+        Assert.NotNull(provider.Logger);
     }
 
     [Fact]

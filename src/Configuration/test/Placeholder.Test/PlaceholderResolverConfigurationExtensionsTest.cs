@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
@@ -12,19 +13,36 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
 public sealed class PlaceholderResolverConfigurationExtensionsTest
 {
     [Fact]
-    public void AddPlaceholderResolver_ThrowsIfConfigBuilderNull()
+    public void AddPlaceholderResolver_WithConfigurationBuilder_ThrowsIfNulls()
     {
-        const IConfigurationBuilder configurationBuilder = null;
+        const IConfigurationBuilder nullConfigurationBuilder = null;
+        var configurationBuilder = new ConfigurationBuilder();
+        var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddPlaceholderResolver());
+        Assert.Throws<ArgumentNullException>(() => nullConfigurationBuilder.AddPlaceholderResolver(loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddPlaceholderResolver(null));
     }
 
     [Fact]
-    public void AddPlaceholderResolver_ThrowsIfConfigNull()
+    public void AddPlaceholderResolver_WithConfiguration_ThrowsIfNulls()
     {
-        const IConfiguration configuration = null;
+        const IConfiguration nullConfiguration = null;
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+        var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => configuration.AddPlaceholderResolver());
+        Assert.Throws<ArgumentNullException>(() => nullConfiguration.AddPlaceholderResolver(loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => configuration.AddPlaceholderResolver(null));
+    }
+
+    [Fact]
+    public void AddPlaceholderResolver_WithConfigurationManager_ThrowsIfNulls()
+    {
+        const ConfigurationManager nullConfigurationManager = null;
+        var configurationManager = new ConfigurationManager();
+        var loggerFactory = NullLoggerFactory.Instance;
+
+        Assert.Throws<ArgumentNullException>(() => nullConfigurationManager.AddPlaceholderResolver(loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => configurationManager.AddPlaceholderResolver(null));
     }
 
     [Fact]
