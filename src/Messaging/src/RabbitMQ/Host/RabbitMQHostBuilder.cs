@@ -23,7 +23,7 @@ public class RabbitMQHostBuilder : IHostBuilder
 
         _hostbuilder.ConfigureAppConfiguration(configBuilder =>
         {
-            configBuilder.AddSpringBootEnv();
+            configBuilder.AddSpringBootFromEnvironmentVariable();
         }).ConfigureServices((hostBuilderContext, services) =>
         {
             IConfigurationSection rabbitConfigSection = hostBuilderContext.Configuration.GetSection(RabbitOptions.Prefix);

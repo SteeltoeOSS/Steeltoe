@@ -12,13 +12,14 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot;
 public static class SpringBootHostBuilderExtensions
 {
     /// <summary>
-    /// Sets up the configuration provider in spring boot style '.' separated values in CommandLine or as SPRING_APPLICATION_JSON Environment variable.
+    /// Sets up the configuration provider in Spring Boot style '.' separated values from the command-line or the SPRING_APPLICATION_JSON environment
+    /// variable.
     /// </summary>
     /// <param name="builder">
-    /// <see cref="IHostBuilder" />.
+    /// The host builder.
     /// </param>
     /// <returns>
-    /// The same instance of the <see cref="IHostBuilder" /> for chaining.
+    /// <paramref name="builder" />.
     /// </returns>
     public static IHostBuilder AddSpringBootConfiguration(this IHostBuilder builder)
     {
@@ -26,43 +27,48 @@ public static class SpringBootHostBuilderExtensions
 
         return builder.ConfigureAppConfiguration((c, b) =>
         {
-            b.AddSpringBootEnv();
-            b.AddSpringBootCmd(c.Configuration);
+            b.AddSpringBootFromEnvironmentVariable();
+            b.AddSpringBootFromCommandLine(c.Configuration);
         });
     }
 
     /// <summary>
-    /// Sets up the configuration provider in spring boot style '.' separated values in CommandLine or as SPRING_APPLICATION_JSON Environment variable.
+    /// Sets up the configuration provider in Spring Boot style '.' separated values from the command-line or the SPRING_APPLICATION_JSON environment
+    /// variable.
     /// </summary>
     /// <param name="builder">
-    /// <see cref="IWebHostBuilder" />.
+    /// The host builder.
     /// </param>
     /// <returns>
-    /// The same instance of the <see cref="IWebHostBuilder" /> for chaining.
+    /// <paramref name="builder" />.
     /// </returns>
     public static IWebHostBuilder AddSpringBootConfiguration(this IWebHostBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
-        return builder.ConfigureAppConfiguration((c, b) =>
+        return builder.ConfigureAppConfiguration((context, configuration) =>
         {
-            b.AddSpringBootEnv();
-            b.AddSpringBootCmd(c.Configuration);
+            configuration.AddSpringBootFromEnvironmentVariable();
+            configuration.AddSpringBootFromCommandLine(context.Configuration);
         });
     }
 
     /// <summary>
-    /// Sets up the configuration provider in spring boot style '.' separated values in CommandLine or as SPRING_APPLICATION_JSON Environment variable.
+    /// Sets up the configuration provider in spring boot style '.' separated values from the command-line or the SPRING_APPLICATION_JSON environment
+    /// variable.
     /// </summary>
     /// <param name="builder">
-    /// <see cref="WebApplicationBuilder" />.
+    /// The web application builder.
     /// </param>
+    /// <returns>
+    /// <paramref name="builder" />.
+    /// </returns>
     public static WebApplicationBuilder AddSpringBootConfiguration(this WebApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
-        builder.Configuration.AddSpringBootEnv();
-        builder.Configuration.AddSpringBootCmd(builder.Configuration);
+        builder.Configuration.AddSpringBootFromEnvironmentVariable();
+        builder.Configuration.AddSpringBootFromCommandLine(builder.Configuration);
         return builder;
     }
 }

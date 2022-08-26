@@ -14,7 +14,7 @@ public sealed class SpringBootConfigurationBuilderExtensionsTest
     {
         const IConfigurationBuilder configurationBuilder = null;
 
-        Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddSpringBootEnv());
+        Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddSpringBootFromEnvironmentVariable());
     }
 
     [Fact]
@@ -22,7 +22,7 @@ public sealed class SpringBootConfigurationBuilderExtensionsTest
     {
         Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootEnv();
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootFromEnvironmentVariable();
         IConfigurationRoot configurationRoot = builder.Build();
         string value = configurationRoot["foo:bar"];
         Assert.Equal("value", value);
@@ -33,9 +33,11 @@ public sealed class SpringBootConfigurationBuilderExtensionsTest
     {
         IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 
-        var ex = Assert.Throws<ArgumentNullException>(() => SpringBootConfigurationBuilderExtensions.AddSpringBootCmd(null, configurationBuilder.Build()));
+        var ex = Assert.Throws<ArgumentNullException>(() =>
+            SpringBootConfigurationBuilderExtensions.AddSpringBootFromCommandLine(null, configurationBuilder.Build()));
+
         Assert.Equal("builder", ex.ParamName);
-        var ex2 = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddSpringBootCmd(null));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddSpringBootFromCommandLine(null));
         Assert.Equal("configuration", ex2.ParamName);
     }
 
@@ -49,7 +51,7 @@ public sealed class SpringBootConfigurationBuilderExtensionsTest
             "bar.foo=value3"
         }).Build();
 
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootCmd(config1);
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootFromCommandLine(config1);
 
         IConfigurationRoot configurationRoot = builder.Build();
         string value = configurationRoot["spring:foo:bar"];

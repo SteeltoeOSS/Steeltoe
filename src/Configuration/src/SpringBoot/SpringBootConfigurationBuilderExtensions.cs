@@ -10,27 +10,43 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot;
 public static class SpringBootConfigurationBuilderExtensions
 {
     /// <summary>
-    /// Add a configuration source to the <see cref="ConfigurationBuilder" /> that reads SPRING_BOOT_APPLICATION from the environment and expands the child
-    /// keys found within. Configuration keys in '.' delimited style are also converted to a format understood by .NET.
+    /// Adds a configuration source to the <see cref="ConfigurationBuilder" /> that reads from the SPRING_BOOT_APPLICATION environment variable and expands
+    /// the child keys found within. Configuration keys in '.' delimited style are also converted to a format understood by .NET.
     /// </summary>
     /// <param name="builder">
-    /// the configuration builder.
+    /// The configuration builder.
     /// </param>
-    /// <returns>builder.</returns>
-    public static IConfigurationBuilder AddSpringBootEnv(this IConfigurationBuilder builder)
+    /// <returns>
+    /// <paramref name="builder" />.
+    /// </returns>
+    public static IConfigurationBuilder AddSpringBootFromEnvironmentVariable(this IConfigurationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
-        builder.Add(new SpringBootEnvSource());
+        builder.Add(new SpringBootEnvironmentVariableSource());
 
         return builder;
     }
 
-    public static IConfigurationBuilder AddSpringBootCmd(this IConfigurationBuilder builder, IConfiguration configuration)
+    /// <summary>
+    /// Adds a configuration source to the <see cref="ConfigurationBuilder" /> that reads from the command-line and expands the child keys found within.
+    /// Configuration keys in '.' delimited style are also converted to a format understood by .NET.
+    /// </summary>
+    /// <param name="builder">
+    /// /// The configuration builder.
+    /// </param>
+    /// <param name="configuration">
+    /// /// The configuration.
+    /// </param>
+    /// <returns>
+    /// <paramref name="builder" />.
+    /// </returns>
+    public static IConfigurationBuilder AddSpringBootFromCommandLine(this IConfigurationBuilder builder, IConfiguration configuration)
     {
         ArgumentGuard.NotNull(builder);
+        ArgumentGuard.NotNull(configuration);
 
-        builder.Add(new SpringBootCmdSource(configuration));
+        builder.Add(new SpringBootCommandLineSource(configuration));
 
         return builder;
     }

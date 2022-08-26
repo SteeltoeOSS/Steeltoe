@@ -7,15 +7,15 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
 
-public sealed class SpringBootCmdSourceTest
+public sealed class SpringBootCommandLineSourceTest
 {
     [Fact]
     public void Constructors__InitializesDefaults()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCommandLine(Array.Empty<string>()).Build();
 
-        var source = new SpringBootCmdSource(configurationRoot);
-        Assert.Equal(configurationRoot, source.InnerConfiguration);
+        var source = new SpringBootCommandLineSource(configurationRoot);
+        Assert.Equal(configurationRoot, source.Configuration);
     }
 
     [Fact]
@@ -23,8 +23,8 @@ public sealed class SpringBootCmdSourceTest
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCommandLine(Array.Empty<string>()).Build();
 
-        var source = new SpringBootCmdSource(configurationRoot);
+        var source = new SpringBootCommandLineSource(configurationRoot);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
-        Assert.IsType<SpringBootCmdProvider>(provider);
+        Assert.IsType<SpringBootCommandLineProvider>(provider);
     }
 }

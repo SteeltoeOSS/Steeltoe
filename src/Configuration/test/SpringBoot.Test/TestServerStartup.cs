@@ -3,21 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
 
 public sealed class TestServerStartup
 {
-    private readonly IConfiguration _configuration;
-
-    public static IServiceProvider ServiceProvider { get; set; }
-
-    public TestServerStartup(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
+    internal static IServiceProvider ServiceProvider { get; private set; }
 
     public void ConfigureServices(IServiceCollection services)
     {

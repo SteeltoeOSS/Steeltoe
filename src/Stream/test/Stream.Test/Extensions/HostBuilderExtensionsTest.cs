@@ -25,8 +25,8 @@ public class HostBuilderExtensionsTest
         var configurationRoot = host.Services.GetService<IConfigurationRoot>();
         Assert.NotNull(hostBuilder);
         Assert.Single(host.Services.GetServices<IHostedService>().Where(svc => svc is StreamLifeCycleService));
-        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootEnvProvider));
-        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootCmdProvider));
+        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootEnvironmentVariableProvider));
+        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootCommandLineProvider));
     }
 
     [Fact]
@@ -41,8 +41,8 @@ public class HostBuilderExtensionsTest
         var configurationRoot = host.Services.GetService<IConfigurationRoot>();
         Assert.NotNull(hostBuilder);
         Assert.Single(host.Services.GetServices<IHostedService>().Where(svc => svc is StreamLifeCycleService));
-        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootEnvProvider));
-        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootCmdProvider));
+        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootEnvironmentVariableProvider));
+        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootCommandLineProvider));
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class HostBuilderExtensionsTest
         var configurationRoot = host.Services.GetService<IConfigurationRoot>();
         Assert.NotNull(hostBuilder);
         Assert.Single(host.Services.GetServices<IHostedService>().Where(svc => svc is StreamLifeCycleService));
-        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootEnvProvider));
-        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootCmdProvider));
+        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootEnvironmentVariableProvider));
+        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootCommandLineProvider));
     }
 }

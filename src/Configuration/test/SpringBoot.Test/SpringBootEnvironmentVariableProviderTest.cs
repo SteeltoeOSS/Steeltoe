@@ -7,12 +7,14 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
 
-public sealed class SpringBootEnvProviderTest
+public sealed class SpringBootEnvironmentVariableProviderTest
 {
     [Fact]
     public void TryGet_Flat()
     {
-        var prov = new SpringBootEnvProvider("{\"management.metrics.tags.application.type\":\"${spring.cloud.dataflow.stream.app.type:unknown}\"}");
+        var prov = new SpringBootEnvironmentVariableProvider(
+            "{\"management.metrics.tags.application.type\":\"${spring.cloud.dataflow.stream.app.type:unknown}\"}");
+
         prov.Load();
         prov.TryGet("management:metrics:tags:application:type", out string value);
         Assert.NotNull(value);
@@ -33,7 +35,7 @@ public sealed class SpringBootEnvProviderTest
                     ""p"": null
                 }";
 
-        var prov = new SpringBootEnvProvider(configString);
+        var prov = new SpringBootEnvironmentVariableProvider(configString);
 
         prov.Load();
         prov.TryGet("a:b:c:e:f:i:j", out string value);
@@ -47,7 +49,7 @@ public sealed class SpringBootEnvProviderTest
     [Fact]
     public void Provider_Throws_For_Malformed()
     {
-        var prov = new SpringBootEnvProvider("{\"a\":}");
+        var prov = new SpringBootEnvironmentVariableProvider("{\"a\":}");
 
         Assert.ThrowsAny<JsonException>(() => prov.Load());
     }

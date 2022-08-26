@@ -7,21 +7,21 @@ using Microsoft.Extensions.Configuration;
 namespace Steeltoe.Extensions.Configuration.SpringBoot;
 
 /// <summary>
-/// Configuration source used in creating a <see cref="SpringBootEnvProvider" />.
+/// Configuration source used in creating a <see cref="SpringBootEnvironmentVariableProvider" />.
 /// </summary>
-public class SpringBootEnvSource : IConfigurationSource
+public sealed class SpringBootEnvironmentVariableSource : IConfigurationSource
 {
     /// <summary>
-    /// Builds a <see cref="SpringBootEnvProvider" /> from the sources.
+    /// Builds a <see cref="SpringBootEnvironmentVariableProvider" /> from the sources.
     /// </summary>
     /// <param name="builder">
-    /// the provided builder.
+    /// The configuration builder.
     /// </param>
     /// <returns>
-    /// the SpringBootEnv provider.
+    /// <see cref="SpringBootEnvironmentVariableProvider" />.
     /// </returns>
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        return new SpringBootEnvProvider();
+        return new SpringBootEnvironmentVariableProvider();
     }
 }

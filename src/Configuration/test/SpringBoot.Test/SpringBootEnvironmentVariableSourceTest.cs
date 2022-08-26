@@ -7,13 +7,13 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
 
-public sealed class SpringBootEnvSourceTest
+public sealed class SpringBootEnvironmentVariableSourceTest
 {
     [Fact]
     public void Build__ReturnsProvider()
     {
-        var source = new SpringBootEnvSource();
+        var source = new SpringBootEnvironmentVariableSource();
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
-        Assert.IsType<SpringBootEnvProvider>(provider);
+        Assert.IsType<SpringBootEnvironmentVariableProvider>(provider);
     }
 }

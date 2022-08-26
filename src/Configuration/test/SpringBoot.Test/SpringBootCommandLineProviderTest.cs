@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
 
-public sealed class SpringBootCmdProviderTest
+public sealed class SpringBootCommandLineProviderTest
 {
     [Fact]
     public void TryGet_Key()
@@ -17,7 +17,7 @@ public sealed class SpringBootCmdProviderTest
             "spring.cloud.stream.bindings.input=test"
         }).Build();
 
-        var prov = new SpringBootCmdProvider(configurationRoot);
+        var prov = new SpringBootCommandLineProvider(configurationRoot);
         prov.Load();
         prov.TryGet("spring:cloud:stream:bindings:input", out string value);
         Assert.NotNull(value);
@@ -27,6 +27,6 @@ public sealed class SpringBootCmdProviderTest
     [Fact]
     public void Throws_When_ArgumentsNull()
     {
-        Assert.Throws<ArgumentNullException>(() => new SpringBootCmdProvider(null));
+        Assert.Throws<ArgumentNullException>(() => new SpringBootCommandLineProvider(null));
     }
 }
