@@ -7,9 +7,9 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 
-public class CloudFoundryApplicationOptions : ApplicationInstanceInfo
+public sealed class CloudFoundryApplicationOptions : ApplicationInstanceInfo
 {
-    public static string PlatformConfigurationRoot => "vcap";
+    internal const string PlatformConfigurationRoot = "vcap";
 
     protected override string PlatformRoot => PlatformConfigurationRoot;
 
@@ -63,29 +63,30 @@ public class CloudFoundryApplicationOptions : ApplicationInstanceInfo
 
     public override int FileDescriptorLimit => Limits?.Fds ?? -1;
 
+    // This constructor is for use with IOptions.
     public CloudFoundryApplicationOptions()
     {
         SecondChanceSetIdProperties();
     }
 
-    public CloudFoundryApplicationOptions(IConfiguration config)
-        : base(config, PlatformConfigurationRoot)
+    public CloudFoundryApplicationOptions(IConfiguration configuration)
+        : base(configuration, PlatformConfigurationRoot)
     {
-        SetIdPropertiesFromVcap(config);
+        SetIdPropertiesFromVcap(configuration);
     }
 
-    private void SetIdPropertiesFromVcap(IConfiguration config = null)
+    private void SetIdPropertiesFromVcap(IConfiguration configuration = null)
     {
-        if (config != null)
+        if (configuration != null)
         {
-            string vcapInstanceId = config.GetValue<string>($"{PlatformConfigurationRoot}:application:instance_id");
+            string vcapInstanceId = configuration.GetValue<string>($"{PlatformConfigurationRoot}:application:instance_id");
 
             if (!string.IsNullOrEmpty(vcapInstanceId))
             {
                 Instance_Id = vcapInstanceId;
             }
 
-            string vcapAppId = config.GetValue<string>($"{PlatformConfigurationRoot}:application:id");
+            string vcapAppId = configuration.GetValue<string>($"{PlatformConfigurationRoot}:application:id");
 
             if (!string.IsNullOrEmpty(vcapAppId))
             {

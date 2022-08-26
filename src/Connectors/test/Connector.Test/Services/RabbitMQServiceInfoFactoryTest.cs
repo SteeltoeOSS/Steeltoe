@@ -34,7 +34,7 @@ public class RabbitMQServiceInfoFactoryTest
         {
             Name = "rabbitMQService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -56,7 +56,7 @@ public class RabbitMQServiceInfoFactoryTest
         {
             Name = "rabbitMQService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -79,7 +79,7 @@ public class RabbitMQServiceInfoFactoryTest
             Label = "rabbitmq",
             Name = "myService",
             Plan = "Standard",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -111,7 +111,7 @@ public class RabbitMQServiceInfoFactoryTest
             },
             Name = "mySqlService",
             Plan = "100mb-dev",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -144,7 +144,7 @@ public class RabbitMQServiceInfoFactoryTest
             },
             Name = "myHystrixService",
             Plan = "standard",
-            Credentials = new Credential
+            Credentials =
             {
                 { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                 { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },

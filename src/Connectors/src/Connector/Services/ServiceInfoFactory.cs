@@ -91,7 +91,7 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
             return false;
         }
 
-        Dictionary<string, Credential> credentials = binding.Credentials;
+        IDictionary<string, Credential> credentials = binding.Credentials;
 
         if (credentials == null)
         {
@@ -121,7 +121,7 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
             return false;
         }
 
-        Dictionary<string, Credential> credentials = binding.Credentials;
+        IDictionary<string, Credential> credentials = binding.Credentials;
 
         if (credentials == null)
         {
@@ -140,52 +140,52 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
         return false;
     }
 
-    protected internal virtual string GetUsernameFromCredentials(Dictionary<string, Credential> credentials)
+    protected internal virtual string GetUsernameFromCredentials(IDictionary<string, Credential> credentials)
     {
         return GetStringFromCredentials(credentials, UserList);
     }
 
-    protected internal virtual string GetPasswordFromCredentials(Dictionary<string, Credential> credentials)
+    protected internal virtual string GetPasswordFromCredentials(IDictionary<string, Credential> credentials)
     {
         return GetStringFromCredentials(credentials, PasswordList);
     }
 
-    protected internal virtual int GetPortFromCredentials(Dictionary<string, Credential> credentials)
+    protected internal virtual int GetPortFromCredentials(IDictionary<string, Credential> credentials)
     {
         return GetIntFromCredentials(credentials, "port");
     }
 
-    protected internal virtual int GetTlsPortFromCredentials(Dictionary<string, Credential> credentials)
+    protected internal virtual int GetTlsPortFromCredentials(IDictionary<string, Credential> credentials)
     {
         return GetIntFromCredentials(credentials, "tls_port");
     }
 
-    protected internal virtual string GetHostFromCredentials(Dictionary<string, Credential> credentials)
+    protected internal virtual string GetHostFromCredentials(IDictionary<string, Credential> credentials)
     {
         return GetStringFromCredentials(credentials, HostList);
     }
 
-    protected internal virtual string GetUriFromCredentials(Dictionary<string, Credential> credentials)
+    protected internal virtual string GetUriFromCredentials(IDictionary<string, Credential> credentials)
     {
         return GetStringFromCredentials(credentials, UriKeys);
     }
 
-    protected internal virtual string GetClientIdFromCredentials(Dictionary<string, Credential> credentials)
+    protected internal virtual string GetClientIdFromCredentials(IDictionary<string, Credential> credentials)
     {
         return GetStringFromCredentials(credentials, "client_id");
     }
 
-    protected internal virtual string GetClientSecretFromCredentials(Dictionary<string, Credential> credentials)
+    protected internal virtual string GetClientSecretFromCredentials(IDictionary<string, Credential> credentials)
     {
         return GetStringFromCredentials(credentials, "client_secret");
     }
 
-    protected internal virtual string GetAccessTokenUriFromCredentials(Dictionary<string, Credential> credentials)
+    protected internal virtual string GetAccessTokenUriFromCredentials(IDictionary<string, Credential> credentials)
     {
         return GetStringFromCredentials(credentials, "access_token_uri");
     }
 
-    protected internal virtual string GetStringFromCredentials(Dictionary<string, Credential> credentials, string key)
+    protected internal virtual string GetStringFromCredentials(IDictionary<string, Credential> credentials, string key)
     {
         return GetStringFromCredentials(credentials, new List<string>
         {
@@ -193,7 +193,7 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
         });
     }
 
-    protected internal virtual string GetStringFromCredentials(Dictionary<string, Credential> credentials, List<string> keys)
+    protected internal virtual string GetStringFromCredentials(IDictionary<string, Credential> credentials, List<string> keys)
     {
         if (credentials != null)
         {
@@ -209,7 +209,7 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
         return null;
     }
 
-    protected internal virtual bool GetBoolFromCredentials(Dictionary<string, Credential> credentials, string key)
+    protected internal virtual bool GetBoolFromCredentials(IDictionary<string, Credential> credentials, string key)
     {
         bool result = false;
 
@@ -221,7 +221,7 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
         return result;
     }
 
-    protected internal virtual int GetIntFromCredentials(Dictionary<string, Credential> credentials, string key)
+    protected internal virtual int GetIntFromCredentials(IDictionary<string, Credential> credentials, string key)
     {
         return GetIntFromCredentials(credentials, new List<string>
         {
@@ -229,7 +229,7 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
         });
     }
 
-    protected internal virtual int GetIntFromCredentials(Dictionary<string, Credential> credentials, List<string> keys)
+    protected internal virtual int GetIntFromCredentials(IDictionary<string, Credential> credentials, List<string> keys)
     {
         int result = 0;
 
@@ -247,7 +247,7 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
         return result;
     }
 
-    protected internal virtual List<string> GetListFromCredentials(Dictionary<string, Credential> credentials, string key)
+    protected internal virtual List<string> GetListFromCredentials(IDictionary<string, Credential> credentials, string key)
     {
         var result = new List<string>();
 

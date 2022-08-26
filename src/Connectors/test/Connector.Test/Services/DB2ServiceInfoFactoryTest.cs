@@ -22,7 +22,7 @@ public class Db2ServiceInfoFactoryTest
             },
             Name = "db2Service",
             Plan = "100mb-dev",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -54,7 +54,7 @@ public class Db2ServiceInfoFactoryTest
             },
             Name = "mysqlService",
             Plan = "100mb-dev",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -86,7 +86,7 @@ public class Db2ServiceInfoFactoryTest
             },
             Name = "db2Service",
             Plan = "100mb-dev",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },

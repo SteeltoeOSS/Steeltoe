@@ -8,12 +8,18 @@ using Steeltoe.Common.Options;
 
 namespace Steeltoe.Extensions.Configuration;
 
+/// <summary>
+/// Represents a service in ASP.NET configuration, containing nested services grouped by type.
+/// </summary>
+/// <remarks>
+/// Binds against an <see cref="IConfiguration" /> when instantiated.
+/// </remarks>
 public abstract class AbstractServiceOptions : AbstractOptions
 {
-    public virtual string ConfigurationPrefix { get; protected set; } = "services";
+    protected virtual string ConfigurationPrefix => "services";
 
     /// <summary>
-    /// Gets or sets the name of the service instance.
+    /// Gets or sets the name of the service.
     /// </summary>
     public string Name { get; set; }
 
@@ -23,71 +29,79 @@ public abstract class AbstractServiceOptions : AbstractOptions
     public string Label { get; set; }
 
     /// <summary>
-    /// Gets or sets the plan level at which the service is provisioned.
+    /// Gets or sets a list of tags describing the service.
     /// </summary>
     public IEnumerable<string> Tags { get; set; }
 
     /// <summary>
-    /// Gets or sets a list of tags describing the service.
+    /// Gets or sets the plan level at which the service is provisioned.
     /// </summary>
     public string Plan { get; set; }
 
-    public Dictionary<string, IEnumerable<Service>> Services { get; set; } = new();
+    public IDictionary<string, IEnumerable<Service>> Services { get; } = new Dictionary<string, IEnumerable<Service>>();
 
-    // This constructor is for use with IOptions
+    // This constructor is for use with IOptions.
     protected AbstractServiceOptions()
     {
     }
 
-    protected AbstractServiceOptions(IConfigurationRoot root, string sectionPrefix = "")
-        : base(root, sectionPrefix)
+    protected AbstractServiceOptions(IConfiguration configuration)
+        : this(configuration, null)
     {
     }
 
-    protected AbstractServiceOptions(IConfiguration config, string sectionPrefix = "")
-        : base(config, sectionPrefix)
+    protected AbstractServiceOptions(IConfiguration configuration, string sectionPrefix)
+        : base(configuration, sectionPrefix)
     {
     }
 
     /// <summary>
-    /// Retrieves a list of all service instances for all service types.
+    /// Retrieves a flattened list of all services for all types.
     /// </summary>
     /// <returns>
-    /// A complete list of service instances known to the application.
+    /// The complete list of services known to the application.
     /// </returns>
-    public IEnumerable<Service> GetServicesList()
+    public IEnumerable<Service> GetAllServices()
     {
-        var results = new List<Service>();
+        var services = new List<Service>();
 
-        if (Services != null)
+        foreach (KeyValuePair<string, IEnumerable<Service>> pair in Services)
         {
-            foreach (KeyValuePair<string, IEnumerable<Service>> kvp in Services)
-            {
-                results.AddRange(kvp.Value);
-            }
+            services.AddRange(pair.Value);
         }
 
-        return results;
+        return services;
     }
 
     /// <summary>
-    /// Retrieves a list of all service instances of a given service type.
+    /// Retrieves a list of all services of a given service type.
     /// </summary>
     /// <param name="serviceType">
-    /// String value that identifies the service type. May be platform/broker/version dependent.
+    /// The type to find services for. May be platform/broker/version dependent.
     /// </param>
     /// <remarks>
     /// Sample values include: p-mysql, azure-mysql-5-7, p-configserver, p.configserver.
     /// </remarks>
     /// <returns>
-    /// A list of service instances configured under the given type.
+    /// A list of services configured under the given type.
     /// </returns>
-    public IEnumerable<Service> GetInstancesOfType(string serviceType)
+    public IEnumerable<Service> GetServicesOfType(string serviceType)
     {
+        ArgumentGuard.NotNullOrEmpty(serviceType);
+
         Services.TryGetValue(serviceType, out IEnumerable<Service> services);
-        return services ?? new List<Service>();
+        return services ?? Array.Empty<Service>();
     }
 
+    /// <summary>
+    /// Attempts to find the specified service and bind it to configuration.
+    /// </summary>
+    /// <param name="configuration">
+    /// The configuration to search for a section or value matching <paramref name="serviceName" />.
+    /// </param>
+    /// <param name="serviceName">
+    /// Name of the service or section to find.
+    /// </param>
     public void Bind(IConfiguration configuration, string serviceName)
     {
         ArgumentGuard.NotNull(configuration);
@@ -96,15 +110,12 @@ public abstract class AbstractServiceOptions : AbstractOptions
         IConfigurationSection services = configuration.GetSection(ConfigurationPrefix);
         IConfigurationSection section = FindServiceSection(services, serviceName);
 
-        if (section != null)
-        {
-            section.Bind(this);
-        }
+        section?.Bind(this);
     }
 
-    internal IConfigurationSection FindServiceSection(IConfigurationSection section, string serviceName)
+    private IConfigurationSection FindServiceSection(IConfigurationSection section, string serviceName)
     {
-        IEnumerable<IConfigurationSection> children = section.GetChildren();
+        IConfigurationSection[] children = section.GetChildren().ToArray();
 
         foreach (IConfigurationSection child in children)
         {
@@ -118,11 +129,11 @@ public abstract class AbstractServiceOptions : AbstractOptions
 
         foreach (IConfigurationSection child in children)
         {
-            IConfigurationSection result = FindServiceSection(child, serviceName);
+            IConfigurationSection nestedSection = FindServiceSection(child, serviceName);
 
-            if (result != null)
+            if (nestedSection != null)
             {
-                return result;
+                return nestedSection;
             }
         }
 

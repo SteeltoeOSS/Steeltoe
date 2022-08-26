@@ -21,7 +21,7 @@ public class MongoDbServiceInfoFactoryTest
             },
             Name = "mongoService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("27017") },
@@ -48,7 +48,7 @@ public class MongoDbServiceInfoFactoryTest
             Tags = Array.Empty<string>(),
             Name = "mongoService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("27017") },
@@ -79,7 +79,7 @@ public class MongoDbServiceInfoFactoryTest
             },
             Name = "mySqlService",
             Plan = "100mb-dev",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("27017") },
@@ -112,7 +112,7 @@ public class MongoDbServiceInfoFactoryTest
             },
             Name = "mongodbService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("27017") },

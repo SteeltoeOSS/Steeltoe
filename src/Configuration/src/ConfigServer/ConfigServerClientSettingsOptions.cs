@@ -7,9 +7,9 @@ using Steeltoe.Common.Options;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
-public class ConfigServerClientSettingsOptions : AbstractOptions
+public sealed class ConfigServerClientSettingsOptions : AbstractOptions
 {
-    public const string ConfigurationPrefix = "spring:cloud:config";
+    internal const string ConfigurationPrefix = "spring:cloud:config";
 
     public bool Enabled { get; set; } = ConfigServerClientSettings.DefaultProviderEnabled;
 
@@ -85,48 +85,42 @@ public class ConfigServerClientSettingsOptions : AbstractOptions
 
     public Dictionary<string, string> Headers { get; set; }
 
-    public ConfigServerClientSettings Settings
-    {
-        get
+    public ConfigServerClientSettings Settings =>
+        new()
         {
-            var settings = new ConfigServerClientSettings
-            {
-                Enabled = Enabled,
-                FailFast = FailFast,
-                ValidateCertificates = Validate_Certificates,
-                RetryAttempts = RetryAttempts,
-                RetryEnabled = RetryEnabled,
-                RetryInitialInterval = RetryInitialInterval,
-                RetryMaxInterval = RetryMaxInterval,
-                RetryMultiplier = RetryMultiplier,
-                Timeout = Timeout,
-                TokenTtl = TokenTtl,
-                TokenRenewRate = TokenRenewRate,
-                DisableTokenRenewal = DisableTokenRenewal,
-                Headers = Headers,
+            Enabled = Enabled,
+            FailFast = FailFast,
+            ValidateCertificates = Validate_Certificates,
+            RetryAttempts = RetryAttempts,
+            RetryEnabled = RetryEnabled,
+            RetryInitialInterval = RetryInitialInterval,
+            RetryMaxInterval = RetryMaxInterval,
+            RetryMultiplier = RetryMultiplier,
+            Timeout = Timeout,
+            TokenTtl = TokenTtl,
+            TokenRenewRate = TokenRenewRate,
+            DisableTokenRenewal = DisableTokenRenewal,
+            Headers = Headers,
 
-                Environment = Env,
-                Label = Label,
-                Name = Name,
-                Password = Password,
-                Uri = Uri,
-                Username = Username,
-                Token = Token,
-                AccessTokenUri = Access_Token_Uri,
-                ClientSecret = Client_Secret,
-                ClientId = Client_Id,
+            Environment = Env,
+            Label = Label,
+            Name = Name,
+            Password = Password,
+            Uri = Uri,
+            Username = Username,
+            Token = Token,
+            AccessTokenUri = Access_Token_Uri,
+            ClientSecret = Client_Secret,
+            ClientId = Client_Id,
 
-                DiscoveryEnabled = DiscoveryEnabled,
-                DiscoveryServiceId = DiscoveryServiceId,
+            DiscoveryEnabled = DiscoveryEnabled,
+            DiscoveryServiceId = DiscoveryServiceId,
 
-                HealthEnabled = HealthEnabled,
-                HealthTimeToLive = HealthTimeToLive
-            };
+            HealthEnabled = HealthEnabled,
+            HealthTimeToLive = HealthTimeToLive
+        };
 
-            return settings;
-        }
-    }
-
+    // This constructor is for use with IOptions.
     public ConfigServerClientSettingsOptions()
     {
     }
@@ -136,8 +130,8 @@ public class ConfigServerClientSettingsOptions : AbstractOptions
     {
     }
 
-    public ConfigServerClientSettingsOptions(IConfiguration config)
-        : base(config)
+    public ConfigServerClientSettingsOptions(IConfiguration configuration)
+        : base(configuration)
     {
     }
 }

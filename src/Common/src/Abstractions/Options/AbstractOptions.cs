@@ -6,25 +6,29 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Common.Options;
 
+/// <summary>
+/// Base type for representing options in ASP.NET configuration.
+/// </summary>
+/// <remarks>
+/// Binds against an <see cref="IConfiguration" /> when instantiated.
+/// </remarks>
 public abstract class AbstractOptions
 {
-    // This constructor is for use with IOptions
+    // This constructor is for use with IOptions.
     protected AbstractOptions()
     {
     }
 
-    protected AbstractOptions(IConfiguration root, string sectionPrefix = null)
+    protected AbstractOptions(IConfiguration root)
+        : this(root, null)
+    {
+    }
+
+    protected AbstractOptions(IConfiguration root, string sectionPrefix)
     {
         ArgumentGuard.NotNull(root);
 
-        if (!string.IsNullOrEmpty(sectionPrefix))
-        {
-            IConfigurationSection section = root.GetSection(sectionPrefix);
-            section.Bind(this);
-        }
-        else
-        {
-            root.Bind(this);
-        }
+        IConfiguration section = string.IsNullOrEmpty(sectionPrefix) ? root : root.GetSection(sectionPrefix);
+        section.Bind(this);
     }
 }

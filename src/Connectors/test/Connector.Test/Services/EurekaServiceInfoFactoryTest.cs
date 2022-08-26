@@ -24,7 +24,7 @@ public class EurekaServiceInfoFactoryTest
             },
             Name = "eurekaService",
             Plan = "standard",
-            Credentials = new Credential
+            Credentials =
             {
                 { "client_id", new Credential("clientId") },
                 { "client_secret", new Credential("clientSecret") },
@@ -50,7 +50,7 @@ public class EurekaServiceInfoFactoryTest
             },
             Name = "mySqlService",
             Plan = "100mb-dev",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -84,7 +84,7 @@ public class EurekaServiceInfoFactoryTest
             },
             Name = "eurekaService",
             Plan = "standard",
-            Credentials = new Credential
+            Credentials =
             {
                 { "client_id", new Credential("clientId") },
                 { "client_secret", new Credential("clientSecret") },

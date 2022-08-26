@@ -22,7 +22,7 @@ public class SqlServerInfoFactoryTest
             },
             Name = "sqlserverService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("1433") },
@@ -53,7 +53,7 @@ public class SqlServerInfoFactoryTest
             Tags = Array.Empty<string>(),
             Name = "sqlserverService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "uid", new Credential("u79024cecd1c8460ab7befc45c1de57ae") },
                 { "pw", new Credential("P39d904d42d4647878e8a29db9c4b1ce0") },
@@ -71,7 +71,7 @@ public class SqlServerInfoFactoryTest
         var s = new Service
         {
             Name = "sqlserverService",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("1433") },
@@ -101,7 +101,7 @@ public class SqlServerInfoFactoryTest
             Label = "sqlserver",
             Name = "sqlserverService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("1433") },
@@ -136,7 +136,7 @@ public class SqlServerInfoFactoryTest
             },
             Name = "mySqlService",
             Plan = "100mb-dev",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("1433") },
@@ -170,7 +170,7 @@ public class SqlServerInfoFactoryTest
             },
             Name = "sqlserverService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("1433") },
@@ -213,7 +213,7 @@ public class SqlServerInfoFactoryTest
             },
             Name = "sqlserverService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("1433") },

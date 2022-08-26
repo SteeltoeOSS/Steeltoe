@@ -41,7 +41,7 @@ public class HystrixRabbitMQServiceInfoFactory : ServiceInfoFactory
         return new HystrixRabbitMQServiceInfo(binding.Name, uri, sslEnabled);
     }
 
-    private bool UriCredentialsMatchesScheme(Dictionary<string, Credential> credentials)
+    private bool UriCredentialsMatchesScheme(IDictionary<string, Credential> credentials)
     {
         if (credentials.ContainsKey("amqp"))
         {

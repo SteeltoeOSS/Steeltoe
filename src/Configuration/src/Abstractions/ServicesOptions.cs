@@ -8,17 +8,18 @@ namespace Steeltoe.Extensions.Configuration;
 
 public class ServicesOptions : AbstractServiceOptions
 {
+    // This constructor is for use with IOptions.
     public ServicesOptions()
     {
     }
 
-    public ServicesOptions(IConfigurationRoot root, string configPrefix = "")
-        : base(root, configPrefix)
+    public ServicesOptions(IConfiguration configuration)
+        : this(configuration, null)
     {
     }
 
-    public ServicesOptions(IConfiguration config, string configPrefix = "")
-        : base(config, configPrefix)
+    public ServicesOptions(IConfiguration configuration, string sectionPrefix)
+        : base(configuration, sectionPrefix)
     {
     }
 }

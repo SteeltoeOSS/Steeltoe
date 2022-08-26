@@ -146,7 +146,7 @@ public class ServiceInfoFactoryTest
                 "noMatch"
             },
             Label = "noMatch",
-            Credentials = new Dictionary<string, Credential>
+            Credentials =
             {
                 { "uri", new Credential("scheme://foo") }
             }
@@ -175,7 +175,7 @@ public class ServiceInfoFactoryTest
                 "noMatch"
             },
             Label = "noMatch",
-            Credentials = new Dictionary<string, Credential>
+            Credentials =
             {
                 { "uri", new Credential("nomatch://foo") }
             }

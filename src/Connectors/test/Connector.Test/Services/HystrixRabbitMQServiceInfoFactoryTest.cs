@@ -34,7 +34,7 @@ public class HystrixRabbitMQServiceInfoFactoryTest
         {
             Name = "myHystrixService",
             Plan = "standard",
-            Credentials = new Credential
+            Credentials =
             {
                 { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                 { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
@@ -65,7 +65,7 @@ public class HystrixRabbitMQServiceInfoFactoryTest
         {
             Name = "myHystrixService",
             Plan = "standard",
-            Credentials = new Credential
+            Credentials =
             {
                 { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                 { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
@@ -97,7 +97,7 @@ public class HystrixRabbitMQServiceInfoFactoryTest
             Label = "p-circuit-breaker-dashboard",
             Name = "myHystrixService",
             Plan = "standard",
-            Credentials = new Credential
+            Credentials =
             {
                 { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                 { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
@@ -134,7 +134,7 @@ public class HystrixRabbitMQServiceInfoFactoryTest
             },
             Name = "mySqlService",
             Plan = "100mb-dev",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -166,7 +166,7 @@ public class HystrixRabbitMQServiceInfoFactoryTest
             },
             Name = "myService",
             Plan = "Standard",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },

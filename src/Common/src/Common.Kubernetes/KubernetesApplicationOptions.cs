@@ -6,9 +6,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Common.Kubernetes;
 
-public class KubernetesApplicationOptions : ApplicationInstanceInfo
+public sealed class KubernetesApplicationOptions : ApplicationInstanceInfo
 {
-    public static string PlatformConfigurationRoot => "spring:cloud:kubernetes";
+    private const string PlatformConfigurationRoot = "spring:cloud:kubernetes";
 
     protected override string PlatformRoot => PlatformConfigurationRoot;
 
@@ -38,6 +38,7 @@ public class KubernetesApplicationOptions : ApplicationInstanceInfo
     /// </summary>
     public string NameEnvironmentSeparator { get; set; } = ".";
 
+    // This constructor is for use with IOptions.
     public KubernetesApplicationOptions()
     {
     }

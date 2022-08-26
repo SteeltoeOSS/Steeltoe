@@ -22,7 +22,7 @@ public class PostgresServiceInfoFactoryTest
             },
             Name = "postgresService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -50,7 +50,7 @@ public class PostgresServiceInfoFactoryTest
         var s = new Service
         {
             Name = "postgresService",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -80,7 +80,7 @@ public class PostgresServiceInfoFactoryTest
             Label = "elephantsql",
             Name = "postgresService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -115,7 +115,7 @@ public class PostgresServiceInfoFactoryTest
             },
             Name = "mySqlService",
             Plan = "100mb-dev",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -149,7 +149,7 @@ public class PostgresServiceInfoFactoryTest
             },
             Name = "postgresService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -192,7 +192,7 @@ public class PostgresServiceInfoFactoryTest
             },
             Name = "postgresService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },

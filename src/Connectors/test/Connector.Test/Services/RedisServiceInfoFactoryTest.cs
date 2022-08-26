@@ -22,7 +22,7 @@ public class RedisServiceInfoFactoryTest
             },
             Name = "myRedisService",
             Plan = "shared-vm",
-            Credentials = new Credential
+            Credentials =
             {
                 { "host", new Credential("192.168.0.103") },
                 { "password", new Credential("133de7c8-9f3a-4df1-8a10-676ba7ddaa10") },
@@ -47,7 +47,7 @@ public class RedisServiceInfoFactoryTest
             },
             Name = "myRedisService",
             Plan = "shared-vm",
-            Credentials = new Credential
+            Credentials =
             {
                 { "host", new Credential("192.168.0.103") },
                 { "password", new Credential("133de7c8-9f3a-4df1-8a10-676ba7ddaa10") },
@@ -72,7 +72,7 @@ public class RedisServiceInfoFactoryTest
             },
             Name = "myRedisService",
             Plan = "shared-vm",
-            Credentials = new Credential
+            Credentials =
             {
                 { "host", new Credential("192.168.0.103") },
                 { "password", new Credential("133de7c8-9f3a-4df1-8a10-676ba7ddaa10") },
@@ -103,7 +103,7 @@ public class RedisServiceInfoFactoryTest
             },
             Name = "myRedisService",
             Plan = "cache-small",
-            Credentials = new Credential
+            Credentials =
             {
                 { "host", new Credential("192.168.0.103") },
                 { "password", new Credential("133de7c8-9f3a-4df1-8a10-676ba7ddaa10") },
