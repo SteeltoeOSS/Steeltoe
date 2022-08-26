@@ -9,7 +9,7 @@ public class ReloadSettings
     /// <summary>
     /// Gets or sets the reload method (polling or event).
     /// </summary>
-    public ReloadMethods Mode { get; set; } = ReloadMethods.Polling;
+    public ReloadMethod Mode { get; set; } = ReloadMethod.Polling;
 
     /// <summary>
     /// Gets or sets the number of seconds before reloading configuration data.

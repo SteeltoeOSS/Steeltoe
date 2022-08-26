@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Common.Kubernetes;
 
-public enum ReloadMethods
+public enum ReloadMethod
 {
     Event,
     Polling

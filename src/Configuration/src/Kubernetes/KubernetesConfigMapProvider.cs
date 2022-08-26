@@ -84,10 +84,10 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
         {
             switch (Settings.ReloadSettings.Mode)
             {
-                case ReloadMethods.Event:
+                case ReloadMethod.Event:
                     EnableEventReloading();
                     break;
-                case ReloadMethods.Polling:
+                case ReloadMethod.Polling:
                     StartPolling(Settings.ReloadSettings.Period);
                     break;
                 default:

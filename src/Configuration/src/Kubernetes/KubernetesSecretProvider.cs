@@ -70,10 +70,10 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
         {
             switch (Settings.ReloadSettings.Mode)
             {
-                case ReloadMethods.Event:
+                case ReloadMethod.Event:
                     EnableEventReloading();
                     break;
-                case ReloadMethods.Polling:
+                case ReloadMethod.Polling:
                     if (!Polling)
                     {
                         StartPolling(Settings.ReloadSettings.Period);
