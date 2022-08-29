@@ -7,7 +7,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 /// <summary>
 /// Exception thrown by Config Server client when problems occur.
 /// </summary>
-public class ConfigServerException : Exception
+public sealed class ConfigServerException : Exception
 {
     public ConfigServerException()
     {

@@ -6,22 +6,25 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using Steeltoe.Common.Logging;
 using Steeltoe.Discovery;
 using Steeltoe.Extensions.Configuration.Placeholder;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
 /// <summary>
-/// Replace bootstrapped components used by ConfigServerConfigurationProvider with objects provided by Dependency Injection.
+/// Replace bootstrapped components used by <see cref="ConfigServerConfigurationProvider" /> with objects provided by Dependency Injection.
 /// </summary>
-public class ConfigServerHostedService : IHostedService
+public sealed class ConfigServerHostedService : IHostedService
 {
     private readonly ConfigServerConfigurationProvider _configuration;
-    private readonly ILoggerFactory _loggerFactory;
     private readonly IDiscoveryClient _discoveryClient;
 
-    public ConfigServerHostedService(IConfigurationRoot configuration, ILoggerFactory loggerFactory, IDiscoveryClient discoveryClient = null)
+    public ConfigServerHostedService(IConfigurationRoot configuration, ILoggerFactory loggerFactory)
+        : this(configuration, loggerFactory, null)
+    {
+    }
+
+    public ConfigServerHostedService(IConfigurationRoot configuration, ILoggerFactory loggerFactory, IDiscoveryClient discoveryClient)
     {
         ArgumentGuard.NotNull(configuration);
 
@@ -34,13 +37,13 @@ public class ConfigServerHostedService : IHostedService
             _configuration = configuration.Providers.OfType<ConfigServerConfigurationProvider>().First();
         }
 
-        _loggerFactory = loggerFactory ?? BootstrapLoggerFactory.Instance;
+        _ = loggerFactory;
         _discoveryClient = discoveryClient;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await _configuration.ProvideRuntimeReplacementsAsync(_discoveryClient, _loggerFactory);
+        await _configuration.ProvideRuntimeReplacementsAsync(_discoveryClient);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

@@ -6,21 +6,21 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Extensions.Configuration.ConfigServer.Integration.Test;
 
 internal sealed class TestServerStartup
 {
-    public IConfiguration Configuration { get; set; }
+    private readonly IConfiguration _configuration;
 
     public TestServerStartup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        _configuration = configuration;
     }
 
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddOptions();
-        services.Configure<ConfigServerDataAsOptions>(Configuration);
+        services.Configure<ConfigServerDataAsOptions>(_configuration);
         services.AddConfigServerHealthContributor();
         services.AddMvc();
     }

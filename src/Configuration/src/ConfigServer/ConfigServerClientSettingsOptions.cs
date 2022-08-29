@@ -83,42 +83,53 @@ public sealed class ConfigServerClientSettingsOptions : AbstractOptions
 
     public string ClientId => Client_Id;
 
-    public Dictionary<string, string> Headers { get; set; }
+    public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
 
-    public ConfigServerClientSettings Settings =>
-        new()
+    public ConfigServerClientSettings Settings
+    {
+        get
         {
-            Enabled = Enabled,
-            FailFast = FailFast,
-            ValidateCertificates = Validate_Certificates,
-            RetryAttempts = RetryAttempts,
-            RetryEnabled = RetryEnabled,
-            RetryInitialInterval = RetryInitialInterval,
-            RetryMaxInterval = RetryMaxInterval,
-            RetryMultiplier = RetryMultiplier,
-            Timeout = Timeout,
-            TokenTtl = TokenTtl,
-            TokenRenewRate = TokenRenewRate,
-            DisableTokenRenewal = DisableTokenRenewal,
-            Headers = Headers,
+            ConfigServerClientSettings settings = new()
+            {
+                Enabled = Enabled,
+                FailFast = FailFast,
+                ValidateCertificates = Validate_Certificates,
+                RetryAttempts = RetryAttempts,
+                RetryEnabled = RetryEnabled,
+                RetryInitialInterval = RetryInitialInterval,
+                RetryMaxInterval = RetryMaxInterval,
+                RetryMultiplier = RetryMultiplier,
+                Timeout = Timeout,
+                TokenTtl = TokenTtl,
+                TokenRenewRate = TokenRenewRate,
+                DisableTokenRenewal = DisableTokenRenewal,
 
-            Environment = Env,
-            Label = Label,
-            Name = Name,
-            Password = Password,
-            Uri = Uri,
-            Username = Username,
-            Token = Token,
-            AccessTokenUri = Access_Token_Uri,
-            ClientSecret = Client_Secret,
-            ClientId = Client_Id,
+                Environment = Env,
+                Label = Label,
+                Name = Name,
+                Password = Password,
+                Uri = Uri,
+                Username = Username,
+                Token = Token,
+                AccessTokenUri = Access_Token_Uri,
+                ClientSecret = Client_Secret,
+                ClientId = Client_Id,
 
-            DiscoveryEnabled = DiscoveryEnabled,
-            DiscoveryServiceId = DiscoveryServiceId,
+                DiscoveryEnabled = DiscoveryEnabled,
+                DiscoveryServiceId = DiscoveryServiceId,
 
-            HealthEnabled = HealthEnabled,
-            HealthTimeToLive = HealthTimeToLive
-        };
+                HealthEnabled = HealthEnabled,
+                HealthTimeToLive = HealthTimeToLive
+            };
+
+            foreach ((string key, string value) in Headers)
+            {
+                settings.Headers[key] = value;
+            }
+
+            return settings;
+        }
+    }
 
     // This constructor is for use with IOptions.
     public ConfigServerClientSettingsOptions()

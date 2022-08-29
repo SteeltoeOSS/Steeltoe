@@ -4,38 +4,45 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.Placeholder;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
-public class ConfigServerHealthContributor : IHealthContributor
+public sealed class ConfigServerHealthContributor : IHealthContributor
 {
-    internal ConfigServerConfigurationProvider Provider { get; set; }
+    private readonly ILogger<ConfigServerHealthContributor> _logger;
 
+    internal ConfigServerConfigurationProvider Provider { get; }
     internal ConfigEnvironment Cached { get; set; }
-
     internal long LastAccess { get; set; }
-
-    internal IConfiguration Configuration { get; set; }
-
-    internal ILogger<ConfigServerHealthContributor> Logger { get; set; }
-
     public string Id => "config-server";
 
-    public ConfigServerHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger = null)
+    public ConfigServerHealthContributor(IConfiguration configuration)
+        : this(configuration, NullLogger<ConfigServerHealthContributor>.Instance)
+    {
+    }
+
+    public ConfigServerHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger)
     {
         ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(logger);
 
-        Configuration = configuration;
-        Logger = logger;
+        _logger = logger;
         Provider = FindProvider(configuration);
     }
 
-    public static IHealthContributor GetHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger = null)
+    public static IHealthContributor GetHealthContributor(IConfiguration configuration)
+    {
+        return GetHealthContributor(configuration, NullLogger<ConfigServerHealthContributor>.Instance);
+    }
+
+    public static IHealthContributor GetHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger)
     {
         ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(logger);
 
         return new ConfigServerHealthContributor(configuration, logger);
     }
@@ -46,7 +53,7 @@ public class ConfigServerHealthContributor : IHealthContributor
 
         if (Provider == null)
         {
-            Logger?.LogDebug("No Config Server provider found");
+            _logger.LogDebug("No Config Server provider found");
             health.Status = HealthStatus.Unknown;
             health.Details.Add("error", "No Config Server provider found");
             return health;
@@ -54,7 +61,7 @@ public class ConfigServerHealthContributor : IHealthContributor
 
         if (!IsEnabled())
         {
-            Logger?.LogDebug("Config Server health check disabled");
+            _logger.LogDebug("Config Server health check disabled");
             health.Status = HealthStatus.Unknown;
             health.Details.Add("info", "Health check disabled");
             return health;
@@ -64,7 +71,7 @@ public class ConfigServerHealthContributor : IHealthContributor
 
         if (sources == null || sources.Count == 0)
         {
-            Logger?.LogDebug("No property sources found");
+            _logger.LogDebug("No property sources found");
             health.Status = HealthStatus.Unknown;
             health.Details.Add("error", "No property sources found");
             return health;
@@ -76,14 +83,14 @@ public class ConfigServerHealthContributor : IHealthContributor
 
     internal void UpdateHealth(HealthCheckResult health, IList<PropertySource> sources)
     {
-        Logger?.LogDebug("Config Server health check returning UP");
+        _logger.LogDebug("Config Server health check returning UP");
 
         health.Status = HealthStatus.Up;
         var names = new List<string>();
 
         foreach (PropertySource source in sources)
         {
-            Logger?.LogDebug("Returning property source: {propertySource}", source.Name);
+            _logger.LogDebug("Returning property source: {propertySource}", source.Name);
             names.Add(source.Name);
         }
 
@@ -97,7 +104,7 @@ public class ConfigServerHealthContributor : IHealthContributor
         if (IsCacheStale(currentTime))
         {
             LastAccess = currentTime;
-            Logger?.LogDebug("Cache stale, fetching config server health");
+            _logger.LogDebug("Cache stale, fetching config server health");
             Cached = Provider.LoadInternal(false);
         }
 
@@ -148,7 +155,7 @@ public class ConfigServerHealthContributor : IHealthContributor
 
         if (result == null)
         {
-            Logger?.LogWarning("Unable to find ConfigServerConfigurationProvider, health check disabled");
+            _logger.LogWarning("Unable to find ConfigServerConfigurationProvider, health check disabled");
         }
 
         return result;

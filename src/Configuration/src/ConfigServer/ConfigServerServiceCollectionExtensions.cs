@@ -29,13 +29,13 @@ public static class ConfigServerServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Add the ConfigServerHealthContributor as a IHealthContributor to the service container.
+    /// Adds the <see cref="ConfigServerHealthContributor" /> as a <see cref="IHealthContributor" /> to the service container.
     /// </summary>
     /// <param name="services">
-    /// the service container.
+    /// The service container.
     /// </param>
     /// <returns>
-    /// the service collection.
+    /// The service collection.
     /// </returns>
     public static IServiceCollection AddConfigServerHealthContributor(this IServiceCollection services)
     {
@@ -47,14 +47,16 @@ public static class ConfigServerServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Configures ConfigServerClientSettingsOptions, ConfigServerHostedService, Config Server Health Contributor and ensures IConfigurationRoot is
-    /// available.
+    /// Configures ConfigServerClientSettingsOptions, ConfigServerHostedService, Config Server Health Contributor and ensures
+    /// <see cref="IConfigurationRoot" /> is available.
     /// </summary>
     /// <param name="services">
-    /// Your <see cref="IServiceCollection" />.
+    /// The service container.
     /// </param>
     public static void AddConfigServerServices(this IServiceCollection services)
     {
+        ArgumentGuard.NotNull(services);
+
         services.ConfigureConfigServerClientOptions();
         services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<IConfiguration>() as IConfigurationRoot);
         services.TryAddSingleton<IHostedService, ConfigServerHostedService>();

@@ -45,6 +45,6 @@ public static class TestHelper
         Assert.Null(settings.Username);
         Assert.Null(settings.Password);
         Assert.Null(settings.Token);
-        Assert.Null(settings.Headers);
+        Assert.Empty(settings.Headers);
     }
 }

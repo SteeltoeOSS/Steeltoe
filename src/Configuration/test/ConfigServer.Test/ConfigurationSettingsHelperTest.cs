@@ -12,12 +12,12 @@ public sealed class ConfigurationSettingsHelperTest
     [Fact]
     public void Initialize_ThrowsOnNulls()
     {
-        const string configPrefix = null;
+        const string sectionPrefix = null;
         const ConfigServerClientSettings settings = null;
         const IConfiguration configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize(configPrefix, settings, configuration));
-        Assert.Contains(nameof(configPrefix), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize(sectionPrefix, settings, configuration));
+        Assert.Contains(nameof(sectionPrefix), ex.Message);
         ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", settings, configuration));
         Assert.Contains(nameof(settings), ex.Message);
         ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", new ConfigServerClientSettings(), configuration));

@@ -71,15 +71,6 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void SourceConstructor_WithDefaults_ThrowsIfHttpClientNull()
-    {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-        var source = new ConfigServerConfigurationSource(configuration);
-
-        Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(source, null));
-    }
-
-    [Fact]
     public void GetConfigServerUri_NoBaseUri_Throws()
     {
         var settings = new ConfigServerClientSettings
@@ -393,7 +384,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client);
 
-        ConfigEnvironment result = await provider.RemoteLoadAsync(settings.GetRawUris(), null);
+        ConfigEnvironment result = await provider.RemoteLoadAsync(settings.RawUris, null);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
@@ -1108,7 +1099,7 @@ public sealed class ConfigServerConfigurationProviderTest
         {
             Name = "foo",
             Environment = "development",
-            Headers = new Dictionary<string, string>
+            Headers =
             {
                 { "foo", "bar" },
                 { "bar", "foo" }
@@ -1326,7 +1317,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
     private sealed class TestConfigServerConfigurationProvider : ConfigServerConfigurationProvider
     {
-        public HttpClient TheConfiguredClient => httpClient;
+        public HttpClient TheConfiguredClient => HttpClient;
 
         public TestConfigServerConfigurationProvider(ConfigServerClientSettings settings)
             : base(settings)

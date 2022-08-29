@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#pragma warning disable S4004 // Collection properties should be readonly
+// https://github.com/dotnet/runtime/issues/30258
+
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
-public class ConfigEnvironment
+public sealed class ConfigEnvironment
 {
     public string Name { get; set; }
 

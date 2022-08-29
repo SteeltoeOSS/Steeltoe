@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
-public class SpringCloudConfigHealth
+public sealed class SpringCloudConfigHealth
 {
     public bool Enabled { get; set; } = ConfigServerClientSettings.DefaultHealthEnabled;
 

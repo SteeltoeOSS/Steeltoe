@@ -10,7 +10,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Extensions.Configuration.ConfigServer.Integration.Test;
 
 // NOTE: Some of the tests assume a running Spring Cloud Config Server is started
 //       with repository data for application: foo, profile: development

@@ -9,8 +9,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 /// <summary>
 /// Holds the settings used to configure the Spring Cloud Config Server provider <see cref="ConfigServerConfigurationProvider" />.
 /// </summary>
-public class ConfigServerClientSettings
+public sealed class ConfigServerClientSettings
 {
+    private const char ColonDelimiter = ':';
+    private const char CommaDelimiter = ',';
+
     /// <summary>
     /// Default Config Server address used by provider.
     /// </summary>
@@ -22,7 +25,7 @@ public class ConfigServerClientSettings
     public const string DefaultEnvironment = "Production";
 
     /// <summary>
-    /// Default fail fast setting.
+    /// Default fail-fast setting.
     /// </summary>
     public const bool DefaultFailFast = false;
 
@@ -67,7 +70,7 @@ public class ConfigServerClientSettings
     public const int DefaultTimeoutMilliseconds = 6 * 1000;
 
     /// <summary>
-    /// Default Vault Token Time to Live setting.
+    /// Default Vault Token time-to-live setting.
     /// </summary>
     public const int DefaultVaultTokenTtl = 300000;
 
@@ -112,19 +115,9 @@ public class ConfigServerClientSettings
     public const bool DefaultHealthEnabled = true;
 
     /// <summary>
-    /// Default health check time to live in milliseconds setting.
+    /// Default health check time-to-live setting, in milliseconds.
     /// </summary>
     public const long DefaultHealthTimeToLive = 60 * 5 * 1000;
-
-    private static readonly char[] ColonDelimit =
-    {
-        ':'
-    };
-
-    private static readonly char[] CommaDelimit =
-    {
-        ','
-    };
 
     private string _username;
     private string _password;
@@ -132,142 +125,160 @@ public class ConfigServerClientSettings
     /// <summary>
     /// Gets or sets the Config Server address.
     /// </summary>
-    public virtual string Uri { get; set; }
+    public string Uri { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether enables/Disables the Config Server provider.
+    /// Gets or sets a value indicating whether the Config Server provider is enabled.
     /// </summary>
-    public virtual bool Enabled { get; set; }
+    public bool Enabled { get; set; }
 
     /// <summary>
     /// Gets or sets the environment used when accessing configuration data.
     /// </summary>
-    public virtual string Environment { get; set; }
+    public string Environment { get; set; }
 
     /// <summary>
     /// Gets or sets the application name used when accessing configuration data.
     /// </summary>
-    public virtual string Name { get; set; }
+    public string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the label used when accessing configuration data.
     /// </summary>
-    public virtual string Label { get; set; }
+    public string Label { get; set; }
 
     /// <summary>
     /// Gets or sets the frequency with which app should check Config Server for changes in configuration.
     /// </summary>
-    public virtual TimeSpan PollingInterval { get; set; }
+    public TimeSpan PollingInterval { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether enables/Disables failfast behavior.
+    /// Gets or sets a value indicating whether fail-fast behavior is enabled.
     /// </summary>
-    public virtual bool FailFast { get; set; }
+    public bool FailFast { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether enables/Disables whether provider validates server certificates.
+    /// Gets or sets a value indicating whether the provider validates server certificates.
     /// </summary>
-    public virtual bool ValidateCertificates { get; set; }
+    public bool ValidateCertificates { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether enables/Disables config server client retry on failures.
+    /// Gets or sets a value indicating whether retries are enabled on failures.
     /// </summary>
-    public virtual bool RetryEnabled { get; set; }
+    public bool RetryEnabled { get; set; }
 
     /// <summary>
     /// Gets or sets initial retry interval in milliseconds.
     /// </summary>
-    public virtual int RetryInitialInterval { get; set; }
+    public int RetryInitialInterval { get; set; }
 
     /// <summary>
     /// Gets or sets max retry interval in milliseconds.
     /// </summary>
-    public virtual int RetryMaxInterval { get; set; }
+    public int RetryMaxInterval { get; set; }
 
     /// <summary>
-    /// Gets or sets multiplier for next retry interval.
+    /// Gets or sets the multiplier for next retry interval.
     /// </summary>
-    public virtual double RetryMultiplier { get; set; }
+    public double RetryMultiplier { get; set; }
 
     /// <summary>
     /// Gets or sets the max number of retries the client will attempt.
     /// </summary>
-    public virtual int RetryAttempts { get; set; }
+    public int RetryAttempts { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether discovery first behavior is enabled.
     /// </summary>
-    public virtual bool DiscoveryEnabled { get; set; }
+    public bool DiscoveryEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets a value of the service id used during discovery first behavior.
+    /// Gets or sets a value of the service ID used during discovery first behavior.
     /// </summary>
-    public virtual string DiscoveryServiceId { get; set; }
+    public string DiscoveryServiceId { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether health check is enabled.
     /// </summary>
-    public virtual bool HealthEnabled { get; set; }
+    public bool HealthEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets a value for the health check cache time to live.
+    /// Gets or sets a value for the health check cache time-to-live.
     /// </summary>
-    public virtual long HealthTimeToLive { get; set; }
+    public long HealthTimeToLive { get; set; }
 
     /// <summary>
-    /// Gets returns HttpRequestUrls, unescaped.
+    /// Gets unescaped <see cref="UriComponents.HttpRequestUrl" />s.
     /// </summary>
-    public virtual string[] RawUris => GetRawUris();
+    public string[] RawUris => GetRawUris();
 
     /// <summary>
-    /// Gets or sets returns the token use for Vault.
+    /// Gets or sets the token used for Vault.
     /// </summary>
-    public virtual string Token { get; set; }
+    public string Token { get; set; }
 
     /// <summary>
-    /// Gets or sets returns the request timeout in milliseconds.
+    /// Gets or sets the request timeout in milliseconds.
     /// </summary>
-    public virtual int Timeout { get; set; }
+    public int Timeout { get; set; }
 
     /// <summary>
-    /// Gets or sets address used by provider to obtain a OAuth Access Token.
+    /// Gets or sets the address used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    public virtual string AccessTokenUri { get; set; } = DefaultAccessTokenUri;
+    public string AccessTokenUri { get; set; } = DefaultAccessTokenUri;
 
     /// <summary>
-    /// Gets or sets client id used by provider to obtain a OAuth Access Token.
+    /// Gets or sets the client ID used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    public virtual string ClientId { get; set; } = DefaultClientId;
+    public string ClientId { get; set; } = DefaultClientId;
 
     /// <summary>
-    /// Gets or sets client secret used by provider to obtain a OAuth Access Token.
+    /// Gets or sets the client secret used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    public virtual string ClientSecret { get; set; } = DefaultClientSecret;
+    public string ClientSecret { get; set; } = DefaultClientSecret;
 
-    public virtual X509Certificate2 ClientCertificate { get; set; }
+    public X509Certificate2 ClientCertificate { get; set; }
 
     /// <summary>
-    /// Gets or sets vault token Time to Live setting in Milliseconds.
+    /// Gets or sets the vault token time-to-live in milliseconds.
     /// </summary>
-    public virtual int TokenTtl { get; set; } = DefaultVaultTokenTtl;
+    public int TokenTtl { get; set; } = DefaultVaultTokenTtl;
 
     /// <summary>
-    /// Gets or sets vault token renew rate in Milliseconds.
+    /// Gets or sets the vault token renew rate in milliseconds.
     /// </summary>
-    public virtual int TokenRenewRate { get; set; } = DefaultVaultTokenRenewRate;
+    public int TokenRenewRate { get; set; } = DefaultVaultTokenRenewRate;
 
-    public virtual bool DisableTokenRenewal { get; set; } = DefaultDisableTokenRenewal;
+    public bool DisableTokenRenewal { get; set; } = DefaultDisableTokenRenewal;
 
     /// <summary>
-    /// Gets or sets headers that will be added to the Config Server request.
+    /// Gets headers that will be added to the Config Server request.
     /// </summary>
-    public virtual Dictionary<string, string> Headers { get; set; }
+    public Dictionary<string, string> Headers { get; } = new();
+
+    /// <summary>
+    /// Gets or sets the username used when accessing the Config Server.
+    /// </summary>
+    public string Username
+    {
+        get => GetUserName(Uri);
+        set => _username = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the password used when accessing the Config Server.
+    /// </summary>
+    public string Password
+    {
+        get => GetPassword(Uri);
+        set => _password = value;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerClientSettings" /> class.
     /// </summary>
     /// <remarks>
-    /// Initialize Config Server client settings with defaults.
+    /// Initializes the Config Server client settings with defaults.
     /// </remarks>
     public ConfigServerClientSettings()
     {
@@ -288,17 +299,17 @@ public class ConfigServerClientSettings
         HealthTimeToLive = DefaultHealthTimeToLive;
     }
 
-    internal static bool IsMultiServerConfig(string uris)
+    internal static bool IsMultiServerConfiguration(string uris)
     {
-        return uris.Contains(",");
+        return uris.Contains(CommaDelimiter);
     }
 
     internal string GetRawUri(string uri)
     {
         try
         {
-            var ri = new Uri(uri);
-            return ri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
+            var tempUri = new Uri(uri);
+            return tempUri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
         }
         catch (UriFormatException)
         {
@@ -306,11 +317,11 @@ public class ConfigServerClientSettings
         }
     }
 
-    internal string[] GetRawUris()
+    private string[] GetRawUris()
     {
         if (!string.IsNullOrEmpty(Uri))
         {
-            string[] uris = Uri.Split(CommaDelimit, StringSplitOptions.RemoveEmptyEntries);
+            string[] uris = Uri.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries);
 
             for (int i = 0; i < uris.Length; i++)
             {
@@ -334,15 +345,10 @@ public class ConfigServerClientSettings
     {
         if (!string.IsNullOrEmpty(Uri))
         {
-            return Uri.Split(CommaDelimit, StringSplitOptions.RemoveEmptyEntries);
+            return Uri.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries);
         }
 
         return Array.Empty<string>();
-    }
-
-    internal string GetPassword()
-    {
-        return GetPassword(Uri);
     }
 
     internal string GetPassword(string uri)
@@ -353,11 +359,6 @@ public class ConfigServerClientSettings
         }
 
         return GetUserPassElement(uri, 1);
-    }
-
-    internal string GetUserName()
-    {
-        return GetUserName(Uri);
     }
 
     internal string GetUserName(string uri)
@@ -383,44 +384,21 @@ public class ConfigServerClientSettings
 
     private static string GetUserPassElement(string uri, int index)
     {
-        if (IsMultiServerConfig(uri))
+        if (!IsMultiServerConfiguration(uri))
         {
-            return null;
-        }
+            string userInfo = GetUserInfo(uri);
 
-        string result = null;
-        string userInfo = GetUserInfo(uri);
-
-        if (!string.IsNullOrEmpty(userInfo))
-        {
-            string[] info = userInfo.Split(ColonDelimit);
-
-            if (info.Length > index)
+            if (!string.IsNullOrEmpty(userInfo))
             {
-                result = info[index];
+                string[] info = userInfo.Split(ColonDelimiter);
+
+                if (info.Length > index)
+                {
+                    return info[index];
+                }
             }
         }
 
-        return result;
+        return null;
     }
-
-#pragma warning disable S4275 // Getters and setters should access the expected fields
-    /// <summary>
-    /// Gets or sets the username used when accessing the Config Server.
-    /// </summary>
-    public virtual string Username
-    {
-        get => GetUserName();
-        set => _username = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the password used when accessing the Config Server.
-    /// </summary>
-    public virtual string Password
-    {
-        get => GetPassword();
-        set => _password = value;
-    }
-#pragma warning restore S4275 // Getters and setters should access the expected fields
 }

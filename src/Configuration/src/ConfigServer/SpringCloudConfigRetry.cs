@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
-public class SpringCloudConfigRetry
+public sealed class SpringCloudConfigRetry
 {
     public bool Enabled { get; set; } = ConfigServerClientSettings.DefaultRetryEnabled;
 

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Extensions.Configuration.ConfigServer.Integration.Test;
 
 public sealed class HomeController : Controller
 {

@@ -124,10 +124,10 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     public void AddConfigServer_ThrowsIfSettingsNull()
     {
         IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-        const ConfigServerClientSettings defaultSettings = null;
+        const ConfigServerClientSettings clientSettings = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(defaultSettings));
-        Assert.Contains(nameof(defaultSettings), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(clientSettings));
+        Assert.Contains(nameof(clientSettings), ex.Message);
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         ConfigServerConfigurationSource configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
 
         Assert.NotNull(configServerSource);
-        Assert.NotNull(configServerSource.LogFactory);
+        Assert.NotNull(configServerSource.LoggerFactory);
     }
 
     [Fact]
@@ -505,6 +505,6 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         configurationBuilder.AddCloudFoundry(new CustomCloudFoundrySettingsReader());
         configurationBuilder.AddConfigServer();
 
-        Assert.Single(configurationBuilder.Sources.Where(c => c.GetType() == typeof(CloudFoundryConfigurationSource)));
+        Assert.Single(configurationBuilder.Sources.Where(source => source is CloudFoundryConfigurationSource));
     }
 }
