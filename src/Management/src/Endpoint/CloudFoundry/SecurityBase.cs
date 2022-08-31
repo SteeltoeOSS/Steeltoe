@@ -40,7 +40,7 @@ public class SecurityBase
     public bool IsCloudFoundryRequest(string requestPath)
     {
         string contextPath = _managementOptions == null ? _options.Path : _managementOptions.Path;
-        return requestPath.StartsWith(contextPath, StringComparison.InvariantCultureIgnoreCase);
+        return requestPath.StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
     }
 
     public string Serialize(SecurityResult error)
@@ -77,7 +77,7 @@ public class SecurityBase
         {
             _logger?.LogDebug("GetPermissionsAsync({uri}, {token})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
             _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DefaultGetPermissionsTimeout);
-            using HttpResponseMessage response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+            using HttpResponseMessage response = await _httpClient.SendAsync(request);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
@@ -89,7 +89,7 @@ public class SecurityBase
                     : new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
             }
 
-            return new SecurityResult(await GetPermissionsAsync(response).ConfigureAwait(false));
+            return new SecurityResult(await GetPermissionsAsync(response));
         }
         catch (Exception e)
         {
@@ -110,7 +110,7 @@ public class SecurityBase
 
         try
         {
-            json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            json = await response.Content.ReadAsStringAsync();
 
             _logger?.LogDebug("GetPermissionsAsync returned json: {json}", SecurityUtilities.SanitizeInput(json));
 

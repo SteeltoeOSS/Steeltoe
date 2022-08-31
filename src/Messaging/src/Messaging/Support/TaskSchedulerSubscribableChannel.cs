@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Messaging.Support;
@@ -80,10 +79,10 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
             }
             else
             {
-                ConfiguredTaskAwaitable task = Factory.StartNew(() =>
+                Task task = Factory.StartNew(() =>
                 {
                     Invoke(interceptors, message, handler);
-                }).ConfigureAwait(false);
+                });
 
                 task.GetAwaiter().GetResult();
             }

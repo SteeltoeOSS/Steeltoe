@@ -28,8 +28,8 @@ public class MetricsObserverOptionsTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
-        Assert.Throws<ArgumentNullException>(() => new MetricsObserverOptions(config));
+        const IConfiguration configuration = null;
+        Assert.Throws<ArgumentNullException>(() => new MetricsObserverOptions(configuration));
     }
 
     [Fact]
@@ -50,9 +50,9 @@ public class MetricsObserverOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new MetricsObserverOptions(config);
+        var opts = new MetricsObserverOptions(configurationRoot);
         Assert.Equal("pattern", opts.IngressIgnorePattern);
         Assert.Equal("pattern", opts.EgressIgnorePattern);
         Assert.False(opts.AspNetCoreHosting);

@@ -20,7 +20,7 @@ public static class MySqlDbContextOptionsExtensions
     /// <param name="optionsBuilder">
     /// <see cref="DbContextOptionsBuilder" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration.
     /// </param>
     /// <param name="mySqlOptionsAction">
@@ -35,9 +35,9 @@ public static class MySqlDbContextOptionsExtensions
     /// Pass in a ServerVersion to avoid the extra DB Connection - see
     /// https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/issues/1088#issuecomment-726091533.
     /// </remarks>
-    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object mySqlOptionsAction = null)
+    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration configuration, object mySqlOptionsAction = null)
     {
-        return UseMySql(optionsBuilder, config, serverVersion: null, mySqlOptionsAction);
+        return UseMySql(optionsBuilder, configuration, serverVersion: null, mySqlOptionsAction);
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ public static class MySqlDbContextOptionsExtensions
     /// <param name="optionsBuilder">
     /// <see cref="DbContextOptionsBuilder" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration.
     /// </param>
     /// <param name="serverVersion">
@@ -58,13 +58,13 @@ public static class MySqlDbContextOptionsExtensions
     /// <returns>
     /// <see cref="DbContextOptionsBuilder" />, configured to use MySQL.
     /// </returns>
-    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object serverVersion,
+    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration configuration, object serverVersion,
         object mySqlOptionsAction = null)
     {
         ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        string connection = GetConnection(config);
+        string connection = GetConnection(configuration);
 
         return DoUseMySql(optionsBuilder, connection, mySqlOptionsAction, serverVersion);
     }
@@ -75,7 +75,7 @@ public static class MySqlDbContextOptionsExtensions
     /// <param name="optionsBuilder">
     /// <see cref="DbContextOptionsBuilder" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration.
     /// </param>
     /// <param name="serviceName">
@@ -93,10 +93,10 @@ public static class MySqlDbContextOptionsExtensions
     /// Pass in a ServerVersion to avoid the extra DB Connection - see
     /// https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/issues/1088#issuecomment-726091533.
     /// </remarks>
-    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName,
+    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration configuration, string serviceName,
         object mySqlOptionsAction = null)
     {
-        return UseMySql(optionsBuilder, config, serviceName, null, mySqlOptionsAction);
+        return UseMySql(optionsBuilder, configuration, serviceName, null, mySqlOptionsAction);
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ public static class MySqlDbContextOptionsExtensions
     /// <param name="optionsBuilder">
     /// <see cref="DbContextOptionsBuilder" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration.
     /// </param>
     /// <param name="serviceName">
@@ -120,14 +120,14 @@ public static class MySqlDbContextOptionsExtensions
     /// <returns>
     /// <see cref="DbContextOptionsBuilder" />, configured to use MySQL.
     /// </returns>
-    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, object serverVersion,
-        object mySqlOptionsAction = null)
+    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration configuration, string serviceName,
+        object serverVersion, object mySqlOptionsAction = null)
     {
         ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNullOrEmpty(serviceName);
 
-        string connection = GetConnection(config, serviceName);
+        string connection = GetConnection(configuration, serviceName);
 
         return DoUseMySql(optionsBuilder, connection, mySqlOptionsAction, serverVersion);
     }
@@ -141,7 +141,7 @@ public static class MySqlDbContextOptionsExtensions
     /// <param name="optionsBuilder">
     /// <see cref="DbContextOptionsBuilder" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration.
     /// </param>
     /// <param name="mySqlOptionsAction">
@@ -153,14 +153,14 @@ public static class MySqlDbContextOptionsExtensions
     /// <returns>
     /// <see cref="DbContextOptionsBuilder" />, configured to use MySQL.
     /// </returns>
-    public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config,
+    public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration configuration,
         object mySqlOptionsAction = null, object serverVersion = null)
         where TContext : DbContext
     {
         ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        string connection = GetConnection(config);
+        string connection = GetConnection(configuration);
 
         return DoUseMySql(optionsBuilder, connection, mySqlOptionsAction, serverVersion);
     }
@@ -174,7 +174,7 @@ public static class MySqlDbContextOptionsExtensions
     /// <param name="optionsBuilder">
     /// <see cref="DbContextOptionsBuilder" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration.
     /// </param>
     /// <param name="serviceName">
@@ -189,28 +189,28 @@ public static class MySqlDbContextOptionsExtensions
     /// <returns>
     /// <see cref="DbContextOptionsBuilder" />, configured to use MySQL.
     /// </returns>
-    public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config,
+    public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration configuration,
         string serviceName, object mySqlOptionsAction = null, object serverVersion = null)
         where TContext : DbContext
     {
         ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNullOrEmpty(serviceName);
 
-        string connection = GetConnection(config, serviceName);
+        string connection = GetConnection(configuration, serviceName);
 
         return DoUseMySql(optionsBuilder, connection, mySqlOptionsAction, serverVersion);
     }
 
-    private static string GetConnection(IConfiguration config, string serviceName = null)
+    private static string GetConnection(IConfiguration configuration, string serviceName = null)
     {
         MySqlServiceInfo info = string.IsNullOrEmpty(serviceName)
-            ? config.GetSingletonServiceInfo<MySqlServiceInfo>()
-            : config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+            ? configuration.GetSingletonServiceInfo<MySqlServiceInfo>()
+            : configuration.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
 
-        var mySqlConfig = new MySqlProviderConnectorOptions(config);
+        var options = new MySqlProviderConnectorOptions(configuration);
 
-        var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, null);
+        var factory = new MySqlProviderConnectorFactory(info, options, null);
 
         return factory.CreateConnectionString();
     }
@@ -301,7 +301,7 @@ public static class MySqlDbContextOptionsExtensions
 
     private static bool MatchesSignature(MethodBase method, IReadOnlyList<Type> parameterTypes)
     {
-        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseMySQL", StringComparison.InvariantCultureIgnoreCase))
+        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseMySQL", StringComparison.OrdinalIgnoreCase))
         {
             ParameterInfo[] parameters = method.GetParameters();
 

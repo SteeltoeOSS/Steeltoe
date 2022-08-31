@@ -11,7 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
@@ -45,8 +45,8 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
     [Fact]
     public async Task TestQueueArgs1()
     {
-        IConfiguration config = await GetQueueConfigurationAsync("all.args.1");
-        IConfigurationSection arguments = config.GetSection("arguments");
+        IConfiguration configuration = await GetQueueConfigurationAsync("all.args.1");
+        IConfigurationSection arguments = configuration.GetSection("arguments");
         Assert.Equal(1000, arguments.GetValue<int>("x-message-ttl"));
         Assert.Equal(200000, arguments.GetValue<int>("x-expires"));
         Assert.Equal(42, arguments.GetValue<int>("x-max-length"));
@@ -62,8 +62,8 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
     [Fact]
     public async Task TestQueueArgs2()
     {
-        IConfiguration config = await GetQueueConfigurationAsync("all.args.2");
-        IConfigurationSection arguments = config.GetSection("arguments");
+        IConfiguration configuration = await GetQueueConfigurationAsync("all.args.2");
+        IConfigurationSection arguments = configuration.GetSection("arguments");
         Assert.Equal(1000, arguments.GetValue<int>("x-message-ttl"));
         Assert.Equal(200000, arguments.GetValue<int>("x-expires"));
         Assert.Equal(42, arguments.GetValue<int>("x-max-length"));
@@ -79,8 +79,8 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
     [Fact]
     public async Task TestQueueArgs3()
     {
-        IConfiguration config = await GetQueueConfigurationAsync("all.args.3");
-        IConfigurationSection arguments = config.GetSection("arguments");
+        IConfiguration configuration = await GetQueueConfigurationAsync("all.args.3");
+        IConfigurationSection arguments = configuration.GetSection("arguments");
         Assert.Equal(1000, arguments.GetValue<int>("x-message-ttl"));
         Assert.Equal(200000, arguments.GetValue<int>("x-expires"));
         Assert.Equal(42, arguments.GetValue<int>("x-max-length"));
@@ -100,8 +100,8 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
     [Fact]
     public async Task TestQuorumArgs()
     {
-        IConfiguration config = await GetQueueConfigurationAsync("test.quorum");
-        IConfigurationSection arguments = config.GetSection("arguments");
+        IConfiguration configuration = await GetQueueConfigurationAsync("test.quorum");
+        IConfigurationSection arguments = configuration.GetSection("arguments");
         Assert.Equal(10, arguments.GetValue<int>("x-delivery-limit"));
         Assert.Equal("quorum", arguments.GetValue<string>("x-queue-type"));
     }
@@ -123,8 +123,8 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
 
         Assert.True(n < 100);
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        IConfigurationRoot config = new ConfigurationBuilder().AddJsonStream(await result.Content.ReadAsStreamAsync()).Build();
-        return config;
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddJsonStream(await result.Content.ReadAsStreamAsync()).Build();
+        return configurationRoot;
     }
 
     private async Task<IConfiguration> GetExchangeConfigurationAsync(string exchangeName)
@@ -136,8 +136,8 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
         HttpResponseMessage result = await client.GetAsync($"http://localhost:15672/api/exchanges/%2F/{exchangeName}");
 
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        IConfigurationRoot config = new ConfigurationBuilder().AddJsonStream(await result.Content.ReadAsStreamAsync()).Build();
-        return config;
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddJsonStream(await result.Content.ReadAsStreamAsync()).Build();
+        return configurationRoot;
     }
 
     public sealed class FixedReplyStartupFixture : IDisposable
@@ -153,10 +153,10 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
             Provider.GetRequiredService<IHostedService>().StartAsync(default).Wait();
         }
 
-        public ServiceCollection CreateContainer(IConfiguration config = null)
+        public ServiceCollection CreateContainer(IConfiguration configuration = null)
         {
             var services = new ServiceCollection();
-            config ??= new ConfigurationBuilder().Build();
+            configuration ??= new ConfigurationBuilder().Build();
 
             services.AddLogging(b =>
             {
@@ -164,7 +164,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
                 b.AddConsole();
             });
 
-            services.AddSingleton(config);
+            services.AddSingleton(configuration);
             services.AddRabbitHostingServices();
             services.AddRabbitDefaultMessageConverter();
 

@@ -9,7 +9,7 @@ using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binding;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Extensions;
 using Steeltoe.Stream.TestBinder;
 using Xunit;

@@ -39,8 +39,8 @@ public class HttpTraceEndpointOptions : AbstractEndpointOptions, ITraceOptions
         Capacity = DefaultCapacity;
     }
 
-    public HttpTraceEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
+    public HttpTraceEndpointOptions(IConfiguration configuration)
+        : base(ManagementInfoPrefix, configuration)
     {
         if (string.IsNullOrEmpty(Id))
         {

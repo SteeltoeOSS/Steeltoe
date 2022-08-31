@@ -14,7 +14,7 @@ public class CosmosDbProviderConfigurerTest
     {
         var configurer = new CosmosDbProviderConfigurer();
 
-        var config = new CosmosDbConnectorOptions
+        var options = new CosmosDbConnectorOptions
         {
             Host = "https://someHost:443",
             MasterKey = "masterKey",
@@ -23,20 +23,20 @@ public class CosmosDbProviderConfigurerTest
             DatabaseLink = "databaseLink"
         };
 
-        configurer.UpdateConfiguration(null, config);
+        configurer.UpdateConfiguration(null, options);
 
-        Assert.Equal("https://someHost:443", config.Host);
-        Assert.Equal("masterKey", config.MasterKey);
-        Assert.Equal("readOnlyKey", config.ReadOnlyKey);
-        Assert.Equal("databaseId", config.DatabaseId);
-        Assert.Equal("databaseLink", config.DatabaseLink);
-        Assert.Null(config.ConnectionString);
+        Assert.Equal("https://someHost:443", options.Host);
+        Assert.Equal("masterKey", options.MasterKey);
+        Assert.Equal("readOnlyKey", options.ReadOnlyKey);
+        Assert.Equal("databaseId", options.DatabaseId);
+        Assert.Equal("databaseLink", options.DatabaseLink);
+        Assert.Null(options.ConnectionString);
     }
 
     [Fact]
     public void Configure_NoServiceInfo_ReturnsExpected()
     {
-        var config = new CosmosDbConnectorOptions
+        var options = new CosmosDbConnectorOptions
         {
             Host = "https://someHost:443",
             MasterKey = "masterKey",
@@ -47,7 +47,7 @@ public class CosmosDbProviderConfigurerTest
 
         var configurer = new CosmosDbProviderConfigurer();
 
-        string connString = configurer.Configure(null, config);
+        string connString = configurer.Configure(null, options);
 
         Assert.Equal("AccountEndpoint=https://someHost:443;AccountKey=masterKey;", connString);
     }
@@ -55,7 +55,7 @@ public class CosmosDbProviderConfigurerTest
     [Fact]
     public void Configure_ServiceInfoOverridesConfig_ReturnsExpected()
     {
-        var config = new CosmosDbConnectorOptions
+        var options = new CosmosDbConnectorOptions
         {
             Host = "https://someHost:443",
             MasterKey = "masterKey",
@@ -75,13 +75,13 @@ public class CosmosDbProviderConfigurerTest
             DatabaseLink = "cbs/sTB+AA==/"
         };
 
-        string connString = configurer.Configure(si, config);
+        string connString = configurer.Configure(si, options);
 
-        Assert.Equal("https://u332d11658f3.documents.azure.com:443/", config.Host);
-        Assert.Equal("lXYMGIE4mYITjXvHwQjkh0U07lwF513NdbTfeyGndeqjVXzwKQ3ZalKXQNYeIZovoyl57IY1J0KnJUH36EPufA==", config.MasterKey);
-        Assert.Equal("hy5XZOeVnBeMmbB9FGcD54tttGKExad9XkGhn5Esc4jAM60OF2U7TcCXgffqBtBRuPAp0uFqKvz1l13OX8auPw==", config.ReadOnlyKey);
-        Assert.Equal("u33ba24fd208", config.DatabaseId);
-        Assert.Equal("cbs/sTB+AA==/", config.DatabaseLink);
+        Assert.Equal("https://u332d11658f3.documents.azure.com:443/", options.Host);
+        Assert.Equal("lXYMGIE4mYITjXvHwQjkh0U07lwF513NdbTfeyGndeqjVXzwKQ3ZalKXQNYeIZovoyl57IY1J0KnJUH36EPufA==", options.MasterKey);
+        Assert.Equal("hy5XZOeVnBeMmbB9FGcD54tttGKExad9XkGhn5Esc4jAM60OF2U7TcCXgffqBtBRuPAp0uFqKvz1l13OX8auPw==", options.ReadOnlyKey);
+        Assert.Equal("u33ba24fd208", options.DatabaseId);
+        Assert.Equal("cbs/sTB+AA==/", options.DatabaseLink);
 
         Assert.Equal(
             "AccountEndpoint=https://u332d11658f3.documents.azure.com:443/;AccountKey=lXYMGIE4mYITjXvHwQjkh0U07lwF513NdbTfeyGndeqjVXzwKQ3ZalKXQNYeIZovoyl57IY1J0KnJUH36EPufA==;",

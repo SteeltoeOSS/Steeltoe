@@ -14,7 +14,7 @@ public class OracleProviderConfigurerTest
     {
         var configurer = new OracleProviderConfigurer();
 
-        var config = new OracleProviderConnectorOptions
+        var options = new OracleProviderConnectorOptions
         {
             Server = "localhost",
             Port = 1234,
@@ -23,14 +23,14 @@ public class OracleProviderConfigurerTest
             ServiceName = "orcl"
         };
 
-        configurer.UpdateConfiguration(null, config);
+        configurer.UpdateConfiguration(null, options);
 
-        Assert.Equal("localhost", config.Server);
-        Assert.Equal(1234, config.Port);
-        Assert.Equal("username", config.Username);
-        Assert.Equal("password", config.Password);
-        Assert.Equal("orcl", config.ServiceName);
-        Assert.Null(config.ConnectionString);
+        Assert.Equal("localhost", options.Server);
+        Assert.Equal(1234, options.Port);
+        Assert.Equal("username", options.Username);
+        Assert.Equal("password", options.Password);
+        Assert.Equal("orcl", options.ServiceName);
+        Assert.Null(options.ConnectionString);
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class OracleProviderConfigurerTest
     {
         var configurer = new OracleProviderConfigurer();
 
-        var config = new OracleProviderConnectorOptions
+        var options = new OracleProviderConnectorOptions
         {
             Server = "localhost",
             Port = 1234,
@@ -49,19 +49,19 @@ public class OracleProviderConfigurerTest
 
         var si = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/orclpdb1");
 
-        configurer.UpdateConfiguration(si, config);
+        configurer.UpdateConfiguration(si, options);
 
-        Assert.Equal("localhost", config.Server);
-        Assert.Equal(1521, config.Port);
-        Assert.Equal("user", config.Username);
-        Assert.Equal("pwd", config.Password);
-        Assert.Equal("orclpdb1", config.ServiceName);
+        Assert.Equal("localhost", options.Server);
+        Assert.Equal(1521, options.Port);
+        Assert.Equal("user", options.Username);
+        Assert.Equal("pwd", options.Password);
+        Assert.Equal("orclpdb1", options.ServiceName);
     }
 
     [Fact]
     public void Configure_NoServiceInfo_ReturnsExpected()
     {
-        var config = new OracleProviderConnectorOptions
+        var options = new OracleProviderConnectorOptions
         {
             Server = "localhost",
             Port = 1234,
@@ -72,18 +72,18 @@ public class OracleProviderConfigurerTest
         };
 
         var configurer = new OracleProviderConfigurer();
-        string opts = configurer.Configure(null, config);
+        string configuration = configurer.Configure(null, options);
 
         string connectionString =
-            $"User Id={config.Username};Password={config.Password};Data Source={config.Server}:{config.Port}/{config.ServiceName};Connection Timeout={config.ConnectionTimeout}";
+            $"User Id={options.Username};Password={options.Password};Data Source={options.Server}:{options.Port}/{options.ServiceName};Connection Timeout={options.ConnectionTimeout}";
 
-        Assert.StartsWith(connectionString, opts);
+        Assert.StartsWith(connectionString, configuration);
     }
 
     [Fact]
     public void Configure_ServiceInfoOverridesConfig_ReturnsExpected()
     {
-        var config = new OracleProviderConnectorOptions
+        var options = new OracleProviderConnectorOptions
         {
             Server = "localhost",
             Port = 1234,
@@ -95,12 +95,12 @@ public class OracleProviderConfigurerTest
         var configurer = new OracleProviderConfigurer();
         var si = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/orclpdb1");
 
-        _ = configurer.Configure(si, config);
+        _ = configurer.Configure(si, options);
 
-        Assert.Equal("localhost", config.Server);
-        Assert.Equal(1521, config.Port);
-        Assert.Equal("user", config.Username);
-        Assert.Equal("pwd", config.Password);
-        Assert.Equal("orclpdb1", config.ServiceName);
+        Assert.Equal("localhost", options.Server);
+        Assert.Equal(1521, options.Port);
+        Assert.Equal("user", options.Username);
+        Assert.Equal("pwd", options.Password);
+        Assert.Equal("orclpdb1", options.ServiceName);
     }
 }

@@ -12,7 +12,7 @@ using Steeltoe.Integration.Handler;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Binder;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Provisioning;
 using static Steeltoe.Stream.TestBinder.TestChannelBinderProvisioner;
 

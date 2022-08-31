@@ -29,14 +29,14 @@ public class EurekaHttpClient : IEurekaHttpClient
         ':'
     };
 
-    private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
+    private readonly IOptionsMonitor<EurekaClientOptions> _configurationOptions;
 
     protected object @lock = new();
     protected IList<string> failingServiceUrls = new List<string>();
 
     protected IDictionary<string, string> headers;
 
-    protected IEurekaClientConfig config;
+    protected IEurekaClientConfiguration configuration;
     protected IHttpClientHandlerProvider handlerProvider;
 
     protected HttpClient httpClient;
@@ -49,35 +49,36 @@ public class EurekaHttpClient : IEurekaHttpClient
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    protected virtual IEurekaClientConfig Config => _configOptions != null ? _configOptions.CurrentValue : config;
+    protected virtual IEurekaClientConfiguration Configuration => _configurationOptions != null ? _configurationOptions.CurrentValue : configuration;
 
-    public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> config, IHttpClientHandlerProvider handlerProvider = null, ILoggerFactory logFactory = null)
+    public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> configuration, IHttpClientHandlerProvider handlerProvider = null,
+        ILoggerFactory logFactory = null)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        this.config = null;
-        _configOptions = config;
+        this.configuration = null;
+        _configurationOptions = configuration;
         this.handlerProvider = handlerProvider;
         Initialize(new Dictionary<string, string>(), logFactory);
     }
 
-    public EurekaHttpClient(IEurekaClientConfig config, HttpClient client, ILoggerFactory logFactory = null)
-        : this(config, new Dictionary<string, string>(), logFactory)
+    public EurekaHttpClient(IEurekaClientConfiguration configuration, HttpClient client, ILoggerFactory logFactory = null)
+        : this(configuration, new Dictionary<string, string>(), logFactory)
     {
         httpClient = client;
     }
 
-    public EurekaHttpClient(IEurekaClientConfig config, ILoggerFactory logFactory = null, IHttpClientHandlerProvider handlerProvider = null)
-        : this(config, new Dictionary<string, string>(), logFactory, handlerProvider)
+    public EurekaHttpClient(IEurekaClientConfiguration configuration, ILoggerFactory logFactory = null, IHttpClientHandlerProvider handlerProvider = null)
+        : this(configuration, new Dictionary<string, string>(), logFactory, handlerProvider)
     {
     }
 
-    public EurekaHttpClient(IEurekaClientConfig config, IDictionary<string, string> headers, ILoggerFactory logFactory = null,
+    public EurekaHttpClient(IEurekaClientConfiguration configuration, IDictionary<string, string> headers, ILoggerFactory logFactory = null,
         IHttpClientHandlerProvider handlerProvider = null)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        this.config = config;
+        this.configuration = configuration;
         this.handlerProvider = handlerProvider;
         Initialize(headers, logFactory);
     }
@@ -95,7 +96,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     private async Task<EurekaHttpResponse> RegisterInternalAsync(InstanceInfo info)
     {
-        if ((Platform.IsContainerized || Platform.IsCloudHosted) && info.HostName?.Equals("localhost", StringComparison.InvariantCultureIgnoreCase) == true)
+        if ((Platform.IsContainerized || Platform.IsCloudHosted) && info.HostName?.Equals("localhost", StringComparison.OrdinalIgnoreCase) == true)
         {
             logger?.LogWarning(
                 "Registering with hostname 'localhost' in containerized or cloud environments may not be valid. Please configure Eureka:Instance:HostName with a non-localhost address");
@@ -104,13 +105,13 @@ public class EurekaHttpClient : IEurekaHttpClient
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
         string serviceUrl = null;
-        httpClient ??= GetHttpClient(Config);
+        httpClient ??= GetHttpClient(Configuration);
 
         // For retries
-        for (int retry = 0; retry < GetRetryCount(Config); retry++)
+        for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
             // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(Config.ValidateCertificates, out SecurityProtocolType prevProtocols,
+            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
 
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
@@ -124,7 +125,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                     Instance = info.ToJsonInstance()
                 });
 
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
                 logger?.LogDebug("RegisterAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                 int statusCode = (int)response.StatusCode;
 
@@ -140,7 +141,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
 
-                string jsonError = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                string jsonError = await response.Content.ReadAsStringAsync();
                 logger?.LogInformation("Failure during RegisterAsync: {jsonError}", jsonError);
             }
             catch (Exception e)
@@ -149,7 +150,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             finally
             {
-                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
+                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -185,12 +186,12 @@ public class EurekaHttpClient : IEurekaHttpClient
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
         string serviceUrl = null;
-        httpClient ??= GetHttpClient(Config);
+        httpClient ??= GetHttpClient(Configuration);
 
-        for (int retry = 0; retry < GetRetryCount(Config); retry++)
+        for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
             // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(Config.ValidateCertificates, out SecurityProtocolType prevProtocols,
+            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
 
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
@@ -199,7 +200,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
                 JsonInstanceInfo instanceInfo = null;
 
                 try
@@ -251,7 +252,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             finally
             {
-                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
+                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -307,12 +308,12 @@ public class EurekaHttpClient : IEurekaHttpClient
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
         string serviceUrl = null;
-        httpClient ??= GetHttpClient(Config);
+        httpClient ??= GetHttpClient(Configuration);
 
         // For retries
-        for (int retry = 0; retry < GetRetryCount(Config); retry++)
+        for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            HttpClientHelper.ConfigureCertificateValidation(Config.ValidateCertificates, out SecurityProtocolType prevProtocols,
+            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
 
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
@@ -321,10 +322,9 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
 
-                JsonApplicationRoot applicationRoot =
-                    await response.Content.ReadFromJsonAsync<JsonApplicationRoot>(JsonSerializerOptions).ConfigureAwait(false);
+                var applicationRoot = await response.Content.ReadFromJsonAsync<JsonApplicationRoot>(JsonSerializerOptions);
 
                 Application appResp = null;
 
@@ -356,7 +356,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             finally
             {
-                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
+                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -404,13 +404,13 @@ public class EurekaHttpClient : IEurekaHttpClient
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
         string serviceUrl = null;
-        httpClient ??= GetHttpClient(Config);
+        httpClient ??= GetHttpClient(Configuration);
 
         // For retries
-        for (int retry = 0; retry < GetRetryCount(Config); retry++)
+        for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
             // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(Config.ValidateCertificates, out SecurityProtocolType prevProtocols,
+            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
 
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
@@ -419,7 +419,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
                 logger?.LogDebug("CancelAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                 Interlocked.Exchange(ref ServiceUrl, serviceUrl);
 
@@ -436,7 +436,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             finally
             {
-                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
+                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -466,13 +466,13 @@ public class EurekaHttpClient : IEurekaHttpClient
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
         string serviceUrl = null;
-        httpClient ??= GetHttpClient(Config);
+        httpClient ??= GetHttpClient(Configuration);
 
         // For retries
-        for (int retry = 0; retry < GetRetryCount(Config); retry++)
+        for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
             // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(Config.ValidateCertificates, out SecurityProtocolType prevProtocols,
+            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
 
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
@@ -481,7 +481,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
 
                 logger?.LogDebug("DeleteStatusOverrideAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(),
                     response.StatusCode, retry);
@@ -506,7 +506,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             finally
             {
-                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
+                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -537,13 +537,13 @@ public class EurekaHttpClient : IEurekaHttpClient
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
         string serviceUrl = null;
-        httpClient ??= GetHttpClient(Config);
+        httpClient ??= GetHttpClient(Configuration);
 
         // For retries
-        for (int retry = 0; retry < GetRetryCount(Config); retry++)
+        for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
             // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(Config.ValidateCertificates, out SecurityProtocolType prevProtocols,
+            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
 
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
@@ -552,7 +552,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
 
                 logger?.LogDebug("StatusUpdateAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode,
                     retry);
@@ -577,7 +577,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             finally
             {
-                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
+                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -593,17 +593,17 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     internal string FetchAccessToken()
     {
-        return Config is not EurekaClientOptions config || string.IsNullOrEmpty(config.AccessTokenUri)
+        return Configuration is not EurekaClientOptions options || string.IsNullOrEmpty(options.AccessTokenUri)
             ? null
             : HttpClientHelper.GetAccessTokenAsync(
-                    config.AccessTokenUri, config.ClientId, config.ClientSecret, DefaultGetAccessTokenTimeout, config.ValidateCertificates).GetAwaiter()
+                    options.AccessTokenUri, options.ClientId, options.ClientSecret, DefaultGetAccessTokenTimeout, options.ValidateCertificates).GetAwaiter()
                 .GetResult();
     }
 
     internal IList<string> GetServiceUrlCandidates()
     {
         // Get latest set of Eureka server urls
-        IList<string> candidateServiceUrls = MakeServiceUrls(Config.EurekaServerServiceUrls);
+        IList<string> candidateServiceUrls = MakeServiceUrls(Configuration.EurekaServerServiceUrls);
 
         lock (@lock)
         {
@@ -763,7 +763,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         JsonSerializerOptions.Converters.Add(new JsonInstanceInfoConverter());
 
         // Validate serviceUrls
-        MakeServiceUrls(Config.EurekaServerServiceUrls);
+        MakeServiceUrls(Configuration.EurekaServerServiceUrls);
     }
 
     protected virtual async Task<EurekaHttpResponse<InstanceInfo>> DoGetInstanceAsync(string path)
@@ -771,13 +771,13 @@ public class EurekaHttpClient : IEurekaHttpClient
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
         string serviceUrl = null;
-        httpClient ??= GetHttpClient(Config);
+        httpClient ??= GetHttpClient(Configuration);
 
         // For retries
-        for (int retry = 0; retry < GetRetryCount(Config); retry++)
+        for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
             // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(Config.ValidateCertificates, out SecurityProtocolType prevProtocols,
+            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
 
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
@@ -786,8 +786,8 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
-                JsonInstanceInfoRoot infoRoot = await response.Content.ReadFromJsonAsync<JsonInstanceInfoRoot>(JsonSerializerOptions).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                var infoRoot = await response.Content.ReadFromJsonAsync<JsonInstanceInfoRoot>(JsonSerializerOptions);
 
                 InstanceInfo infoResp = null;
 
@@ -819,7 +819,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             finally
             {
-                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
+                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -843,13 +843,13 @@ public class EurekaHttpClient : IEurekaHttpClient
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
         string serviceUrl = null;
-        httpClient ??= GetHttpClient(Config);
+        httpClient ??= GetHttpClient(Configuration);
 
         // For retries
-        for (int retry = 0; retry < GetRetryCount(Config); retry++)
+        for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
             // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(Config.ValidateCertificates, out SecurityProtocolType prevProtocols,
+            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
 
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
@@ -858,12 +858,12 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
                 JsonApplicationsRoot root = null;
 
                 try
                 {
-                    root = await response.Content.ReadFromJsonAsync<JsonApplicationsRoot>(JsonSerializerOptions).ConfigureAwait(false);
+                    root = await response.Content.ReadFromJsonAsync<JsonApplicationsRoot>(JsonSerializerOptions);
                 }
                 catch (Exception e)
                 {
@@ -900,7 +900,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             finally
             {
-                HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
+                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -910,27 +910,27 @@ public class EurekaHttpClient : IEurekaHttpClient
         throw new EurekaTransportException("Retry limit reached; giving up on completing the DoGetApplicationsAsync request");
     }
 
-    protected virtual HttpClient GetHttpClient(IEurekaClientConfig config)
+    protected virtual HttpClient GetHttpClient(IEurekaClientConfiguration configuration)
     {
-        return httpClient ?? HttpClientHelper.GetHttpClient(config.ValidateCertificates,
-            ConfigureEurekaHttpClientHandler(config, handlerProvider?.GetHttpClientHandler()), config.EurekaServerConnectTimeoutSeconds * 1000);
+        return httpClient ?? HttpClientHelper.GetHttpClient(configuration.ValidateCertificates,
+            ConfigureEurekaHttpClientHandler(configuration, handlerProvider?.GetHttpClientHandler()), configuration.EurekaServerConnectTimeoutSeconds * 1000);
     }
 
-    internal static HttpClientHandler ConfigureEurekaHttpClientHandler(IEurekaClientConfig config, HttpClientHandler handler)
+    internal static HttpClientHandler ConfigureEurekaHttpClientHandler(IEurekaClientConfiguration configuration, HttpClientHandler handler)
     {
         handler ??= new HttpClientHandler();
 
-        if (!string.IsNullOrEmpty(config.ProxyHost))
+        if (!string.IsNullOrEmpty(configuration.ProxyHost))
         {
-            handler.Proxy = new WebProxy(config.ProxyHost, config.ProxyPort);
+            handler.Proxy = new WebProxy(configuration.ProxyHost, configuration.ProxyPort);
 
-            if (!string.IsNullOrEmpty(config.ProxyPassword))
+            if (!string.IsNullOrEmpty(configuration.ProxyPassword))
             {
-                handler.Proxy.Credentials = new NetworkCredential(config.ProxyUserName, config.ProxyPassword);
+                handler.Proxy.Credentials = new NetworkCredential(configuration.ProxyUserName, configuration.ProxyPassword);
             }
         }
 
-        if (config.ShouldGZipContent)
+        if (configuration.ShouldGZipContent)
         {
             handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
         }
@@ -986,8 +986,8 @@ public class EurekaHttpClient : IEurekaHttpClient
         return result;
     }
 
-    private int GetRetryCount(IEurekaClientConfig config)
+    private int GetRetryCount(IEurekaClientConfiguration configuration)
     {
-        return config is EurekaClientConfig clientConfig ? clientConfig.EurekaServerRetryCount : DefaultNumberOfRetries;
+        return configuration is EurekaClientConfiguration clientConfig ? clientConfig.EurekaServerRetryCount : DefaultNumberOfRetries;
     }
 }

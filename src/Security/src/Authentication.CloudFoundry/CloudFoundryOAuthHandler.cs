@@ -73,11 +73,11 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
         options.CallbackUrl = context.RedirectUri;
 
         var tEx = new TokenExchanger(options, GetHttpClient());
-        HttpResponseMessage response = await tEx.ExchangeCodeForTokenAsync(context.Code, Options.TokenEndpoint, Context.RequestAborted).ConfigureAwait(false);
+        HttpResponseMessage response = await tEx.ExchangeCodeForTokenAsync(context.Code, Options.TokenEndpoint, Context.RequestAborted);
 
         if (response.IsSuccessStatusCode)
         {
-            string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            string result = await response.Content.ReadAsStringAsync();
 
             _logger?.LogDebug("ExchangeCodeAsync() received json: {json}", result);
             JsonDocument payload = JsonDocument.Parse(result);
@@ -86,7 +86,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
             return tokenResponse;
         }
 
-        string error = $"OAuth token endpoint failure: {await DisplayAsync(response).ConfigureAwait(false)}";
+        string error = $"OAuth token endpoint failure: {await DisplayAsync(response)}";
         return OAuthTokenResponse.Failed(new Exception(error));
     }
 
@@ -105,7 +105,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
 
         try
         {
-            response = await client.SendAsync(request, Context.RequestAborted).ConfigureAwait(false);
+            response = await client.SendAsync(request, Context.RequestAborted);
         }
         finally
         {
@@ -118,13 +118,13 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
             throw new HttpRequestException($"An error occurred while retrieving token information ({response.StatusCode}).");
         }
 
-        string resp = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        string resp = await response.Content.ReadAsStringAsync();
 
         _logger?.LogDebug("CreateTicketAsync() received json: {json}", resp);
         JsonElement payload = JsonDocument.Parse(resp).RootElement;
         var context = new OAuthCreatingTicketContext(new ClaimsPrincipal(identity), properties, Context, Scheme, Options, Backchannel, tokens, payload);
         context.RunClaimActions();
-        await Events.CreatingTicket(context).ConfigureAwait(false);
+        await Events.CreatingTicket(context);
 
         if (Options.UseTokenLifetime)
         {
@@ -132,7 +132,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
             properties.ExpiresUtc = CloudFoundryHelper.GetExpTime(payload);
         }
 
-        await Events.CreatingTicket(context).ConfigureAwait(false);
+        await Events.CreatingTicket(context);
         var ticket = new AuthenticationTicket(context.Principal, context.Properties, Scheme.Name);
         return ticket;
     }
@@ -186,7 +186,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
         var output = new StringBuilder();
         output.Append($"Status: {response.StatusCode};");
         output.Append($"Headers: {response.Headers};");
-        output.Append($"Body: {await response.Content.ReadAsStringAsync().ConfigureAwait(false)};");
+        output.Append($"Body: {await response.Content.ReadAsStringAsync()};");
         return output.ToString();
     }
 }

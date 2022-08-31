@@ -13,25 +13,25 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot;
 public class SpringBootCmdProvider : ConfigurationProvider
 {
     private const string KeyPrefix = "spring.";
-    internal IConfiguration Config;
+    internal IConfiguration InnerConfiguration;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SpringBootCmdProvider" /> class. The <see cref="Configuration" /> will be created from the
     /// CommandLineConfigurationProvider.
     /// </summary>
-    /// <param name="config">
+    /// <param name="configuration">
     /// The Default CommandLineConfigurationProvider.
     /// </param>
-    public SpringBootCmdProvider(IConfiguration config)
+    public SpringBootCmdProvider(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        Config = config;
+        InnerConfiguration = configuration;
     }
 
     public override void Load()
     {
-        IEnumerable<KeyValuePair<string, string>> enumerable = Config.AsEnumerable();
+        IEnumerable<KeyValuePair<string, string>> enumerable = InnerConfiguration.AsEnumerable();
 
         foreach (KeyValuePair<string, string> kvp in enumerable)
         {

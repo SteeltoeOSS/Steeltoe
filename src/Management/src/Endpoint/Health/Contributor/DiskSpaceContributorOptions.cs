@@ -22,11 +22,11 @@ public class DiskSpaceContributorOptions
         Threshold = DefaultThreshold;
     }
 
-    public DiskSpaceContributorOptions(IConfiguration config)
+    public DiskSpaceContributorOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(ManagementInfoPrefix);
+        IConfigurationSection section = configuration.GetSection(ManagementInfoPrefix);
 
         if (section != null)
         {

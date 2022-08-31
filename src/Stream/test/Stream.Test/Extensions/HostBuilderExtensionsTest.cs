@@ -22,11 +22,11 @@ public class HostBuilderExtensionsTest
         IHostBuilder hostBuilder = Host.CreateDefaultBuilder().AddStreamServices<SampleSink>();
         hostBuilder.ConfigureServices(services => services.AddSingleton(isp => isp.GetRequiredService<IConfiguration>() as IConfigurationRoot));
         IHost host = hostBuilder.Build();
-        var configRoot = host.Services.GetService<IConfigurationRoot>();
+        var configurationRoot = host.Services.GetService<IConfigurationRoot>();
         Assert.NotNull(hostBuilder);
         Assert.Single(host.Services.GetServices<IHostedService>().Where(svc => svc is StreamLifeCycleService));
-        Assert.Single(configRoot.Providers.Where(p => p is SpringBootEnvProvider));
-        Assert.Single(configRoot.Providers.Where(p => p is SpringBootCmdProvider));
+        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootEnvProvider));
+        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootCmdProvider));
     }
 
     [Fact]
@@ -38,11 +38,11 @@ public class HostBuilderExtensionsTest
 
         hostBuilder.ConfigureServices(services => services.AddSingleton(isp => isp.GetRequiredService<IConfiguration>() as IConfigurationRoot));
         IWebHost host = hostBuilder.Build();
-        var configRoot = host.Services.GetService<IConfigurationRoot>();
+        var configurationRoot = host.Services.GetService<IConfigurationRoot>();
         Assert.NotNull(hostBuilder);
         Assert.Single(host.Services.GetServices<IHostedService>().Where(svc => svc is StreamLifeCycleService));
-        Assert.Single(configRoot.Providers.Where(p => p is SpringBootEnvProvider));
-        Assert.Single(configRoot.Providers.Where(p => p is SpringBootCmdProvider));
+        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootEnvProvider));
+        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootCmdProvider));
     }
 
     [Fact]
@@ -51,10 +51,10 @@ public class HostBuilderExtensionsTest
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder().AddStreamServices<SampleSink>();
         hostBuilder.Services.AddSingleton(isp => isp.GetRequiredService<IConfiguration>() as IConfigurationRoot);
         WebApplication host = hostBuilder.Build();
-        var configRoot = host.Services.GetService<IConfigurationRoot>();
+        var configurationRoot = host.Services.GetService<IConfigurationRoot>();
         Assert.NotNull(hostBuilder);
         Assert.Single(host.Services.GetServices<IHostedService>().Where(svc => svc is StreamLifeCycleService));
-        Assert.Single(configRoot.Providers.Where(p => p is SpringBootEnvProvider));
-        Assert.Single(configRoot.Providers.Where(p => p is SpringBootCmdProvider));
+        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootEnvProvider));
+        Assert.Single(configurationRoot.Providers.Where(p => p is SpringBootCmdProvider));
     }
 }

@@ -23,7 +23,7 @@ public class OracleProviderConnectorFactoryTest
     [Fact]
     public void Create_ReturnsMySqlConnection()
     {
-        var config = new OracleProviderConnectorOptions
+        var options = new OracleProviderConnectorOptions
         {
             Server = "localhost",
             Port = 3306,
@@ -33,7 +33,7 @@ public class OracleProviderConnectorFactoryTest
         };
 
         var si = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/orclpdb1");
-        var factory = new OracleProviderConnectorFactory(si, config, typeof(OracleConnection));
+        var factory = new OracleProviderConnectorFactory(si, options, typeof(OracleConnection));
         object connection = factory.Create(null);
         Assert.NotNull(connection);
     }

@@ -36,9 +36,9 @@ public class EndpointServiceCollectionTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        services.AddCloudFoundryActuator(config);
+        services.AddCloudFoundryActuator(configurationRoot);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<ICloudFoundryOptions>();

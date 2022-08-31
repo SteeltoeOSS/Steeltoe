@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Extensions;
 using Steeltoe.Stream.Binder;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Extensions;
 
 namespace Steeltoe.Stream;

@@ -7,7 +7,7 @@ using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Binder;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 
 namespace Steeltoe.Stream.Binding;
 

@@ -27,8 +27,8 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         ConfigureServicesInvoked = true; // Testing
-        IConfigurationSection config = Configuration.GetSection("binder1");
-        config["name"] = "foobar"; // Unit test checks for this change to verify access to configuration
+        IConfigurationSection section = Configuration.GetSection("binder1");
+        section["name"] = "foobar"; // Unit test checks for this change to verify access to configuration
         services.AddSingleton<IBinder, StubBinder1>();
     }
 }

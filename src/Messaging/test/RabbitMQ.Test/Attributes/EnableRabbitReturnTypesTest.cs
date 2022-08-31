@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
@@ -163,9 +163,9 @@ public class EnableRabbitReturnTypesTest
     public static async Task<ServiceProvider> CreateAndStartServicesAsync(IConfiguration configuration, List<IQueue> queues, params Type[] listeners)
     {
         var services = new ServiceCollection();
-        IConfiguration config = configuration ?? new ConfigurationBuilder().Build();
+        IConfiguration effectiveConfiguration = configuration ?? new ConfigurationBuilder().Build();
 
-        services.AddSingleton(config);
+        services.AddSingleton(effectiveConfiguration);
         services.AddRabbitHostingServices();
         services.AddRabbitMessageConverter<JsonMessageConverter>();
         services.AddRabbitMessageHandlerMethodFactory();
@@ -188,7 +188,7 @@ public class EnableRabbitReturnTypesTest
             services.AddSingleton(listener);
         }
 
-        services.AddRabbitListeners(config, listeners);
+        services.AddRabbitListeners(effectiveConfiguration, listeners);
         ServiceProvider provider = services.BuildServiceProvider();
         await provider.GetRequiredService<IHostedService>().StartAsync(default);
         return provider;

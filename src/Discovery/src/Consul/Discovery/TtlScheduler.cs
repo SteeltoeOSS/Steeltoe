@@ -97,7 +97,7 @@ public class TtlScheduler : IScheduler
 
             var timer = new Timer(async s =>
             {
-                await PassTtlAsync(s.ToString()).ConfigureAwait(false);
+                await PassTtlAsync(s.ToString());
             }, checkId, TimeSpan.Zero, interval);
 
             ServiceHeartbeats.AddOrUpdate(instanceId, timer, (_, oldTimer) =>

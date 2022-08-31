@@ -20,15 +20,15 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add actuator to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for settings starting with
     /// management:endpoints:env).
     /// </param>
-    public static void AddEnvActuator(this IServiceCollection services, IConfiguration config = null)
+    public static void AddEnvActuator(this IServiceCollection services, IConfiguration configuration = null)
     {
         ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.TryAddSingleton<IHostEnvironment>(provider =>
         {
@@ -43,8 +43,8 @@ public static class EndpointServiceCollectionExtensions
             };
         });
 
-        services.AddActuatorManagementOptions(config);
-        services.AddEnvActuatorServices(config);
+        services.AddActuatorManagementOptions(configuration);
+        services.AddEnvActuatorServices(configuration);
         services.AddActuatorEndpointMapping<EnvEndpoint>();
     }
 }

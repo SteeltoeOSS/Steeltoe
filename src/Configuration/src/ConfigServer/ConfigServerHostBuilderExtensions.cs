@@ -21,11 +21,11 @@ public static class ConfigServerHostBuilderExtensions
     /// <see cref="ILoggerFactory" />.
     /// </param>
     /// <returns>
-    /// <see cref="IWebHostBuilder" /> with config server and Cloud Foundry Config Provider attached.
+    /// <see cref="IWebHostBuilder" /> with Config Server and Cloud Foundry Config Provider attached.
     /// </returns>
     public static IWebHostBuilder AddConfigServer(this IWebHostBuilder hostBuilder, ILoggerFactory loggerFactory = null)
     {
-        return hostBuilder.ConfigureAppConfiguration((context, config) => config.AddConfigServer(context.HostingEnvironment, loggerFactory))
+        return hostBuilder.ConfigureAppConfiguration((context, builder) => builder.AddConfigServer(context.HostingEnvironment, loggerFactory))
             .ConfigureServices((_, services) => services.AddConfigServerServices());
     }
 
@@ -43,7 +43,7 @@ public static class ConfigServerHostBuilderExtensions
     /// </returns>
     public static IHostBuilder AddConfigServer(this IHostBuilder hostBuilder, ILoggerFactory loggerFactory = null)
     {
-        return hostBuilder.ConfigureAppConfiguration((context, config) => config.AddConfigServer(context.HostingEnvironment, loggerFactory))
+        return hostBuilder.ConfigureAppConfiguration((context, builder) => builder.AddConfigServer(context.HostingEnvironment, loggerFactory))
             .ConfigureServices((_, services) => services.AddConfigServerServices());
     }
 

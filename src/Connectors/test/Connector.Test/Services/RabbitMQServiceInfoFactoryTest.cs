@@ -258,9 +258,9 @@ public class RabbitMQServiceInfoFactoryTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
-        var opt = new CloudFoundryServicesOptions(config);
-        IConfigurationSection section = config.GetSection(CloudFoundryServicesOptions.ServicesConfigRoot);
+        IConfigurationRoot configurationRoot = builder.Build();
+        var opt = new CloudFoundryServicesOptions(configurationRoot);
+        IConfigurationSection section = configurationRoot.GetSection(CloudFoundryServicesOptions.ServicesConfigurationRoot);
         section.Bind(opt);
         Assert.Single(opt.Services);
 

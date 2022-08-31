@@ -14,9 +14,9 @@ public class TestServerStartup
 
     public static IServiceProvider ServiceProvider { get; set; }
 
-    public TestServerStartup(IConfiguration config)
+    public TestServerStartup(IConfiguration configuration)
     {
-        _configuration = config;
+        _configuration = configuration;
     }
 
     public void ConfigureServices(IServiceCollection services)

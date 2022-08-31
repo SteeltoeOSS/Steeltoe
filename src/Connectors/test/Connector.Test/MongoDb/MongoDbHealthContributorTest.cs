@@ -26,8 +26,8 @@ public class MongoDbHealthContributorTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
-        IHealthContributor contrib = MongoDbHealthContributor.GetMongoDbHealthContributor(config);
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        IHealthContributor contrib = MongoDbHealthContributor.GetMongoDbHealthContributor(configurationRoot);
         Assert.NotNull(contrib);
         HealthCheckResult status = contrib.Health();
         Assert.Equal(HealthStatus.Down, status.Status);
@@ -36,10 +36,10 @@ public class MongoDbHealthContributorTest
     [Fact]
     public void Not_Connected_Returns_Down_Status()
     {
-        var mongoDbConfig = new MongoDbConnectorOptions();
+        var options = new MongoDbConnectorOptions();
         var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27018");
         var loggerFactory = new LoggerFactory();
-        var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, _mongoDbImplementationType);
+        var connFactory = new MongoDbConnectorFactory(sInfo, options, _mongoDbImplementationType);
         var h = new MongoDbHealthContributor(connFactory, loggerFactory.CreateLogger<MongoDbHealthContributor>(), 1);
 
         HealthCheckResult status = h.Health();
@@ -51,10 +51,10 @@ public class MongoDbHealthContributorTest
     [Fact(Skip = "Integration test - Requires local MongoDb server")]
     public void Is_Connected_Returns_Up_Status()
     {
-        var mongoDbConfig = new MongoDbConnectorOptions();
+        var options = new MongoDbConnectorOptions();
         var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27017");
         var loggerFactory = new LoggerFactory();
-        var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, _mongoDbImplementationType);
+        var connFactory = new MongoDbConnectorFactory(sInfo, options, _mongoDbImplementationType);
         var h = new MongoDbHealthContributor(connFactory, loggerFactory.CreateLogger<MongoDbHealthContributor>());
 
         HealthCheckResult status = h.Health();

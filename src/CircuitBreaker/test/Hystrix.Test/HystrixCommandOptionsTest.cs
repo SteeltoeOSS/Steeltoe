@@ -63,8 +63,8 @@ public class HystrixCommandOptionsTest
         MemoryStream memStream = GetMemoryStream(configSettings);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(memStream));
-        IConfigurationRoot config = builder.Build();
-        var dynamics = new HystrixDynamicOptionsDefault(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        var dynamics = new HystrixDynamicOptionsDefault(configurationRoot);
 
         var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), null, dynamics);
 
@@ -92,8 +92,8 @@ public class HystrixCommandOptionsTest
         MemoryStream memStream = GetMemoryStream(configSettings);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(memStream));
-        IConfigurationRoot config = builder.Build();
-        var dynamics = new HystrixDynamicOptionsDefault(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        var dynamics = new HystrixDynamicOptionsDefault(configurationRoot);
 
         var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions
         {
@@ -124,8 +124,8 @@ public class HystrixCommandOptionsTest
         MemoryStream memStream = GetMemoryStream(configSettings);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(memStream));
-        IConfigurationRoot config = builder.Build();
-        var dynamics = new HystrixDynamicOptionsDefault(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        var dynamics = new HystrixDynamicOptionsDefault(configurationRoot);
 
         var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions
         {
@@ -161,8 +161,8 @@ public class HystrixCommandOptionsTest
         MemoryStream memStream = GetMemoryStream(configSettings);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(memStream));
-        IConfigurationRoot config = builder.Build();
-        var dynamics = new HystrixDynamicOptionsDefault(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        var dynamics = new HystrixDynamicOptionsDefault(configurationRoot);
 
         var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions
         {
@@ -214,8 +214,8 @@ public class HystrixCommandOptionsTest
         MemoryStream memStream = GetMemoryStream(configSettings);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(memStream));
-        IConfigurationRoot config = builder.Build();
-        var dynamics = new HystrixDynamicOptionsDefault(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        var dynamics = new HystrixDynamicOptionsDefault(configurationRoot);
 
         var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), null, dynamics);
         //// the global dynamic property should take precedence over the default
@@ -244,8 +244,8 @@ public class HystrixCommandOptionsTest
         MemoryStream memStream = GetMemoryStream(configSettings);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(memStream));
-        IConfigurationRoot config = builder.Build();
-        var dynamics = new HystrixDynamicOptionsDefault(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        var dynamics = new HystrixDynamicOptionsDefault(configurationRoot);
 
         var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions
         {
@@ -285,8 +285,8 @@ public class HystrixCommandOptionsTest
         MemoryStream memStream = GetMemoryStream(configSettings);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(memStream));
-        IConfigurationRoot config = builder.Build();
-        var dynamics = new HystrixDynamicOptionsDefault(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        var dynamics = new HystrixDynamicOptionsDefault(configurationRoot);
 
         var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions
         {

@@ -14,9 +14,9 @@ public class ExternalConnectorTest
     [Fact]
     public void CustomCreatorIsRetrieved()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        ServiceInfoCreator creator = ServiceInfoCreatorFactory.GetServiceInfoCreator(config);
+        ServiceInfoCreator creator = ServiceInfoCreatorFactory.GetServiceInfoCreator(configurationRoot);
 
         Assert.IsType<TestServiceInfoCreator>(creator);
         Assert.Single(creator.ServiceInfos);
@@ -25,10 +25,10 @@ public class ExternalConnectorTest
     [Fact]
     public void CustomCreatorCanBePresentAndDisabled()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         Environment.SetEnvironmentVariable("TestServiceInfoCreator", "false");
 
-        ServiceInfoCreator creator = ServiceInfoCreatorFactory.GetServiceInfoCreator(config);
+        ServiceInfoCreator creator = ServiceInfoCreatorFactory.GetServiceInfoCreator(configurationRoot);
 
         Assert.IsType<ServiceInfoCreator>(creator);
         Assert.Equal(13, creator.Factories.Count);
@@ -38,9 +38,9 @@ public class ExternalConnectorTest
     [Fact]
     public void CustomCreatorCanUseOwnServiceInfos()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        IEnumerable<Db2ServiceInfo> serviceInfos = config.GetServiceInfos<Db2ServiceInfo>();
+        IEnumerable<Db2ServiceInfo> serviceInfos = configurationRoot.GetServiceInfos<Db2ServiceInfo>();
 
         Assert.Single(serviceInfos);
         Db2ServiceInfo serviceInfo = serviceInfos.First();

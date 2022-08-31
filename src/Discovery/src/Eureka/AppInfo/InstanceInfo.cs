@@ -179,7 +179,7 @@ public class InstanceInfo
         return sb.ToString();
     }
 
-    internal static InstanceInfo FromInstanceConfig(IEurekaInstanceConfig instanceConfig)
+    internal static InstanceInfo FromInstanceConfiguration(IEurekaInstanceConfig instanceConfig)
     {
         var info = new InstanceInfo
         {
@@ -204,9 +204,9 @@ public class InstanceInfo
         info.DataCenterInfo = instanceConfig.DataCenterInfo;
         info.IpAddress = instanceConfig.IpAddress;
         info.HostName = defaultAddress;
-        info.Port = instanceConfig.NonSecurePort == -1 ? EurekaInstanceConfig.DefaultNonSecurePort : instanceConfig.NonSecurePort;
+        info.Port = instanceConfig.NonSecurePort == -1 ? EurekaInstanceConfiguration.DefaultNonSecurePort : instanceConfig.NonSecurePort;
         info.IsInsecurePortEnabled = instanceConfig.IsNonSecurePortEnabled;
-        info.SecurePort = instanceConfig.SecurePort == -1 ? EurekaInstanceConfig.DefaultSecurePort : instanceConfig.SecurePort;
+        info.SecurePort = instanceConfig.SecurePort == -1 ? EurekaInstanceConfiguration.DefaultSecurePort : instanceConfig.SecurePort;
         info.IsSecurePortEnabled = instanceConfig.SecurePortEnabled;
         info.VipAddress = instanceConfig.VirtualHostName;
         info.SecureVipAddress = instanceConfig.SecureVirtualHostName;

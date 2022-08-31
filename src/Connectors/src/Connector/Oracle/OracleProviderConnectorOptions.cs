@@ -34,15 +34,15 @@ public class OracleProviderConnectorOptions : AbstractServiceConnectorOptions
     {
     }
 
-    public OracleProviderConnectorOptions(IConfiguration config)
+    public OracleProviderConnectorOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(OracleClientSectionPrefix);
+        IConfigurationSection section = configuration.GetSection(OracleClientSectionPrefix);
 
         section.Bind(this);
 
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+        _cloudFoundryConfigFound = configuration.HasCloudFoundryServiceConfigurations();
     }
 
     public override string ToString()

@@ -13,7 +13,7 @@ using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Provisioning;
 using AbstractMessageChannel = Steeltoe.Integration.Channel.AbstractMessageChannel;
 using AbstractSubscribableChannel = Steeltoe.Integration.Channel.AbstractSubscribableChannel;

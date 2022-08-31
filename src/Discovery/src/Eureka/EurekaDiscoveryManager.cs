@@ -12,7 +12,7 @@ public class EurekaDiscoveryManager : DiscoveryManager
     private readonly IOptionsMonitor<EurekaClientOptions> _clientConfig;
     private readonly IOptionsMonitor<EurekaInstanceOptions> _instConfig;
 
-    public override IEurekaClientConfig ClientConfig => _clientConfig.CurrentValue;
+    public override IEurekaClientConfiguration ClientConfiguration => _clientConfig.CurrentValue;
 
     public override IEurekaInstanceConfig InstanceConfig => _instConfig.CurrentValue;
 

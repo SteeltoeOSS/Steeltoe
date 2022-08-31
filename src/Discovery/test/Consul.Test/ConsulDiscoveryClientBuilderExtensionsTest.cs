@@ -26,9 +26,9 @@ public class ConsulDiscoveryClientBuilderExtensionsTest
     [Fact]
     public void UseConsulUsesConsul()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(_appsettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(_appsettings).Build();
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(config);
+        serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
         serviceCollection.AddServiceDiscovery(options => options.UseConsul());
 
         ServiceProvider provider = serviceCollection.BuildServiceProvider();

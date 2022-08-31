@@ -69,14 +69,14 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
     {
     }
 
-    public MySqlProviderConnectorOptions(IConfiguration config)
+    public MySqlProviderConnectorOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(MysqlClientSectionPrefix);
+        IConfigurationSection section = configuration.GetSection(MysqlClientSectionPrefix);
         section.Bind(this);
 
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+        _cloudFoundryConfigFound = configuration.HasCloudFoundryServiceConfigurations();
     }
 
     public override string ToString()

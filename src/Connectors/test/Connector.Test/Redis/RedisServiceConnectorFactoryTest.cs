@@ -15,7 +15,7 @@ public class RedisServiceConnectorFactoryTest
     [Fact]
     public void Create_CanReturnRedisCache()
     {
-        var config = new RedisCacheConnectorOptions
+        var options = new RedisCacheConnectorOptions
         {
             Host = "localhost",
             Port = 1234,
@@ -25,7 +25,7 @@ public class RedisServiceConnectorFactoryTest
 
         var si = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "foobar", 4321, "sipassword");
 
-        var factory = new RedisServiceConnectorFactory(si, config, typeof(RedisCache), typeof(RedisCacheOptions), null);
+        var factory = new RedisServiceConnectorFactory(si, options, typeof(RedisCache), typeof(RedisCacheOptions), null);
         object cache = factory.Create(null);
 
         Assert.NotNull(cache);
@@ -35,7 +35,7 @@ public class RedisServiceConnectorFactoryTest
     [Fact]
     public void Create_CanReturnConnectionMultiplexer()
     {
-        var config = new RedisCacheConnectorOptions
+        var options = new RedisCacheConnectorOptions
         {
             Host = "localhost",
             Port = 1234,
@@ -47,7 +47,7 @@ public class RedisServiceConnectorFactoryTest
 
         var si = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "127.0.0.1", 4321, "sipassword");
 
-        var factory = new RedisServiceConnectorFactory(si, config, typeof(ConnectionMultiplexer), typeof(ConfigurationOptions),
+        var factory = new RedisServiceConnectorFactory(si, options, typeof(ConnectionMultiplexer), typeof(ConfigurationOptions),
             RedisTypeLocator.StackExchangeInitializer);
 
         object multi = factory.Create(null);

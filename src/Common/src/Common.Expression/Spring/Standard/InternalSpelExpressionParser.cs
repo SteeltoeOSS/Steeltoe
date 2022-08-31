@@ -614,7 +614,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 throw new InvalidOperationException("Expected token");
             }
 
-            if (!"null".Equals(nullToken.StringValue, StringComparison.InvariantCultureIgnoreCase))
+            if (!"null".Equals(nullToken.StringValue, StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
@@ -1047,17 +1047,17 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
         {
             string idString = t.StringValue;
 
-            if (idString.Equals("instanceof", StringComparison.InvariantCultureIgnoreCase))
+            if (idString.Equals("instanceof", StringComparison.OrdinalIgnoreCase))
             {
                 return t.AsInstanceOfToken();
             }
 
-            if (idString.Equals("matches", StringComparison.InvariantCultureIgnoreCase))
+            if (idString.Equals("matches", StringComparison.OrdinalIgnoreCase))
             {
                 return t.AsMatchesToken();
             }
 
-            if (idString.Equals("between", StringComparison.InvariantCultureIgnoreCase))
+            if (idString.Equals("between", StringComparison.OrdinalIgnoreCase))
             {
                 return t.AsBetweenToken();
             }
@@ -1164,7 +1164,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             return false;
         }
 
-        return Equals(t.Kind, TokenKind.Identifier) && identifierString.Equals(t.StringValue, StringComparison.InvariantCultureIgnoreCase);
+        return Equals(t.Kind, TokenKind.Identifier) && identifierString.Equals(t.StringValue, StringComparison.OrdinalIgnoreCase);
     }
 
     private bool PeekSelectToken()

@@ -22,7 +22,7 @@ public class MappingsEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
-        Assert.Throws<ArgumentNullException>(() => new MappingsEndpointOptions(config));
+        const IConfiguration configuration = null;
+        Assert.Throws<ArgumentNullException>(() => new MappingsEndpointOptions(configuration));
     }
 }

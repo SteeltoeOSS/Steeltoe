@@ -30,12 +30,12 @@ public static class ConfigurationValuesHelper
     }
 
     /// <summary>
-    /// Get setting from config searching the given configPrefix keys in order. Returns the first element with key.
+    /// Get setting from configuration searching the given configPrefix keys in order. Returns the first element with key.
     /// </summary>
     /// <param name="key">
     /// The key of the element to return.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// IConfiguration to search through.
     /// </param>
     /// <param name="defaultValue">
@@ -45,13 +45,13 @@ public static class ConfigurationValuesHelper
     /// The prefixes to search for in given order.
     /// </param>
     /// <returns>
-    /// Config value.
+    /// Configuration value.
     /// </returns>
-    public static string GetSetting(string key, IConfiguration config, string defaultValue, params string[] configPrefixes)
+    public static string GetSetting(string key, IConfiguration configuration, string defaultValue, params string[] configPrefixes)
     {
         foreach (string prefix in configPrefixes)
         {
-            IConfigurationSection section = config.GetSection(prefix);
+            IConfigurationSection section = configuration.GetSection(prefix);
             string result = section.GetValue<string>(key);
 
             if (!string.IsNullOrEmpty(result))
@@ -64,9 +64,9 @@ public static class ConfigurationValuesHelper
     }
 
     /// <summary>
-    /// Get a setting from config by searching the given keys in order. Returns the first match.
+    /// Get a setting from configuration by searching the given keys in order. Returns the first match.
     /// </summary>
-    /// <param name="config">
+    /// <param name="configuration">
     /// IConfiguration to search through.
     /// </param>
     /// <param name="defaultValue">
@@ -76,13 +76,13 @@ public static class ConfigurationValuesHelper
     /// The fully-qualified keys to search for in given order.
     /// </param>
     /// <returns>
-    /// Value from config or default (if not found).
+    /// Value from configuration or default (if not found).
     /// </returns>
-    public static string GetPreferredSetting(IConfiguration config, string defaultValue, params string[] configKeys)
+    public static string GetPreferredSetting(IConfiguration configuration, string defaultValue, params string[] configKeys)
     {
         foreach (string key in configKeys.Where(c => !string.IsNullOrEmpty(c)))
         {
-            string result = config.GetValue<string>(key);
+            string result = configuration.GetValue<string>(key);
 
             if (!string.IsNullOrEmpty(result))
             {
@@ -93,9 +93,9 @@ public static class ConfigurationValuesHelper
         return defaultValue;
     }
 
-    public static int GetInt(string key, IConfiguration config, IConfiguration resolve, int def)
+    public static int GetInt(string key, IConfiguration configuration, IConfiguration resolve, int def)
     {
-        string val = GetString(key, config, resolve, null);
+        string val = GetString(key, configuration, resolve, null);
 
         if (!string.IsNullOrEmpty(val) && int.TryParse(val, out int result))
         {
@@ -105,9 +105,9 @@ public static class ConfigurationValuesHelper
         return def;
     }
 
-    public static double GetDouble(string key, IConfiguration config, IConfiguration resolve, double def)
+    public static double GetDouble(string key, IConfiguration configuration, IConfiguration resolve, double def)
     {
-        string val = GetString(key, config, resolve, null);
+        string val = GetString(key, configuration, resolve, null);
 
         if (!string.IsNullOrEmpty(val) && double.TryParse(val, out double result))
         {
@@ -117,9 +117,9 @@ public static class ConfigurationValuesHelper
         return def;
     }
 
-    public static bool GetBoolean(string key, IConfiguration config, IConfiguration resolve, bool def)
+    public static bool GetBoolean(string key, IConfiguration configuration, IConfiguration resolve, bool def)
     {
-        string val = GetString(key, config, resolve, null);
+        string val = GetString(key, configuration, resolve, null);
 
         if (!string.IsNullOrEmpty(val) && bool.TryParse(val, out bool result))
         {
@@ -129,12 +129,12 @@ public static class ConfigurationValuesHelper
         return def;
     }
 
-    public static string GetString(string key, IConfiguration config, IConfiguration resolve, string def)
+    public static string GetString(string key, IConfiguration configuration, IConfiguration resolve, string def)
     {
         ArgumentGuard.NotNullOrEmpty(key);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        string val = config[key];
+        string val = configuration[key];
 
         if (!string.IsNullOrEmpty(val))
         {

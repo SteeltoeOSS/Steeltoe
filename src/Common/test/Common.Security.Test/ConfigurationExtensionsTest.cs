@@ -22,9 +22,9 @@ public class ConfigurationExtensionsTest
     [Fact]
     public void AddPemFiles_ReadsFiles()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().AddPemFiles("instance.crt", "instance.key").Build();
-        Assert.NotNull(config["certificate"]);
-        Assert.NotNull(config["privateKey"]);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddPemFiles("instance.crt", "instance.key").Build();
+        Assert.NotNull(configurationRoot["certificate"]);
+        Assert.NotNull(configurationRoot["privateKey"]);
     }
 
     [Fact]
@@ -35,22 +35,22 @@ public class ConfigurationExtensionsTest
         string tempFile1 = sandbox.CreateFile("cert", "cert");
         string tempFile2 = sandbox.CreateFile("key", "key");
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddPemFiles(tempFile1, tempFile2).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddPemFiles(tempFile1, tempFile2).Build();
 
-        Assert.Equal("cert", config["certificate"]);
-        Assert.Equal("key", config["privateKey"]);
+        Assert.Equal("cert", configurationRoot["certificate"]);
+        Assert.Equal("key", configurationRoot["privateKey"]);
 
         await File.WriteAllTextAsync(tempFile1, "cert2");
         await Task.Delay(2000);
 
-        if (config["certificate"] == null)
+        if (configurationRoot["certificate"] == null)
         {
             // wait a little longer
             await Task.Delay(4000);
         }
 
-        Assert.Equal("cert2", config["certificate"]);
-        Assert.Equal("key", config["privateKey"]);
+        Assert.Equal("cert2", configurationRoot["certificate"]);
+        Assert.Equal("key", configurationRoot["privateKey"]);
     }
 
     [Fact]
@@ -60,28 +60,28 @@ public class ConfigurationExtensionsTest
         string tempFile1 = sandbox.CreateFile("cert", "cert1");
         string tempFile2 = sandbox.CreateFile("key", "key1");
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddPemFiles(tempFile1, tempFile2).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddPemFiles(tempFile1, tempFile2).Build();
 
         bool changeCalled = false;
-        IChangeToken token = config.GetReloadToken();
+        IChangeToken token = configurationRoot.GetReloadToken();
         token.RegisterChangeCallback(_ => changeCalled = true, "state");
-        Assert.Equal("cert1", config["certificate"]);
-        Assert.Equal("key1", config["privateKey"]);
+        Assert.Equal("cert1", configurationRoot["certificate"]);
+        Assert.Equal("key1", configurationRoot["privateKey"]);
 
         await File.WriteAllTextAsync(tempFile1, "barfoo");
         Thread.Sleep(4000);
-        Assert.Equal("barfoo", config["certificate"]);
-        Assert.Equal("key1", config["privateKey"]);
+        Assert.Equal("barfoo", configurationRoot["certificate"]);
+        Assert.Equal("key1", configurationRoot["privateKey"]);
         Assert.True(changeCalled, "Change wasn't called for tempFile1");
 
-        token = config.GetReloadToken();
+        token = configurationRoot.GetReloadToken();
         token.RegisterChangeCallback(_ => changeCalled = true, "state");
 
         changeCalled = false;
         await File.WriteAllTextAsync(tempFile2, "barbar");
         Thread.Sleep(4000);
-        Assert.Equal("barfoo", config["certificate"]);
-        Assert.Equal("barbar", config["privateKey"]);
+        Assert.Equal("barfoo", configurationRoot["certificate"]);
+        Assert.Equal("barbar", configurationRoot["privateKey"]);
         Assert.True(changeCalled, "Change wasn't called for tempFile2");
     }
 
@@ -95,8 +95,8 @@ public class ConfigurationExtensionsTest
     [Fact]
     public void AddCertificateFile_HoldsPath()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().AddCertificateFile("instance.p12").Build();
-        Assert.Equal(Path.GetFullPath("instance.p12"), config["certificate"]);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificateFile("instance.p12").Build();
+        Assert.Equal(Path.GetFullPath("instance.p12"), configurationRoot["certificate"]);
     }
 
     [Fact]
@@ -112,17 +112,17 @@ public class ConfigurationExtensionsTest
         const string filename = "fakeCertificate.p12";
         await File.WriteAllTextAsync(filename, "cert1");
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddCertificateFile(filename).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificateFile(filename).Build();
 
         bool changeCalled = false;
-        IChangeToken token = config.GetReloadToken();
+        IChangeToken token = configurationRoot.GetReloadToken();
         token.RegisterChangeCallback(_ => changeCalled = true, "state");
-        Assert.Equal("cert1", await File.ReadAllTextAsync(config["certificate"]));
+        Assert.Equal("cert1", await File.ReadAllTextAsync(configurationRoot["certificate"]));
 
         await File.WriteAllTextAsync(filename, "barfoo");
         await Task.Delay(2000);
 
-        Assert.Equal("barfoo", await File.ReadAllTextAsync(config["certificate"]));
+        Assert.Equal("barfoo", await File.ReadAllTextAsync(configurationRoot["certificate"]));
         Assert.True(changeCalled);
 
         // cleanup

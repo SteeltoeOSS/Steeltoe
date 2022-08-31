@@ -43,19 +43,19 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
     [Fact]
     public void Initialize_Initializes_InstanceInfo()
     {
-        var config = new EurekaInstanceConfig();
-        ApplicationInfoManager.Instance.Initialize(config);
+        var configuration = new EurekaInstanceConfiguration();
+        ApplicationInfoManager.Instance.Initialize(configuration);
 
         Assert.NotNull(ApplicationInfoManager.Instance.InstanceConfig);
-        Assert.Equal(config, ApplicationInfoManager.Instance.InstanceConfig);
+        Assert.Equal(configuration, ApplicationInfoManager.Instance.InstanceConfig);
         Assert.NotNull(ApplicationInfoManager.Instance.InstanceInfo);
     }
 
     [Fact]
     public void StatusChanged_ChangesStatus()
     {
-        var config = new EurekaInstanceConfig();
-        ApplicationInfoManager.Instance.Initialize(config);
+        var configuration = new EurekaInstanceConfiguration();
+        ApplicationInfoManager.Instance.Initialize(configuration);
 
         Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
         ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Up;
@@ -64,8 +64,8 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
     [Fact]
     public void StatusChanged_ChangesStatus_SendsEvents()
     {
-        var config = new EurekaInstanceConfig();
-        ApplicationInfoManager.Instance.Initialize(config);
+        var configuration = new EurekaInstanceConfiguration();
+        ApplicationInfoManager.Instance.Initialize(configuration);
         Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
 
         // Check event sent
@@ -81,8 +81,8 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
     [Fact]
     public void StatusChanged_RemovesEventHandler()
     {
-        var config = new EurekaInstanceConfig();
-        ApplicationInfoManager.Instance.Initialize(config);
+        var configuration = new EurekaInstanceConfiguration();
+        ApplicationInfoManager.Instance.Initialize(configuration);
         Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
 
         // Check event sent
@@ -101,22 +101,22 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
     [Fact]
     public void RefreshLeaseInfo_UpdatesLeaseInfo()
     {
-        var config = new EurekaInstanceConfig();
-        ApplicationInfoManager.Instance.Initialize(config);
+        var configuration = new EurekaInstanceConfiguration();
+        ApplicationInfoManager.Instance.Initialize(configuration);
 
         ApplicationInfoManager.Instance.RefreshLeaseInfo();
         InstanceInfo info = ApplicationInfoManager.Instance.InstanceInfo;
 
         Assert.False(info.IsDirty);
-        Assert.Equal(config.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
-        Assert.Equal(config.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
+        Assert.Equal(configuration.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
+        Assert.Equal(configuration.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
 
-        config.LeaseRenewalIntervalInSeconds += 100;
-        config.LeaseExpirationDurationInSeconds += 100;
+        configuration.LeaseRenewalIntervalInSeconds += 100;
+        configuration.LeaseExpirationDurationInSeconds += 100;
         ApplicationInfoManager.Instance.RefreshLeaseInfo();
         Assert.True(info.IsDirty);
-        Assert.Equal(config.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
-        Assert.Equal(config.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
+        Assert.Equal(configuration.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
+        Assert.Equal(configuration.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
     }
 
     private void HandleInstanceStatusChanged(object sender, StatusChangedEventArgs args)

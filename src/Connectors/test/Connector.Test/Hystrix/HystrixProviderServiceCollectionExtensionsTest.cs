@@ -22,12 +22,12 @@ public class HystrixProviderServiceCollectionExtensionsTest
     public void AddHystrixConnection_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
     }
 
@@ -35,23 +35,23 @@ public class HystrixProviderServiceCollectionExtensionsTest
     public void AddHystrixConnection_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(config, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
     }
 
     [Fact]
     public void AddHystrixConnection_ThrowsIfServiceNameNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
         const string serviceName = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(config, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -59,9 +59,9 @@ public class HystrixProviderServiceCollectionExtensionsTest
     public void AddHystrixConnection_NoVCAPs_AddsConfiguredConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        services.AddHystrixConnection(config);
+        services.AddHystrixConnection(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<HystrixConnectionFactory>();
         Assert.NotNull(service);
@@ -71,9 +71,9 @@ public class HystrixProviderServiceCollectionExtensionsTest
     public void AddHystrixConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddHystrixConnection(config, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddHystrixConnection(configurationRoot, "foobar"));
         Assert.Contains("foobar", ex.Message);
     }
 
@@ -199,9 +199,9 @@ public class HystrixProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddHystrixConnection(config));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddHystrixConnection(configurationRoot));
         Assert.Contains("Multiple", ex.Message);
     }
 
@@ -273,9 +273,9 @@ public class HystrixProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddHystrixConnection(config);
+        services.AddHystrixConnection(configurationRoot);
 
         var hystrixService = services.BuildServiceProvider().GetService<HystrixConnectionFactory>();
         Assert.NotNull(hystrixService);

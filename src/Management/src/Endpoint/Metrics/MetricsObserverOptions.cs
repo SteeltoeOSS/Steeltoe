@@ -45,11 +45,11 @@ public class MetricsObserverOptions : IMetricsObserverOptions
         EgressIgnorePattern = DefaultEgressIgnorePattern;
     }
 
-    public MetricsObserverOptions(IConfiguration config)
+    public MetricsObserverOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(ManagementMetricsPrefix);
+        IConfigurationSection section = configuration.GetSection(ManagementMetricsPrefix);
 
         if (section != null)
         {

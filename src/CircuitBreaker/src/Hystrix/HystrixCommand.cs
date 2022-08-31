@@ -259,12 +259,12 @@ public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecuta
 
     protected virtual async Task<TResult> RunAsync()
     {
-        return await Task.FromResult(default(TResult)).ConfigureAwait(false);
+        return await Task.FromResult(default(TResult));
     }
 
     protected virtual async Task<TResult> RunFallbackAsync()
     {
-        return await Task.FromException<TResult>(new InvalidOperationException("No fallback available.")).ConfigureAwait(false);
+        return await Task.FromException<TResult>(new InvalidOperationException("No fallback available."));
     }
 
     protected override TResult DoRun()

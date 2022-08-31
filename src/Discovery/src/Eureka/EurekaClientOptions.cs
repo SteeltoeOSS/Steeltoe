@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Discovery.Eureka;
 
-public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
+public class EurekaClientOptions : EurekaClientConfiguration, IDiscoveryClientOptions
 {
     public const string EurekaClientConfigurationPrefix = "eureka:client";
 

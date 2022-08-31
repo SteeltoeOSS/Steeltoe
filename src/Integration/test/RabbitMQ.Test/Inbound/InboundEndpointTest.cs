@@ -34,9 +34,9 @@ public class InboundEndpointTest
     [Fact]
     public void TestInt2809JavaTypePropertiesToRabbit()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         ServiceProvider services = new ServiceCollection().BuildServiceProvider();
-        var context = new GenericApplicationContext(services, config);
+        var context = new GenericApplicationContext(services, configurationRoot);
 
         var channel = new Mock<RC.IModel>();
         channel.Setup(c => c.IsOpen).Returns(true);
@@ -77,9 +77,9 @@ public class InboundEndpointTest
     [Fact]
     public void TestInt2809JavaTypePropertiesFromAmqp()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         ServiceProvider services = new ServiceCollection().BuildServiceProvider();
-        var context = new GenericApplicationContext(services, config);
+        var context = new GenericApplicationContext(services, configurationRoot);
 
         var channel = new Mock<RC.IModel>();
         channel.Setup(c => c.IsOpen).Returns(true);
@@ -109,9 +109,9 @@ public class InboundEndpointTest
     [Fact]
     public void TestAdapterConversionError()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         ServiceProvider services = new ServiceCollection().BuildServiceProvider();
-        var context = new GenericApplicationContext(services, config);
+        var context = new GenericApplicationContext(services, configurationRoot);
 
         var channel = new Mock<RC.IModel>();
         channel.Setup(c => c.IsOpen).Returns(true);
@@ -159,9 +159,9 @@ public class InboundEndpointTest
     [Fact]
     public void TestRetryWithinOnMessageAdapter()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         ServiceProvider services = new ServiceCollection().BuildServiceProvider();
-        var context = new GenericApplicationContext(services, config);
+        var context = new GenericApplicationContext(services, configurationRoot);
 
         var container = new DirectMessageListenerContainer();
 
@@ -198,9 +198,9 @@ public class InboundEndpointTest
     [Fact]
     public void TestBatchedAdapter()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         ServiceProvider services = new ServiceCollection().BuildServiceProvider();
-        var context = new GenericApplicationContext(services, config);
+        var context = new GenericApplicationContext(services, configurationRoot);
 
         var container = new DirectMessageListenerContainer();
         var adapter = new RabbitInboundChannelAdapter(context, container);

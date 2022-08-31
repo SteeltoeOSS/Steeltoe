@@ -3,31 +3,31 @@
 // See the LICENSE file in the project root for more information.
 
 using Newtonsoft.Json;
-using Steeltoe.CircuitBreaker.Hystrix.Config;
+using Steeltoe.CircuitBreaker.Hystrix.Configuration;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Serial;
 
 public static class SerialHystrixConfiguration
 {
-    public static string ToJsonString(HystrixConfiguration config)
+    public static string ToJsonString(HystrixConfiguration configuration)
     {
         using var sw = new StringWriter();
 
         using (var writer = new JsonTextWriter(sw))
         {
-            SerializeConfiguration(writer, config);
+            SerializeConfiguration(writer, configuration);
         }
 
         return sw.ToString();
     }
 
-    private static void SerializeConfiguration(JsonTextWriter writer, HystrixConfiguration config)
+    private static void SerializeConfiguration(JsonTextWriter writer, HystrixConfiguration configuration)
     {
         writer.WriteStartObject();
         writer.WriteStringField("type", "HystrixConfig");
         writer.WriteObjectFieldStart("commands");
 
-        foreach (KeyValuePair<IHystrixCommandKey, HystrixCommandConfiguration> entry in config.CommandConfig)
+        foreach (KeyValuePair<IHystrixCommandKey, HystrixCommandConfiguration> entry in configuration.CommandConfig)
         {
             IHystrixCommandKey key = entry.Key;
             HystrixCommandConfiguration commandConfig = entry.Value;
@@ -38,7 +38,7 @@ public static class SerialHystrixConfiguration
 
         writer.WriteObjectFieldStart("threadpools");
 
-        foreach (KeyValuePair<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration> entry in config.ThreadPoolConfig)
+        foreach (KeyValuePair<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration> entry in configuration.ThreadPoolConfig)
         {
             IHystrixThreadPoolKey threadPoolKey = entry.Key;
             HystrixThreadPoolConfiguration threadPoolConfig = entry.Value;
@@ -49,7 +49,7 @@ public static class SerialHystrixConfiguration
 
         writer.WriteObjectFieldStart("collapsers");
 
-        foreach (KeyValuePair<IHystrixCollapserKey, HystrixCollapserConfiguration> entry in config.CollapserConfig)
+        foreach (KeyValuePair<IHystrixCollapserKey, HystrixCollapserConfiguration> entry in configuration.CollapserConfig)
         {
             IHystrixCollapserKey collapserKey = entry.Key;
             HystrixCollapserConfiguration collapserConfig = entry.Value;

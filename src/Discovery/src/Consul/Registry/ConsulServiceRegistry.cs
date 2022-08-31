@@ -106,7 +106,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
 
         try
         {
-            await _client.Agent.ServiceRegister(registration.Service).ConfigureAwait(false);
+            await _client.Agent.ServiceRegister(registration.Service);
 
             if (Options.IsHeartBeatEnabled && _scheduler != null)
             {
@@ -178,7 +178,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
 
     public async Task<object> GetStatusInternalAsync(IConsulRegistration registration)
     {
-        QueryResult<HealthCheck[]> response = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default).ConfigureAwait(false);
+        QueryResult<HealthCheck[]> response = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default);
         HealthCheck[] checks = response.Response;
 
         foreach (HealthCheck check in checks)

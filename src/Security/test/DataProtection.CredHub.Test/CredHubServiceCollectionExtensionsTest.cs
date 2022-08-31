@@ -19,10 +19,10 @@ public class CredHubServiceCollectionExtensionsTest
 
     ////    ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
     ////    configurationBuilder.AddInMemoryCollection(appsettings);
-    ////    var config = configurationBuilder.Build();
+    ////    var configuration = configurationBuilder.Build();
 
     ////    // Act and Assert
-    ////    services.AddCredHubClient(config);
+    ////    services.AddCredHubClient(configuration);
     ////    Assert.True(services.Contains(new ServiceDescriptor(typeof(ICredHubClient), null)));
     ////}
 }

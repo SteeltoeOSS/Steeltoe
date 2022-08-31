@@ -30,7 +30,7 @@ public static class ConsulPostConfigurer
     /// <summary>
     /// Perform post-configuration on ConsulDiscoveryOptions.
     /// </summary>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application Configuration.
     /// </param>
     /// <param name="options">
@@ -39,10 +39,10 @@ public static class ConsulPostConfigurer
     /// <param name="netOptions">
     /// Optional InetOptions.
     /// </param>
-    public static void UpdateDiscoveryOptions(IConfiguration config, ConsulDiscoveryOptions options, InetOptions netOptions)
+    public static void UpdateDiscoveryOptions(IConfiguration configuration, ConsulDiscoveryOptions options, InetOptions netOptions)
     {
         options.NetUtils = new InetUtils(netOptions);
         options.ApplyNetUtils();
-        options.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
+        options.ApplyConfigUrls(configuration.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
     }
 }

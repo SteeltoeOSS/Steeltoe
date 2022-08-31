@@ -11,8 +11,8 @@ public class AppSettingsInfoContributor : AbstractConfigurationContributor, IInf
 {
     private const string AppsettingsPrefix = "info";
 
-    public AppSettingsInfoContributor(IConfiguration config)
-        : base(config)
+    public AppSettingsInfoContributor(IConfiguration configuration)
+        : base(configuration)
     {
     }
 

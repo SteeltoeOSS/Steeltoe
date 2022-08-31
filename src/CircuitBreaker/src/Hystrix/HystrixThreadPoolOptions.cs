@@ -17,7 +17,7 @@ public class HystrixThreadPoolOptions : HystrixBaseOptions, IHystrixThreadPoolOp
 
     // -1 turns it off and makes us use SynchronousQueue
     internal const bool
-        DefaultAllowMaximumSizeToDivergeFromCoreSize = false; // should the maximumSize config value get read and used in configuring the threadPool
+        DefaultAllowMaximumSizeToDivergeFromCoreSize = false; // should the maximumSize configuration value get read and used in configuring the threadPool
 
     // turning this on should be a conscious decision by the user, so we default it to false
     internal const int DefaultQueueSizeRejectionThreshold = 5; // number of items in queue

@@ -17,7 +17,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
     private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
     private readonly IServiceInstance _thisInstance;
 
-    public override IEurekaClientConfig ClientConfig => _configOptions.CurrentValue;
+    public override IEurekaClientConfiguration ClientConfiguration => _configOptions.CurrentValue;
 
     public IList<string> Services => GetServices();
 
@@ -87,17 +87,17 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
 
     private sealed class EurekaHttpClientInternal : EurekaHttpClient
     {
-        private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
+        private readonly IOptionsMonitor<EurekaClientOptions> _optionsMonitorOptions;
 
-        protected override IEurekaClientConfig Config => _configOptions.CurrentValue;
+        protected override IEurekaClientConfiguration Configuration => _optionsMonitorOptions.CurrentValue;
 
-        public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null,
+        public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> optionsMonitor, ILoggerFactory logFactory = null,
             IHttpClientHandlerProvider handlerProvider = null, HttpClient httpClient = null)
         {
-            ArgumentGuard.NotNull(config);
+            ArgumentGuard.NotNull(optionsMonitor);
 
-            this.config = null;
-            _configOptions = config;
+            configuration = null;
+            _optionsMonitorOptions = optionsMonitor;
             this.handlerProvider = handlerProvider;
             Initialize(new Dictionary<string, string>(), logFactory);
             this.httpClient = httpClient;

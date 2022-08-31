@@ -15,9 +15,9 @@ public class CloudFoundryServiceCollectionExtensionsTest
     public void ConfigureCloudFoundryOptions_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryOptions(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryOptions(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
     }
 
@@ -25,10 +25,10 @@ public class CloudFoundryServiceCollectionExtensionsTest
     public void ConfigureCloudFoundryOptions_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryOptions(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryOptions(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
     }
 
     [Fact]
@@ -40,8 +40,8 @@ public class CloudFoundryServiceCollectionExtensionsTest
             @"{ ""cf_api"": ""https://api.run.pcfone.io"", ""limits"": { ""fds"": 16384 }, ""application_name"": ""foo"", ""application_uris"": [ ""foo-unexpected-serval-iy.apps.pcfone.io"" ], ""name"": ""foo"", ""space_name"": ""playground"", ""space_id"": ""f03f2ab0-cf33-416b-999c-fb01c1247753"", ""organization_id"": ""d7afe5cb-2d42-487b-a415-f47c0665f1ba"", ""organization_name"": ""pivot-thess"", ""uris"": [ ""foo-unexpected-serval-iy.apps.pcfone.io"" ], ""users"": null, ""application_id"": ""f69a6624-7669-43e3-a3c8-34d23a17e3db"" }");
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
-        services.ConfigureCloudFoundryOptions(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        services.ConfigureCloudFoundryOptions(configurationRoot);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var app = serviceProvider.GetService<IOptions<CloudFoundryApplicationOptions>>();
@@ -56,28 +56,28 @@ public class CloudFoundryServiceCollectionExtensionsTest
     public void ConfigureCloudFoundryService_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, "foobar"));
+        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(configurationRoot, "foobar"));
     }
 
     [Fact]
     public void ConfigureCloudFoundryService_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, "foobar"));
+        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(configurationRoot, "foobar"));
     }
 
     [Fact]
     public void ConfigureCloudFoundryService_BadServiceName()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, null));
-        Assert.Throws<ArgumentException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(config, string.Empty));
+        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(configurationRoot, null));
+        Assert.Throws<ArgumentException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(configurationRoot, string.Empty));
     }
 
     [Fact]
@@ -130,11 +130,11 @@ public class CloudFoundryServiceCollectionExtensionsTest
         MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
         var services = new ServiceCollection();
         services.AddOptions();
 
-        services.ConfigureCloudFoundryService<MySqlServiceOption>(config, "mySql2");
+        services.ConfigureCloudFoundryService<MySqlServiceOption>(configurationRoot, "mySql2");
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var snapShot = serviceProvider.GetRequiredService<IOptionsSnapshot<MySqlServiceOption>>();
@@ -200,11 +200,11 @@ public class CloudFoundryServiceCollectionExtensionsTest
         MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
         var services = new ServiceCollection();
         services.AddOptions();
 
-        services.ConfigureCloudFoundryServices<MySqlServiceOption>(config, "p-mysql");
+        services.ConfigureCloudFoundryServices<MySqlServiceOption>(configurationRoot, "p-mysql");
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var snapShot = serviceProvider.GetRequiredService<IOptionsSnapshot<MySqlServiceOption>>();

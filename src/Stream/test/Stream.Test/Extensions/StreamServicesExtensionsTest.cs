@@ -15,7 +15,7 @@ using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Stream.Binding;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Messaging;
 using Steeltoe.Stream.StreamHost;
 using Xunit;
@@ -31,8 +31,8 @@ public class StreamServicesExtensionsTest
         container.AddOptions();
         container.AddLogging(b => b.AddConsole());
 
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        container.AddStreamConfiguration(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        container.AddStreamConfiguration(configurationRoot);
         ServiceProvider serviceProvider = container.BuildServiceProvider();
         ValidateConfigurationServices(serviceProvider);
     }
@@ -44,12 +44,12 @@ public class StreamServicesExtensionsTest
         container.AddOptions();
         container.AddLogging(b => b.AddConsole());
 
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        container.AddSingleton<IConfiguration>(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        container.AddSingleton<IConfiguration>(configurationRoot);
         container.AddCoreServices();
         container.AddIntegrationServices();
-        container.AddBinderServices(config);
-        container.AddStreamCoreServices(config);
+        container.AddBinderServices(configurationRoot);
+        container.AddStreamCoreServices(configurationRoot);
         ServiceProvider serviceProvider = container.BuildServiceProvider();
         ValidateCoreServices(serviceProvider);
     }
@@ -61,9 +61,9 @@ public class StreamServicesExtensionsTest
         container.AddOptions();
         container.AddLogging(b => b.AddConsole());
 
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        container.AddSingleton<IConfiguration>(config);
-        container.AddStreamServices(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        container.AddSingleton<IConfiguration>(configurationRoot);
+        container.AddStreamServices(configurationRoot);
         ServiceProvider serviceProvider = container.BuildServiceProvider();
         ValidateConfigurationServices(serviceProvider);
         ValidateCoreServices(serviceProvider);

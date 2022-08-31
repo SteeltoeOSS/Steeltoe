@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Connector.RabbitMQ;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Xunit;
 using RC = RabbitMQ.Client;
 
@@ -84,9 +84,9 @@ public class RabbitMQHostTest
         });
 
         using IHost host = hostBuilder.Start();
-        var config = host.Services.GetService<IConfiguration>();
+        var configuration = host.Services.GetService<IConfiguration>();
 
-        Assert.Equal("RabbitHostCommandValue", config["RabbitHostCommandKey"]);
+        Assert.Equal("RabbitHostCommandValue", configuration["RabbitHostCommandKey"]);
     }
 
     [Fact]

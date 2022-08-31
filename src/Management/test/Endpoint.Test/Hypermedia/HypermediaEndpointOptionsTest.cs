@@ -22,8 +22,8 @@ public class HypermediaEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
-        Assert.Throws<ArgumentNullException>(() => new HypermediaEndpointOptions(config));
+        const IConfiguration configuration = null;
+        Assert.Throws<ArgumentNullException>(() => new HypermediaEndpointOptions(configuration));
     }
 
     [Fact]
@@ -43,9 +43,9 @@ public class HypermediaEndpointOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new InfoEndpointOptions(config);
+        var opts = new InfoEndpointOptions(configurationRoot);
 
         Assert.Equal("info", opts.Id);
         Assert.Equal("infopath", opts.Path);

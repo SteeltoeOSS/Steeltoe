@@ -44,12 +44,12 @@ public class ManagementEndpointOptions : IManagementOptions
         EndpointOptions = new List<IEndpointOptions>();
     }
 
-    public ManagementEndpointOptions(IConfiguration config)
+    public ManagementEndpointOptions(IConfiguration configuration)
         : this()
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(ManagementInfoPrefix);
+        IConfigurationSection section = configuration.GetSection(ManagementInfoPrefix);
 
         if (section != null)
         {

@@ -18,12 +18,12 @@ public class RedisCacheConfigurerTest
     // {
     //    RedisCacheConfigurer configurer = new RedisCacheConfigurer();
     //    RedisCacheOptions redisOptions = new RedisCacheOptions();
-    //    RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
+    //    RedisCacheConnectorOptions options = new RedisCacheConnectorOptions()
     //    {
     //        ConnectionString = "foobar",
     //        InstanceName = "instanceId"
     //    };
-    //    configurer.UpdateOptions(config, redisOptions);
+    //    configurer.UpdateOptions(options, redisOptions);
     //    Assert.Equal("foobar", redisOptions.Configuration);
     //    Assert.Equal("instanceId", redisOptions.InstanceName);
     // }
@@ -33,14 +33,14 @@ public class RedisCacheConfigurerTest
     // {
     //    RedisCacheConfigurer configurer = new RedisCacheConfigurer();
     //    RedisCacheOptions redisOptions = new RedisCacheOptions();
-    //    RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
+    //    RedisCacheConnectorOptions options = new RedisCacheConnectorOptions()
     //    {
     //        Host = "localhost",
     //        Port = 1234,
     //        Password = "password",
     //        InstanceName = "instanceId"
     //    };
-    //    configurer.UpdateOptions(config, redisOptions);
+    //    configurer.UpdateOptions(options, redisOptions);
     //    Assert.Equal("localhost:1234,password=password,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", redisOptions.Configuration);
     //    Assert.Equal("instanceId", redisOptions.InstanceName);
     //// }
@@ -49,12 +49,12 @@ public class RedisCacheConfigurerTest
     public void UpdateOptions_FromServiceInfo_ReturnsExpected()
     {
         var configurer = new RedisCacheConfigurer();
-        var connOptions = new RedisCacheConnectorOptions();
+        var options = new RedisCacheConnectorOptions();
         var si = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "foobar", 4321, "sipassword");
-        configurer.UpdateOptions(si, connOptions);
+        configurer.UpdateOptions(si, options);
 
-        Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connOptions.ToString());
-        Assert.Null(connOptions.InstanceName);
+        Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", options.ToString());
+        Assert.Null(options.InstanceName);
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class RedisCacheConfigurerTest
     {
         var configurer = new RedisCacheConfigurer();
 
-        var config = new RedisCacheConnectorOptions
+        var options = new RedisCacheConnectorOptions
         {
             Host = "localhost",
             Port = 1234,
@@ -70,7 +70,7 @@ public class RedisCacheConfigurerTest
             InstanceName = "instanceId"
         };
 
-        RedisCacheConnectorOptions opts = configurer.Configure(null, config);
+        RedisCacheConnectorOptions opts = configurer.Configure(null, options);
         Assert.NotNull(opts);
         var redisOptions = (RedisCacheOptions)opts.ToMicrosoftExtensionObject(typeof(RedisCacheOptions));
         Assert.NotNull(redisOptions);
@@ -84,7 +84,7 @@ public class RedisCacheConfigurerTest
     {
         var configurer = new RedisCacheConfigurer();
 
-        var config = new RedisCacheConnectorOptions
+        var options = new RedisCacheConnectorOptions
         {
             Host = "localhost",
             Port = 1234,
@@ -93,7 +93,7 @@ public class RedisCacheConfigurerTest
         };
 
         var si = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "foobar", 4321, "sipassword");
-        RedisCacheConnectorOptions connectionSettings = configurer.Configure(si, config);
+        RedisCacheConnectorOptions connectionSettings = configurer.Configure(si, options);
         Assert.NotNull(connectionSettings);
 
         Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connectionSettings.ToString());
@@ -105,14 +105,14 @@ public class RedisCacheConfigurerTest
     {
         var configurer = new RedisCacheConfigurer();
 
-        var config = new RedisCacheConnectorOptions
+        var options = new RedisCacheConnectorOptions
         {
             Host = "localhost",
             Port = 1234,
             Password = "password"
         };
 
-        RedisCacheConnectorOptions opts = configurer.Configure(null, config);
+        RedisCacheConnectorOptions opts = configurer.Configure(null, options);
         Assert.NotNull(opts);
 
         Assert.NotNull(((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints);
@@ -128,7 +128,7 @@ public class RedisCacheConfigurerTest
     {
         var configurer = new RedisCacheConfigurer();
 
-        var config = new RedisCacheConnectorOptions
+        var options = new RedisCacheConnectorOptions
         {
             Host = "localhost",
             Port = 1234,
@@ -137,7 +137,7 @@ public class RedisCacheConfigurerTest
 
         var si = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "foobar", 4321, "sipassword");
 
-        RedisCacheConnectorOptions opts = configurer.Configure(si, config);
+        RedisCacheConnectorOptions opts = configurer.Configure(si, options);
         Assert.NotNull(opts);
 
         Assert.NotNull(((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints);

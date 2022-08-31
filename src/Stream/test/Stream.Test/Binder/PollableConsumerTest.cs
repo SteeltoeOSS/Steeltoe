@@ -15,7 +15,7 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Binding;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 using Xunit;
 
 namespace Steeltoe.Stream.Binder;

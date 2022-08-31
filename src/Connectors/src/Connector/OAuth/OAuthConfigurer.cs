@@ -17,43 +17,43 @@ public class OAuthConfigurer
         return new ConnectorIOptions<OAuthServiceOptions>(ssoOptions);
     }
 
-    internal void UpdateOptions(SsoServiceInfo si, OAuthServiceOptions options)
+    internal void UpdateOptions(SsoServiceInfo si, OAuthServiceOptions serviceOptions)
     {
         if (si == null)
         {
             return;
         }
 
-        options.ClientId = si.ClientId;
-        options.ClientSecret = si.ClientSecret;
-        options.AccessTokenUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultAccessTokenUri;
-        options.UserAuthorizationUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultAuthorizationUri;
-        options.TokenInfoUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultCheckTokenUri;
-        options.UserInfoUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultUserInfoUri;
-        options.JwtKeyUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultJwtTokenKey;
+        serviceOptions.ClientId = si.ClientId;
+        serviceOptions.ClientSecret = si.ClientSecret;
+        serviceOptions.AccessTokenUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultAccessTokenUri;
+        serviceOptions.UserAuthorizationUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultAuthorizationUri;
+        serviceOptions.TokenInfoUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultCheckTokenUri;
+        serviceOptions.UserInfoUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultUserInfoUri;
+        serviceOptions.JwtKeyUrl = si.AuthDomain + OAuthConnectorDefaults.DefaultJwtTokenKey;
     }
 
-    internal void UpdateOptions(OAuthConnectorOptions config, OAuthServiceOptions options)
+    internal void UpdateOptions(OAuthConnectorOptions connectorOptions, OAuthServiceOptions serviceOptions)
     {
-        if (config == null)
+        if (connectorOptions == null)
         {
             return;
         }
 
-        options.ClientId = config.ClientId;
-        options.ClientSecret = config.ClientSecret;
-        options.AccessTokenUrl = config.OAuthServiceUrl + config.AccessTokenUri;
-        options.UserAuthorizationUrl = config.OAuthServiceUrl + config.UserAuthorizationUri;
-        options.TokenInfoUrl = config.OAuthServiceUrl + config.TokenInfoUri;
-        options.UserInfoUrl = config.OAuthServiceUrl + config.UserInfoUri;
-        options.JwtKeyUrl = config.OAuthServiceUrl + config.JwtKeyUri;
-        options.ValidateCertificates = config.ValidateCertificates;
+        serviceOptions.ClientId = connectorOptions.ClientId;
+        serviceOptions.ClientSecret = connectorOptions.ClientSecret;
+        serviceOptions.AccessTokenUrl = connectorOptions.OAuthServiceUrl + connectorOptions.AccessTokenUri;
+        serviceOptions.UserAuthorizationUrl = connectorOptions.OAuthServiceUrl + connectorOptions.UserAuthorizationUri;
+        serviceOptions.TokenInfoUrl = connectorOptions.OAuthServiceUrl + connectorOptions.TokenInfoUri;
+        serviceOptions.UserInfoUrl = connectorOptions.OAuthServiceUrl + connectorOptions.UserInfoUri;
+        serviceOptions.JwtKeyUrl = connectorOptions.OAuthServiceUrl + connectorOptions.JwtKeyUri;
+        serviceOptions.ValidateCertificates = connectorOptions.ValidateCertificates;
 
-        if (config.Scope != null)
+        if (connectorOptions.Scope != null)
         {
-            foreach (string scope in config.Scope)
+            foreach (string scope in connectorOptions.Scope)
             {
-                options.Scope.Add(scope);
+                serviceOptions.Scope.Add(scope);
             }
         }
     }

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace Steeltoe.Common.Logging;
 
 /// <summary>
-/// Allows early utilization of log infrastructure before log config is even read. Any providers spawned are instantly switched over to real log
+/// Allows early utilization of log infrastructure before log configuration is even read. Any providers spawned are instantly switched over to real log
 /// providers as the application utilization progresses. This class should only be used by components that need logging infrastructure before Service
 /// Container is available.
 /// </summary>
@@ -35,19 +35,19 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
 
         _factoryInstance = LoggerFactory.Create(builder =>
         {
-            IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+            IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "Logging:LogLevel:Default", "Information" },
                 { "Logging:LogLevel:Microsoft", "Warning" },
                 { "Logging:LogLevel:Microsoft.Hosting.Lifetime", "Information" }
             }).AddEnvironmentVariables().AddCommandLine(Environment.GetCommandLineArgs()).Build();
 
-            _bootstrapLoggingBuilder(builder, config);
+            _bootstrapLoggingBuilder(builder, configurationRoot);
         });
     }
 
     /// <summary>
-    /// Updates existing loggers to use configuration from the supplied config.
+    /// Updates existing loggers to use configuration from the supplied configuration.
     /// </summary>
     public void Update(IConfiguration value)
     {

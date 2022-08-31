@@ -13,10 +13,10 @@ public class MongoDbConnectorOptionsTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
+        const IConfiguration configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new MongoDbConnectorOptions(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new MongoDbConnectorOptions(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
     }
 
     [Fact]
@@ -32,9 +32,9 @@ public class MongoDbConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new MongoDbConnectorOptions(config);
+        var options = new MongoDbConnectorOptions(configurationRoot);
         Assert.Equal("localhost", options.Server);
         Assert.Equal(1234, options.Port);
         Assert.Equal("password", options.Password);
@@ -55,9 +55,9 @@ public class MongoDbConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new MongoDbConnectorOptions(config);
+        var options = new MongoDbConnectorOptions(configurationRoot);
 
         Assert.Equal("someValue", options.Options["someKey"]);
         Assert.Equal("someOtherValue", options.Options["someOtherKey"]);
@@ -76,9 +76,9 @@ public class MongoDbConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new MongoDbConnectorOptions(config);
+        var options = new MongoDbConnectorOptions(configurationRoot);
 
         Assert.Equal("mongodb://localhost:27017?someKey=someValue&someOtherKey=someOtherValue", options.ToString());
     }
@@ -93,9 +93,9 @@ public class MongoDbConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new MongoDbConnectorOptions(config);
+        var options = new MongoDbConnectorOptions(configurationRoot);
 
         Assert.Equal(appsettings["mongodb:client:ConnectionString"], options.ToString());
     }
@@ -112,14 +112,14 @@ public class MongoDbConnectorOptionsTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBindingA9SSingleServerVcap);
 
-        // add settings to config
+        // add settings to configuration
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddCloudFoundry();
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new MongoDbConnectorOptions(config);
+        var options = new MongoDbConnectorOptions(configurationRoot);
 
         Assert.NotEqual(appsettings["mongodb:client:ConnectionString"], options.ToString());
     }
@@ -136,14 +136,14 @@ public class MongoDbConnectorOptionsTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleServerEnterpriseVcap);
 
-        // add settings to config
+        // add settings to configuration
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddCloudFoundry();
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new MongoDbConnectorOptions(config);
+        var options = new MongoDbConnectorOptions(configurationRoot);
 
         Assert.NotEqual(appsettings["mongodb:client:ConnectionString"], options.ToString());
 

@@ -17,18 +17,18 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add logging to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
     /// management:endpoints:loggers).
     /// </param>
-    public static void AddLoggersActuator(this IServiceCollection services, IConfiguration config = null)
+    public static void AddLoggersActuator(this IServiceCollection services, IConfiguration configuration = null)
     {
         ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddActuatorManagementOptions(config);
-        services.AddLoggersActuatorServices(config);
+        services.AddActuatorManagementOptions(configuration);
+        services.AddLoggersActuatorServices(configuration);
         services.AddActuatorEndpointMapping<LoggersEndpoint>();
     }
 }

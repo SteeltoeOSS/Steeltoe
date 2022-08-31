@@ -23,15 +23,15 @@ public static class AuthenticationBuilderExtensions
     /// <param name="builder">
     /// Your <see cref="AuthenticationBuilder" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use OAuth with UAA or Pivotal SSO.
     /// </returns>
-    public static AuthenticationBuilder AddCloudFoundryOAuth(this AuthenticationBuilder builder, IConfiguration config)
+    public static AuthenticationBuilder AddCloudFoundryOAuth(this AuthenticationBuilder builder, IConfiguration configuration)
     {
-        return builder.AddCloudFoundryOAuth(CloudFoundryDefaults.AuthenticationScheme, config);
+        return builder.AddCloudFoundryOAuth(CloudFoundryDefaults.AuthenticationScheme, configuration);
     }
 
     /// <summary>
@@ -43,15 +43,15 @@ public static class AuthenticationBuilderExtensions
     /// <param name="authenticationScheme">
     /// An identifier for this authentication mechanism.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use OAuth with UAA or Pivotal SSO.
     /// </returns>
-    public static AuthenticationBuilder AddCloudFoundryOAuth(this AuthenticationBuilder builder, string authenticationScheme, IConfiguration config)
+    public static AuthenticationBuilder AddCloudFoundryOAuth(this AuthenticationBuilder builder, string authenticationScheme, IConfiguration configuration)
     {
-        return builder.AddCloudFoundryOAuth(authenticationScheme, CloudFoundryDefaults.DisplayName, config);
+        return builder.AddCloudFoundryOAuth(authenticationScheme, CloudFoundryDefaults.DisplayName, configuration);
     }
 
     /// <summary>
@@ -66,22 +66,22 @@ public static class AuthenticationBuilderExtensions
     /// <param name="displayName">
     /// Sets a display name for this auth scheme. Defaults to <see cref="CloudFoundryDefaults.DisplayName" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use OAuth with UAA or Pivotal SSO.
     /// </returns>
     public static AuthenticationBuilder AddCloudFoundryOAuth(this AuthenticationBuilder builder, string authenticationScheme, string displayName,
-        IConfiguration config)
+        IConfiguration configuration)
     {
         builder.AddOAuth<CloudFoundryOAuthOptions, CloudFoundryOAuthHandler>(authenticationScheme, displayName, options =>
         {
-            IConfigurationSection securitySection = config.GetSection(CloudFoundryDefaults.SecurityClientSectionPrefix);
+            IConfigurationSection securitySection = configuration.GetSection(CloudFoundryDefaults.SecurityClientSectionPrefix);
             securitySection.Bind(options);
             options.SetEndpoints(GetAuthDomain(securitySection));
 
-            var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+            var info = configuration.GetSingletonServiceInfo<SsoServiceInfo>();
             CloudFoundryOAuthConfigurer.Configure(info, options);
         });
 
@@ -94,7 +94,7 @@ public static class AuthenticationBuilderExtensions
     /// <param name="builder">
     /// Your <see cref="AuthenticationBuilder" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <param name="configurer">
@@ -103,10 +103,10 @@ public static class AuthenticationBuilderExtensions
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use OAuth with UAA or Pivotal SSO.
     /// </returns>
-    public static AuthenticationBuilder AddCloudFoundryOAuth(this AuthenticationBuilder builder, IConfiguration config,
+    public static AuthenticationBuilder AddCloudFoundryOAuth(this AuthenticationBuilder builder, IConfiguration configuration,
         Action<CloudFoundryOAuthOptions, IConfiguration> configurer)
     {
-        return builder.AddCloudFoundryOAuth(CloudFoundryDefaults.AuthenticationScheme, config, configurer);
+        return builder.AddCloudFoundryOAuth(CloudFoundryDefaults.AuthenticationScheme, configuration, configurer);
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ public static class AuthenticationBuilderExtensions
     /// <param name="authenticationScheme">
     /// An identifier for this authentication mechanism. Default value is <see cref="CloudFoundryDefaults.DisplayName" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <param name="configurer">
@@ -127,10 +127,10 @@ public static class AuthenticationBuilderExtensions
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use OAuth with UAA or Pivotal SSO.
     /// </returns>
-    public static AuthenticationBuilder AddCloudFoundryOAuth(this AuthenticationBuilder builder, string authenticationScheme, IConfiguration config,
+    public static AuthenticationBuilder AddCloudFoundryOAuth(this AuthenticationBuilder builder, string authenticationScheme, IConfiguration configuration,
         Action<CloudFoundryOAuthOptions, IConfiguration> configurer)
     {
-        return builder.AddCloudFoundryOAuth(authenticationScheme, CloudFoundryDefaults.DisplayName, config, configurer);
+        return builder.AddCloudFoundryOAuth(authenticationScheme, CloudFoundryDefaults.DisplayName, configuration, configurer);
     }
 
     /// <summary>
@@ -145,7 +145,7 @@ public static class AuthenticationBuilderExtensions
     /// <param name="displayName">
     /// Sets a display name for this auth scheme. Defaults to <see cref="CloudFoundryDefaults.DisplayName" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <param name="configurer">
@@ -155,11 +155,11 @@ public static class AuthenticationBuilderExtensions
     /// <see cref="AuthenticationBuilder" /> configured to use OAuth with UAA or Pivotal SSO.
     /// </returns>
     public static AuthenticationBuilder AddCloudFoundryOAuth(this AuthenticationBuilder builder, string authenticationScheme, string displayName,
-        IConfiguration config, Action<CloudFoundryOAuthOptions, IConfiguration> configurer)
+        IConfiguration configuration, Action<CloudFoundryOAuthOptions, IConfiguration> configurer)
     {
         builder.AddOAuth<CloudFoundryOAuthOptions, CloudFoundryOAuthHandler>(authenticationScheme, displayName, options =>
         {
-            configurer(options, config);
+            configurer(options, configuration);
         });
 
         return builder;
@@ -171,15 +171,15 @@ public static class AuthenticationBuilderExtensions
     /// <param name="builder">
     /// Your <see cref="AuthenticationBuilder" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use OpenID Connect with UAA or Pivotal SSO.
     /// </returns>
-    public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, IConfiguration config)
+    public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, IConfiguration configuration)
     {
-        return builder.AddCloudFoundryOpenIdConnect(CloudFoundryDefaults.AuthenticationScheme, config);
+        return builder.AddCloudFoundryOpenIdConnect(CloudFoundryDefaults.AuthenticationScheme, configuration);
     }
 
     /// <summary>
@@ -191,15 +191,16 @@ public static class AuthenticationBuilderExtensions
     /// <param name="authenticationScheme">
     /// An identifier for this authentication mechanism. Default value is <see cref="CloudFoundryDefaults.DisplayName" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use OpenID Connect with UAA or Pivotal SSO.
     /// </returns>
-    public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, string authenticationScheme, IConfiguration config)
+    public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, string authenticationScheme,
+        IConfiguration configuration)
     {
-        return builder.AddCloudFoundryOpenIdConnect(authenticationScheme, CloudFoundryDefaults.DisplayName, config);
+        return builder.AddCloudFoundryOpenIdConnect(authenticationScheme, CloudFoundryDefaults.DisplayName, configuration);
     }
 
     /// <summary>
@@ -214,22 +215,22 @@ public static class AuthenticationBuilderExtensions
     /// <param name="displayName">
     /// Sets a display name for this auth scheme. Defaults to <see cref="CloudFoundryDefaults.DisplayName" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use OpenID Connect with UAA or Pivotal SSO.
     /// </returns>
     public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, string authenticationScheme, string displayName,
-        IConfiguration config)
+        IConfiguration configuration)
     {
         builder.AddOpenIdConnect(authenticationScheme, displayName, options =>
         {
             var cloudFoundryOptions = new CloudFoundryOpenIdConnectOptions();
-            IConfigurationSection securitySection = config.GetSection(CloudFoundryDefaults.SecurityClientSectionPrefix);
+            IConfigurationSection securitySection = configuration.GetSection(CloudFoundryDefaults.SecurityClientSectionPrefix);
             securitySection.Bind(cloudFoundryOptions);
 
-            var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+            var info = configuration.GetSingletonServiceInfo<SsoServiceInfo>();
             CloudFoundryOpenIdConnectConfigurer.Configure(info, options, cloudFoundryOptions);
         });
 
@@ -242,7 +243,7 @@ public static class AuthenticationBuilderExtensions
     /// <param name="builder">
     /// Your <see cref="AuthenticationBuilder" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <param name="configurer">
@@ -251,10 +252,10 @@ public static class AuthenticationBuilderExtensions
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use OpenID Connect with UAA or Pivotal SSO.
     /// </returns>
-    public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, IConfiguration config,
+    public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, IConfiguration configuration,
         Action<OpenIdConnectOptions, IConfiguration> configurer)
     {
-        return builder.AddCloudFoundryOpenIdConnect(CloudFoundryDefaults.AuthenticationScheme, config, configurer);
+        return builder.AddCloudFoundryOpenIdConnect(CloudFoundryDefaults.AuthenticationScheme, configuration, configurer);
     }
 
     /// <summary>
@@ -266,7 +267,7 @@ public static class AuthenticationBuilderExtensions
     /// <param name="authenticationScheme">
     /// An identifier for this authentication mechanism. Default value is <see cref="CloudFoundryDefaults.DisplayName" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// (Optional) Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <param name="configurer">
@@ -275,10 +276,10 @@ public static class AuthenticationBuilderExtensions
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use OpenID Connect with UAA or Pivotal SSO.
     /// </returns>
-    public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, string authenticationScheme, IConfiguration config,
-        Action<OpenIdConnectOptions, IConfiguration> configurer)
+    public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, string authenticationScheme,
+        IConfiguration configuration, Action<OpenIdConnectOptions, IConfiguration> configurer)
     {
-        return builder.AddCloudFoundryOpenIdConnect(authenticationScheme, CloudFoundryDefaults.DisplayName, config, configurer);
+        return builder.AddCloudFoundryOpenIdConnect(authenticationScheme, CloudFoundryDefaults.DisplayName, configuration, configurer);
     }
 
     /// <summary>
@@ -293,7 +294,7 @@ public static class AuthenticationBuilderExtensions
     /// <param name="displayName">
     /// Sets a display name for this auth scheme. Defaults to <see cref="CloudFoundryDefaults.DisplayName" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <param name="configurer">
@@ -303,18 +304,18 @@ public static class AuthenticationBuilderExtensions
     /// <see cref="AuthenticationBuilder" /> configured to use OpenID Connect with UAA or Pivotal SSO.
     /// </returns>
     public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, string authenticationScheme, string displayName,
-        IConfiguration config, Action<OpenIdConnectOptions, IConfiguration> configurer)
+        IConfiguration configuration, Action<OpenIdConnectOptions, IConfiguration> configurer)
     {
         builder.AddOpenIdConnect(authenticationScheme, displayName, options =>
         {
             var cloudFoundryOptions = new CloudFoundryOpenIdConnectOptions();
-            IConfigurationSection securitySection = config.GetSection(CloudFoundryDefaults.SecurityClientSectionPrefix);
+            IConfigurationSection securitySection = configuration.GetSection(CloudFoundryDefaults.SecurityClientSectionPrefix);
             securitySection.Bind(cloudFoundryOptions);
 
-            var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+            var info = configuration.GetSingletonServiceInfo<SsoServiceInfo>();
             CloudFoundryOpenIdConnectConfigurer.Configure(info, options, cloudFoundryOptions);
 
-            configurer(options, config);
+            configurer(options, configuration);
         });
 
         return builder;
@@ -326,15 +327,15 @@ public static class AuthenticationBuilderExtensions
     /// <param name="builder">
     /// Your <see cref="AuthenticationBuilder" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use JWT Bearer tokens from UAA or Pivotal SSO.
     /// </returns>
-    public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, IConfiguration config)
+    public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, IConfiguration configuration)
     {
-        return builder.AddCloudFoundryJwtBearer(JwtBearerDefaults.AuthenticationScheme, config);
+        return builder.AddCloudFoundryJwtBearer(JwtBearerDefaults.AuthenticationScheme, configuration);
     }
 
     /// <summary>
@@ -346,15 +347,15 @@ public static class AuthenticationBuilderExtensions
     /// <param name="authenticationScheme">
     /// An identifier for this authentication mechanism. Default value is <see cref="JwtBearerDefaults.AuthenticationScheme" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use JWT Bearer tokens from UAA or Pivotal SSO.
     /// </returns>
-    public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, string authenticationScheme, IConfiguration config)
+    public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, string authenticationScheme, IConfiguration configuration)
     {
-        return builder.AddCloudFoundryJwtBearer(authenticationScheme, JwtBearerDefaults.AuthenticationScheme, config);
+        return builder.AddCloudFoundryJwtBearer(authenticationScheme, JwtBearerDefaults.AuthenticationScheme, configuration);
     }
 
     /// <summary>
@@ -369,23 +370,23 @@ public static class AuthenticationBuilderExtensions
     /// <param name="displayName">
     /// Sets a display name for this auth scheme. Defaults to <see cref="JwtBearerDefaults.AuthenticationScheme" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use JWT Bearer tokens from UAA or Pivotal SSO.
     /// </returns>
     public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, string authenticationScheme, string displayName,
-        IConfiguration config)
+        IConfiguration configuration)
     {
         builder.AddJwtBearer(authenticationScheme, displayName, options =>
         {
             var cloudFoundryOptions = new CloudFoundryJwtBearerOptions();
-            IConfigurationSection securitySection = config.GetSection(CloudFoundryDefaults.SecurityClientSectionPrefix);
+            IConfigurationSection securitySection = configuration.GetSection(CloudFoundryDefaults.SecurityClientSectionPrefix);
             securitySection.Bind(cloudFoundryOptions);
             cloudFoundryOptions.SetEndpoints(GetAuthDomain(securitySection));
 
-            var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+            var info = configuration.GetSingletonServiceInfo<SsoServiceInfo>();
             CloudFoundryJwtBearerConfigurer.Configure(info, options, cloudFoundryOptions);
         });
 
@@ -398,7 +399,7 @@ public static class AuthenticationBuilderExtensions
     /// <param name="builder">
     /// Your <see cref="AuthenticationBuilder" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <param name="configurer">
@@ -407,10 +408,10 @@ public static class AuthenticationBuilderExtensions
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use JWT Bearer tokens from UAA or Pivotal SSO.
     /// </returns>
-    public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, IConfiguration config,
+    public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, IConfiguration configuration,
         Action<JwtBearerOptions, IConfiguration> configurer)
     {
-        return builder.AddCloudFoundryJwtBearer(JwtBearerDefaults.AuthenticationScheme, config, configurer);
+        return builder.AddCloudFoundryJwtBearer(JwtBearerDefaults.AuthenticationScheme, configuration, configurer);
     }
 
     /// <summary>
@@ -422,7 +423,7 @@ public static class AuthenticationBuilderExtensions
     /// <param name="authenticationScheme">
     /// An identifier for this authentication mechanism. Default value is <see cref="JwtBearerDefaults.AuthenticationScheme" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <param name="configurer">
@@ -431,10 +432,10 @@ public static class AuthenticationBuilderExtensions
     /// <returns>
     /// <see cref="AuthenticationBuilder" /> configured to use JWT Bearer tokens from UAA or Pivotal SSO.
     /// </returns>
-    public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, string authenticationScheme, IConfiguration config,
+    public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, string authenticationScheme, IConfiguration configuration,
         Action<JwtBearerOptions, IConfiguration> configurer)
     {
-        return builder.AddCloudFoundryJwtBearer(authenticationScheme, JwtBearerDefaults.AuthenticationScheme, config, configurer);
+        return builder.AddCloudFoundryJwtBearer(authenticationScheme, JwtBearerDefaults.AuthenticationScheme, configuration, configurer);
     }
 
     /// <summary>
@@ -449,7 +450,7 @@ public static class AuthenticationBuilderExtensions
     /// <param name="displayName">
     /// Sets a display name for this auth scheme. Defaults to <see cref="JwtBearerDefaults.AuthenticationScheme" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider" />.
     /// </param>
     /// <param name="configurer">
@@ -459,11 +460,11 @@ public static class AuthenticationBuilderExtensions
     /// <see cref="AuthenticationBuilder" /> configured to use JWT Bearer tokens from UAA or Pivotal SSO.
     /// </returns>
     public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, string authenticationScheme, string displayName,
-        IConfiguration config, Action<JwtBearerOptions, IConfiguration> configurer)
+        IConfiguration configuration, Action<JwtBearerOptions, IConfiguration> configurer)
     {
         builder.AddJwtBearer(authenticationScheme, displayName, jwtOptions =>
         {
-            configurer(jwtOptions, config);
+            configurer(jwtOptions, configuration);
         });
 
         return builder;

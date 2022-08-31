@@ -16,8 +16,8 @@ public static class ServiceCollectionExtensions
     {
         services.TryAddSingleton<IApplicationContext>(p =>
         {
-            var config = p.GetService<IConfiguration>();
-            var context = new GenericApplicationContext(p, config);
+            var configuration = p.GetService<IConfiguration>();
+            var context = new GenericApplicationContext(p, configuration);
 
             if (configure != null)
             {

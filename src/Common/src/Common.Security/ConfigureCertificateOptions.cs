@@ -11,13 +11,13 @@ namespace Steeltoe.Common.Security;
 
 public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
 {
-    private readonly IConfiguration _config;
+    private readonly IConfiguration _configuration;
 
-    public ConfigureCertificateOptions(IConfiguration config)
+    public ConfigureCertificateOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        _config = config;
+        _configuration = configuration;
     }
 
     public void Configure(string name, CertificateOptions options)
@@ -26,7 +26,7 @@ public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOpt
 
         options.Name = name;
 
-        string certPath = _config["certificate"];
+        string certPath = _configuration["certificate"];
 
         if (string.IsNullOrEmpty(certPath))
         {

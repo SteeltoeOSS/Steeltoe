@@ -21,8 +21,8 @@ public class DiskSpaceContributorOptionsTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
-        Assert.Throws<ArgumentNullException>(() => new DiskSpaceContributorOptions(config));
+        const IConfiguration configuration = null;
+        Assert.Throws<ArgumentNullException>(() => new DiskSpaceContributorOptions(configuration));
     }
 
     [Fact]
@@ -37,9 +37,9 @@ public class DiskSpaceContributorOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new DiskSpaceContributorOptions(config);
+        var opts = new DiskSpaceContributorOptions(configurationRoot);
         Assert.Equal("foobar", opts.Path);
         Assert.Equal(5, opts.Threshold);
     }

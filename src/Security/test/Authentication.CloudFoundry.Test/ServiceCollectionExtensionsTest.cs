@@ -26,8 +26,8 @@ public class ServiceCollectionExtensionsTest
     public void AddCloudFoundryCertificateAuth_AddsServices()
     {
         var services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        services.AddSingleton<IConfiguration>(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection().Build();
+        services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddLogging();
 
         services.AddCloudFoundryCertificateAuth();

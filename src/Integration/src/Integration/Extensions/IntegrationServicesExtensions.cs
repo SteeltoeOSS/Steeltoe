@@ -12,7 +12,7 @@ using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Attributes;
 using Steeltoe.Integration.Channel;
-using Steeltoe.Integration.Config;
+using Steeltoe.Integration.Configuration;
 using Steeltoe.Integration.Endpoint;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Integration.Support;

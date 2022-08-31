@@ -18,20 +18,20 @@ public static class OAuthServiceCollectionExtensions
     /// <param name="services">
     /// Your Service Collection.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application Configuration.
     /// </param>
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var oauthConfig = new OAuthConnectorOptions(config);
-        var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
-        var factory = new OAuthConnectorFactory(info, oauthConfig);
+        var options = new OAuthConnectorOptions(configuration);
+        var info = configuration.GetSingletonServiceInfo<SsoServiceInfo>();
+        var factory = new OAuthConnectorFactory(info, options);
         services.AddSingleton(typeof(IOptions<OAuthServiceOptions>), factory.Create);
         return services;
     }
@@ -42,7 +42,7 @@ public static class OAuthServiceCollectionExtensions
     /// <param name="services">
     /// Your Service Collection.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application Configuration.
     /// </param>
     /// <param name="serviceName">
@@ -51,15 +51,15 @@ public static class OAuthServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration config, string serviceName)
+    public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration configuration, string serviceName)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var oauthConfig = new OAuthConnectorOptions(config);
-        var info = config.GetRequiredServiceInfo<SsoServiceInfo>(serviceName);
-        var factory = new OAuthConnectorFactory(info, oauthConfig);
+        var options = new OAuthConnectorOptions(configuration);
+        var info = configuration.GetRequiredServiceInfo<SsoServiceInfo>(serviceName);
+        var factory = new OAuthConnectorFactory(info, options);
         services.AddSingleton(typeof(IOptions<OAuthServiceOptions>), factory.Create);
         return services;
     }

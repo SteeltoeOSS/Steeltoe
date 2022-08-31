@@ -160,11 +160,11 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
         {
             queryOptions ??= QueryOptions.Default;
             var instances = new List<IServiceInstance>();
-            IList<string> result = await GetServicesAsync().ConfigureAwait(false);
+            IList<string> result = await GetServicesAsync();
 
             foreach (string serviceId in result)
             {
-                await AddInstancesToListAsync(instances, serviceId, queryOptions).ConfigureAwait(false);
+                await AddInstancesToListAsync(instances, serviceId, queryOptions);
             }
 
             return instances;
@@ -189,22 +189,21 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     internal async Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, QueryOptions queryOptions)
     {
         var instances = new List<IServiceInstance>();
-        await AddInstancesToListAsync(instances, serviceId, queryOptions).ConfigureAwait(false);
+        await AddInstancesToListAsync(instances, serviceId, queryOptions);
         return instances;
     }
 
     internal async Task<IList<string>> GetServicesAsync(QueryOptions queryOptions = null)
     {
         queryOptions ??= QueryOptions.Default;
-        QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(queryOptions).ConfigureAwait(false);
+        QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(queryOptions);
         Dictionary<string, string[]> response = result.Response;
         return response.Keys.ToList();
     }
 
     internal async Task AddInstancesToListAsync(ICollection<IServiceInstance> instances, string serviceId, QueryOptions queryOptions)
     {
-        QueryResult<ServiceEntry[]> result =
-            await _client.Health.Service(serviceId, Options.DefaultQueryTag, Options.QueryPassing, queryOptions).ConfigureAwait(false);
+        QueryResult<ServiceEntry[]> result = await _client.Health.Service(serviceId, Options.DefaultQueryTag, Options.QueryPassing, queryOptions);
 
         ServiceEntry[] response = result.Response;
 

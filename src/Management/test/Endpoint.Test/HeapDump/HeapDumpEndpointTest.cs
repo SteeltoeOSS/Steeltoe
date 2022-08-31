@@ -31,7 +31,7 @@ public class HeapDumpEndpointTest : BaseTest
     [Fact]
     public void Invoke_CreatesDump()
     {
-        if (Platform.IsWindows && RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.InvariantCultureIgnoreCase))
+        if (Platform.IsWindows && RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase))
         {
             using var tc = new TestContext(_output);
 

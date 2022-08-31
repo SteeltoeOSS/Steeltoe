@@ -5,7 +5,7 @@
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 
 namespace Steeltoe.Stream.Binder;
 

@@ -36,8 +36,8 @@ public class MixedDispatcherConfigurationScenarioTest
     public MixedDispatcherConfigurationScenarioTest()
     {
         var services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        services.AddSingleton<IConfiguration>(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();

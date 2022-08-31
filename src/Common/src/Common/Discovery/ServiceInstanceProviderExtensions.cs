@@ -16,7 +16,7 @@ public static class ServiceInstanceProviderExtensions
 
         if (distributedCache != null)
         {
-            byte[] cacheValue = await distributedCache.GetAsync(cacheKey).ConfigureAwait(false);
+            byte[] cacheValue = await distributedCache.GetAsync(cacheKey);
             IList<IServiceInstance> instancesFromCache = FromCacheValue(cacheValue);
 
             if (instancesFromCache != null)
@@ -30,7 +30,7 @@ public static class ServiceInstanceProviderExtensions
         if (distributedCache != null && instances != null)
         {
             byte[] cacheValue = ToCacheValue(instances);
-            await distributedCache.SetAsync(cacheKey, cacheValue, cacheOptions ?? new DistributedCacheEntryOptions()).ConfigureAwait(false);
+            await distributedCache.SetAsync(cacheKey, cacheValue, cacheOptions ?? new DistributedCacheEntryOptions());
         }
 
         return instances;

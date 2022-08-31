@@ -46,15 +46,15 @@ public class ConfigServerHealthContributor : IHealthContributor
 
         if (Provider == null)
         {
-            Logger?.LogDebug("No config server provider found");
+            Logger?.LogDebug("No Config Server provider found");
             health.Status = HealthStatus.Unknown;
-            health.Details.Add("error", "No config server provider found");
+            health.Details.Add("error", "No Config Server provider found");
             return health;
         }
 
         if (!IsEnabled())
         {
-            Logger?.LogDebug("Config server health check disabled");
+            Logger?.LogDebug("Config Server health check disabled");
             health.Status = HealthStatus.Unknown;
             health.Details.Add("info", "Health check disabled");
             return health;
@@ -76,7 +76,7 @@ public class ConfigServerHealthContributor : IHealthContributor
 
     internal void UpdateHealth(HealthCheckResult health, IList<PropertySource> sources)
     {
-        Logger?.LogDebug("Config server health check returning UP");
+        Logger?.LogDebug("Config Server health check returning UP");
 
         health.Status = HealthStatus.Up;
         var names = new List<string>();

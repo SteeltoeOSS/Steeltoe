@@ -21,7 +21,7 @@ public static class RedisCacheServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="addSteeltoeHealthChecks">
@@ -33,12 +33,13 @@ public static class RedisCacheServiceCollectionExtensions
     /// <remarks>
     /// RedisCache is retrievable as both RedisCache and IDistributedCache.
     /// </remarks>
-    public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, bool addSteeltoeHealthChecks = false)
+    public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration configuration,
+        bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        return services.AddDistributedRedisCache(config, config, null, addSteeltoeHealthChecks: addSteeltoeHealthChecks);
+        return services.AddDistributedRedisCache(configuration, configuration, null, addSteeltoeHealthChecks: addSteeltoeHealthChecks);
     }
 
     /// <summary>
@@ -47,7 +48,7 @@ public static class RedisCacheServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="serviceName">
@@ -62,14 +63,14 @@ public static class RedisCacheServiceCollectionExtensions
     /// <remarks>
     /// RedisCache is retrievable as both RedisCache and IDistributedCache.
     /// </remarks>
-    public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, string serviceName,
+    public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration configuration, string serviceName,
         bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        return services.AddDistributedRedisCache(config, config, serviceName, addSteeltoeHealthChecks: addSteeltoeHealthChecks);
+        return services.AddDistributedRedisCache(configuration, configuration, serviceName, addSteeltoeHealthChecks: addSteeltoeHealthChecks);
     }
 
     /// <summary>
@@ -122,7 +123,7 @@ public static class RedisCacheServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="addSteeltoeHealthChecks">
@@ -134,13 +135,13 @@ public static class RedisCacheServiceCollectionExtensions
     /// <remarks>
     /// ConnectionMultiplexer is retrievable as both ConnectionMultiplexer and IConnectionMultiplexer.
     /// </remarks>
-    public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config,
+    public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration configuration,
         bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        return services.AddRedisConnectionMultiplexer(config, config, null, addSteeltoeHealthChecks: addSteeltoeHealthChecks);
+        return services.AddRedisConnectionMultiplexer(configuration, configuration, null, addSteeltoeHealthChecks: addSteeltoeHealthChecks);
     }
 
     /// <summary>
@@ -149,7 +150,7 @@ public static class RedisCacheServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="serviceName">
@@ -164,14 +165,14 @@ public static class RedisCacheServiceCollectionExtensions
     /// <remarks>
     /// ConnectionMultiplexer is retrievable as both ConnectionMultiplexer and IConnectionMultiplexer.
     /// </remarks>
-    public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config, string serviceName,
+    public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration configuration, string serviceName,
         bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        return services.AddRedisConnectionMultiplexer(config, config, serviceName, addSteeltoeHealthChecks: addSteeltoeHealthChecks);
+        return services.AddRedisConnectionMultiplexer(configuration, configuration, serviceName, addSteeltoeHealthChecks: addSteeltoeHealthChecks);
     }
 
     /// <summary>
@@ -218,15 +219,15 @@ public static class RedisCacheServiceCollectionExtensions
         return services;
     }
 
-    private static void DoAddIDistributedCache(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime,
-        bool addSteeltoeHealthChecks = false)
+    private static void DoAddIDistributedCache(IServiceCollection services, RedisServiceInfo info, IConfiguration configuration,
+        ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks = false)
     {
         Type interfaceType = RedisTypeLocator.MicrosoftInterface;
         Type connectionType = RedisTypeLocator.MicrosoftImplementation;
         Type optionsType = RedisTypeLocator.MicrosoftOptions;
 
-        var redisConfig = new RedisCacheConnectorOptions(config);
-        var factory = new RedisServiceConnectorFactory(info, redisConfig, connectionType, optionsType, null);
+        var options = new RedisCacheConnectorOptions(configuration);
+        var factory = new RedisServiceConnectorFactory(info, options, connectionType, optionsType, null);
         services.Add(new ServiceDescriptor(interfaceType, factory.Create, contextLifetime));
         services.Add(new ServiceDescriptor(connectionType, factory.Create, contextLifetime));
 
@@ -237,16 +238,16 @@ public static class RedisCacheServiceCollectionExtensions
         }
     }
 
-    private static void DoAddConnectionMultiplexer(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime,
-        bool addSteeltoeHealthChecks)
+    private static void DoAddConnectionMultiplexer(IServiceCollection services, RedisServiceInfo info, IConfiguration configuration,
+        ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks)
     {
         Type redisInterface = RedisTypeLocator.StackExchangeInterface;
         Type redisImplementation = RedisTypeLocator.StackExchangeImplementation;
         Type redisOptions = RedisTypeLocator.StackExchangeOptions;
         MethodInfo initializer = RedisTypeLocator.StackExchangeInitializer;
 
-        var redisConfig = new RedisCacheConnectorOptions(config);
-        var factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer);
+        var options = new RedisCacheConnectorOptions(configuration);
+        var factory = new RedisServiceConnectorFactory(info, options, redisImplementation, redisOptions, initializer);
         services.Add(new ServiceDescriptor(redisInterface, factory.Create, contextLifetime));
         services.Add(new ServiceDescriptor(redisImplementation, factory.Create, contextLifetime));
 

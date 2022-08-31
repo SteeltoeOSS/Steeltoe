@@ -30,11 +30,11 @@ public class ServiceInfoCreatorFactoryTest
     [Fact]
     public void Factory_ReturnsSameInstance()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        ServiceInfoCreator inst = ServiceInfoCreatorFactory.GetServiceInfoCreator(config);
+        ServiceInfoCreator inst = ServiceInfoCreatorFactory.GetServiceInfoCreator(configurationRoot);
         Assert.NotNull(inst);
-        ServiceInfoCreator inst2 = ServiceInfoCreatorFactory.GetServiceInfoCreator(config);
+        ServiceInfoCreator inst2 = ServiceInfoCreatorFactory.GetServiceInfoCreator(configurationRoot);
         Assert.Same(inst, inst2);
     }
 

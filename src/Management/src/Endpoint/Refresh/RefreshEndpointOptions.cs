@@ -26,8 +26,8 @@ public class RefreshEndpointOptions : AbstractEndpointOptions, IRefreshOptions
         _returnConfiguration = DefaultReturnConfiguration;
     }
 
-    public RefreshEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
+    public RefreshEndpointOptions(IConfiguration configuration)
+        : base(ManagementInfoPrefix, configuration)
     {
         if (string.IsNullOrEmpty(Id))
         {

@@ -19,10 +19,10 @@ public class PlaceholderResolverExtensionsTest
     public void ConfigurePlaceholderResolver_ThrowsIfNulls()
     {
         const IServiceCollection services = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        Assert.Throws<ArgumentNullException>(() => services.ConfigurePlaceholderResolver(config));
-        Assert.Throws<ArgumentNullException>(() => new ServiceCollection().ConfigurePlaceholderResolver(config));
+        Assert.Throws<ArgumentNullException>(() => services.ConfigurePlaceholderResolver(configuration));
+        Assert.Throws<ArgumentNullException>(() => new ServiceCollection().ConfigurePlaceholderResolver(configuration));
     }
 
     [Fact]
@@ -111,8 +111,8 @@ public class PlaceholderResolverExtensionsTest
 
         using var server = new TestServer(hostBuilder);
         IServiceProvider services = TestServerStartup1.ServiceProvider;
-        IConfiguration config = services.GetServices<IConfiguration>().SingleOrDefault();
-        Assert.Equal("myName", config["spring:cloud:config:name"]);
+        IConfiguration configuration = services.GetServices<IConfiguration>().SingleOrDefault();
+        Assert.Equal("myName", configuration["spring:cloud:config:name"]);
     }
 
     [Fact]
@@ -156,8 +156,8 @@ public class PlaceholderResolverExtensionsTest
         }).AddPlaceholderResolver();
 
         using TestServer server = hostBuilder.Build().GetTestServer();
-        IConfiguration config = server.Services.GetServices<IConfiguration>().SingleOrDefault();
-        Assert.Equal("myName", config["spring:cloud:config:name"]);
+        IConfiguration configuration = server.Services.GetServices<IConfiguration>().SingleOrDefault();
+        Assert.Equal("myName", configuration["spring:cloud:config:name"]);
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public class PlaceholderResolverExtensionsTest
         hostBuilder.AddPlaceholderResolver();
 
         using WebApplication server = hostBuilder.Build();
-        IConfiguration config = server.Services.GetServices<IConfiguration>().First();
-        Assert.Equal("myName", config["spring:cloud:config:name"]);
+        IConfiguration configuration = server.Services.GetServices<IConfiguration>().First();
+        Assert.Equal("myName", configuration["spring:cloud:config:name"]);
     }
 }

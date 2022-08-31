@@ -23,7 +23,7 @@ public class HystrixProviderConnectorFactoryTest
     [Fact]
     public void Create_ReturnsRabbitMQConnection()
     {
-        var config = new HystrixProviderConnectorOptions
+        var options = new HystrixProviderConnectorOptions
         {
             Server = "localhost",
             Port = 5672,
@@ -33,7 +33,7 @@ public class HystrixProviderConnectorFactoryTest
         };
 
         var si = new HystrixRabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost", false);
-        var factory = new HystrixProviderConnectorFactory(si, config, typeof(ConnectionFactory));
+        var factory = new HystrixProviderConnectorFactory(si, options, typeof(ConnectionFactory));
         object connection = factory.Create(null);
         Assert.NotNull(connection);
     }

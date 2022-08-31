@@ -21,13 +21,13 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add trace to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
     /// management:endpoints:trace).
     /// </param>
-    public static void AddTraceActuator(this IServiceCollection services, IConfiguration config = null)
+    public static void AddTraceActuator(this IServiceCollection services, IConfiguration configuration = null)
     {
-        services.AddTraceActuator(config, MediaTypeVersion.V2);
+        services.AddTraceActuator(configuration, MediaTypeVersion.V2);
     }
 
     /// <summary>
@@ -36,23 +36,23 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add trace to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
     /// management:endpoints:trace).
     /// </param>
     /// <param name="version">
     /// <see cref="MediaTypeVersion" /> to use in responses.
     /// </param>
-    public static void AddTraceActuator(this IServiceCollection services, IConfiguration config, MediaTypeVersion version)
+    public static void AddTraceActuator(this IServiceCollection services, IConfiguration configuration, MediaTypeVersion version)
     {
         ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
-        services.AddActuatorManagementOptions(config);
-        services.AddTraceActuatorServices(config, version);
+        services.AddActuatorManagementOptions(configuration);
+        services.AddTraceActuatorServices(configuration, version);
 
         switch (version)
         {

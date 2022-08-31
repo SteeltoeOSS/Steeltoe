@@ -79,8 +79,8 @@ public class ConsulRegistrationTest
     {
         var options = new ConsulDiscoveryOptions();
         var appsettings = new Dictionary<string, string>();
-        IConfiguration config = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        var appInstanceInfo = new ApplicationInstanceInfo(config);
+        IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        var appInstanceInfo = new ApplicationInstanceInfo(configuration);
 
         // default value is assembly name
         var result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
@@ -88,29 +88,29 @@ public class ConsulRegistrationTest
 
         // followed by spring:application:name
         appsettings.Add("spring:application:name", "SpringApplicationName");
-        config = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        appInstanceInfo = new ApplicationInstanceInfo(config);
+        configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        appInstanceInfo = new ApplicationInstanceInfo(configuration);
         result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
         Assert.Equal("SpringApplicationName", result.Service.Name);
 
         // Platform app name overrides spring name
         appsettings.Add("application:name", "PlatformName");
-        config = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        appInstanceInfo = new ApplicationInstanceInfo(config);
+        configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        appInstanceInfo = new ApplicationInstanceInfo(configuration);
         result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
         Assert.Equal("PlatformName", result.Service.Name);
 
         // Consul-specific value beats generic value
         appsettings.Add("consul:serviceName", "ConsulServiceName");
-        config = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        appInstanceInfo = new ApplicationInstanceInfo(config);
+        configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        appInstanceInfo = new ApplicationInstanceInfo(configuration);
         result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
         Assert.Equal("ConsulServiceName", result.Service.Name);
 
         // Consul-discovery is highest priority
         appsettings.Add("consul:discovery:serviceName", "ConsulDiscoveryServiceName");
-        config = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        appInstanceInfo = new ApplicationInstanceInfo(config);
+        configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        appInstanceInfo = new ApplicationInstanceInfo(configuration);
         result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
         Assert.Equal("ConsulDiscoveryServiceName", result.Service.Name);
     }
@@ -119,7 +119,7 @@ public class ConsulRegistrationTest
     public void Tags_MapTo_Metadata()
     {
         // arrange some tags in configuration
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
             { "consul:discovery:tags:0", "key0=value0" },
             { "consul:discovery:tags:1", "key1=value1" },
@@ -128,7 +128,7 @@ public class ConsulRegistrationTest
 
         // bind to options
         var options = new ConsulDiscoveryOptions();
-        config.Bind(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix, options);
+        configurationRoot.Bind(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix, options);
         string[] tags = ConsulRegistration.CreateTags(options);
 
         // act - get metadata from tags
@@ -149,18 +149,18 @@ public class ConsulRegistrationTest
             { "consul:discovery:serviceName", "serviceName" }
         };
 
-        IConfiguration config = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        string result = ConsulRegistration.GetDefaultInstanceId(new ApplicationInstanceInfo(config));
+        IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        string result = ConsulRegistration.GetDefaultInstanceId(new ApplicationInstanceInfo(configuration));
         Assert.StartsWith("serviceName:", result);
 
         appsettings.Add("spring:application:instance_id", "springid");
-        config = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        result = ConsulRegistration.GetDefaultInstanceId(new ApplicationInstanceInfo(config));
+        configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        result = ConsulRegistration.GetDefaultInstanceId(new ApplicationInstanceInfo(configuration));
         Assert.Equal("serviceName:springid", result);
 
         appsettings.Add("vcap:application:instance_id", "vcapid");
-        config = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        result = ConsulRegistration.GetDefaultInstanceId(new CloudFoundryApplicationOptions(config));
+        configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        result = ConsulRegistration.GetDefaultInstanceId(new CloudFoundryApplicationOptions(configuration));
         Assert.Equal("serviceName:vcapid", result);
     }
 
@@ -172,17 +172,17 @@ public class ConsulRegistrationTest
             InstanceId = "instanceId"
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
             { "spring:application:name", "foobar" }
         }).Build();
 
-        string result = ConsulRegistration.GetInstanceId(options, new ApplicationInstanceInfo(config));
+        string result = ConsulRegistration.GetInstanceId(options, new ApplicationInstanceInfo(configurationRoot));
         Assert.Equal("instanceId", result);
 
         options.InstanceId = null;
 
-        result = ConsulRegistration.GetInstanceId(options, new ApplicationInstanceInfo(config));
+        result = ConsulRegistration.GetInstanceId(options, new ApplicationInstanceInfo(configurationRoot));
         Assert.StartsWith("foobar-", result);
     }
 
@@ -228,12 +228,12 @@ public class ConsulRegistrationTest
             Port = 1100
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
             { "spring:application:name", "foobar" }
         }).Build();
 
-        var reg = ConsulRegistration.CreateRegistration(options, new ApplicationInstanceInfo(config));
+        var reg = ConsulRegistration.CreateRegistration(options, new ApplicationInstanceInfo(configurationRoot));
 
         Assert.StartsWith("foobar-", reg.InstanceId);
         Assert.False(reg.IsSecure);

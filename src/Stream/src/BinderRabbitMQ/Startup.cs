@@ -8,8 +8,8 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binder.Rabbit;
-using Steeltoe.Stream.Binder.Rabbit.Config;
 using Steeltoe.Stream.Binder.Rabbit.Provisioning;
+using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
 
 [assembly: Binder("rabbit", typeof(Startup))]
 

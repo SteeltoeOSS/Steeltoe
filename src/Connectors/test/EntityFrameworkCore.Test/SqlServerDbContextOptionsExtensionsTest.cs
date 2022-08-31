@@ -26,18 +26,18 @@ public class SqlServerDbContextOptionsExtensionsTest
     {
         const DbContextOptionsBuilder optionsBuilder = null;
         const DbContextOptionsBuilder<GoodDbContext> goodBuilder = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(configurationRoot));
         Assert.Contains(nameof(optionsBuilder), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(configurationRoot, "foobar"));
         Assert.Contains(nameof(optionsBuilder), ex2.Message);
 
-        var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(config));
+        var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(configurationRoot));
         Assert.Contains(nameof(optionsBuilder), ex3.Message);
 
-        var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(config, "foobar"));
+        var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(configurationRoot, "foobar"));
         Assert.Contains(nameof(optionsBuilder), ex4.Message);
     }
 
@@ -46,19 +46,19 @@ public class SqlServerDbContextOptionsExtensionsTest
     {
         var optionsBuilder = new DbContextOptionsBuilder();
         var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(config, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
 
-        var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(config));
-        Assert.Contains(nameof(config), ex3.Message);
+        var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(configuration));
+        Assert.Contains(nameof(configuration), ex3.Message);
 
-        var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(config, "foobar"));
-        Assert.Contains(nameof(config), ex4.Message);
+        var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex4.Message);
     }
 
     [Fact]
@@ -66,13 +66,13 @@ public class SqlServerDbContextOptionsExtensionsTest
     {
         var optionsBuilder = new DbContextOptionsBuilder();
         var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         const string serviceName = null;
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(config, serviceName));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseSqlServer(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex2.Message);
 
-        var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(config, serviceName));
+        var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseSqlServer(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex4.Message);
     }
 
@@ -80,9 +80,9 @@ public class SqlServerDbContextOptionsExtensionsTest
     public void AddDbContext_NoVCAPs_AddsDbContext_WithSqlServerConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(configurationRoot));
 
         var service = services.BuildServiceProvider().GetService<GoodDbContext>();
         Assert.NotNull(service);
@@ -95,9 +95,9 @@ public class SqlServerDbContextOptionsExtensionsTest
     public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config, "foobar"));
+        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(configurationRoot, "foobar"));
 
         var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
         Assert.Contains("foobar", ex.Message);
@@ -113,9 +113,9 @@ public class SqlServerDbContextOptionsExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(configurationRoot));
 
         var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
         Assert.Contains("Multiple", ex.Message);
@@ -131,9 +131,9 @@ public class SqlServerDbContextOptionsExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(configurationRoot));
 
         ServiceProvider built = services.BuildServiceProvider();
         var service = built.GetService<GoodDbContext>();
@@ -161,9 +161,9 @@ public class SqlServerDbContextOptionsExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(configurationRoot));
 
         ServiceProvider built = services.BuildServiceProvider();
         var service = built.GetService<GoodDbContext>();

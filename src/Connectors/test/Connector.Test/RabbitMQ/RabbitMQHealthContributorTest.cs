@@ -26,8 +26,8 @@ public class RabbitMQHealthContributorTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
-        IHealthContributor contrib = RabbitMQHealthContributor.GetRabbitMQContributor(config);
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        IHealthContributor contrib = RabbitMQHealthContributor.GetRabbitMQContributor(configurationRoot);
         Assert.NotNull(contrib);
         HealthCheckResult status = contrib.Health();
         Assert.Equal(HealthStatus.Down, status.Status);
@@ -38,10 +38,10 @@ public class RabbitMQHealthContributorTest
     {
         _ = RabbitMQTypeLocator.ConnectionFactoryInterface;
         Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
-        var rabbitMQConfig = new RabbitMQProviderConnectorOptions();
+        var options = new RabbitMQProviderConnectorOptions();
         var sInfo = new RabbitMQServiceInfo("MyId", "amqp://si_username:si_password@localhost:5672/si_vhost");
         var factory = new LoggerFactory();
-        var connFactory = new RabbitMQProviderConnectorFactory(sInfo, rabbitMQConfig, rabbitMQImplementationType);
+        var connFactory = new RabbitMQProviderConnectorFactory(sInfo, options, rabbitMQImplementationType);
         var h = new RabbitMQHealthContributor(connFactory, factory.CreateLogger<RabbitMQHealthContributor>());
 
         HealthCheckResult status = h.Health();
@@ -54,10 +54,10 @@ public class RabbitMQHealthContributorTest
     public void Is_Connected_Returns_Up_Status()
     {
         Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
-        var rabbitMQConfig = new RabbitMQProviderConnectorOptions();
+        var options = new RabbitMQProviderConnectorOptions();
         var sInfo = new RabbitMQServiceInfo("MyId", "amqp://localhost:5672");
         var factory = new LoggerFactory();
-        var connFactory = new RabbitMQProviderConnectorFactory(sInfo, rabbitMQConfig, rabbitMQImplementationType);
+        var connFactory = new RabbitMQProviderConnectorFactory(sInfo, options, rabbitMQImplementationType);
         var h = new RabbitMQHealthContributor(connFactory, factory.CreateLogger<RabbitMQHealthContributor>());
 
         HealthCheckResult status = h.Health();

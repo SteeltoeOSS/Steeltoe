@@ -196,7 +196,7 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
     private EndpointSubsetNs GetSubsetsFromEndpoints(V1Endpoints endpoints)
     {
-        // Start with config or default
+        // Start with configuration or default
         var es = new EndpointSubsetNs
         {
             Namespace = _discoveryOptions.CurrentValue.Namespace ?? DefaultNamespace

@@ -25,8 +25,8 @@ public class MessageProducerSupportEndpointTest
         _services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         _services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         _services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        _services.AddSingleton<IConfiguration>(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        _services.AddSingleton<IConfiguration>(configurationRoot);
         _services.AddSingleton<IApplicationContext, GenericApplicationContext>();
     }
 

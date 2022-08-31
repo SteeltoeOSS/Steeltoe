@@ -39,8 +39,8 @@ public class BinderFactoryConfigurationTest : AbstractTest
 
         _ = factory.GetBinder("binder1", typeof(IMessageChannel));
 
-        IConfigurationSection config = provider.GetService<IConfiguration>().GetSection("binder1");
-        Assert.Equal("foobar", config["name"]);
+        IConfigurationSection section = provider.GetService<IConfiguration>().GetSection("binder1");
+        Assert.Equal("foobar", section["name"]);
     }
 
     [Fact]

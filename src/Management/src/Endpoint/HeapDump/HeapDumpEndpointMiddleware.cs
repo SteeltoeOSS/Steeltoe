@@ -42,7 +42,7 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
         }
 
         string gzFileName = $"{fileName}.gz";
-        Stream result = await Utils.CompressFileAsync(fileName, gzFileName).ConfigureAwait(false);
+        Stream result = await Utils.CompressFileAsync(fileName, gzFileName);
 
         if (result != null)
         {
@@ -51,7 +51,7 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
                 context.Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{Path.GetFileName(gzFileName)}\"");
                 context.Response.StatusCode = StatusCodes.Status200OK;
                 context.Response.ContentLength = result.Length;
-                await result.CopyToAsync(context.Response.Body).ConfigureAwait(false);
+                await result.CopyToAsync(context.Response.Body);
             }
 
             File.Delete(gzFileName);

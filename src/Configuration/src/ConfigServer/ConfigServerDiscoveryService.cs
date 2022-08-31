@@ -104,7 +104,7 @@ internal sealed class ConfigServerDiscoveryService
         if (discoveryClientFromDI is not null)
         {
             Logger.LogInformation("Replacing the IDiscoveryClient built at startup with one for runtime");
-            await DiscoveryClient.ShutdownAsync().ConfigureAwait(false);
+            await DiscoveryClient.ShutdownAsync();
             DiscoveryClient = discoveryClientFromDI;
             _usingInitialDiscoveryClient = false;
         }

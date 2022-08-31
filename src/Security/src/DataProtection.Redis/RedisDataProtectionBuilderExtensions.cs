@@ -23,12 +23,12 @@ public static class RedisDataProtectionBuilderExtensions
 
         builder.Services.AddSingleton<IConfigureOptions<KeyManagementOptions>>(p =>
         {
-            var config = new ConfigureNamedOptions<KeyManagementOptions>(Options.DefaultName, options =>
+            var namedOptions = new ConfigureNamedOptions<KeyManagementOptions>(Options.DefaultName, options =>
             {
                 options.XmlRepository = p.GetRequiredService<IXmlRepository>();
             });
 
-            return config;
+            return namedOptions;
         });
 
         return builder;

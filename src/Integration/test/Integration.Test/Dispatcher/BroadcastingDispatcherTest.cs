@@ -28,8 +28,8 @@ public class BroadcastingDispatcherTest
     public BroadcastingDispatcherTest()
     {
         var services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        services.AddSingleton<IConfiguration>(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         _provider = services.BuildServiceProvider();

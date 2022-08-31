@@ -61,12 +61,13 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HeapDumpActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((webHostContext, loggingBuilder) =>
-            {
-                loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                loggingBuilder.AddDynamicConsole();
-            });
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
+                (webHostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
+                });
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();

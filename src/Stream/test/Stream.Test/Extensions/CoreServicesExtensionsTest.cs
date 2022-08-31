@@ -20,8 +20,8 @@ public class CoreServicesExtensionsTest
         var container = new ServiceCollection();
         container.AddOptions();
         container.AddLogging(b => b.AddConsole());
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        container.AddSingleton<IConfiguration>(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        container.AddSingleton<IConfiguration>(configurationRoot);
         container.AddCoreServices();
         ServiceProvider serviceProvider = container.BuildServiceProvider();
         Assert.NotNull(serviceProvider.GetService<IApplicationContext>());

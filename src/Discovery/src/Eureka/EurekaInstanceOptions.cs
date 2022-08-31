@@ -6,7 +6,7 @@ using Steeltoe.Common.Net;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistrationOptions
+public class EurekaInstanceOptions : EurekaInstanceConfiguration, IDiscoveryRegistrationOptions
 {
     public const string EurekaInstanceConfigurationPrefix = "eureka:instance";
     public new const string DefaultStatusPageUrlPath = "/info";
@@ -106,7 +106,7 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
 
     public void ApplyConfigUrls(List<Uri> addresses, string wildcardHostname)
     {
-        // only use addresses from config if there are any and registration method hasn't been set
+        // only use addresses from configuration if there are any and registration method hasn't been set
         // if registration method has been set, the user probably wants to define their own behavior
         if (addresses.Any() && string.IsNullOrEmpty(RegistrationMethod))
         {

@@ -11,14 +11,14 @@ public class EurekaClientConfigTest : AbstractBaseTest
     [Fact]
     public void DefaultConstructor_InitializedWithDefaults()
     {
-        var config = new EurekaClientConfig();
-        Assert.Equal(EurekaClientConfig.DefaultRegistryFetchIntervalSeconds, config.RegistryFetchIntervalSeconds);
-        Assert.True(config.ShouldGZipContent);
-        Assert.Equal(EurekaClientConfig.DefaultEurekaServerConnectTimeoutSeconds, config.EurekaServerConnectTimeoutSeconds);
-        Assert.True(config.ShouldRegisterWithEureka);
-        Assert.False(config.ShouldDisableDelta);
-        Assert.True(config.ShouldFilterOnlyUpInstances);
-        Assert.True(config.ShouldFetchRegistry);
-        Assert.True(config.ShouldOnDemandUpdateStatusChange);
+        var configuration = new EurekaClientConfiguration();
+        Assert.Equal(EurekaClientConfiguration.DefaultRegistryFetchIntervalSeconds, configuration.RegistryFetchIntervalSeconds);
+        Assert.True(configuration.ShouldGZipContent);
+        Assert.Equal(EurekaClientConfiguration.DefaultEurekaServerConnectTimeoutSeconds, configuration.EurekaServerConnectTimeoutSeconds);
+        Assert.True(configuration.ShouldRegisterWithEureka);
+        Assert.False(configuration.ShouldDisableDelta);
+        Assert.True(configuration.ShouldFilterOnlyUpInstances);
+        Assert.True(configuration.ShouldFetchRegistry);
+        Assert.True(configuration.ShouldOnDemandUpdateStatusChange);
     }
 }

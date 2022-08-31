@@ -36,8 +36,8 @@ public class RabbitMQHealthContributor : IHealthContributor
 
         var info = configuration.GetSingletonServiceInfo<RabbitMQServiceInfo>();
 
-        var rabbitMQConfig = new RabbitMQProviderConnectorOptions(configuration);
-        var factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
+        var options = new RabbitMQProviderConnectorOptions(configuration);
+        var factory = new RabbitMQProviderConnectorFactory(info, options, rabbitMQImplementationType);
         return new RabbitMQHealthContributor(factory, logger);
     }
 

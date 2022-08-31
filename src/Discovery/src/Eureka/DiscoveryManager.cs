@@ -18,7 +18,7 @@ public class DiscoveryManager
 
     public virtual DiscoveryClient Client { get; protected internal set; }
 
-    public virtual IEurekaClientConfig ClientConfig { get; protected internal set; }
+    public virtual IEurekaClientConfiguration ClientConfiguration { get; protected internal set; }
 
     public virtual IEurekaInstanceConfig InstanceConfig { get; protected internal set; }
 
@@ -28,33 +28,33 @@ public class DiscoveryManager
     {
     }
 
-    public virtual void Initialize(IEurekaClientConfig clientConfig, ILoggerFactory logFactory = null)
+    public virtual void Initialize(IEurekaClientConfiguration clientConfiguration, ILoggerFactory logFactory = null)
     {
-        Initialize(clientConfig, (IEurekaHttpClient)null, logFactory);
+        Initialize(clientConfiguration, (IEurekaHttpClient)null, logFactory);
     }
 
-    public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
+    public virtual void Initialize(IEurekaClientConfiguration clientConfiguration, IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
     {
-        Initialize(clientConfig, instanceConfig, null, logFactory);
+        Initialize(clientConfiguration, instanceConfig, null, logFactory);
     }
 
-    public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
+    public virtual void Initialize(IEurekaClientConfiguration clientConfiguration, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
     {
-        ArgumentGuard.NotNull(clientConfig);
+        ArgumentGuard.NotNull(clientConfiguration);
 
         logger = logFactory?.CreateLogger<DiscoveryManager>();
-        ClientConfig = clientConfig;
-        Client = new DiscoveryClient(clientConfig, httpClient, logFactory);
+        ClientConfiguration = clientConfiguration;
+        Client = new DiscoveryClient(clientConfiguration, httpClient, logFactory);
     }
 
-    public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, IEurekaHttpClient httpClient,
+    public virtual void Initialize(IEurekaClientConfiguration clientConfiguration, IEurekaInstanceConfig instanceConfig, IEurekaHttpClient httpClient,
         ILoggerFactory logFactory = null)
     {
-        ArgumentGuard.NotNull(clientConfig);
+        ArgumentGuard.NotNull(clientConfiguration);
         ArgumentGuard.NotNull(instanceConfig);
 
         logger = logFactory?.CreateLogger<DiscoveryManager>();
-        ClientConfig = clientConfig;
+        ClientConfiguration = clientConfiguration;
         InstanceConfig = instanceConfig;
 
         if (ApplicationInfoManager.Instance.InstanceInfo == null)
@@ -62,6 +62,6 @@ public class DiscoveryManager
             ApplicationInfoManager.Instance.Initialize(instanceConfig, logFactory);
         }
 
-        Client = new DiscoveryClient(clientConfig, httpClient, logFactory);
+        Client = new DiscoveryClient(clientConfiguration, httpClient, logFactory);
     }
 }

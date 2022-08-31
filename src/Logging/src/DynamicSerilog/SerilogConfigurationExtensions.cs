@@ -11,7 +11,7 @@ internal static class SerilogConfigurationExtensions
 {
     /// <summary>
     /// Clear all the levels from serilog configuration. This extension is used to clear the levels in serilog, after capturing them into steeltoe config and
-    /// using steeltoe config to control the verbosity.
+    /// using steeltoe configuration to control the verbosity.
     /// </summary>
     /// <param name="loggerConfiguration">
     /// The <see cref="LoggerConfiguration" />.

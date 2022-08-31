@@ -19,8 +19,8 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        services.AddSingleton<IConfiguration>(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         _provider = services.BuildServiceProvider();
     }

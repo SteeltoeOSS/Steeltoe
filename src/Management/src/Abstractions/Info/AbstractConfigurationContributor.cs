@@ -9,15 +9,15 @@ namespace Steeltoe.Management.Info;
 
 public abstract class AbstractConfigurationContributor
 {
-    protected IConfiguration config;
+    protected IConfiguration configuration;
 
     protected AbstractConfigurationContributor()
     {
     }
 
-    protected AbstractConfigurationContributor(IConfiguration config)
+    protected AbstractConfigurationContributor(IConfiguration configuration)
     {
-        this.config = config;
+        this.configuration = configuration;
     }
 
     protected virtual void Contribute(IInfoBuilder builder, string prefix, bool keepPrefix)
@@ -29,12 +29,12 @@ public abstract class AbstractConfigurationContributor
 
     protected virtual Dictionary<string, object> CreateDictionary(string prefix, bool keepPrefix)
     {
-        if (config != null)
+        if (configuration != null)
         {
             var result = new Dictionary<string, object>();
             Dictionary<string, object> dict = result;
 
-            IConfigurationSection section = config.GetSection(prefix);
+            IConfigurationSection section = configuration.GetSection(prefix);
             IEnumerable<IConfigurationSection> children = section.GetChildren();
 
             if (keepPrefix)

@@ -19,11 +19,11 @@ public class WavefrontApplicationOptions
 
     public string Cluster { get; set; }
 
-    public WavefrontApplicationOptions(IConfiguration config)
+    public WavefrontApplicationOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(WavefrontPrefix);
+        IConfigurationSection section = configuration.GetSection(WavefrontPrefix);
 
         if (section == null)
         {

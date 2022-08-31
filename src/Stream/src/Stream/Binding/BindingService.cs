@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Stream.Binder;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 
 namespace Steeltoe.Stream.Binding;
 

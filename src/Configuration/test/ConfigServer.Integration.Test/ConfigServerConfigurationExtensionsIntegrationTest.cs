@@ -52,7 +52,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
         IHostEnvironment hostingEnv = HostingHelpers.GetHostingEnvironment();
         configurationBuilder.AddJsonFile(fileName);
 
-        // Act and Assert (expects Spring Cloud Config server to be running)
+        // Act and Assert (expects Spring Cloud Config Server to be running)
         configurationBuilder.AddConfigServer(hostingEnv);
         IConfigurationRoot root = configurationBuilder.Build();
 
@@ -93,12 +93,12 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
         string fileName = Path.GetFileName(path);
 
         IWebHostBuilder builder = new WebHostBuilder().UseEnvironment("development").UseStartup<TestServerStartup>().ConfigureAppConfiguration(
-            (context, config) =>
+            (context, configuration) =>
             {
-                config.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment);
+                configuration.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment);
             });
 
-        // Act and Assert (TestServer expects Spring Cloud Config server to be running)
+        // Act and Assert (TestServer expects Spring Cloud Config Server to be running)
         using var server = new TestServer(builder);
         using HttpClient client = server.CreateClient();
         string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
@@ -174,14 +174,14 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
         string fileName = Path.GetFileName(path);
 
         IWebHostBuilder builder = new WebHostBuilder().UseEnvironment("development").UseStartup<TestServerStartup>().ConfigureAppConfiguration(
-            (context, config) =>
+            (context, configuration) =>
             {
-                config.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment);
+                configuration.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment);
             });
 
         try
         {
-            // Act and Assert (TestServer expects Spring Cloud Config server to be running @ localhost:8888)
+            // Act and Assert (TestServer expects Spring Cloud Config Server to be running @ localhost:8888)
             using var server = new TestServer(builder);
             using HttpClient client = server.CreateClient();
             string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
@@ -264,14 +264,14 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
         string fileName = Path.GetFileName(path);
 
         IWebHostBuilder builder = new WebHostBuilder().UseEnvironment("development").UseStartup<TestServerStartup>().ConfigureAppConfiguration(
-            (context, config) =>
+            (context, configuration) =>
             {
-                config.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment);
+                configuration.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment);
             });
 
         try
         {
-            // Act and Assert (TestServer expects Spring Cloud Config server to be running)
+            // Act and Assert (TestServer expects Spring Cloud Config Server to be running)
             using var server = new TestServer(builder);
             using HttpClient client = server.CreateClient();
             string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
@@ -286,7 +286,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     }
 
     // NOTE: This test assumes a running Spring Cloud Config Server is started
-    //      and a Spring Cloud Eureka Server is also running. The Config server must be
+    //      and a Spring Cloud Eureka Server is also running. The Config Server must be
     //      configured to register itself with Eureka upon start up.
     //
     //      The easiest way to get that to happen is create a spring boot application:
@@ -331,7 +331,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     //      fetchRegistry: true
     //      serviceUrl:
     //          defaultZone: http://localhost:8761/eureka/
-    [Fact(Skip = "Config server image needs to be enhanced to support discovery-first")]
+    [Fact(Skip = "Config Server image needs to be enhanced to support discovery-first")]
     [Trait("Category", "Integration")]
     public void SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()
     {
@@ -369,7 +369,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
         IHostEnvironment hostingEnv = HostingHelpers.GetHostingEnvironment("development");
         configurationBuilder.AddJsonFile(fileName);
 
-        // Act and Assert (expects Spring Cloud Config server to be running)
+        // Act and Assert (expects Spring Cloud Config Server to be running)
         configurationBuilder.AddConfigServer(hostingEnv);
         IConfigurationRoot root = configurationBuilder.Build();
 
@@ -409,12 +409,12 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
         string directory = Path.GetDirectoryName(path);
         string fileName = Path.GetFileName(path);
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestServerStartup>().ConfigureAppConfiguration((context, config) =>
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestServerStartup>().ConfigureAppConfiguration((context, builder) =>
         {
-            config.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment);
+            builder.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment);
         });
 
-        // Act and Assert (TestServer expects Spring Cloud Config server to be running)
+        // Act and Assert (TestServer expects Spring Cloud Config Server to be running)
         using var server = new TestServer(builder);
         using HttpClient client = server.CreateClient();
         string result = await client.GetStringAsync("http://localhost/Home/Health");

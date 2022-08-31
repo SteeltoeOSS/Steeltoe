@@ -21,8 +21,8 @@ public class CloudfoundryManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
-        Assert.Throws<ArgumentNullException>(() => new CloudFoundryManagementOptions(config));
+        const IConfiguration configuration = null;
+        Assert.Throws<ArgumentNullException>(() => new CloudFoundryManagementOptions(configuration));
     }
 
     [Fact]
@@ -36,9 +36,9 @@ public class CloudfoundryManagementOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new ActuatorManagementOptions(config);
+        var opts = new ActuatorManagementOptions(configurationRoot);
 
         Assert.Equal("/management", opts.Path);
         Assert.False(opts.Enabled);
@@ -57,9 +57,9 @@ public class CloudfoundryManagementOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new CloudFoundryManagementOptions(config);
+        var opts = new CloudFoundryManagementOptions(configurationRoot);
 
         Assert.Equal("/cloudfoundryapplication", opts.Path);
         Assert.False(opts.Enabled);

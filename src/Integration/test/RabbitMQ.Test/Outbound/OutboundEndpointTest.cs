@@ -21,9 +21,9 @@ public class OutboundEndpointTest
     [Fact]
     public void TestDelay()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         ServiceProvider services = new ServiceCollection().BuildServiceProvider();
-        var context = new GenericApplicationContext(services, config);
+        var context = new GenericApplicationContext(services, configurationRoot);
 
         var connectionFactory = new Mock<IConnectionFactory>();
 

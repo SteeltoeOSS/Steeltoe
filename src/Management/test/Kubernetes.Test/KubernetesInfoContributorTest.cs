@@ -51,8 +51,8 @@ public class KubernetesInfoContributorTest
     // public async Task Test1()
     // {
     //    var appSettings = new Dictionary<string, string> { { "spring:cloud:kubernetes", "kubedev" } };
-    //    var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-    //    var utils = new StandardPodUtilities(new KubernetesApplicationOptions(config));
+    //    var configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+    //    var utils = new StandardPodUtilities(new KubernetesApplicationOptions(configuration));
     //    await utils.GetCurrentPodAsync();
     // }
 }

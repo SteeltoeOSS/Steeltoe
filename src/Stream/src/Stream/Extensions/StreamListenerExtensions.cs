@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binding;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 
 namespace Steeltoe.Stream.Extensions;
 

@@ -29,8 +29,8 @@ public class MetricsEndpointOptions : AbstractEndpointOptions, IMetricsEndpointO
         ExactMatch = false;
     }
 
-    public MetricsEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
+    public MetricsEndpointOptions(IConfiguration configuration)
+        : base(ManagementInfoPrefix, configuration)
     {
         if (string.IsNullOrEmpty(Id))
         {

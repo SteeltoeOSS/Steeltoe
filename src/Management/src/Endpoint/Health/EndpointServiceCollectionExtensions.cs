@@ -29,13 +29,13 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add health to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
     /// management:endpoints:health).
     /// </param>
-    public static void AddHealthActuator(this IServiceCollection services, IConfiguration config = null)
+    public static void AddHealthActuator(this IServiceCollection services, IConfiguration configuration = null)
     {
-        services.AddHealthActuator(config, new HealthRegistrationsAggregator(), DefaultHealthContributors);
+        services.AddHealthActuator(configuration, new HealthRegistrationsAggregator(), DefaultHealthContributors);
     }
 
     /// <summary>
@@ -44,18 +44,18 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add health to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
     /// management:endpoints:health).
     /// </param>
     /// <param name="contributors">
     /// Contributors to application health.
     /// </param>
-    public static void AddHealthActuator(this IServiceCollection services, IConfiguration config = null, params Type[] contributors)
+    public static void AddHealthActuator(this IServiceCollection services, IConfiguration configuration = null, params Type[] contributors)
     {
         ArgumentGuard.NotNull(services);
 
-        services.AddHealthActuator(config, new HealthRegistrationsAggregator(), contributors);
+        services.AddHealthActuator(configuration, new HealthRegistrationsAggregator(), contributors);
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add health to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
     /// management:endpoints:health).
     /// </param>
@@ -74,15 +74,16 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="contributors">
     /// Contributors to application health.
     /// </param>
-    public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, IHealthAggregator aggregator, params Type[] contributors)
+    public static void AddHealthActuator(this IServiceCollection services, IConfiguration configuration, IHealthAggregator aggregator,
+        params Type[] contributors)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(aggregator);
 
-        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddActuatorManagementOptions(config);
-        services.AddHealthActuatorServices(config);
+        services.AddActuatorManagementOptions(configuration);
+        services.AddHealthActuatorServices(configuration);
 
         AddHealthContributors(services, contributors);
 

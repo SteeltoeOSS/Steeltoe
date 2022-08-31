@@ -114,12 +114,12 @@ public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
         SecondChanceSetIdProperties(this.configuration);
     }
 
-    protected void SecondChanceSetIdProperties(IConfiguration config = null)
+    protected void SecondChanceSetIdProperties(IConfiguration configuration = null)
     {
-        if (config != null)
+        if (configuration != null)
         {
-            Instance_Id ??= config.GetValue<string>(AppInstanceIdKey);
-            Application_Id ??= config.GetValue<string>($"{SpringApplicationRoot}:id");
+            Instance_Id ??= configuration.GetValue<string>(AppInstanceIdKey);
+            Application_Id ??= configuration.GetValue<string>($"{SpringApplicationRoot}:id");
         }
     }
 

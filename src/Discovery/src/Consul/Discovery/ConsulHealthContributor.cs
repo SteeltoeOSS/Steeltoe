@@ -104,7 +104,7 @@ public class ConsulHealthContributor : IHealthContributor
 
     internal async Task<Dictionary<string, string[]>> GetCatalogServicesAsync()
     {
-        QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(QueryOptions.Default).ConfigureAwait(false);
+        QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(QueryOptions.Default);
         return result.Response;
     }
 }

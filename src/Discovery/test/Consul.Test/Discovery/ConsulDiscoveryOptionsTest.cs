@@ -59,14 +59,14 @@ public class ConsulDiscoveryOptionsTest
             IpAddress = "254.254.254.254"
         }).Verifiable();
 
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         var opts = new ConsulDiscoveryOptions
         {
             NetUtils = mockNetUtils.Object
         };
 
-        config.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
+        configurationRoot.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
 
         opts.ApplyNetUtils();
 
@@ -89,14 +89,14 @@ public class ConsulDiscoveryOptionsTest
             { "consul:discovery:UseNetUtils", "true" }
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var opts = new ConsulDiscoveryOptions
         {
             NetUtils = mockNetUtils.Object
         };
 
-        config.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
+        configurationRoot.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
 
         opts.ApplyNetUtils();
 
@@ -115,14 +115,14 @@ public class ConsulDiscoveryOptionsTest
             { "spring:cloud:inet:SkipReverseDnsLookup", "true" }
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var opts = new ConsulDiscoveryOptions
         {
-            NetUtils = new InetUtils(config.GetSection(InetOptions.Prefix).Get<InetOptions>())
+            NetUtils = new InetUtils(configurationRoot.GetSection(InetOptions.Prefix).Get<InetOptions>())
         };
 
-        config.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
+        configurationRoot.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
 
         var noSlowReverseDnsQuery = new Stopwatch();
         noSlowReverseDnsQuery.Start();

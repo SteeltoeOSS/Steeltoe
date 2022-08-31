@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Steeltoe.CircuitBreaker.Hystrix.Config;
+using Steeltoe.CircuitBreaker.Hystrix.Configuration;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Xunit;

@@ -54,8 +54,8 @@ public class ConsulServiceRegistryTest
             { "spring:application:name", "foobar" }
         });
 
-        IConfigurationRoot config = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
+        IConfigurationRoot configurationRoot = builder.Build();
+        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(configurationRoot));
         await reg.RegisterAsync(registration);
 
         agentMoq.Verify(a => a.ServiceRegister(registration.Service, default), Times.Once);
@@ -98,8 +98,8 @@ public class ConsulServiceRegistryTest
             { "spring:application:name", "foobar" }
         });
 
-        IConfigurationRoot config = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
+        IConfigurationRoot configurationRoot = builder.Build();
+        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(configurationRoot));
         await reg.RegisterAsync(registration);
 
         agentMoq.Verify(a => a.ServiceRegister(registration.Service, default), Times.Once);
@@ -143,8 +143,8 @@ public class ConsulServiceRegistryTest
             { "spring:application:name", "foobar" }
         });
 
-        IConfigurationRoot config = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
+        IConfigurationRoot configurationRoot = builder.Build();
+        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(configurationRoot));
 
         var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
         Assert.ThrowsAsync<ArgumentException>(() => reg.SetStatusAsync(registration, string.Empty));
@@ -166,8 +166,8 @@ public class ConsulServiceRegistryTest
             { "spring:application:name", "foobar" }
         });
 
-        IConfigurationRoot config = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
+        IConfigurationRoot configurationRoot = builder.Build();
+        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(configurationRoot));
 
         var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
         await reg.SetStatusAsync(registration, "Up");
@@ -201,8 +201,8 @@ public class ConsulServiceRegistryTest
             { "spring:application:name", "foobar" }
         });
 
-        IConfigurationRoot config = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
+        IConfigurationRoot configurationRoot = builder.Build();
+        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(configurationRoot));
 
         var queryResult = new QueryResult<HealthCheck[]>
         {

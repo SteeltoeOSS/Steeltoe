@@ -9,12 +9,12 @@ using Steeltoe.Common.Retry;
 using Steeltoe.Integration.Rabbit.Inbound;
 using Steeltoe.Integration.Rabbit.Outbound;
 using Steeltoe.Messaging;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
-using Steeltoe.Stream.Binder.Rabbit.Config;
+using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -12,10 +12,10 @@ public class OAuthConnectorOptionsTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
+        const IConfiguration configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new OAuthConnectorOptions(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new OAuthConnectorOptions(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
     }
 
     [Fact]
@@ -37,9 +37,9 @@ public class OAuthConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new OAuthConnectorOptions(config);
+        var options = new OAuthConnectorOptions(configurationRoot);
         Assert.Equal("accesstokenuri", options.AccessTokenUri);
         Assert.Equal("clientid", options.ClientId);
         Assert.Equal("clientsecret", options.ClientSecret);
@@ -65,9 +65,9 @@ public class OAuthConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new OAuthConnectorOptions(config);
+        var options = new OAuthConnectorOptions(configurationRoot);
 
         Assert.False(options.ValidateCertificates);
     }
@@ -83,9 +83,9 @@ public class OAuthConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new OAuthConnectorOptions(config);
+        var options = new OAuthConnectorOptions(configurationRoot);
 
         Assert.False(options.ValidateCertificates);
     }

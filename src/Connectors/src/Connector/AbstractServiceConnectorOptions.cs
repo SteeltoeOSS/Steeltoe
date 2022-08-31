@@ -15,12 +15,12 @@ public abstract class AbstractServiceConnectorOptions
     private readonly char _keyValueTerm;
     private readonly char _keyValueSep;
 
-    protected AbstractServiceConnectorOptions(IConfiguration config, char terminator = DefaultTerminator, char separator = DefaultSeparator)
+    protected AbstractServiceConnectorOptions(IConfiguration configuration, char terminator = DefaultTerminator, char separator = DefaultSeparator)
         : this(terminator, separator)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        config.Bind(this);
+        configuration.Bind(this);
     }
 
     protected AbstractServiceConnectorOptions()

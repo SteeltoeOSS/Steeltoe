@@ -53,7 +53,7 @@ public class TokenExchanger
 
         try
         {
-            return await _httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
+            return await _httpClient.SendAsync(requestMessage, cancellationToken);
         }
         finally
         {
@@ -72,7 +72,7 @@ public class TokenExchanger
     /// </returns>
     public async Task<ClaimsIdentity> ExchangeAuthCodeForClaimsIdentityAsync(string code)
     {
-        HttpResponseMessage response = await ExchangeCodeForTokenAsync(code, _options.AuthorizationUrl, default).ConfigureAwait(false);
+        HttpResponseMessage response = await ExchangeCodeForTokenAsync(code, _options.AuthorizationUrl, default);
 
         if (response.IsSuccessStatusCode)
         {
@@ -89,7 +89,7 @@ public class TokenExchanger
 
         _logger?.LogError("Failed call to exchange code for token: {status}", response.StatusCode);
         _logger?.LogWarning(response.ReasonPhrase);
-        _logger?.LogInformation(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+        _logger?.LogInformation(await response.Content.ReadAsStringAsync());
 
         return null;
     }
@@ -112,7 +112,7 @@ public class TokenExchanger
 
         try
         {
-            return await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
+            return await _httpClient.SendAsync(requestMessage);
         }
         finally
         {

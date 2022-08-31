@@ -13,7 +13,7 @@ using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Handler.Attributes.Support;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
@@ -219,10 +219,10 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             Provider.Dispose();
         }
 
-        public ServiceCollection CreateContainer(IConfiguration config = null)
+        public ServiceCollection CreateContainer(IConfiguration configuration = null)
         {
             var services = new ServiceCollection();
-            config ??= new ConfigurationBuilder().Build();
+            configuration ??= new ConfigurationBuilder().Build();
 
             services.AddLogging(b =>
             {
@@ -230,7 +230,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
                 b.AddConsole();
             });
 
-            services.AddSingleton(config);
+            services.AddSingleton(configuration);
             services.AddRabbitHostingServices();
             services.AddRabbitJsonMessageConverter();
 
@@ -264,7 +264,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             });
 
             services.AddSingleton<Foo2Service>();
-            services.AddRabbitListeners<Foo2Service>(config);
+            services.AddRabbitListeners<Foo2Service>(configuration);
 
             return services;
         }

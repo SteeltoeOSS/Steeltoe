@@ -66,8 +66,8 @@ public class ConfigServerClientSettingsOptionsTest
         var builder = new ConfigurationBuilder();
         builder.SetBasePath(directory);
         builder.AddJsonFile(fileName);
-        IConfigurationRoot config = builder.Build();
-        services.AddSingleton<IConfiguration>(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        services.AddSingleton<IConfiguration>(configurationRoot);
 
         services.ConfigureConfigServerClientOptions();
         var service = services.BuildServiceProvider().GetService<IOptions<ConfigServerClientSettingsOptions>>();

@@ -80,12 +80,12 @@ public class EurekaServerHealthContributorTest
 
         results = new HealthCheckResult();
 
-        var config = new EurekaClientConfig
+        var configuration = new EurekaClientConfiguration
         {
             ShouldFetchRegistry = true
         };
 
-        contrib.AddFetchStatus(config, results, 0);
+        contrib.AddFetchStatus(configuration, results, 0);
         Assert.Contains("fetch", results.Details.Keys);
         Assert.Contains("Not yet successfully connected", (string)results.Details["fetch"]);
         Assert.Contains("fetchTime", results.Details.Keys);
@@ -94,9 +94,9 @@ public class EurekaServerHealthContributorTest
         Assert.Equal("UNKNOWN", results.Details["fetchStatus"]);
 
         results = new HealthCheckResult();
-        long ticks = DateTime.UtcNow.Ticks - TimeSpan.TicksPerSecond * config.RegistryFetchIntervalSeconds * 10;
+        long ticks = DateTime.UtcNow.Ticks - TimeSpan.TicksPerSecond * configuration.RegistryFetchIntervalSeconds * 10;
         var dateTime = new DateTime(ticks);
-        contrib.AddFetchStatus(config, results, ticks);
+        contrib.AddFetchStatus(configuration, results, ticks);
         Assert.Contains("fetch", results.Details.Keys);
         Assert.Contains("Reporting failures", (string)results.Details["fetch"]);
         Assert.Contains("fetchTime", results.Details.Keys);
@@ -118,12 +118,12 @@ public class EurekaServerHealthContributorTest
 
         results = new HealthCheckResult();
 
-        var clientConfig = new EurekaClientConfig
+        var clientConfig = new EurekaClientConfiguration
         {
             ShouldRegisterWithEureka = true
         };
 
-        var instanceConfig = new EurekaInstanceConfig();
+        var instanceConfig = new EurekaInstanceConfiguration();
 
         contrib.AddHeartbeatStatus(clientConfig, instanceConfig, results, 0);
         Assert.Contains("heartbeat", results.Details.Keys);

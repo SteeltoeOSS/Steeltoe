@@ -35,7 +35,7 @@ public class LoadBalancerHttpClientHandler : HttpClientHandler
         Uri originalUri = request.RequestUri;
 
         // look up a service instance and update the request
-        Uri resolvedUri = await _loadBalancer.ResolveServiceInstanceAsync(request.RequestUri).ConfigureAwait(false);
+        Uri resolvedUri = await _loadBalancer.ResolveServiceInstanceAsync(request.RequestUri);
         request.RequestUri = resolvedUri;
 
         // allow other handlers to operate and the request to continue
@@ -45,7 +45,7 @@ public class LoadBalancerHttpClientHandler : HttpClientHandler
 
         try
         {
-            return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            return await base.SendAsync(request, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -58,7 +58,7 @@ public class LoadBalancerHttpClientHandler : HttpClientHandler
             request.RequestUri = originalUri;
 
             // track stats
-            await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, DateTime.UtcNow - startTime, exception).ConfigureAwait(false);
+            await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, DateTime.UtcNow - startTime, exception);
         }
     }
 }

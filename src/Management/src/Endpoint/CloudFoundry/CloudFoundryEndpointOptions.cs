@@ -24,11 +24,11 @@ public class CloudFoundryEndpointOptions : AbstractEndpointOptions, ICloudFoundr
         Id = string.Empty;
     }
 
-    public CloudFoundryEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
+    public CloudFoundryEndpointOptions(IConfiguration configuration)
+        : base(ManagementInfoPrefix, configuration)
     {
         Id = string.Empty;
-        ApplicationId = config[VcapApplicationIdKey];
-        CloudFoundryApi = config[VcapApplicationCloudfoundryApiKey];
+        ApplicationId = configuration[VcapApplicationIdKey];
+        CloudFoundryApi = configuration[VcapApplicationCloudfoundryApiKey];
     }
 }

@@ -340,7 +340,7 @@ public class DefaultLifecycleProcessorTest
 
     private static IApplicationContext CreateApplicationContext(List<ILifecycle> lifecycles, List<ISmartLifecycle> smartLifecycles)
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         var serviceCollection = new ServiceCollection();
 
         foreach (ILifecycle lifeCycle in lifecycles)
@@ -353,7 +353,7 @@ public class DefaultLifecycleProcessorTest
             serviceCollection.AddSingleton(lifeCycle);
         }
 
-        return new GenericApplicationContext(serviceCollection.BuildServiceProvider(), config);
+        return new GenericApplicationContext(serviceCollection.BuildServiceProvider(), configurationRoot);
     }
 
     private static int GetPhase(ILifecycle lifecycle)

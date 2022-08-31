@@ -28,7 +28,7 @@ using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
@@ -37,18 +37,18 @@ using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Retry;
 using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 using Steeltoe.Messaging.Support;
-using Steeltoe.Stream.Binder.Rabbit.Config;
 using Steeltoe.Stream.Binder.Rabbit.Provisioning;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
+using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Converter;
 using Steeltoe.Stream.Provisioning;
 using Xunit;
 using Xunit.Abstractions;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
-using ExchangeType = Steeltoe.Messaging.RabbitMQ.Config.ExchangeType;
+using ExchangeType = Steeltoe.Messaging.RabbitMQ.Configuration.ExchangeType;
 using Message = Steeltoe.Messaging.Message;
-using Queue = Steeltoe.Messaging.RabbitMQ.Config.Queue;
-using RabbitBinding = Steeltoe.Messaging.RabbitMQ.Config.Binding;
+using Queue = Steeltoe.Messaging.RabbitMQ.Configuration.Queue;
+using RabbitBinding = Steeltoe.Messaging.RabbitMQ.Configuration.Binding;
 
 namespace Steeltoe.Stream.Binder.Rabbit;
 
@@ -1732,7 +1732,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var admin = new RabbitAdmin(GetResource());
         Queue queue = new AnonymousQueue();
         var exchange = new TopicExchange("rke");
-        Steeltoe.Messaging.RabbitMQ.Config.IBinding binding = BindingBuilder.Bind(queue).To(exchange).With("rkeTest");
+        Steeltoe.Messaging.RabbitMQ.Configuration.IBinding binding = BindingBuilder.Bind(queue).To(exchange).With("rkeTest");
         admin.DeclareQueue(queue);
         admin.DeclareBinding(binding);
 
@@ -1777,7 +1777,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var admin = new RabbitAdmin(GetResource());
         Queue queue = new AnonymousQueue();
         var exchange = new TopicExchange("rkep");
-        Steeltoe.Messaging.RabbitMQ.Config.IBinding binding = BindingBuilder.Bind(queue).To(exchange).With("rkepTest-0");
+        Steeltoe.Messaging.RabbitMQ.Configuration.IBinding binding = BindingBuilder.Bind(queue).To(exchange).With("rkepTest-0");
         admin.DeclareQueue(queue);
         admin.DeclareBinding(binding);
 

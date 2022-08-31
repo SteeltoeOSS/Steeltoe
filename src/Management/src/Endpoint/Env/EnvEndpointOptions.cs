@@ -29,8 +29,8 @@ public class EnvEndpointOptions : AbstractEndpointOptions, IEnvOptions
         KeysToSanitize = DefaultKeysToSanitize;
     }
 
-    public EnvEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
+    public EnvEndpointOptions(IConfiguration configuration)
+        : base(ManagementInfoPrefix, configuration)
     {
         if (string.IsNullOrEmpty(Id))
         {

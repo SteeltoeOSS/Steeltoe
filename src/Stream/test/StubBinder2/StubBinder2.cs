@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Stream.Binder;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 
 namespace Steeltoe.Stream.StubBinder2;
 

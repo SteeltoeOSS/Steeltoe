@@ -23,7 +23,7 @@ public class MySqlProviderConnectorFactoryTest
     [Fact]
     public void Create_ReturnsMySqlConnection()
     {
-        var config = new MySqlProviderConnectorOptions
+        var options = new MySqlProviderConnectorOptions
         {
             Server = "localhost",
             Port = 3306,
@@ -33,7 +33,7 @@ public class MySqlProviderConnectorFactoryTest
         };
 
         var si = new MySqlServiceInfo("MyId", "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
-        var factory = new MySqlProviderConnectorFactory(si, config, typeof(MySqlConnection));
+        var factory = new MySqlProviderConnectorFactory(si, options, typeof(MySqlConnection));
         object connection = factory.Create(null);
         Assert.NotNull(connection);
     }

@@ -38,9 +38,9 @@ public class ConnectionStringManagerTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
-        IConfigurationRoot config = new ConfigurationBuilder().AddCloudFoundry().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCloudFoundry().Build();
 
-        var cm = new ConnectionStringManager(config);
+        var cm = new ConnectionStringManager(configurationRoot);
         Connection connInfo = cm.Get<MySqlConnectionInfo>("spring-cloud-broker-db");
 
         Assert.NotNull(connInfo);
@@ -166,7 +166,7 @@ public class ConnectionStringManagerTest
     public void ConnectionInfoTypeFoundByName(string value)
     {
         var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        Assert.StartsWith(value, manager.GetByTypeName(value).Name, StringComparison.InvariantCultureIgnoreCase);
+        Assert.StartsWith(value, manager.GetByTypeName(value).Name, StringComparison.OrdinalIgnoreCase);
     }
 
     [Theory]
