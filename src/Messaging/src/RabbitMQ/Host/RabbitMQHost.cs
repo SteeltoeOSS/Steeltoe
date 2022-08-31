@@ -2,9 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common.Lifecycle;
 
 namespace Steeltoe.Messaging.RabbitMQ.Host;
 
@@ -29,6 +28,23 @@ public sealed class RabbitMQHost : IHost
         return new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args));
     }
 
+    public static WebApplicationBuilder CreateWebApplicationBuilder()
+    {
+        return GetWebApplicationBuilder();
+    }
+
+    public static WebApplicationBuilder CreateWebApplicationBuilder(string[] args)
+    {
+        return GetWebApplicationBuilder(args);
+    }
+
+    private static WebApplicationBuilder GetWebApplicationBuilder(string[] args = null)
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+        builder.Services.ConfigureRabbitServices(builder.Configuration);
+        return builder;
+    }
+
     public void Dispose()
     {
         _host?.Dispose();
@@ -36,23 +52,11 @@ public sealed class RabbitMQHost : IHost
 
     public Task StartAsync(CancellationToken cancellationToken = default)
     {
-        using (IServiceScope scope = _host.Services.CreateScope())
-        {
-            var lifecycleProcessor = scope.ServiceProvider.GetRequiredService<ILifecycleProcessor>();
-            lifecycleProcessor.OnRefreshAsync();
-        }
-
         return _host.StartAsync(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        using (IServiceScope scope = _host.Services.CreateScope())
-        {
-            var lifecycleProcessor = scope.ServiceProvider.GetRequiredService<ILifecycleProcessor>();
-            lifecycleProcessor.StopAsync();
-        }
-
         return _host.StopAsync(cancellationToken);
     }
 }

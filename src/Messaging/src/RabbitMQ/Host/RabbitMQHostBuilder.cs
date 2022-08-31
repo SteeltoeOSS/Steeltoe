@@ -6,8 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Extensions.Configuration.SpringBoot;
-using Steeltoe.Messaging.RabbitMQ.Config;
-using Steeltoe.Messaging.RabbitMQ.Extensions;
 
 namespace Steeltoe.Messaging.RabbitMQ.Host;
 
@@ -24,15 +22,7 @@ public class RabbitMQHostBuilder : IHostBuilder
         _hostbuilder.ConfigureAppConfiguration(configBuilder =>
         {
             configBuilder.AddSpringBootEnv();
-        }).ConfigureServices((hostBuilderContext, services) =>
-        {
-            IConfigurationSection rabbitConfigSection = hostBuilderContext.Configuration.GetSection(RabbitOptions.Prefix);
-            services.Configure<RabbitOptions>(rabbitConfigSection);
-
-            services.AddRabbitServices();
-            services.AddRabbitAdmin();
-            services.AddRabbitTemplate();
-        });
+        }).ConfigureServices((hostBuilderContext, services) => services.ConfigureRabbitServices(hostBuilderContext.Configuration));
     }
 
     public IHost Build()
