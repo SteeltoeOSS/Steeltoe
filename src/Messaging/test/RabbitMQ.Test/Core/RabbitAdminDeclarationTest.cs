@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Xunit;
@@ -31,7 +31,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
     public void TestUnconditional()
     {
         var services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         services.AddLogging(b =>
         {
@@ -39,7 +39,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
             b.AddConsole();
         });
 
-        services.AddSingleton<IConfiguration>(config);
+        services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddRabbitHostingServices();
 
         var cf = new Mock<IConnectionFactory>();
@@ -76,7 +76,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
     public void TestNoDeclareWithCachedConnections()
     {
         var services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         services.AddLogging(b =>
         {
@@ -84,7 +84,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
             b.AddConsole();
         });
 
-        services.AddSingleton<IConfiguration>(config);
+        services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddRabbitHostingServices();
 
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
@@ -127,7 +127,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
     public void TestUnconditionalWithExplicitFactory()
     {
         var services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         services.AddLogging(b =>
         {
@@ -135,7 +135,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
             b.AddConsole();
         });
 
-        services.AddSingleton<IConfiguration>(config);
+        services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddRabbitHostingServices();
 
         var cf = new Mock<IConnectionFactory>();
@@ -177,7 +177,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
     public void TestSkipBecauseDifferentFactory()
     {
         var services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         services.AddLogging(b =>
         {
@@ -185,7 +185,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
             b.AddConsole();
         });
 
-        services.AddSingleton<IConfiguration>(config);
+        services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddRabbitHostingServices();
 
         var cf = new Mock<IConnectionFactory>();
@@ -230,7 +230,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
     public void TestSkipBecauseShouldNotDeclare()
     {
         var services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         services.AddLogging(b =>
         {
@@ -238,7 +238,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
             b.AddConsole();
         });
 
-        services.AddSingleton<IConfiguration>(config);
+        services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddRabbitHostingServices();
 
         var cf = new Mock<IConnectionFactory>();
@@ -403,10 +403,10 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
             Provider.GetRequiredService<IHostedService>().StartAsync(default).Wait();
         }
 
-        public ServiceCollection CreateContainer(IConfiguration config = null)
+        public ServiceCollection CreateContainer(IConfiguration configuration = null)
         {
             var services = new ServiceCollection();
-            config ??= new ConfigurationBuilder().Build();
+            configuration ??= new ConfigurationBuilder().Build();
 
             services.AddLogging(b =>
             {
@@ -414,7 +414,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
                 b.AddConsole();
             });
 
-            services.AddSingleton(config);
+            services.AddSingleton(configuration);
             services.AddRabbitHostingServices();
 
             // services.AddRabbitDefaultMessageConverter();

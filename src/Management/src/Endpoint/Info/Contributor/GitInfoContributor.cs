@@ -36,7 +36,7 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
 
     public virtual void Contribute(IInfoBuilder builder)
     {
-        config = ReadGitProperties(_propFile);
+        configuration = ReadGitProperties(_propFile);
         Contribute(builder, GitSettingsPrefix, true);
     }
 

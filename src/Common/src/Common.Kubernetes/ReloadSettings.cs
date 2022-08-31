@@ -12,12 +12,12 @@ public class ReloadSettings
     public ReloadMethods Mode { get; set; } = ReloadMethods.Polling;
 
     /// <summary>
-    /// Gets or sets the number of seconds before reloading config data.
+    /// Gets or sets the number of seconds before reloading configuration data.
     /// </summary>
     public int Period { get; set; } = 15;
 
     /// <summary>
-    /// Gets or sets a value indicating whether config maps should be reloaded if changed.
+    /// Gets or sets a value indicating whether configuration maps should be reloaded if changed.
     /// </summary>
     public bool ConfigMaps { get; set; }
 

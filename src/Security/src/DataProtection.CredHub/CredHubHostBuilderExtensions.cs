@@ -38,9 +38,9 @@ public static class CredHubHostBuilderExtensions
         // don't bother interpolating if there aren't any credhub references
         if (vcapServices != null && vcapServices.Contains("credhub-ref"))
         {
-            webHostBuilder.ConfigureAppConfiguration((_, config) =>
+            webHostBuilder.ConfigureAppConfiguration((_, configuration) =>
             {
-                IConfigurationRoot builtConfig = config.Build();
+                IConfigurationRoot builtConfig = configuration.Build();
                 CredHubClient credHubClient;
 
                 var credHubOptions = builtConfig.GetSection("CredHubClient").Get<CredHubOptions>();

@@ -13,10 +13,10 @@ public class PostgresProviderConnectorOptionsTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
+        const IConfiguration configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new PostgresProviderConnectorOptions(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new PostgresProviderConnectorOptions(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
     }
 
     [Fact]
@@ -33,9 +33,9 @@ public class PostgresProviderConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new PostgresProviderConnectorOptions(config);
+        var options = new PostgresProviderConnectorOptions(configurationRoot);
         Assert.Equal("localhost", options.Host);
         Assert.Equal(1234, options.Port);
         Assert.Equal("password", options.Password);
@@ -54,9 +54,9 @@ public class PostgresProviderConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new PostgresProviderConnectorOptions(config);
+        var options = new PostgresProviderConnectorOptions(configurationRoot);
 
         Assert.StartsWith(appsettings["postgres:client:ConnectionString"], options.ToString());
     }
@@ -79,9 +79,9 @@ public class PostgresProviderConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new PostgresProviderConnectorOptions(config);
+        var options = new PostgresProviderConnectorOptions(configurationRoot);
 
         Assert.Equal(expected, options.ToString());
     }
@@ -99,14 +99,14 @@ public class PostgresProviderConnectorOptionsTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVcapEdb);
 
-        // add settings to config
+        // add settings to configuration
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddCloudFoundry();
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new PostgresProviderConnectorOptions(config);
+        var options = new PostgresProviderConnectorOptions(configurationRoot);
 
         Assert.NotEqual(appsettings["postgres:client:ConnectionString"], options.ToString());
     }
@@ -125,14 +125,14 @@ public class PostgresProviderConnectorOptionsTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVcapEdb);
 
-        // add settings to config
+        // add settings to configuration
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddCloudFoundry();
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new PostgresProviderConnectorOptions(config);
+        var options = new PostgresProviderConnectorOptions(configurationRoot);
 
         Assert.DoesNotContain(appsettings["postgres:client:ConnectionString"], options.ToString());
         Assert.EndsWith($"Search Path={options.SearchPath};", options.ToString());

@@ -10,7 +10,7 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Binding;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 using Xunit;
 using IntChannel = Steeltoe.Integration.Channel;
 

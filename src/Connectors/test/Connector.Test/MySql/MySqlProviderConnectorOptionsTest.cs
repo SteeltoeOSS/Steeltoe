@@ -13,10 +13,10 @@ public class MySqlProviderConnectorOptionsTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
+        const IConfiguration configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new MySqlProviderConnectorOptions(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new MySqlProviderConnectorOptions(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
     }
 
     [Fact]
@@ -33,9 +33,9 @@ public class MySqlProviderConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new MySqlProviderConnectorOptions(config);
+        var options = new MySqlProviderConnectorOptions(configurationRoot);
         Assert.Equal("localhost", options.Server);
         Assert.Equal(1234, options.Port);
         Assert.True(options.PersistSecurityInfo);
@@ -54,9 +54,9 @@ public class MySqlProviderConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new MySqlProviderConnectorOptions(config);
+        var options = new MySqlProviderConnectorOptions(configurationRoot);
 
         Assert.Equal(appsettings["mysql:client:ConnectionString"], options.ToString());
     }
@@ -74,14 +74,14 @@ public class MySqlProviderConnectorOptionsTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
 
-        // add settings to config
+        // add settings to configuration
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddCloudFoundry();
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new MySqlProviderConnectorOptions(config);
+        var options = new MySqlProviderConnectorOptions(configurationRoot);
 
         Assert.NotEqual(appsettings["mysql:client:ConnectionString"], options.ToString());
 

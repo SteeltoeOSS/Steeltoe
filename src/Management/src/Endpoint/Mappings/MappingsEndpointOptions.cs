@@ -16,8 +16,8 @@ public class MappingsEndpointOptions : AbstractEndpointOptions, IMappingsOptions
         RequiredPermissions = Permissions.Restricted;
     }
 
-    public MappingsEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
+    public MappingsEndpointOptions(IConfiguration configuration)
+        : base(ManagementInfoPrefix, configuration)
     {
         if (string.IsNullOrEmpty(Id))
         {

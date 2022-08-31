@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
@@ -27,7 +27,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
     public RabbitBindingIntegrationTest()
     {
         _services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         _services.AddLogging(b =>
         {
@@ -35,7 +35,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
             b.AddConsole();
         });
 
-        _services.AddSingleton<IConfiguration>(config);
+        _services.AddSingleton<IConfiguration>(configurationRoot);
         _services.AddRabbitHostingServices();
         _services.AddRabbitDefaultMessageConverter();
         _services.AddRabbitConnectionFactory((_, f) => f.Host = "localhost");

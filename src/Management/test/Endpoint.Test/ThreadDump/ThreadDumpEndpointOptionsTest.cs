@@ -22,8 +22,8 @@ public class ThreadDumpEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
-        Assert.Throws<ArgumentNullException>(() => new ThreadDumpEndpointOptions(config));
+        const IConfiguration configuration = null;
+        Assert.Throws<ArgumentNullException>(() => new ThreadDumpEndpointOptions(configuration));
     }
 
     [Fact]
@@ -40,10 +40,10 @@ public class ThreadDumpEndpointOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new ThreadDumpEndpointOptions(config);
-        var cloudOpts = new CloudFoundryEndpointOptions(config);
+        var opts = new ThreadDumpEndpointOptions(configurationRoot);
+        var cloudOpts = new CloudFoundryEndpointOptions(configurationRoot);
         var ep = new ThreadDumpEndpoint(opts, new ThreadDumperEp(opts));
 
         Assert.True(cloudOpts.Enabled);

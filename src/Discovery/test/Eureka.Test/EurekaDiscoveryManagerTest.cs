@@ -25,7 +25,7 @@ public class EurekaDiscoveryManagerTest : AbstractBaseTest
 
         var mgr = new EurekaDiscoveryManager(wrapClient, wrapInst, client);
         Assert.Equal(instOptions, mgr.InstanceConfig);
-        Assert.Equal(clientOptions, mgr.ClientConfig);
+        Assert.Equal(clientOptions, mgr.ClientConfiguration);
         Assert.Equal(client, mgr.Client);
     }
 }

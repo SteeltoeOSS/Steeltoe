@@ -25,10 +25,10 @@ public class NoOpDiscoveryClientTest
             { "TestClientConfigPath:Uri", "http://someserver:1234" }
         };
 
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
         var logger = new Mock<ILogger<NoOpDiscoveryClient>>();
 
-        _ = new NoOpDiscoveryClient(config, logger.Object);
+        _ = new NoOpDiscoveryClient(configurationRoot, logger.Object);
 
         VerifyLogEntered(logger, LogLevel.Warning,
             "Found configuration values for TestClient, try adding a NuGet reference that enables TestClient to work with Steeltoe Discovery");

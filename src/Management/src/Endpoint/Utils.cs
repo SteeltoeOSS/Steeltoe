@@ -72,7 +72,7 @@ public static class Utils
             {
                 await using var output = new FileStream(gzFilename, FileMode.CreateNew);
                 await using var gzipStream = new GZipStream(output, CompressionLevel.Fastest);
-                await input.CopyToAsync(gzipStream).ConfigureAwait(false);
+                await input.CopyToAsync(gzipStream);
             }
 
             return new FileStream(gzFilename, FileMode.Open);

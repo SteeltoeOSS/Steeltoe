@@ -39,10 +39,10 @@ public class EndpointMiddlewareTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
         var options = new ActuatorManagementOptions();
         options.EndpointOptions.Add(opts);
-        var ep = new EnvEndpoint(opts, config, _host);
+        var ep = new EnvEndpoint(opts, configurationRoot, _host);
         var middle = new EnvEndpointMiddleware(null, ep, options);
 
         HttpContext context = CreateRequest("GET", "/env");
@@ -64,12 +64,13 @@ public class EndpointMiddlewareTest : BaseTest
         string originalEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((webHostContext, loggingBuilder) =>
-            {
-                loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                loggingBuilder.AddDynamicConsole();
-            });
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
+                (webHostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
+                });
 
         using (var server = new TestServer(builder))
         {

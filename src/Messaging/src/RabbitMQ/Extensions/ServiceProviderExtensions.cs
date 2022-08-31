@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 

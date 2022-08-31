@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Contexts;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Core;
 
 namespace Steeltoe.Messaging.RabbitMQ.Extensions;

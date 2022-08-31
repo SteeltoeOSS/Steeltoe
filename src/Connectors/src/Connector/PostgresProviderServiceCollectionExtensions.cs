@@ -22,7 +22,7 @@ public static class PostgresProviderServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="contextLifetime">
@@ -37,15 +37,15 @@ public static class PostgresProviderServiceCollectionExtensions
     /// <remarks>
     /// NpgsqlConnection is retrievable as both NpgsqlConnection and IDbConnection.
     /// </remarks>
-    public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config,
+    public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
+        var info = configuration.GetSingletonServiceInfo<PostgresServiceInfo>();
 
-        DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
+        DoAdd(services, info, configuration, contextLifetime, addSteeltoeHealthChecks);
         return services;
     }
 
@@ -55,7 +55,7 @@ public static class PostgresProviderServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="serviceName">
@@ -73,25 +73,25 @@ public static class PostgresProviderServiceCollectionExtensions
     /// <remarks>
     /// NpgsqlConnection is retrievable as both NpgsqlConnection and IDbConnection.
     /// </remarks>
-    public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, string serviceName,
+    public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+        var info = configuration.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
 
-        DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
+        DoAdd(services, info, configuration, contextLifetime, addSteeltoeHealthChecks);
         return services;
     }
 
-    private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime,
+    private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime,
         bool addSteeltoeHealthChecks)
     {
         Type postgresConnection = ReflectionHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
-        var postgresConfig = new PostgresProviderConnectorOptions(config);
-        var factory = new PostgresProviderConnectorFactory(info, postgresConfig, postgresConnection);
+        var options = new PostgresProviderConnectorOptions(configuration);
+        var factory = new PostgresProviderConnectorFactory(info, options, postgresConnection);
         services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
         services.Add(new ServiceDescriptor(postgresConnection, factory.Create, contextLifetime));
 

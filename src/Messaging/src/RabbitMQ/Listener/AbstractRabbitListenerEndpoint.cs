@@ -10,7 +10,7 @@ using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Batch;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 

@@ -36,7 +36,7 @@ internal sealed class ConnectionStringConfigurationProvider : ConfigurationProvi
     /// <inheritdoc />
     public override bool TryGet(string key, out string value)
     {
-        if (key.StartsWith("ConnectionStrings:", StringComparison.InvariantCultureIgnoreCase))
+        if (key.StartsWith("ConnectionStrings:", StringComparison.OrdinalIgnoreCase))
         {
             string searchKey = key.Split(':')[1];
 

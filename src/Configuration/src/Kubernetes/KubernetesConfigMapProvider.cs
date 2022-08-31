@@ -14,8 +14,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
 internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
 {
-    private const string ConfigFileKeyPrefix = "appsettings";
-    private const string ConfigFileKeySuffix = "json";
+    private const string ConfigurationFileKeyPrefix = "appsettings";
+    private const string ConfigurationFileKeySuffix = "json";
 
     private Watcher<V1ConfigMap> ConfigMapWatcher { get; set; }
 
@@ -40,7 +40,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
             if (e.Response.StatusCode == HttpStatusCode.Forbidden)
             {
                 Logger?.LogCritical(e,
-                    "Failed to retrieve config map '{configMapName}' in namespace '{configMapNamespace}'. Confirm that your service account has the necessary permissions",
+                    "Failed to retrieve configuration map '{configMapName}' in namespace '{configMapNamespace}'. Confirm that your service account has the necessary permissions",
                     Settings.Name, Settings.Namespace);
             }
             else if (e.Response.StatusCode == HttpStatusCode.NotFound)
@@ -132,7 +132,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
             return;
         }
 
-        var configMapContents = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        var configMapContents = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         if (item?.Data != null)
         {
@@ -160,8 +160,8 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
 
     private bool IsAppsettingsKey(string key)
     {
-        return key.StartsWith(ConfigFileKeyPrefix, StringComparison.InvariantCultureIgnoreCase) &&
-            key.EndsWith(ConfigFileKeySuffix, StringComparison.InvariantCultureIgnoreCase);
+        return key.StartsWith(ConfigurationFileKeyPrefix, StringComparison.OrdinalIgnoreCase) &&
+            key.EndsWith(ConfigurationFileKeySuffix, StringComparison.OrdinalIgnoreCase);
     }
 
     private Stream GenerateStreamFromString(string s)

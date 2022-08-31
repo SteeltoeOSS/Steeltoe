@@ -18,8 +18,8 @@ public class PrometheusEndpointOptions : AbstractEndpointOptions, IPrometheusEnd
         ExactMatch = false;
     }
 
-    public PrometheusEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
+    public PrometheusEndpointOptions(IConfiguration configuration)
+        : base(ManagementInfoPrefix, configuration)
     {
         if (string.IsNullOrEmpty(Id))
         {

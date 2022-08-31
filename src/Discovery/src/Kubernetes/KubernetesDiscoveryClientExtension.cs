@@ -34,13 +34,13 @@ public class KubernetesDiscoveryClientExtension : IDiscoveryClientExtension
     {
         services.AddKubernetesClient();
 
-        services.AddOptions<KubernetesDiscoveryOptions>().Configure<IConfiguration>((options, config) =>
+        services.AddOptions<KubernetesDiscoveryOptions>().Configure<IConfiguration>((options, configuration) =>
         {
-            config.GetSection(KubernetesDiscoveryOptions.KubernetesDiscoveryConfigurationPrefix).Bind(options);
+            configuration.GetSection(KubernetesDiscoveryOptions.KubernetesDiscoveryConfigurationPrefix).Bind(options);
 
             // Kubernetes discovery is enabled by default. If spring:cloud:kubernetes:discovery:enabled was not set then check spring:cloud:discovery:enabled
-            if (options.Enabled && config.GetValue<bool?>($"{KubernetesDiscoveryOptions.KubernetesDiscoveryConfigurationPrefix}:enabled") is null &&
-                config.GetValue<bool?>(SpringDiscoveryEnabled) == false)
+            if (options.Enabled && configuration.GetValue<bool?>($"{KubernetesDiscoveryOptions.KubernetesDiscoveryConfigurationPrefix}:enabled") is null &&
+                configuration.GetValue<bool?>(SpringDiscoveryEnabled) == false)
             {
                 options.Enabled = false;
             }

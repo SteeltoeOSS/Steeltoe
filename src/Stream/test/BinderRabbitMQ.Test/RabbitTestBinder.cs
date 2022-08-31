@@ -8,12 +8,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
-using Steeltoe.Stream.Binder.Rabbit.Config;
 using Steeltoe.Stream.Binder.Rabbit.Provisioning;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
+using Steeltoe.Stream.Configuration;
 
 namespace Steeltoe.Stream.Binder.Rabbit;
 

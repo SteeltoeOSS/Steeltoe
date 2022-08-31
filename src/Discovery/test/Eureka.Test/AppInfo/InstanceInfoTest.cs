@@ -116,29 +116,29 @@ public class InstanceInfoTest : AbstractBaseTest
     [Fact]
     public void FromInstanceConfig_DefaultInstanceConfig_Correct()
     {
-        var config = new EurekaInstanceConfig();
-        var info = InstanceInfo.FromInstanceConfig(config);
+        var configuration = new EurekaInstanceConfiguration();
+        var info = InstanceInfo.FromInstanceConfiguration(configuration);
         Assert.NotNull(info);
 
         // Verify
-        Assert.Equal(config.GetHostName(false), info.InstanceId);
-        Assert.Equal(EurekaInstanceConfig.DefaultAppName.ToUpperInvariant(), info.AppName);
+        Assert.Equal(configuration.GetHostName(false), info.InstanceId);
+        Assert.Equal(EurekaInstanceConfiguration.DefaultAppName.ToUpperInvariant(), info.AppName);
         Assert.Null(info.AppGroupName);
-        Assert.Equal(config.IpAddress, info.IpAddress);
+        Assert.Equal(configuration.IpAddress, info.IpAddress);
         Assert.Equal("na", info.Sid);
         Assert.Equal(80, info.Port);
         Assert.True(info.IsInsecurePortEnabled);
         Assert.Equal(443, info.SecurePort);
         Assert.False(info.IsSecurePortEnabled);
-        Assert.Equal($"http://{config.GetHostName(false)}:{80}/", info.HomePageUrl);
-        Assert.Equal($"http://{config.GetHostName(false)}:{80}/Status", info.StatusPageUrl);
-        Assert.Equal($"http://{config.GetHostName(false)}:{80}/healthcheck", info.HealthCheckUrl);
+        Assert.Equal($"http://{configuration.GetHostName(false)}:{80}/", info.HomePageUrl);
+        Assert.Equal($"http://{configuration.GetHostName(false)}:{80}/Status", info.StatusPageUrl);
+        Assert.Equal($"http://{configuration.GetHostName(false)}:{80}/healthcheck", info.HealthCheckUrl);
         Assert.Null(info.SecureHealthCheckUrl);
-        Assert.Equal($"{config.GetHostName(false)}:{80}", info.VipAddress);
-        Assert.Equal($"{config.GetHostName(false)}:{443}", info.SecureVipAddress);
+        Assert.Equal($"{configuration.GetHostName(false)}:{80}", info.VipAddress);
+        Assert.Equal($"{configuration.GetHostName(false)}:{443}", info.SecureVipAddress);
         Assert.Equal(1, info.CountryId);
         Assert.Equal("MyOwn", info.DataCenterInfo.Name.ToString());
-        Assert.Equal(config.GetHostName(false), info.HostName);
+        Assert.Equal(configuration.GetHostName(false), info.HostName);
         Assert.Equal(InstanceStatus.Starting, info.Status);
         Assert.Equal(InstanceStatus.Unknown, info.OverriddenStatus);
         Assert.NotNull(info.LeaseInfo);
@@ -160,34 +160,34 @@ public class InstanceInfoTest : AbstractBaseTest
     [Fact]
     public void FromInstanceConfig_NonSecurePortFalse_SecurePortTrue_Correct()
     {
-        var config = new EurekaInstanceConfig
+        var configuration = new EurekaInstanceConfiguration
         {
             SecurePortEnabled = true,
             IsNonSecurePortEnabled = false
         };
 
-        var info = InstanceInfo.FromInstanceConfig(config);
+        var info = InstanceInfo.FromInstanceConfiguration(configuration);
         Assert.NotNull(info);
 
         // Verify
-        Assert.Equal(config.GetHostName(false), info.InstanceId);
-        Assert.Equal(EurekaInstanceConfig.DefaultAppName.ToUpperInvariant(), info.AppName);
+        Assert.Equal(configuration.GetHostName(false), info.InstanceId);
+        Assert.Equal(EurekaInstanceConfiguration.DefaultAppName.ToUpperInvariant(), info.AppName);
         Assert.Null(info.AppGroupName);
-        Assert.Equal(config.IpAddress, info.IpAddress);
+        Assert.Equal(configuration.IpAddress, info.IpAddress);
         Assert.Equal("na", info.Sid);
         Assert.Equal(80, info.Port);
         Assert.False(info.IsInsecurePortEnabled);
         Assert.Equal(443, info.SecurePort);
         Assert.True(info.IsSecurePortEnabled);
-        Assert.Equal($"https://{config.GetHostName(false)}:{443}/", info.HomePageUrl);
-        Assert.Equal($"https://{config.GetHostName(false)}:{443}/Status", info.StatusPageUrl);
-        Assert.Equal($"https://{config.GetHostName(false)}:{443}/healthcheck", info.HealthCheckUrl);
+        Assert.Equal($"https://{configuration.GetHostName(false)}:{443}/", info.HomePageUrl);
+        Assert.Equal($"https://{configuration.GetHostName(false)}:{443}/Status", info.StatusPageUrl);
+        Assert.Equal($"https://{configuration.GetHostName(false)}:{443}/healthcheck", info.HealthCheckUrl);
         Assert.Null(info.SecureHealthCheckUrl);
-        Assert.Equal($"{config.GetHostName(false)}:{80}", info.VipAddress);
-        Assert.Equal($"{config.GetHostName(false)}:{443}", info.SecureVipAddress);
+        Assert.Equal($"{configuration.GetHostName(false)}:{80}", info.VipAddress);
+        Assert.Equal($"{configuration.GetHostName(false)}:{443}", info.SecureVipAddress);
         Assert.Equal(1, info.CountryId);
         Assert.Equal("MyOwn", info.DataCenterInfo.Name.ToString());
-        Assert.Equal(config.GetHostName(false), info.HostName);
+        Assert.Equal(configuration.GetHostName(false), info.HostName);
         Assert.Equal(InstanceStatus.Starting, info.Status);
         Assert.Equal(InstanceStatus.Unknown, info.OverriddenStatus);
         Assert.NotNull(info.LeaseInfo);
@@ -209,17 +209,17 @@ public class InstanceInfoTest : AbstractBaseTest
     [Fact]
     public void ToJsonInstance_DefaultInstanceConfig_Correct()
     {
-        var config = new EurekaInstanceConfig();
-        var info = InstanceInfo.FromInstanceConfig(config);
+        var configuration = new EurekaInstanceConfiguration();
+        var info = InstanceInfo.FromInstanceConfiguration(configuration);
         Assert.NotNull(info);
 
         JsonInstanceInfo instanceInfo = info.ToJsonInstance();
 
         // Verify
-        Assert.Equal(config.GetHostName(false), instanceInfo.InstanceId);
-        Assert.Equal(EurekaInstanceConfig.DefaultAppName.ToUpperInvariant(), instanceInfo.AppName);
+        Assert.Equal(configuration.GetHostName(false), instanceInfo.InstanceId);
+        Assert.Equal(EurekaInstanceConfiguration.DefaultAppName.ToUpperInvariant(), instanceInfo.AppName);
         Assert.Null(instanceInfo.AppGroupName);
-        Assert.Equal(config.IpAddress, instanceInfo.IpAddress);
+        Assert.Equal(configuration.IpAddress, instanceInfo.IpAddress);
         Assert.Equal("na", instanceInfo.Sid);
         Assert.NotNull(instanceInfo.Port);
         Assert.Equal(80, instanceInfo.Port.Port);
@@ -227,17 +227,17 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.NotNull(instanceInfo.SecurePort);
         Assert.Equal(443, instanceInfo.SecurePort.Port);
         Assert.False(instanceInfo.SecurePort.Enabled);
-        Assert.Equal($"http://{config.GetHostName(false)}:{80}/", instanceInfo.HomePageUrl);
-        Assert.Equal($"http://{config.GetHostName(false)}:{80}/Status", instanceInfo.StatusPageUrl);
-        Assert.Equal($"http://{config.GetHostName(false)}:{80}/healthcheck", instanceInfo.HealthCheckUrl);
+        Assert.Equal($"http://{configuration.GetHostName(false)}:{80}/", instanceInfo.HomePageUrl);
+        Assert.Equal($"http://{configuration.GetHostName(false)}:{80}/Status", instanceInfo.StatusPageUrl);
+        Assert.Equal($"http://{configuration.GetHostName(false)}:{80}/healthcheck", instanceInfo.HealthCheckUrl);
         Assert.Null(instanceInfo.SecureHealthCheckUrl);
-        Assert.Equal($"{config.GetHostName(false)}:{80}", instanceInfo.VipAddress);
-        Assert.Equal($"{config.GetHostName(false)}:{443}", instanceInfo.SecureVipAddress);
+        Assert.Equal($"{configuration.GetHostName(false)}:{80}", instanceInfo.VipAddress);
+        Assert.Equal($"{configuration.GetHostName(false)}:{443}", instanceInfo.SecureVipAddress);
         Assert.Equal(1, instanceInfo.CountryId);
         Assert.NotNull(instanceInfo.DataCenterInfo);
         Assert.Equal("MyOwn", instanceInfo.DataCenterInfo.Name);
         Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", instanceInfo.DataCenterInfo.ClassName);
-        Assert.Equal(config.GetHostName(false), instanceInfo.HostName);
+        Assert.Equal(configuration.GetHostName(false), instanceInfo.HostName);
         Assert.Equal(InstanceStatus.Starting, instanceInfo.Status);
         Assert.Equal(InstanceStatus.Unknown, instanceInfo.OverriddenStatus);
         Assert.NotNull(instanceInfo.LeaseInfo);

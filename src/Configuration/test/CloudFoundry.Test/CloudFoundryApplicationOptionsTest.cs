@@ -13,9 +13,9 @@ public class CloudFoundryApplicationOptionsTest
     public void Constructor_WithNoVcapApplicationConfiguration()
     {
         var builder = new ConfigurationBuilder();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var options = new CloudFoundryApplicationOptions(config);
+        var options = new CloudFoundryApplicationOptions(configurationRoot);
 
         Assert.Null(options.CF_Api);
         Assert.Null(options.ApplicationId);
@@ -82,9 +82,9 @@ public class CloudFoundryApplicationOptionsTest
         MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var options = new CloudFoundryApplicationOptions(config);
+        var options = new CloudFoundryApplicationOptions(configurationRoot);
 
         Assert.Equal("https://api.system.testcloud.com", options.CF_Api);
         Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", options.ApplicationId);

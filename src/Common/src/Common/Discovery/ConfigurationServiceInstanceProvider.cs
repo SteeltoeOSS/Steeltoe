@@ -21,8 +21,7 @@ public class ConfigurationServiceInstanceProvider : IServiceInstanceProvider
 
     public IList<IServiceInstance> GetInstances(string serviceId)
     {
-        return new List<IServiceInstance>(_serviceInstances.CurrentValue.Where(si =>
-            si.ServiceId.Equals(serviceId, StringComparison.InvariantCultureIgnoreCase)));
+        return new List<IServiceInstance>(_serviceInstances.CurrentValue.Where(si => si.ServiceId.Equals(serviceId, StringComparison.OrdinalIgnoreCase)));
     }
 
     internal IList<string> GetServices()

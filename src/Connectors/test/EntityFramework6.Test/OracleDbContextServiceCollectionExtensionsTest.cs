@@ -16,12 +16,12 @@ public class OracleDbContextServiceCollectionExtensionsTest
     public void AddDbContext_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
     }
 
@@ -29,23 +29,23 @@ public class OracleDbContextServiceCollectionExtensionsTest
     public void AddDbContext_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(config, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
     }
 
     [Fact]
     public void AddDbContext_ThrowsIfServiceNameNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
         const string serviceName = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(config, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -53,9 +53,9 @@ public class OracleDbContextServiceCollectionExtensionsTest
     public void AddDbContext_NoVCAPs_AddsDbContext()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        services.AddDbContext<GoodOracleDbContext>(config);
+        services.AddDbContext<GoodOracleDbContext>(configurationRoot);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var service = serviceProvider.GetService<GoodOracleDbContext>();

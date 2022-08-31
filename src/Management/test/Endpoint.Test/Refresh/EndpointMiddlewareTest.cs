@@ -37,9 +37,9 @@ public class EndpointMiddlewareTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var ep = new RefreshEndpoint(opts, config);
+        var ep = new RefreshEndpoint(opts, configurationRoot);
         var middle = new RefreshEndpointMiddleware(null, ep, managementOptions);
 
         HttpContext context = CreateRequest("GET", "/refresh");
@@ -60,12 +60,13 @@ public class EndpointMiddlewareTest : BaseTest
         string ancEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((webHostContext, loggingBuilder) =>
-            {
-                loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                loggingBuilder.AddDynamicConsole();
-            });
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
+                (webHostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
+                });
 
         using (var server = new TestServer(builder))
         {

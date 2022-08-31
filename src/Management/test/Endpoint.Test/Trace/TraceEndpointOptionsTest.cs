@@ -33,8 +33,8 @@ public class TraceEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
-        Assert.Throws<ArgumentNullException>(() => new TraceEndpointOptions(config));
+        const IConfiguration configuration = null;
+        Assert.Throws<ArgumentNullException>(() => new TraceEndpointOptions(configuration));
     }
 
     [Fact]
@@ -63,10 +63,10 @@ public class TraceEndpointOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new TraceEndpointOptions(config);
-        var cloudOpts = new CloudFoundryEndpointOptions(config);
+        var opts = new TraceEndpointOptions(configurationRoot);
+        var cloudOpts = new CloudFoundryEndpointOptions(configurationRoot);
 
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);

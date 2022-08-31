@@ -17,7 +17,7 @@ public class SerilogOptions : ISerilogOptions
 {
     private LoggerConfiguration _serilogConfiguration;
 
-    public string ConfigPath => "Serilog";
+    public string ConfigurationPath => "Serilog";
 
     /// <summary>
     /// Gets or sets the minimum level for the root logger (and the "Default"). Limits the verbosity of all other overrides to this setting.
@@ -26,7 +26,7 @@ public class SerilogOptions : ISerilogOptions
 
     public void SetSerilogOptions(IConfiguration configuration)
     {
-        IConfigurationSection section = configuration.GetSection(ConfigPath);
+        IConfigurationSection section = configuration.GetSection(ConfigurationPath);
         section.Bind(this);
 
         if (MinimumLevel == null || MinimumLevel.Default == (LogEventLevel)(-1))

@@ -98,14 +98,14 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
                     string name = prefix;
                     LogLevel? configured = GetConfiguredLevel(name);
                     LogLevel effective = GetEffectiveLevel(name);
-                    var config = new DynamicLoggerConfiguration(name, configured, effective);
+                    var configuration = new DynamicLoggerConfiguration(name, configured, effective);
 
-                    if (results.ContainsKey(name) && !results[name].Equals(config))
+                    if (results.ContainsKey(name) && !results[name].Equals(configuration))
                     {
                         throw new InvalidProgramException("Shouldn't happen");
                     }
 
-                    results[name] = config;
+                    results[name] = configuration;
                 }
             }
         }
@@ -252,9 +252,9 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
         // check the dictionary
         foreach (string prefix in prefixes)
         {
-            if (_runningFilters.Any(n => n.Key.Equals(prefix, StringComparison.InvariantCultureIgnoreCase)))
+            if (_runningFilters.Any(n => n.Key.Equals(prefix, StringComparison.OrdinalIgnoreCase)))
             {
-                Filter filter = _runningFilters.First(n => n.Key.Equals(prefix, StringComparison.InvariantCultureIgnoreCase)).Value;
+                Filter filter = _runningFilters.First(n => n.Key.Equals(prefix, StringComparison.OrdinalIgnoreCase)).Value;
                 return GetLogLevelFromFilter(name, filter);
             }
         }

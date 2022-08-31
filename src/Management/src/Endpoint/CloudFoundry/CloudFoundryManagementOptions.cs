@@ -15,8 +15,8 @@ public class CloudFoundryManagementOptions : ManagementEndpointOptions
         Path = DefaultActuatorPath;
     }
 
-    public CloudFoundryManagementOptions(IConfiguration config)
-        : base(config)
+    public CloudFoundryManagementOptions(IConfiguration configuration)
+        : base(configuration)
     {
         Path = DefaultActuatorPath;
     }

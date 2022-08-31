@@ -15,39 +15,39 @@ public class GitInfoContributorTest : BaseTest
     [Fact]
     public void ReadGitPropertiesMissingPropertiesFile()
     {
-        IConfiguration config = new GitInfoContributor().ReadGitProperties("foobar");
-        Assert.Null(config);
+        IConfiguration configuration = new GitInfoContributor().ReadGitProperties("foobar");
+        Assert.Null(configuration);
     }
 
     [Fact]
     public void ReadEmptyGitPropertiesFile()
     {
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}empty.git.properties";
-        IConfiguration config = new GitInfoContributor().ReadGitProperties(path);
-        Assert.Null(config);
+        IConfiguration configuration = new GitInfoContributor().ReadGitProperties(path);
+        Assert.Null(configuration);
     }
 
     [Fact]
     public void ReadMalformedGitPropertiesFile()
     {
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}garbage.git.properties";
-        IConfiguration config = new GitInfoContributor().ReadGitProperties(path);
-        Assert.NotNull(config);
-        Assert.Null(config["git"]);
+        IConfiguration configuration = new GitInfoContributor().ReadGitProperties(path);
+        Assert.NotNull(configuration);
+        Assert.Null(configuration["git"]);
     }
 
     [Fact]
     public void ReadGoodPropertiesFile()
     {
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}git.properties";
-        IConfiguration config = new GitInfoContributor().ReadGitProperties(path);
-        Assert.NotNull(config);
-        Assert.Equal("true", config["git:dirty"]);
+        IConfiguration configuration = new GitInfoContributor().ReadGitProperties(path);
+        Assert.NotNull(configuration);
+        Assert.Equal("true", configuration["git:dirty"]);
 
         // Verify `\:` strings get converted if they exist in the dates/URLs
-        Assert.Equal("https://github.com/spring-projects/spring-boot.git", config["git:remote:origin:url"]);
-        Assert.Equal("2017-07-12T12:40:39-0600", config["git:build:time"]);
-        Assert.Equal("2017-06-08T06:47:02-0600", config["git:commit:time"]);
+        Assert.Equal("https://github.com/spring-projects/spring-boot.git", configuration["git:remote:origin:url"]);
+        Assert.Equal("2017-07-12T12:40:39-0600", configuration["git:build:time"]);
+        Assert.Equal("2017-06-08T06:47:02-0600", configuration["git:commit:time"]);
     }
 
     [Fact]

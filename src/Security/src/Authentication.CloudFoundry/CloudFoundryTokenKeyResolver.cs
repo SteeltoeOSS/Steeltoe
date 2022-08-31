@@ -100,7 +100,7 @@ public class CloudFoundryTokenKeyResolver
 
         try
         {
-            response = await client.SendAsync(requestMessage).ConfigureAwait(false);
+            response = await client.SendAsync(requestMessage);
         }
         finally
         {
@@ -109,7 +109,7 @@ public class CloudFoundryTokenKeyResolver
 
         if (response.IsSuccessStatusCode)
         {
-            string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            string result = await response.Content.ReadAsStringAsync();
             return GetJsonWebKeySet(result);
         }
 

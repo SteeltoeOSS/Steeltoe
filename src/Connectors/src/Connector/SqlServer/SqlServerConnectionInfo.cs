@@ -25,8 +25,7 @@ public class SqlServerConnectionInfo : IConnectionInfo
 
     public bool IsSameType(string serviceType)
     {
-        return serviceType.Equals("sqlserver", StringComparison.InvariantCultureIgnoreCase) ||
-            serviceType.Equals("mssql", StringComparison.InvariantCultureIgnoreCase);
+        return serviceType.Equals("sqlserver", StringComparison.OrdinalIgnoreCase) || serviceType.Equals("mssql", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsSameType(IServiceInfo serviceInfo)
@@ -36,8 +35,8 @@ public class SqlServerConnectionInfo : IConnectionInfo
 
     private Connection GetConnection(SqlServerServiceInfo info, IConfiguration configuration)
     {
-        var sqlConfig = new SqlServerProviderConnectorOptions(configuration);
+        var options = new SqlServerProviderConnectorOptions(configuration);
         var configurer = new SqlServerProviderConfigurer();
-        return new Connection(configurer.Configure(info, sqlConfig), "SqlServer", info);
+        return new Connection(configurer.Configure(info, options), "SqlServer", info);
     }
 }

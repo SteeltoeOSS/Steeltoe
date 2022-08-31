@@ -146,10 +146,10 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
             Provider.GetRequiredService<IHostedService>().StartAsync(default).Wait();
         }
 
-        public ServiceCollection CreateContainer(IConfiguration config = null)
+        public ServiceCollection CreateContainer(IConfiguration configuration = null)
         {
             var services = new ServiceCollection();
-            config ??= new ConfigurationBuilder().Build();
+            configuration ??= new ConfigurationBuilder().Build();
 
             services.AddLogging(b =>
             {
@@ -158,7 +158,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
                 b.AddConsole();
             });
 
-            services.AddSingleton(config);
+            services.AddSingleton(configuration);
             services.AddRabbitHostingServices();
             services.AddRabbitJsonMessageConverter();
             services.AddRabbitMessageHandlerMethodFactory();
@@ -179,7 +179,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
             services.AddRabbitQueue(TestQueue2);
 
             services.AddSingleton<Listener>();
-            services.AddRabbitListeners<Listener>(config);
+            services.AddRabbitListeners<Listener>(configuration);
             return services;
         }
 

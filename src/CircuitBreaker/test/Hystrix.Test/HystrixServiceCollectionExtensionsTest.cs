@@ -126,8 +126,8 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
     public void AddHystrixCommand_AddsToContainer()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfiguration config = new ConfigurationBuilder().Build();
-        services.AddHystrixCommand<DummyCommand>(_groupKey, config);
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+        services.AddHystrixCommand<DummyCommand>(_groupKey, configuration);
         ServiceProvider provider = services.BuildServiceProvider();
         var command = provider.GetService<DummyCommand>();
         Assert.NotNull(command);
@@ -144,8 +144,8 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         services = new ServiceCollection();
-        config = new ConfigurationBuilder().Build();
-        services.AddHystrixCommand<IDummyCommand, DummyCommand>(_groupKey, config);
+        configuration = new ConfigurationBuilder().Build();
+        services.AddHystrixCommand<IDummyCommand, DummyCommand>(_groupKey, configuration);
         provider = services.BuildServiceProvider();
         var commandInterface = provider.GetService<IDummyCommand>();
         Assert.NotNull(commandInterface);
@@ -163,7 +163,7 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         services = new ServiceCollection();
-        services.AddHystrixCommand<DummyCommand>("GroupKey", config);
+        services.AddHystrixCommand<DummyCommand>("GroupKey", configuration);
         provider = services.BuildServiceProvider();
         command = provider.GetService<DummyCommand>();
         Assert.NotNull(command);
@@ -180,8 +180,8 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         services = new ServiceCollection();
-        config = new ConfigurationBuilder().Build();
-        services.AddHystrixCommand<IDummyCommand, DummyCommand>("GroupKey", config);
+        configuration = new ConfigurationBuilder().Build();
+        services.AddHystrixCommand<IDummyCommand, DummyCommand>("GroupKey", configuration);
         provider = services.BuildServiceProvider();
         commandInterface = provider.GetService<IDummyCommand>();
         Assert.NotNull(commandInterface);
@@ -199,8 +199,8 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         services = new ServiceCollection();
-        config = new ConfigurationBuilder().Build();
-        services.AddHystrixCommand<DummyCommand>(_groupKey, _commandKey, config);
+        configuration = new ConfigurationBuilder().Build();
+        services.AddHystrixCommand<DummyCommand>(_groupKey, _commandKey, configuration);
         provider = services.BuildServiceProvider();
         command = provider.GetService<DummyCommand>();
         Assert.NotNull(command);
@@ -216,8 +216,8 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         services = new ServiceCollection();
-        config = new ConfigurationBuilder().Build();
-        services.AddHystrixCommand<IDummyCommand, DummyCommand>(_groupKey, _commandKey, config);
+        configuration = new ConfigurationBuilder().Build();
+        services.AddHystrixCommand<IDummyCommand, DummyCommand>(_groupKey, _commandKey, configuration);
         provider = services.BuildServiceProvider();
         commandInterface = provider.GetService<IDummyCommand>();
         Assert.NotNull(commandInterface);
@@ -235,7 +235,7 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         services = new ServiceCollection();
-        services.AddHystrixCommand<DummyCommand>("GroupKey", "CommandKey", config);
+        services.AddHystrixCommand<DummyCommand>("GroupKey", "CommandKey", configuration);
         provider = services.BuildServiceProvider();
         command = provider.GetService<DummyCommand>();
         Assert.NotNull(command);
@@ -251,8 +251,8 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         Assert.Equal(expectedThreadPoolKey, threadOptions.ThreadPoolKey);
 
         services = new ServiceCollection();
-        config = new ConfigurationBuilder().Build();
-        services.AddHystrixCommand<IDummyCommand, DummyCommand>("GroupKey", "CommandKey", config);
+        configuration = new ConfigurationBuilder().Build();
+        services.AddHystrixCommand<IDummyCommand, DummyCommand>("GroupKey", "CommandKey", configuration);
         provider = services.BuildServiceProvider();
         commandInterface = provider.GetService<IDummyCommand>();
         Assert.NotNull(commandInterface);
@@ -288,8 +288,8 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         };
 
         IServiceCollection services = new ServiceCollection();
-        IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        services.AddHystrixCommand<DummyCommand>(_groupKey, config);
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        services.AddHystrixCommand<DummyCommand>(_groupKey, configuration);
         ServiceProvider provider = services.BuildServiceProvider();
         var command = provider.GetService<DummyCommand>();
         Assert.NotNull(command);

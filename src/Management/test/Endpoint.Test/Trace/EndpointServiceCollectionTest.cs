@@ -37,11 +37,11 @@ public class EndpointServiceCollectionTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
         var listener = new DiagnosticListener("Test");
         services.AddSingleton(listener);
 
-        services.AddTraceActuator(config);
+        services.AddTraceActuator(configurationRoot);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<ITraceOptions>();

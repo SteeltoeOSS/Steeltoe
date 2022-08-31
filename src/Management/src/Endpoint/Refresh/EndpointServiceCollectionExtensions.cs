@@ -17,18 +17,18 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add actuator to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
     /// management:endpoints:refresh).
     /// </param>
-    public static void AddRefreshActuator(this IServiceCollection services, IConfiguration config = null)
+    public static void AddRefreshActuator(this IServiceCollection services, IConfiguration configuration = null)
     {
         ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddActuatorManagementOptions(config);
-        services.AddRefreshActuatorServices(config);
+        services.AddActuatorManagementOptions(configuration);
+        services.AddRefreshActuatorServices(configuration);
         services.AddActuatorEndpointMapping<RefreshEndpoint>();
     }
 }

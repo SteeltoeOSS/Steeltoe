@@ -39,28 +39,28 @@ public class SpringBootAdminClientOptions
     /// </summary>
     public Dictionary<string, object> Metadata { get; set; }
 
-    public SpringBootAdminClientOptions(IConfiguration config, IApplicationInstanceInfo appInfo)
+    public SpringBootAdminClientOptions(IConfiguration configuration, IApplicationInstanceInfo appInfo)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(appInfo);
 
-        IConfigurationSection section = config.GetSection(Prefix);
+        IConfigurationSection section = configuration.GetSection(Prefix);
 
         if (section != null)
         {
             section.Bind(this);
         }
 
-        // Require base path to be supplied directly, in the config, or in the app instance info
-        BasePath ??= GetBasePath(config) ?? appInfo?.Uris?.FirstOrDefault() ??
+        // Require base path to be supplied directly, in the configuration, or in the app instance info
+        BasePath ??= GetBasePath(configuration) ?? appInfo?.Uris?.FirstOrDefault() ??
             throw new NullReferenceException($"Please set {Prefix}:BasePath in order to register with Spring Boot Admin");
 
         ApplicationName ??= appInfo.ApplicationNameInContext(SteeltoeComponent.Management);
     }
 
-    private string GetBasePath(IConfiguration config)
+    private string GetBasePath(IConfiguration configuration)
     {
-        string urlString = config.GetValue<string>(Urls);
+        string urlString = configuration.GetValue<string>(Urls);
         string[] urls = urlString?.Split(';');
 
         if (urls?.Length > 0)

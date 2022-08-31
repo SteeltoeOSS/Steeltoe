@@ -423,13 +423,13 @@ public static class ReflectionHelpers
         Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 
         IEnumerable<string> assemblyPaths = Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory)
-            .Where(f => f.EndsWith("dll", StringComparison.InvariantCultureIgnoreCase));
+            .Where(f => f.EndsWith("dll", StringComparison.OrdinalIgnoreCase));
 
         foreach (string assembly in assemblyPaths)
         {
             string filename = Path.GetFileNameWithoutExtension(assembly);
 
-            if (!loadedAssemblies.Any(a => a.FullName.StartsWith(filename, StringComparison.InvariantCultureIgnoreCase)))
+            if (!loadedAssemblies.Any(a => a.FullName.StartsWith(filename, StringComparison.OrdinalIgnoreCase)))
             {
                 try
                 {

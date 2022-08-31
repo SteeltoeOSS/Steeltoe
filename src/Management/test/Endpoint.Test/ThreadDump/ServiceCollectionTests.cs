@@ -15,12 +15,12 @@ public class ServiceCollectionTests
     {
         const IServiceCollection services = null;
         IServiceCollection services2 = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddThreadDumpActuatorServices(config, MediaTypeVersion.V2));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddThreadDumpActuatorServices(configuration, MediaTypeVersion.V2));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddThreadDumpActuatorServices(config, MediaTypeVersion.V2));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddThreadDumpActuatorServices(configuration, MediaTypeVersion.V2));
+        Assert.Contains(nameof(configuration), ex2.Message);
     }
 }

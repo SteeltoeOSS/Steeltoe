@@ -15,8 +15,8 @@ public class HypermediaEndpointOptions : AbstractEndpointOptions, IActuatorHyper
         Id = string.Empty;
     }
 
-    public HypermediaEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
+    public HypermediaEndpointOptions(IConfiguration configuration)
+        : base(ManagementInfoPrefix, configuration)
     {
     }
 }

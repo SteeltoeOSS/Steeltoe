@@ -29,12 +29,12 @@ public class TracingLogProcessorTest
     {
         using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
 
-        IConfiguration config = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string>
+        IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string>
         {
             ["management:tracing:name"] = "foobar"
         });
 
-        var processor = new TracingLogProcessor(new TracingOptions(new ApplicationInstanceInfo(config), config));
+        var processor = new TracingLogProcessor(new TracingOptions(new ApplicationInstanceInfo(configuration), configuration));
         Tracer tracer = TracerProvider.Default.GetTracer("tracername");
         TelemetrySpan span = tracer.StartActiveSpan("spanName");
 
@@ -70,8 +70,8 @@ public class TracingLogProcessorTest
             ["management:tracing:useShortTraceIds"] = "true"
         };
 
-        IConfiguration config = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        var opts = new TracingOptions(new ApplicationInstanceInfo(config), config);
+        IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        var opts = new TracingOptions(new ApplicationInstanceInfo(configuration), configuration);
 
         using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
         Tracer tracer = TracerProvider.Default.GetTracer("tracername");

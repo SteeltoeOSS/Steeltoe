@@ -19,9 +19,9 @@ public class EnableBindingsExtensionsTest
         var container = new ServiceCollection();
         container.AddOptions();
         container.AddLogging(b => b.AddDebug());
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        container.AddSingleton<IConfiguration>(config);
-        container.AddStreamServices(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        container.AddSingleton<IConfiguration>(configurationRoot);
+        container.AddStreamServices(configurationRoot);
         container.AddProcessorStreamBinding();
         ServiceProvider serviceProvider = container.BuildServiceProvider();
 
@@ -42,9 +42,9 @@ public class EnableBindingsExtensionsTest
         var container = new ServiceCollection();
         container.AddOptions();
         container.AddLogging(b => b.AddDebug());
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        container.AddSingleton<IConfiguration>(config);
-        container.AddStreamServices(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        container.AddSingleton<IConfiguration>(configurationRoot);
+        container.AddStreamServices(configurationRoot);
         container.AddSinkStreamBinding();
         ServiceProvider serviceProvider = container.BuildServiceProvider();
 
@@ -64,9 +64,9 @@ public class EnableBindingsExtensionsTest
         var container = new ServiceCollection();
         container.AddOptions();
         container.AddLogging(b => b.AddDebug());
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        container.AddSingleton<IConfiguration>(config);
-        container.AddStreamServices(config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        container.AddSingleton<IConfiguration>(configurationRoot);
+        container.AddStreamServices(configurationRoot);
         container.AddSourceStreamBinding();
         ServiceProvider serviceProvider = container.BuildServiceProvider();
 

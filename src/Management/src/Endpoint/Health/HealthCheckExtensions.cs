@@ -34,8 +34,7 @@ public static class HealthCheckExtensions
 
         try
         {
-            Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult res = await registration.Factory(provider).CheckHealthAsync(context)
-                .ConfigureAwait(false);
+            Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult res = await registration.Factory(provider).CheckHealthAsync(context);
 
             var status = res.Status.ToHealthStatus();
             healthCheckResult.Status = status; // Only used for aggregate doesn't get reported

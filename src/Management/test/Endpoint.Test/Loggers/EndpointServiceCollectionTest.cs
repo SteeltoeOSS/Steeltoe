@@ -38,15 +38,15 @@ public class EndpointServiceCollectionTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         services.AddLogging(builder =>
         {
-            builder.AddConfiguration(config);
+            builder.AddConfiguration(configurationRoot);
             builder.AddDynamicConsole();
         });
 
-        services.AddLoggersActuator(config);
+        services.AddLoggersActuator(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
 
         var options = serviceProvider.GetService<ILoggersOptions>();

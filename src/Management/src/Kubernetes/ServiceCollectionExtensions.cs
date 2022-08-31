@@ -50,7 +50,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// <see cref="IServiceCollection" />.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided.
     /// </param>
     /// <param name="podUtilities">
@@ -59,13 +59,13 @@ public static class ServiceCollectionExtensions
     /// <param name="version">
     /// Set response type version.
     /// </param>
-    public static IServiceCollection AddKubernetesActuators(this IServiceCollection services, IConfiguration config = null, IPodUtilities podUtilities = null,
-        MediaTypeVersion version = MediaTypeVersion.V2)
+    public static IServiceCollection AddKubernetesActuators(this IServiceCollection services, IConfiguration configuration = null,
+        IPodUtilities podUtilities = null, MediaTypeVersion version = MediaTypeVersion.V2)
     {
         ArgumentGuard.NotNull(services);
 
         services.AddKubernetesInfoContributor(podUtilities);
-        services.AddAllActuators(config, version);
+        services.AddAllActuators(configuration, version);
         return services;
     }
 }

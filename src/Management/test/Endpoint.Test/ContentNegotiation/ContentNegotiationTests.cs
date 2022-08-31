@@ -177,11 +177,12 @@ public class ContentNegotiationTests
     {
         // arrange a server and client
         IWebHostBuilder builder = new WebHostBuilder().StartupByEpName(epName)
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings)).ConfigureLogging((webHostContext, loggingBuilder) =>
-            {
-                loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                loggingBuilder.AddDynamicConsole();
-            });
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
+                (webHostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
+                });
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();

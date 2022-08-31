@@ -8,7 +8,7 @@ using RabbitMQ.Client.Exceptions;
 using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;

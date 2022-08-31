@@ -88,8 +88,7 @@ public class HealthEndpointCore : HealthEndpoint
             {
                 List<string> includedContributors = groupOptions.Include.Split(",").ToList();
 
-                return svcOptions.CurrentValue.Registrations.Where(n => includedContributors.Contains(n.Name, StringComparer.InvariantCultureIgnoreCase))
-                    .ToList();
+                return svcOptions.CurrentValue.Registrations.Where(n => includedContributors.Contains(n.Name, StringComparer.OrdinalIgnoreCase)).ToList();
             }
 
             _logger?.LogInformation("Health check requested for a group that is not configured");

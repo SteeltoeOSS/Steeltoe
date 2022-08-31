@@ -25,7 +25,7 @@ public class CosmosDbConnectionInfo : IConnectionInfo
 
     public bool IsSameType(string serviceType)
     {
-        return serviceType.Equals("cosmosdb", StringComparison.InvariantCultureIgnoreCase);
+        return serviceType.Equals("cosmosdb", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsSameType(IServiceInfo serviceInfo)
@@ -35,11 +35,11 @@ public class CosmosDbConnectionInfo : IConnectionInfo
 
     private Connection GetConnection(CosmosDbServiceInfo info, IConfiguration configuration)
     {
-        var cosmosConfig = new CosmosDbConnectorOptions(configuration);
+        var options = new CosmosDbConnectorOptions(configuration);
         var configurer = new CosmosDbProviderConfigurer();
-        var conn = new Connection(configurer.Configure(info, cosmosConfig), "CosmosDb", info);
-        conn.Properties.Add("DatabaseId", cosmosConfig.DatabaseId);
-        conn.Properties.Add("DatabaseLink", cosmosConfig.DatabaseLink);
+        var conn = new Connection(configurer.Configure(info, options), "CosmosDb", info);
+        conn.Properties.Add("DatabaseId", options.DatabaseId);
+        conn.Properties.Add("DatabaseLink", options.DatabaseLink);
 
         return conn;
     }

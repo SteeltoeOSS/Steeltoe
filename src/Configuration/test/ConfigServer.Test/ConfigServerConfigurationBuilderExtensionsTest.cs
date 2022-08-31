@@ -217,9 +217,9 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         configurationBuilder.AddJsonFile(fileName);
 
         configurationBuilder.AddConfigServer(clientSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientSettings settings = configServerProvider.Settings;
@@ -272,9 +272,9 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         configurationBuilder.AddXmlFile(fileName);
 
         configurationBuilder.AddConfigServer(clientSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
+        ConfigServerConfigurationProvider configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         Assert.NotNull(configServerProvider);
         ConfigServerClientSettings settings = configServerProvider.Settings;
@@ -314,9 +314,9 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         configurationBuilder.AddIniFile(fileName);
 
         configurationBuilder.AddConfigServer(clientSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
         ConfigServerClientSettings settings = configServerProvider.Settings;
@@ -354,8 +354,8 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         configurationBuilder.AddCommandLine(appsettings);
 
         configurationBuilder.AddConfigServer(clientSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
-        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        ConfigServerConfigurationProvider configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
         ConfigServerClientSettings settings = configServerProvider.Settings;
@@ -410,9 +410,9 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         configurationBuilder.AddJsonFile(fileName);
 
         configurationBuilder.AddConfigServer(clientSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
         ConfigServerClientSettings settings = configServerProvider.Settings;
@@ -446,8 +446,8 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         };
 
         configurationBuilder.AddEnvironmentVariables().AddConfigServer(settings);
-        IConfigurationRoot config = configurationBuilder.Build();
-        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        ConfigServerConfigurationProvider configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         Assert.NotNull(configServerProvider);
         Assert.IsType<ConfigServerConfigurationProvider>(configServerProvider);
@@ -476,8 +476,8 @@ public class ConfigServerConfigurationBuilderExtensionsTest
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(configServerClientSettings);
 
-        IConfigurationRoot config = builder.Build();
-        ConfigServerConfigurationProvider provider = config.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
+        IConfigurationRoot configurationRoot = builder.Build();
+        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         Assert.NotNull(provider);
         Assert.Equal("testConfigLabel", provider.Settings.Label);

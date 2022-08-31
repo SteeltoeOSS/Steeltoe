@@ -24,8 +24,8 @@ public static class ServiceProviderExtensions
 
         if (appInfo == null)
         {
-            var config = sp.GetRequiredService<IConfiguration>();
-            appInfo = new ApplicationInstanceInfo(config, string.Empty);
+            var configuration = sp.GetRequiredService<IConfiguration>();
+            appInfo = new ApplicationInstanceInfo(configuration, string.Empty);
         }
 
         return appInfo;

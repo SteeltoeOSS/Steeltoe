@@ -25,12 +25,12 @@ public class SqlServerServiceCollectionExtensionsTest
     public void AddSqlServerHealthContributor_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
     }
 
@@ -38,23 +38,23 @@ public class SqlServerServiceCollectionExtensionsTest
     public void AddSqlServerHealthContributor_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(config, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
     }
 
     [Fact]
     public void AddSqlServerHealthContributor_ThrowsIfServiceNameNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
         const string serviceName = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(config, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerHealthContributor(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -62,9 +62,9 @@ public class SqlServerServiceCollectionExtensionsTest
     public void AddSqlServerHealthContributor_NoVCAPs_AddsIHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        services.AddSqlServerHealthContributor(config);
+        services.AddSqlServerHealthContributor(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IHealthContributor>();
         Assert.NotNull(service);
@@ -74,9 +74,9 @@ public class SqlServerServiceCollectionExtensionsTest
     public void AddSqlServerHealthContributor_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddSqlServerHealthContributor(config, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddSqlServerHealthContributor(configurationRoot, "foobar"));
         Assert.Contains("foobar", ex.Message);
     }
 
@@ -86,9 +86,9 @@ public class SqlServerServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddSqlServerHealthContributor(config);
+        services.AddSqlServerHealthContributor(configurationRoot);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
         Assert.NotNull(healthContributor);

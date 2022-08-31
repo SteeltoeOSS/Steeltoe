@@ -121,7 +121,7 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
             return;
         }
 
-        var secretContents = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        var secretContents = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         if (item?.Data != null)
         {

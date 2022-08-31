@@ -12,10 +12,10 @@ public class OracleProviderConnectorOptionsTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
+        const IConfiguration configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new OracleProviderConnectorOptions(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new OracleProviderConnectorOptions(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
     }
 
     [Fact]
@@ -31,9 +31,9 @@ public class OracleProviderConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new OracleProviderConnectorOptions(config);
+        var options = new OracleProviderConnectorOptions(configurationRoot);
         Assert.Equal("localhost", options.Server);
         Assert.Equal(1234, options.Port);
         Assert.Equal("password", options.Password);
@@ -51,9 +51,9 @@ public class OracleProviderConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new OracleProviderConnectorOptions(config);
+        var options = new OracleProviderConnectorOptions(configurationRoot);
 
         Assert.Equal(appsettings["oracle:client:ConnectionString"], options.ToString());
     }

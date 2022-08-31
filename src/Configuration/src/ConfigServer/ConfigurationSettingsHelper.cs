@@ -16,15 +16,15 @@ public static class ConfigurationSettingsHelper
     private const string VcapServicesConfigserver30Prefix = "vcap:services:p.config-server:0";
     private const string VcapServicesConfigserverAltPrefix = "vcap:services:config-server:0";
 
-    public static void Initialize(string configPrefix, ConfigServerClientSettings settings, IConfiguration config)
+    public static void Initialize(string configPrefix, ConfigServerClientSettings settings, IConfiguration configuration)
     {
         ArgumentGuard.NotNull(configPrefix);
         ArgumentGuard.NotNull(settings);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection configurationSection = config.GetSection(configPrefix);
+        IConfigurationSection configurationSection = configuration.GetSection(configPrefix);
 
-        settings.Name = GetApplicationName(configPrefix, config, settings.Name);
+        settings.Name = GetApplicationName(configPrefix, configuration, settings.Name);
         settings.Environment = GetEnvironment(configurationSection, settings.Environment);
         settings.Label = GetLabel(configurationSection, settings.Label);
         settings.Username = GetUsername(configurationSection, settings.Username);
@@ -40,9 +40,9 @@ public static class ConfigurationSettingsHelper
         settings.RetryAttempts = GetRetryMaxAttempts(configurationSection, settings.RetryAttempts);
         settings.Token = GetToken(configurationSection);
         settings.Timeout = GetTimeout(configurationSection, settings.Timeout);
-        settings.AccessTokenUri = GetAccessTokenUri(configPrefix, config);
-        settings.ClientId = GetClientId(configPrefix, config);
-        settings.ClientSecret = GetClientSecret(configPrefix, config);
+        settings.AccessTokenUri = GetAccessTokenUri(configPrefix, configuration);
+        settings.ClientId = GetClientId(configPrefix, configuration);
+        settings.ClientSecret = GetClientSecret(configPrefix, configuration);
         settings.TokenRenewRate = GetTokenRenewRate(configurationSection);
         settings.DisableTokenRenewal = GetDisableTokenRenewal(configurationSection);
         settings.TokenTtl = GetTokenTtl(configurationSection);
@@ -52,8 +52,8 @@ public static class ConfigurationSettingsHelper
         settings.HealthTimeToLive = GetHealthTimeToLive(configurationSection, settings.HealthTimeToLive);
         settings.PollingInterval = GetPollingInterval(configurationSection, settings.PollingInterval);
 
-        // Override Config server URI
-        settings.Uri = GetCloudFoundryUri(configPrefix, config, settings.Uri);
+        // Override Config Server URI
+        settings.Uri = GetCloudFoundryUri(configPrefix, configuration, settings.Uri);
     }
 
     private static bool GetHealthEnabled(IConfigurationSection configurationSection, bool def)

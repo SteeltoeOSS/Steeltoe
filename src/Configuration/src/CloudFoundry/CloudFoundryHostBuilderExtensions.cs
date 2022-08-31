@@ -18,9 +18,9 @@ public static class CloudFoundryHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureAppConfiguration((_, config) =>
+        return hostBuilder.ConfigureAppConfiguration((_, builder) =>
         {
-            config.AddCloudFoundry();
+            builder.AddCloudFoundry();
         }).ConfigureServices((_, serviceCollection) => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
     }
 
@@ -32,9 +32,9 @@ public static class CloudFoundryHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureAppConfiguration((_, config) =>
+        return hostBuilder.ConfigureAppConfiguration((_, builder) =>
         {
-            config.AddCloudFoundry();
+            builder.AddCloudFoundry();
         }).ConfigureServices((_, serviceCollection) => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
     }
 

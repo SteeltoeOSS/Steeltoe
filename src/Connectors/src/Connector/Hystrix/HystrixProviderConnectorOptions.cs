@@ -37,11 +37,11 @@ public class HystrixProviderConnectorOptions : AbstractServiceConnectorOptions
     {
     }
 
-    public HystrixProviderConnectorOptions(IConfiguration config)
+    public HystrixProviderConnectorOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(HystrixClientSectionPrefix);
+        IConfigurationSection section = configuration.GetSection(HystrixClientSectionPrefix);
         section.Bind(this);
     }
 

@@ -26,7 +26,7 @@ public static class PropertyPlaceholderHelper
     /// <param name="property">
     /// the string containing one or more placeholders.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// the configuration used for finding replace values.
     /// </param>
     /// <param name="logger">
@@ -35,16 +35,16 @@ public static class PropertyPlaceholderHelper
     /// <returns>
     /// the supplied value with the placeholders replaced inline.
     /// </returns>
-    public static string ResolvePlaceholders(string property, IConfiguration config, ILogger logger = null)
+    public static string ResolvePlaceholders(string property, IConfiguration configuration, ILogger logger = null)
     {
-        return ParseStringValue(property, config, new HashSet<string>(), logger);
+        return ParseStringValue(property, configuration, new HashSet<string>(), logger);
     }
 
     /// <summary>
     /// Finds all placeholders of the form: <code> ${some:config:reference?default_if_not_present}</code>, resolves them from other values in the
     /// configuration, returns a new list to add to your configuration.
     /// </summary>
-    /// <param name="config">
+    /// <param name="configuration">
     /// The configuration to use as both source and target for placeholder resolution.
     /// </param>
     /// <param name="logger">
@@ -56,28 +56,28 @@ public static class PropertyPlaceholderHelper
     /// <returns>
     /// A list of keys with resolved values. Add to your <see cref="ConfigurationBuilder" /> with method 'AddInMemoryCollection'.
     /// </returns>
-    public static IEnumerable<KeyValuePair<string, string>> GetResolvedConfigurationPlaceholders(IConfiguration config, ILogger logger = null,
+    public static IEnumerable<KeyValuePair<string, string>> GetResolvedConfigurationPlaceholders(IConfiguration configuration, ILogger logger = null,
         bool useEmptyStringIfNotFound = true)
     {
         // setup a holding tank for resolved values
         var resolvedValues = new Dictionary<string, string>();
         var visitedPlaceholders = new HashSet<string>();
 
-        // iterate all config entries where the value isn't null and contains both the prefix and suffix that identify placeholders
-        foreach (KeyValuePair<string, string> entry in
-            config.AsEnumerable().Where(e => e.Value != null && e.Value.Contains(Prefix) && e.Value.Contains(Suffix)))
+        // iterate all configuration entries where the value isn't null and contains both the prefix and suffix that identify placeholders
+        foreach (KeyValuePair<string, string> entry in configuration.AsEnumerable()
+            .Where(e => e.Value != null && e.Value.Contains(Prefix) && e.Value.Contains(Suffix)))
         {
             logger?.LogTrace("Found a property placeholder '{placeholder}' to resolve for key '{key}", entry.Value, entry.Key);
-            resolvedValues.Add(entry.Key, ParseStringValue(entry.Value, config, visitedPlaceholders, logger, useEmptyStringIfNotFound));
+            resolvedValues.Add(entry.Key, ParseStringValue(entry.Value, configuration, visitedPlaceholders, logger, useEmptyStringIfNotFound));
         }
 
         return resolvedValues;
     }
 
-    private static string ParseStringValue(string property, IConfiguration config, ISet<string> visitedPlaceHolders, ILogger logger = null,
+    private static string ParseStringValue(string property, IConfiguration configuration, ISet<string> visitedPlaceHolders, ILogger logger = null,
         bool useEmptyStringIfNotFound = false)
     {
-        if (config == null)
+        if (configuration == null)
         {
             return property;
         }
@@ -112,13 +112,13 @@ public static class PropertyPlaceholderHelper
                 }
 
                 // Recursive invocation, parsing placeholders contained in the placeholder key.
-                placeholder = ParseStringValue(placeholder, config, visitedPlaceHolders);
+                placeholder = ParseStringValue(placeholder, configuration, visitedPlaceHolders);
 
                 // Handle array references foo:bar[1]:baz format -> foo:bar:1:baz
                 string lookup = placeholder.Replace('[', ':').Replace("]", string.Empty);
 
                 // Now obtain the value for the fully resolved key...
-                string propVal = config[lookup];
+                string propVal = configuration[lookup];
 
                 if (propVal == null)
                 {
@@ -128,7 +128,7 @@ public static class PropertyPlaceholderHelper
                     {
                         string actualPlaceholder = placeholder.Substring(0, separatorIndex);
                         string defaultValue = placeholder.Substring(separatorIndex + Separator.Length);
-                        propVal = config[actualPlaceholder] ?? defaultValue;
+                        propVal = configuration[actualPlaceholder] ?? defaultValue;
                     }
                     else if (useEmptyStringIfNotFound)
                     {
@@ -141,14 +141,14 @@ public static class PropertyPlaceholderHelper
                 {
                     // Replace Spring delimiters ('.') with MS-friendly delimiters (':') so Spring placeholders can also be resolved
                     lookup = placeholder.Replace(".", ":");
-                    propVal = config[lookup];
+                    propVal = configuration[lookup];
                 }
 
                 if (propVal != null)
                 {
                     // Recursive invocation, parsing placeholders contained in these
                     // previously resolved placeholder value.
-                    propVal = ParseStringValue(propVal, config, visitedPlaceHolders);
+                    propVal = ParseStringValue(propVal, configuration, visitedPlaceHolders);
                     result.Replace(startIndex, endIndex + Suffix.Length, propVal);
                     logger?.LogDebug("Resolved placeholder '{placeholder}'", placeholder);
                     startIndex = result.IndexOf(Prefix, startIndex + propVal.Length);

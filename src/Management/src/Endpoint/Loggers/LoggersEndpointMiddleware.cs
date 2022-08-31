@@ -61,7 +61,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
-        await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+        await context.Response.WriteAsync(serialInfo);
     }
 
     private bool ChangeLoggerLevel(HttpRequest request, string path)

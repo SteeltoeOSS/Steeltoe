@@ -272,7 +272,7 @@ public static class HttpClientHelper
 
         try
         {
-            using HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+            using HttpResponseMessage response = await client.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -282,7 +282,7 @@ public static class HttpClientHelper
                 return null;
             }
 
-            JsonDocument payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            JsonDocument payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
             JsonElement token = payload.RootElement.EnumerateObject().FirstOrDefault(n => n.Name.Equals("access_token")).Value;
 
             if (httpClient is null)

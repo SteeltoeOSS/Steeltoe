@@ -11,19 +11,19 @@ internal sealed class KubernetesSecretSource : IConfigurationSource
 {
     private IKubernetes KubernetesClient { get; }
 
-    private KubernetesConfigSourceSettings ConfigSettings { get; }
+    private KubernetesConfigSourceSettings ConfigurationSettings { get; }
 
     private CancellationToken CancelToken { get; }
 
     internal KubernetesSecretSource(IKubernetes kubernetesClient, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
     {
         KubernetesClient = kubernetesClient;
-        ConfigSettings = settings;
+        ConfigurationSettings = settings;
         CancelToken = cancellationToken;
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        return new KubernetesSecretProvider(KubernetesClient, ConfigSettings, CancelToken);
+        return new KubernetesSecretProvider(KubernetesClient, ConfigurationSettings, CancelToken);
     }
 }

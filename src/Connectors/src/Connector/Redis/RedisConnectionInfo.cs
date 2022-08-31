@@ -25,7 +25,7 @@ public class RedisConnectionInfo : IConnectionInfo
 
     public bool IsSameType(string serviceType)
     {
-        return serviceType.Equals("redis", StringComparison.InvariantCultureIgnoreCase);
+        return serviceType.Equals("redis", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsSameType(IServiceInfo serviceInfo)
@@ -35,8 +35,8 @@ public class RedisConnectionInfo : IConnectionInfo
 
     private Connection GetConnection(RedisServiceInfo serviceInfo, IConfiguration configuration)
     {
-        var redisConfig = new RedisCacheConnectorOptions(configuration);
+        var options = new RedisCacheConnectorOptions(configuration);
         var configurer = new RedisCacheConfigurer();
-        return new Connection(configurer.Configure(serviceInfo, redisConfig).ToString(), "Redis", serviceInfo);
+        return new Connection(configurer.Configure(serviceInfo, options).ToString(), "Redis", serviceInfo);
     }
 }

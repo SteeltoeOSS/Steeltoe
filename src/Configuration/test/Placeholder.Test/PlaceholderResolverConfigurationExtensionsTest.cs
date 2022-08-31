@@ -82,9 +82,9 @@ public class PlaceholderResolverConfigurationExtensionsTest
         configurationBuilder.AddJsonFile(fileName, false, false);
 
         configurationBuilder.AddPlaceholderResolver();
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        Assert.Equal("myName", config["spring:cloud:config:name"]);
+        Assert.Equal("myName", configurationRoot["spring:cloud:config:name"]);
     }
 
     // Mac issue https://github.com/dotnet/runtime/issues/30056
@@ -116,9 +116,9 @@ public class PlaceholderResolverConfigurationExtensionsTest
         configurationBuilder.AddXmlFile(fileName, false, false);
 
         configurationBuilder.AddPlaceholderResolver();
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        Assert.Equal("myName", config["spring:cloud:config:name"]);
+        Assert.Equal("myName", configurationRoot["spring:cloud:config:name"]);
     }
 
     // Mac issue https://github.com/dotnet/runtime/issues/30056
@@ -143,9 +143,9 @@ public class PlaceholderResolverConfigurationExtensionsTest
         configurationBuilder.AddIniFile(fileName, false, false);
 
         configurationBuilder.AddPlaceholderResolver();
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        Assert.Equal("myName", config["spring:cloud:config:name"]);
+        Assert.Equal("myName", configurationRoot["spring:cloud:config:name"]);
     }
 
     [Fact]
@@ -161,9 +161,9 @@ public class PlaceholderResolverConfigurationExtensionsTest
         configurationBuilder.AddCommandLine(appsettings);
 
         configurationBuilder.AddPlaceholderResolver();
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        Assert.Equal("myName", config["spring:cloud:config:name"]);
+        Assert.Equal("myName", configurationRoot["spring:cloud:config:name"]);
     }
 
     // Mac issue https://github.com/dotnet/runtime/issues/30056
@@ -222,9 +222,9 @@ public class PlaceholderResolverConfigurationExtensionsTest
         configurationBuilder.AddCommandLine(appsettingsLine);
 
         configurationBuilder.AddPlaceholderResolver();
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        Assert.Equal("myName", config["spring:cloud:config:name"]);
+        Assert.Equal("myName", configurationRoot["spring:cloud:config:name"]);
     }
 
     [Fact]
@@ -243,10 +243,10 @@ public class PlaceholderResolverConfigurationExtensionsTest
         builder.AddPlaceholderResolver();
 
         Assert.Single(builder.Sources);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        Assert.Single(config.Providers);
-        IConfigurationProvider provider = config.Providers.ToList()[0];
+        Assert.Single(configurationRoot.Providers);
+        IConfigurationProvider provider = configurationRoot.Providers.ToList()[0];
         Assert.IsType<PlaceholderResolverProvider>(provider);
     }
 

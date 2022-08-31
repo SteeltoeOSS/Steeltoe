@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Batch;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core;

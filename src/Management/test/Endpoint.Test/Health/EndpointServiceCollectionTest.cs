@@ -19,13 +19,13 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddHealthActuator_ThrowsOnNulls()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         const IHealthAggregator aggregator = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(null));
         Assert.Equal("services", ex.ParamName);
         Assert.Throws<InvalidOperationException>(() => services.AddHealthActuator());
-        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuator(config, aggregator));
+        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuator(configurationRoot, aggregator));
         Assert.Contains(nameof(aggregator), ex3.Message);
     }
 
@@ -43,11 +43,11 @@ public class EndpointServiceCollectionTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        services.AddHealthActuator(config, new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
+        services.AddHealthActuator(configurationRoot, new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
 
-        services.Configure<HealthCheckServiceOptions>(config);
+        services.Configure<HealthCheckServiceOptions>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IHealthOptions>();
         Assert.NotNull(options);
@@ -75,11 +75,11 @@ public class EndpointServiceCollectionTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        services.AddHealthActuator(config);
+        services.AddHealthActuator(configurationRoot);
 
-        services.Configure<HealthCheckServiceOptions>(config);
+        services.Configure<HealthCheckServiceOptions>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IHealthOptions>();
         Assert.NotNull(options);

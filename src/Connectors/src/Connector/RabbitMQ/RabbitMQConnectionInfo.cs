@@ -25,7 +25,7 @@ public class RabbitMQConnectionInfo : IConnectionInfo
 
     public bool IsSameType(string serviceType)
     {
-        return serviceType.Equals("rabbitmq", StringComparison.InvariantCultureIgnoreCase);
+        return serviceType.Equals("rabbitmq", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsSameType(IServiceInfo serviceInfo)
@@ -35,8 +35,8 @@ public class RabbitMQConnectionInfo : IConnectionInfo
 
     private Connection GetConnection(RabbitMQServiceInfo info, IConfiguration configuration)
     {
-        var rabbitConfig = new RabbitMQProviderConnectorOptions(configuration);
+        var options = new RabbitMQProviderConnectorOptions(configuration);
         var configurer = new RabbitMQProviderConfigurer();
-        return new Connection(configurer.Configure(info, rabbitConfig), "RabbitMQ", info);
+        return new Connection(configurer.Configure(info, options), "RabbitMQ", info);
     }
 }

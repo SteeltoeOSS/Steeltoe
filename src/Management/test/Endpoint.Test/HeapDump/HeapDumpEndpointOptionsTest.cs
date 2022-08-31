@@ -22,8 +22,8 @@ public class HeapDumpEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
-        Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpointOptions(config));
+        const IConfiguration configuration = null;
+        Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpointOptions(configuration));
     }
 
     [Fact]
@@ -42,10 +42,10 @@ public class HeapDumpEndpointOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new HeapDumpEndpointOptions(config);
-        var cloudOpts = new CloudFoundryEndpointOptions(config);
+        var opts = new HeapDumpEndpointOptions(configurationRoot);
+        var cloudOpts = new CloudFoundryEndpointOptions(configurationRoot);
 
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);

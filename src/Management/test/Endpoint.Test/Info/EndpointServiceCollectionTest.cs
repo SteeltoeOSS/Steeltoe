@@ -29,9 +29,9 @@ public class EndpointServiceCollectionTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        services.AddInfoActuator(config);
+        services.AddInfoActuator(configurationRoot);
 
         IInfoContributor extra = new TestInfoContributor();
         services.AddSingleton(extra);

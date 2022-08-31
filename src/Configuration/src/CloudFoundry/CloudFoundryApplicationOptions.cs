@@ -9,9 +9,9 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 
 public class CloudFoundryApplicationOptions : ApplicationInstanceInfo
 {
-    public static string PlatformConfigRoot => "vcap";
+    public static string PlatformConfigurationRoot => "vcap";
 
-    protected override string PlatformRoot => PlatformConfigRoot;
+    protected override string PlatformRoot => PlatformConfigurationRoot;
 
     // ReSharper disable once InconsistentNaming
     public string CF_Api { get; set; }
@@ -69,7 +69,7 @@ public class CloudFoundryApplicationOptions : ApplicationInstanceInfo
     }
 
     public CloudFoundryApplicationOptions(IConfiguration config)
-        : base(config, PlatformConfigRoot)
+        : base(config, PlatformConfigurationRoot)
     {
         SetIdPropertiesFromVcap(config);
     }
@@ -78,14 +78,14 @@ public class CloudFoundryApplicationOptions : ApplicationInstanceInfo
     {
         if (config != null)
         {
-            string vcapInstanceId = config.GetValue<string>($"{PlatformConfigRoot}:application:instance_id");
+            string vcapInstanceId = config.GetValue<string>($"{PlatformConfigurationRoot}:application:instance_id");
 
             if (!string.IsNullOrEmpty(vcapInstanceId))
             {
                 Instance_Id = vcapInstanceId;
             }
 
-            string vcapAppId = config.GetValue<string>($"{PlatformConfigRoot}:application:id");
+            string vcapAppId = config.GetValue<string>($"{PlatformConfigurationRoot}:application:id");
 
             if (!string.IsNullOrEmpty(vcapAppId))
             {

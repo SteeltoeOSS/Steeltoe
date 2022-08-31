@@ -17,14 +17,14 @@ public class ConfigurationAccessorTests
 
     public ConfigurationAccessorTests()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
             { "my.name", "myservice" }
         }).Build();
 
         var collection = new ServiceCollection();
-        collection.AddSingleton<IConfiguration>(config);
-        collection.AddSingleton<IApplicationContext>(p => new GenericApplicationContext(p, config));
+        collection.AddSingleton<IConfiguration>(configurationRoot);
+        collection.AddSingleton<IApplicationContext>(p => new GenericApplicationContext(p, configurationRoot));
 
         _serviceProvider = collection.BuildServiceProvider();
     }

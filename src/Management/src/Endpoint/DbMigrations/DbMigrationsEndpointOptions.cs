@@ -18,8 +18,8 @@ public class DbMigrationsEndpointOptions : AbstractEndpointOptions, IDbMigration
         RequiredPermissions = Permissions.Restricted;
     }
 
-    public DbMigrationsEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
+    public DbMigrationsEndpointOptions(IConfiguration configuration)
+        : base(ManagementInfoPrefix, configuration)
     {
         if (string.IsNullOrEmpty(Id))
         {

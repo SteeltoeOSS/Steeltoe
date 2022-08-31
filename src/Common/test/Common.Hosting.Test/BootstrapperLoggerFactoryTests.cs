@@ -43,21 +43,21 @@ public class BootstrapperLoggerFactoryTests
         logger.LogInformation("Test");
 
         mockLogger.Verify(x => x.Log(LogLevel.Information, It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((o, t) => string.Equals("Test", o.ToString(), StringComparison.InvariantCultureIgnoreCase)), It.IsAny<Exception>(),
+            It.Is<It.IsAnyType>((o, t) => string.Equals("Test", o.ToString(), StringComparison.OrdinalIgnoreCase)), It.IsAny<Exception>(),
             It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)));
 
-        // test change to log levels after updated with config
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        // test change to log levels after updated with configuration
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
             { "Logging:LogLevel:Default", nameof(LogLevel.Warning) }
         }).Build();
 
-        sut.Update(config);
+        sut.Update(configurationRoot);
         logger.LogInformation("Test2");
 
         mockLogger.Verify(
             x => x.Log(LogLevel.Information, It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((o, t) => string.Equals("Test2", o.ToString(), StringComparison.InvariantCultureIgnoreCase)), It.IsAny<Exception>(),
+                It.Is<It.IsAnyType>((o, t) => string.Equals("Test2", o.ToString(), StringComparison.OrdinalIgnoreCase)), It.IsAny<Exception>(),
                 It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)), Times.Never);
 
         // upgrade bootstrapper with new log factory, and confirm that it delegates to loggers spawned from it
@@ -71,7 +71,7 @@ public class BootstrapperLoggerFactoryTests
 
         newMockLogger.Verify(
             x => x.Log(LogLevel.Information, It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((o, t) => string.Equals("Test3", o.ToString(), StringComparison.InvariantCultureIgnoreCase)), It.IsAny<Exception>(),
+                It.Is<It.IsAnyType>((o, t) => string.Equals("Test3", o.ToString(), StringComparison.OrdinalIgnoreCase)), It.IsAny<Exception>(),
                 It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)), Times.Never);
     }
 }

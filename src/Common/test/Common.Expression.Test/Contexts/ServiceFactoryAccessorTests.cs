@@ -19,10 +19,10 @@ public class ServiceFactoryAccessorTests
 
     public ServiceFactoryAccessorTests()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         var collection = new ServiceCollection();
-        collection.AddSingleton<IConfiguration>(config);
-        collection.AddSingleton<IApplicationContext>(p => new GenericApplicationContext(p, config));
+        collection.AddSingleton<IConfiguration>(configurationRoot);
+        collection.AddSingleton<IApplicationContext>(p => new GenericApplicationContext(p, configurationRoot));
         collection.AddSingleton(typeof(Car));
         collection.AddSingleton(typeof(Boat));
         _serviceProvider = collection.BuildServiceProvider();

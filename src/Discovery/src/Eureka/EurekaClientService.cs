@@ -30,8 +30,8 @@ public static class EurekaClientService
     /// </returns>
     public static IList<IServiceInstance> GetInstances(IConfiguration configuration, string serviceId, ILoggerFactory logFactory = null)
     {
-        EurekaClientOptions config = ConfigureClientOptions(configuration);
-        LookupClient client = GetLookupClient(config, logFactory);
+        EurekaClientOptions options = ConfigureClientOptions(configuration);
+        LookupClient client = GetLookupClient(options, logFactory);
         IList<IServiceInstance> result = client.GetInstancesInternal(serviceId);
         client.ShutdownAsync().GetAwaiter().GetResult();
         return result;
@@ -52,16 +52,16 @@ public static class EurekaClientService
     /// </returns>
     public static IList<string> GetServices(IConfiguration configuration, ILoggerFactory logFactory = null)
     {
-        EurekaClientOptions config = ConfigureClientOptions(configuration);
-        LookupClient client = GetLookupClient(config, logFactory);
+        EurekaClientOptions options = ConfigureClientOptions(configuration);
+        LookupClient client = GetLookupClient(options, logFactory);
         IList<string> result = client.GetServicesInternal();
         client.ShutdownAsync().GetAwaiter().GetResult();
         return result;
     }
 
-    internal static LookupClient GetLookupClient(EurekaClientOptions config, ILoggerFactory logFactory)
+    internal static LookupClient GetLookupClient(EurekaClientOptions options, ILoggerFactory logFactory)
     {
-        return new LookupClient(config, null, logFactory);
+        return new LookupClient(options, null, logFactory);
     }
 
     internal static EurekaClientOptions ConfigureClientOptions(IConfiguration configuration)
@@ -77,8 +77,8 @@ public static class EurekaClientService
 
     internal sealed class LookupClient : DiscoveryClient
     {
-        public LookupClient(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
-            : base(clientConfig, httpClient, logFactory)
+        public LookupClient(IEurekaClientConfiguration clientConfiguration, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
+            : base(clientConfiguration, httpClient, logFactory)
         {
             if (cacheRefreshTimer != null)
             {

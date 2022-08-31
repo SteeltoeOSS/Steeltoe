@@ -22,12 +22,12 @@ public class OAuthServiceCollectionExtensionsTest
     public void AddOAuthServiceOptions_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
     }
 
@@ -35,23 +35,23 @@ public class OAuthServiceCollectionExtensionsTest
     public void AddOAuthServiceOptions_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(config, "foobar"));
-        Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(configuration, "foobar"));
+        Assert.Contains(nameof(configuration), ex2.Message);
     }
 
     [Fact]
     public void AddOAuthServiceOptions_ThrowsIfServiceNameNull()
     {
         IServiceCollection services = new ServiceCollection();
-        const IConfigurationRoot config = null;
+        const IConfigurationRoot configurationRoot = null;
         const string serviceName = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(config, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddOAuthServiceOptions(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -59,9 +59,9 @@ public class OAuthServiceCollectionExtensionsTest
     public void AddOAuthServiceOptions_NoVCAPs_AddsOAuthOptions()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        services.AddOAuthServiceOptions(config);
+        services.AddOAuthServiceOptions(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IOptions<OAuthServiceOptions>>();
         Assert.NotNull(service);
@@ -71,9 +71,9 @@ public class OAuthServiceCollectionExtensionsTest
     public void AddOAuthServiceOptions_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddOAuthServiceOptions(config, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddOAuthServiceOptions(configurationRoot, "foobar"));
         Assert.Contains("foobar", ex.Message);
     }
 
@@ -117,9 +117,9 @@ public class OAuthServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddOAuthServiceOptions(config));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddOAuthServiceOptions(configurationRoot));
         Assert.Contains("Multiple", ex.Message);
     }
 
@@ -150,9 +150,9 @@ public class OAuthServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        services.AddOAuthServiceOptions(config);
+        services.AddOAuthServiceOptions(configurationRoot);
 
         var service = services.BuildServiceProvider().GetService<IOptions<OAuthServiceOptions>>();
         Assert.NotNull(service);

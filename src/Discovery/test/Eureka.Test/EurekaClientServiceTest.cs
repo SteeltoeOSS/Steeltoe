@@ -20,9 +20,9 @@ public class EurekaClientServiceTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        EurekaClientOptions options = EurekaClientService.ConfigureClientOptions(config);
+        EurekaClientOptions options = EurekaClientService.ConfigureClientOptions(configurationRoot);
         Assert.Equal("https://foo.bar:8761/eureka/", options.EurekaServerServiceUrls);
         Assert.True(options.ShouldFetchRegistry);
         Assert.False(options.ShouldRegisterWithEureka);
@@ -38,15 +38,15 @@ public class EurekaClientServiceTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        EurekaClientOptions options = EurekaClientService.ConfigureClientOptions(config);
+        EurekaClientOptions options = EurekaClientService.ConfigureClientOptions(configurationRoot);
         EurekaClientService.LookupClient lookupClient = EurekaClientService.GetLookupClient(options, null);
         Assert.NotNull(lookupClient);
-        Assert.NotNull(lookupClient.ClientConfig);
-        Assert.Equal("https://foo.bar:8761/eureka/", lookupClient.ClientConfig.EurekaServerServiceUrls);
-        Assert.True(lookupClient.ClientConfig.ShouldFetchRegistry);
-        Assert.False(lookupClient.ClientConfig.ShouldRegisterWithEureka);
+        Assert.NotNull(lookupClient.ClientConfiguration);
+        Assert.Equal("https://foo.bar:8761/eureka/", lookupClient.ClientConfiguration.EurekaServerServiceUrls);
+        Assert.True(lookupClient.ClientConfiguration.ShouldFetchRegistry);
+        Assert.False(lookupClient.ClientConfiguration.ShouldRegisterWithEureka);
         Assert.Null(lookupClient.HeartBeatTimer);
         Assert.Null(lookupClient.CacheRefreshTimer);
         Assert.NotNull(lookupClient.HttpClient);
@@ -62,8 +62,8 @@ public class EurekaClientServiceTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
-        IConfigurationRoot config = builder.Build();
-        IList<IServiceInstance> result = EurekaClientService.GetInstances(config, "testService");
+        IConfigurationRoot configurationRoot = builder.Build();
+        IList<IServiceInstance> result = EurekaClientService.GetInstances(configurationRoot, "testService");
         Assert.NotNull(result);
         Assert.Empty(result);
     }
@@ -78,8 +78,8 @@ public class EurekaClientServiceTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
-        IConfigurationRoot config = builder.Build();
-        IList<string> result = EurekaClientService.GetServices(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        IList<string> result = EurekaClientService.GetServices(configurationRoot);
         Assert.NotNull(result);
         Assert.Empty(result);
     }

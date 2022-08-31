@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Stream.Binder;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 
 namespace Steeltoe.Stream.StubBinder1;
 

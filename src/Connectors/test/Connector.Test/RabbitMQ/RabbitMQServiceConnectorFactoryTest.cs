@@ -23,7 +23,7 @@ public class RabbitMQServiceConnectorFactoryTest
     [Fact]
     public void Create_ReturnsRabbitMQConnection()
     {
-        var config = new RabbitMQProviderConnectorOptions
+        var options = new RabbitMQProviderConnectorOptions
         {
             Server = "localhost",
             Port = 5672,
@@ -33,7 +33,7 @@ public class RabbitMQServiceConnectorFactoryTest
         };
 
         var si = new RabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost");
-        var factory = new RabbitMQProviderConnectorFactory(si, config, typeof(ConnectionFactory));
+        var factory = new RabbitMQProviderConnectorFactory(si, options, typeof(ConnectionFactory));
         object connection = factory.Create(null);
         Assert.NotNull(connection);
     }

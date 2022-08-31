@@ -13,9 +13,9 @@ public class CloudFoundryServiceOptionsTest
     public void Constructor_WithNoVcapServicesConfiguration()
     {
         var builder = new ConfigurationBuilder();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var options = new CloudFoundryServicesOptions(config);
+        var options = new CloudFoundryServicesOptions(configurationRoot);
 
         Assert.NotNull(options);
         Assert.NotNull(options.Services);
@@ -49,9 +49,9 @@ public class CloudFoundryServiceOptionsTest
         MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var options = new CloudFoundryServicesOptions(config);
+        var options = new CloudFoundryServicesOptions(configurationRoot);
 
         Assert.NotNull(options.Services);
         Assert.Single(options.Services);
@@ -148,9 +148,9 @@ public class CloudFoundryServiceOptionsTest
         MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var options = new CloudFoundryServicesOptions(config);
+        var options = new CloudFoundryServicesOptions(configurationRoot);
 
         Assert.NotNull(options.Services);
         Assert.Single(options.Services);
@@ -224,9 +224,9 @@ public class CloudFoundryServiceOptionsTest
         MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var options = new CloudFoundryServicesOptions(config);
+        var options = new CloudFoundryServicesOptions(configurationRoot);
 
         Assert.NotNull(options.Services);
         Assert.Single(options.Services);
@@ -277,9 +277,9 @@ public class CloudFoundryServiceOptionsTest
         MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var options = new CloudFoundryServicesOptions(config);
+        var options = new CloudFoundryServicesOptions(configurationRoot);
 
         Assert.NotNull(options.Services);
         Assert.Single(options.Services);
@@ -334,8 +334,8 @@ public class CloudFoundryServiceOptionsTest
         MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
-        IConfigurationRoot config = builder.Build();
-        var options = new CloudFoundryServicesOptions(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        var options = new CloudFoundryServicesOptions(configurationRoot);
 
         Assert.NotNull(options.Services);
         Assert.Single(options.Services);

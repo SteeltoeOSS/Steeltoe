@@ -21,19 +21,19 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 public static class EndpointServiceCollectionExtensions
 {
-    public static void AddMetricsActuator(this IServiceCollection services, IConfiguration config = null)
+    public static void AddMetricsActuator(this IServiceCollection services, IConfiguration configuration = null)
     {
         ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
 
-        services.AddActuatorManagementOptions(config);
-        services.AddMetricsActuatorServices(config);
+        services.AddActuatorManagementOptions(configuration);
+        services.AddMetricsActuatorServices(configuration);
 
-        var observerOptions = new MetricsObserverOptions(config);
+        var observerOptions = new MetricsObserverOptions(configuration);
         services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
 
         services.TryAddSingleton<IViewRegistry, ViewRegistry>();
@@ -42,26 +42,26 @@ public static class EndpointServiceCollectionExtensions
         services.AddActuatorEndpointMapping<MetricsEndpoint>();
     }
 
-    public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration config = null)
+    public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration configuration = null)
     {
         ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(configuration)));
 
-        var metricsEndpointOptions = new MetricsEndpointOptions(config);
+        var metricsEndpointOptions = new MetricsEndpointOptions(configuration);
         services.TryAddSingleton<IMetricsEndpointOptions>(metricsEndpointOptions);
 
-        var observerOptions = new MetricsObserverOptions(config);
+        var observerOptions = new MetricsObserverOptions(configuration);
         services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
         services.TryAddSingleton<IViewRegistry, ViewRegistry>();
         services.TryAddSingleton<PrometheusEndpointOptions>();
 
-        services.AddPrometheusActuatorServices(config);
+        services.AddPrometheusActuatorServices(configuration);
 
         AddMetricsObservers(services);
 

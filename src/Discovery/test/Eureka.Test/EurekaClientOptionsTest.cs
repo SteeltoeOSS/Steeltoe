@@ -15,20 +15,20 @@ public class EurekaClientOptionsTest : AbstractBaseTest
     {
         var opts = new EurekaClientOptions();
         Assert.True(opts.Enabled);
-        Assert.Equal(EurekaClientConfig.DefaultRegistryFetchIntervalSeconds, opts.RegistryFetchIntervalSeconds);
+        Assert.Equal(EurekaClientConfiguration.DefaultRegistryFetchIntervalSeconds, opts.RegistryFetchIntervalSeconds);
         Assert.Null(opts.ProxyHost);
         Assert.Equal(0, opts.ProxyPort);
         Assert.Null(opts.ProxyUserName);
         Assert.Null(opts.ProxyPassword);
         Assert.True(opts.ShouldGZipContent);
-        Assert.Equal(EurekaClientConfig.DefaultEurekaServerConnectTimeoutSeconds, opts.EurekaServerConnectTimeoutSeconds);
+        Assert.Equal(EurekaClientConfiguration.DefaultEurekaServerConnectTimeoutSeconds, opts.EurekaServerConnectTimeoutSeconds);
         Assert.True(opts.ShouldRegisterWithEureka);
         Assert.False(opts.ShouldDisableDelta);
         Assert.True(opts.ShouldFilterOnlyUpInstances);
         Assert.True(opts.ShouldFetchRegistry);
         Assert.Null(opts.RegistryRefreshSingleVipAddress);
         Assert.True(opts.ShouldOnDemandUpdateStatusChange);
-        Assert.Equal(EurekaClientConfig.DefaultServerServiceUrl, opts.EurekaServerServiceUrls);
+        Assert.Equal(EurekaClientConfiguration.DefaultServerServiceUrl, opts.EurekaServerServiceUrls);
         Assert.NotNull(opts.Health);
         Assert.True(opts.Health.Enabled); // Health contrib enabled
         Assert.True(opts.Health.CheckEnabled); // Health check enabled
@@ -100,9 +100,9 @@ public class EurekaClientOptionsTest : AbstractBaseTest
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddJsonFile(fileName);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        IConfigurationSection clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
+        IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         var co = new EurekaClientOptions();
         clientSection.Bind(co);
 

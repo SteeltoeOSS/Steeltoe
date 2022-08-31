@@ -22,8 +22,8 @@ public class LoggersEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
-        Assert.Throws<ArgumentNullException>(() => new LoggersEndpointOptions(config));
+        const IConfiguration configuration = null;
+        Assert.Throws<ArgumentNullException>(() => new LoggersEndpointOptions(configuration));
     }
 
     [Fact]
@@ -39,10 +39,10 @@ public class LoggersEndpointOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new LoggersEndpointOptions(config);
-        var cloudOpts = new CloudFoundryEndpointOptions(config);
+        var opts = new LoggersEndpointOptions(configurationRoot);
+        var cloudOpts = new CloudFoundryEndpointOptions(configurationRoot);
 
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);

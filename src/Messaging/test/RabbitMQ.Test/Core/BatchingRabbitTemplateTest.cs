@@ -11,7 +11,7 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Batch;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
@@ -192,10 +192,10 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
     public void TestDebatchByContainer()
     {
         ServiceProvider provider = new ServiceCollection().BuildServiceProvider();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         var received = new List<IMessage>();
         var latch = new CountdownEvent(2);
-        var context = new GenericApplicationContext(provider, config);
+        var context = new GenericApplicationContext(provider, configurationRoot);
         context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
         var container = new DirectMessageListenerContainer(context, _connectionFactory);
         container.SetQueueNames(Route);
@@ -240,11 +240,11 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
     public void TestDebatchByContainerPerformance()
     {
         ServiceProvider provider = new ServiceCollection().BuildServiceProvider();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         var received = new List<IMessage>();
         const int count = 10_000;
         var latch = new CountdownEvent(count);
-        var context = new GenericApplicationContext(provider, config);
+        var context = new GenericApplicationContext(provider, configurationRoot);
         context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
         var container = new DirectMessageListenerContainer(context, _connectionFactory);
         container.SetQueueNames(Route);
@@ -290,8 +290,8 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
     public void TestDebatchByContainerBadMessageRejected()
     {
         ServiceProvider provider = new ServiceCollection().BuildServiceProvider();
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
-        var context = new GenericApplicationContext(provider, config);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        var context = new GenericApplicationContext(provider, configurationRoot);
         context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
         var container = new DirectMessageListenerContainer(context, _connectionFactory);
         container.SetQueueNames(Route);

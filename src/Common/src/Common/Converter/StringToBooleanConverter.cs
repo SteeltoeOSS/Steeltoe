@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Converter;
 
 public class StringToBooleanConverter : AbstractGenericConditionalConverter
 {
-    private static readonly ISet<string> TrueValues = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)
+    private static readonly ISet<string> TrueValues = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
         "true",
         "on",
@@ -14,7 +14,7 @@ public class StringToBooleanConverter : AbstractGenericConditionalConverter
         "1"
     };
 
-    private static readonly ISet<string> FalseValues = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)
+    private static readonly ISet<string> FalseValues = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
         "false",
         "off",

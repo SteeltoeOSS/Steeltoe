@@ -127,7 +127,7 @@ public class DefaultBinderTypeRegistryTest : AbstractTest
         var paths = new List<string>();
         paths.AddRange(Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll"));
 
-        if (!Environment.CurrentDirectory.Equals(binderPath, StringComparison.InvariantCultureIgnoreCase))
+        if (!Environment.CurrentDirectory.Equals(binderPath, StringComparison.OrdinalIgnoreCase))
         {
             paths.AddRange(Directory.GetFiles(Environment.CurrentDirectory, "*.dll"));
         }

@@ -13,10 +13,10 @@ public class CosmosDbConnectorOptionsTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
+        const IConfiguration configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorOptions(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorOptions(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
     }
 
     [Fact]
@@ -33,9 +33,9 @@ public class CosmosDbConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new CosmosDbConnectorOptions(config);
+        var options = new CosmosDbConnectorOptions(configurationRoot);
         Assert.Equal("https://localhost:443", options.Host);
         Assert.Equal("masterKey", options.MasterKey);
         Assert.Equal("readOnlyKey", options.ReadOnlyKey);
@@ -57,9 +57,9 @@ public class CosmosDbConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new CosmosDbConnectorOptions(config);
+        var options = new CosmosDbConnectorOptions(configurationRoot);
 
         Assert.Equal(appsettings["cosmosdb:client:ConnectionString"], options.ToString());
     }
@@ -76,13 +76,13 @@ public class CosmosDbConnectorOptionsTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", CosmosDbTestHelpers.SingleVcapBinding);
 
-        // add settings to config
+        // add settings to configuration
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
         configurationBuilder.AddCloudFoundry();
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new CosmosDbConnectorOptions(config);
+        var options = new CosmosDbConnectorOptions(configurationRoot);
 
         Assert.NotEqual(appsettings["cosmosdb:client:ConnectionString"], options.ToString());
 

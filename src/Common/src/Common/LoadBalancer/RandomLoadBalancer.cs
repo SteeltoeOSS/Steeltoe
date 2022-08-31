@@ -47,7 +47,7 @@ public class RandomLoadBalancer : ILoadBalancer
         _logger?.LogTrace("ResolveServiceInstance {serviceInstance}", request.Host);
 
         IList<IServiceInstance> availableServiceInstances =
-            await _serviceInstanceProvider.GetInstancesWithCacheAsync(request.Host, _distributedCache, _cacheOptions).ConfigureAwait(false);
+            await _serviceInstanceProvider.GetInstancesWithCacheAsync(request.Host, _distributedCache, _cacheOptions);
 
         if (availableServiceInstances.Count > 0)
         {

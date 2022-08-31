@@ -279,8 +279,7 @@ public class MimeType : IComparable<MimeType>
             return false;
         }
 
-        return Type.Equals(other.Type, StringComparison.InvariantCultureIgnoreCase) &&
-            Subtype.Equals(other.Subtype, StringComparison.InvariantCultureIgnoreCase);
+        return Type.Equals(other.Type, StringComparison.OrdinalIgnoreCase) && Subtype.Equals(other.Subtype, StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsPresentIn<T>(ICollection<T> mimeTypes)
@@ -309,8 +308,8 @@ public class MimeType : IComparable<MimeType>
             return false;
         }
 
-        return Type.Equals(otherType.Type, StringComparison.InvariantCultureIgnoreCase) &&
-            Subtype.Equals(otherType.Subtype, StringComparison.InvariantCultureIgnoreCase) && ParametersAreEqual(otherType);
+        return Type.Equals(otherType.Type, StringComparison.OrdinalIgnoreCase) && Subtype.Equals(otherType.Subtype, StringComparison.OrdinalIgnoreCase) &&
+            ParametersAreEqual(otherType);
     }
 
     public override int GetHashCode()
@@ -356,12 +355,12 @@ public class MimeType : IComparable<MimeType>
             return comp;
         }
 
-        var thisAttributes = new SortedSet<string>(Parameters.Keys, StringComparer.InvariantCultureIgnoreCase);
-        var otherAttributes = new SortedSet<string>(other.Parameters.Keys, StringComparer.InvariantCultureIgnoreCase);
+        var thisAttributes = new SortedSet<string>(Parameters.Keys, StringComparer.OrdinalIgnoreCase);
+        var otherAttributes = new SortedSet<string>(other.Parameters.Keys, StringComparer.OrdinalIgnoreCase);
 
         using SortedSet<string>.Enumerator thisAttributesIterator = thisAttributes.GetEnumerator();
         using SortedSet<string>.Enumerator otherAttributesIterator = otherAttributes.GetEnumerator();
-        StringComparer comparer = StringComparer.InvariantCultureIgnoreCase;
+        StringComparer comparer = StringComparer.OrdinalIgnoreCase;
 
         while (thisAttributesIterator.MoveNext())
         {

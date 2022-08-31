@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 
 namespace Steeltoe.Stream.Converter;
 

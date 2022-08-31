@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
@@ -119,11 +119,11 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             Provider.GetRequiredService<IHostedService>().StartAsync(default).Wait();
         }
 
-        public ServiceCollection CreateContainer(IConfiguration config = null)
+        public ServiceCollection CreateContainer(IConfiguration configuration = null)
         {
             var services = new ServiceCollection();
 
-            config ??= new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+            configuration ??= new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "spring:rabbitmq:listener:direct:PossibleAuthenticationFailureFatal", "False" }
             }).Build();
@@ -135,8 +135,8 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
                 b.AddConsole();
             });
 
-            services.ConfigureRabbitOptions(config);
-            services.AddSingleton(config);
+            services.ConfigureRabbitOptions(configuration);
+            services.AddSingleton(configuration);
             services.AddRabbitHostingServices();
             services.AddRabbitJsonMessageConverter();
             services.AddRabbitMessageHandlerMethodFactory();
@@ -184,7 +184,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             });
 
             services.AddSingleton<Listener>();
-            services.AddRabbitListeners<Listener>(config);
+            services.AddRabbitListeners<Listener>(configuration);
             services.AddRabbitListenerErrorHandler<CustomListenerErrorHandler>(nameof(CustomListenerErrorHandler));
 
             return services;

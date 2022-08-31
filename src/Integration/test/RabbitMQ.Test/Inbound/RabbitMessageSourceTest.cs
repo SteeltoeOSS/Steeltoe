@@ -24,9 +24,9 @@ public class RabbitMessageSourceTest
     [Fact]
     public void TestAck()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         ServiceProvider services = new ServiceCollection().BuildServiceProvider();
-        var context = new GenericApplicationContext(services, config);
+        var context = new GenericApplicationContext(services, configurationRoot);
         var channel = new Mock<R.IModel>();
         channel.Setup(c => c.IsOpen).Returns(true);
         var props = new MockRabbitBasicProperties();
@@ -102,9 +102,9 @@ public class RabbitMessageSourceTest
         headerConverter.FromMessageHeaders(batchHeaders, props, Encoding.UTF8);
         props.ContentType = "text/plain";
 
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         ServiceProvider services = new ServiceCollection().BuildServiceProvider();
-        var context = new GenericApplicationContext(services, config);
+        var context = new GenericApplicationContext(services, configurationRoot);
         var channel = new Mock<R.IModel>();
         channel.Setup(c => c.IsOpen).Returns(true);
 
@@ -128,9 +128,9 @@ public class RabbitMessageSourceTest
 
     private void TestNackOrRequeue(bool requeue)
     {
-        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         ServiceProvider services = new ServiceCollection().BuildServiceProvider();
-        var context = new GenericApplicationContext(services, config);
+        var context = new GenericApplicationContext(services, configurationRoot);
 
         var channel = new Mock<R.IModel>();
         channel.Setup(c => c.IsOpen).Returns(true);

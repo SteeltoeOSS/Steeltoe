@@ -34,8 +34,8 @@ public class HystrixStreamBaseController : Controller
             {
                 try
                 {
-                    await Response.WriteAsync($"data: {sampleDataAsString}\n\n").ConfigureAwait(false);
-                    await Response.Body.FlushAsync().ConfigureAwait(false);
+                    await Response.WriteAsync($"data: {sampleDataAsString}\n\n");
+                    await Response.Body.FlushAsync();
                 }
                 catch (Exception)
                 {

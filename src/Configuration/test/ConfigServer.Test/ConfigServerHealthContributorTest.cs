@@ -20,7 +20,7 @@ public class ConfigServerHealthContributorTest
     [Fact]
     public void Constructor_FindsConfigServerProvider()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -33,16 +33,16 @@ public class ConfigServerHealthContributorTest
         builder.AddConfigServer();
         builder.AddPlaceholderResolver();
 
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(config);
+        var contributor = new ConfigServerHealthContributor(configurationRoot);
         Assert.NotNull(contributor.Provider);
     }
 
     [Fact]
     public void FindProvider_FindsProvider()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -54,16 +54,16 @@ public class ConfigServerHealthContributorTest
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
 
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(config);
-        Assert.NotNull(contributor.FindProvider(config));
+        var contributor = new ConfigServerHealthContributor(configurationRoot);
+        Assert.NotNull(contributor.FindProvider(configurationRoot));
     }
 
     [Fact]
     public void GetTimeToLive_ReturnsExpected()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -76,16 +76,16 @@ public class ConfigServerHealthContributorTest
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
 
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(config);
+        var contributor = new ConfigServerHealthContributor(configurationRoot);
         Assert.Equal(100000, contributor.GetTimeToLive());
     }
 
     [Fact]
     public void IsEnabled_ReturnsExpected()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -98,16 +98,16 @@ public class ConfigServerHealthContributorTest
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
 
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(config);
+        var contributor = new ConfigServerHealthContributor(configurationRoot);
         Assert.True(contributor.IsEnabled());
     }
 
     [Fact]
     public void IsCacheStale_ReturnsExpected()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -121,9 +121,9 @@ public class ConfigServerHealthContributorTest
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
 
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(config);
+        var contributor = new ConfigServerHealthContributor(configurationRoot);
         Assert.True(contributor.IsCacheStale(0)); // No cache established yet
         contributor.Cached = new ConfigEnvironment();
         contributor.LastAccess = 9;
@@ -134,8 +134,8 @@ public class ConfigServerHealthContributorTest
     [Fact]
     public void GetPropertySources_ReturnsExpected()
     {
-        // this test does NOT expect to find a running config server
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        // this test does NOT expect to find a running Config Server
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8887/" },
             { "spring:cloud:config:name", "myName" },
@@ -149,9 +149,9 @@ public class ConfigServerHealthContributorTest
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
 
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(config)
+        var contributor = new ConfigServerHealthContributor(configurationRoot)
         {
             Cached = new ConfigEnvironment()
         };
@@ -179,9 +179,9 @@ public class ConfigServerHealthContributorTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(config);
+        var contributor = new ConfigServerHealthContributor(configurationRoot);
         Assert.Null(contributor.Provider);
         HealthCheckResult health = contributor.Health();
         Assert.NotNull(health);
@@ -192,7 +192,7 @@ public class ConfigServerHealthContributorTest
     [Fact]
     public void Health_NotEnabled_ReturnsExpected()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -205,9 +205,9 @@ public class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(config);
+        var contributor = new ConfigServerHealthContributor(configurationRoot);
         Assert.NotNull(contributor.Provider);
         HealthCheckResult health = contributor.Health();
         Assert.NotNull(health);
@@ -217,8 +217,8 @@ public class ConfigServerHealthContributorTest
     [Fact]
     public void Health_NoPropertySources_ReturnsExpected()
     {
-        // this test does NOT expect to find a running config server
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        // this test does NOT expect to find a running Config Server
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8887/" },
             { "spring:cloud:config:name", "myName" },
@@ -231,9 +231,9 @@ public class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(config);
+        var contributor = new ConfigServerHealthContributor(configurationRoot);
         Assert.NotNull(contributor.Provider);
         HealthCheckResult health = contributor.Health();
         Assert.NotNull(health);
@@ -244,7 +244,7 @@ public class ConfigServerHealthContributorTest
     [Fact]
     public void UpdateHealth_WithPropertySources_ReturnsExpected()
     {
-        var values = new Dictionary<string, string> (TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -257,9 +257,9 @@ public class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(config);
+        var contributor = new ConfigServerHealthContributor(configurationRoot);
         var health = new HealthCheckResult();
 
         var sources = new List<PropertySource>

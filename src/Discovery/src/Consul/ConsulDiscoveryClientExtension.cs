@@ -37,23 +37,23 @@ public class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
     internal static void ConfigureConsulServices(IServiceCollection services)
     {
         services.AddOptions<ConsulOptions>()
-            .Configure<IConfiguration>((options, config) => config.GetSection(ConsulOptions.ConsulConfigurationPrefix).Bind(options))
+            .Configure<IConfiguration>((options, configuration) => configuration.GetSection(ConsulOptions.ConsulConfigurationPrefix).Bind(options))
             .PostConfigure(ConsulPostConfigurer.ValidateConsulOptions);
 
-        services.AddOptions<ConsulDiscoveryOptions>().Configure<IConfiguration>((options, config) =>
+        services.AddOptions<ConsulDiscoveryOptions>().Configure<IConfiguration>((options, configuration) =>
         {
-            config.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(options);
+            configuration.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(options);
 
             // Consul is enabled by default. If consul:discovery:enabled was not set then check spring:cloud:discovery:enabled
-            if (options.Enabled && config.GetValue<bool?>($"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:enabled") is null &&
-                config.GetValue<bool?>(SpringDiscoveryEnabled) == false)
+            if (options.Enabled && configuration.GetValue<bool?>($"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:enabled") is null &&
+                configuration.GetValue<bool?>(SpringDiscoveryEnabled) == false)
             {
                 options.Enabled = false;
             }
-        }).PostConfigure<IConfiguration>((options, config) =>
+        }).PostConfigure<IConfiguration>((options, configuration) =>
         {
-            var netOptions = config.GetSection(InetOptions.Prefix).Get<InetOptions>();
-            ConsulPostConfigurer.UpdateDiscoveryOptions(config, options, netOptions);
+            var netOptions = configuration.GetSection(InetOptions.Prefix).Get<InetOptions>();
+            ConsulPostConfigurer.UpdateDiscoveryOptions(configuration, options, netOptions);
         });
 
         services.TryAddSingleton(serviceProvider =>

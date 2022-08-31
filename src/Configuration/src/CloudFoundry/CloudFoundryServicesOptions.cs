@@ -8,9 +8,9 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 
 public class CloudFoundryServicesOptions : ServicesOptions
 {
-    public static string ServicesConfigRoot => "vcap";
+    public static string ServicesConfigurationRoot => "vcap";
 
-    public override string ConfigurationPrefix { get; protected set; } = ServicesConfigRoot;
+    public override string ConfigurationPrefix { get; protected set; } = ServicesConfigurationRoot;
 
     // This constructor is for use with IOptions
     public CloudFoundryServicesOptions()
@@ -18,12 +18,12 @@ public class CloudFoundryServicesOptions : ServicesOptions
     }
 
     public CloudFoundryServicesOptions(IConfigurationRoot root)
-        : base(root, ServicesConfigRoot)
+        : base(root, ServicesConfigurationRoot)
     {
     }
 
     public CloudFoundryServicesOptions(IConfiguration config)
-        : base(config, ServicesConfigRoot)
+        : base(config, ServicesConfigurationRoot)
     {
     }
 }

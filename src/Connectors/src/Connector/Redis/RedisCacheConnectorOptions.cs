@@ -67,15 +67,15 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     {
     }
 
-    public RedisCacheConnectorOptions(IConfiguration config)
+    public RedisCacheConnectorOptions(IConfiguration configuration)
         : base(',', DefaultSeparator)
     {
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(RedisClientSectionPrefix);
+        IConfigurationSection section = configuration.GetSection(RedisClientSectionPrefix);
         section.Bind(this);
 
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+        _cloudFoundryConfigFound = configuration.HasCloudFoundryServiceConfigurations();
     }
 
     // TODO: Add back in when https://github.com/aspnet/Caching updates to new StackExchange
@@ -190,7 +190,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         }
 
         // this return is effectively "StackExchange.Redis.ConfigurationOptions.Parse(this.ToString())"
-        object config = optionsType.GetMethod(nameof(int.Parse), new[]
+        object configuration = optionsType.GetMethod(nameof(int.Parse), new[]
         {
             typeof(string)
         }).Invoke(stackObject, new object[]
@@ -200,10 +200,10 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
 
         if (resetPassword)
         {
-            ReflectionHelpers.TrySetProperty(config, "Password", tempPassword);
+            ReflectionHelpers.TrySetProperty(configuration, "Password", tempPassword);
         }
 
-        return config;
+        return configuration;
     }
 
     // internal void AddEndPoints(EndPointCollection result, string endpoints)

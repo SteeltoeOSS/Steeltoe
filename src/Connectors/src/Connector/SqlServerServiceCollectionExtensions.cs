@@ -20,7 +20,7 @@ public static class SqlServerServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="contextLifetime">
@@ -29,15 +29,15 @@ public static class SqlServerServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddSqlServerHealthContributor(this IServiceCollection services, IConfiguration config,
+    public static IServiceCollection AddSqlServerHealthContributor(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
+        var info = configuration.GetSingletonServiceInfo<SqlServerServiceInfo>();
 
-        DoAdd(services, info, config, contextLifetime);
+        DoAdd(services, info, configuration, contextLifetime);
         return services;
     }
 
@@ -47,7 +47,7 @@ public static class SqlServerServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="serviceName">
@@ -59,23 +59,23 @@ public static class SqlServerServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddSqlServerHealthContributor(this IServiceCollection services, IConfiguration config, string serviceName,
+    public static IServiceCollection AddSqlServerHealthContributor(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+        var info = configuration.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
 
-        DoAdd(services, info, config, contextLifetime);
+        DoAdd(services, info, configuration, contextLifetime);
         return services;
     }
 
-    private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
+    private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime)
     {
-        var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
-        var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, SqlServerTypeLocator.SqlConnection);
+        var options = new SqlServerProviderConnectorOptions(configuration);
+        var factory = new SqlServerProviderConnectorFactory(info, options, SqlServerTypeLocator.SqlConnection);
 
         services.Add(new ServiceDescriptor(typeof(IHealthContributor),
             ctx => new RelationalDbHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),

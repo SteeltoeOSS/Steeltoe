@@ -72,7 +72,7 @@ public class ApplicationInfoManager
 
         logger = logFactory?.CreateLogger<ApplicationInfoManager>();
         InstanceConfig = instanceConfig;
-        InstanceInfo = InstanceInfo.FromInstanceConfig(instanceConfig);
+        InstanceInfo = InstanceInfo.FromInstanceConfiguration(instanceConfig);
     }
 
     public virtual void RefreshLeaseInfo()

@@ -16,7 +16,7 @@ using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
@@ -800,10 +800,10 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             Provider.Dispose();
         }
 
-        public ServiceCollection CreateContainer(IConfiguration config = null)
+        public ServiceCollection CreateContainer(IConfiguration configuration = null)
         {
             var services = new ServiceCollection();
-            config ??= new ConfigurationBuilder().Build();
+            configuration ??= new ConfigurationBuilder().Build();
 
             services.AddLogging(b =>
             {
@@ -812,7 +812,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
                 b.AddConsole();
             });
 
-            services.AddSingleton(config);
+            services.AddSingleton(configuration);
             services.AddRabbitHostingServices();
             services.AddRabbitDefaultMessageConverter();
             services.AddRabbitMessageHandlerMethodFactory();
@@ -946,13 +946,13 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             services.AddSingleton<MultiListenerJsonService>();
             services.AddSingleton<FanOutListener>();
 
-            services.AddRabbitListeners<MyService>(config);
-            services.AddRabbitListeners<IMyServiceInterface>(config);
-            services.AddRabbitListeners<IMyServiceInterface2>(config);
-            services.AddRabbitListeners<MultiListenerService>(config);
-            services.AddRabbitListeners<MultiListenerJsonService>(config);
-            services.AddRabbitListeners<ITxClassLevel>(config);
-            services.AddRabbitListeners<FanOutListener>(config);
+            services.AddRabbitListeners<MyService>(configuration);
+            services.AddRabbitListeners<IMyServiceInterface>(configuration);
+            services.AddRabbitListeners<IMyServiceInterface2>(configuration);
+            services.AddRabbitListeners<MultiListenerService>(configuration);
+            services.AddRabbitListeners<MultiListenerJsonService>(configuration);
+            services.AddRabbitListeners<ITxClassLevel>(configuration);
+            services.AddRabbitListeners<FanOutListener>(configuration);
 
             services.AddRabbitQueue(new Queue("sendTo.replies", false, false, false));
             services.AddRabbitQueue(new Queue("sendTo.replies.spel", false, false, false));

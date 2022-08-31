@@ -44,6 +44,6 @@ public class DiscoveryHttpClientHandlerBase
             return current;
         }
 
-        return await loadBalancer.ResolveServiceInstanceAsync(current).ConfigureAwait(false);
+        return await loadBalancer.ResolveServiceInstanceAsync(current);
     }
 }

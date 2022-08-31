@@ -44,8 +44,8 @@ public class RedisHealthContributor : IHealthContributor
         MethodInfo initializer = RedisTypeLocator.StackExchangeInitializer;
 
         var info = configuration.GetSingletonServiceInfo<RedisServiceInfo>();
-        var redisConfig = new RedisCacheConnectorOptions(configuration);
-        var factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer);
+        var options = new RedisCacheConnectorOptions(configuration);
+        var factory = new RedisServiceConnectorFactory(info, options, redisImplementation, redisOptions, initializer);
         return new RedisHealthContributor(factory, redisImplementation, logger);
     }
 

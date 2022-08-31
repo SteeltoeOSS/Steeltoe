@@ -63,8 +63,8 @@ public static class TaskWebHostExtensions
 
     private static bool FindAndRunTask(IServiceProvider services)
     {
-        var config = services.GetRequiredService<IConfiguration>();
-        string taskName = config.GetValue<string>("runtask");
+        var configuration = services.GetRequiredService<IConfiguration>();
+        string taskName = configuration.GetValue<string>("runtask");
         IServiceProvider scope = services.CreateScope().ServiceProvider;
 
         if (taskName != null)

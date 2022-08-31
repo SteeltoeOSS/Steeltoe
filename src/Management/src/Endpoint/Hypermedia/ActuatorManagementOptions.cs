@@ -19,8 +19,8 @@ public class ActuatorManagementOptions : ManagementEndpointOptions
         Exposure = new Exposure();
     }
 
-    public ActuatorManagementOptions(IConfiguration config)
-        : base(config)
+    public ActuatorManagementOptions(IConfiguration configuration)
+        : base(configuration)
     {
         if (string.IsNullOrEmpty(Path))
         {
@@ -32,6 +32,6 @@ public class ActuatorManagementOptions : ManagementEndpointOptions
             Path = DefaultActuatorPath; // Override path set to /cloudfoundryapplication since it will be hidden by the cloudfoundry context actuators
         }
 
-        Exposure = new Exposure(config);
+        Exposure = new Exposure(configuration);
     }
 }

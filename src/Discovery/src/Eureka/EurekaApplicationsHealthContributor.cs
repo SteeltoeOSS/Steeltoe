@@ -35,7 +35,7 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
             Description = "No monitored applications"
         };
 
-        IList<string> appNames = GetMonitoredApplications(_discoveryClient.ClientConfig);
+        IList<string> appNames = GetMonitoredApplications(_discoveryClient.ClientConfiguration);
 
         foreach (string appName in appNames)
         {
@@ -72,9 +72,9 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
         }
     }
 
-    internal IList<string> GetMonitoredApplications(IEurekaClientConfig clientConfig)
+    internal IList<string> GetMonitoredApplications(IEurekaClientConfiguration clientConfiguration)
     {
-        IList<string> configApps = GetApplicationsFromConfig(clientConfig);
+        IList<string> configApps = GetApplicationsFromConfig(clientConfiguration);
 
         if (configApps != null)
         {
@@ -85,11 +85,11 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
         return regApps.Select(app => app.Name).ToList();
     }
 
-    internal IList<string> GetApplicationsFromConfig(IEurekaClientConfig clientConfig)
+    internal IList<string> GetApplicationsFromConfig(IEurekaClientConfiguration clientConfiguration)
     {
-        if (clientConfig is EurekaClientConfig config)
+        if (clientConfiguration is EurekaClientConfiguration configuration)
         {
-            string[] monitoredApps = config.HealthMonitoredApps?.Split(new[]
+            string[] monitoredApps = configuration.HealthMonitoredApps?.Split(new[]
             {
                 ','
             }, StringSplitOptions.RemoveEmptyEntries);

@@ -70,7 +70,7 @@ public interface IApplicationInstanceInfo
     /// The Steeltoe component requesting the app's name.
     /// </param>
     /// <param name="additionalSearchPath">
-    /// One additional config key to consider, used as top priority in search.
+    /// One additional configuration key to consider, used as top priority in search.
     /// </param>
     /// <returns>
     /// The name of the application.

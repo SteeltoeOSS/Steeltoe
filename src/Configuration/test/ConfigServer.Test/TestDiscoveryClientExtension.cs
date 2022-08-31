@@ -15,7 +15,9 @@ internal sealed class TestDiscoveryClientExtension : IDiscoveryClientExtension
 {
     public void ApplyServices(IServiceCollection services)
     {
-        services.AddOptions<TestDiscoveryClientOptions>().Configure<IConfiguration>((options, config) => config.GetSection("testdiscovery").Bind(options));
+        services.AddOptions<TestDiscoveryClientOptions>()
+            .Configure<IConfiguration>((options, configuration) => configuration.GetSection("testdiscovery").Bind(options));
+
         services.AddSingleton<TestDiscoveryClient>();
         services.TryAddSingleton<IDiscoveryClient>(isp => isp.GetRequiredService<TestDiscoveryClient>());
     }

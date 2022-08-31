@@ -12,13 +12,13 @@ namespace Steeltoe.Discovery.Client.SimpleClients;
 
 public class ConfigurationDiscoveryClientExtension : IDiscoveryClientExtension
 {
-    public const string ConfigPrefix = "discovery:services";
+    public const string ConfigurationPrefix = "discovery:services";
 
     /// <inheritdoc />
     public void ApplyServices(IServiceCollection services)
     {
         services.AddOptions<List<ConfigurationServiceInstance>>()
-            .Configure<IConfiguration>((options, configuration) => configuration.GetSection(ConfigPrefix).Bind(options));
+            .Configure<IConfiguration>((options, configuration) => configuration.GetSection(ConfigurationPrefix).Bind(options));
 
         services.AddSingleton<IDiscoveryClient>(serviceProvider =>
             new ConfigurationDiscoveryClient(serviceProvider.GetRequiredService<IOptionsMonitor<List<ConfigurationServiceInstance>>>()));
@@ -26,6 +26,6 @@ public class ConfigurationDiscoveryClientExtension : IDiscoveryClientExtension
 
     public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
     {
-        return configuration.GetSection(ConfigPrefix).GetChildren().Any();
+        return configuration.GetSection(ConfigurationPrefix).GetChildren().Any();
     }
 }

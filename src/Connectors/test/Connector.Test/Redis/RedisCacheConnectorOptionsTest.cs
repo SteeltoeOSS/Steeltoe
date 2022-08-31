@@ -14,10 +14,10 @@ public class RedisCacheConnectorOptionsTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
+        const IConfiguration configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new RedisCacheConnectorOptions(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new RedisCacheConnectorOptions(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
     }
 
     [Fact]
@@ -46,9 +46,9 @@ public class RedisCacheConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new RedisCacheConnectorOptions(config);
+        var options = new RedisCacheConnectorOptions(configurationRoot);
         Assert.Equal("localhost", options.Host);
         Assert.Equal(1234, options.Port);
         Assert.Equal("password", options.Password);
@@ -81,9 +81,9 @@ public class RedisCacheConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new RedisCacheConnectorOptions(config);
+        var options = new RedisCacheConnectorOptions(configurationRoot);
 
         Assert.Equal(appsettings["redis:client:ConnectionString"], options.ToString());
     }
@@ -101,14 +101,14 @@ public class RedisCacheConnectorOptionsTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcap);
 
-        // add settings to config
+        // add settings to configuration
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddCloudFoundry();
-        IConfigurationRoot config = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new RedisCacheConnectorOptions(config);
+        var options = new RedisCacheConnectorOptions(configurationRoot);
 
         Assert.NotEqual(appsettings["redis:client:ConnectionString"], options.ToString());
     }

@@ -20,40 +20,40 @@ public class CloudFoundryServiceInfoCreatorTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const IConfiguration config = null;
+        const IConfiguration configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceInfoCreator.Instance(config));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceInfoCreator.Instance(configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
     }
 
     [Fact]
     public void Constructor_ReturnsInstance()
     {
-        IConfiguration config = new ConfigurationBuilder().Build();
+        IConfiguration configuration = new ConfigurationBuilder().Build();
 
-        var inst = CloudFoundryServiceInfoCreator.Instance(config);
+        var inst = CloudFoundryServiceInfoCreator.Instance(configuration);
         Assert.NotNull(inst);
     }
 
     [Fact]
     public void Constructor_ReturnsNewInstance()
     {
-        IConfiguration config = new ConfigurationBuilder().Build();
-        IConfiguration config2 = new ConfigurationBuilder().Build();
+        IConfiguration configuration1 = new ConfigurationBuilder().Build();
+        IConfiguration configuration2 = new ConfigurationBuilder().Build();
 
-        var inst = CloudFoundryServiceInfoCreator.Instance(config);
+        var inst = CloudFoundryServiceInfoCreator.Instance(configuration1);
         Assert.NotNull(inst);
 
-        var inst2 = CloudFoundryServiceInfoCreator.Instance(config2);
+        var inst2 = CloudFoundryServiceInfoCreator.Instance(configuration2);
         Assert.NotSame(inst, inst2);
     }
 
     [Fact]
     public void BuildServiceInfoFactories_BuildsExpected()
     {
-        IConfiguration config = new ConfigurationBuilder().Build();
+        IConfiguration configuration = new ConfigurationBuilder().Build();
 
-        var inst = CloudFoundryServiceInfoCreator.Instance(config);
+        var inst = CloudFoundryServiceInfoCreator.Instance(configuration);
         Assert.NotNull(inst);
         Assert.NotNull(inst.Factories);
         Assert.Equal(12, inst.Factories.Count);
@@ -67,9 +67,9 @@ public class CloudFoundryServiceInfoCreatorTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var creator = CloudFoundryServiceInfoCreator.Instance(config);
+        var creator = CloudFoundryServiceInfoCreator.Instance(configurationRoot);
 
         Assert.NotNull(creator.ServiceInfos);
         Assert.Equal(0, creator.ServiceInfos.Count);
@@ -160,8 +160,8 @@ public class CloudFoundryServiceInfoCreatorTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
-        var creator = CloudFoundryServiceInfoCreator.Instance(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        var creator = CloudFoundryServiceInfoCreator.Instance(configurationRoot);
         Assert.NotNull(creator.ServiceInfos);
         Assert.Equal(2, creator.ServiceInfos.Count);
     }
@@ -171,8 +171,8 @@ public class CloudFoundryServiceInfoCreatorTest
     {
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
-        var creator = CloudFoundryServiceInfoCreator.Instance(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        var creator = CloudFoundryServiceInfoCreator.Instance(configurationRoot);
         IEnumerable<RedisServiceInfo> result = creator.GetServiceInfos<RedisServiceInfo>();
         Assert.NotNull(result);
         Assert.Empty(result);
@@ -254,8 +254,8 @@ public class CloudFoundryServiceInfoCreatorTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
-        var creator = CloudFoundryServiceInfoCreator.Instance(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        var creator = CloudFoundryServiceInfoCreator.Instance(configurationRoot);
 
         IEnumerable<MySqlServiceInfo> result = creator.GetServiceInfos<MySqlServiceInfo>();
         Assert.Equal(2, result.Count(si => si != null));
@@ -404,8 +404,8 @@ public class CloudFoundryServiceInfoCreatorTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot config = builder.Build();
-        var creator = CloudFoundryServiceInfoCreator.Instance(config);
+        IConfigurationRoot configurationRoot = builder.Build();
+        var creator = CloudFoundryServiceInfoCreator.Instance(configurationRoot);
         Assert.NotNull(creator.ServiceInfos);
         Assert.Equal(4, creator.ServiceInfos.Count);
 

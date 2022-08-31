@@ -5,7 +5,7 @@
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Messaging;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 
 namespace Steeltoe.Stream.Binder;
 

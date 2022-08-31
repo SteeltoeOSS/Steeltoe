@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using RabbitMQ.Client.Exceptions;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;

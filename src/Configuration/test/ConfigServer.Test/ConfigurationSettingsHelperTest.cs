@@ -14,14 +14,14 @@ public class ConfigurationSettingsHelperTest
     {
         const string configPrefix = null;
         const ConfigServerClientSettings settings = null;
-        const IConfiguration config = null;
+        const IConfiguration configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize(configPrefix, settings, config));
+        var ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize(configPrefix, settings, configuration));
         Assert.Contains(nameof(configPrefix), ex.Message);
-        ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", settings, config));
+        ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", settings, configuration));
         Assert.Contains(nameof(settings), ex.Message);
-        ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", new ConfigServerClientSettings(), config));
-        Assert.Contains(nameof(config), ex.Message);
+        ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", new ConfigServerClientSettings(), configuration));
+        Assert.Contains(nameof(configuration), ex.Message);
     }
 
     [Fact]
@@ -29,9 +29,9 @@ public class ConfigurationSettingsHelperTest
     {
         const string prefix = "spring:cloud:config";
         var settings = new ConfigServerClientSettings();
-        IConfiguration config = new ConfigurationRoot(new List<IConfigurationProvider>());
+        IConfiguration configuration = new ConfigurationRoot(new List<IConfigurationProvider>());
 
-        ConfigurationSettingsHelper.Initialize(prefix, settings, config);
+        ConfigurationSettingsHelper.Initialize(prefix, settings, configuration);
         TestHelper.VerifyDefaults(settings);
     }
 }

@@ -16,13 +16,13 @@ public class ApplicationContextExpressionTests
 
     public ApplicationContextExpressionTests()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
             { "code", "123" }
         }).Build();
 
         var collection = new ServiceCollection();
-        collection.AddSingleton<IConfiguration>(config);
+        collection.AddSingleton<IConfiguration>(configurationRoot);
 
         collection.AddSingleton(_ =>
         {
@@ -46,7 +46,7 @@ public class ApplicationContextExpressionTests
 
         collection.AddSingleton<IApplicationContext>(p =>
         {
-            var context = new GenericApplicationContext(p, config)
+            var context = new GenericApplicationContext(p, configurationRoot)
             {
                 ServiceExpressionResolver = new StandardServiceExpressionResolver()
             };

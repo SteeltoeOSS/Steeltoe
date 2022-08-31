@@ -89,7 +89,7 @@ public static class ConfigurationExtensions
     /// <typeparam name="TServiceInfo">
     /// Type of Service Info to return.
     /// </typeparam>
-    /// <param name="config">
+    /// <param name="configuration">
     /// Configuration to retrieve service info from.
     /// </param>
     /// <exception cref="ConnectorException">
@@ -98,10 +98,10 @@ public static class ConfigurationExtensions
     /// <returns>
     /// Information required to connect to provisioned service.
     /// </returns>
-    public static TServiceInfo GetSingletonServiceInfo<TServiceInfo>(this IConfiguration config)
+    public static TServiceInfo GetSingletonServiceInfo<TServiceInfo>(this IConfiguration configuration)
         where TServiceInfo : class
     {
-        IEnumerable<TServiceInfo> results = GetServiceInfos<TServiceInfo>(config);
+        IEnumerable<TServiceInfo> results = GetServiceInfos<TServiceInfo>(configuration);
 
         if (results.Any())
         {
@@ -154,7 +154,7 @@ public static class ConfigurationExtensions
     /// Application Configuration.
     /// </param>
     /// <returns>
-    /// true if vcap:services found in config, otherwise false.
+    /// true if vcap:services found in configuration, otherwise false.
     /// </returns>
     public static bool HasCloudFoundryServiceConfigurations(this IConfiguration configuration)
     {

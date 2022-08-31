@@ -11,8 +11,8 @@ using Steeltoe.Integration;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
-using Steeltoe.Stream.Binder.Rabbit.Config;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
+using Steeltoe.Stream.Configuration;
 using Xunit;
 using Xunit.Abstractions;
 

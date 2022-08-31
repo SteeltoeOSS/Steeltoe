@@ -59,7 +59,7 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HealthActuator_ReturnsOnlyStatus()
     {
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
@@ -82,7 +82,7 @@ public class EndpointMiddlewareTest : BaseTest
         };
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<AuthStartup>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
@@ -108,7 +108,7 @@ public class EndpointMiddlewareTest : BaseTest
         };
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<AuthStartup>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
@@ -133,7 +133,8 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string>(_appSettings);
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
@@ -158,7 +159,8 @@ public class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:customjsonconverters:0", typeof(HealthConverterV3).FullName }
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
@@ -183,7 +185,8 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string>(_appSettings);
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
@@ -204,7 +207,8 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string>(_appSettings);
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         builder.ConfigureServices(services =>
         {
@@ -224,7 +228,7 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task GetStatusCode_ReturnsExpected()
     {
-        IWebHostBuilder builder = new WebHostBuilder().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings))
+        IWebHostBuilder builder = new WebHostBuilder().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings))
             .UseStartup<Startup>();
 
         using (var server = new TestServer(builder))
@@ -237,10 +241,11 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Contains("\"status\":\"UP\"", json);
         }
 
-        builder = new WebHostBuilder().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings)
-        {
-            ["HealthCheckType"] = "down"
-        })).UseStartup<Startup>();
+        builder = new WebHostBuilder().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
+            new Dictionary<string, string>(_appSettings)
+            {
+                ["HealthCheckType"] = "down"
+            })).UseStartup<Startup>();
 
         using (var server = new TestServer(builder))
         {
@@ -252,10 +257,11 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Contains("\"status\":\"DOWN\"", downJson);
         }
 
-        builder = new WebHostBuilder().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings)
-        {
-            ["HealthCheckType"] = "out"
-        })).UseStartup<Startup>();
+        builder = new WebHostBuilder().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
+            new Dictionary<string, string>(_appSettings)
+            {
+                ["HealthCheckType"] = "out"
+            })).UseStartup<Startup>();
 
         using (var server = new TestServer(builder))
         {
@@ -267,7 +273,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Contains("\"status\":\"OUT_OF_SERVICE\"", outJson);
         }
 
-        builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(
+        builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
             new Dictionary<string, string>(_appSettings)
             {
                 ["HealthCheckType"] = "unknown"
@@ -283,7 +289,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Contains("\"status\":\"UNKNOWN\"", unknownJson);
         }
 
-        builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(
+        builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
             new Dictionary<string, string>(_appSettings)
             {
                 ["HealthCheckType"] = "defaultAggregator"
@@ -299,7 +305,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Contains("\"status\":\"UP\"", unknownJson);
         }
 
-        builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(
+        builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
             new Dictionary<string, string>(_appSettings)
             {
                 ["HealthCheckType"] = "down",
@@ -320,8 +326,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task GetStatusCode_MicrosoftAggregator_ReturnsExpected()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) =>
-            config.AddInMemoryCollection(new Dictionary<string, string>(_appSettings)
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) =>
+            configuration.AddInMemoryCollection(new Dictionary<string, string>(_appSettings)
             {
                 ["HealthCheckType"] = "microsoftHealthAggregator"
             }));

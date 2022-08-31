@@ -31,7 +31,7 @@ public abstract class AbstractBindingLifecycle : ISmartLifecycle
         {
             foreach (IBindable bindable in _bindables)
             {
-                await Task.Run(() => DoStartWithBindable(bindable)).ConfigureAwait(false);
+                await Task.Run(() => DoStartWithBindable(bindable));
             }
 
             _running = true;
@@ -44,7 +44,7 @@ public abstract class AbstractBindingLifecycle : ISmartLifecycle
         {
             foreach (IBindable bindable in _bindables)
             {
-                await Task.Run(() => DoStopWithBindable(bindable)).ConfigureAwait(false);
+                await Task.Run(() => DoStopWithBindable(bindable));
             }
 
             _running = false;

@@ -51,100 +51,103 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
 
     internal void ConfigureEurekaServices(IServiceCollection services)
     {
-        services.AddOptions<EurekaClientOptions>().Configure<IConfiguration>((options, config) =>
+        services.AddOptions<EurekaClientOptions>().Configure<IConfiguration>((options, configuration) =>
         {
-            config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix).Bind(options);
+            configuration.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix).Bind(options);
 
             // Eureka is enabled by default. If eureka:client:enabled was not set then check spring:cloud:discovery:enabled
-            if (options.Enabled && config.GetValue<bool?>($"{EurekaClientOptions.EurekaClientConfigurationPrefix}:enabled") is null &&
-                config.GetValue<bool?>(SpringDiscoveryEnabled) == false)
+            if (options.Enabled && configuration.GetValue<bool?>($"{EurekaClientOptions.EurekaClientConfigurationPrefix}:enabled") is null &&
+                configuration.GetValue<bool?>(SpringDiscoveryEnabled) == false)
             {
                 options.Enabled = false;
             }
-        }).PostConfigure<IConfiguration>((options, config) =>
+        }).PostConfigure<IConfiguration>((options, configuration) =>
         {
-            EurekaServiceInfo info = GetServiceInfo(config);
+            EurekaServiceInfo info = GetServiceInfo(configuration);
             EurekaPostConfigurer.UpdateConfiguration(info, options);
         });
 
         services.AddOptions<EurekaInstanceOptions>()
-            .Configure<IConfiguration>((options, config) => config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix).Bind(options))
-            .PostConfigure<IServiceProvider>((options, serviceProvider) =>
-            {
-                var config = serviceProvider.GetRequiredService<IConfiguration>();
-                var appInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
-                var inetOptions = config.GetSection(InetOptions.Prefix).Get<InetOptions>();
-                options.NetUtils = new InetUtils(inetOptions);
-                options.ApplyNetUtils();
-                const string endpointAssembly = "Steeltoe.Management.Endpoint";
-
-                if (ReflectionHelpers.IsAssemblyLoaded(endpointAssembly))
+            .Configure<IConfiguration>((options, configuration) =>
+                configuration.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix).Bind(options)).PostConfigure<IServiceProvider>(
+                (options, serviceProvider) =>
                 {
-                    Type actuatorOptionsType = ReflectionHelpers.FindType(new[]
-                    {
-                        endpointAssembly
-                    }, new[]
-                    {
-                        "Steeltoe.Management.Endpoint.Hypermedia.ActuatorManagementOptions"
-                    });
+                    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+                    var appInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
+                    var inetOptions = configuration.GetSection(InetOptions.Prefix).Get<InetOptions>();
+                    options.NetUtils = new InetUtils(inetOptions);
+                    options.ApplyNetUtils();
+                    const string endpointAssembly = "Steeltoe.Management.Endpoint";
 
-                    Type endpointOptionsBaseType = ReflectionHelpers.FindType(new[]
+                    if (ReflectionHelpers.IsAssemblyLoaded(endpointAssembly))
                     {
-                        "Steeltoe.Management.Abstractions"
-                    }, new[]
-                    {
-                        "Steeltoe.Management.IEndpointOptions"
-                    });
-
-                    object managementOptions = serviceProvider.GetService(actuatorOptionsType);
-
-                    if (managementOptions != null)
-                    {
-                        string basePath = $"{(string)actuatorOptionsType.GetProperty("Path").GetValue(managementOptions)}/";
-
-                        if (string.IsNullOrEmpty(config.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:HealthCheckUrlPath")))
+                        Type actuatorOptionsType = ReflectionHelpers.FindType(new[]
                         {
-                            Type healthOptionsType = ReflectionHelpers.FindType(new[]
-                            {
-                                endpointAssembly
-                            }, new[]
-                            {
-                                "Steeltoe.Management.Endpoint.Health.IHealthOptions"
-                            });
+                            endpointAssembly
+                        }, new[]
+                        {
+                            "Steeltoe.Management.Endpoint.Hypermedia.ActuatorManagementOptions"
+                        });
 
-                            object healthOptions = serviceProvider.GetService(healthOptionsType);
+                        Type endpointOptionsBaseType = ReflectionHelpers.FindType(new[]
+                        {
+                            "Steeltoe.Management.Abstractions"
+                        }, new[]
+                        {
+                            "Steeltoe.Management.IEndpointOptions"
+                        });
 
-                            if (healthOptions != null)
+                        object managementOptions = serviceProvider.GetService(actuatorOptionsType);
+
+                        if (managementOptions != null)
+                        {
+                            string basePath = $"{(string)actuatorOptionsType.GetProperty("Path").GetValue(managementOptions)}/";
+
+                            if (string.IsNullOrEmpty(
+                                configuration.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:HealthCheckUrlPath")))
                             {
-                                options.HealthCheckUrlPath =
-                                    basePath + ((string)endpointOptionsBaseType.GetProperty("Path")?.GetValue(healthOptions))?.TrimStart('/');
+                                Type healthOptionsType = ReflectionHelpers.FindType(new[]
+                                {
+                                    endpointAssembly
+                                }, new[]
+                                {
+                                    "Steeltoe.Management.Endpoint.Health.IHealthOptions"
+                                });
+
+                                object healthOptions = serviceProvider.GetService(healthOptionsType);
+
+                                if (healthOptions != null)
+                                {
+                                    options.HealthCheckUrlPath =
+                                        basePath + ((string)endpointOptionsBaseType.GetProperty("Path")?.GetValue(healthOptions))?.TrimStart('/');
+                                }
                             }
-                        }
 
-                        if (string.IsNullOrEmpty(config.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:StatusPageUrlPath")))
-                        {
-                            Type infoOptionsType = ReflectionHelpers.FindType(new[]
+                            if (string.IsNullOrEmpty(
+                                configuration.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:StatusPageUrlPath")))
                             {
-                                endpointAssembly
-                            }, new[]
-                            {
-                                "Steeltoe.Management.Endpoint.Info.IInfoOptions"
-                            });
+                                Type infoOptionsType = ReflectionHelpers.FindType(new[]
+                                {
+                                    endpointAssembly
+                                }, new[]
+                                {
+                                    "Steeltoe.Management.Endpoint.Info.IInfoOptions"
+                                });
 
-                            object infoOptions = serviceProvider.GetService(infoOptionsType);
+                                object infoOptions = serviceProvider.GetService(infoOptionsType);
 
-                            if (infoOptions != null)
-                            {
-                                options.StatusPageUrlPath =
-                                    basePath + ((string)endpointOptionsBaseType.GetProperty("Path")?.GetValue(infoOptions))?.TrimStart('/');
+                                if (infoOptions != null)
+                                {
+                                    options.StatusPageUrlPath =
+                                        basePath + ((string)endpointOptionsBaseType.GetProperty("Path")?.GetValue(infoOptions))?.TrimStart('/');
+                                }
                             }
                         }
                     }
-                }
 
-                EurekaServiceInfo info = GetServiceInfo(config);
-                EurekaPostConfigurer.UpdateConfiguration(config, info, options, info?.ApplicationInfo ?? appInfo);
-            });
+                    EurekaServiceInfo info = GetServiceInfo(configuration);
+                    EurekaPostConfigurer.UpdateConfiguration(configuration, info, options, info?.ApplicationInfo ?? appInfo);
+                });
 
         services.TryAddSingleton(serviceProvider =>
         {
@@ -210,13 +213,13 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
         });
     }
 
-    private EurekaServiceInfo GetServiceInfo(IConfiguration config)
+    private EurekaServiceInfo GetServiceInfo(IConfiguration configuration)
     {
-        ServiceInfoName ??= config.GetValue<string>("eureka:serviceInfoName");
+        ServiceInfoName ??= configuration.GetValue<string>("eureka:serviceInfoName");
 
         IServiceInfo info = string.IsNullOrEmpty(ServiceInfoName)
-            ? GetSingletonDiscoveryServiceInfo(config)
-            : GetNamedDiscoveryServiceInfo(config, ServiceInfoName);
+            ? GetSingletonDiscoveryServiceInfo(configuration)
+            : GetNamedDiscoveryServiceInfo(configuration, ServiceInfoName);
 
         return info as EurekaServiceInfo;
     }

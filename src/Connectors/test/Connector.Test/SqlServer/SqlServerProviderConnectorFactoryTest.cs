@@ -22,7 +22,7 @@ public class SqlServerProviderConnectorFactoryTest
     [Fact]
     public void Create_ReturnsSqlConnection()
     {
-        var config = new SqlServerProviderConnectorOptions
+        var options = new SqlServerProviderConnectorOptions
         {
             Server = "servername",
             Password = "password",
@@ -31,7 +31,7 @@ public class SqlServerProviderConnectorFactoryTest
         };
 
         var si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e", "user", "pass");
-        var factory = new SqlServerProviderConnectorFactory(si, config, typeof(SqlConnection));
+        var factory = new SqlServerProviderConnectorFactory(si, options, typeof(SqlConnection));
         object connection = factory.Create(null);
         Assert.NotNull(connection);
     }

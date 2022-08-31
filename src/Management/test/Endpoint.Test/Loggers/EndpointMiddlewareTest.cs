@@ -49,8 +49,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((context, loggingBuilder) =>
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(context.Configuration);
                 loggingBuilder.AddDynamicConsole();
@@ -69,8 +69,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_ReturnsBadRequest()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((context, loggingBuilder) =>
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(context.Configuration);
                 loggingBuilder.AddDynamicConsole();
@@ -86,8 +86,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_AcceptsPost()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((context, loggingBuilder) =>
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
                 loggingBuilder.AddDynamicConsole();
@@ -113,8 +113,8 @@ public class EndpointMiddlewareTest : BaseTest
 
         appSettings.Add("Management:Endpoints:Actuator:Exposure:Include:0", "*");
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(appSettings))
-            .ConfigureLogging((context, loggingBuilder) =>
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging((context, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
                 loggingBuilder.AddDynamicConsole();
@@ -133,8 +133,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_UpdateNameSpace_UpdatesChildren()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((context, loggingBuilder) =>
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
                 loggingBuilder.AddDynamicConsole();
@@ -168,8 +168,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_MultipleProviders_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((context, loggingBuilder) =>
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(context.Configuration);
                 loggingBuilder.AddDynamicConsole();

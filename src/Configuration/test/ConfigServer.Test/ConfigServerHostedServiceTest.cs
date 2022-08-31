@@ -50,12 +50,12 @@ public class ConfigServerHostedServiceTest
             })
         });
 
-        var configRoot = new ConfigurationRoot(new List<IConfigurationProvider>
+        var configurationRoot = new ConfigurationRoot(new List<IConfigurationProvider>
         {
             placeholder
         });
 
-        var service = new ConfigServerHostedService(configRoot, null);
+        var service = new ConfigServerHostedService(configurationRoot, null);
 
         Func<Task> startStopAction = async () =>
         {

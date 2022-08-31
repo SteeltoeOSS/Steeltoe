@@ -5,7 +5,7 @@
 using System.Reflection;
 using RabbitMQ.Client.Impl;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Xunit;

@@ -55,11 +55,12 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task ThreadDumpActuator_ReturnsExpectedData()
     {
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupV1>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings)).ConfigureLogging((webHostContext, loggingBuilder) =>
-            {
-                loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                loggingBuilder.AddDynamicConsole();
-            });
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
+                (webHostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
+                });
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
@@ -78,11 +79,12 @@ public class EndpointMiddlewareTest : BaseTest
         if (Platform.IsWindows)
         {
             IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
-                .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings)).ConfigureLogging((webHostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
+                .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
+                    (webHostContext, loggingBuilder) =>
+                    {
+                        loggingBuilder.AddConfiguration(webHostContext.Configuration);
+                        loggingBuilder.AddDynamicConsole();
+                    });
 
             using var server = new TestServer(builder);
             HttpClient client = server.CreateClient();

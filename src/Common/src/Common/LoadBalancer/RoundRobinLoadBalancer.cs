@@ -38,7 +38,7 @@ public class RoundRobinLoadBalancer : ILoadBalancer
 
         // get instances for this service
         IList<IServiceInstance> availableServiceInstances =
-            await ServiceInstanceProvider.GetInstancesWithCacheAsync(serviceName, DistributedCache, _cacheOptions).ConfigureAwait(false);
+            await ServiceInstanceProvider.GetInstancesWithCacheAsync(serviceName, DistributedCache, _cacheOptions);
 
         if (!availableServiceInstances.Any())
         {
@@ -47,7 +47,7 @@ public class RoundRobinLoadBalancer : ILoadBalancer
         }
 
         // get next instance, or wrap back to first instance if we reach the end of the list
-        int nextInstanceIndex = await GetOrInitNextIndexAsync(cacheKey, 0).ConfigureAwait(false);
+        int nextInstanceIndex = await GetOrInitNextIndexAsync(cacheKey, 0);
 
         if (nextInstanceIndex >= availableServiceInstances.Count)
         {
@@ -57,7 +57,7 @@ public class RoundRobinLoadBalancer : ILoadBalancer
         // get next instance, or wrap back to first instance if we reach the end of the list
         IServiceInstance serviceInstance = availableServiceInstances[nextInstanceIndex];
         _logger?.LogDebug("Resolved {url} to {service}", request.Host, serviceInstance.Host);
-        await SetNextIndexAsync(cacheKey, nextInstanceIndex).ConfigureAwait(false);
+        await SetNextIndexAsync(cacheKey, nextInstanceIndex);
         return new Uri(serviceInstance.Uri, request.PathAndQuery);
     }
 
@@ -72,7 +72,7 @@ public class RoundRobinLoadBalancer : ILoadBalancer
 
         if (DistributedCache != null)
         {
-            byte[] cacheEntry = await DistributedCache.GetAsync(cacheKey).ConfigureAwait(false);
+            byte[] cacheEntry = await DistributedCache.GetAsync(cacheKey);
 
             if (cacheEntry != null && cacheEntry.Length > 0)
             {
@@ -91,7 +91,7 @@ public class RoundRobinLoadBalancer : ILoadBalancer
     {
         if (DistributedCache != null)
         {
-            await DistributedCache.SetAsync(cacheKey, BitConverter.GetBytes(currentValue + 1)).ConfigureAwait(false);
+            await DistributedCache.SetAsync(cacheKey, BitConverter.GetBytes(currentValue + 1));
         }
         else
         {

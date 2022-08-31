@@ -9,7 +9,7 @@ using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
@@ -30,7 +30,7 @@ public class RabbitListenerAttributeProcessorTest
             QueueBuilder.Durable("secondQueue").Build()
         };
 
-        ServiceProvider provider = await Config.CreateAndStartServicesAsync(null, queues, typeof(SimpleMessageListenerTestBean));
+        ServiceProvider provider = await Configuration.CreateAndStartServicesAsync(null, queues, typeof(SimpleMessageListenerTestBean));
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
@@ -60,7 +60,7 @@ public class RabbitListenerAttributeProcessorTest
             { "rabbit:myQueue", "secondQueue" }
         });
 
-        IConfigurationRoot config = configBuilder.Build();
+        IConfigurationRoot configurationRoot = configBuilder.Build();
 
         var queues = new List<IQueue>
         {
@@ -68,7 +68,9 @@ public class RabbitListenerAttributeProcessorTest
             QueueBuilder.Durable("secondQueue").Build()
         };
 
-        ServiceProvider provider = await Config.CreateAndStartServicesAsync(config, queues, typeof(SimpleMessageListenerWithMixedAnnotationsTestBean));
+        ServiceProvider provider =
+            await Configuration.CreateAndStartServicesAsync(configurationRoot, queues, typeof(SimpleMessageListenerWithMixedAnnotationsTestBean));
+
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
@@ -101,7 +103,7 @@ public class RabbitListenerAttributeProcessorTest
             QueueBuilder.Durable("metaTestQueue2").Build()
         };
 
-        ServiceProvider provider = await Config.CreateAndStartServicesAsync(null, queues, typeof(MultipleQueueNamesTestBean));
+        ServiceProvider provider = await Configuration.CreateAndStartServicesAsync(null, queues, typeof(MultipleQueueNamesTestBean));
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
@@ -129,7 +131,7 @@ public class RabbitListenerAttributeProcessorTest
             queue2
         };
 
-        ServiceProvider provider = await Config.CreateAndStartServicesAsync(null, queues, typeof(MultipleQueuesTestBean));
+        ServiceProvider provider = await Configuration.CreateAndStartServicesAsync(null, queues, typeof(MultipleQueuesTestBean));
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
@@ -156,7 +158,7 @@ public class RabbitListenerAttributeProcessorTest
             queue2
         };
 
-        ServiceProvider provider = await Config.CreateAndStartServicesAsync(null, queues, typeof(MixedQueuesAndQueueNamesTestBean));
+        ServiceProvider provider = await Configuration.CreateAndStartServicesAsync(null, queues, typeof(MixedQueuesAndQueueNamesTestBean));
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
@@ -180,7 +182,7 @@ public class RabbitListenerAttributeProcessorTest
             { "rabbit:myQueue", "#{@queue1}" }
         });
 
-        IConfigurationRoot config = configBuilder.Build();
+        IConfigurationRoot configurationRoot = configBuilder.Build();
 
         IQueue queue1 = QueueBuilder.Durable("metaTestQueue").Build();
         queue1.ServiceName = "queue1";
@@ -193,7 +195,9 @@ public class RabbitListenerAttributeProcessorTest
             queue2
         };
 
-        ServiceProvider provider = await Config.CreateAndStartServicesAsync(config, queues, typeof(PropertyPlaceholderResolvingToQueueTestBean));
+        ServiceProvider provider =
+            await Configuration.CreateAndStartServicesAsync(configurationRoot, queues, typeof(PropertyPlaceholderResolvingToQueueTestBean));
+
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
@@ -221,7 +225,7 @@ public class RabbitListenerAttributeProcessorTest
             queue2
         };
 
-        await Assert.ThrowsAsync<ExpressionException>(() => Config.CreateAndStartServicesAsync(null, queues, typeof(InvalidValueInAnnotationTestBean)));
+        await Assert.ThrowsAsync<ExpressionException>(() => Configuration.CreateAndStartServicesAsync(null, queues, typeof(InvalidValueInAnnotationTestBean)));
     }
 
     [Fact]
@@ -238,7 +242,7 @@ public class RabbitListenerAttributeProcessorTest
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.System);
     }
 
-    public static class Config
+    public static class Configuration
     {
         public static async Task<ServiceProvider> CreateAndStartServicesAsync(IConfiguration configuration, List<IQueue> queues, params Type[] listeners)
         {
@@ -256,9 +260,9 @@ public class RabbitListenerAttributeProcessorTest
                 .Callback<string>(name => queueName.Value = name);
 
             var services = new ServiceCollection();
-            IConfiguration config = configuration ?? new ConfigurationBuilder().Build();
+            IConfiguration effectiveConfiguration = configuration ?? new ConfigurationBuilder().Build();
 
-            services.AddSingleton(config);
+            services.AddSingleton(effectiveConfiguration);
             services.AddSingleton(mockConnectionFactory.Object);
             services.AddRabbitHostingServices();
             services.AddRabbitMessageHandlerMethodFactory();
@@ -279,7 +283,7 @@ public class RabbitListenerAttributeProcessorTest
                 services.AddSingleton(listener);
             }
 
-            services.AddRabbitListeners(config, listeners);
+            services.AddRabbitListeners(effectiveConfiguration, listeners);
 
             ServiceProvider provider = services.BuildServiceProvider();
             await provider.GetRequiredService<IHostedService>().StartAsync(default);

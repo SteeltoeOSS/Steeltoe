@@ -45,12 +45,12 @@ public abstract class AbstractEndpointOptions : IEndpointOptions
     {
     }
 
-    protected AbstractEndpointOptions(string sectionName, IConfiguration config)
+    protected AbstractEndpointOptions(string sectionName, IConfiguration configuration)
     {
         ArgumentGuard.NotNull(sectionName);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = config.GetSection(sectionName);
+        IConfigurationSection section = configuration.GetSection(sectionName);
 
         if (section != null)
         {

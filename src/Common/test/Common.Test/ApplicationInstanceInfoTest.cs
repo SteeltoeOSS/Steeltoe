@@ -15,9 +15,9 @@ public class ApplicationInstanceInfoTest
     public void ConstructorSetsDefaults()
     {
         var builder = new ConfigurationBuilder();
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var options = new ApplicationInstanceInfo(config, true);
+        var options = new ApplicationInstanceInfo(configurationRoot, true);
         Assert.Null(options.ApplicationId);
         Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, options.ApplicationName);
         Assert.Null(options.ApplicationVersion);
@@ -57,9 +57,9 @@ public class ApplicationInstanceInfoTest
         var builder = new ConfigurationBuilder();
         builder.SetBasePath(directory);
         builder.AddJsonFile(fileName);
-        IConfigurationRoot config = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-        var options = new ApplicationInstanceInfo(config, true);
+        var options = new ApplicationInstanceInfo(configurationRoot, true);
 
         Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", options.ApplicationId);
         Assert.Equal("my-app", options.ApplicationName);

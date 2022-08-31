@@ -24,41 +24,41 @@ namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorServiceCollectionExtensions
 {
-    public static void AddAllActuators(this IServiceCollection services, IConfiguration config, Action<CorsPolicyBuilder> buildCorsPolicy)
+    public static void AddAllActuators(this IServiceCollection services, IConfiguration configuration, Action<CorsPolicyBuilder> buildCorsPolicy)
     {
-        services.AddAllActuators(config, MediaTypeVersion.V2, buildCorsPolicy);
+        services.AddAllActuators(configuration, MediaTypeVersion.V2, buildCorsPolicy);
     }
 
-    public static IServiceCollection AddAllActuators(this IServiceCollection services, IConfiguration config = null,
+    public static IServiceCollection AddAllActuators(this IServiceCollection services, IConfiguration configuration = null,
         MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
     {
         ArgumentGuard.NotNull(services);
 
-        config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.AddSteeltoeCors(buildCorsPolicy);
 
         if (Platform.IsCloudFoundry)
         {
-            services.AddCloudFoundryActuator(config);
+            services.AddCloudFoundryActuator(configuration);
         }
 
-        services.AddHypermediaActuator(config);
+        services.AddHypermediaActuator(configuration);
 
-        services.AddThreadDumpActuator(config, version);
+        services.AddThreadDumpActuator(configuration, version);
 
-        services.AddHeapDumpActuator(config);
+        services.AddHeapDumpActuator(configuration);
 
-        services.AddDbMigrationsActuator(config);
-        services.AddEnvActuator(config);
-        services.AddInfoActuator(config);
-        services.AddHealthActuator(config);
-        services.AddLoggersActuator(config);
-        services.AddTraceActuator(config, version);
-        services.AddMappingsActuator(config);
-        services.AddMetricsActuator(config);
-        services.AddPrometheusActuator(config);
-        services.AddRefreshActuator(config);
+        services.AddDbMigrationsActuator(configuration);
+        services.AddEnvActuator(configuration);
+        services.AddInfoActuator(configuration);
+        services.AddHealthActuator(configuration);
+        services.AddLoggersActuator(configuration);
+        services.AddTraceActuator(configuration, version);
+        services.AddMappingsActuator(configuration);
+        services.AddMetricsActuator(configuration);
+        services.AddPrometheusActuator(configuration);
+        services.AddRefreshActuator(configuration);
         return services;
     }
 

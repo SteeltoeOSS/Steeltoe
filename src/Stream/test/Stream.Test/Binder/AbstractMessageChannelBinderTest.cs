@@ -9,7 +9,7 @@ using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
-using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.TestBinder;
 using Xunit;
 

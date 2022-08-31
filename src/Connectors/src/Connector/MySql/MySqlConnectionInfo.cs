@@ -25,7 +25,7 @@ public class MySqlConnectionInfo : IConnectionInfo
 
     public bool IsSameType(string serviceType)
     {
-        return serviceType.Equals("mysql", StringComparison.InvariantCultureIgnoreCase);
+        return serviceType.Equals("mysql", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsSameType(IServiceInfo serviceInfo)
@@ -35,8 +35,8 @@ public class MySqlConnectionInfo : IConnectionInfo
 
     private Connection GetConnection(MySqlServiceInfo info, IConfiguration configuration)
     {
-        var mySqlConfig = new MySqlProviderConnectorOptions(configuration);
+        var options = new MySqlProviderConnectorOptions(configuration);
         var configurer = new MySqlProviderConfigurer();
-        return new Connection(configurer.Configure(info, mySqlConfig), "MySql", info);
+        return new Connection(configurer.Configure(info, options), "MySql", info);
     }
 }

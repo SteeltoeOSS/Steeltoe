@@ -21,7 +21,7 @@ public static class SqlServerProviderServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="contextLifetime">
@@ -33,14 +33,14 @@ public static class SqlServerProviderServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config,
+    public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
-        DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
+        var info = configuration.GetSingletonServiceInfo<SqlServerServiceInfo>();
+        DoAdd(services, info, configuration, contextLifetime, addSteeltoeHealthChecks);
 
         return services;
     }
@@ -51,7 +51,7 @@ public static class SqlServerProviderServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add to.
     /// </param>
-    /// <param name="config">
+    /// <param name="configuration">
     /// App configuration.
     /// </param>
     /// <param name="serviceName">
@@ -66,25 +66,25 @@ public static class SqlServerProviderServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, string serviceName,
+    public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(config);
+        ArgumentGuard.NotNull(configuration);
 
-        var info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
-        DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
+        var info = configuration.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+        DoAdd(services, info, configuration, contextLifetime, addSteeltoeHealthChecks);
 
         return services;
     }
 
-    private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime,
+    private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime,
         bool addSteeltoeHealthChecks)
     {
         Type sqlServerConnection = SqlServerTypeLocator.SqlConnection;
-        var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
-        var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
+        var options = new SqlServerProviderConnectorOptions(configuration);
+        var factory = new SqlServerProviderConnectorFactory(info, options, sqlServerConnection);
         services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
         services.Add(new ServiceDescriptor(sqlServerConnection, factory.Create, contextLifetime));
 
