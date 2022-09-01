@@ -3,14 +3,11 @@ override Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationO
 override Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.DiskLimit.get -> int
 override Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.FileDescriptorLimit.get -> int
 override Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InstanceIndex.get -> int
-override Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InstanceIp.get -> string
-override Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InternalIp.get -> string
+override Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InstanceIP.get -> string
+override Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.InternalIP.get -> string
 override Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.MemoryLimit.get -> int
-override Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.PlatformRoot.get -> string
 override Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryConfigurationProvider.Load() -> void
 override Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServicesOptions.ConfigurationPrefix.get -> string
-override Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServicesOptions.ConfigurationPrefix.set -> void
-static Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.PlatformConfigurationRoot.get -> string
 static Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryConfigurationBuilderExtensions.AddCloudFoundry(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
 static Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryConfigurationBuilderExtensions.AddCloudFoundry(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder, Steeltoe.Extensions.Configuration.CloudFoundry.ICloudFoundrySettingsReader settingsReader) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
 static Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions.AddCloudFoundryConfiguration(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
@@ -19,7 +16,6 @@ static Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryHostBuilderExt
 static Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryOptions(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 static Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<TOption>(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration, string serviceName) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 static Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryServices<TOption>(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration, string serviceLabel) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
-static Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServicesOptions.ServicesConfigRoot.get -> string
 static Steeltoe.Extensions.Configuration.CloudFoundry.ServiceCollectionExtensions.RegisterCloudFoundryApplicationInstanceInfo(this Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.ApplicationUris.get -> System.Collections.Generic.IEnumerable<string>
@@ -30,7 +26,7 @@ Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.Ap
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.CF_Api.get -> string
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.CF_Api.set -> void
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.CloudFoundryApplicationOptions() -> void
-Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.CloudFoundryApplicationOptions(Microsoft.Extensions.Configuration.IConfiguration config) -> void
+Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.CloudFoundryApplicationOptions(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.Instance_Index.get -> int
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.Instance_Index.set -> void
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryApplicationOptions.Instance_IP.get -> string
@@ -60,8 +56,8 @@ Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryEnvironmentSettingsRe
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryEnvironmentSettingsReader.CloudFoundryEnvironmentSettingsReader() -> void
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryEnvironmentSettingsReader.InstanceId.get -> string
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryEnvironmentSettingsReader.InstanceIndex.get -> string
-Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryEnvironmentSettingsReader.InstanceInternalIp.get -> string
-Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryEnvironmentSettingsReader.InstanceIp.get -> string
+Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryEnvironmentSettingsReader.InstanceInternalIP.get -> string
+Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryEnvironmentSettingsReader.InstanceIP.get -> string
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryEnvironmentSettingsReader.InstancePort.get -> string
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryEnvironmentSettingsReader.ServicesJson.get -> string
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryHostBuilderExtensions
@@ -73,10 +69,10 @@ Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.InstanceId.set -> void
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.InstanceIndex.get -> string
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.InstanceIndex.set -> void
-Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.InstanceInternalIp.get -> string
-Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.InstanceInternalIp.set -> void
-Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.InstanceIp.get -> string
-Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.InstanceIp.set -> void
+Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.InstanceInternalIP.get -> string
+Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.InstanceInternalIP.set -> void
+Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.InstanceIP.get -> string
+Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.InstanceIP.set -> void
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.InstancePort.get -> string
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.InstancePort.set -> void
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.ServicesJson.get -> string
@@ -84,14 +80,13 @@ Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryMemorySettingsReader.
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServiceCollectionExtensions
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServicesOptions
 Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServicesOptions.CloudFoundryServicesOptions() -> void
-Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServicesOptions.CloudFoundryServicesOptions(Microsoft.Extensions.Configuration.IConfiguration config) -> void
-Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServicesOptions.CloudFoundryServicesOptions(Microsoft.Extensions.Configuration.IConfigurationRoot root) -> void
+Steeltoe.Extensions.Configuration.CloudFoundry.CloudFoundryServicesOptions.CloudFoundryServicesOptions(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
 Steeltoe.Extensions.Configuration.CloudFoundry.ICloudFoundrySettingsReader
 Steeltoe.Extensions.Configuration.CloudFoundry.ICloudFoundrySettingsReader.ApplicationJson.get -> string
 Steeltoe.Extensions.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstanceId.get -> string
 Steeltoe.Extensions.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstanceIndex.get -> string
-Steeltoe.Extensions.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstanceInternalIp.get -> string
-Steeltoe.Extensions.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstanceIp.get -> string
+Steeltoe.Extensions.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstanceInternalIP.get -> string
+Steeltoe.Extensions.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstanceIP.get -> string
 Steeltoe.Extensions.Configuration.CloudFoundry.ICloudFoundrySettingsReader.InstancePort.get -> string
 Steeltoe.Extensions.Configuration.CloudFoundry.ICloudFoundrySettingsReader.ServicesJson.get -> string
 Steeltoe.Extensions.Configuration.CloudFoundry.Limits

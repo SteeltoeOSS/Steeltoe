@@ -1,19 +1,20 @@
-﻿override Steeltoe.Extensions.Configuration.SpringBoot.SpringBootCmdProvider.Load() -> void
-override Steeltoe.Extensions.Configuration.SpringBoot.SpringBootEnvProvider.Load() -> void
-static Steeltoe.Extensions.Configuration.SpringBoot.SpringBootConfigurationBuilderExtensions.AddSpringBootCmd(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, Microsoft.Extensions.Configuration.IConfiguration configuration) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-static Steeltoe.Extensions.Configuration.SpringBoot.SpringBootConfigurationBuilderExtensions.AddSpringBootEnv(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
+﻿override Steeltoe.Extensions.Configuration.SpringBoot.SpringBootCommandLineProvider.Load() -> void
+override Steeltoe.Extensions.Configuration.SpringBoot.SpringBootEnvironmentVariableProvider.Load() -> void
+static Steeltoe.Extensions.Configuration.SpringBoot.SpringBootConfigurationBuilderExtensions.AddSpringBootFromCommandLine(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, Microsoft.Extensions.Configuration.IConfiguration configuration) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
+static Steeltoe.Extensions.Configuration.SpringBoot.SpringBootConfigurationBuilderExtensions.AddSpringBootFromEnvironmentVariable(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
 static Steeltoe.Extensions.Configuration.SpringBoot.SpringBootHostBuilderExtensions.AddSpringBootConfiguration(this Microsoft.AspNetCore.Builder.WebApplicationBuilder builder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
 static Steeltoe.Extensions.Configuration.SpringBoot.SpringBootHostBuilderExtensions.AddSpringBootConfiguration(this Microsoft.AspNetCore.Hosting.IWebHostBuilder builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
 static Steeltoe.Extensions.Configuration.SpringBoot.SpringBootHostBuilderExtensions.AddSpringBootConfiguration(this Microsoft.Extensions.Hosting.IHostBuilder builder) -> Microsoft.Extensions.Hosting.IHostBuilder
-Steeltoe.Extensions.Configuration.SpringBoot.SpringBootCmdProvider
-Steeltoe.Extensions.Configuration.SpringBoot.SpringBootCmdProvider.SpringBootCmdProvider(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
-Steeltoe.Extensions.Configuration.SpringBoot.SpringBootCmdSource
-Steeltoe.Extensions.Configuration.SpringBoot.SpringBootCmdSource.Build(Microsoft.Extensions.Configuration.IConfigurationBuilder builder) -> Microsoft.Extensions.Configuration.IConfigurationProvider
-Steeltoe.Extensions.Configuration.SpringBoot.SpringBootCmdSource.SpringBootCmdSource(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
+Steeltoe.Extensions.Configuration.SpringBoot.SpringBootCommandLineProvider
+Steeltoe.Extensions.Configuration.SpringBoot.SpringBootCommandLineProvider.SpringBootCommandLineProvider(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
+Steeltoe.Extensions.Configuration.SpringBoot.SpringBootCommandLineSource
+Steeltoe.Extensions.Configuration.SpringBoot.SpringBootCommandLineSource.Build(Microsoft.Extensions.Configuration.IConfigurationBuilder builder) -> Microsoft.Extensions.Configuration.IConfigurationProvider
+Steeltoe.Extensions.Configuration.SpringBoot.SpringBootCommandLineSource.SpringBootCommandLineSource(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
 Steeltoe.Extensions.Configuration.SpringBoot.SpringBootConfigurationBuilderExtensions
-Steeltoe.Extensions.Configuration.SpringBoot.SpringBootEnvProvider
-Steeltoe.Extensions.Configuration.SpringBoot.SpringBootEnvProvider.SpringBootEnvProvider(string springApplicationJson = null) -> void
-Steeltoe.Extensions.Configuration.SpringBoot.SpringBootEnvSource
-Steeltoe.Extensions.Configuration.SpringBoot.SpringBootEnvSource.Build(Microsoft.Extensions.Configuration.IConfigurationBuilder builder) -> Microsoft.Extensions.Configuration.IConfigurationProvider
-Steeltoe.Extensions.Configuration.SpringBoot.SpringBootEnvSource.SpringBootEnvSource() -> void
+Steeltoe.Extensions.Configuration.SpringBoot.SpringBootEnvironmentVariableProvider
+Steeltoe.Extensions.Configuration.SpringBoot.SpringBootEnvironmentVariableProvider.SpringBootEnvironmentVariableProvider() -> void
+Steeltoe.Extensions.Configuration.SpringBoot.SpringBootEnvironmentVariableProvider.SpringBootEnvironmentVariableProvider(string springApplicationJson) -> void
+Steeltoe.Extensions.Configuration.SpringBoot.SpringBootEnvironmentVariableSource
+Steeltoe.Extensions.Configuration.SpringBoot.SpringBootEnvironmentVariableSource.Build(Microsoft.Extensions.Configuration.IConfigurationBuilder builder) -> Microsoft.Extensions.Configuration.IConfigurationProvider
+Steeltoe.Extensions.Configuration.SpringBoot.SpringBootEnvironmentVariableSource.SpringBootEnvironmentVariableSource() -> void
 Steeltoe.Extensions.Configuration.SpringBoot.SpringBootHostBuilderExtensions

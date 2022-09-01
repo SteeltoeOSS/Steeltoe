@@ -1,20 +1,19 @@
-﻿override Steeltoe.Extensions.Configuration.CredentialConverter.CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Type sourceType) -> bool
+override Steeltoe.Extensions.Configuration.CredentialConverter.CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Type sourceType) -> bool
 override Steeltoe.Extensions.Configuration.CredentialConverter.ConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value) -> object
 Steeltoe.Extensions.Configuration.AbstractServiceOptions
 Steeltoe.Extensions.Configuration.AbstractServiceOptions.AbstractServiceOptions() -> void
-Steeltoe.Extensions.Configuration.AbstractServiceOptions.AbstractServiceOptions(Microsoft.Extensions.Configuration.IConfiguration config, string sectionPrefix = "") -> void
-Steeltoe.Extensions.Configuration.AbstractServiceOptions.AbstractServiceOptions(Microsoft.Extensions.Configuration.IConfigurationRoot root, string sectionPrefix = "") -> void
+Steeltoe.Extensions.Configuration.AbstractServiceOptions.AbstractServiceOptions(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
+Steeltoe.Extensions.Configuration.AbstractServiceOptions.AbstractServiceOptions(Microsoft.Extensions.Configuration.IConfiguration configuration, string sectionPrefix) -> void
 Steeltoe.Extensions.Configuration.AbstractServiceOptions.Bind(Microsoft.Extensions.Configuration.IConfiguration configuration, string serviceName) -> void
-Steeltoe.Extensions.Configuration.AbstractServiceOptions.GetInstancesOfType(string serviceType) -> System.Collections.Generic.IEnumerable<Steeltoe.Extensions.Configuration.Service>
-Steeltoe.Extensions.Configuration.AbstractServiceOptions.GetServicesList() -> System.Collections.Generic.IEnumerable<Steeltoe.Extensions.Configuration.Service>
+Steeltoe.Extensions.Configuration.AbstractServiceOptions.GetAllServices() -> System.Collections.Generic.IEnumerable<Steeltoe.Extensions.Configuration.Service>
+Steeltoe.Extensions.Configuration.AbstractServiceOptions.GetServicesOfType(string serviceType) -> System.Collections.Generic.IEnumerable<Steeltoe.Extensions.Configuration.Service>
 Steeltoe.Extensions.Configuration.AbstractServiceOptions.Label.get -> string
 Steeltoe.Extensions.Configuration.AbstractServiceOptions.Label.set -> void
 Steeltoe.Extensions.Configuration.AbstractServiceOptions.Name.get -> string
 Steeltoe.Extensions.Configuration.AbstractServiceOptions.Name.set -> void
 Steeltoe.Extensions.Configuration.AbstractServiceOptions.Plan.get -> string
 Steeltoe.Extensions.Configuration.AbstractServiceOptions.Plan.set -> void
-Steeltoe.Extensions.Configuration.AbstractServiceOptions.Services.get -> System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<Steeltoe.Extensions.Configuration.Service>>
-Steeltoe.Extensions.Configuration.AbstractServiceOptions.Services.set -> void
+Steeltoe.Extensions.Configuration.AbstractServiceOptions.Services.get -> System.Collections.Generic.IDictionary<string, System.Collections.Generic.IEnumerable<Steeltoe.Extensions.Configuration.Service>>
 Steeltoe.Extensions.Configuration.AbstractServiceOptions.Tags.get -> System.Collections.Generic.IEnumerable<string>
 Steeltoe.Extensions.Configuration.AbstractServiceOptions.Tags.set -> void
 Steeltoe.Extensions.Configuration.Credential
@@ -26,16 +25,11 @@ Steeltoe.Extensions.Configuration.CredentialConverter.CredentialConverter() -> v
 Steeltoe.Extensions.Configuration.IPlaceholderResolverProvider
 Steeltoe.Extensions.Configuration.IPlaceholderResolverProvider.Providers.get -> System.Collections.Generic.IList<Microsoft.Extensions.Configuration.IConfigurationProvider>
 Steeltoe.Extensions.Configuration.IPlaceholderResolverProvider.ResolvedKeys.get -> System.Collections.Generic.IList<string>
-Steeltoe.Extensions.Configuration.IServicesInfo
-Steeltoe.Extensions.Configuration.IServicesInfo.GetInstancesOfType(string serviceType) -> System.Collections.Generic.IEnumerable<Steeltoe.Extensions.Configuration.Service>
-Steeltoe.Extensions.Configuration.IServicesInfo.GetServicesList() -> System.Collections.Generic.IEnumerable<Steeltoe.Extensions.Configuration.Service>
 Steeltoe.Extensions.Configuration.Service
-Steeltoe.Extensions.Configuration.Service.Credentials.get -> System.Collections.Generic.Dictionary<string, Steeltoe.Extensions.Configuration.Credential>
-Steeltoe.Extensions.Configuration.Service.Credentials.set -> void
+Steeltoe.Extensions.Configuration.Service.Credentials.get -> System.Collections.Generic.IDictionary<string, Steeltoe.Extensions.Configuration.Credential>
 Steeltoe.Extensions.Configuration.Service.Service() -> void
 Steeltoe.Extensions.Configuration.ServicesOptions
 Steeltoe.Extensions.Configuration.ServicesOptions.ServicesOptions() -> void
-Steeltoe.Extensions.Configuration.ServicesOptions.ServicesOptions(Microsoft.Extensions.Configuration.IConfiguration config, string configPrefix = "") -> void
-Steeltoe.Extensions.Configuration.ServicesOptions.ServicesOptions(Microsoft.Extensions.Configuration.IConfigurationRoot root, string configPrefix = "") -> void
+Steeltoe.Extensions.Configuration.ServicesOptions.ServicesOptions(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
+Steeltoe.Extensions.Configuration.ServicesOptions.ServicesOptions(Microsoft.Extensions.Configuration.IConfiguration configuration, string sectionPrefix) -> void
 virtual Steeltoe.Extensions.Configuration.AbstractServiceOptions.ConfigurationPrefix.get -> string
-virtual Steeltoe.Extensions.Configuration.AbstractServiceOptions.ConfigurationPrefix.set -> void
