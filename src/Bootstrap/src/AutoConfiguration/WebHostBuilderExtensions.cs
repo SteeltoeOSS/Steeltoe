@@ -61,8 +61,8 @@ public static class WebHostBuilderExtensions
     public static IWebHostBuilder AddSteeltoe(this IWebHostBuilder hostBuilder, IEnumerable<string> exclusions = null, ILoggerFactory loggerFactory = null)
     {
         AssemblyExtensions.ExcludedAssemblies = exclusions ?? new List<string>();
-        _loggerFactory = loggerFactory;
-        _logger = loggerFactory?.CreateLogger(LoggerName) ?? NullLogger.Instance;
+        _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
+        _logger = _loggerFactory.CreateLogger(LoggerName);
 
         if (!hostBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServer))
         {
@@ -159,7 +159,7 @@ public static class WebHostBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireKubernetesConfiguration(this IWebHostBuilder hostBuilder)
     {
-        hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddKubernetes(loggerFactory: _loggerFactory))
+        hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddKubernetes(_loggerFactory))
             .ConfigureServices(serviceCollection => serviceCollection.AddKubernetesConfigurationServices()).Log(LogMessages.WireKubernetesConfiguration);
     }
 

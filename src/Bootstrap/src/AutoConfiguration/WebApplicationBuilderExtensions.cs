@@ -60,8 +60,8 @@ public static class WebApplicationBuilderExtensions
         ILoggerFactory loggerFactory = null)
     {
         AssemblyExtensions.ExcludedAssemblies = exclusions ?? new List<string>();
-        _loggerFactory = loggerFactory;
-        _logger = loggerFactory?.CreateLogger(LoggerName) ?? NullLogger.Instance;
+        _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
+        _logger = _loggerFactory.CreateLogger(LoggerName);
 
         if (!webApplicationBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServer))
         {
@@ -162,7 +162,7 @@ public static class WebApplicationBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireKubernetesConfiguration(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Configuration.AddKubernetes(loggerFactory: _loggerFactory);
+        webApplicationBuilder.Configuration.AddKubernetes(_loggerFactory);
         webApplicationBuilder.Services.AddKubernetesConfigurationServices();
         Log(LogMessages.WireKubernetesConfiguration);
     }
