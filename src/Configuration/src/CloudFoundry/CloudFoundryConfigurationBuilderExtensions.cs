@@ -11,7 +11,7 @@ public static class CloudFoundryConfigurationBuilderExtensions
 {
     public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder)
     {
-        return configurationBuilder.AddCloudFoundry(null);
+        return AddCloudFoundry(configurationBuilder, null);
     }
 
     public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder, ICloudFoundrySettingsReader settingsReader)

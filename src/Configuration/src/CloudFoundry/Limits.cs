@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 
-public class Limits
+public sealed class Limits
 {
     public int Disk { get; set; } = -1;
 

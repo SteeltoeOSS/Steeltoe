@@ -18,6 +18,8 @@ public static class ServiceCollectionExtensions
     /// </param>
     public static IServiceCollection RegisterCloudFoundryApplicationInstanceInfo(this IServiceCollection serviceCollection)
     {
+        ArgumentGuard.NotNull(serviceCollection);
+
         ServiceDescriptor appInfo = serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
 
         if (appInfo?.ImplementationType?.IsAssignableFrom(typeof(CloudFoundryApplicationOptions)) != true)

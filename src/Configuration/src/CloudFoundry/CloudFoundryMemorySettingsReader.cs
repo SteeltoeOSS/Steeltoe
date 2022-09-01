@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 
-public class CloudFoundryMemorySettingsReader : ICloudFoundrySettingsReader
+public sealed class CloudFoundryMemorySettingsReader : ICloudFoundrySettingsReader
 {
     public string ApplicationJson { get; set; }
 

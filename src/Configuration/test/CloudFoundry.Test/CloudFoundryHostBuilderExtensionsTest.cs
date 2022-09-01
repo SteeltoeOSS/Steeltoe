@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Xunit;
@@ -27,7 +28,7 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
 
         IApplicationInstanceInfo instanceInfo = host.Services.GetApplicationInstanceInfo();
         Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
-        var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
+        var cfg = (IConfigurationRoot)host.Services.GetRequiredService(typeof(IConfiguration));
         Assert.Contains(cfg.Providers, provider => provider is CloudFoundryConfigurationProvider);
     }
 
@@ -41,7 +42,7 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
 
         IApplicationInstanceInfo instanceInfo = host.Services.GetApplicationInstanceInfo();
         Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
-        var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
+        var cfg = (IConfigurationRoot)host.Services.GetRequiredService(typeof(IConfiguration));
         Assert.Contains(cfg.Providers, provider => provider is CloudFoundryConfigurationProvider);
     }
 
@@ -57,7 +58,7 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
         hostbuilder.AddCloudFoundryConfiguration();
         IWebHost host = hostbuilder.Build();
 
-        var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
+        var cfg = (IConfigurationRoot)host.Services.GetRequiredService(typeof(IConfiguration));
         Assert.Contains(cfg.Providers, provider => provider is CloudFoundryConfigurationProvider);
     }
 
@@ -68,7 +69,7 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
         hostbuilder.AddCloudFoundryConfiguration();
         WebApplication host = hostbuilder.Build();
 
-        var configurationRoot = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
+        var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService(typeof(IConfiguration));
         Assert.Contains(configurationRoot.Providers, provider => provider is CloudFoundryConfigurationProvider);
     }
 }

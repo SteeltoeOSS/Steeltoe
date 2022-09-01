@@ -7,7 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 
-public class CloudFoundryConfigurationProvider : ConfigurationProvider
+public sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
 {
     private readonly ICloudFoundrySettingsReader _settingsReader;
 
@@ -38,7 +38,7 @@ public class CloudFoundryConfigurationProvider : ConfigurationProvider
         return stream;
     }
 
-    internal void AddDiegoVariables(IDictionary<string, string> data)
+    private void AddDiegoVariables(IDictionary<string, string> data)
     {
         if (!data.ContainsKey("vcap:application:instance_id"))
         {

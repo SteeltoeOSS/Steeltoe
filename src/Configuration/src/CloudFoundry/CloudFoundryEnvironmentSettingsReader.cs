@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 
-public class CloudFoundryEnvironmentSettingsReader : ICloudFoundrySettingsReader
+public sealed class CloudFoundryEnvironmentSettingsReader : ICloudFoundrySettingsReader
 {
     private const string CfInstanceGuid = "CF_INSTANCE_GUID";
     private const string CfInstanceIndex = "CF_INSTANCE_INDEX";
