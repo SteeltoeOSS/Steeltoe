@@ -55,24 +55,17 @@ public static class HttpClientHelper
     {
         HttpClient client;
 
-        if (Platform.IsFullFramework)
+        if (!validateCertificates)
         {
-            client = handler == null ? new HttpClient() : new HttpClient(handler);
+            handler ??= new HttpClientHandler();
+
+            handler.ServerCertificateCustomValidationCallback = GetDisableDelegate();
+            handler.SslProtocols = SslProtocols.Tls12;
+            client = new HttpClient(handler);
         }
         else
         {
-            if (!validateCertificates)
-            {
-                handler ??= new HttpClientHandler();
-
-                handler.ServerCertificateCustomValidationCallback = GetDisableDelegate();
-                handler.SslProtocols = SslProtocols.Tls12;
-                client = new HttpClient(handler);
-            }
-            else
-            {
-                client = handler == null ? new HttpClient() : new HttpClient(handler);
-            }
+            client = handler == null ? new HttpClient() : new HttpClient(handler);
         }
 
         client.Timeout = TimeSpan.FromMilliseconds(timeoutMillis);
@@ -95,59 +88,6 @@ public static class HttpClientHelper
         client.Timeout = TimeSpan.FromMilliseconds(timeoutMillis);
         client.DefaultRequestHeaders.UserAgent.ParseAdd(SteeltoeUserAgent);
         return client;
-    }
-
-    /// <summary>
-    /// Disable certificate validation on demand. Has no effect unless <see cref="Platform.IsFullFramework" />.
-    /// </summary>
-    /// <param name="validateCertificates">
-    /// Whether or not certificates should be validated.
-    /// </param>
-    /// <param name="protocolType">
-    /// <see cref="SecurityProtocolType" />.
-    /// </param>
-    /// <param name="prevValidator">
-    /// Pre-existing certificate validation callback.
-    /// </param>
-    public static void ConfigureCertificateValidation(bool validateCertificates, out SecurityProtocolType protocolType,
-        out RemoteCertificateValidationCallback prevValidator)
-    {
-        prevValidator = null;
-        protocolType = 0;
-
-        if (Platform.IsFullFramework && !validateCertificates)
-        {
-            protocolType = ServicePointManager.SecurityProtocol;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            prevValidator = ServicePointManager.ServerCertificateValidationCallback;
-
-            // Disabling certificate validation is a bad idea, that's why it's off by default!
-#pragma warning disable S4830 // Server certificates should be verified during SSL/TLS connections
-            ServicePointManager.ServerCertificateValidationCallback = (_, _, _, _) => true;
-#pragma warning restore S4830 // Server certificates should be verified during SSL/TLS connections
-        }
-    }
-
-    /// <summary>
-    /// Returns certificate validation to its original state. Has no effect unless <see cref="Platform.IsFullFramework" />.
-    /// </summary>
-    /// <param name="validateCertificates">
-    /// Whether or not certificates should be validated.
-    /// </param>
-    /// <param name="protocolType">
-    /// <see cref="SecurityProtocolType" />.
-    /// </param>
-    /// <param name="prevValidator">
-    /// Pre-existing certificate validation callback.
-    /// </param>
-    public static void RestoreCertificateValidation(bool validateCertificates, SecurityProtocolType protocolType,
-        RemoteCertificateValidationCallback prevValidator)
-    {
-        if (Platform.IsFullFramework && !validateCertificates)
-        {
-            ServicePointManager.SecurityProtocol = protocolType;
-            ServicePointManager.ServerCertificateValidationCallback = prevValidator;
-        }
     }
 
     public static string GetEncodedUserPassword(string user, string password)
@@ -252,9 +192,6 @@ public static class HttpClientHelper
         logger?.LogInformation("HttpClient not provided, a new instance will be created and disposed after retrieving a token");
         HttpClient client = httpClient ?? GetHttpClient(validateCertificates, timeout);
 
-        // If certificate validation is disabled, inject a callback to handle properly
-        ConfigureCertificateValidation(validateCertificates, out SecurityProtocolType prevProtocols, out RemoteCertificateValidationCallback prevValidator);
-
         var auth = new AuthenticationHeaderValue("Basic", GetEncodedUserPassword(clientId, clientSecret));
         request.Headers.Authorization = auth;
 
@@ -296,21 +233,12 @@ public static class HttpClientHelper
         {
             logger?.LogError(e, "GetAccessTokenAsync exception obtaining access token from: {uri}", WebUtility.UrlEncode(accessTokenUri.OriginalString));
         }
-        finally
-        {
-            RestoreCertificateValidation(validateCertificates, prevProtocols, prevValidator);
-        }
 
         return null;
     }
 
     internal static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> GetDisableDelegate()
     {
-        if (Platform.IsFullFramework)
-        {
-            return null;
-        }
-
         if (_reflectedDelegate != null)
         {
             return _reflectedDelegate;

@@ -2,9 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Security;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -14,7 +12,6 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Http;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 
@@ -98,19 +95,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
         HttpRequestMessage request = GetTokenInfoRequestMessage(tokens);
         HttpClient client = GetHttpClient();
 
-        HttpClientHelper.ConfigureCertificateValidation(Options.ValidateCertificates, out SecurityProtocolType prevProtocols,
-            out RemoteCertificateValidationCallback prevValidator);
-
-        HttpResponseMessage response = null;
-
-        try
-        {
-            response = await client.SendAsync(request, Context.RequestAborted);
-        }
-        finally
-        {
-            HttpClientHelper.RestoreCertificateValidation(Options.ValidateCertificates, prevProtocols, prevValidator);
-        }
+        HttpResponseMessage response = await client.SendAsync(request, Context.RequestAborted);
 
         if (!response.IsSuccessStatusCode)
         {

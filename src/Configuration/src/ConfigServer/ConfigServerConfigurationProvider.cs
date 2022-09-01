@@ -5,7 +5,6 @@
 using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
-using System.Net.Security;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
@@ -581,10 +580,6 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
             // Get the request message
             HttpRequestMessage request = GetRequestMessage(path, username, password);
 
-            // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(_settings.ValidateCertificates, out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
-
             // Invoke Config Server
             try
             {
@@ -624,10 +619,6 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
                 }
 
                 throw;
-            }
-            finally
-            {
-                HttpClientHelper.RestoreCertificateValidation(_settings.ValidateCertificates, prevProtocols, prevValidator);
             }
         }
 
@@ -827,10 +818,6 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
 
         string obscuredToken = $"{Settings.Token[..4]}[*]{Settings.Token[^4..]}";
 
-        // If certificate validation is disabled, inject a callback to handle properly
-        HttpClientHelper.ConfigureCertificateValidation(_settings.ValidateCertificates, out SecurityProtocolType previousProtocols,
-            out RemoteCertificateValidationCallback previousValidator);
-
         try
         {
             HttpClient ??= GetConfiguredHttpClient(Settings);
@@ -850,10 +837,6 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
         catch (Exception exception)
         {
             Logger.LogError(exception, "Unable to renew Vault token {token}. Is the token invalid or expired?", obscuredToken);
-        }
-        finally
-        {
-            HttpClientHelper.RestoreCertificateValidation(_settings.ValidateCertificates, previousProtocols, previousValidator);
         }
     }
 

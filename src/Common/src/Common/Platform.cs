@@ -8,14 +8,8 @@ namespace Steeltoe.Common;
 
 public static class Platform
 {
-    public const string NetFramework = ".NET Framework";
-    public const string NetCore = ".NET Core";
     public const string VcapApplication = "VCAP_APPLICATION";
     public const string KubernetesHost = "KUBERNETES_SERVICE_HOST";
-
-    public static bool IsFullFramework => RuntimeInformation.FrameworkDescription.StartsWith(NetFramework);
-
-    public static bool IsNetCore => RuntimeInformation.FrameworkDescription.StartsWith(NetCore);
 
     public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 

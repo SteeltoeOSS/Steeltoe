@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
-using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Security;
 using Microsoft.IdentityModel.Tokens;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
@@ -59,7 +57,6 @@ public class CloudFoundryTokenKeyResolver
         {
             foreach (JsonWebKey key in keySet.Keys)
             {
-                FixupKey(key);
                 Resolved[key.Kid] = key;
             }
         }
@@ -75,17 +72,6 @@ public class CloudFoundryTokenKeyResolver
         return null;
     }
 
-    public JsonWebKey FixupKey(JsonWebKey key)
-    {
-        if (Platform.IsFullFramework)
-        {
-            byte[] existing = Base64UrlEncoder.DecodeBytes(key.N);
-            TrimKey(key, existing);
-        }
-
-        return key;
-    }
-
     public virtual async Task<JsonWebKeySet> FetchKeySetAsync()
     {
         var requestMessage = new HttpRequestMessage(HttpMethod.Get, _jwtKeyUrl);
@@ -93,19 +79,7 @@ public class CloudFoundryTokenKeyResolver
 
         HttpClient client = GetHttpClient();
 
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType prevProtocols,
-            out RemoteCertificateValidationCallback prevValidator);
-
-        HttpResponseMessage response = null;
-
-        try
-        {
-            response = await client.SendAsync(requestMessage);
-        }
-        finally
-        {
-            HttpClientHelper.RestoreCertificateValidation(_validateCertificates, prevProtocols, prevValidator);
-        }
+        HttpResponseMessage response = await client.SendAsync(requestMessage);
 
         if (response.IsSuccessStatusCode)
         {
@@ -128,13 +102,5 @@ public class CloudFoundryTokenKeyResolver
             : HttpClientHelper.GetHttpClient(_httpHandler);
 
         return _httpClient;
-    }
-
-    private void TrimKey(JsonWebKey key, byte[] existing)
-    {
-        byte[] signRemoved = new byte[existing.Length - 1];
-        Buffer.BlockCopy(existing, 1, signRemoved, 0, existing.Length - 1);
-        string withSignRemoved = Base64UrlEncoder.Encode(signRemoved);
-        key.N = withSignRemoved;
     }
 }
