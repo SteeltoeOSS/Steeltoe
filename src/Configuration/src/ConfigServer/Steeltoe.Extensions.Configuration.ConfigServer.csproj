@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference Include="System.Net.Http.Json" Version="$(SystemVersion)" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\CloudFoundry\Steeltoe.Extensions.Configuration.CloudFoundry.csproj" />
