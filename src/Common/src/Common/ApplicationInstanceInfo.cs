@@ -107,8 +107,8 @@ public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
         SecondChanceSetIdProperties(Configuration);
     }
 
-    public ApplicationInstanceInfo(IConfiguration configuration, string configPrefix)
-        : base(configuration, BuildConfigString(configPrefix, ApplicationRoot))
+    public ApplicationInstanceInfo(IConfiguration configuration, string sectionPrefix)
+        : base(configuration, BuildConfigString(sectionPrefix, ApplicationRoot))
     {
         Configuration = configuration;
         SecondChanceSetIdProperties(Configuration);
