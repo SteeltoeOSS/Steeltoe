@@ -493,7 +493,7 @@ public class MimeType : IComparable<MimeType>
     {
         if (name.Equals("utf-7", StringComparison.OrdinalIgnoreCase))
         {
-            return EncodingUtils.Utf7;
+            throw new NotSupportedException("The UTF-7 encoding is insecure and should not be used. Consider using UTF-8 instead.");
         }
 
         if (name.Equals("utf-8", StringComparison.OrdinalIgnoreCase))
