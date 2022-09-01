@@ -14,7 +14,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
 internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDisposable
 {
-    private Watcher<V1Secret> SecretWatcher { get; set; }
+    private Watcher<V1Secret> _secretWatcher;
 
     internal KubernetesSecretProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
         : base(kubernetes, settings, cancellationToken)
@@ -32,15 +32,15 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
             ProcessData(secretResponse.Body);
             EnableReloading();
         }
-        catch (HttpOperationException e)
+        catch (HttpOperationException exception)
         {
-            if (e.Response.StatusCode == HttpStatusCode.Forbidden)
+            if (exception.Response.StatusCode == HttpStatusCode.Forbidden)
             {
-                Logger?.LogCritical(e,
+                Logger.LogCritical(exception,
                     "Failed to retrieve secret '{SecretName}' in namespace '{SecretNamespace}'. Confirm that your service account has the necessary permissions",
                     Settings.Name, Settings.Namespace);
             }
-            else if (e.Response.StatusCode == HttpStatusCode.NotFound)
+            else if (exception.Response.StatusCode == HttpStatusCode.NotFound)
             {
                 EnableReloading();
                 return;
@@ -52,8 +52,8 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
 
     public void Dispose()
     {
-        SecretWatcher?.Dispose();
-        SecretWatcher = null;
+        _secretWatcher?.Dispose();
+        _secretWatcher = null;
 
         KubernetesClient?.Dispose();
         KubernetesClient = null;
@@ -74,14 +74,14 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
                     EnableEventReloading();
                     break;
                 case ReloadMethod.Polling:
-                    if (!Polling)
+                    if (!IsPolling)
                     {
                         StartPolling(Settings.ReloadSettings.Period);
                     }
 
                     break;
                 default:
-                    Logger?.LogError("Unsupported reload method!");
+                    Logger.LogError("Unsupported reload method!");
                     break;
             }
         }
@@ -89,9 +89,9 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
 
     private void EnableEventReloading()
     {
-        SecretWatcher = KubernetesClient.WatchNamespacedSecretAsync(Settings.Name, Settings.Namespace, onEvent: (eventType, item) =>
+        _secretWatcher = KubernetesClient.WatchNamespacedSecretAsync(Settings.Name, Settings.Namespace, onEvent: (eventType, item) =>
                 {
-                    Logger?.LogInformation("Received {eventType} event for Secret {secretName} with {entries} values", eventType, Settings.Name,
+                    Logger.LogInformation("Received {eventType} event for Secret {secretName} with {entries} values", eventType, Settings.Name,
                         item?.Data?.Count);
 
                     switch (eventType)
@@ -102,13 +102,13 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
                             ProcessData(item);
                             break;
                         default:
-                            Logger?.LogDebug("Event type {eventType} is not support, no action has been taken", eventType);
+                            Logger.LogDebug("Event type {eventType} is not support, no action has been taken", eventType);
                             break;
                     }
                 },
-                onError: exception => Logger?.LogCritical(exception, "Secret watcher on {namespace}.{name} encountered an error!", Settings.Namespace,
+                onError: exception => Logger.LogCritical(exception, "Secret watcher on {namespace}.{name} encountered an error!", Settings.Namespace,
                     Settings.Name),
-                onClosed: () => Logger?.LogInformation("Secret watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name))
+                onClosed: () => Logger.LogInformation("Secret watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name))
             .GetAwaiter()
             .GetResult();
     }
@@ -117,13 +117,13 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
     {
         if (item is null)
         {
-            Logger?.LogWarning("ConfigMap response is null, no data could be processed");
+            Logger.LogWarning("ConfigMap response is null, no data could be processed");
             return;
         }
 
         var secretContents = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        if (item?.Data != null)
+        if (item.Data != null)
         {
             foreach (KeyValuePair<string, byte[]> data in item.Data)
             {

@@ -3,33 +3,17 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
 
 public sealed class TestServerStartup
 {
-    public static string Response { get; set; }
-
-    public static int ReturnStatus { get; set; } = 200;
-
-    public static HttpRequest LastRequest { get; set; }
-
-    public static int RequestCount { get; set; }
-
-    public TestServerStartup()
-    {
-        LastRequest = null;
-    }
-
     public void Configure(IApplicationBuilder app)
     {
-        app.Run(async context =>
+        app.Run(context =>
         {
-            LastRequest = context.Request;
-            RequestCount++;
-            context.Response.StatusCode = ReturnStatus;
-            await context.Response.WriteAsync(Response);
+            context.Response.StatusCode = 200;
+            return Task.CompletedTask;
         });
     }
 }

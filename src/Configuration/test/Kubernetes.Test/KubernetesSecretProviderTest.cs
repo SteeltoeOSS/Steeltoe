@@ -67,7 +67,7 @@ public sealed class KubernetesSecretProviderTest
         provider.Load();
         await Task.Delay(50);
 
-        Assert.True(provider.Polling, "Provider has begun polling");
+        Assert.True(provider.IsPolling, "Provider has begun polling");
     }
 
     [Fact]

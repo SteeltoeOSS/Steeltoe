@@ -14,10 +14,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
 internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
 {
-    private const string ConfigurationFileKeyPrefix = "appsettings";
-    private const string ConfigurationFileKeySuffix = "json";
-
-    private Watcher<V1ConfigMap> ConfigMapWatcher { get; set; }
+    private Watcher<V1ConfigMap> _configMapWatcher;
 
     internal KubernetesConfigMapProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
         : base(kubernetes, settings, cancellationToken)
@@ -35,15 +32,15 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
             ProcessData(configMapResponse.Body);
             EnableReloading();
         }
-        catch (HttpOperationException e)
+        catch (HttpOperationException exception)
         {
-            if (e.Response.StatusCode == HttpStatusCode.Forbidden)
+            if (exception.Response.StatusCode == HttpStatusCode.Forbidden)
             {
-                Logger?.LogCritical(e,
+                Logger.LogCritical(exception,
                     "Failed to retrieve configuration map '{configMapName}' in namespace '{configMapNamespace}'. Confirm that your service account has the necessary permissions",
                     Settings.Name, Settings.Namespace);
             }
-            else if (e.Response.StatusCode == HttpStatusCode.NotFound)
+            else if (exception.Response.StatusCode == HttpStatusCode.NotFound)
             {
                 EnableReloading();
                 return;
@@ -55,8 +52,8 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
 
     public void Dispose()
     {
-        ConfigMapWatcher?.Dispose();
-        ConfigMapWatcher = null;
+        _configMapWatcher?.Dispose();
+        _configMapWatcher = null;
 
         KubernetesClient?.Dispose();
         KubernetesClient = null;
@@ -80,7 +77,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
 
     private void EnableReloading()
     {
-        if (Settings.ReloadSettings.ConfigMaps && !Polling)
+        if (Settings.ReloadSettings.ConfigMaps && !IsPolling)
         {
             switch (Settings.ReloadSettings.Mode)
             {
@@ -91,7 +88,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
                     StartPolling(Settings.ReloadSettings.Period);
                     break;
                 default:
-                    Logger?.LogError("Unsupported reload method!");
+                    Logger.LogError("Unsupported reload method!");
                     break;
             }
         }
@@ -99,10 +96,9 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
 
     private void EnableEventReloading()
     {
-        ConfigMapWatcher = KubernetesClient.WatchNamespacedConfigMapAsync(Settings.Name, Settings.Namespace, onEvent: (eventType, item) =>
+        _configMapWatcher = KubernetesClient.WatchNamespacedConfigMapAsync(Settings.Name, Settings.Namespace, onEvent: (eventType, item) =>
                 {
-                    Logger?.LogInformation("Received {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(),
-                        Settings.Name,
+                    Logger.LogInformation("Received {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(), Settings.Name,
                         item?.Data?.Count);
 
                     switch (eventType)
@@ -113,13 +109,13 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
                             ProcessData(item);
                             break;
                         default:
-                            Logger?.LogDebug("Event type {eventType} is not supported, no action has been taken", eventType);
+                            Logger.LogDebug("Event type {eventType} is not supported, no action has been taken", eventType);
                             break;
                     }
                 },
-                onError: exception =>
-                    Logger?.LogCritical(exception, "ConfigMap watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name),
-                onClosed: () => Logger?.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name))
+                onError: exception => Logger.LogCritical(exception, "ConfigMap watcher on {namespace}.{name} encountered an error!", Settings.Namespace,
+                    Settings.Name),
+                onClosed: () => Logger.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name))
             .GetAwaiter()
             .GetResult();
     }
@@ -128,15 +124,15 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
     {
         if (item is null)
         {
-            Logger?.LogWarning("ConfigMap response is null, no data could be processed");
+            Logger.LogWarning("ConfigMap response is null, no data could be processed");
             return;
         }
 
         var configMapContents = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        if (item?.Data != null)
+        if (item.Data != null)
         {
-            foreach (KeyValuePair<string, string> data in item?.Data)
+            foreach (KeyValuePair<string, string> data in item.Data)
             {
                 if (IsAppsettingsKey(data.Key))
                 {
@@ -160,16 +156,18 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
 
     private bool IsAppsettingsKey(string key)
     {
-        return key.StartsWith(ConfigurationFileKeyPrefix, StringComparison.OrdinalIgnoreCase) &&
-            key.EndsWith(ConfigurationFileKeySuffix, StringComparison.OrdinalIgnoreCase);
+        return key.StartsWith("appsettings", StringComparison.OrdinalIgnoreCase) && key.EndsWith("json", StringComparison.OrdinalIgnoreCase);
     }
 
-    private Stream GenerateStreamFromString(string s)
+    private Stream GenerateStreamFromString(string source)
     {
         var stream = new MemoryStream();
-        var writer = new StreamWriter(stream);
-        writer.Write(s);
-        writer.Flush();
+
+        using (var writer = new StreamWriter(stream, leaveOpen: true))
+        {
+            writer.Write(source);
+        }
+
         stream.Position = 0;
         return stream;
     }

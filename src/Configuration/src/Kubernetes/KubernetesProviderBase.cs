@@ -5,21 +5,19 @@
 using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
 internal abstract class KubernetesProviderBase : ConfigurationProvider
 {
-    internal bool Polling { get; private set; }
+    private readonly CancellationToken _cancellationToken;
+    internal bool IsPolling { get; private set; }
 
     protected IKubernetes KubernetesClient { get; set; }
-
-    protected KubernetesConfigSourceSettings Settings { get; set; }
-
-    protected CancellationToken CancellationToken { get; set; }
-
-    protected ILogger Logger => Settings.LoggerFactory?.CreateLogger(GetType());
+    protected KubernetesConfigSourceSettings Settings { get; }
+    protected ILogger Logger => Settings.LoggerFactory?.CreateLogger(GetType()) ?? NullLoggerFactory.Instance.CreateLogger(GetType());
 
     protected KubernetesProviderBase(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken token = default)
     {
@@ -28,7 +26,7 @@ internal abstract class KubernetesProviderBase : ConfigurationProvider
 
         KubernetesClient = kubernetes;
         Settings = settings;
-        CancellationToken = token;
+        _cancellationToken = token;
     }
 
     internal void ProvideRuntimeReplacements(ILoggerFactory loggerFactory)
@@ -36,7 +34,7 @@ internal abstract class KubernetesProviderBase : ConfigurationProvider
         if (loggerFactory is not null)
         {
             Settings.LoggerFactory = loggerFactory;
-            Logger?.LogTrace("Replacing Bootstrapped loggerFactory with actual factory");
+            Logger.LogTrace("Replacing Bootstrapped loggerFactory with actual factory");
         }
     }
 
@@ -44,20 +42,20 @@ internal abstract class KubernetesProviderBase : ConfigurationProvider
     {
         Task.Factory.StartNew(() =>
         {
-            Polling = true;
+            IsPolling = true;
 
-            while (Polling)
+            while (IsPolling)
             {
                 Thread.Sleep(TimeSpan.FromSeconds(interval));
-                Logger?.LogTrace("Interval completed for {namespace}.{name}, beginning reload", Settings.Namespace, Settings.Name);
+                Logger.LogTrace("Interval completed for {namespace}.{name}, beginning reload", Settings.Namespace, Settings.Name);
                 Load();
 
-                if (CancellationToken.IsCancellationRequested)
+                if (_cancellationToken.IsCancellationRequested)
                 {
-                    Logger?.LogTrace("Cancellation requested for {namespace}.{name}, shutting down", Settings.Namespace, Settings.Name);
+                    Logger.LogTrace("Cancellation requested for {namespace}.{name}, shutting down", Settings.Namespace, Settings.Name);
                     break;
                 }
             }
-        }, CancellationToken);
+        }, _cancellationToken);
     }
 }
