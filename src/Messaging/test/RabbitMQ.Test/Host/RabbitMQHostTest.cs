@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -97,29 +96,5 @@ public class RabbitMQHostTest
         var connectionFactory = host.Services.GetRequiredService<RC.IConnectionFactory>();
 
         Assert.NotNull(connectionFactory);
-    }
-
-    [Fact]
-    public void WebAppHostCanBeStarted()
-    {
-        MockRabbitHostedService hostedService;
-
-        WebApplicationBuilder builder = RabbitMQHost.CreateWebApplicationBuilder();
-        builder.Services.AddSingleton<IHostedService, MockRabbitHostedService>();
-        WebApplication webApp = builder.Build();
-        webApp.Start();
-
-        using (hostedService = webApp.Services.GetServices<IHostedService>().OfType<MockRabbitHostedService>().First())
-        {
-            Assert.NotNull(hostedService);
-            Assert.Equal(1, hostedService.StartCount);
-            Assert.Equal(0, hostedService.StopCount);
-            Assert.Equal(0, hostedService.DisposeCount);
-            webApp.StopAsync().Wait();
-        }
-
-        Assert.Equal(1, hostedService.StartCount);
-        Assert.Equal(1, hostedService.StopCount);
-        Assert.Equal(1, hostedService.DisposeCount);
     }
 }
