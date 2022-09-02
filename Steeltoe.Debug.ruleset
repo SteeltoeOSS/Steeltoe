@@ -56,6 +56,7 @@
     <Rule Id="S3926" Action="None" />
     <Rule Id="S3927" Action="None" />
     <Rule Id="S3937" Action="Warning" />
+    <Rule Id="S3956" Action="Warning" />
     <Rule Id="S3962" Action="Warning" />
     <Rule Id="S3993" Action="Warning" />
     <Rule Id="S3998" Action="None" />
