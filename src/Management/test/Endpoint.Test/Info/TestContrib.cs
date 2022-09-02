@@ -8,8 +8,8 @@ namespace Steeltoe.Management.Endpoint.Info.Test;
 
 internal sealed class TestContrib : IInfoContributor
 {
-    public bool Called;
-    public bool Throws;
+    public bool Called { get; private set; }
+    public bool Throws { get; }
 
     public TestContrib()
     {

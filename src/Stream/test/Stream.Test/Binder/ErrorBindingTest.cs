@@ -101,7 +101,7 @@ public class ErrorBindingTest : AbstractTest
 
     public class ErrorConfigurationDefault
     {
-        public int Counter;
+        public int Counter { get; private set; }
 
         [StreamListener("input")]
         public void Handle(object value)
@@ -113,7 +113,7 @@ public class ErrorBindingTest : AbstractTest
 
     public class ErrorConfigurationWithCustomErrorHandler
     {
-        public int Counter;
+        public int Counter { get; private set; }
 
         [StreamListener("input")]
         public void Handle(object value)

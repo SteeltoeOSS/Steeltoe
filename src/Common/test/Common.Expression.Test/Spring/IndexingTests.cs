@@ -11,22 +11,22 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class IndexingTests
 {
-    [FieldAnnotation]
-    public object Property;
+    [field: FieldAnnotation]
+    public object Property { get; set; }
 
-    public IList ListOfMapsNotGeneric;
-    public Dictionary<int, int> ParameterizedMap;
-    public List<int> ParameterizedList;
-    public List<List<int>> ParameterizedListOfList;
-    public IList Property2;
+    public IList ListOfMapsNotGeneric { get; set; }
+    public Dictionary<int, int> ParameterizedMap { get; set; }
+    public List<int> ParameterizedList { get; set; }
+    public List<List<int>> ParameterizedListOfList { get; set; }
+    public IList Property2 { get; set; }
 
-    [FieldAnnotation]
-    public IList ListNotGeneric;
+    [field: FieldAnnotation]
+    public IList ListNotGeneric { get; set; }
 
-    [FieldAnnotation]
-    public IDictionary MapNotGeneric;
+    [field: FieldAnnotation]
+    public IDictionary MapNotGeneric { get; set; }
 
-    public IList ListOfScalarNotGeneric;
+    public IList ListOfScalarNotGeneric { get; set; }
 
     [Fact]
     public void IndexIntoGenericPropertyContainingMap()

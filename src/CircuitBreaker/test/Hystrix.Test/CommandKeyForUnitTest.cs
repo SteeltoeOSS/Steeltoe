@@ -6,6 +6,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public static class CommandKeyForUnitTest
 {
-    public static IHystrixCommandKey KeyOne = new HystrixCommandKeyDefault("KEY_ONE");
-    public static IHystrixCommandKey KeyTwo = new HystrixCommandKeyDefault("KEY_TWO");
+    public static IHystrixCommandKey KeyOne { get; } = new HystrixCommandKeyDefault("KEY_ONE");
+    public static IHystrixCommandKey KeyTwo { get; } = new HystrixCommandKeyDefault("KEY_TWO");
 }

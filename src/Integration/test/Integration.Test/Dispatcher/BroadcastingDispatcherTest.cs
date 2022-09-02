@@ -350,7 +350,7 @@ public class BroadcastingDispatcherTest
 
     private sealed class MessageStoringTestEndpoint : IMessageHandler
     {
-        public readonly ConcurrentQueue<IMessage> MessageList;
+        public ConcurrentQueue<IMessage> MessageList { get; }
 
         public string ServiceName { get; set; } = nameof(MessageStoringTestEndpoint);
 

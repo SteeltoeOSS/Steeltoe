@@ -39,7 +39,7 @@ public class PropertyAccessTests : AbstractExpressionTests
         EvaluateAndCheckError("Name.foobar", SpelMessage.PropertyOrFieldNotReadable, 5);
     }
 
-    /**
+    /*
          * The standard reflection resolver cannot find properties on null objects but some
          * supplied resolver might be able to - so null shouldn't crash the reflection resolver.
          */

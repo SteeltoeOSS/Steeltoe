@@ -166,7 +166,7 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
 
     public class Foo
     {
-        public readonly string Value;
+        public string Value { get; }
 
         public ICollection<Foo> Foos { get; set; }
 

@@ -76,9 +76,9 @@ public class HystrixEventSourceServiceTests : HystrixTestBase
     {
         private const string EventSourceName = "Steeltoe.Hystrix.Events";
 
-        public List<EventWrittenEventArgs> CommandEvents = new();
-        public List<EventWrittenEventArgs> ThreadPoolEvents = new();
-        public List<EventWrittenEventArgs> CollapserEvents = new();
+        public List<EventWrittenEventArgs> CommandEvents { get; } = new();
+        public List<EventWrittenEventArgs> ThreadPoolEvents { get; } = new();
+        public List<EventWrittenEventArgs> CollapserEvents { get; } = new();
 
         protected override void OnEventWritten(EventWrittenEventArgs eventData)
         {

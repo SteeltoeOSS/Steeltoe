@@ -348,7 +348,7 @@ public class MessageHeaderAccessorTest
 
     private sealed class TestIdGenerator : IIdGenerator
     {
-        public string Id;
+        public string Id { get; set; }
 
         public string GenerateId()
         {

@@ -8,10 +8,10 @@ namespace Steeltoe.Common.Net.Test;
 
 internal sealed class FakeMultipleProviderRouter : IMultipleProviderRouter
 {
-    internal string Username;
-    internal string Password;
-    internal string NetworkPath;
-    internal bool ShouldConnect;
+    internal string Username { get; private set; }
+    internal string Password { get; private set; }
+    internal string NetworkPath { get; private set; }
+    internal bool ShouldConnect { get; }
 
     public FakeMultipleProviderRouter(bool shouldConnect = true)
     {

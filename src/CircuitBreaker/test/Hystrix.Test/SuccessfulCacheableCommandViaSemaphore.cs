@@ -8,7 +8,7 @@ internal sealed class SuccessfulCacheableCommandViaSemaphore : TestHystrixComman
 {
     private readonly bool _cacheEnabled;
     private readonly string _value;
-    public volatile bool Executed;
+    private volatile bool _executed;
 
     protected override string CacheKey
     {
@@ -25,6 +25,8 @@ internal sealed class SuccessfulCacheableCommandViaSemaphore : TestHystrixComman
 
     public bool IsCommandRunningInThread => CommandOptions.ExecutionIsolationStrategy.Equals(ExecutionIsolationStrategy.Thread);
 
+    public bool Executed => _executed;
+
     public SuccessfulCacheableCommandViaSemaphore(TestCircuitBreaker circuitBreaker, bool cacheEnabled, string value)
         : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
             .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions())))
@@ -35,7 +37,7 @@ internal sealed class SuccessfulCacheableCommandViaSemaphore : TestHystrixComman
 
     protected override string Run()
     {
-        Executed = true;
+        _executed = true;
 
         Output?.WriteLine("successfully executed");
         return _value;

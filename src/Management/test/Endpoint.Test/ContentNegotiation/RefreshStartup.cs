@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
 
 public class RefreshStartup
 {
-    public IConfiguration Configuration;
+    public IConfiguration Configuration { get; }
 
     public RefreshStartup(IConfiguration configuration)
     {

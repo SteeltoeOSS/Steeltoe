@@ -136,7 +136,7 @@ public class AbstractReplyProducingMessageHandlerTest
 
     private sealed class TestAbstractReplyProducingMessageHandler : AbstractReplyProducingMessageHandler
     {
-        public object ReturnValue;
+        public object ReturnValue { get; set; }
 
         public TestAbstractReplyProducingMessageHandler(IApplicationContext context)
             : base(context)

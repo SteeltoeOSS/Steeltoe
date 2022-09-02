@@ -34,4 +34,9 @@
     <!-- Widen the condition above as we're completing more public API reviews -->
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="$(PublicApiAnalyzersVersion)" PrivateAssets="All" />
   </ItemGroup>
+
+  <PropertyGroup Condition="!$(MSBuildProjectName.StartsWith('Steeltoe.Extensions.Configuration'))">
+    <!-- Narrow the condition above as we're completing more public API reviews -->
+    <NoWarn>$(NoWarn);SA1401</NoWarn>
+  </PropertyGroup>
 </Project>

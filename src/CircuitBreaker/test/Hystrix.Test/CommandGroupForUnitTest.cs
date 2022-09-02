@@ -6,6 +6,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public static class CommandGroupForUnitTest
 {
-    public static IHystrixCommandGroupKey OwnerOne = new HystrixCommandGroupKeyDefault("OWNER_ONE");
-    public static IHystrixCommandGroupKey OwnerTwo = new HystrixCommandGroupKeyDefault("OWNER_TWO");
+    public static IHystrixCommandGroupKey OwnerOne { get; } = new HystrixCommandGroupKeyDefault("OWNER_ONE");
+    public static IHystrixCommandGroupKey OwnerTwo { get; } = new HystrixCommandGroupKeyDefault("OWNER_TWO");
 }

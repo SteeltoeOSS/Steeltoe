@@ -232,7 +232,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
 
         public class Principal
         {
-            public string Name = "Andy";
+            public string Name { get; } = "Andy";
         }
     }
 

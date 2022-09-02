@@ -10,28 +10,26 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
 public class Inventor
 {
     private PlaceOfBirth _placeOfBirth;
-    public List<int> ListOfInteger = new();
-    public List<bool> BoolList = new();
-    public Dictionary<string, bool> MapOfStringToBoolean = new();
-    public Dictionary<int, string> MapOfNumbersUpToTen = new();
-    public List<int> ListOfNumbersUpToTen = new();
-    public List<int> ListOneFive = new();
+    public List<int> ListOfInteger { get; set; } = new();
+    public List<bool> BoolList { get; } = new();
+    public Dictionary<string, bool> MapOfStringToBoolean { get; } = new();
+    public Dictionary<int, string> MapOfNumbersUpToTen { get; } = new();
+    public List<int> ListOfNumbersUpToTen { get; } = new();
+    public List<int> ListOneFive { get; } = new();
 
-    public string[] StringArrayOfThreeItems =
+    public string[] StringArrayOfThreeItems { get; } =
     {
         "1",
         "2",
         "3"
     };
 
-    public int Counter;
-    public string _name;
-    public string _name_;
-    public string RandomField;
-    public Dictionary<string, string> TestDictionary;
-    public string PublicName;
-    public ArrayContainer ArrayContainer;
-    public bool PublicBoolean;
+    public int Counter { get; set; }
+    public string RandomField { get; }
+    public Dictionary<string, string> TestDictionary { get; }
+    public string PublicName { get; set; }
+    public ArrayContainer ArrayContainer { get; set; }
+    public bool PublicBoolean { get; set; }
 
     public string[] Inventions { get; set; }
 
@@ -203,4 +201,8 @@ public class Inventor
     public class TestException : Exception
     {
     }
+#pragma warning disable SA1401 // Fields should be private
+    public string _name;
+    public string _name_;
+#pragma warning restore SA1401 // Fields should be private
 }

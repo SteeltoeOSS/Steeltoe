@@ -9,10 +9,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 internal abstract class AbstractFlexibleTestHystrixCommand : TestHystrixCommand<int>
 {
-    protected readonly ExecutionResultTest Result;
-    protected readonly int ExecutionLatency;
-    protected readonly CacheEnabledTest CacheEnabled;
-    protected readonly object Value;
+    protected ExecutionResultTest Result { get; }
+    protected int ExecutionLatency { get; }
+    protected CacheEnabledTest CacheEnabled { get; }
+    protected object Value { get; }
 
     protected override string CacheKey
     {

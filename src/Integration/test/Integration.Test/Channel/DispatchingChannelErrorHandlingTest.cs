@@ -90,7 +90,7 @@ public class DispatchingChannelErrorHandlingTest
 
     private sealed class ThrowMessageExceptionHandler : IMessageHandler
     {
-        public readonly Exception ExceptionToThrow = new NotSupportedException("intentional test failure");
+        public Exception ExceptionToThrow { get; } = new NotSupportedException("intentional test failure");
 
         public string ServiceName { get; set; } = nameof(ThrowMessageExceptionHandler);
 
@@ -102,7 +102,7 @@ public class DispatchingChannelErrorHandlingTest
 
     private sealed class ThrowingHandler : IMessageHandler
     {
-        public readonly Exception ExceptionToThrow = new NotSupportedException("intentional test failure");
+        public Exception ExceptionToThrow { get; } = new NotSupportedException("intentional test failure");
 
         public string ServiceName { get; set; } = nameof(ThrowingHandler);
 
@@ -115,12 +115,12 @@ public class DispatchingChannelErrorHandlingTest
     private sealed class ResultHandler : IMessageHandler
     {
         private readonly CountdownEvent _latch;
-
-        public volatile IMessage LastMessage;
-
-        public volatile Thread LastThread;
+        private volatile IMessage _lastMessage;
+        private volatile Thread _lastThread;
 
         public string ServiceName { get; set; } = nameof(ResultHandler);
+        public IMessage LastMessage => _lastMessage;
+        public Thread LastThread => _lastThread;
 
         public ResultHandler(CountdownEvent latch)
         {
@@ -129,8 +129,8 @@ public class DispatchingChannelErrorHandlingTest
 
         public void HandleMessage(IMessage message)
         {
-            LastMessage = message;
-            LastThread = Thread.CurrentThread;
+            _lastMessage = message;
+            _lastThread = Thread.CurrentThread;
             _latch.Signal();
         }
     }

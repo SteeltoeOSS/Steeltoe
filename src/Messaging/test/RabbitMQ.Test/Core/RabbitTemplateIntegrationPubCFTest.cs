@@ -8,7 +8,7 @@ public class RabbitTemplateIntegrationPubCFTest : RabbitTemplateIntegrationTest
 {
     public RabbitTemplateIntegrationPubCFTest()
     {
-        template.UsePublisherConnection = true;
-        routingTemplate.UsePublisherConnection = true;
+        Template.UsePublisherConnection = true;
+        RoutingTemplate.UsePublisherConnection = true;
     }
 }

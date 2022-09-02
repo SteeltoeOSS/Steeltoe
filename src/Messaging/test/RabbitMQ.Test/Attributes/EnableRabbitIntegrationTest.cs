@@ -691,7 +691,11 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
     public sealed class StartupFixture : IDisposable
     {
-        public static string[] Queues =
+        private readonly CachingConnectionFactory _adminCf;
+        private readonly RabbitAdmin _admin;
+        private readonly IServiceCollection _services;
+
+        public static string[] Queues { get; } =
         {
             "test.manual.container",
             "test.no.listener.yet",
@@ -751,10 +755,6 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             "erit.batch.2",
             "erit.batch.3"
         };
-
-        private readonly CachingConnectionFactory _adminCf;
-        private readonly RabbitAdmin _admin;
-        private readonly IServiceCollection _services;
 
         public ServiceProvider Provider { get; set; }
 

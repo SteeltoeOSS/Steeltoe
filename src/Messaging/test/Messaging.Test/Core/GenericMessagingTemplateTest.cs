@@ -11,9 +11,9 @@ namespace Steeltoe.Messaging.Core.Test;
 
 public class GenericMessagingTemplateTest
 {
-    internal MessageChannelTemplate Template;
+    internal MessageChannelTemplate Template { get; }
 
-    internal StubMessageChannel MessageChannel;
+    internal StubMessageChannel MessageChannel { get; }
 
     public GenericMessagingTemplateTest()
     {
@@ -307,8 +307,8 @@ public class GenericMessagingTemplateTest
 
     internal sealed class LateReplierMessageHandler : IMessageHandler
     {
-        public CountdownEvent Latch;
-        public Exception Failure;
+        public CountdownEvent Latch { get; }
+        public Exception Failure { get; private set; }
 
         public string ServiceName { get; set; } = nameof(LateReplierMessageHandler);
 

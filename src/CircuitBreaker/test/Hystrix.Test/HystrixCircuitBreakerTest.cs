@@ -524,9 +524,9 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
     private abstract class Command : HystrixCommand<bool>
     {
-        protected readonly bool ShouldFail;
-        protected readonly bool ShouldFailWithBadRequest;
-        protected readonly int LatencyToAdd;
+        protected bool ShouldFail { get; }
+        protected bool ShouldFailWithBadRequest { get; }
+        protected int LatencyToAdd { get; }
 
         protected Command(string commandKey, bool shouldFail, int latencyToAdd)
             : this(commandKey, shouldFail, false, latencyToAdd, 400, 1)

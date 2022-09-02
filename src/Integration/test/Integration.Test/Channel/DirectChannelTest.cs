@@ -165,7 +165,7 @@ public class DirectChannelTest
 
     internal sealed class CounterHandler : IMessageHandler
     {
-        public int Count;
+        public int Count { get; private set; }
 
         public string ServiceName { get; set; } = nameof(CounterHandler);
 
@@ -177,10 +177,10 @@ public class DirectChannelTest
 
     internal sealed class ThreadNameExtractingTestTarget : IMessageHandler
     {
-        public readonly CountdownEvent Latch;
-        public int? TaskId;
-        public int ThreadId;
-        public string ThreadName;
+        public CountdownEvent Latch { get; }
+        public int? TaskId { get; private set; }
+        public int ThreadId { get; private set; }
+        public string ThreadName { get; private set; }
 
         public string ServiceName { get; set; } = nameof(ThreadNameExtractingTestTarget);
 

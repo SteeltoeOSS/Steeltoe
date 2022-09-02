@@ -166,7 +166,11 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
 
     public sealed class CustomStartupFixture : IDisposable
     {
-        public static string[] Queues =
+        private readonly CachingConnectionFactory _adminCf;
+        private readonly RabbitAdmin _admin;
+        private readonly IServiceCollection _services;
+
+        public static string[] Queues { get; } =
         {
             "test.converted",
             "test.converted.list",
@@ -182,10 +186,6 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             "test.notconverted.messagingmessagenotgeneric",
             "test.simple.direct"
         };
-
-        private readonly CachingConnectionFactory _adminCf;
-        private readonly RabbitAdmin _admin;
-        private readonly IServiceCollection _services;
 
         public ServiceProvider Provider { get; set; }
 

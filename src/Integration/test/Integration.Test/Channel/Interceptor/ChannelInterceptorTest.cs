@@ -209,12 +209,14 @@ public class ChannelInterceptorTest
 
     public class TestPostReceiveInterceptorInterceptor : AbstractChannelInterceptor
     {
-        public int Counter;
+        private int _counter;
+
+        public int Counter => _counter;
 
         public override IMessage PostReceive(IMessage message, IMessageChannel channel)
         {
             Assert.NotNull(channel);
-            Interlocked.Increment(ref Counter);
+            Interlocked.Increment(ref _counter);
             return message;
         }
     }
@@ -234,8 +236,11 @@ public class ChannelInterceptorTest
 
     public class TestPostSendInterceptorWithUnsentMessageInterceptor : AbstractChannelInterceptor
     {
-        public int InvokedCounter;
-        public int SentCounter;
+        private int _invokedCounter;
+        private int _sentCounter;
+
+        public int InvokedCounter => _invokedCounter;
+        public int SentCounter => _sentCounter;
 
         public override void PostSend(IMessage message, IMessageChannel channel, bool sent)
         {
@@ -244,16 +249,16 @@ public class ChannelInterceptorTest
 
             if (sent)
             {
-                Interlocked.Increment(ref SentCounter);
+                Interlocked.Increment(ref _sentCounter);
             }
 
-            Interlocked.Increment(ref InvokedCounter);
+            Interlocked.Increment(ref _invokedCounter);
         }
     }
 
     private sealed class TestPostSendInterceptorWithSentMessageInterceptor : AbstractChannelInterceptor
     {
-        public bool Invoked;
+        public bool Invoked { get; private set; }
 
         public override void PostSend(IMessage message, IMessageChannel channel, bool sent)
         {
@@ -266,44 +271,50 @@ public class ChannelInterceptorTest
 
     private sealed class PreSendReturnsMessageInterceptor : AbstractChannelInterceptor
     {
-        public int Counter;
-        public volatile bool AfterCompletionInvoked;
+        private int _counter;
+        private volatile bool _afterCompletionInvoked;
+
+        public bool AfterCompletionInvoked => _afterCompletionInvoked;
 
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
             Assert.NotNull(message);
-            int value = Interlocked.Increment(ref Counter);
+            int value = Interlocked.Increment(ref _counter);
             return IntegrationMessageBuilder.FromMessage(message).SetHeader(GetType().Name, value).Build();
         }
 
         public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception exception)
         {
-            AfterCompletionInvoked = true;
+            _afterCompletionInvoked = true;
         }
     }
 
     private sealed class PreSendReturnsNullInterceptor : AbstractChannelInterceptor
     {
-        public int Counter;
+        private int _counter;
+
+        public int Counter => _counter;
 
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
             Assert.NotNull(message);
-            Interlocked.Increment(ref Counter);
+            Interlocked.Increment(ref _counter);
             return null;
         }
     }
 
     private sealed class AfterCompletionTestInterceptor : AbstractChannelInterceptor
     {
-        public Exception ExceptionToRaise;
-        public int Counter;
-        public volatile bool AfterCompletionInvoked;
+        private int _counter;
+        private volatile bool _afterCompletionInvoked;
+
+        public Exception ExceptionToRaise { get; set; }
+        public bool AfterCompletionInvoked => _afterCompletionInvoked;
 
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
             Assert.NotNull(message);
-            Interlocked.Increment(ref Counter);
+            Interlocked.Increment(ref _counter);
 
             if (ExceptionToRaise != null)
             {
@@ -315,19 +326,22 @@ public class ChannelInterceptorTest
 
         public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception exception)
         {
-            AfterCompletionInvoked = true;
+            _afterCompletionInvoked = true;
         }
     }
 
     private sealed class PreReceiveReturnsTrueInterceptor : AbstractChannelInterceptor
     {
-        public Exception ExceptionToRaise;
-        public int Counter;
-        public volatile bool AfterCompletionInvoked;
+        private int _counter;
+        private volatile bool _afterCompletionInvoked;
+
+        public Exception ExceptionToRaise { get; set; }
+        public int Counter => _counter;
+        public bool AfterCompletionInvoked => _afterCompletionInvoked;
 
         public override bool PreReceive(IMessageChannel channel)
         {
-            Interlocked.Increment(ref Counter);
+            Interlocked.Increment(ref _counter);
 
             if (ExceptionToRaise != null)
             {
@@ -339,17 +353,19 @@ public class ChannelInterceptorTest
 
         public override void AfterReceiveCompletion(IMessage message, IMessageChannel channel, Exception exception)
         {
-            AfterCompletionInvoked = true;
+            _afterCompletionInvoked = true;
         }
     }
 
     private sealed class PreReceiveReturnsFalseInterceptor : AbstractChannelInterceptor
     {
-        public int Counter;
+        private int _counter;
+
+        public int Counter => _counter;
 
         public override bool PreReceive(IMessageChannel channel)
         {
-            Interlocked.Increment(ref Counter);
+            Interlocked.Increment(ref _counter);
             return false;
         }
     }

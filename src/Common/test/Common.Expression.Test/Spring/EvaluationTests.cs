@@ -1373,16 +1373,16 @@ public class EvaluationTests : AbstractExpressionTests
 
     public class Spr9751
     {
-        public string Type = "hello";
-        public decimal Bd = 2M;
-        public double Ddd = 2.0d;
-        public float Fff = 3.0f;
-        public long Lll = 66666L;
-        public int Iii = 42;
-        public short Sss = 15;
-        public Spr9751_2 Foo = new();
+        public string Type { get; set; } = "hello";
+        public decimal Bd { get; set; } = 2M;
+        public double Ddd { get; set; } = 2.0d;
+        public float Fff { get; set; } = 3.0f;
+        public long Lll { get; set; } = 66666L;
+        public int Iii { get; set; } = 42;
+        public short Sss { get; set; } = 15;
+        public Spr9751_2 Foo { get; set; } = new();
 
-        public int[] IntArray =
+        public int[] IntArray { get; } =
         {
             1,
             2,
@@ -1391,13 +1391,13 @@ public class EvaluationTests : AbstractExpressionTests
             5
         };
 
-        public int Index1 = 2;
+        public int Index1 { get; set; } = 2;
 
-        public int[] IntegerArray;
-        public int Index2 = 2;
+        public int[] IntegerArray { get; }
+        public int Index2 { get; } = 2;
 
-        public List<string> ListOfStrings;
-        public int Index3;
+        public List<string> ListOfStrings { get; }
+        public int Index3 { get; set; }
 
         public Spr9751()
         {
@@ -1426,7 +1426,7 @@ public class EvaluationTests : AbstractExpressionTests
 
     public class Spr9751_2
     {
-        public int Iii = 99;
+        public int Iii { get; set; } = 99;
     }
 
     public class CustomMethodResolver : IMethodResolver
@@ -1447,17 +1447,17 @@ public class EvaluationTests : AbstractExpressionTests
 
     public class Foo
     {
-        public string Bar = "hello";
+        public string Bar { get; set; } = "hello";
     }
 
     public class TestClass
     {
-        public Foo Wibble;
+        public Foo Wibble { get; set; }
 
-        public IDictionary Map;
-        public Dictionary<string, int> MapStringToInteger;
-        public List<string> List;
-        public IList List2;
+        public IDictionary Map { get; set; }
+        public Dictionary<string, int> MapStringToInteger { get; }
+        public List<string> List { get; set; }
+        public IList List2 { get; }
 
         public List<string> Foo { get; set; }
 

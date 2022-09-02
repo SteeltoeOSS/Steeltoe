@@ -6,17 +6,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class TestCommandBuilder
 {
-    public IHystrixCommandGroupKey Owner = CommandGroupForUnitTest.OwnerOne;
-    public IHystrixCommandKey DependencyKey;
-    public IHystrixThreadPoolKey ThreadPoolKey;
-    public ICircuitBreaker CircuitBreaker;
-    public IHystrixThreadPool ThreadPool;
-    public IHystrixCommandOptions CommandPropertiesDefaults = HystrixCommandOptionsTest.GetUnitTestOptions();
-    public IHystrixThreadPoolOptions ThreadPoolPropertiesDefaults = HystrixThreadPoolOptionsTest.GetUnitTestPropertiesBuilder();
-    public HystrixCommandMetrics Metrics;
-    public SemaphoreSlim FallbackSemaphore;
-    public SemaphoreSlim ExecutionSemaphore;
-    public TestableExecutionHook ExecutionHook = new();
+    public IHystrixCommandGroupKey Owner { get; private set; } = CommandGroupForUnitTest.OwnerOne;
+    public IHystrixCommandKey DependencyKey { get; private set; }
+    public IHystrixThreadPoolKey ThreadPoolKey { get; private set; }
+    public ICircuitBreaker CircuitBreaker { get; private set; }
+    public IHystrixThreadPool ThreadPool { get; private set; }
+    public IHystrixCommandOptions CommandPropertiesDefaults { get; private set; } = HystrixCommandOptionsTest.GetUnitTestOptions();
+    public IHystrixThreadPoolOptions ThreadPoolPropertiesDefaults { get; private set; } = HystrixThreadPoolOptionsTest.GetUnitTestPropertiesBuilder();
+    public HystrixCommandMetrics Metrics { get; private set; }
+    public SemaphoreSlim FallbackSemaphore { get; private set; }
+    public SemaphoreSlim ExecutionSemaphore { get; private set; }
+    public TestableExecutionHook ExecutionHook { get; private set; } = new();
 
     public TestCommandBuilder(ExecutionIsolationStrategy isolationStrategy)
     {

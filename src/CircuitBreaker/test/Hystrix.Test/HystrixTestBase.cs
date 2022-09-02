@@ -17,7 +17,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public abstract class HystrixTestBase : IDisposable
 {
-    protected HystrixRequestContext context;
+    protected HystrixRequestContext Context { get; set; }
 
     protected HystrixTestBase()
     {
@@ -26,7 +26,7 @@ public abstract class HystrixTestBase : IDisposable
 
     public void Before()
     {
-        context = HystrixRequestContext.InitializeContext();
+        Context = HystrixRequestContext.InitializeContext();
         ResetAll();
     }
 
@@ -74,8 +74,8 @@ public abstract class HystrixTestBase : IDisposable
     {
         if (disposing)
         {
-            context?.Dispose();
-            context = null;
+            Context?.Dispose();
+            Context = null;
 
             HystrixThreadPoolFactory.Shutdown();
             ResetAll();

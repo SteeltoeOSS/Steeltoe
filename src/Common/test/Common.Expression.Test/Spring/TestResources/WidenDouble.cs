@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
 
 public class WidenDouble
 {
-    public double D;
+    public double D { get; }
 
     public WidenDouble(double d)
     {

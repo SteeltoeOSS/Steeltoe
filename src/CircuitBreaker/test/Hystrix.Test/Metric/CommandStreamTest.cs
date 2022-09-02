@@ -186,9 +186,9 @@ public abstract class CommandStreamTest : HystrixTestBase
     {
         private readonly int _arg;
         private readonly ITestOutputHelper _output;
-        public bool CommandCreated;
 
         protected override string CacheKey => _arg.ToString();
+        public bool CommandCreated { get; set; }
 
         public override int RequestArgument => _arg;
 

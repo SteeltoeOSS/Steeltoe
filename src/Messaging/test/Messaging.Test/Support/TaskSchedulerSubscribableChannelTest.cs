@@ -9,11 +9,10 @@ namespace Steeltoe.Messaging.Support.Test;
 
 public class TaskSchedulerSubscribableChannelTest
 {
-    internal readonly TaskSchedulerSubscribableChannel Channel;
-    internal readonly object Payload;
-    internal readonly IMessage Message;
-
-    internal IMessageHandler Handler;
+    internal TaskSchedulerSubscribableChannel Channel { get; }
+    internal object Payload { get; }
+    internal IMessage Message { get; }
+    internal IMessageHandler Handler { get; set; }
 
     public TaskSchedulerSubscribableChannelTest()
     {
@@ -229,7 +228,7 @@ public class TaskSchedulerSubscribableChannelTest
 
     internal sealed class TestScheduler : TaskScheduler
     {
-        public bool WasTaskScheduled;
+        public bool WasTaskScheduled { get; private set; }
 
         protected override IEnumerable<Task> GetScheduledTasks()
         {

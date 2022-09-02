@@ -916,7 +916,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
 
     public class NumberHolder
     {
-        public int Payload = 36;
+        public int Payload { get; } = 36;
     }
 
     public class Greeter
@@ -926,7 +926,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
 
     public class TestClass2
     {
-        public string Name = "Santa";
+        public string Name { get; } = "Santa";
 
         public string Name2 => "foobar";
 
@@ -935,7 +935,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
 
     public class Foo
     {
-        public Bar Bar = new();
+        public Bar Bar { get; } = new();
 
         public Bar Baz { get; } = new();
 
@@ -947,6 +947,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
 
     public class Bar
     {
-        public string Boo = "oranges";
+        public string Boo { get; } = "oranges";
     }
 }

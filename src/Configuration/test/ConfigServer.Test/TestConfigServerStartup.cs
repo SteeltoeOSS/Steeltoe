@@ -9,7 +9,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
 public sealed class TestConfigServerStartup
 {
-    public static CountdownEvent InitialRequestLatch = new(1);
+    public static CountdownEvent InitialRequestLatch { get; private set; } = new(1);
 
     public static string Response { get; set; }
 

@@ -17,8 +17,8 @@ internal sealed class TestSemaphoreCommand : TestHystrixCommand<bool>
     public const int FallbackFailure = 12;
     private readonly int _executionSleep;
 
-    public readonly int ResultBehavior;
-    public readonly int FallbackBehavior;
+    public int ResultBehavior { get; }
+    public int FallbackBehavior { get; }
 
     public TestSemaphoreCommand(TestCircuitBreaker circuitBreaker, int executionSemaphoreCount, int executionSleep, int resultBehavior, int fallbackBehavior)
         : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)

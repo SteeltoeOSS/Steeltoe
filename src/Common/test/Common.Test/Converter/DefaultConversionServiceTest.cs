@@ -1115,11 +1115,11 @@ public class DefaultConversionServiceTest
 
     private sealed class Isbn
     {
-        public static int ConstructorCount;
-        public static int ToStringCount;
-        public static int ValueOfCount;
-
         private readonly string _value;
+
+        public static int ConstructorCount { get; private set; }
+        public static int ToStringCount { get; private set; }
+        public static int ValueOfCount { get; private set; }
 
         public Isbn(string value)
         {
@@ -1171,11 +1171,10 @@ public class DefaultConversionServiceTest
 
     private sealed class SocialSecurityNumber
     {
-        public static int ConstructorCount;
-
-        public static int ToStringCount;
-
         private readonly string _value;
+
+        public static int ConstructorCount { get; private set; }
+        public static int ToStringCount { get; private set; }
 
         public SocialSecurityNumber(string value)
         {

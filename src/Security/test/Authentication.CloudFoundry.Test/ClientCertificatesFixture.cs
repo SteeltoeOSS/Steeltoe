@@ -8,7 +8,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
 public sealed class ClientCertificatesFixture : IDisposable
 {
-    public readonly LocalCertificateWriter CertificateWriter = new();
+    public LocalCertificateWriter CertificateWriter { get; } = new();
 
     public ClientCertificatesFixture()
     {
@@ -29,7 +29,7 @@ public sealed class ClientCertificatesFixture : IDisposable
 
     // Suppress S4581 to workaround bug at https://github.com/SonarSource/sonar-dotnet/issues/5703.
 #pragma warning disable S4581 // "new Guid()" should not be used
-    public readonly Guid ServerOrgId = new("a8fef16f-94c0-49e3-aa0b-ced7c3da6229");
-    public readonly Guid ServerSpaceId = new("122b942a-d7b9-4839-b26e-836654b9785f");
+    public Guid ServerOrgId { get; } = new("a8fef16f-94c0-49e3-aa0b-ced7c3da6229");
+    public Guid ServerSpaceId { get; } = new("122b942a-d7b9-4839-b26e-836654b9785f");
 #pragma warning restore S4581 // "new Guid()" should not be used
 }

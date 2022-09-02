@@ -5846,6 +5846,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 #pragma warning disable S1144 // Unused private types or members should be removed
 #pragma warning disable S2326 // Unused type parameters should be removed
 #pragma warning disable S1118 // Utility classes should not have public constructors
+#pragma warning disable SA1401 // Fields should be private
 
     public static class AHolder
     {

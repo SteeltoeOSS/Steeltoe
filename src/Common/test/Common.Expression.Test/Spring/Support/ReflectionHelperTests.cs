@@ -718,10 +718,6 @@ public class ReflectionHelperTests : AbstractExpressionTests
 
     public class Tester
     {
-        public int Field = 3;
-        public int Field2;
-        public int Field3;
-
         public string Property { get; set; }
 
         public string Property2 { private get; set; }
@@ -729,6 +725,12 @@ public class ReflectionHelperTests : AbstractExpressionTests
         public string Property3 { get; } = "doodoo";
 
         public bool Property4 { get; }
+
+#pragma warning disable SA1401 // Fields should be private
+        public int Field = 3;
+        public int Field2;
+        public int Field3;
+#pragma warning restore SA1401 // Fields should be private
 
         // ReSharper disable InconsistentNaming
 #pragma warning disable SA1300 // Element should begin with upper-case letter

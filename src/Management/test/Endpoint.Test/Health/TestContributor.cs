@@ -8,8 +8,8 @@ namespace Steeltoe.Management.Endpoint.Health.Test;
 
 internal sealed class TestContributor : IHealthContributor
 {
-    public bool Called;
-    public bool Throws;
+    public bool Called { get; private set; }
+    public bool Throws { get; }
 
     public string Id { get; }
 

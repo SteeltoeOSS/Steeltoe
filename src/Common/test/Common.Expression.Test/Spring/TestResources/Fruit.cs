@@ -6,8 +6,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
 
 public class Fruit
 {
+#pragma warning disable SA1401 // Fields should be private
     public string Name; // accessible as property field
-    public string ColorName; // accessible as property through getter/setter
+#pragma warning restore SA1401 // Fields should be private
+    public string ColorName { get; } // accessible as property through getter/setter
 
     public Color Color { get; }
 

@@ -200,9 +200,9 @@ public class ChannelInterceptorTest
 
     internal sealed class PostSendInterceptorMessageWasNotSentInterceptor : AbstractChannelInterceptor
     {
-        public bool PreSendInvoked;
-        public bool CompletionInvoked;
-        public IMessageChannel ExpectedChannel;
+        public bool PreSendInvoked { get; private set; }
+        public bool CompletionInvoked { get; private set; }
+        public IMessageChannel ExpectedChannel { get; }
 
         public PostSendInterceptorMessageWasNotSentInterceptor(IMessageChannel expectedChannel)
         {
@@ -232,9 +232,9 @@ public class ChannelInterceptorTest
 
     internal sealed class PostSendInterceptorMessageWasSentChannelInterceptor : AbstractChannelInterceptor
     {
-        public bool PreSendInvoked;
-        public bool CompletionInvoked;
-        public IMessageChannel ExpectedChannel;
+        public bool PreSendInvoked { get; set; }
+        public bool CompletionInvoked { get; set; }
+        public IMessageChannel ExpectedChannel { get; }
 
         public PostSendInterceptorMessageWasSentChannelInterceptor(IMessageChannel expectedChannel)
         {

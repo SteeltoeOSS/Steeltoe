@@ -116,7 +116,7 @@ public class PublishSubscribeChannelTest
 
     private sealed class CounterHandler : IMessageHandler
     {
-        public int Count;
+        public int Count { get; private set; }
 
         public string ServiceName { get; set; } = nameof(CounterHandler);
 

@@ -351,8 +351,8 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
 #pragma warning disable S1172 // Unused method parameters should be removed
     private sealed class SampleBean
     {
-        public object Payload;
-        public List<object> BatchPayloads;
+        public object Payload { get; private set; }
+        public List<object> BatchPayloads { get; private set; }
 
         public IMessage<string> Echo(IMessage<string> input)
         {

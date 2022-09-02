@@ -10,11 +10,10 @@ namespace Steeltoe.Messaging.Support.Test;
 
 public class TaskSchedulerSubscribableChannelWriterTest
 {
-    internal readonly TaskSchedulerSubscribableChannel Channel;
-    internal readonly object Payload;
-    internal readonly IMessage Message;
-
-    internal IMessageHandler Handler;
+    internal TaskSchedulerSubscribableChannel Channel { get; }
+    internal object Payload { get; }
+    internal IMessage Message { get; }
+    internal IMessageHandler Handler { get; private set; }
 
     public TaskSchedulerSubscribableChannelWriterTest()
     {

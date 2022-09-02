@@ -112,8 +112,8 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
 
     private sealed class TestHystrixMetricsPublisher : HystrixMetricsPublisher
     {
-        public readonly AtomicInteger CommandCounter = new();
-        public readonly AtomicInteger ThreadCounter = new();
+        public AtomicInteger CommandCounter { get; } = new();
+        public AtomicInteger ThreadCounter { get; } = new();
 
         public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandGroupKey,
             HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)

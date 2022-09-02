@@ -172,8 +172,8 @@ public class ConstructorInvocationTests : AbstractExpressionTests
 
     public class Tester
     {
-        public static int Counter;
-        public int I;
+        public static int Counter { get; set; }
+        public int I { get; }
 
         public Tester()
         {

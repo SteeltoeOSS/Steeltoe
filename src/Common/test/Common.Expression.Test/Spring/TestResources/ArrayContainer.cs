@@ -6,14 +6,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
 
 public class ArrayContainer
 {
-    public int[] Integers = new int[3];
-    public long[] Longs = new long[3];
-    public double[] Doubles = new double[3];
-    public byte[] Bytes = new byte[3];
-    public char[] Chars = new char[3];
-    public short[] Shorts = new short[3];
-    public bool[] Booleans = new bool[3];
-    public float[] Floats = new float[3];
+    public int[] Integers { get; } = new int[3];
+    public long[] Longs { get; } = new long[3];
+    public double[] Doubles { get; } = new double[3];
+    public byte[] Bytes { get; } = new byte[3];
+    public char[] Chars { get; } = new char[3];
+    public short[] Shorts { get; } = new short[3];
+    public bool[] Booleans { get; } = new bool[3];
+    public float[] Floats { get; } = new float[3];
 
     public ArrayContainer()
     {

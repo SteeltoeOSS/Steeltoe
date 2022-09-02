@@ -6,7 +6,7 @@ namespace Steeltoe.Connector.Test;
 
 public static class TestHelpers
 {
-    public static string VcapApplication = @"
+    public const string VcapApplication = @"
             {
                 ""limits"": {
                     ""fds"": 16384,

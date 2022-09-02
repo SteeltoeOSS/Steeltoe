@@ -1349,8 +1349,8 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     [Fact]
     public void TestAutoBindDlQWithRepublish()
     {
-        maxStackTraceSize = RabbitUtils.GetMaxFrame(GetResource()) - 20_000;
-        Assert.True(maxStackTraceSize > 0);
+        MaxStackTraceSize = RabbitUtils.GetMaxFrame(GetResource()) - 20_000;
+        Assert.True(MaxStackTraceSize > 0);
 
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(rabbitBindingsOptions);
@@ -1366,7 +1366,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         moduleInputChannel.ComponentName = "dlqPubTest";
         Exception exception = BigCause();
 
-        Assert.True(exception.StackTrace.Length > maxStackTraceSize);
+        Assert.True(exception.StackTrace.Length > MaxStackTraceSize);
         var noNotRepublish = new AtomicBoolean();
 
         moduleInputChannel.Subscribe(new TestMessageHandler
@@ -1553,7 +1553,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
                 binderOptions, rabbitBindingsOptions, provisioner);
 
             var binder = new RabbitTestBinder(cf, rabbitBinder, LoggerFactory.CreateLogger<RabbitTestBinder>());
-            testBinder = binder;
+            TestBinder = binder;
 
             ProducerOptions producerProperties = GetProducerOptions("output", currentRabbitBindings);
             RabbitProducerOptions rabbitProducerOptions = currentRabbitBindings.GetRabbitProducerOptions("output");
@@ -1658,7 +1658,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
             durableConsumerBinding.UnbindAsync();
 
             // Reset timeouts so cleanup happens
-            testBinder.ResetConnectionFactoryTimeout();
+            TestBinder.ResetConnectionFactoryTimeout();
 
             Cleanup();
         }

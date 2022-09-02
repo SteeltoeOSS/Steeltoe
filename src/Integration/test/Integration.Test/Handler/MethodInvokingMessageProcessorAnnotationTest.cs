@@ -292,7 +292,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
 
     public class TestService
     {
-        public ISet<string> Ids = new HashSet<string>();
+        public ISet<string> Ids { get; } = new HashSet<string>();
 
         public IDictionary MapOnly(IDictionary map)
         {

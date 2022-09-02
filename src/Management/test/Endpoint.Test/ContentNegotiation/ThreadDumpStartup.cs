@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
 
 public class ThreadDumpStartup
 {
-    public IConfiguration Configuration;
+    public IConfiguration Configuration { get; }
 
     public ThreadDumpStartup(IConfiguration configuration)
     {

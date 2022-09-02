@@ -113,16 +113,18 @@ public abstract class AbstractConnectionFactoryTest
 
     protected class IncrementConnectionListener : IConnectionListener
     {
-        public int Called;
+        private int _called;
+
+        public int Called => _called;
 
         public void OnClose(IConnection connection)
         {
-            Interlocked.Decrement(ref Called);
+            Interlocked.Decrement(ref _called);
         }
 
         public void OnCreate(IConnection connection)
         {
-            Interlocked.Increment(ref Called);
+            Interlocked.Increment(ref _called);
         }
 
         public void OnShutDown(RC.ShutdownEventArgs args)

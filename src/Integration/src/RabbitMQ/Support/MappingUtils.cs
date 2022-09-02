@@ -87,7 +87,7 @@ public static class MappingUtils
     //    return null;
     // }
 
-    // /**
+    // /*
     // * Check the delivery mode and update with the default if not already present.
     // * @param requestMessage the request message.
     // * @param messageProperties the mapped message properties.

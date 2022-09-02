@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
 
 public class WidenLong
 {
-    public long L;
+    public long L { get; }
 
     public WidenLong(long l)
     {

@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
 
 public class DbMigrationsStartup
 {
-    public IConfiguration Configuration;
+    public IConfiguration Configuration { get; }
 
     public DbMigrationsStartup(IConfiguration configuration)
     {
