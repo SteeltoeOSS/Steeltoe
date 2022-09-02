@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
@@ -12,18 +11,6 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class PublishSubscribeChannelTest
 {
-    private readonly IServiceProvider _provider;
-
-    public PublishSubscribeChannelTest()
-    {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
-        services.AddSingleton<IConfiguration>(configurationRoot);
-        services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-        _provider = services.BuildServiceProvider();
-    }
-
     [Fact]
     public void TestSend()
     {

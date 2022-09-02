@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Threading.Channels;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
@@ -13,18 +12,6 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class QueueChannelTest
 {
-    private readonly IServiceProvider _provider;
-
-    public QueueChannelTest()
-    {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
-        services.AddSingleton<IConfiguration>(configurationRoot);
-        services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-        _provider = services.BuildServiceProvider();
-    }
-
     [Fact]
     public void TestSimpleSendAndReceive()
     {

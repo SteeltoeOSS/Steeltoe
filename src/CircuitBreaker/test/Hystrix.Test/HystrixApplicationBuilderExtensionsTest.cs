@@ -4,19 +4,11 @@
 
 using Microsoft.AspNetCore.Builder;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixApplicationBuilderExtensionsTest
 {
-    private readonly ITestOutputHelper _output;
-
-    public HystrixApplicationBuilderExtensionsTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
-
     [Fact]
     public void UseHystrixRequestContext_ThrowsIfBuilderNull()
     {

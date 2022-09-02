@@ -403,13 +403,11 @@ internal sealed class ResolvableMethod
 
     internal sealed class LabeledPredicate<T> : IPredicate<T>
     {
-        private readonly string _label;
-
         private readonly Func<T, bool> _del;
 
         public LabeledPredicate(string label, Func<T, bool> del)
         {
-            _label = label;
+            _ = label;
             _del = del;
         }
 

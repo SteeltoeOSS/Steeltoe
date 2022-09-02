@@ -23,7 +23,7 @@ internal sealed class TestOutputLoggerProvider : ILoggerProvider
 
     public ILogger CreateLogger(string categoryName)
     {
-        return _loggers.GetOrAdd(categoryName, _ => new TestOutputLogger(_output, categoryName));
+        return _loggers.GetOrAdd(categoryName, _ => new TestOutputLogger(_output));
     }
 
     public void Dispose()

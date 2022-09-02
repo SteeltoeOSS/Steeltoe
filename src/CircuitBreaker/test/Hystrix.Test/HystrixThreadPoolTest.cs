@@ -7,19 +7,11 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
 using Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixThreadPoolTest : HystrixTestBase
 {
-    private readonly ITestOutputHelper _output;
-
-    public HystrixThreadPoolTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
-
     [Fact]
     public void TestShutdown()
     {

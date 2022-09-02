@@ -4,19 +4,11 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixRequestCacheTest : HystrixTestBase
 {
-    private readonly ITestOutputHelper _output;
-
-    public HystrixRequestCacheTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
-
     [Fact]
     public void TestCache()
     {

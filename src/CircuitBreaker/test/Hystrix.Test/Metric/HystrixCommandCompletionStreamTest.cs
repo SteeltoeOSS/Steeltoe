@@ -6,7 +6,6 @@ using System.Reactive;
 using System.Reactive.Linq;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 
@@ -15,12 +14,6 @@ public class HystrixCommandCompletionStreamTest : CommandStreamTest
     private static readonly IHystrixCommandKey CommandKey = HystrixCommandKeyDefault.AsKey("COMMAND");
     private static readonly IHystrixThreadPoolKey ThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool");
     private readonly HystrixCommandCompletionStream _commandStream = new(CommandKey);
-    private readonly ITestOutputHelper _output;
-
-    public HystrixCommandCompletionStreamTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
 
     [Fact]
     public void TestNoEvents()
