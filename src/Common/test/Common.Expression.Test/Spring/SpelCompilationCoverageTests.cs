@@ -636,7 +636,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var foh = new FooObjectHolder();
         var context = new StandardEvaluationContext(foh);
 
-        var expression = (SpelExpression)Parser.ParseExpression("Foo?.Object");
+        var expression = (SpelExpression)Parser.ParseExpression("Foo?.TheObject");
         Assert.Equal("hello", expression.GetValue(context));
         foh.Foo = null;
         Assert.Null(expression.GetValue(context));
@@ -4974,7 +4974,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void PlusNeedingCheckCast_SPR12426()
     {
-        _expression = Parser.ParseExpression("Object + ' world'");
+        _expression = Parser.ParseExpression("TheObject + ' world'");
         object v = _expression.GetValue(new FooObject());
         Assert.Equal("hello world", v);
         AssertCanCompile(_expression);
@@ -7068,11 +7068,11 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class FooObject
     {
-        public object Object => "hello";
+        public object TheObject => "hello";
 
         public object GetObject()
         {
-            return Object;
+            return TheObject;
         }
     }
 
