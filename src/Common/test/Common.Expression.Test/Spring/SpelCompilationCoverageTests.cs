@@ -5879,7 +5879,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
+#pragma warning disable S3898 // Value types should implement "IEquatable<T>"
     public struct A
+#pragma warning restore S3898 // Value types should implement "IEquatable<T>"
     {
         public int Value;
 
