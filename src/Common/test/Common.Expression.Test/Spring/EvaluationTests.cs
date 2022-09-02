@@ -12,6 +12,7 @@ using Xunit;
 
 // ReSharper disable InconsistentNaming
 #pragma warning disable S3443 // Type should not be examined on "System.Type" instances
+#pragma warning disable S4004 // Collection properties should be readonly
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
 

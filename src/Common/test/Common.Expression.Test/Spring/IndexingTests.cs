@@ -7,6 +7,8 @@ using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Xunit;
 
+#pragma warning disable S4004 // Collection properties should be readonly
+
 namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class IndexingTests

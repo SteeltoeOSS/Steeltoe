@@ -119,7 +119,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
 
     public class AfterReceivePostProcessors : IMessagePostProcessor
     {
-        public List<string> Headers { get; set; }
+        public List<string> Headers { get; }
 
         public AfterReceivePostProcessors(List<string> headers)
         {

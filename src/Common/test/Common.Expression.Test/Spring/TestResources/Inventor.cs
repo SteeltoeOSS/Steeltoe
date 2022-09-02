@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable S4004 // Collection properties should be readonly
 // ReSharper disable InconsistentNaming
 
 namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;

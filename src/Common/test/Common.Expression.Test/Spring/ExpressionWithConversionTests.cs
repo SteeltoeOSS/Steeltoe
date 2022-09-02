@@ -168,7 +168,9 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
     {
         public string Value { get; }
 
+#pragma warning disable S4004 // Collection properties should be readonly
         public ICollection<Foo> Foos { get; set; }
+#pragma warning restore S4004 // Collection properties should be readonly
 
         public ICollection<string> FoosAsStrings =>
             new List<string>

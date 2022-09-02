@@ -36,7 +36,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
 
     protected virtual ITestOutputHelper Output { get; set; }
 
-    protected virtual ServiceCollection Services { get; set; }
+    protected virtual ServiceCollection Services { get; }
 
     protected virtual ConfigurationBuilder ConfigurationBuilder { get; set; }
 
@@ -355,7 +355,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
 
         var station = new Station
         {
-            ReadingsList = new List<Station.Readings>
+            ReadingsList =
             {
                 r1,
                 r2
@@ -593,7 +593,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
 
     public class Station
     {
-        public List<Readings> ReadingsList { get; set; }
+        public List<Readings> ReadingsList { get; } = new();
 
         public class Readings
         {

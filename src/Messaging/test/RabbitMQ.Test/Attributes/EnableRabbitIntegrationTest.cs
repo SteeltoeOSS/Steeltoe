@@ -1051,7 +1051,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         public CountdownEvent Latch { get; set; } = new(1);
 
-        public List<object> Foos { get; set; } = new();
+        public List<object> Foos { get; } = new();
 
         public CountdownEvent Batch1Latch { get; set; } = new(1);
 
@@ -1059,11 +1059,11 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         public CountdownEvent Batch3Latch { get; set; } = new(1);
 
-        public List<IMessage<byte[]>> AmqpMessagesReceived { get; set; }
+        public List<IMessage<byte[]>> AmqpMessagesReceived { get; } = new();
 
-        public List<IMessage> MessagingMessagesReceived { get; set; }
+        public List<IMessage> MessagingMessagesReceived { get; } = new();
 
-        public List<string> Batch3Strings { get; set; }
+        public List<string> Batch3Strings { get; } = new();
 
         public MyService(IApplicationContext context)
         {
@@ -1324,7 +1324,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         [RabbitListener("erit.batch.1", ContainerFactory = "consumerBatchContainerFactory")]
         public void ConsumerBatch1(List<IMessage<byte[]>> amqpMessages)
         {
-            AmqpMessagesReceived = amqpMessages;
+            AmqpMessagesReceived.Clear();
+            AmqpMessagesReceived.AddRange(amqpMessages);
 
             if (!Batch1Latch.IsSet)
             {
@@ -1335,7 +1336,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         [RabbitListener("erit.batch.2", ContainerFactory = "consumerBatchContainerFactory")]
         public void ConsumerBatch2(List<IMessage> messages)
         {
-            MessagingMessagesReceived = messages;
+            MessagingMessagesReceived.Clear();
+            MessagingMessagesReceived.AddRange(messages);
 
             if (!Batch2Latch.IsSet)
             {
@@ -1346,7 +1348,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         [RabbitListener("erit.batch.3", ContainerFactory = "consumerBatchContainerFactory")]
         public void ConsumerBatch3(List<string> strings)
         {
-            Batch3Strings = strings;
+            Batch3Strings.Clear();
+            Batch3Strings.AddRange(strings);
 
             if (!Batch3Latch.IsSet)
             {
