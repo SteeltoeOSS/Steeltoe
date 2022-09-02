@@ -10,7 +10,6 @@
     <Rule Id="S1104" Action="None" />
     <Rule Id="S1135" Action="Info" />
     <Rule Id="S1151" Action="Warning" />
-    <Rule Id="S1168" Action="Info" />
     <Rule Id="S1172" Action="Info" />
     <Rule Id="S1185" Action="Info" />
     <Rule Id="S1186" Action="None" />
