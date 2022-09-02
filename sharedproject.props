@@ -37,6 +37,6 @@
 
   <PropertyGroup Condition="!$(MSBuildProjectName.StartsWith('Steeltoe.Extensions.Configuration'))">
     <!-- Narrow the condition above as we're completing more public API reviews -->
-    <NoWarn>$(NoWarn);SA1401;S1168;S2360;S3872;S3874;S3956</NoWarn>
+    <NoWarn>$(NoWarn);SA1401;S1168;S2360;S3872;S3874;S3956;S4023</NoWarn>
   </PropertyGroup>
 </Project>
