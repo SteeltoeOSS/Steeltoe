@@ -223,7 +223,7 @@ public class ChannelInterceptorTest
 
     public class AfterCompletionWithSendExceptionChannel : AbstractMessageChannel
     {
-        public AfterCompletionWithSendExceptionChannel(IApplicationContext context, ILogger logger = null)
+        internal AfterCompletionWithSendExceptionChannel(IApplicationContext context, ILogger logger = null)
             : base(context, logger)
         {
         }

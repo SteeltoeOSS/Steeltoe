@@ -38,6 +38,7 @@ public class RabbitAdminTest : AbstractTest
 #pragma warning restore S2699 // Tests should include assertions
     {
         ServiceCollection serviceCollection = CreateContainer();
+        serviceCollection.AddLogging();
         serviceCollection.AddRabbitQueue(new Queue("foo"));
 
         serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
@@ -62,6 +63,7 @@ public class RabbitAdminTest : AbstractTest
     public void TestFailOnFirstUseWithMissingBroker()
     {
         ServiceCollection serviceCollection = CreateContainer();
+        serviceCollection.AddLogging();
         serviceCollection.AddRabbitQueue(new Queue("foo"));
 
         serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
@@ -87,6 +89,7 @@ public class RabbitAdminTest : AbstractTest
     public async Task TestGetQueueProperties()
     {
         ServiceCollection serviceCollection = CreateContainer();
+        serviceCollection.AddLogging();
 
         serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
         {
@@ -140,6 +143,7 @@ public class RabbitAdminTest : AbstractTest
     public void TestTemporaryLogs()
     {
         ServiceCollection serviceCollection = CreateContainer();
+        serviceCollection.AddLogging();
         serviceCollection.AddRabbitQueue(new Queue("testq.nonDur", false, false, false));
         serviceCollection.AddRabbitQueue(new Queue("testq.ad", true, false, true));
         serviceCollection.AddRabbitQueue(new Queue("testq.excl", true, true, false));

@@ -13,7 +13,7 @@ public class TestSink : ILogEventSink
 
     private readonly List<string> _logs = new();
 
-    public static TestSink GetCurrentSink(bool createNew = false)
+    internal static TestSink GetCurrentSink(bool createNew = false)
     {
         if (createNew)
         {

@@ -56,12 +56,10 @@ public abstract class BaseTest : IDisposable
         return options;
     }
 
-    public MeterProvider GetTestMetrics(IViewRegistry viewRegistry, SteeltoeExporter steeltoeExporter, SteeltoePrometheusExporter prometheusExporter,
-        string name = null, string version = null)
+    public MeterProvider GetTestMetrics(IViewRegistry viewRegistry, SteeltoeExporter steeltoeExporter, SteeltoePrometheusExporter prometheusExporter)
     {
         MeterProviderBuilder builder = Sdk.CreateMeterProviderBuilder()
-            .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
-            .AddRegisteredViews(viewRegistry);
+            .AddMeter(OpenTelemetryMetrics.InstrumentationName, OpenTelemetryMetrics.InstrumentationVersion).AddRegisteredViews(viewRegistry);
 
         if (steeltoeExporter != null)
         {

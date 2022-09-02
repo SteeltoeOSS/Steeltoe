@@ -12,7 +12,7 @@ public class UpContributor : IHealthContributor
 
     public string Id { get; } = "Up";
 
-    public UpContributor(int? sleepyTime = null)
+    internal UpContributor(int? sleepyTime = null)
     {
         _sleepyTime = sleepyTime;
     }

@@ -334,7 +334,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     [Fact]
     public void TestSendAndReceiveTransactedWithUncachedConnection()
     {
-        var singleConnectionFactory = new SingleConnectionFactory("localhost");
+        var singleConnectionFactory = new SingleConnectionFactory("localhost", null);
 
         var rabbitTemplate = new RabbitTemplate(singleConnectionFactory)
         {
@@ -1690,7 +1690,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     private sealed class MockSingleConnectionFactory : SingleConnectionFactory
     {
         public MockSingleConnectionFactory(string hostname)
-            : base(hostname)
+            : base(hostname, null)
         {
         }
 

@@ -82,12 +82,12 @@ public abstract class HystrixTestBase : IDisposable
         }
     }
 
-    public virtual bool WaitForHealthCountToUpdate(string commandKey, int maxTimeToWait, ITestOutputHelper output = null)
+    protected virtual bool WaitForHealthCountToUpdate(string commandKey, int maxTimeToWait)
     {
-        return WaitForHealthCountToUpdate(commandKey, 1, maxTimeToWait, output);
+        return WaitForHealthCountToUpdate(commandKey, maxTimeToWait, null);
     }
 
-    public virtual bool WaitForHealthCountToUpdate(string commandKey, int numberOfUpdates, int maxTimeToWait, ITestOutputHelper output = null)
+    protected virtual bool WaitForHealthCountToUpdate(string commandKey, int maxTimeToWait, ITestOutputHelper output)
     {
         var stream = HealthCountsStream.GetInstance(commandKey);
 
@@ -96,10 +96,10 @@ public abstract class HystrixTestBase : IDisposable
             return false;
         }
 
-        return WaitForObservableToUpdate(stream.Observe(), numberOfUpdates, maxTimeToWait, output);
+        return WaitForObservableToUpdate(stream.Observe(), 1, maxTimeToWait, output);
     }
 
-    public virtual bool WaitForObservableToUpdate<T>(IObservable<T> observable, int numberOfUpdates, int maxTimeToWait, ITestOutputHelper output = null)
+    protected virtual bool WaitForObservableToUpdate<T>(IObservable<T> observable, int numberOfUpdates, int maxTimeToWait, ITestOutputHelper output)
     {
         bool updated = false;
         int number = numberOfUpdates;
@@ -125,7 +125,7 @@ public abstract class HystrixTestBase : IDisposable
         }
     }
 
-    public virtual bool WaitForLatchedObserverToUpdate<T>(TestObserverBase<T> observer, int count, int maxWaitTime, ITestOutputHelper output = null)
+    protected virtual bool WaitForLatchedObserverToUpdate<T>(TestObserverBase<T> observer, int count, int maxWaitTime, ITestOutputHelper output)
     {
         int current = observer.TickCount;
         int countToWait = count;
@@ -137,8 +137,8 @@ public abstract class HystrixTestBase : IDisposable
         return Time.WaitUntil(() => observer.TickCount >= current + countToWait, maxWaitTime);
     }
 
-    public virtual bool WaitForLatchedObserverToUpdate<T>(TestObserverBase<T> observer, int count, int minWaitTime, int maxWaitTime,
-        ITestOutputHelper output = null)
+    protected virtual bool WaitForLatchedObserverToUpdate<T>(TestObserverBase<T> observer, int count, int minWaitTime, int maxWaitTime,
+        ITestOutputHelper output)
     {
         int current = observer.TickCount;
         int countToWait = count;

@@ -445,14 +445,24 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         return ".";
     }
 
-    protected abstract TTestBinder GetBinder(RabbitBindingsOptions bindingsOptions = null);
+    protected TTestBinder GetBinder()
+    {
+        return GetBinder(null);
+    }
+
+    protected abstract TTestBinder GetBinder(RabbitBindingsOptions bindingsOptions);
 
     protected void BinderBindUnbindLatency()
     {
     }
 
-    protected ConsumerOptions GetConsumerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitConsumerOptions rabbitConsumerOptions = null,
-        RabbitBindingOptions bindingOptions = null)
+    protected ConsumerOptions GetConsumerOptions(string bindingName, RabbitBindingsOptions bindingsOptions)
+    {
+        return GetConsumerOptions(bindingName, bindingsOptions, null, null);
+    }
+
+    protected ConsumerOptions GetConsumerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitConsumerOptions rabbitConsumerOptions,
+        RabbitBindingOptions bindingOptions)
     {
         rabbitConsumerOptions ??= new RabbitConsumerOptions();
         rabbitConsumerOptions.PostProcess();
@@ -470,7 +480,12 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         return consumerOptions;
     }
 
-    protected ProducerOptions GetProducerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitBindingOptions bindingOptions = null)
+    protected ProducerOptions GetProducerOptions(string bindingName, RabbitBindingsOptions bindingsOptions)
+    {
+        return GetProducerOptions(bindingName, bindingsOptions, null);
+    }
+
+    protected ProducerOptions GetProducerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitBindingOptions bindingOptions)
     {
         var rabbitProducerOptions = new RabbitProducerOptions();
         rabbitProducerOptions.PostProcess();

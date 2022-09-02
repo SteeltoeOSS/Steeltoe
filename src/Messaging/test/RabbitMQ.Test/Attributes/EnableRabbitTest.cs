@@ -329,7 +329,7 @@ public class EnableRabbitTest
 
     public static class RabbitSampleConfig
     {
-        public static async Task<ServiceProvider> CreateAndStartServicesAsync(Type listenerBeanType = null)
+        internal static async Task<ServiceProvider> CreateAndStartServicesAsync(Type listenerBeanType = null)
         {
             var mockConnectionFactory = new Mock<IConnectionFactory>();
             var mockConnection = new Mock<IConnection>();
@@ -642,7 +642,7 @@ public class EnableRabbitTest
         }
     }
 
-    public class TestDirectRabbitListenerContainerFactory : DirectRabbitListenerContainerFactory
+    private sealed class TestDirectRabbitListenerContainerFactory : DirectRabbitListenerContainerFactory
     {
         public TestDirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory,
             ILoggerFactory loggerFactory = null)
@@ -737,7 +737,7 @@ public class EnableRabbitTest
         }
     }
 
-    protected class CustomRabbitListenerEndpointRegistry : RabbitListenerEndpointRegistry
+    private class CustomRabbitListenerEndpointRegistry : RabbitListenerEndpointRegistry
     {
         public CustomRabbitListenerEndpointRegistry(IApplicationContext applicationContext, ILogger logger = null)
             : base(applicationContext, logger)

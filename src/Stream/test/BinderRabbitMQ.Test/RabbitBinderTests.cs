@@ -270,7 +270,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var bindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(bindingsOptions);
 
-        ConsumerOptions properties = GetConsumerOptions("input", bindingsOptions, rabbitConsumerOptions);
+        ConsumerOptions properties = GetConsumerOptions("input", bindingsOptions, rabbitConsumerOptions, null);
 
         IBinding consumerBinding = binder.BindConsumer("props.0", null, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
 
@@ -1364,7 +1364,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         rabbitConsumerOptions.DurableSubscription = true;
         DirectChannel moduleInputChannel = CreateBindableChannel("input", CreateConsumerBindingOptions(consumerProperties));
         moduleInputChannel.ComponentName = "dlqPubTest";
-        Exception exception = BigCause();
+        Exception exception = BigCause(null);
 
         Assert.True(exception.StackTrace.Length > MaxStackTraceSize);
         var noNotRepublish = new AtomicBoolean();

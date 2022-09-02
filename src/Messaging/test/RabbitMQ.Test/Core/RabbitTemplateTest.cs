@@ -107,7 +107,7 @@ public class RabbitTemplateTest
                 It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
             .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>((_, _, _, _, _, _, arg7) => consumer.Value = arg7);
 
-        var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+        var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object, null);
 
         var template = new RabbitTemplate(connectionFactory)
         {
@@ -131,7 +131,7 @@ public class RabbitTemplateTest
         mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Callback(() => count.IncrementAndGet())
             .Throws(new AuthenticationFailureException("foo"));
 
-        var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+        var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object, null);
 
         var template = new RabbitTemplate(connectionFactory)
         {
@@ -190,7 +190,7 @@ public class RabbitTemplateTest
         mockChannel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitMQReplyTo)).Throws(new ShutdownSignalException(
             new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty, RabbitUtils.QueueClassId, RabbitUtils.DeclareMethodId)));
 
-        var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+        var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object, null);
 
         var template = new RabbitTemplate(connectionFactory)
         {
@@ -215,7 +215,7 @@ public class RabbitTemplateTest
         mockChannel.Setup(c => c.IsOpen).Returns(true);
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
         mockChannel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitMQReplyTo)).Returns(() => new RC.QueueDeclareOk(Address.AmqRabbitMQReplyTo, 0, 0));
-        var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+        var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object, null);
 
         var template = new RabbitTemplate(connectionFactory)
         {
@@ -236,7 +236,7 @@ public class RabbitTemplateTest
         mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Callback(() => count.IncrementAndGet())
             .Throws(new AuthenticationFailureException("foo"));
 
-        var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+        var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object, null);
 
         var template = new RabbitTemplate(connectionFactory)
         {
@@ -380,7 +380,7 @@ public class RabbitTemplateTest
             shutdownLatch.Signal();
         });
 
-        var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+        var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object, null);
 
         var template = new RabbitTemplate(connectionFactory)
         {

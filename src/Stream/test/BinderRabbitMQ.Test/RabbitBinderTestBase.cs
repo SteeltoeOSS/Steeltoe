@@ -80,7 +80,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
         }
     }
 
-    protected override RabbitTestBinder GetBinder(RabbitBindingsOptions bindingsOptions = null)
+    protected override RabbitTestBinder GetBinder(RabbitBindingsOptions bindingsOptions)
     {
         if (TestBinder == null)
         {
@@ -122,7 +122,12 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
         return container;
     }
 
-    protected Exception BigCause(Exception innerException = null, int recursionDepth = 0)
+    protected Exception BigCause(Exception innerException)
+    {
+        return BigCause(innerException, 0);
+    }
+
+    private Exception BigCause(Exception innerException, int recursionDepth)
     {
         if (recursionDepth > 1000)
         {

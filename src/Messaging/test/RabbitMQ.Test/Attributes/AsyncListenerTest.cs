@@ -119,7 +119,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             Provider.GetRequiredService<IHostedService>().StartAsync(default).Wait();
         }
 
-        public ServiceCollection CreateContainer(IConfiguration configuration = null)
+        private ServiceCollection CreateContainer(IConfiguration configuration = null)
         {
             var services = new ServiceCollection();
 

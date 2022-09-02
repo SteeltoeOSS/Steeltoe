@@ -800,7 +800,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             Provider.Dispose();
         }
 
-        public ServiceCollection CreateContainer(IConfiguration configuration = null)
+        private ServiceCollection CreateContainer(IConfiguration configuration = null)
         {
             var services = new ServiceCollection();
             configuration ??= new ConfigurationBuilder().Build();
