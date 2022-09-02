@@ -656,7 +656,9 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
                 label = label.Replace("/", "(_)");
             }
 
+#pragma warning disable S3900 // Arguments of public methods should be validated against null
             path = $"{path}/{label.Trim()}";
+#pragma warning restore S3900 // Arguments of public methods should be validated against null
         }
 
         if (!baseRawUri.EndsWith("/", StringComparison.Ordinal))
