@@ -67,9 +67,9 @@ public class MessagePostProcessorUtilsTest
 
         int IOrdered.Order => _order;
 
-        public OrderedMessagePostProcessor Order(int order)
+        public OrderedMessagePostProcessor Order(int value)
         {
-            _order = order;
+            _order = value;
             return this;
         }
     }

@@ -32,6 +32,8 @@ using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Attributes.EnableRabbitIntegrationTest;
 using RC = RabbitMQ.Client;
 
+#pragma warning disable S3872 // Parameter names should not duplicate the names of their methods
+
 namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 
 [Trait("Category", "Integration")]

@@ -68,20 +68,20 @@ internal sealed class ResolvableMethod
             return this;
         }
 
-        public Builder<T> ArgTypes(params Type[] argTypes)
+        public Builder<T> ArgTypes(params Type[] types)
         {
-            AddFilter($"argTypes={string.Join<Type>(",", argTypes)}", method =>
+            AddFilter($"argTypes={string.Join<Type>(",", types)}", method =>
             {
                 Type[] paramTypes = method.GetParameters().Select(p => p.ParameterType).ToArray();
 
-                if (paramTypes.Length != argTypes.Length)
+                if (paramTypes.Length != types.Length)
                 {
                     return false;
                 }
 
-                for (int i = 0; i < argTypes.Length; i++)
+                for (int i = 0; i < types.Length; i++)
                 {
-                    if (argTypes[i] != paramTypes[i])
+                    if (types[i] != paramTypes[i])
                     {
                         return false;
                     }

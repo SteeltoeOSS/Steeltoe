@@ -297,9 +297,9 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         public int IntHeader { get; set; }
 
         [RabbitListener("test.converted")]
-        public Foo2 Foo2(Foo2 foo2)
+        public Foo2 Foo2(Foo2 value)
         {
-            return foo2;
+            return value;
         }
 
         [RabbitListener("test.converted.list")]
@@ -319,9 +319,9 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         }
 
         [RabbitListener("test.converted.args1")]
-        public string Foo2(Foo2 foo2, [Header(RabbitMessageHeaders.ConsumerQueue)] string queue)
+        public string Foo2(Foo2 value, [Header(RabbitMessageHeaders.ConsumerQueue)] string queue)
         {
-            return foo2 + queue;
+            return value + queue;
         }
 
         [RabbitListener("test.converted.args2")]

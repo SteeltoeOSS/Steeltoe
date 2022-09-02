@@ -47,9 +47,9 @@ internal sealed class MessagingPredicates
     {
         private string _value;
 
-        public DestinationVariablePredicate Name(string name)
+        public DestinationVariablePredicate Name(string value)
         {
-            _value = name;
+            _value = value;
             return this;
         }
 
@@ -72,9 +72,9 @@ internal sealed class MessagingPredicates
         private bool _required = true;
         private string _defaultValue;
 
-        public HeaderPredicate Name(string name)
+        public HeaderPredicate Name(string value)
         {
-            _name = name;
+            _name = value;
             return this;
         }
 
@@ -84,9 +84,9 @@ internal sealed class MessagingPredicates
             return this;
         }
 
-        public HeaderPredicate Required(bool required)
+        public HeaderPredicate Required(bool value)
         {
-            _required = required;
+            _required = value;
             return this;
         }
 
