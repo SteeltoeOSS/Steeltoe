@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  
   <PropertyGroup>
-    <Description>Steeltoe Messaging RabbitMQ</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
+    <Description>Steeltoe Messaging RabbitMQ</Description>
     <PackageTags>Messaging, ASPNET Core, Spring, Spring Cloud</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
-  
+
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
@@ -22,5 +21,4 @@
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(ExtensionsVersion)" />
   </ItemGroup>
-  
 </Project>

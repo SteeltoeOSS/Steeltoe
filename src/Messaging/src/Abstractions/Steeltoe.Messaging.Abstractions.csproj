@@ -6,7 +6,7 @@
     <PackageTags></PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
-  
+
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>

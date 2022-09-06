@@ -19,5 +19,4 @@
     <PackageReference Include="Castle.Core" Version="$(CastleCoreVersion)" />
     <PackageReference Include="System.Runtime.Loader" Version="$(RuntimeLoaderVersion)" />
   </ItemGroup>
-
 </Project>

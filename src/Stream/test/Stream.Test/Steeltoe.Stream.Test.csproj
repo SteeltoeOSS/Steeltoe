@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Stream</RootNamespace>
@@ -10,7 +9,7 @@
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
-  
+
   <ItemGroup>
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -22,7 +21,5 @@
     <ProjectReference Include="..\..\src\Stream\Steeltoe.Stream.csproj" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <ProjectReference Include="..\TestBinder\Steeltoe.Stream.TestBinder.csproj" />
-
   </ItemGroup>
-
 </Project>

@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Stream.Binder</RootNamespace>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
-  
+
   <ItemGroup>
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -17,5 +16,4 @@
     <ProjectReference Include="..\..\src\BinderRabbitMQ\Steeltoe.Stream.Binder.RabbitMQ.csproj" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
   </ItemGroup>
-
 </Project>

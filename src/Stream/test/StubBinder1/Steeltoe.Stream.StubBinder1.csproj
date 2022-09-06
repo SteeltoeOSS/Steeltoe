@@ -3,7 +3,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <IsPackable>False</IsPackable>
   </PropertyGroup>
-  
+
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
@@ -13,5 +13,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Stream\Steeltoe.Stream.csproj" />
   </ItemGroup>
-
 </Project>

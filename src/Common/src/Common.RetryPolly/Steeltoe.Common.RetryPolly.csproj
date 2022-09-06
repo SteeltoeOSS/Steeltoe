@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Steeltoe library for handling retries</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
+    <Description>Steeltoe library for handling retries</Description>
     <PackageTags>NET Core;Retry;</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
@@ -11,7 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Common\Steeltoe.Common.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Polly" Version="$(PollyVersion)" />
     <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="$(PollyContribVersion)" />

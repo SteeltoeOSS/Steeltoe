@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Stream.Binder.Rabbit</RootNamespace>
@@ -7,7 +6,7 @@
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
-  
+
   <ItemGroup>
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -22,5 +21,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Binder.Test\Steeltoe.Stream.Binder.Test.csproj" />
   </ItemGroup>
-
 </Project>

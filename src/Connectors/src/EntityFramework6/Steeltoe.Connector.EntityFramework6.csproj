@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Connector Extensions for Entity Framework</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
+    <Description>Connector Extensions for Entity Framework</Description>
     <PackageTags>connectors;EntityFramework;aspnetcore;services</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>

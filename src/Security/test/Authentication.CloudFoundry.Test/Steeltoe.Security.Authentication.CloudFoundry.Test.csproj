@@ -10,6 +10,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\Authentication.CloudFoundry\Steeltoe.Security.Authentication.CloudFoundry.csproj" />
   </ItemGroup>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Additions to OpenTelemetry, intended for use within Steeltoe Management</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
+    <Description>Additions to OpenTelemetry, intended for use within Steeltoe Management</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
