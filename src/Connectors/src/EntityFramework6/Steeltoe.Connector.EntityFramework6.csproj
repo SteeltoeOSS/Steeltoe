@@ -3,6 +3,7 @@
     <Description>Connector Extensions for Entity Framework</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <PackageTags>connectors;EntityFramework;aspnetcore;services</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

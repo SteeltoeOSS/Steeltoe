@@ -2,6 +2,7 @@
   <PropertyGroup>
     <Description>Additions to OpenTelemetry, intended for use within Steeltoe Management</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

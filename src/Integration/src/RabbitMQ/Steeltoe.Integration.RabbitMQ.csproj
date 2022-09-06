@@ -7,6 +7,7 @@
     </Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <PackageTags>Integration, ASPNET Core, Spring, Spring Cloud, RabbitMQ</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

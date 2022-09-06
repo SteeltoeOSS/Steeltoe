@@ -4,6 +4,7 @@
     <Description>Steeltoe Messaging Base</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <PackageTags>Messaging, NET Core, Spring, Spring Cloud</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
   
   <Import Project="..\..\..\..\shared.props" />
