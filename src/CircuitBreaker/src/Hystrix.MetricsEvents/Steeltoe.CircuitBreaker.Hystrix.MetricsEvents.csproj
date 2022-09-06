@@ -9,11 +9,11 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\Hystrix\Steeltoe.CircuitBreaker.Hystrix.csproj" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\Hystrix\Steeltoe.CircuitBreaker.Hystrix.csproj" />
   </ItemGroup>
 
   <ItemGroup>

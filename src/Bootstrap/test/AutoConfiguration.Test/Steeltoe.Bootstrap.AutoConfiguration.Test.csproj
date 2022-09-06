@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-   <ProjectReference Include="..\..\..\Configuration\src\ConfigServer\Steeltoe.Extensions.Configuration.ConfigServer.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\ConfigServer\Steeltoe.Extensions.Configuration.ConfigServer.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\Kubernetes\Steeltoe.Extensions.Configuration.Kubernetes.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\RandomValue\Steeltoe.Extensions.Configuration.RandomValue.csproj" />
     <ProjectReference Include="..\..\..\Discovery\src\Client\Steeltoe.Discovery.Client.csproj" />
