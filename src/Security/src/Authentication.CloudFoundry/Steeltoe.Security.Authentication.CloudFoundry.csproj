@@ -5,9 +5,9 @@
     <PackageTags>CloudFoundry;security;oauth2;sso;openid</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
-  
+
   <Import Project="..\..\..\..\shared.props" />
-  
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\..\..\Connectors\src\Connector\Steeltoe.Connector.csproj" />

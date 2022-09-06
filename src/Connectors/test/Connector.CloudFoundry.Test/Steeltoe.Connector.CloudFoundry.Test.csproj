@@ -1,9 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
   </PropertyGroup>
-  
+
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
@@ -15,5 +14,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
   </ItemGroup>
-
 </Project>

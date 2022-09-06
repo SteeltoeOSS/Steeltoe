@@ -5,12 +5,13 @@
     <PackageTags>aspnetcore;authentication;security;x509;certificate;mtls</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
-  
+
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Certificate" Version="$(AspNetCoreVersion)" />
   </ItemGroup>

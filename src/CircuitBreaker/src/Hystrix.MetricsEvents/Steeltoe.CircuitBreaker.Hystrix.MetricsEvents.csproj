@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Steeltoe Netflix Hystrix Metrics Event Stream ASP.NET Core</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
+    <Description>Steeltoe Netflix Hystrix Metrics Event Stream ASP.NET Core</Description>
     <PackageTags>aspnetcore;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Steeltoe common expression language library</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
+    <Description>Steeltoe common expression language library</Description>
     <PackageTags>NET Core;Expression;SPEL</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
@@ -11,7 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Common\Steeltoe.Common.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="$(LightweightEmitVersion)" />
   </ItemGroup>

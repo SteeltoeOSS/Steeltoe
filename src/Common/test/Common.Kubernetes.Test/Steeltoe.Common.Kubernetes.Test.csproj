@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
   </PropertyGroup>
-  
+
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Common.Kubernetes\Steeltoe.Common.Kubernetes.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="RichardSzalay.MockHttp" Version="$(MockHttpVersion)" />
   </ItemGroup>

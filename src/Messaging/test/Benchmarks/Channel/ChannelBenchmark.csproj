@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net6.0</TargetFrameworks>
@@ -15,5 +14,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Messaging\Steeltoe.Messaging.csproj" />
   </ItemGroup>
-
 </Project>

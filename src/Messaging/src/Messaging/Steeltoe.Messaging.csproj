@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  
   <PropertyGroup>
-    <Description>Steeltoe Messaging Base</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
+    <Description>Steeltoe Messaging Base</Description>
     <PackageTags>Messaging, NET Core, Spring, Spring Cloud</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
-  
+
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
@@ -17,6 +16,4 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
   </ItemGroup>
-
-  
 </Project>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Steeltoe library for common hosting-related utilities</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
+    <Description>Steeltoe library for common hosting-related utilities</Description>
     <PackageTags>NET Core;Cloud Hosting;</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
