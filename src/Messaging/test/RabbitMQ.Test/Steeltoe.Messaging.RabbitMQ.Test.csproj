@@ -7,12 +7,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <None Update="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\src\RabbitMQ\Steeltoe.Messaging.RabbitMQ.csproj" />
   </ItemGroup>

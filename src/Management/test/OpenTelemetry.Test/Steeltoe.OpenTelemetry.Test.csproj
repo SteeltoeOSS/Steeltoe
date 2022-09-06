@@ -7,12 +7,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <Content Include="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\src\OpenTelemetry\Steeltoe.Management.OpenTelemetry.csproj" />
   </ItemGroup>
 
