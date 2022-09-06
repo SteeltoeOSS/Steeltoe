@@ -3,6 +3,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Netflix Hystrix metrics event stream for ASP.NET Core over RabbitMQ</Description>
     <PackageTags>aspnetcore;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix;turbine;cloudfoundry</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
   
   <Import Project="..\..\..\..\shared.props" />

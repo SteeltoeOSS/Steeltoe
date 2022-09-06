@@ -3,6 +3,7 @@
     <Description>Steeltoe library for handling retries</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <PackageTags>NET Core;Retry;</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

@@ -4,6 +4,7 @@
     <RootNamespace>Steeltoe.Common</RootNamespace>
     <Description>Abstractions commonly used across Steeltoe components</Description>
     <PackageTags></PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

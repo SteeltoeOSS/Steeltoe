@@ -7,6 +7,7 @@
     </Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <PackageTags>Integration, NET Core, Spring, Spring Cloud</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

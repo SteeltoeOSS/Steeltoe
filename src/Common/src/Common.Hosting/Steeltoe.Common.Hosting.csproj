@@ -3,6 +3,7 @@
     <Description>Steeltoe library for common hosting-related utilities</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <PackageTags>NET Core;Cloud Hosting;</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

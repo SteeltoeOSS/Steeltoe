@@ -3,6 +3,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Configuration provider for resolving property placeholders in configuration values</Description>
     <PackageTags>configuration;placeholders;spring boot</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

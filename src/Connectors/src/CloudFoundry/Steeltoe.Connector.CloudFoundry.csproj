@@ -3,6 +3,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Package for enabling Steeltoe Connectors on Cloud Foundry</Description>
     <PackageTags>CloudFoundry;vcap;connectors</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

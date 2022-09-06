@@ -3,6 +3,7 @@
     <Description>Steeltoe common expression language library</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <PackageTags>NET Core;Expression;SPEL</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

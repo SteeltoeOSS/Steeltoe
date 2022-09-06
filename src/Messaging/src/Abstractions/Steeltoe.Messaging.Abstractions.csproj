@@ -4,6 +4,7 @@
     <RootNamespace>Steeltoe.Messaging</RootNamespace>
     <Description>Abstractions for use with Steeltoe Messaging</Description>
     <PackageTags></PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
   
   <Import Project="..\..\..\..\shared.props" />

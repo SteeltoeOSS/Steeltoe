@@ -3,6 +3,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>ASP.NET Core middleware that enables an application to support certificate authentication.</Description>
     <PackageTags>aspnetcore;authentication;security;x509;certificate;mtls</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
   
   <Import Project="..\..\..\..\shared.props" />
