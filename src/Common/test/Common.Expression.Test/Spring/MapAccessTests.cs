@@ -73,7 +73,6 @@ public class MapAccessTests : AbstractExpressionTests
         Assert.Equal("value", expr.GetValue(map));
     }
 
-    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     [Fact]
     public void TestGetValuePerformance()
     {

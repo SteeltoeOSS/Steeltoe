@@ -6,7 +6,6 @@ using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Xunit;
 using Xunit.Abstractions;
 
-#pragma warning disable xUnit1004 // Test methods should not be skipped
 // ReSharper disable InconsistentNaming
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -28,7 +27,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output = output;
     }
 
-    //[Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     [Fact]
     public void CompilingMathematicalExpressionsWithDifferentOperandTypes()
     {
@@ -162,7 +160,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
     }
 
-    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     [Fact]
     public void InlineLists()
     {
@@ -231,7 +228,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
     }
 
-    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     [Fact]
     public void InlineNestedLists()
     {
@@ -300,7 +296,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
     }
 
-    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     [Fact]
     public void StringConcatenation()
     {
@@ -370,7 +365,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
     }
 
-    //[Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     [Fact]
     public void ComplexExpressionPerformance()
     {
@@ -443,7 +437,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.True(bc);
     }
 
-    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     [Fact]
     public void CompilingMethodReference()
     {
@@ -512,7 +505,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         }
     }
 
-    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     [Fact]
     public void CompilingPropertyReferenceField()
     {
@@ -581,7 +573,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         }
     }
 
-    //[Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     [Fact]
     public void CompilingPropertyReferenceNestedField()
     {
@@ -650,7 +641,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         }
     }
 
-    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     [Fact]
     public void CompilingPropertyReferenceNestedMixedFieldGetter()
     {
@@ -719,7 +709,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         }
     }
 
-    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     [Fact]
     public void CompilingNestedMixedFieldPropertyReferenceMethodReference()
     {
@@ -788,7 +777,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         }
     }
 
-    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     [Fact]
     public void CompilingPropertyReferenceGetter()
     {
@@ -856,8 +844,6 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
             throw new Exception("Compiled version is slower than interpreted!");
         }
     }
-
-#pragma warning restore xUnit1004 // Test methods should not be skipped
 
     private void ReportPerformance(string title, long interpretedTotalTicks, long compiledTotalTicks)
     {

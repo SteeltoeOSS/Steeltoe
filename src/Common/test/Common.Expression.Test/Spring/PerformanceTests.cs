@@ -21,7 +21,6 @@ public class PerformanceTests
         _output = output;
     }
 
-    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     [Fact]
     public void TestPerformanceOfPropertyAccess()
     {
@@ -79,7 +78,6 @@ public class PerformanceTests
         }
     }
 
-    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
     [Fact]
     public void TestPerformanceOfMethodAccess()
     {
