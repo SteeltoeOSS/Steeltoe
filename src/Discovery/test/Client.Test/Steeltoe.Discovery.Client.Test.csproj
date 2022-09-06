@@ -6,10 +6,7 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <None Update="instance.crt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="instance.key">
+    <None Update="instance.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="xunit.runner.json">

@@ -13,8 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\RabbitMQ\Steeltoe.Integration.RabbitMQ.csproj" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\RabbitMQ\Steeltoe.Integration.RabbitMQ.csproj" />
   </ItemGroup>
 </Project>

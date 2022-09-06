@@ -3,10 +3,6 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Stream</RootNamespace>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
 
@@ -17,9 +13,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Moq" Version="$(MoqVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\src\Stream\Steeltoe.Stream.csproj" />
-    <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <ProjectReference Include="..\TestBinder\Steeltoe.Stream.TestBinder.csproj" />
   </ItemGroup>
 </Project>

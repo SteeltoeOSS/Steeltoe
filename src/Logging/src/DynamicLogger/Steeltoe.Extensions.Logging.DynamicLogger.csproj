@@ -8,7 +8,7 @@
 
   <Import Project="..\..\..\..\shared.props" />
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

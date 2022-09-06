@@ -10,6 +10,10 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Diagnostics.NETCore.Client" Version="$(DiagnosticsNetCoreClientVersion)" />
     <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="$(DiagnosticsTracingVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="$(ExtensionsVersion)" />
@@ -20,10 +24,6 @@
     <PackageReference Include="Microsoft.DiaSymReader.PortablePdb" Version="$(SymReaderPortableVersion)" />
     <PackageReference Include="System.IO.FileSystem.DriveInfo" Version="$(DriveInfoVersion)" />
     <PackageReference Include="System.Net.Http.Json" Version="$(SystemVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
