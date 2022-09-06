@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);SA0001</NoWarn>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <Import Condition="$(MSBuildProjectName.EndsWith('.Test'))" Project="$(MSBuildThisFileDirectory)\shared-test.props" />
+</Project>
