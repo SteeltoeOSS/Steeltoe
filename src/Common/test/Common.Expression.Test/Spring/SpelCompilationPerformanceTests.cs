@@ -28,7 +28,8 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output = output;
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    //[Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void CompilingMathematicalExpressionsWithDifferentOperandTypes()
     {
         var nh = new NumberHolder();
@@ -161,7 +162,8 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void InlineLists()
     {
         _expression = Parser.ParseExpression("{'abcde','ijklm'}[0].Substring({1,3,4}[0],{1,3,4}[1])");
@@ -229,7 +231,8 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void InlineNestedLists()
     {
         _expression = Parser.ParseExpression("{'abcde',{'ijklm','nopqr'}}[1][0].Substring({1,3,4}[0],{1,3,4}[1])");
@@ -297,7 +300,8 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void StringConcatenation()
     {
         var g = new Greeter();
@@ -366,7 +370,8 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    //[Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void ComplexExpressionPerformance()
     {
         var payload = new Payload();
@@ -438,7 +443,8 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.True(bc);
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void CompilingMethodReference()
     {
         long interpretedTotal = 0;
@@ -506,7 +512,8 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         }
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void CompilingPropertyReferenceField()
     {
         long interpretedTotal = 0;
@@ -574,7 +581,8 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         }
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    //[Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void CompilingPropertyReferenceNestedField()
     {
         long interpretedTotal = 0;
@@ -642,7 +650,8 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         }
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void CompilingPropertyReferenceNestedMixedFieldGetter()
     {
         long interpretedTotal = 0;
@@ -710,7 +719,8 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         }
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void CompilingNestedMixedFieldPropertyReferenceMethodReference()
     {
         long interpretedTotal = 0;
@@ -778,7 +788,8 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         }
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void CompilingPropertyReferenceGetter()
     {
         long interpretedTotal = 0;

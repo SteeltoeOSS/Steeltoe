@@ -76,12 +76,6 @@ public class ListTests : AbstractExpressionTests
         Evaluate("{1,2,3,4,5,6,7,8,9,10}.?[#IsEven(#this) == 'y']", "[2,4,6,8,10]", typeof(List<object>));
     }
 
-    [Fact(Skip = "Need non-generic hashset")]
-    public void TestSetConstruction01()
-    {
-        Evaluate("new java.util.HashSet().addAll({'a','b','c'})", "true", typeof(bool));
-    }
-
     [Fact]
     public void TestRelOperatorsBetween01()
     {

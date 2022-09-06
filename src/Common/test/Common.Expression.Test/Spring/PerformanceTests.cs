@@ -21,7 +21,8 @@ public class PerformanceTests
         _output = output;
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void TestPerformanceOfPropertyAccess()
     {
         long startTime = 0;
@@ -78,7 +79,8 @@ public class PerformanceTests
         }
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void TestPerformanceOfMethodAccess()
     {
         long startTime = 0;

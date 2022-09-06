@@ -12,11 +12,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class MapAccessTests : AbstractExpressionTests
 {
-    [Fact(Skip = "No Get() method on dictionary")]
-    public void TestSimpleMapAccess01()
-    {
-        Evaluate("TestDictionary.get('monday')", "montag", typeof(string));
-    }
 
     [Fact]
     public void TestMapAccessThroughIndexer()
@@ -78,7 +73,8 @@ public class MapAccessTests : AbstractExpressionTests
         Assert.Equal("value", expr.GetValue(map));
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    // [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void TestGetValuePerformance()
     {
         var map = new Dictionary<string, string>
