@@ -15,23 +15,34 @@ jobs:
   variables:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
-    PackageVersion: $[format('4.0.0-{0}', variables['Build.BuildId'])]
-    BUILD_PACKAGES: true
   steps:
-  - pwsh: |
-      if ($env:PackageVersionOverride) {
-          $env:PackageVersion = $env:PackageVersionOverride
-      }
-      Write-Host "##vso[build.updatebuildnumber]$env:PackageVersion"
-      Write-Host "##vso[task.setvariable variable=PackageVersion;]$env:PackageVersion"
-      $prefix = $env:PackageVersion.Split('-')[0]
-      $suffix = $env:PackageVersion.Split('-')[1]
-      Write-Host "##vso[task.setvariable variable=VersionPrefix;]$prefix"
-      Write-Host "##vso[task.setvariable variable=VersionSuffix;]$suffix"
-    displayName: Set build variables
+  - task: DotNetCoreCLI@2
+    displayName: Install Nerdbank.GitVersioning tool
+    inputs:
+      command: custom
+      custom: tool
+      arguments: install --tool-path . nbgv
+  - task: PowerShell@2
+    displayName: Set PackageVersion variable
     env:
       PackageVersion: $(PackageVersion)
       PackageVersionOverride: $(PackageVersionOverride)
+    inputs:
+      targetType: 'inline'
+      script: |
+        .\nbgv cloud
+
+        if ($env:PackageVersionOverride) {
+            $env:PackageVersion = $env:PackageVersionOverride
+        }
+        else {
+          $version = .\nbgv.exe get-version -f json | ConvertFrom-Json
+          $env:PackageVersion = $version.NuGetPackageVersion
+        }
+
+        Write-Host "Using package version: $env:PackageVersion"
+
+        Write-Host "##vso[task.setvariable variable=PackageVersion;]$env:PackageVersion"
   - task: UseDotNet@2
     displayName: Install .NET 6
     inputs:
@@ -49,7 +60,7 @@ jobs:
     inputs:
       command: build
       projects: src/Steeltoe.All.sln
-      arguments: --no-restore -c $(buildConfiguration) -v n /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)
+      arguments: --no-restore -c $(buildConfiguration) -v n
   - task: DotNetCoreCLI@2
     displayName: dotnet pack
     inputs:
