@@ -24,7 +24,6 @@ public class RabbitMQHostWebApplicationTest
         MockRabbitHostedService hostedService;
 
         WebApplicationBuilder builder = RabbitMQHost.CreateWebApplicationBuilder(null);
-        ;
         builder.Services.AddSingleton<IHostedService, MockRabbitHostedService>();
 
         using (WebApplication webApp = builder.Build())
@@ -116,8 +115,8 @@ public class RabbitMQHostWebApplicationTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", TestConfiguration.CloudFoundryRabbitMqConfiguration);
         var builder = RabbitMQHost.CreateWebApplicationBuilder(null, config => config.AddCloudFoundry());
-        //var builder = WebApplication.CreateBuilder();
-        //builder.Configuration.AddCloudFoundry();
+        // var builder = WebApplication.CreateBuilder();
+        // builder.Configuration.AddCloudFoundry();
         using WebApplication webApp = builder.Build();
 
         webApp.Start();
