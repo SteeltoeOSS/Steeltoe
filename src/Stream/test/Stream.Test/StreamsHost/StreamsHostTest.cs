@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -52,6 +53,51 @@ public class StreamsHostTest
         Assert.Equal("Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306", rabbitOptions.Addresses);
     }
 
+    [Fact]
+    public void WebApplicationHostCanBeStarted()
+    {
+        FakeHostedService service;
+
+        var builder = StreamHost.CreateWebApplicationBuilder<SampleSink>();
+        builder.Services.AddSingleton<IHostedService, FakeHostedService>();
+        using (WebApplication webApp = builder.Build())
+        {
+            webApp.Start();
+            service = webApp.Services.GetServices<IHostedService>().OfType<FakeHostedService>().First();
+            Assert.NotNull(service);
+            Assert.Equal(1, service.StartCount);
+            Assert.Equal(0, service.StopCount);
+            Assert.Equal(0, service.DisposeCount);
+        }
+
+        Assert.Equal(1, service.StartCount);
+        Assert.Equal(0, service.StopCount);
+        Assert.Equal(1, service.DisposeCount);
+    }
+
+    [Fact]
+    [Trait("Category", "SkipOnMacOS")]
+    [Trait("Category", "SkipOnLinux")]
+    public void WebApplicationHostConfiguresRabbitOptions()
+    {
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration());
+        var builder = StreamHost.CreateWebApplicationBuilder<SampleSink>(null, configure => configure.AddCloudFoundry());
+
+        using WebApplication webApp = builder.Build();
+
+        webApp.Start();
+
+        var rabbitOptionsMonitor = webApp.Services.GetService<IOptionsMonitor<RabbitOptions>>();
+        Assert.NotNull(rabbitOptionsMonitor);
+        RabbitOptions rabbitOptions = rabbitOptionsMonitor.CurrentValue;
+
+        Assert.Equal("Dd6O1BPXUHdrmzbP", rabbitOptions.Username);
+        Assert.Equal("7E1LxXnlH2hhlPVt", rabbitOptions.Password);
+        Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", rabbitOptions.VirtualHost);
+        Assert.Equal("Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306", rabbitOptions.Addresses);
+    }
+
     private static string GetCloudFoundryRabbitMqConfiguration()
     {
         return @"
@@ -72,4 +118,5 @@ public class StreamsHostTest
             }]
         }";
     }
+
 }

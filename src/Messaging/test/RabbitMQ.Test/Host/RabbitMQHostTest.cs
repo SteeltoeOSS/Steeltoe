@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Connector.RabbitMQ;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Xunit;
 using RC = RabbitMQ.Client;
@@ -96,5 +97,23 @@ public class RabbitMQHostTest
         var connectionFactory = host.Services.GetRequiredService<RC.IConnectionFactory>();
 
         Assert.NotNull(connectionFactory);
+    }
+
+    [Fact]
+    [Trait("Category", "SkipOnMacOS")]
+    [Trait("Category", "SkipOnLinux")]
+    public void HostConfiguresRabbitOptions()
+    {
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", TestConfiguration.CloudFoundryRabbitMqConfiguration);
+        using IHost host = RabbitMQHost.CreateDefaultBuilder().ConfigureAppConfiguration(c => c.AddCloudFoundry()).Start();
+        var rabbitOptionsMonitor = host.Services.GetService<IOptionsMonitor<RabbitOptions>>();
+        Assert.NotNull(rabbitOptionsMonitor);
+        RabbitOptions rabbitOptions = rabbitOptionsMonitor.CurrentValue;
+
+        Assert.Equal("Dd6O1BPXUHdrmzbP", rabbitOptions.Username);
+        Assert.Equal("7E1LxXnlH2hhlPVt", rabbitOptions.Password);
+        Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", rabbitOptions.VirtualHost);
+        Assert.Equal("Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306", rabbitOptions.Addresses);
     }
 }

@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Stream.Binding;
+using Steeltoe.Stream.Extensions;
 
 namespace Steeltoe.Stream.StreamHost;
 
@@ -30,6 +33,14 @@ public sealed class StreamHost : IHost
         return new StreamsHostBuilder<T>(Host.CreateDefaultBuilder(args));
     }
 
+    public static WebApplicationBuilder CreateWebApplicationBuilder<T>(string[] args = null, Action<IConfigurationBuilder> configure = null)
+    {
+        var builder = WebApplication.CreateBuilder();
+        configure?.Invoke(builder.Configuration);
+        builder.Services.AddStreamServices<T>(builder.Configuration);
+        return builder;
+    }
+
     public void Dispose()
     {
         _host?.Dispose();
@@ -52,4 +63,6 @@ public sealed class StreamHost : IHost
         // Stop that thing
         return _host.StopAsync(cancellationToken);
     }
+
+    
 }

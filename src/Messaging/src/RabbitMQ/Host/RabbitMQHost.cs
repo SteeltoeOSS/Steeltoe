@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Messaging.RabbitMQ.Host;
@@ -18,45 +19,23 @@ public sealed class RabbitMQHost : IHost
         _host = host;
     }
 
-    public static IHostBuilder CreateDefaultBuilder()
-    {
-        return new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder());
-    }
+    public static IHostBuilder CreateDefaultBuilder() => new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder());
 
-    public static IHostBuilder CreateDefaultBuilder(string[] args)
-    {
-        return new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args));
-    }
+    public static IHostBuilder CreateDefaultBuilder(string[] args) => new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args));
 
-    public static WebApplicationBuilder CreateWebApplicationBuilder()
-    {
-        return GetWebApplicationBuilder();
-    }
+    public static WebApplicationBuilder CreateWebApplicationBuilder(string[] args = null, Action<IConfigurationBuilder> configure = null) => GetWebApplicationBuilder(args, configure);
 
-    public static WebApplicationBuilder CreateWebApplicationBuilder(string[] args)
-    {
-        return GetWebApplicationBuilder(args);
-    }
-
-    private static WebApplicationBuilder GetWebApplicationBuilder(string[] args = null)
+    private static WebApplicationBuilder GetWebApplicationBuilder(string[] args = null, Action<IConfigurationBuilder> configure = null)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+        configure?.Invoke(builder.Configuration);
         builder.Services.ConfigureRabbitServices(builder.Configuration);
         return builder;
     }
 
-    public void Dispose()
-    {
-        _host?.Dispose();
-    }
+    public void Dispose() => _host.Dispose();
 
-    public Task StartAsync(CancellationToken cancellationToken = default)
-    {
-        return _host.StartAsync(cancellationToken);
-    }
-
-    public Task StopAsync(CancellationToken cancellationToken = default)
-    {
-        return _host.StopAsync(cancellationToken);
-    }
+    public Task StartAsync(CancellationToken cancellationToken = default) => _host.StartAsync(cancellationToken);
+   
+    public Task StopAsync(CancellationToken cancellationToken = default) => _host.StopAsync(cancellationToken);
 }
