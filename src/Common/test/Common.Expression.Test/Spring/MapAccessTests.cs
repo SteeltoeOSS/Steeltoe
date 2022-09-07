@@ -12,7 +12,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class MapAccessTests : AbstractExpressionTests
 {
-
     [Fact]
     public void TestMapAccessThroughIndexer()
     {
