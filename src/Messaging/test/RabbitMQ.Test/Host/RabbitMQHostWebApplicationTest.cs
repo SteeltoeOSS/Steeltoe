@@ -6,11 +6,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Connector.RabbitMQ;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
-using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Xunit;
 using RC = RabbitMQ.Client;
 
@@ -23,7 +20,7 @@ public class RabbitMQHostWebApplicationTest
     {
         MockRabbitHostedService hostedService;
 
-        WebApplicationBuilder builder = RabbitMQHost.CreateWebApplicationBuilder(null);
+        WebApplicationBuilder builder = RabbitMQHost.CreateWebApplicationBuilder();
         ;
         builder.Services.AddSingleton<IHostedService, MockRabbitHostedService>();
 
@@ -57,31 +54,6 @@ public class RabbitMQHostWebApplicationTest
     }
 
     [Fact]
-    public void WebAppHostShouldAddRabbitOptionsConfiguration()
-    {
-        WebApplicationBuilder builder = RabbitMQHost.CreateWebApplicationBuilder();
-
-        var appSettings = new Dictionary<string, string>
-        {
-            [$"{RabbitOptions.Prefix}:host"] = "ThisIsATest",
-            [$"{RabbitOptions.Prefix}:port"] = "1234",
-            [$"{RabbitOptions.Prefix}:username"] = "TestUser",
-            [$"{RabbitOptions.Prefix}:password"] = "TestPassword"
-        };
-
-        builder.Configuration.AddInMemoryCollection(appSettings);
-
-        using WebApplication webApp = builder.Build();
-        RabbitOptions rabbitOptions = webApp.Services.GetService<IOptions<RabbitOptions>>()?.Value;
-
-        Assert.NotNull(rabbitOptions);
-        Assert.Equal("ThisIsATest", rabbitOptions.Host);
-        Assert.Equal(1234, rabbitOptions.Port);
-        Assert.Equal("TestUser", rabbitOptions.Username);
-        Assert.Equal("TestPassword", rabbitOptions.Password);
-    }
-
-    [Fact]
     public void WebAppHostShouldSendCommandLineArgs()
     {
         WebApplicationBuilder builder = RabbitMQHost.CreateWebApplicationBuilder(new[]
@@ -107,29 +79,4 @@ public class RabbitMQHostWebApplicationTest
 
         Assert.NotNull(connectionFactory);
     }
-
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")]
-    [Trait("Category", "SkipOnLinux")]
-    public void WebApplicationHostConfiguresRabbitOptions()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", TestConfiguration.CloudFoundryRabbitMqConfiguration);
-        var builder = RabbitMQHost.CreateWebApplicationBuilder(null, config => config.AddCloudFoundry());
-        //var builder = WebApplication.CreateBuilder();
-        //builder.Configuration.AddCloudFoundry();
-        using WebApplication webApp = builder.Build();
-
-        webApp.Start();
-
-        var rabbitOptionsMonitor = webApp.Services.GetService<IOptionsMonitor<RabbitOptions>>();
-        Assert.NotNull(rabbitOptionsMonitor);
-        RabbitOptions rabbitOptions = rabbitOptionsMonitor.CurrentValue;
-
-        Assert.Equal("Dd6O1BPXUHdrmzbP", rabbitOptions.Username);
-        Assert.Equal("7E1LxXnlH2hhlPVt", rabbitOptions.Password);
-        Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", rabbitOptions.VirtualHost);
-        Assert.Equal("Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306", rabbitOptions.Addresses);
-    }
-
 }

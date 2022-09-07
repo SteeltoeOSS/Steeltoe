@@ -58,8 +58,9 @@ public class StreamsHostTest
     {
         FakeHostedService service;
 
-        var builder = StreamHost.CreateWebApplicationBuilder<SampleSink>();
+        WebApplicationBuilder builder = StreamHost.CreateWebApplicationBuilder<SampleSink>();
         builder.Services.AddSingleton<IHostedService, FakeHostedService>();
+
         using (WebApplication webApp = builder.Build())
         {
             webApp.Start();
@@ -82,7 +83,7 @@ public class StreamsHostTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration());
-        var builder = StreamHost.CreateWebApplicationBuilder<SampleSink>(null, configure => configure.AddCloudFoundry());
+        WebApplicationBuilder builder = StreamHost.CreateWebApplicationBuilder<SampleSink>(null, configure => configure.AddCloudFoundry());
 
         using WebApplication webApp = builder.Build();
 
@@ -118,5 +119,4 @@ public class StreamsHostTest
             }]
         }";
     }
-
 }

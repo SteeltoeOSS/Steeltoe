@@ -19,11 +19,20 @@ public sealed class RabbitMQHost : IHost
         _host = host;
     }
 
-    public static IHostBuilder CreateDefaultBuilder() => new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder());
+    public static IHostBuilder CreateDefaultBuilder()
+    {
+        return new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder());
+    }
 
-    public static IHostBuilder CreateDefaultBuilder(string[] args) => new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args));
+    public static IHostBuilder CreateDefaultBuilder(string[] args)
+    {
+        return new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args));
+    }
 
-    public static WebApplicationBuilder CreateWebApplicationBuilder(string[] args = null, Action<IConfigurationBuilder> configure = null) => GetWebApplicationBuilder(args, configure);
+    public static WebApplicationBuilder CreateWebApplicationBuilder(string[] args = null, Action<IConfigurationBuilder> configure = null)
+    {
+        return GetWebApplicationBuilder(args, configure);
+    }
 
     private static WebApplicationBuilder GetWebApplicationBuilder(string[] args = null, Action<IConfigurationBuilder> configure = null)
     {
@@ -33,9 +42,18 @@ public sealed class RabbitMQHost : IHost
         return builder;
     }
 
-    public void Dispose() => _host.Dispose();
+    public void Dispose()
+    {
+        _host.Dispose();
+    }
 
-    public Task StartAsync(CancellationToken cancellationToken = default) => _host.StartAsync(cancellationToken);
-   
-    public Task StopAsync(CancellationToken cancellationToken = default) => _host.StopAsync(cancellationToken);
+    public Task StartAsync(CancellationToken cancellationToken = default)
+    {
+        return _host.StartAsync(cancellationToken);
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken = default)
+    {
+        return _host.StopAsync(cancellationToken);
+    }
 }

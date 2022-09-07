@@ -35,7 +35,7 @@ public sealed class StreamHost : IHost
 
     public static WebApplicationBuilder CreateWebApplicationBuilder<T>(string[] args = null, Action<IConfigurationBuilder> configure = null)
     {
-        var builder = WebApplication.CreateBuilder();
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
         configure?.Invoke(builder.Configuration);
         builder.Services.AddStreamServices<T>(builder.Configuration);
         return builder;
@@ -63,6 +63,4 @@ public sealed class StreamHost : IHost
         // Stop that thing
         return _host.StopAsync(cancellationToken);
     }
-
-    
 }
