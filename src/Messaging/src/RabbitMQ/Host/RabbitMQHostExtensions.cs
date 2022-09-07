@@ -15,7 +15,7 @@ public static class RabbitMQHostExtensions
 {
     public static void ConfigureRabbitServices(this IServiceCollection services, IConfiguration configuration)
     {
-        //IConfigurationSection rabbitConfigSection = configuration.GetSection(RabbitOptions.Prefix);
+        // IConfigurationSection rabbitConfigSection = configuration.GetSection(RabbitOptions.Prefix);
         //services.Configure<RabbitOptions>(rabbitConfigSection);
         services.AddOptions();
         services.SafeAddRabbitMQConnection(configuration);
