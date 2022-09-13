@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -33,7 +34,7 @@ public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOpt
             return;
         }
 
-        options.Certificate = new X509Certificate2(certPath, string.Empty, X509KeyStorageFlags.EphemeralKeySet);
+        options.Certificate = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? new X509Certificate2(certPath) : new X509Certificate2(certPath, string.Empty, X509KeyStorageFlags.EphemeralKeySet);
     }
 
     public void Configure(CertificateOptions options)

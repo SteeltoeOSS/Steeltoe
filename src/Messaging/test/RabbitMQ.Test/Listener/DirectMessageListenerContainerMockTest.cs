@@ -65,7 +65,6 @@ public class DirectMessageListenerContainerMockTest
     }
 
     [Fact]
-    [Trait("Category", "SkipOnMacOS")] // TODO: Figure out why
     public async Task TestDeferredAcks()
     {
         var connectionFactory = new Mock<IConnectionFactory>();

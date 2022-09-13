@@ -169,8 +169,7 @@ public class HostBuilderExtensionsTest
     }
 
     [Fact]
-    [Trait("Category", "SkipOnMacOS")] // for .NET 5+, this test produces an admin prompt on OSX
-    public async Task UseCloudHosting_WebApplication_UsesLocalPortSettings()
+    public void UseCloudHosting_WebApplication_UsesLocalPortSettings()
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
         Environment.SetEnvironmentVariable("PORT", null);
@@ -178,11 +177,9 @@ public class HostBuilderExtensionsTest
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
 
         hostBuilder.UseCloudHosting(3000, 3001);
-        WebApplication host = hostBuilder.Build();
-        await host.StartAsync();
-        var addressFeature = ((IApplicationBuilder)host).ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Contains("http://[::]:3000", addressFeature.Addresses);
-        Assert.Contains("https://[::]:3001", addressFeature.Addresses);
+        var settings = hostBuilder.WebHost.GetSetting(WebHostDefaults.ServerUrlsKey);
+        Assert.Contains("http://*:3000", settings);
+        Assert.Contains("https://*:3001", settings);
     }
 
     [Fact]
