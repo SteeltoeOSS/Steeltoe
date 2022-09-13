@@ -21,7 +21,6 @@ public class RabbitMQHostWebApplicationTest
         MockRabbitHostedService hostedService;
 
         WebApplicationBuilder builder = RabbitMQHost.CreateWebApplicationBuilder();
-        ;
         builder.Services.AddSingleton<IHostedService, MockRabbitHostedService>();
 
         using (WebApplication webApp = builder.Build())
