@@ -34,7 +34,9 @@ public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOpt
             return;
         }
 
-        options.Certificate = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? new X509Certificate2(certPath) : new X509Certificate2(certPath, string.Empty, X509KeyStorageFlags.EphemeralKeySet);
+        options.Certificate = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+            ? new X509Certificate2(certPath)
+            : new X509Certificate2(certPath, string.Empty, X509KeyStorageFlags.EphemeralKeySet);
     }
 
     public void Configure(CertificateOptions options)

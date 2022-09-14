@@ -177,7 +177,7 @@ public class HostBuilderExtensionsTest
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
 
         hostBuilder.UseCloudHosting(3000, 3001);
-        var settings = hostBuilder.WebHost.GetSetting(WebHostDefaults.ServerUrlsKey);
+        string settings = hostBuilder.WebHost.GetSetting(WebHostDefaults.ServerUrlsKey);
         Assert.Contains("http://*:3000", settings);
         Assert.Contains("https://*:3001", settings);
     }

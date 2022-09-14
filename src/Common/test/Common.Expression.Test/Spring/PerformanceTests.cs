@@ -7,7 +7,6 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
-#pragma warning disable xUnit1004 // Test methods should not be skipped
 public class PerformanceTests
 {
     private const int Iterations = 10000;
