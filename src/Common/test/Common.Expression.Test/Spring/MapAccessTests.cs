@@ -94,7 +94,7 @@ public class MapAccessTests : AbstractExpressionTests
         }
 
         s.Stop();
-        Assert.True(s.ElapsedMilliseconds < 200L);
+        Assert.True(s.ElapsedMilliseconds < 500L);
     }
 
     public class TestBean
