@@ -7,6 +7,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
+
 public class PerformanceTests
 {
     private const int Iterations = 10000;
