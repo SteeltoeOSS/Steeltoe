@@ -1073,7 +1073,6 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         }
     }
 
-    //[Fact(Skip = "Requires expression language")]
     [Fact]
     public void TestRouting()
     {
