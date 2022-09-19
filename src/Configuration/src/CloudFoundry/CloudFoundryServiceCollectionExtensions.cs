@@ -15,7 +15,7 @@ public static class CloudFoundryServiceCollectionExtensions
 {
     /// <summary>
     /// Binds configuration data into <see cref="CloudFoundryApplicationOptions" /> and <see cref="CloudFoundryServicesOptions" /> and adds both to the
-    /// provided service container as configured TOptions.  You can then inject both options using the normal Options pattern.
+    /// provided service container. You can then inject both options using the normal Options pattern.
     /// </summary>
     /// <param name="services">
     /// The service container.

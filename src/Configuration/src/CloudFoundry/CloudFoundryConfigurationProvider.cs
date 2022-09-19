@@ -25,7 +25,7 @@ public sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
         Process();
     }
 
-    internal static Stream GetMemoryStream(string json)
+    internal static Stream GetStream(string json)
     {
         var stream = new MemoryStream();
 
@@ -67,7 +67,7 @@ public sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
 
         if (!string.IsNullOrEmpty(appJson))
         {
-            using Stream stream = GetMemoryStream(appJson);
+            using Stream stream = GetStream(appJson);
             var builder = new ConfigurationBuilder();
             builder.Add(new JsonStreamConfigurationSource(stream));
             IConfigurationRoot applicationData = builder.Build();
@@ -83,7 +83,7 @@ public sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
 
         if (!string.IsNullOrEmpty(appServicesJson))
         {
-            using Stream stream = GetMemoryStream(appServicesJson);
+            using Stream stream = GetStream(appServicesJson);
             var builder = new ConfigurationBuilder();
             builder.Add(new JsonStreamConfigurationSource(stream));
             IConfigurationRoot servicesData = builder.Build();

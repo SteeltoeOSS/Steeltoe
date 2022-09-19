@@ -79,7 +79,7 @@ public sealed class CloudFoundryApplicationOptionsTest
                 }
             }";
 
-        using Stream stream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        using Stream stream = CloudFoundryConfigurationProvider.GetStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(stream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot configurationRoot = builder.Build();

@@ -37,7 +37,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
             if (exception.Response.StatusCode == HttpStatusCode.Forbidden)
             {
                 Logger.LogCritical(exception,
-                    "Failed to retrieve configuration map '{configMapName}' in namespace '{configMapNamespace}'. Confirm that your service account has the necessary permissions",
+                    "Failed to retrieve ConfigMap '{configMapName}' in namespace '{configMapNamespace}'. Confirm that your service account has the necessary permissions",
                     Settings.Name, Settings.Namespace);
             }
             else if (exception.Response.StatusCode == HttpStatusCode.NotFound)

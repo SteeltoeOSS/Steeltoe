@@ -17,12 +17,12 @@ public class ReloadSettings
     public int Period { get; set; } = 15;
 
     /// <summary>
-    /// Gets or sets a value indicating whether configuration maps should be reloaded if changed.
+    /// Gets or sets a value indicating whether ConfigMaps should be reloaded if changed.
     /// </summary>
     public bool ConfigMaps { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether secrets should be reloaded if changed.
+    /// Gets or sets a value indicating whether Secrets should be reloaded if changed.
     /// </summary>
     public bool Secrets { get; set; }
 }

@@ -133,9 +133,9 @@ public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
         return $"{prefix}:{key}";
     }
 
-    public string GetApplicationNameInContext(SteeltoeComponent steeltoeComponent, string additionalSearchPath = null)
+    public string GetApplicationNameInContext(SteeltoeComponent component, string additionalSearchPath = null)
     {
-        return steeltoeComponent switch
+        return component switch
         {
             SteeltoeComponent.Configuration => ConfigurationValuesHelper.GetPreferredSetting(Configuration, DefaultAppName, additionalSearchPath,
                 ConfigServerNameKey, PlatformNameKey, AppNameKey),

@@ -80,7 +80,7 @@ public sealed class JsonStreamConfigurationProviderTest
                     }]
                 }";
 
-        using Stream stream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
+        using Stream stream = CloudFoundryConfigurationProvider.GetStream(environment);
         var provider = new JsonStreamConfigurationProvider(new JsonStreamConfigurationSource(stream));
         provider.Load();
 

@@ -25,10 +25,10 @@ public sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigurat
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SpringBootEnvironmentVariableProvider" /> class that reads from the specified JSON directly.
+    /// Initializes a new instance of the <see cref="SpringBootEnvironmentVariableProvider" /> class from the specified JSON.
     /// </summary>
     /// <param name="springApplicationJson">
-    /// The JSON string to parse.
+    /// The Spring Application JSON.
     /// </param>
     public SpringBootEnvironmentVariableProvider(string springApplicationJson)
         : base(new JsonStreamConfigurationSource())
@@ -45,7 +45,7 @@ public sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigurat
 
         if (!string.IsNullOrEmpty(json))
         {
-            Source.Stream = GetMemoryStream(json);
+            Source.Stream = GetStream(json);
             base.Load();
             var keys = new List<string>(Data.Keys);
 
@@ -62,7 +62,7 @@ public sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigurat
         }
     }
 
-    private static MemoryStream GetMemoryStream(string json)
+    private static Stream GetStream(string json)
     {
         var stream = new MemoryStream();
 

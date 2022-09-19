@@ -98,7 +98,7 @@ public sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// The configuration key.
     /// </param>
     /// <param name="value">
-    /// Contains the resolved configuration value, if this method returned <c>true</c>.
+    /// When this method returns, contains the resolved configuration value, if a value for the specified key was found.
     /// </param>
     /// <returns>
     /// <c>true</c> if a value for the specified key was found, otherwise <c>false</c>.

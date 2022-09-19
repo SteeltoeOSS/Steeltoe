@@ -29,12 +29,12 @@ public sealed class KubernetesApplicationOptions : ApplicationInstanceInfo
     public KubernetesConfiguration Config { get; set; }
 
     /// <summary>
-    /// Gets or sets configuration properties of secrets.
+    /// Gets or sets configuration properties of Secrets.
     /// </summary>
     public WatchableResource Secrets { get; set; }
 
     /// <summary>
-    /// Gets or sets the character used to separate the app and environment names when used for retrieving configuration maps or secrets.
+    /// Gets or sets the character used to separate the app and environment names when used for retrieving ConfigMaps or Secrets.
     /// </summary>
     public string NameEnvironmentSeparator { get; set; } = ".";
 

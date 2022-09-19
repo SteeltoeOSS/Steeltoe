@@ -38,7 +38,6 @@ public sealed class KubernetesHostedService : IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        // Do nothing
         return Task.CompletedTask;
     }
 }

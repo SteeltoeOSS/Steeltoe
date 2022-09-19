@@ -15,7 +15,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes;
 public static class KubernetesHostBuilderExtensions
 {
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="hostBuilder">
     /// The host builder.
@@ -26,13 +26,13 @@ public static class KubernetesHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="hostBuilder">
     /// The host builder.
     /// </param>
     /// <param name="configureClient">
-    /// Enables to customize the <see cref="KubernetesClientConfiguration" />.
+    /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
     public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder hostBuilder, Action<KubernetesClientConfiguration> configureClient)
     {
@@ -40,7 +40,7 @@ public static class KubernetesHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="hostBuilder">
     /// The host builder.
@@ -54,13 +54,13 @@ public static class KubernetesHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="hostBuilder">
     /// The host builder.
     /// </param>
     /// <param name="configureClient">
-    /// Enables to customize the <see cref="KubernetesClientConfiguration" />.
+    /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
@@ -78,7 +78,7 @@ public static class KubernetesHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="hostBuilder">
     /// The host builder.
@@ -89,13 +89,13 @@ public static class KubernetesHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="hostBuilder">
     /// The host builder.
     /// </param>
     /// <param name="configureClient">
-    /// Enables to customize the <see cref="KubernetesClientConfiguration" />.
+    /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
     public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder hostBuilder, Action<KubernetesClientConfiguration> configureClient)
     {
@@ -103,7 +103,7 @@ public static class KubernetesHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="hostBuilder">
     /// The host builder.
@@ -117,13 +117,13 @@ public static class KubernetesHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="hostBuilder">
     /// The host builder.
     /// </param>
     /// <param name="configureClient">
-    /// Enables to customize the <see cref="KubernetesClientConfiguration" />.
+    /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
@@ -140,10 +140,8 @@ public static class KubernetesHostBuilderExtensions
         return hostBuilder;
     }
 
-    // ***
-
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="applicationBuilder">
     /// The web application builder.
@@ -154,13 +152,13 @@ public static class KubernetesHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="applicationBuilder">
     /// The web application builder.
     /// </param>
     /// <param name="configureClient">
-    /// Enables to customize the <see cref="KubernetesClientConfiguration" />.
+    /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
     public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder applicationBuilder,
         Action<KubernetesClientConfiguration> configureClient)
@@ -169,7 +167,7 @@ public static class KubernetesHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="applicationBuilder">
     /// The web application builder.
@@ -183,13 +181,13 @@ public static class KubernetesHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="applicationBuilder">
     /// The web application builder.
     /// </param>
     /// <param name="configureClient">
-    /// Enables to customize the <see cref="KubernetesClientConfiguration" />.
+    /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.

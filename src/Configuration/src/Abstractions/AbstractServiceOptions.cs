@@ -12,7 +12,7 @@ namespace Steeltoe.Extensions.Configuration;
 /// Represents a service in ASP.NET configuration, containing nested services grouped by type.
 /// </summary>
 /// <remarks>
-/// Binds against an <see cref="IConfiguration" /> when instantiated.
+/// Binds with an <see cref="IConfiguration" /> when instantiated.
 /// </remarks>
 public abstract class AbstractServiceOptions : AbstractOptions
 {
@@ -94,7 +94,7 @@ public abstract class AbstractServiceOptions : AbstractOptions
     }
 
     /// <summary>
-    /// Attempts to find the specified service and bind it to configuration.
+    /// Attempts to find the specified service and bind it to the configuration.
     /// </summary>
     /// <param name="configuration">
     /// The configuration to search for a section or value matching <paramref name="serviceName" />.

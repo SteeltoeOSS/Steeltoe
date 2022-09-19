@@ -22,7 +22,7 @@ public sealed class RandomValueProvider : ConfigurationProvider
     /// Initializes a new instance of the <see cref="RandomValueProvider" /> class. The new placeholder resolver wraps the provided configuration.
     /// </summary>
     /// <param name="prefix">
-    /// Key prefix to use to match random number keys.
+    /// Prefix to use to match random number keys.
     /// </param>
     public RandomValueProvider(string prefix)
         : this(prefix, NullLoggerFactory.Instance)
@@ -33,7 +33,7 @@ public sealed class RandomValueProvider : ConfigurationProvider
     /// Initializes a new instance of the <see cref="RandomValueProvider" /> class. The new placeholder resolver wraps the provided configuration.
     /// </summary>
     /// <param name="prefix">
-    /// Key prefix to use to match random number keys.
+    /// Prefix to use to match random number keys.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
@@ -56,7 +56,7 @@ public sealed class RandomValueProvider : ConfigurationProvider
     /// The configuration key, which should start with the prefix specified during construction.
     /// </param>
     /// <param name="value">
-    /// Contains the produced random value if this method returns <c>true</c>.
+    /// When this method returns, contains the produced random value, if a value for the specified key was found.
     /// </param>
     /// <returns>
     /// <c>true</c> if a value for the specified key was found, otherwise <c>false</c>.

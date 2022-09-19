@@ -7,10 +7,10 @@ using Microsoft.Extensions.Configuration;
 namespace Steeltoe.Common.Options;
 
 /// <summary>
-/// Base type for representing options in ASP.NET configuration.
+/// Base type representing ASP.NET configuration options.
 /// </summary>
 /// <remarks>
-/// Binds against an <see cref="IConfiguration" /> when instantiated.
+/// Binds with an <see cref="IConfiguration" /> when instantiated.
 /// </remarks>
 public abstract class AbstractOptions
 {

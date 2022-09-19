@@ -14,7 +14,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes;
 public static class KubernetesConfigurationBuilderExtensions
 {
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="configurationBuilder">
     /// The configuration builder.
@@ -25,13 +25,13 @@ public static class KubernetesConfigurationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="configurationBuilder">
     /// The configuration builder.
     /// </param>
     /// <param name="configureClient">
-    /// Enables to customize the <see cref="KubernetesClientConfiguration" />.
+    /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
     public static IConfigurationBuilder AddKubernetes(this IConfigurationBuilder configurationBuilder, Action<KubernetesClientConfiguration> configureClient)
     {
@@ -39,7 +39,7 @@ public static class KubernetesConfigurationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="configurationBuilder">
     /// The configuration builder.
@@ -53,13 +53,13 @@ public static class KubernetesConfigurationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds Kubernetes configuration providers for config maps and secrets.
+    /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
     /// <param name="configurationBuilder">
     /// The configuration builder.
     /// </param>
     /// <param name="configureClient">
-    /// Enables to customize the <see cref="KubernetesClientConfiguration" />.
+    /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.

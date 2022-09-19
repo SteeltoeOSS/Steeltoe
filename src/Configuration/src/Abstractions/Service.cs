@@ -10,7 +10,7 @@ namespace Steeltoe.Extensions.Configuration;
 public sealed class Service : AbstractServiceOptions
 {
     /// <summary>
-    /// Gets the connection information and credentials for using the service.
+    /// Gets the connection information and credentials for the service.
     /// </summary>
     public IDictionary<string, Credential> Credentials { get; } = new Dictionary<string, Credential>(StringComparer.OrdinalIgnoreCase);
 }

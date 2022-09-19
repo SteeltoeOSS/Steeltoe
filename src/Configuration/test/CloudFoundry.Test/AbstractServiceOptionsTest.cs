@@ -65,7 +65,7 @@ public sealed class AbstractServiceOptionsTest
                 }
             }";
 
-        using Stream stream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        using Stream stream = CloudFoundryConfigurationProvider.GetStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(stream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot root = builder.Build();
@@ -92,7 +92,7 @@ public sealed class AbstractServiceOptionsTest
                 }
             }";
 
-        using Stream stream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        using Stream stream = CloudFoundryConfigurationProvider.GetStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(stream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot root = builder.Build();

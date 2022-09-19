@@ -55,7 +55,7 @@ public static class RandomValueExtensions
     /// The configuration builder.
     /// </param>
     /// <param name="prefix">
-    /// The prefix used for random key values, default 'random:'.
+    /// The prefix used for random key values.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" />.
@@ -72,7 +72,7 @@ public static class RandomValueExtensions
     /// The configuration builder.
     /// </param>
     /// <param name="prefix">
-    /// The prefix used for random key values, default 'random:'.
+    /// The prefix used for random key values.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
@@ -86,9 +86,9 @@ public static class RandomValueExtensions
         ArgumentGuard.NotNullOrEmpty(prefix);
         ArgumentGuard.NotNull(loggerFactory);
 
-        if (!prefix.EndsWith(":", StringComparison.Ordinal))
+        if (!prefix.EndsWith(':'))
         {
-            prefix += ":";
+            prefix += ':';
         }
 
         var source = new RandomValueSource(prefix, loggerFactory);
