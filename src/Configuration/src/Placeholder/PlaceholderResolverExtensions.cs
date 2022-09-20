@@ -19,7 +19,7 @@ public static class PlaceholderResolverExtensions
     /// <summary>
     /// Creates a new <see cref="IConfiguration" /> using a <see cref="PlaceholderResolverProvider" /> which wraps the provided <see cref="IConfiguration" />
     /// . The new configuration will then be used to replace the current <see cref="IConfiguration" /> in the service container. All subsequent requests for
-    /// a <see cref="IConfiguration" /> will return the newly created one providing placeholder resolution.
+    /// a <see cref="IConfiguration" /> will return the newly created <see cref="IConfiguration" /> providing placeholder resolution.
     /// </summary>
     /// <param name="services">
     /// The service container.
@@ -38,7 +38,7 @@ public static class PlaceholderResolverExtensions
     /// <summary>
     /// Creates a new <see cref="IConfiguration" /> using a <see cref="PlaceholderResolverProvider" /> which wraps the provided <see cref="IConfiguration" />
     /// . The new configuration will then be used to replace the current <see cref="IConfiguration" /> in the service container. All subsequent requests for
-    /// a <see cref="IConfiguration" /> will return the newly created one providing placeholder resolution.
+    /// a <see cref="IConfiguration" /> will return the newly created <see cref="IConfiguration" /> providing placeholder resolution.
     /// </summary>
     /// <param name="services">
     /// The service container.
