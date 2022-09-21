@@ -41,7 +41,7 @@ public class HystrixSubclassCommandTest : HystrixTestBase
         HystrixCommand<int> superCmd3 = new SuperCommand("no-cache", true);
         Assert.Equal(1, superCmd3.Execute());
         _output.WriteLine("REQ LOG : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        HystrixRequestLog reqLog = HystrixRequestLog.CurrentRequestLog;
+        IHystrixRequestLog reqLog = HystrixRequestLog.CurrentRequestLog;
         Assert.Equal(3, reqLog.AllExecutedCommands.Count);
         var infos = new List<IHystrixInvokableInfo>(reqLog.AllExecutedCommands);
         IHystrixInvokableInfo info1 = infos[0];
@@ -66,7 +66,7 @@ public class HystrixSubclassCommandTest : HystrixTestBase
         HystrixCommand<int> subCmd3 = new SubCommandNoOverride("no-cache", true);
         Assert.Equal(1, subCmd3.Execute());
         _output.WriteLine("REQ LOG : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        HystrixRequestLog reqLog = HystrixRequestLog.CurrentRequestLog;
+        IHystrixRequestLog reqLog = HystrixRequestLog.CurrentRequestLog;
         Assert.Equal(3, reqLog.AllExecutedCommands.Count);
         var infos = new List<IHystrixInvokableInfo>(reqLog.AllExecutedCommands);
 
@@ -88,7 +88,7 @@ public class HystrixSubclassCommandTest : HystrixTestBase
         HystrixCommand<int> superCmd = new SuperCommand("cache", true);
         Assert.Equal(1, superCmd.Execute());
         _output.WriteLine("REQ LOG : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        HystrixRequestLog reqLog = HystrixRequestLog.CurrentRequestLog;
+        IHystrixRequestLog reqLog = HystrixRequestLog.CurrentRequestLog;
         Assert.Equal(1, reqLog.AllExecutedCommands.Count);
         IHystrixInvokableInfo info = reqLog.AllExecutedCommands.ToList()[0];
         Assert.Equal("SuperCommand", info.CommandKey.Name);
@@ -100,7 +100,7 @@ public class HystrixSubclassCommandTest : HystrixTestBase
         HystrixCommand<int> subCmd = new SubCommandNoOverride("cache", true);
         Assert.Equal(1, subCmd.Execute());
         _output.WriteLine("REQ LOG : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        HystrixRequestLog reqLog = HystrixRequestLog.CurrentRequestLog;
+        IHystrixRequestLog reqLog = HystrixRequestLog.CurrentRequestLog;
         Assert.Equal(1, reqLog.AllExecutedCommands.Count);
         IHystrixInvokableInfo info = reqLog.AllExecutedCommands.ToList()[0];
         Assert.Equal("SubCommandNoOverride", info.CommandKey.Name);

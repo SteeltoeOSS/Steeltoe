@@ -981,7 +981,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         Assert.True(numInFlight <= 1, "Pool-filler NOT still going"); // pool-filler still going
 
         // This is a case where we knowingly walk away from executing Hystrix threads. They should have an in-flight status ("Executed").  You should avoid this in a production environment
-        HystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
+        IHystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
         Assert.Equal(3, requestLog.AllExecutedCommands.Count);
         Assert.Contains("Executed", requestLog.GetExecutedCommandsAsString());
 
@@ -1498,7 +1498,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         // verifies that some executions failed
         // Assert.Equal(sharedSemaphore.numberOfPermits.get().longValue(), failureCount.get());
-        HystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
+        IHystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
         Assert.Contains("SEMAPHORE_REJECTED", requestLog.GetExecutedCommandsAsString());
         Assert.Equal(0, circuitBreaker.Metrics.CurrentConcurrentExecutionCount);
     }
