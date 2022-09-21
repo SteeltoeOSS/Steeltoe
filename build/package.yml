@@ -17,6 +17,8 @@ jobs:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
   steps:
+  - checkout: self
+    fetchDepth: 0
   - task: DotNetCoreCLI@2
     displayName: Install Nerdbank.GitVersioning tool
     inputs:

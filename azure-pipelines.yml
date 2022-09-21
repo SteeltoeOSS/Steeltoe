@@ -31,6 +31,8 @@ jobs:
   pool:
     vmImage: $(imageName)
   steps:
+  - checkout: self
+    fetchDepth: 0
   - task: UseDotNet@2
     displayName: Install .NET 6
     inputs:
