@@ -177,13 +177,15 @@ public class DirectMessageListenerContainerMockTest
         channel.Verify(c => c.BasicAck(20ul, true));
     }
 
-    [Fact(Skip = "Fails, needs investigation")]
+    [Fact(Skip = "Fails because it requires use of AutoRecoveringChannel which is not implemented")]
     public async Task TestRemoveQueuesWhileNotConnected()
     {
         var connectionFactory = new Mock<IConnectionFactory>();
         var connection = new Mock<IConnection>();
         var channel = new Mock<IChannelProxy>();
-        var rabbitChannel = new Mock<RC.IModel>();
+
+        // Note: Spring code mocks AutorecoveringChannel
+        var rabbitChannel = new Mock<RC.IModel>(); 
         channel.Setup(c => c.TargetChannel).Returns(rabbitChannel.Object);
 
         connectionFactory.Setup(f => f.CreateConnection()).Returns(connection.Object);
