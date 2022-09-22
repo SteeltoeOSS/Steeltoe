@@ -10,14 +10,14 @@ using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
-public class HystrixRequestLog
+public class HystrixRequestLog : IHystrixRequestLog
 {
     protected internal const int MaxStorage = 1000;
 
     private static readonly HystrixRequestLogVariable RequestLog = new();
     private readonly BlockingCollection<IHystrixInvokableInfo> _allExecutedCommands = new(MaxStorage);
 
-    public static HystrixRequestLog CurrentRequestLog
+    public static IHystrixRequestLog CurrentRequestLog
     {
         get
         {
@@ -26,7 +26,7 @@ public class HystrixRequestLog
                 return RequestLog.Value;
             }
 
-            return null;
+            return EmptyHystrixRequestLog.Instance;
         }
     }
 
@@ -36,7 +36,7 @@ public class HystrixRequestLog
     {
     }
 
-    internal void AddExecutedCommand(IHystrixInvokableInfo command)
+    public void AddExecutedCommand(IHystrixInvokableInfo command)
     {
         if (!_allExecutedCommands.TryAdd(command))
         {
@@ -188,6 +188,26 @@ public class HystrixRequestLog
                 HystrixRequestEventsStream.GetInstance().Write(log.AllExecutedCommands);
             })
         {
+        }
+    }
+
+    private sealed class EmptyHystrixRequestLog : IHystrixRequestLog
+    {
+        public static IHystrixRequestLog Instance { get; } = new EmptyHystrixRequestLog();
+
+        public ICollection<IHystrixInvokableInfo> AllExecutedCommands { get; } = Array.Empty<IHystrixInvokableInfo>();
+
+        private EmptyHystrixRequestLog()
+        {
+        }
+
+        public void AddExecutedCommand(IHystrixInvokableInfo command)
+        {
+        }
+
+        public string GetExecutedCommandsAsString()
+        {
+            return string.Empty;
         }
     }
 }
