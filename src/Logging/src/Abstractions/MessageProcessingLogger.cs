@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
+using Filter = System.Func<string, Microsoft.Extensions.Logging.LogLevel, bool>;
 
 namespace Steeltoe.Extensions.Logging;
 
@@ -13,7 +14,7 @@ public class MessageProcessingLogger : ILogger
 
     public ILogger Delegate { get; }
 
-    public Func<string, LogLevel, bool> Filter { get; internal set; }
+    public Filter Filter { get; internal set; }
 
     public string Name { get; internal set; }
 
