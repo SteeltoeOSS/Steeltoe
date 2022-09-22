@@ -53,7 +53,6 @@ public class PlaceholderResolverConfigurationExtensionsTest
         Assert.NotNull(provider.Logger);
     }
 
-    // Mac issue https://github.com/dotnet/runtime/issues/30056
     [Fact]
     public void AddPlaceholderResolver_JsonAppSettingsResolvesPlaceholders()
     {
