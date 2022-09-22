@@ -5,16 +5,17 @@ root = true
 
 [*]
 indent_style = space
-# (Please don't specify an indent_size here; that has too many unintended consequences.)
+indent_size = 4
+tab-width = 4
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
 [*.{build,config,csproj,js,json,proj,props,targets,xml,ruleset,xsd}]
 indent_size = 2
+tab-width = 2
 
 [*.{cs,cshtml,ascx,aspx}]
-indent_size = 4
 
 #### C#/.NET Coding Conventions ####
 
