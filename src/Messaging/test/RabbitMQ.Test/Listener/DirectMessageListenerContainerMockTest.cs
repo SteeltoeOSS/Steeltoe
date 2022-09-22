@@ -185,7 +185,7 @@ public class DirectMessageListenerContainerMockTest
         var channel = new Mock<IChannelProxy>();
 
         // Note: Spring code mocks AutorecoveringChannel
-        var rabbitChannel = new Mock<RC.IModel>(); 
+        var rabbitChannel = new Mock<RC.IModel>();
         channel.Setup(c => c.TargetChannel).Returns(rabbitChannel.Object);
 
         connectionFactory.Setup(f => f.CreateConnection()).Returns(connection.Object);
