@@ -106,7 +106,6 @@ public class ConsulDiscoveryOptionsTest
     }
 
     [Fact]
-    [Trait("Category", "SkipOnMacOS")] // for some reason this takes 25-ish seconds on the MSFT-hosted MacOS agent
     public void Options_CanUseInetUtilsWithoutReverseDnsOnIP()
     {
         var appSettings = new Dictionary<string, string>

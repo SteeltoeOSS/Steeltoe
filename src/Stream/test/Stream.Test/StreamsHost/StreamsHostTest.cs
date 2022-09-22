@@ -35,8 +35,6 @@ public class StreamsHostTest
     }
 
     [Fact]
-    [Trait("Category", "SkipOnMacOS")]
-    [Trait("Category", "SkipOnLinux")]
     public void HostConfiguresRabbitOptions()
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);

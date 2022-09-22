@@ -28,7 +28,6 @@ public class ConfigurationExtensionsTest
     }
 
     [Fact]
-    [Trait("Category", "SkipOnMacOS")]
     public async Task AddPemFiles_ReloadsOnChange()
     {
         using var sandbox = new Sandbox();

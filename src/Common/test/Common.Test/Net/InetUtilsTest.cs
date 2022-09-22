@@ -11,7 +11,6 @@ namespace Steeltoe.Common.Net.Test;
 public class InetUtilsTest
 {
     [Fact]
-    [Trait("Category", "SkipOnMacOS")] // TODO: revisit running this on the MSFT-hosted MacOS agent
     public void TestGetFirstNonLoopbackHostInfo()
     {
         var utils = new InetUtils(new InetOptions(), GetLogger());
@@ -19,7 +18,6 @@ public class InetUtilsTest
     }
 
     [Fact]
-    [Trait("Category", "SkipOnMacOS")] // TODO: revisit running this on the MSFT-hosted MacOS agent
     public void TestGetFirstNonLoopbackAddress()
     {
         var utils = new InetUtils(new InetOptions
@@ -38,7 +36,6 @@ public class InetUtilsTest
     }
 
     [Fact]
-    [Trait("Category", "SkipOnMacOS")] // TODO: revisit running this on the MSFT-hosted MacOS agent
     public void TestHostInfo()
     {
         var utils = new InetUtils(new InetOptions(), GetLogger());

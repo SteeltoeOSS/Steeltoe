@@ -1528,7 +1528,6 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
      * queues.
      */
     [Fact]
-    [Trait("Category", "SkipOnLinux")]
     public void TestLateBinding()
     {
         RabbitProxy proxy = null;

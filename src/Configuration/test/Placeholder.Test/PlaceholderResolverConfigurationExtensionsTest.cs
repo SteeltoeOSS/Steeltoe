@@ -53,9 +53,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
         Assert.NotNull(provider.Logger);
     }
 
-    // Mac issue https://github.com/dotnet/runtime/issues/30056
     [Fact]
-    [Trait("Category", "SkipOnMacOS")]
     public void AddPlaceholderResolver_JsonAppSettingsResolvesPlaceholders()
     {
         const string appsettings = @"
@@ -87,9 +85,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
         Assert.Equal("myName", configurationRoot["spring:cloud:config:name"]);
     }
 
-    // Mac issue https://github.com/dotnet/runtime/issues/30056
     [Fact]
-    [Trait("Category", "SkipOnMacOS")]
     public void AddPlaceholderResolver_XmlAppSettingsResolvesPlaceholders()
     {
         const string appsettings = @"
@@ -121,9 +117,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
         Assert.Equal("myName", configurationRoot["spring:cloud:config:name"]);
     }
 
-    // Mac issue https://github.com/dotnet/runtime/issues/30056
     [Fact]
-    [Trait("Category", "SkipOnMacOS")]
     public void AddPlaceholderResolver_IniAppSettingsResolvesPlaceholders()
     {
         const string appsettings = @"
@@ -166,9 +160,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
         Assert.Equal("myName", configurationRoot["spring:cloud:config:name"]);
     }
 
-    // Mac issue https://github.com/dotnet/runtime/issues/30056
     [Fact]
-    [Trait("Category", "SkipOnMacOS")]
     public void AddPlaceholderResolver_HandlesRecursivePlaceHolders()
     {
         const string appsettingsJson = @"

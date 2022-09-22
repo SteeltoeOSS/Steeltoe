@@ -61,7 +61,7 @@ public class EventCounterListenerTest : BaseTest
         }
     }
 
-    [Fact(Skip = "Revisit in https://github.com/SteeltoeOSS/Steeltoe/issues/985")]
+    [Fact(Skip = "See https://github.com/SteeltoeOSS/Steeltoe/issues/985")]
     public void EventCounterListenerGetsMetricsWithExclusionsTest()
     {
         var exclusions = new List<string>

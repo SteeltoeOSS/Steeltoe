@@ -106,7 +106,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
                             ""homePageUrl"": ""homePageUrl"",
                             ""healthCheckUrlPath"": ""healthCheckUrlPath"",
                             ""healthCheckUrl"":""healthCheckUrl"",
-                            ""secureHealthCheckUrl"":""secureHealthCheckUrl""   
+                            ""secureHealthCheckUrl"":""secureHealthCheckUrl""
                         }
                     }
                 }";
@@ -212,7 +212,6 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
     }
 
     [Fact]
-    [Trait("Category", "SkipOnMacOS")] // for some reason this takes 25-ish seconds on the MSFT-hosted MacOS agent
     public void Options_CanUseInetUtilsWithoutReverseDnsOnIP()
     {
         var appSettings = new Dictionary<string, string>
