@@ -34,7 +34,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     protected readonly IHystrixCommandOptions InnerOptions;
 
-    protected internal readonly HystrixRequestLog CurrentRequestLog;
+    protected internal readonly IHystrixRequestLog CurrentRequestLog;
     protected internal readonly HystrixRequestCache RequestCache;
     protected internal readonly HystrixCommandExecutionHook ExecutionHook;
     protected internal readonly HystrixCommandMetrics InnerMetrics;
@@ -308,7 +308,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         return fromConstructor;
     }
 
-    protected static HystrixRequestLog InitRequestLog(bool enabled)
+    protected static IHystrixRequestLog InitRequestLog(bool enabled)
     {
         if (enabled)
         {

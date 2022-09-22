@@ -72,7 +72,7 @@ public abstract class CommonHystrixCommandTests<TCommand> : HystrixTestBase
 
     protected void AssertSaneHystrixRequestLog(int numCommands)
     {
-        HystrixRequestLog currentRequestLog = HystrixRequestLog.CurrentRequestLog;
+        IHystrixRequestLog currentRequestLog = HystrixRequestLog.CurrentRequestLog;
 
         Assert.Equal(numCommands, currentRequestLog.AllExecutedCommands.Count);
         Assert.DoesNotContain("Executed", currentRequestLog.GetExecutedCommandsAsString());
