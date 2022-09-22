@@ -1191,7 +1191,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         }
 
         [RabbitListener("test.sendTo.runtimespelsource")]
-        [SendTo("!{Source.Headers['internal_consumerQueue'] + '.reply'}")] // TODO: Fix the hardcoded "amqp_consumerQueue" when this works
+        [SendTo("!{Source.Headers['internal_consumerQueue'] + '.reply'}")] // TODO: Fix the hardcoded "internal_consumerQueue" when this works
         public string CapitalizeAndSendToSpelRuntimeSource(string foo)
         {
             return "sourceEval";
