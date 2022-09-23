@@ -1,17 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Unit test project for OpenTelemetry</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
+    <Description>Unit test project for OpenTelemetry</Description>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
-
-  <ItemGroup>
-    <Content Include="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OpenTelemetry\Steeltoe.Management.OpenTelemetry.csproj" />
@@ -20,6 +13,4 @@
   <ItemGroup>
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
   </ItemGroup>
-
-
 </Project>

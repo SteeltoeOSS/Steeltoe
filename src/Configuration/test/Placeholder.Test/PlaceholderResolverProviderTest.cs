@@ -133,9 +133,7 @@ public sealed class PlaceholderResolverProviderTest
         Assert.Equal("nokeyvalue", val);
     }
 
-    // Mac issue https://github.com/dotnet/runtime/issues/30056
     [Fact]
-    [Trait("Category", "SkipOnMacOS")]
     public void GetReloadToken_ReturnsExpected_NotifyChanges()
     {
         const string appsettings1 = @"
@@ -218,9 +216,7 @@ public sealed class PlaceholderResolverProviderTest
         Assert.Equal("value1", holder.Configuration["key1"]);
     }
 
-    // Mac issue https://github.com/dotnet/runtime/issues/30056
     [Fact]
-    [Trait("Category", "SkipOnMacOS")]
     public void Load_ReloadsConfiguration()
     {
         const string appsettings1 = @"

@@ -3,14 +3,8 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Connector.Test</RootNamespace>
   </PropertyGroup>
-  
-  <Import Project="..\..\..\..\shared.props" />
 
-  <ItemGroup>
-    <None Update="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <PackageReference Include="Moq" Version="$(MoqVersion)" />

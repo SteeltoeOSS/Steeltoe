@@ -3,10 +3,11 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Steeltoe common library</Description>
     <PackageTags></PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
-  
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(ExtensionsVersion)" />
@@ -23,5 +24,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Abstractions\Steeltoe.Common.Abstractions.csproj" />
   </ItemGroup>
-
 </Project>

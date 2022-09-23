@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Stream.Binder.Rabbit</RootNamespace>
@@ -7,12 +6,6 @@
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
-  
-  <ItemGroup>
-    <None Update="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="EasyNetQ.Management.Client" Version="$(EasyNetQVersion)" />
@@ -22,5 +15,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Binder.Test\Steeltoe.Stream.Binder.Test.csproj" />
   </ItemGroup>
-
 </Project>

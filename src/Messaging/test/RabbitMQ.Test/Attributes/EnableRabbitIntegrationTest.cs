@@ -391,7 +391,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         Assert.Equal("BARbar", result);
     }
 
-    [Fact(Skip = "SpEL")]
+    [Fact]
     public void SimpleEndpointWithSendToSpelRuntime()
     {
         RabbitTemplate template = _context.GetRabbitTemplate();
@@ -402,7 +402,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         Assert.Equal("runtimespel", result);
     }
 
-    [Fact(Skip = "SpEL")]
+    [Fact]
     public void SimpleEndpointWithSendToSpelRuntimeMessagingMessage()
     {
         RabbitTemplate template = _context.GetRabbitTemplate();
@@ -1186,14 +1186,14 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         }
 
         [RabbitListener("test.sendTo.runtimespel")]
-        [SendTo("!{'test.sendTo.reply.' + result}")]
+        [SendTo("!{'test.sendTo.reply.' + Result}")]
         public string CapitalizeAndSendToSpelRuntime(string foo)
         {
             return $"runtime{foo}";
         }
 
         [RabbitListener("test.sendTo.runtimespelsource")]
-        [SendTo("!{source.headers['amqp_consumerQueue'] + '.reply'}")] // TODO: Fix the hardcoded "amqp_consumerQueue" when this works
+        [SendTo("!{Source.Headers['internal_consumerQueue'] + '.reply'}")] // TODO: Fix the hardcoded "internal_consumerQueue" when this works
         public string CapitalizeAndSendToSpelRuntimeSource(string foo)
         {
             return "sourceEval";

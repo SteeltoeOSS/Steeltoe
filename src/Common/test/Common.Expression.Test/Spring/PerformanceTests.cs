@@ -7,7 +7,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
-#pragma warning disable xUnit1004 // Test methods should not be skipped
+
 public class PerformanceTests
 {
     private const int Iterations = 10000;
@@ -21,7 +21,7 @@ public class PerformanceTests
         _output = output;
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void TestPerformanceOfPropertyAccess()
     {
         long startTime = 0;
@@ -78,7 +78,7 @@ public class PerformanceTests
         }
     }
 
-    [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
+    [Fact]
     public void TestPerformanceOfMethodAccess()
     {
         long startTime = 0;

@@ -3,6 +3,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Steeltoe library for enabling dynamic management of Serilog.</Description>
     <PackageTags>logging;dynamic logging;serilog;management;monitoring;Spring Cloud;</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

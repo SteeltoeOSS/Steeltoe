@@ -2,18 +2,13 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
   </PropertyGroup>
-  
-  <Import Project="..\..\..\..\shared.props" />
 
-  <ItemGroup>
-    <None Update="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(ExtensionsVersion)" />
@@ -23,5 +18,4 @@
     <ProjectReference Include="..\..\src\Hystrix.MetricsEvents\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.csproj" />
     <ProjectReference Include="..\Hystrix.Test\Steeltoe.CircuitBreaker.Hystrix.Test.csproj" />
   </ItemGroup>
-
 </Project>

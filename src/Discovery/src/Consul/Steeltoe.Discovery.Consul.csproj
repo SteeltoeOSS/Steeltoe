@@ -3,8 +3,9 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Steeltoe compatibility package for service discovery and registration with Hashicorp Consul</Description>
     <PackageTags>aspnetcore;Consul;Spring;Spring Cloud</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
-  
+
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>

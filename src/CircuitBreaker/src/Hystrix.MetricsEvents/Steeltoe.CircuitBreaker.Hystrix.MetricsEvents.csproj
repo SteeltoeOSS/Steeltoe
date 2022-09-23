@@ -1,18 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Steeltoe Netflix Hystrix Metrics Event Stream ASP.NET Core</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
+    <Description>Steeltoe Netflix Hystrix Metrics Event Stream ASP.NET Core</Description>
     <PackageTags>aspnetcore;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\Hystrix\Steeltoe.CircuitBreaker.Hystrix.csproj" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\Hystrix\Steeltoe.CircuitBreaker.Hystrix.csproj" />
   </ItemGroup>
 
   <ItemGroup>

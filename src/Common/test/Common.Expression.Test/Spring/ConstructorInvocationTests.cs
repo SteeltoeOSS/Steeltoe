@@ -149,13 +149,11 @@ public class ConstructorInvocationTests : AbstractExpressionTests
         // Evaluate("new Long(3)", 3L, typeof(long));
     }
 
-    [Fact(Skip = "Currently failing as with new ObjectToArray converter closest constructor")]
+    [Fact]
     public void TestArgumentConversion01()
     {
-        // Closest ctor will be new String(String) and converter supports Double>String
-        // TODO currently failing as with new ObjectToArray converter closest constructor
-        // matched becomes String(byte[]) which fails...
-        Evaluate("new String(3.0d)", "3.0", typeof(string));
+        // Closest ctor will be new Company(String) and converter supports Double>String
+        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Company(1.1d).Address", "1.1", typeof(string));
     }
 
     public class DummyConstructorResolver : IConstructorResolver

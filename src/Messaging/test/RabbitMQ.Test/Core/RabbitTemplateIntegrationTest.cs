@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
+using Steeltoe.Common.Expression.Internal.Spring.Common;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
@@ -52,7 +54,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             ReplyTimeout = 10000
         };
 
-        // template.SetSendConnectionFactorySelectorExpression(new LiteralExpression("foo"));
+        Template.SendConnectionFactorySelectorExpression = new LiteralExpression("foo");
         var adminCf = new CachingConnectionFactory("localhost");
         Admin = new RabbitAdmin(adminCf);
         Admin.DeclareQueue(new Queue(Route));
@@ -60,8 +62,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         RoutingTemplate = new RabbitTemplate();
 
-        // TODO: Requires expression language support
-        // routingTemplate.SendConnectionFactorySelectorExpression = "messageProperties.headers['cfKey']"
+        RoutingTemplate.SendConnectionFactorySelectorExpression = new SpelExpressionParser().ParseExpression("Headers['cfKey']");
         var routingConnFactory = new SimpleRoutingConnectionFactory();
         ConnectionFactory1 = new Mock<IConnectionFactory>();
         ConnectionFactory2 = new Mock<IConnectionFactory>();
@@ -1072,15 +1073,17 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         }
     }
 
-    [Fact(Skip = "Requires expression language")]
+    [Fact]
     public void TestRouting()
     {
         var connection1 = new Mock<IConnection>();
         var channel1 = new Mock<RC.IModel>();
+        var properties1 = new Mock<RC.IBasicProperties>();
         ConnectionFactory1.Setup(f => f.CreateConnection()).Returns(connection1.Object);
         connection1.Setup(c => c.CreateChannel(false)).Returns(channel1.Object);
         connection1.Setup(c => c.IsOpen).Returns(true);
         channel1.Setup(c => c.IsOpen).Returns(true);
+        channel1.Setup(c => c.CreateBasicProperties()).Returns(properties1.Object);
 
         var testPp = new TestPostProcessor("foo");
         RoutingTemplate.ConvertAndSend("exchange", "routingKey", "xyz", testPp);
@@ -1088,10 +1091,12 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         var connection2 = new Mock<IConnection>();
         var channel2 = new Mock<RC.IModel>();
+        var properties2 = new Mock<RC.IBasicProperties>();
         ConnectionFactory2.Setup(f => f.CreateConnection()).Returns(connection2.Object);
         connection2.Setup(c => c.CreateChannel(false)).Returns(channel2.Object);
         connection2.Setup(c => c.IsOpen).Returns(true);
         channel2.Setup(c => c.IsOpen).Returns(true);
+        channel2.Setup(c => c.CreateBasicProperties()).Returns(properties2.Object);
         var testPp2 = new TestPostProcessor("bar");
         RoutingTemplate.ConvertAndSend("exchange", "routingKey", "xyz", testPp2);
         channel1.Verify(c => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()));

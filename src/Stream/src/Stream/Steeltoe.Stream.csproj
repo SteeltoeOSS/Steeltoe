@@ -3,6 +3,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Steeltoe Stream Base</Description>
     <PackageTags>Streams, NET Core, Spring, Spring Cloud</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -18,5 +19,4 @@
     <PackageReference Include="Castle.Core" Version="$(CastleCoreVersion)" />
     <PackageReference Include="System.Runtime.Loader" Version="$(RuntimeLoaderVersion)" />
   </ItemGroup>
-
 </Project>

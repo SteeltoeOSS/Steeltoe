@@ -107,7 +107,6 @@ public class RoutingConnectionFactoryTest
     }
 
     [Fact]
-    [Trait("Category", "SkipOnMacOS")]
     public async Task TestAbstractRoutingConnectionFactoryWithListenerContainer()
     {
         var connectionFactory1 = new Mock<IConnectionFactory>();

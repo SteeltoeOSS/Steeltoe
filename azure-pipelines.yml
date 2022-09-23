@@ -2,77 +2,13 @@ trigger:
   branches:
     include:
     - main
+    - release/*
   paths:
     exclude:
     - README.md
-    - build/*
     - roadmaps/*
 
 jobs:
-- job: Steeltoe_Package
-  pool:
-    vmImage: windows-latest
-  variables:
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-    DOTNET_CLI_TELEMETRY_OPTOUT: 1
-    PackageVersion: $[format('4.0.0-{0}', variables['Build.BuildId'])]
-    BUILD_PACKAGES: true
-  steps:
-  - pwsh: |
-      if ($env:PackageVersionOverride) {
-          $env:PackageVersion = $env:PackageVersionOverride
-      }
-      Write-Host "##vso[build.updatebuildnumber]$env:PackageVersion"
-      Write-Host "##vso[task.setvariable variable=PackageVersion;]$env:PackageVersion"
-      $prefix = $env:PackageVersion.Split('-')[0]
-      $suffix = $env:PackageVersion.Split('-')[1]
-      Write-Host "##vso[task.setvariable variable=VersionPrefix;]$prefix"
-      Write-Host "##vso[task.setvariable variable=VersionSuffix;]$suffix"
-    displayName: Set build variables
-    env:
-      PackageVersion: $(PackageVersion)
-      PackageVersionOverride: $(PackageVersionOverride)
-  - task: UseDotNet@2
-    displayName: Install .NET 6
-    inputs:
-      version: 6.0.x
-      includePreviewVersions: true
-  - task: DotNetCoreCLI@2
-    displayName: dotnet restore
-    inputs:
-      command: restore
-      projects: src/Steeltoe.All.sln
-      feedsToUse: config
-      nugetConfigPath: nuget.config
-  - task: DotNetCoreCLI@2
-    displayName: dotnet build
-    inputs:
-      command: build
-      projects: src/Steeltoe.All.sln
-      arguments: --no-restore -c $(buildConfiguration) -v n /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)
-  - task: DotNetCoreCLI@2
-    displayName: dotnet pack
-    inputs:
-      command: pack
-      feedsToUse: select
-      packagesToPack: src/Steeltoe.All.sln
-      packDirectory: $(Build.ArtifactStagingDirectory)/packages
-      versioningScheme: byEnvVar
-      versionEnvVar: PackageVersion
-      nobuild: true
-  - task: PowerShell@2
-    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
-    displayName: Authenticode sign packages
-    inputs:
-      filePath: build/sign-packages.ps1
-    env:
-      SignClientUser: $(SignClientUser)
-      SignClientSecret: $(SignClientSecret)
-      ArtifactDirectory: $(Build.ArtifactStagingDirectory)/packages
-  - publish: $(Build.ArtifactStagingDirectory)/packages
-    condition: succeeded()
-    displayName: Publish build artifacts
-    artifact: Packages
 - job: Steeltoe_CI
   timeoutInMinutes: 60
   variables:
@@ -95,6 +31,8 @@ jobs:
   pool:
     vmImage: $(imageName)
   steps:
+  - checkout: self
+    fetchDepth: 0
   - task: UseDotNet@2
     displayName: Install .NET 6
     inputs:

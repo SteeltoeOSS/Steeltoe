@@ -5,6 +5,7 @@
 using System.Reflection;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Support;
 using Xunit;
@@ -72,7 +73,7 @@ public class NewtonJsonMessageConverterTest
         }, actual.Bytes);
     }
 
-    [Fact(Skip = "Failing with NewtonSoft, need to dig into")]
+    [Fact]
     public void FromMessageUntyped()
     {
         var converter = new NewtonJsonMessageConverter();
@@ -90,7 +91,7 @@ public class NewtonJsonMessageConverterTest
         {
             "Foo",
             "Bar"
-        }, actual["array"]);
+        }, ((JArray)actual["array"]).ToObject<string[]>());
 
         Assert.Equal(true, actual["bool"]);
         Assert.Equal("AQI=", actual["bytes"]);

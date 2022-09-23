@@ -4,6 +4,7 @@
     <RootNamespace>Steeltoe.Extensions.Logging</RootNamespace>
     <Description>Abstractions for use with dynamic logging</Description>
     <PackageTags></PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

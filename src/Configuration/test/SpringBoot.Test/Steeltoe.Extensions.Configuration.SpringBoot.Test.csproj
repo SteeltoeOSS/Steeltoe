@@ -6,12 +6,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <None Update="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\src\SpringBoot\Steeltoe.Extensions.Configuration.SpringBoot.csproj" />
   </ItemGroup>
 </Project>

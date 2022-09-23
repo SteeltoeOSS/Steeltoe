@@ -74,7 +74,6 @@ public class HystrixUtilizationStreamTest : CommandStreamTest
     }
 
     [Fact]
-    [Trait("Category", "SkipOnMacOS")]
     public void TestTwoSubscribersOneUnsubscribes()
     {
         var latch1 = new CountdownEvent(1);

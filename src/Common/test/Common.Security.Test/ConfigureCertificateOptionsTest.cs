@@ -39,11 +39,8 @@ public class ConfigureCertificateOptionsTest
     }
 
     [Fact]
-    [Trait("Category", "SkipOnMacOS")]
     public void ConfigureCertificateOptions_ReadsFile_CreatesCertificate()
     {
-        // Skipped on Mac due to inability to open a PKCS#12 with no password
-        // https://github.com/dotnet/runtime/issues/23635
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificateFile("instance.p12").Build();
         Assert.NotNull(configurationRoot["certificate"]);
         var options = new ConfigureCertificateOptions(configurationRoot);

@@ -1,34 +1,50 @@
 <Project>
   <PropertyGroup>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <NoWarn>$(NoWarn);CS1591;NU5104</NoWarn>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
     <Authors>Steeltoe,VMware</Authors>
-    <VersionPrefix>$(VersionPrefix)</VersionPrefix>
-    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>See https://github.com/SteeltoeOSS/Steeltoe/releases.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(BUILD_PACKAGES)' == 'true'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+    <!--
+      While deterministic builds are enabled by default in .NET SDK projects, there is an extra property, ContinuousIntegrationBuild,
+      to set on the build server to normalize stored file paths. These should not be enabled during local dev or the debugger won't
+      be able to find the local source files.
+    -->
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)\build\icon.png" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(BUILD_PACKAGES)' == 'true'">
+  <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All" />
   </ItemGroup>
+
+  <Target Name="ValidatePackage" AfterTargets="BeforeBuild">
+    <Error Text="The 'Description' property must be set for packable project '$(MSBuildProjectName)'." Condition="'$(Description)' == ''" />
+  </Target>
 
   <ItemGroup Condition="$(MSBuildProjectName.StartsWith('Steeltoe.Extensions.Configuration'))">
     <!-- Widen the condition above as we're completing more public API reviews -->

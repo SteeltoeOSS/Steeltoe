@@ -1,8 +1,4 @@
 <Project>
-  <PropertyGroup Condition="'$(TF_BUILD)' != 'true'">
-    <VersionPrefix>4.0.0</VersionPrefix>
-  </PropertyGroup>
-
   <PropertyGroup>
     <!--
       Non-exposed dependencies, only referenced from test projects or build infrastructure.
@@ -38,6 +34,7 @@
     <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
     <EFCoreTestVersion>6.0.*</EFCoreTestVersion>
     <EFCoreOracleTestVersion>6.21.*</EFCoreOracleTestVersion>
+    <NerdbankGitVersioningVersion>3.5.*</NerdbankGitVersioningVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
 
     <!--
