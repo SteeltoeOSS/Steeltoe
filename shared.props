@@ -33,11 +33,12 @@
   </ItemGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)\versions.props" />
-  <Import Condition="!$(MSBuildProjectName.EndsWith('.Test'))" Project="$(MSBuildThisFileDirectory)\sharedproject.props" />
-  <Import Condition="$(MSBuildProjectName.EndsWith('.Test'))" Project="$(MSBuildThisFileDirectory)\sharedtest.props" />
+  <Import Condition="'$(IsPackable)' == 'true'" Project="$(MSBuildThisFileDirectory)\shared-package.props" />
+  <Import Condition="'$(IsPackable)' != 'true'" Project="$(MSBuildThisFileDirectory)\shared-project.props" />
 
   <ItemGroup>
     <PackageReference Include="SonarAnalyzer.CSharp" Version="$(SonarAnalyzerVersion)" PrivateAssets="All" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)" PrivateAssets="All" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="$(NerdbankGitVersioningVersion)" PrivateAssets="All" />
   </ItemGroup>
 </Project>

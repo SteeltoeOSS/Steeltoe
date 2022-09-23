@@ -3,17 +3,11 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Extensions.Configuration.ConfigServer.Test</RootNamespace>
   </PropertyGroup>
-  
+
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <None Update="instance.crt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="instance.key">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="xunit.runner.json">
+    <None Update="instance.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

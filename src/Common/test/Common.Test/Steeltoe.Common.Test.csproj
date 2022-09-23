@@ -2,14 +2,8 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
   </PropertyGroup>
-  
-  <Import Project="..\..\..\..\shared.props" />
 
-  <ItemGroup>
-    <None Update="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Common.Utils\Steeltoe.Common.Utils.csproj" />
@@ -21,5 +15,4 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
   </ItemGroup>
-
 </Project>

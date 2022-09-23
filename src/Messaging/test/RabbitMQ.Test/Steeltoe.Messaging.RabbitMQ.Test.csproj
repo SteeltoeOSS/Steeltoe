@@ -1,17 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Messaging.RabbitMQ</RootNamespace>
   </PropertyGroup>
-  
+
   <Import Project="..\..\..\..\shared.props" />
-  
-  <ItemGroup>
-    <None Update="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
@@ -22,6 +15,4 @@
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
   </ItemGroup>
-  
-
 </Project>

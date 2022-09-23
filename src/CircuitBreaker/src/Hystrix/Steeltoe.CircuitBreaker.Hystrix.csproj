@@ -3,6 +3,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Steeltoe's implementation of Netflix's Hystrix, for .NET</Description>
     <PackageTags>Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -21,5 +22,4 @@
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
     <ProjectReference Include="..\..\..\Discovery\src\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
   </ItemGroup>
-
 </Project>

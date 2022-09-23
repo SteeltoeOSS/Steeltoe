@@ -3,6 +3,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Configuration Provider for reading Cloud Foundry Environment Variables</Description>
     <PackageTags>configuration;Kubernetes</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

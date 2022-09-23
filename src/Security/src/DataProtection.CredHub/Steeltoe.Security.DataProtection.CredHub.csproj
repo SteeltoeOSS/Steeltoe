@@ -3,6 +3,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>.NET Client for CredHub - Base Package</Description>
     <PackageTags>CloudFoundry;NET Core;Security;DataProtection;CredHub</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -15,6 +16,7 @@
     <PackageReference Include="Portable.BouncyCastle" Version="$(BouncyCastleVersion)" />
     <PackageReference Include="System.Net.Http.Json" Version="$(SystemVersion)" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
   </ItemGroup>

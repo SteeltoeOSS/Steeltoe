@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Client for service discovery with Kubernetes native service discovery</Description>
     <PackageTags>aspnetcore;Kubernetes;Spring;Spring Cloud</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -12,5 +12,4 @@
     <ProjectReference Include="..\..\..\Common\src\Common.Kubernetes\Steeltoe.Common.Kubernetes.csproj" />
     <ProjectReference Include="..\Client\Steeltoe.Discovery.Client.csproj" />
   </ItemGroup>
-
 </Project>

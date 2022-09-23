@@ -3,6 +3,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Configuration provider for reading from Spring Cloud Config Server</Description>
     <PackageTags>configuration;Spring Cloud;Spring Cloud Config Server</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -14,7 +15,7 @@
   <ItemGroup>
     <PackageReference Include="System.Net.Http.Json" Version="$(SystemVersion)" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\CloudFoundry\Steeltoe.Extensions.Configuration.CloudFoundry.csproj" />

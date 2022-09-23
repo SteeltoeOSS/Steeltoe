@@ -7,12 +7,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <None Update="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\src\Common.Expression\Steeltoe.Common.Expression.csproj" />
   </ItemGroup>
 </Project>

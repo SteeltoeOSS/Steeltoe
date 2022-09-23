@@ -3,6 +3,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Support for storing data protection keys in Redis.</Description>
     <PackageTags>CloudFoundry;aspnetcore;security;dataprotection;redis</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

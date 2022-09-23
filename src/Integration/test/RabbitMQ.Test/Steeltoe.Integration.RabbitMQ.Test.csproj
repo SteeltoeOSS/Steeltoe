@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Integration.RabbitMQ</RootNamespace>
@@ -8,15 +7,11 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <None Update="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <PackageReference Include="Moq" Version="$(MoqVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RabbitMQ\Steeltoe.Integration.RabbitMQ.csproj" />
-    <PackageReference Include="Moq" Version="$(MoqVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
-  </ItemGroup>  
-
+  </ItemGroup>
 </Project>
