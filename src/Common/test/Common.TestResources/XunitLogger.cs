@@ -10,12 +10,11 @@ namespace Steeltoe.Common;
 public class XunitLogger : ILogger
 {
     private readonly ITestOutputHelper _output;
-    private readonly ILoggerFactory _factory;
 
     public XunitLogger(ITestOutputHelper output)
     {
         _output = output;
-        _factory = LoggerFactory.Create(builder => builder.AddConsole());
+        LoggerFactory.Create(builder => builder.AddConsole());
     }
 
     public IDisposable BeginScope<TState>(TState state)

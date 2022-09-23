@@ -91,7 +91,12 @@ public static class TestHelpers
         return serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
     }
 
-    public static WebApplicationBuilder GetTestWebApplicationBuilder(string[] args = null)
+    public static WebApplicationBuilder GetTestWebApplicationBuilder()
+    {
+        return GetTestWebApplicationBuilder(null);
+    }
+
+    public static WebApplicationBuilder GetTestWebApplicationBuilder(string[] args)
     {
         WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder(args);
         webAppBuilder.Configuration.AddInMemoryCollection(FastTestsConfiguration);
