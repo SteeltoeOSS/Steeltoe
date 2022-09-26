@@ -1,0 +1,26 @@
+{
+  "solution": {
+    "path": "Steeltoe.All.sln",
+    "projects": [
+      "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
+      "Common\\src\\Common.Http\\Steeltoe.Common.Http.csproj",
+      "Common\\src\\Common.Security\\Steeltoe.Common.Security.csproj",
+      "Common\\src\\Common\\Steeltoe.Common.csproj",
+      "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Configuration\\src\\Abstractions\\Steeltoe.Extensions.Configuration.Abstractions.csproj",
+      "Configuration\\src\\CloudFoundry\\Steeltoe.Extensions.Configuration.CloudFoundry.csproj",
+      "Connectors\\src\\Abstractions\\Steeltoe.Connector.Abstractions.csproj",
+      "Connectors\\src\\CloudFoundry\\Steeltoe.Connector.CloudFoundry.csproj",
+      "Connectors\\src\\Connector\\Steeltoe.Connector.csproj",
+      "Discovery\\src\\Abstractions\\Steeltoe.Discovery.Abstractions.csproj",
+      "Security\\src\\Authentication.CloudFoundry\\Steeltoe.Security.Authentication.CloudFoundry.csproj",
+      "Security\\src\\Authentication.Mtls\\Steeltoe.Security.Authentication.Mtls.csproj",
+      "Security\\src\\DataProtection.CredHub\\Steeltoe.Security.DataProtection.CredHub.csproj",
+      "Security\\src\\DataProtection.Redis\\Steeltoe.Security.DataProtection.Redis.csproj",
+      "Security\\test\\Authentication.CloudFoundry.Test\\Steeltoe.Security.Authentication.CloudFoundry.Test.csproj",
+      "Security\\test\\Authentication.Mtls.Test\\Steeltoe.Security.Authentication.Mtls.Test.csproj",
+      "Security\\test\\DataProtection.CredHub.Test\\Steeltoe.Security.DataProtection.CredHub.Test.csproj",
+      "Security\\test\\DataProtection.Redis.Test\\Steeltoe.Security.DataProtection.Redis.Test.csproj"
+    ]
+  }
+}

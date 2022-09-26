@@ -1,0 +1,22 @@
+{
+  "solution": {
+    "path": "Steeltoe.All.sln",
+    "projects": [
+      "CircuitBreaker\\src\\Abstractions\\Steeltoe.CircuitBreaker.Abstractions.csproj",
+      "CircuitBreaker\\src\\Hystrix.MetricsEvents\\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.csproj",
+      "CircuitBreaker\\src\\Hystrix.MetricsStream\\Steeltoe.CircuitBreaker.Hystrix.MetricsStream.csproj",
+      "CircuitBreaker\\src\\Hystrix\\Steeltoe.CircuitBreaker.Hystrix.csproj",
+      "CircuitBreaker\\test\\Hystrix.MetricsEvents.Test\\Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test.csproj",
+      "CircuitBreaker\\test\\Hystrix.MetricsStream.Test\\Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test.csproj",
+      "CircuitBreaker\\test\\Hystrix.Test\\Steeltoe.CircuitBreaker.Hystrix.Test.csproj",
+      "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
+      "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
+      "Common\\src\\Common\\Steeltoe.Common.csproj",
+      "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Configuration\\src\\Abstractions\\Steeltoe.Extensions.Configuration.Abstractions.csproj",
+      "Connectors\\src\\Abstractions\\Steeltoe.Connector.Abstractions.csproj",
+      "Connectors\\src\\Connector\\Steeltoe.Connector.csproj",
+      "Discovery\\src\\Abstractions\\Steeltoe.Discovery.Abstractions.csproj"
+    ]
+  }
+}

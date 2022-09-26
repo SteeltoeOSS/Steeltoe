@@ -1,0 +1,28 @@
+{
+  "solution": {
+    "path": "Steeltoe.All.sln",
+    "projects": [
+      "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
+      "Common\\src\\Common.Expression\\Steeltoe.Common.Expression.csproj",
+      "Common\\src\\Common.Hosting\\Steeltoe.Common.Hosting.csproj",
+      "Common\\src\\Common.Http\\Steeltoe.Common.Http.csproj",
+      "Common\\src\\Common.Kubernetes\\Steeltoe.Common.Kubernetes.csproj",
+      "Common\\src\\Common.Net\\Steeltoe.Common.Net.csproj",
+      "Common\\src\\Common.RetryPolly\\Steeltoe.Common.RetryPolly.csproj",
+      "Common\\src\\Common.Security\\Steeltoe.Common.Security.csproj",
+      "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
+      "Common\\src\\Common\\Steeltoe.Common.csproj",
+      "Common\\test\\Common.Expression.Test\\Steeltoe.Common.Expression.Test.csproj",
+      "Common\\test\\Common.Hosting.Test\\Steeltoe.Common.Hosting.Test.csproj",
+      "Common\\test\\Common.Http.Test\\Steeltoe.Common.Http.Test.csproj",
+      "Common\\test\\Common.Kubernetes.Test\\Steeltoe.Common.Kubernetes.Test.csproj",
+      "Common\\test\\Common.Net.Test\\Steeltoe.Common.Net.Test.csproj",
+      "Common\\test\\Common.RetryPolly.Test\\Steeltoe.Common.RetryPolly.Test.csproj",
+      "Common\\test\\Common.Security.Test\\Steeltoe.Common.Security.Test.csproj",
+      "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Common\\test\\Common.Test\\Steeltoe.Common.Test.csproj",
+      "Common\\test\\Common.Utils.Test\\Steeltoe.Common.Utils.Test.csproj",
+      "Discovery\\src\\Abstractions\\Steeltoe.Discovery.Abstractions.csproj"
+    ]
+  }
+}

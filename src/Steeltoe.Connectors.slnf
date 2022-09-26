@@ -1,0 +1,23 @@
+{
+  "solution": {
+    "path": "Steeltoe.All.sln",
+    "projects": [
+      "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
+      "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
+      "Common\\src\\Common\\Steeltoe.Common.csproj",
+      "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Configuration\\src\\Abstractions\\Steeltoe.Extensions.Configuration.Abstractions.csproj",
+      "Configuration\\src\\CloudFoundry\\Steeltoe.Extensions.Configuration.CloudFoundry.csproj",
+      "Connectors\\src\\Abstractions\\Steeltoe.Connector.Abstractions.csproj",
+      "Connectors\\src\\CloudFoundry\\Steeltoe.Connector.CloudFoundry.csproj",
+      "Connectors\\src\\Connector\\Steeltoe.Connector.csproj",
+      "Connectors\\src\\EntityFramework6\\Steeltoe.Connector.EntityFramework6.csproj",
+      "Connectors\\src\\EntityFrameworkCore\\Steeltoe.Connector.EntityFrameworkCore.csproj",
+      "Connectors\\test\\Connector.CloudFoundry.Test\\Steeltoe.Connector.CloudFoundry.Test.csproj",
+      "Connectors\\test\\Connector.Test\\Steeltoe.Connector.Test.csproj",
+      "Connectors\\test\\EntityFramework6.Test\\Steeltoe.Connector.EntityFramework6.Test.csproj",
+      "Connectors\\test\\EntityFrameworkCore.Test\\Steeltoe.Connector.EntityFrameworkCore.Test.csproj",
+      "Connectors\\test\\External.Connector.Test\\External.Connector.Test.csproj"
+    ]
+  }
+}
