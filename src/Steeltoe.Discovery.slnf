@@ -1,0 +1,34 @@
+{
+  "solution": {
+    "path": "Steeltoe.All.sln",
+    "projects": [
+      "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
+      "Common\\src\\Common.Http\\Steeltoe.Common.Http.csproj",
+      "Common\\src\\Common.Kubernetes\\Steeltoe.Common.Kubernetes.csproj",
+      "Common\\src\\Common.Net\\Steeltoe.Common.Net.csproj",
+      "Common\\src\\Common.Security\\Steeltoe.Common.Security.csproj",
+      "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
+      "Common\\src\\Common\\Steeltoe.Common.csproj",
+      "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Configuration\\src\\Abstractions\\Steeltoe.Extensions.Configuration.Abstractions.csproj",
+      "Configuration\\src\\CloudFoundry\\Steeltoe.Extensions.Configuration.CloudFoundry.csproj",
+      "Connectors\\src\\Abstractions\\Steeltoe.Connector.Abstractions.csproj",
+      "Connectors\\src\\CloudFoundry\\Steeltoe.Connector.CloudFoundry.csproj",
+      "Connectors\\src\\Connector\\Steeltoe.Connector.csproj",
+      "Discovery\\src\\Abstractions\\Steeltoe.Discovery.Abstractions.csproj",
+      "Discovery\\src\\Client\\Steeltoe.Discovery.Client.csproj",
+      "Discovery\\src\\Consul\\Steeltoe.Discovery.Consul.csproj",
+      "Discovery\\src\\Eureka\\Steeltoe.Discovery.Eureka.csproj",
+      "Discovery\\src\\Kubernetes\\Steeltoe.Discovery.Kubernetes.csproj",
+      "Discovery\\test\\Client.Test\\Steeltoe.Discovery.Client.Test.csproj",
+      "Discovery\\test\\Consul.Test\\Steeltoe.Discovery.Consul.Test.csproj",
+      "Discovery\\test\\Eureka.Test\\Steeltoe.Discovery.Eureka.Test.csproj",
+      "Discovery\\test\\Kubernetes.Test\\Steeltoe.Discovery.Kubernetes.Test.csproj",
+      "Logging\\src\\Abstractions\\Steeltoe.Extensions.Logging.Abstractions.csproj",
+      "Logging\\src\\DynamicLogger\\Steeltoe.Extensions.Logging.DynamicLogger.csproj",
+      "Management\\src\\Abstractions\\Steeltoe.Management.Abstractions.csproj",
+      "Management\\src\\Endpoint\\Steeltoe.Management.Endpoint.csproj",
+      "Management\\src\\OpenTelemetry\\Steeltoe.Management.OpenTelemetry.csproj"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "solution": {
+    "path": "Steeltoe.All.sln",
+    "projects": [
+      "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
+      "Common\\src\\Common.Http\\Steeltoe.Common.Http.csproj",
+      "Common\\src\\Common.Kubernetes\\Steeltoe.Common.Kubernetes.csproj",
+      "Common\\src\\Common.Security\\Steeltoe.Common.Security.csproj",
+      "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
+      "Common\\src\\Common\\Steeltoe.Common.csproj",
+      "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Configuration\\src\\Abstractions\\Steeltoe.Extensions.Configuration.Abstractions.csproj",
+      "Configuration\\src\\CloudFoundry\\Steeltoe.Extensions.Configuration.CloudFoundry.csproj",
+      "Configuration\\src\\ConfigServer\\Steeltoe.Extensions.Configuration.ConfigServer.csproj",
+      "Configuration\\src\\Kubernetes\\Steeltoe.Extensions.Configuration.Kubernetes.csproj",
+      "Configuration\\src\\Placeholder\\Steeltoe.Extensions.Configuration.Placeholder.csproj",
+      "Configuration\\src\\RandomValue\\Steeltoe.Extensions.Configuration.RandomValue.csproj",
+      "Configuration\\src\\SpringBoot\\Steeltoe.Extensions.Configuration.SpringBoot.csproj",
+      "Configuration\\test\\CloudFoundry.Test\\Steeltoe.Extensions.Configuration.CloudFoundry.Test.csproj",
+      "Configuration\\test\\ConfigServer.Integration.Test\\Steeltoe.Extensions.Configuration.ConfigServer.Integration.Test.csproj",
+      "Configuration\\test\\ConfigServer.Test\\Steeltoe.Extensions.Configuration.ConfigServer.Test.csproj",
+      "Configuration\\test\\Kubernetes.Test\\Steeltoe.Extensions.Configuration.Kubernetes.Test.csproj",
+      "Configuration\\test\\Placeholder.Test\\Steeltoe.Extensions.Configuration.Placeholder.Test.csproj",
+      "Configuration\\test\\RandomValue.Test\\Steeltoe.Extensions.Configuration.RandomValue.Test.csproj",
+      "Configuration\\test\\SpringBoot.Test\\Steeltoe.Extensions.Configuration.SpringBoot.Test.csproj",
+      "Connectors\\src\\Abstractions\\Steeltoe.Connector.Abstractions.csproj",
+      "Connectors\\src\\Connector\\Steeltoe.Connector.csproj",
+      "Discovery\\src\\Abstractions\\Steeltoe.Discovery.Abstractions.csproj",
+      "Discovery\\src\\Client\\Steeltoe.Discovery.Client.csproj",
+      "Discovery\\src\\Eureka\\Steeltoe.Discovery.Eureka.csproj"
+    ]
+  }
+}
