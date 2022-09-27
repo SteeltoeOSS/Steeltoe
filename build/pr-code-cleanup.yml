@@ -9,8 +9,6 @@ jobs:
   pool:
     vmImage: windows-latest
   steps:
-  - checkout: self
-    fetchDepth: 0
   - task: PowerShell@2
     displayName: Validate preconditions
     inputs:
@@ -20,6 +18,7 @@ jobs:
           throw 'This pipeline can only be run from pull requests. Use "/azp run cleanup-code" in a GitHub PR comment.'
         }
   - checkout: self
+    fetchDepth: 0
     persistCredentials: true
   - task: PowerShell@2
     displayName: Checkout PR branch
