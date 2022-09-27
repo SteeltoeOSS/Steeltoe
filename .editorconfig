@@ -11,9 +11,10 @@ charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.{build,config,csproj,js,json,proj,props,targets,xml,ruleset,xsd}]
+[*.{build,config,csproj,js,json,proj,props,targets,xml,ruleset,xsd,yml,yaml}]
 indent_size = 2
 tab-width = 2
+max_line_length = 160
 
 [*.{cs,cshtml,ascx,aspx}]
 
