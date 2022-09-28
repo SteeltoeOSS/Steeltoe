@@ -14,7 +14,7 @@ namespace Steeltoe.Configuration;
 /// <remarks>
 /// Binds with an <see cref="IConfiguration" /> when instantiated.
 /// </remarks>
-public abstract class AbstractServiceOptions : AbstractOptions
+public abstract class BaseServiceOptions : AbstractOptions
 {
     protected virtual string ConfigurationPrefix => "services";
 
@@ -41,16 +41,16 @@ public abstract class AbstractServiceOptions : AbstractOptions
     public IDictionary<string, IEnumerable<Service>> Services { get; } = new Dictionary<string, IEnumerable<Service>>();
 
     // This constructor is for use with IOptions.
-    protected AbstractServiceOptions()
+    protected BaseServiceOptions()
     {
     }
 
-    protected AbstractServiceOptions(IConfiguration configuration)
+    protected BaseServiceOptions(IConfiguration configuration)
         : this(configuration, null)
     {
     }
 
-    protected AbstractServiceOptions(IConfiguration configuration, string sectionPrefix)
+    protected BaseServiceOptions(IConfiguration configuration, string sectionPrefix)
         : base(configuration, sectionPrefix)
     {
     }

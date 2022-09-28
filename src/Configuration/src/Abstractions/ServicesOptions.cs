@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration;
 
-public class ServicesOptions : AbstractServiceOptions
+public class ServicesOptions : BaseServiceOptions
 {
     // This constructor is for use with IOptions.
     public ServicesOptions()

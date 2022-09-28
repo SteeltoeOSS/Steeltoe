@@ -7,7 +7,7 @@ namespace Steeltoe.Configuration;
 /// <summary>
 /// Represents a service instance bound to an application.
 /// </summary>
-public sealed class Service : AbstractServiceOptions
+public sealed class Service : BaseServiceOptions
 {
     /// <summary>
     /// Gets the connection information and credentials for the service.
