@@ -12,22 +12,11 @@ namespace Steeltoe.Configuration.RandomValue;
 /// <summary>
 /// Configuration provider that provides random values. Note: This code was inspired by the Spring Boot equivalent class.
 /// </summary>
-public sealed class RandomValueProvider : ConfigurationProvider
+internal sealed class RandomValueProvider : ConfigurationProvider
 {
     private readonly ILogger<RandomValueProvider> _logger;
     private readonly string _prefix;
     private Random _random;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RandomValueProvider" /> class. The new placeholder resolver wraps the provided configuration.
-    /// </summary>
-    /// <param name="prefix">
-    /// Prefix to use to match random number keys.
-    /// </param>
-    public RandomValueProvider(string prefix)
-        : this(prefix, NullLoggerFactory.Instance)
-    {
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RandomValueProvider" /> class. The new placeholder resolver wraps the provided configuration.

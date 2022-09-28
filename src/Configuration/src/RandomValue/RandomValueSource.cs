@@ -12,7 +12,7 @@ namespace Steeltoe.Configuration.RandomValue;
 /// <summary>
 /// Configuration source used in creating a <see cref="RandomValueProvider" /> that generates random numbers.
 /// </summary>
-public sealed class RandomValueSource : IConfigurationSource
+internal sealed class RandomValueSource : IConfigurationSource
 {
     private const string RandomPrefix = "random:";
 
@@ -22,30 +22,11 @@ public sealed class RandomValueSource : IConfigurationSource
     /// <summary>
     /// Initializes a new instance of the <see cref="RandomValueSource" /> class.
     /// </summary>
-    public RandomValueSource()
-        : this(RandomPrefix, NullLoggerFactory.Instance)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RandomValueSource" /> class.
-    /// </summary>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     public RandomValueSource(ILoggerFactory loggerFactory)
         : this(RandomPrefix, loggerFactory)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RandomValueSource" /> class using a custom prefix for key values.
-    /// </summary>
-    /// <param name="prefix">
-    /// Key prefix to use to match random number keys. Should end with the configuration separator.
-    /// </param>
-    public RandomValueSource(string prefix)
-        : this(prefix, NullLoggerFactory.Instance)
     {
     }
 

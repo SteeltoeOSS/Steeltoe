@@ -41,7 +41,7 @@ public sealed class RandomValueSourceTest
     [Fact]
     public void Build__ReturnsProvider()
     {
-        var source = new RandomValueSource();
+        var source = new RandomValueSource(NullLoggerFactory.Instance);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<RandomValueProvider>(provider);
     }
