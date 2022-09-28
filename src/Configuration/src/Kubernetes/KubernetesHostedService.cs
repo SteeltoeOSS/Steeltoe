@@ -12,7 +12,7 @@ namespace Steeltoe.Configuration.Kubernetes;
 /// <summary>
 /// Replaces bootstrapped components used by KubernetesConfigurationProvider with objects provided by Dependency Injection.
 /// </summary>
-public sealed class KubernetesHostedService : IHostedService
+internal sealed class KubernetesHostedService : IHostedService
 {
     private readonly IEnumerable<KubernetesConfigMapProvider> _configMapProviders;
     private readonly IEnumerable<KubernetesSecretProvider> _configSecretProviders;

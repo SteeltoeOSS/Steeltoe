@@ -17,8 +17,4 @@ static Steeltoe.Configuration.Kubernetes.KubernetesHostBuilderExtensions.AddKube
 static Steeltoe.Configuration.Kubernetes.KubernetesServiceCollectionExtensions.AddKubernetesConfigurationServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 Steeltoe.Configuration.Kubernetes.KubernetesConfigurationBuilderExtensions
 Steeltoe.Configuration.Kubernetes.KubernetesHostBuilderExtensions
-Steeltoe.Configuration.Kubernetes.KubernetesHostedService
-Steeltoe.Configuration.Kubernetes.KubernetesHostedService.KubernetesHostedService(Microsoft.Extensions.Configuration.IConfiguration configuration, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
-Steeltoe.Configuration.Kubernetes.KubernetesHostedService.StartAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
-Steeltoe.Configuration.Kubernetes.KubernetesHostedService.StopAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
 Steeltoe.Configuration.Kubernetes.KubernetesServiceCollectionExtensions
