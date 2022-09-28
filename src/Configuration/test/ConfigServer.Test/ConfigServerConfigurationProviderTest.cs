@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Xunit;
@@ -28,7 +29,7 @@ public sealed class ConfigServerConfigurationProviderTest
     {
         const ConfigServerClientSettings settings = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings));
+        var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance));
         Assert.Contains(nameof(settings), ex.Message);
     }
 
@@ -38,7 +39,7 @@ public sealed class ConfigServerConfigurationProviderTest
         var settings = new ConfigServerClientSettings();
         const HttpClient httpClient = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient));
+        var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient, NullLoggerFactory.Instance));
         Assert.Contains(nameof(httpClient), ex.Message);
     }
 
@@ -55,7 +56,8 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void DefaultConstructor_InitializedWithDefaultSettings()
     {
-        var provider = new ConfigServerConfigurationProvider();
+        var settings = new ConfigServerClientSettings();
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         TestHelper.VerifyDefaults(provider.Settings);
     }
@@ -64,8 +66,9 @@ public sealed class ConfigServerConfigurationProviderTest
     public void SourceConstructor_WithDefaults_InitializesWithDefaultSettings()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
-        var source = new ConfigServerConfigurationSource(configuration);
-        var provider = new ConfigServerConfigurationProvider(source);
+        var settings = new ConfigServerClientSettings();
+        var source = new ConfigServerConfigurationSource(settings, configuration, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
         TestHelper.VerifyDefaults(provider.Settings);
     }
@@ -79,7 +82,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         Assert.Throws<ArgumentNullException>(() => provider.GetConfigServerUri(null, null));
     }
@@ -93,7 +96,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         string path = provider.GetConfigServerUri(settings.RawUris[0], null);
         Assert.Equal($"{settings.RawUris[0]}{settings.Name}/{settings.Environment}", path);
@@ -109,7 +112,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Label = "myLabel"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         string path = provider.GetConfigServerUri(settings.RawUris[0], settings.Label);
         Assert.Equal($"{settings.RawUris[0]}{settings.Name}/{settings.Environment}/{settings.Label}", path);
@@ -125,7 +128,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Label = "myLabel/version"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         string path = provider.GetConfigServerUri(settings.RawUris[0], settings.Label);
         Assert.Equal($"{settings.RawUris[0]}{settings.Name}/{settings.Environment}/myLabel(_)version", path);
@@ -141,7 +144,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         string path = provider.GetConfigServerUri(settings.RawUris[0], null);
         Assert.Equal($"http://localhost:9999/myPath/path/{settings.Name}/{settings.Environment}", path);
@@ -157,7 +160,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         string path = provider.GetConfigServerUri(settings.RawUris[0], null);
         Assert.Equal($"http://localhost:9999/myPath/path/{settings.Name}/{settings.Environment}", path);
@@ -173,7 +176,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         string path = provider.GetConfigServerUri(settings.RawUris[0], null);
         Assert.Equal($"http://localhost:9999/{settings.Name}/{settings.Environment}", path);
@@ -189,7 +192,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         string path = provider.GetConfigServerUri(settings.RawUris[0], null);
         Assert.Equal($"http://localhost:9999/{settings.Name}/{settings.Environment}", path);
@@ -222,7 +225,8 @@ public sealed class ConfigServerConfigurationProviderTest
             }
         };
 
-        var provider = new ConfigServerConfigurationProvider();
+        var settings = new ConfigServerClientSettings();
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
         var content = JsonContent.Create(environment);
 
         var env = await content.ReadFromJsonAsync<ConfigEnvironment>(provider.SerializerOptions);
@@ -245,7 +249,9 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void ConvertArray_NotArrayValue()
     {
-        var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+        var settings = new ConfigServerClientSettings();
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+
         string result = provider.ConvertArrayKey("foobar");
         Assert.Equal("foobar", result);
     }
@@ -253,7 +259,9 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void ConvertArray_NotArrayValue2()
     {
-        var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+        var settings = new ConfigServerClientSettings();
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+
         string result = provider.ConvertArrayKey("foobar[bar]");
         Assert.Equal("foobar[bar]", result);
     }
@@ -261,7 +269,9 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void ConvertArray_WithArrayValue()
     {
-        var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+        var settings = new ConfigServerClientSettings();
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+
         string result = provider.ConvertArrayKey("foobar[1234]");
         Assert.Equal("foobar:1234", result);
     }
@@ -269,7 +279,9 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void ConvertArray_WithArrayArrayValue()
     {
-        var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+        var settings = new ConfigServerClientSettings();
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+
         string result = provider.ConvertArrayKey("foobar[1234][5678]");
         Assert.Equal("foobar:1234:5678", result);
     }
@@ -277,7 +289,9 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void ConvertArray_WithArrayArrayNotAtEnd()
     {
-        var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+        var settings = new ConfigServerClientSettings();
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+
         string result = provider.ConvertArrayKey("foobar[1234][5678]barbar");
         Assert.Equal("foobar[1234][5678]barbar", result);
     }
@@ -285,7 +299,9 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void ConvertKey_WithArrayArrayValue()
     {
-        var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+        var settings = new ConfigServerClientSettings();
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+
         string result = provider.ConvertKey("a.b.foobar[1234][5678].barfoo.boo[123]");
         Assert.Equal("a:b:foobar:1234:5678:barfoo:boo:123", result);
     }
@@ -293,7 +309,9 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void ConvertKey_WithEscapedDot()
     {
-        var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+        var settings = new ConfigServerClientSettings();
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+
         string result = provider.ConvertKey(@"a.b\.foobar");
         Assert.Equal("a:b.foobar", result);
     }
@@ -301,7 +319,8 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task RemoteLoadAsync_InvalidUri()
     {
-        var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+        var settings = new ConfigServerClientSettings();
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         await Assert.ThrowsAsync<UriFormatException>(() => provider.RemoteLoadAsync(new[]
         {
@@ -312,10 +331,12 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task RemoteLoadAsync_HostTimesOut()
     {
-        var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings
+        var settings = new ConfigServerClientSettings
         {
             Timeout = 100
-        });
+        };
+
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         try
         {
@@ -354,7 +375,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
         await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(settings.GetUris(), null));
 
@@ -382,7 +403,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
         ConfigEnvironment result = await provider.RemoteLoadAsync(settings.RawUris, null);
 
@@ -426,7 +447,7 @@ public sealed class ConfigServerConfigurationProviderTest
         };
 
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
         Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(60)));
         Assert.True(TestConfigServerStartup.RequestCount >= 1);
         await Task.Delay(1000);
@@ -477,7 +498,7 @@ public sealed class ConfigServerConfigurationProviderTest
         ConfigServerClientSettings settings = _commonSettings;
         settings.Label = "label,testlabel";
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
         provider.DoLoad();
 
@@ -518,7 +539,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
         ConfigEnvironment env = await provider.RemoteLoadAsync(settings.GetUris(), null);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
@@ -560,7 +581,7 @@ public sealed class ConfigServerConfigurationProviderTest
         ConfigServerClientSettings settings = _commonSettings;
         settings.Uri = "http://localhost:8888, http://localhost:8888";
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
         provider.LoadInternal();
         Assert.NotNull(TestConfigServerStartup.LastRequest);
@@ -590,7 +611,7 @@ public sealed class ConfigServerConfigurationProviderTest
         ConfigServerClientSettings settings = _commonSettings;
         settings.Uri = "http://localhost:8888, http://localhost:8888";
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
         provider.LoadInternal();
         Assert.NotNull(TestConfigServerStartup.LastRequest);
@@ -618,7 +639,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
         provider.LoadInternal();
         Assert.NotNull(TestConfigServerStartup.LastRequest);
@@ -647,7 +668,7 @@ public sealed class ConfigServerConfigurationProviderTest
         ConfigServerClientSettings settings = _commonSettings;
         settings.FailFast = true;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
         Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
     }
@@ -667,7 +688,7 @@ public sealed class ConfigServerConfigurationProviderTest
         };
 
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus = new[]
@@ -701,7 +722,7 @@ public sealed class ConfigServerConfigurationProviderTest
         ConfigServerClientSettings settings = _commonSettings;
         settings.FailFast = true;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
         Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
     }
@@ -730,7 +751,7 @@ public sealed class ConfigServerConfigurationProviderTest
         settings.FailFast = true;
         settings.Uri = "http://localhost:8888, http://localhost:8888, http://localhost:8888";
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
         Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
@@ -769,7 +790,7 @@ public sealed class ConfigServerConfigurationProviderTest
         };
 
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
         Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
         Assert.Equal(6, TestConfigServerStartup.RequestCount);
@@ -807,7 +828,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
         provider.LoadInternal();
         Assert.NotNull(TestConfigServerStartup.LastRequest);
@@ -853,7 +874,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
         provider.Load();
         Assert.NotNull(TestConfigServerStartup.LastRequest);
@@ -915,7 +936,7 @@ public sealed class ConfigServerConfigurationProviderTest
             RetryMultiplier = 1.1
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
         CultureInfo initialCulture = GetAndSetCurrentCulture(new CultureInfo("ru-RU"));
 
         try
@@ -972,7 +993,7 @@ public sealed class ConfigServerConfigurationProviderTest
     public void GetLabels_Null()
     {
         var settings = new ConfigServerClientSettings();
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
         Assert.NotNull(result);
@@ -988,7 +1009,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Label = string.Empty
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
         Assert.NotNull(result);
@@ -1004,7 +1025,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Label = "foobar"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
         Assert.NotNull(result);
@@ -1020,7 +1041,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Label = "1,2,3,"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
         Assert.NotNull(result);
@@ -1038,7 +1059,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Label = "1,,2,3,"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
         Assert.NotNull(result);
@@ -1058,7 +1079,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Environment = "development"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         string requestUri = provider.GetConfigServerUri(settings.RawUris[0], null);
         HttpRequestMessage request = provider.GetRequestMessage(requestUri, "user", "password");
@@ -1080,7 +1101,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Token = "MyVaultToken"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         string requestUri = provider.GetConfigServerUri(settings.RawUris[0], null);
         HttpRequestMessage request = provider.GetRequestMessage(requestUri, null, null);
@@ -1106,8 +1127,8 @@ public sealed class ConfigServerConfigurationProviderTest
             }
         };
 
-        var provider = new TestConfigServerConfigurationProvider(settings);
-        HttpClient httpClient = provider.TheConfiguredClient;
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        HttpClient httpClient = provider.HttpClient;
 
         Assert.Equal("bar", httpClient.DefaultRequestHeaders.GetValues("foo").SingleOrDefault());
         Assert.Equal("foo", httpClient.DefaultRequestHeaders.GetValues("bar").SingleOrDefault());
@@ -1123,7 +1144,7 @@ public sealed class ConfigServerConfigurationProviderTest
             DiscoveryEnabled = true
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings);
+        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
         Assert.True(provider.IsDiscoveryFirstEnabled());
 
         var values = new Dictionary<string, string>
@@ -1139,8 +1160,8 @@ public sealed class ConfigServerConfigurationProviderTest
             Environment = "development"
         };
 
-        var source = new ConfigServerConfigurationSource(settings, configuration);
-        provider = new ConfigServerConfigurationProvider(source);
+        var source = new ConfigServerConfigurationSource(settings, configuration, NullLoggerFactory.Instance);
+        provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
         Assert.True(provider.IsDiscoveryFirstEnabled());
     }
@@ -1162,8 +1183,8 @@ public sealed class ConfigServerConfigurationProviderTest
             Environment = "development"
         };
 
-        var source = new ConfigServerConfigurationSource(settings, configuration);
-        var provider = new ConfigServerConfigurationProvider(source);
+        var source = new ConfigServerConfigurationSource(settings, configuration, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
         provider.UpdateSettingsFromDiscovery(new List<IServiceInstance>(), settings);
         Assert.Null(settings.Username);
@@ -1213,8 +1234,8 @@ public sealed class ConfigServerConfigurationProviderTest
             Timeout = 10
         };
 
-        var source = new ConfigServerConfigurationSource(settings, configuration);
-        var provider = new ConfigServerConfigurationProvider(source);
+        var source = new ConfigServerConfigurationSource(settings, configuration, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
         var exception = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
         Assert.StartsWith("Could not locate Config Server via discovery", exception.Message);
@@ -1253,7 +1274,7 @@ public sealed class ConfigServerConfigurationProviderTest
         };
 
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client);
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
         var configurationBuilder = new ConfigurationBuilder();
 
@@ -1312,16 +1333,6 @@ public sealed class ConfigServerConfigurationProviderTest
         {
             Uri = uri;
             Metadata = metadata;
-        }
-    }
-
-    private sealed class TestConfigServerConfigurationProvider : ConfigServerConfigurationProvider
-    {
-        public HttpClient TheConfiguredClient => HttpClient;
-
-        public TestConfigServerConfigurationProvider(ConfigServerClientSettings settings)
-            : base(settings)
-        {
         }
     }
 

@@ -11,7 +11,7 @@ using Steeltoe.Common.Options;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
-public sealed class ConfigServerConfigurationSource : IConfigurationSource
+internal sealed class ConfigServerConfigurationSource : IConfigurationSource
 {
     internal IList<IConfigurationSource> Sources { get; } = new List<IConfigurationSource>();
 
@@ -36,45 +36,6 @@ public sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
     /// </summary>
-    /// <param name="configuration">
-    /// configuration used by the Config Server client. Values will override those found in default settings.
-    /// </param>
-    public ConfigServerConfigurationSource(IConfiguration configuration)
-        : this(configuration, NullLoggerFactory.Instance)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
-    /// </summary>
-    /// <param name="configuration">
-    /// configuration used by the Config Server client. Values will override those found in default settings.
-    /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
-    public ConfigServerConfigurationSource(IConfiguration configuration, ILoggerFactory loggerFactory)
-        : this(new ConfigServerClientSettings(), configuration, loggerFactory)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
-    /// </summary>
-    /// <param name="defaultSettings">
-    /// the default settings used by the Config Server client.
-    /// </param>
-    /// <param name="configuration">
-    /// configuration used by the Config Server client. Values will override those found in default settings.
-    /// </param>
-    public ConfigServerConfigurationSource(ConfigServerClientSettings defaultSettings, IConfiguration configuration)
-        : this(defaultSettings, configuration, NullLoggerFactory.Instance)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
-    /// </summary>
     /// <param name="defaultSettings">
     /// the default settings used by the Config Server client.
     /// </param>
@@ -93,73 +54,6 @@ public sealed class ConfigServerConfigurationSource : IConfigurationSource
         Configuration = configuration;
         DefaultSettings = defaultSettings;
         LoggerFactory = loggerFactory;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
-    /// </summary>
-    /// <param name="sources">
-    /// configuration sources used by the Config Server client. The <see cref="Configuration" /> will be built from these sources and the values will
-    /// override those found in <see cref="DefaultSettings" />.
-    /// </param>
-    /// <param name="properties">
-    /// properties to be used when sources are built.
-    /// </param>
-    public ConfigServerConfigurationSource(IList<IConfigurationSource> sources, IDictionary<string, object> properties)
-        : this(sources, properties, NullLoggerFactory.Instance)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
-    /// </summary>
-    /// <param name="sources">
-    /// configuration sources used by the Config Server client. The <see cref="Configuration" /> will be built from these sources and the values will
-    /// override those found in <see cref="DefaultSettings" />.
-    /// </param>
-    /// <param name="properties">
-    /// properties to be used when sources are built.
-    /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
-    public ConfigServerConfigurationSource(IList<IConfigurationSource> sources, IDictionary<string, object> properties, ILoggerFactory loggerFactory)
-        : this(new ConfigServerClientSettings(), sources, properties, loggerFactory)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
-    /// </summary>
-    /// <param name="defaultSettings">
-    /// the default settings used by the Config Server client.
-    /// </param>
-    /// <param name="sources">
-    /// configuration sources used by the Config Server client. The <see cref="Configuration" /> will be built from these sources and the values will
-    /// override those found in <see cref="DefaultSettings" />.
-    /// </param>
-    public ConfigServerConfigurationSource(ConfigServerClientSettings defaultSettings, IList<IConfigurationSource> sources)
-        : this(defaultSettings, sources, null, NullLoggerFactory.Instance)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
-    /// </summary>
-    /// <param name="defaultSettings">
-    /// the default settings used by the Config Server client.
-    /// </param>
-    /// <param name="sources">
-    /// configuration sources used by the Config Server client. The <see cref="Configuration" /> will be built from these sources and the values will
-    /// override those found in <see cref="DefaultSettings" />.
-    /// </param>
-    /// <param name="properties">
-    /// properties to be used when sources are built.
-    /// </param>
-    public ConfigServerConfigurationSource(ConfigServerClientSettings defaultSettings, IList<IConfigurationSource> sources,
-        IDictionary<string, object> properties)
-        : this(defaultSettings, sources, properties, NullLoggerFactory.Instance)
-    {
     }
 
     /// <summary>
@@ -239,6 +133,6 @@ public sealed class ConfigServerConfigurationSource : IConfigurationSource
             DefaultSettings.ClientCertificate = options.Certificate;
         }
 
-        return new ConfigServerConfigurationProvider(this);
+        return new ConfigServerConfigurationProvider(this, NullLoggerFactory.Instance);
     }
 }

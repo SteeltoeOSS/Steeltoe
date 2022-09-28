@@ -4,14 +4,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.Placeholder;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
-public sealed class ConfigServerHealthContributor : IHealthContributor
+internal sealed class ConfigServerHealthContributor : IHealthContributor
 {
     private readonly ILogger<ConfigServerHealthContributor> _logger;
 
@@ -20,11 +19,6 @@ public sealed class ConfigServerHealthContributor : IHealthContributor
     internal long LastAccess { get; set; }
     public string Id => "config-server";
 
-    public ConfigServerHealthContributor(IConfiguration configuration)
-        : this(configuration, NullLogger<ConfigServerHealthContributor>.Instance)
-    {
-    }
-
     public ConfigServerHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger)
     {
         ArgumentGuard.NotNull(configuration);
@@ -32,19 +26,6 @@ public sealed class ConfigServerHealthContributor : IHealthContributor
 
         _logger = logger;
         Provider = FindProvider(configuration);
-    }
-
-    public static IHealthContributor GetHealthContributor(IConfiguration configuration)
-    {
-        return GetHealthContributor(configuration, NullLogger<ConfigServerHealthContributor>.Instance);
-    }
-
-    public static IHealthContributor GetHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger)
-    {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(logger);
-
-        return new ConfigServerHealthContributor(configuration, logger);
     }
 
     public HealthCheckResult Health()

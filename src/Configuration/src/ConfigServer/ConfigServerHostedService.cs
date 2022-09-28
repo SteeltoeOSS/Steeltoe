@@ -14,7 +14,7 @@ namespace Steeltoe.Configuration.ConfigServer;
 /// <summary>
 /// Replace bootstrapped components used by <see cref="ConfigServerConfigurationProvider" /> with objects provided by Dependency Injection.
 /// </summary>
-public sealed class ConfigServerHostedService : IHostedService
+internal sealed class ConfigServerHostedService : IHostedService
 {
     private readonly ConfigServerConfigurationProvider _configuration;
     private readonly IDiscoveryClient _discoveryClient;

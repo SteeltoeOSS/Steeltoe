@@ -90,7 +90,7 @@ public sealed class ConfigServerConfigurationSourceTest
             memSource
         };
 
-        var source = new ConfigServerConfigurationSource(settings, sources);
+        var source = new ConfigServerConfigurationSource(settings, sources, null, NullLoggerFactory.Instance);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<ConfigServerConfigurationProvider>(provider);
     }

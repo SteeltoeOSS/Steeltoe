@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.Placeholder;
 using Xunit;
@@ -14,7 +15,8 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public void Constructor_ThrowsOnNull()
     {
-        Assert.Throws<ArgumentNullException>(() => new ConfigServerHealthContributor(null));
+        Assert.Throws<ArgumentNullException>(() => new ConfigServerHealthContributor(null, NullLogger<ConfigServerHealthContributor>.Instance));
+        Assert.Throws<ArgumentNullException>(() => new ConfigServerHealthContributor(new ConfigurationBuilder().Build(), null));
     }
 
     [Fact]
@@ -35,7 +37,7 @@ public sealed class ConfigServerHealthContributorTest
 
         IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(configurationRoot);
+        var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.NotNull(contributor.Provider);
     }
 
@@ -56,7 +58,7 @@ public sealed class ConfigServerHealthContributorTest
 
         IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(configurationRoot);
+        var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.NotNull(contributor.FindProvider(configurationRoot));
     }
 
@@ -78,7 +80,7 @@ public sealed class ConfigServerHealthContributorTest
 
         IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(configurationRoot);
+        var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.Equal(100000, contributor.GetTimeToLive());
     }
 
@@ -100,7 +102,7 @@ public sealed class ConfigServerHealthContributorTest
 
         IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(configurationRoot);
+        var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.True(contributor.IsEnabled());
     }
 
@@ -123,7 +125,7 @@ public sealed class ConfigServerHealthContributorTest
 
         IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(configurationRoot);
+        var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.True(contributor.IsCacheStale(0)); // No cache established yet
         contributor.Cached = new ConfigEnvironment();
         contributor.LastAccess = 9;
@@ -151,7 +153,7 @@ public sealed class ConfigServerHealthContributorTest
 
         IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(configurationRoot)
+        var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance)
         {
             Cached = new ConfigEnvironment()
         };
@@ -181,7 +183,7 @@ public sealed class ConfigServerHealthContributorTest
         builder.AddInMemoryCollection(values);
         IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(configurationRoot);
+        var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.Null(contributor.Provider);
         HealthCheckResult health = contributor.Health();
         Assert.NotNull(health);
@@ -207,7 +209,7 @@ public sealed class ConfigServerHealthContributorTest
         builder.AddConfigServer();
         IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(configurationRoot);
+        var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.NotNull(contributor.Provider);
         HealthCheckResult health = contributor.Health();
         Assert.NotNull(health);
@@ -233,7 +235,7 @@ public sealed class ConfigServerHealthContributorTest
         builder.AddConfigServer();
         IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(configurationRoot);
+        var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.NotNull(contributor.Provider);
         HealthCheckResult health = contributor.Health();
         Assert.NotNull(health);
@@ -259,7 +261,7 @@ public sealed class ConfigServerHealthContributorTest
         builder.AddConfigServer();
         IConfigurationRoot configurationRoot = builder.Build();
 
-        var contributor = new ConfigServerHealthContributor(configurationRoot);
+        var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         var health = new HealthCheckResult();
 
         var sources = new List<PropertySource>
