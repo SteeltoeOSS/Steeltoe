@@ -14,22 +14,3 @@ static Steeltoe.Configuration.Placeholder.PlaceholderResolverExtensions.Configur
 static Steeltoe.Configuration.Placeholder.PlaceholderResolverExtensions.ConfigurePlaceholderResolver(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Configuration.IConfiguration
 Steeltoe.Configuration.Placeholder.PlaceholderResolverConfigurationExtensions
 Steeltoe.Configuration.Placeholder.PlaceholderResolverExtensions
-Steeltoe.Configuration.Placeholder.PlaceholderResolverProvider
-Steeltoe.Configuration.Placeholder.PlaceholderResolverProvider.Configuration.get -> Microsoft.Extensions.Configuration.IConfigurationRoot
-Steeltoe.Configuration.Placeholder.PlaceholderResolverProvider.GetChildKeys(System.Collections.Generic.IEnumerable<string> earlierKeys, string parentPath) -> System.Collections.Generic.IEnumerable<string>
-Steeltoe.Configuration.Placeholder.PlaceholderResolverProvider.GetReloadToken() -> Microsoft.Extensions.Primitives.IChangeToken
-Steeltoe.Configuration.Placeholder.PlaceholderResolverProvider.Load() -> void
-Steeltoe.Configuration.Placeholder.PlaceholderResolverProvider.PlaceholderResolverProvider(Microsoft.Extensions.Configuration.IConfigurationRoot root) -> void
-Steeltoe.Configuration.Placeholder.PlaceholderResolverProvider.PlaceholderResolverProvider(Microsoft.Extensions.Configuration.IConfigurationRoot root, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
-Steeltoe.Configuration.Placeholder.PlaceholderResolverProvider.PlaceholderResolverProvider(System.Collections.Generic.IList<Microsoft.Extensions.Configuration.IConfigurationProvider> providers) -> void
-Steeltoe.Configuration.Placeholder.PlaceholderResolverProvider.PlaceholderResolverProvider(System.Collections.Generic.IList<Microsoft.Extensions.Configuration.IConfigurationProvider> providers, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
-Steeltoe.Configuration.Placeholder.PlaceholderResolverProvider.Providers.get -> System.Collections.Generic.IList<Microsoft.Extensions.Configuration.IConfigurationProvider>
-Steeltoe.Configuration.Placeholder.PlaceholderResolverProvider.ResolvedKeys.get -> System.Collections.Generic.IList<string>
-Steeltoe.Configuration.Placeholder.PlaceholderResolverProvider.Set(string key, string value) -> void
-Steeltoe.Configuration.Placeholder.PlaceholderResolverProvider.TryGet(string key, out string value) -> bool
-Steeltoe.Configuration.Placeholder.PlaceholderResolverSource
-Steeltoe.Configuration.Placeholder.PlaceholderResolverSource.Build(Microsoft.Extensions.Configuration.IConfigurationBuilder builder) -> Microsoft.Extensions.Configuration.IConfigurationProvider
-Steeltoe.Configuration.Placeholder.PlaceholderResolverSource.PlaceholderResolverSource(Microsoft.Extensions.Configuration.IConfigurationRoot root) -> void
-Steeltoe.Configuration.Placeholder.PlaceholderResolverSource.PlaceholderResolverSource(Microsoft.Extensions.Configuration.IConfigurationRoot root, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
-Steeltoe.Configuration.Placeholder.PlaceholderResolverSource.PlaceholderResolverSource(System.Collections.Generic.IList<Microsoft.Extensions.Configuration.IConfigurationSource> sources) -> void
-Steeltoe.Configuration.Placeholder.PlaceholderResolverSource.PlaceholderResolverSource(System.Collections.Generic.IList<Microsoft.Extensions.Configuration.IConfigurationSource> sources, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void

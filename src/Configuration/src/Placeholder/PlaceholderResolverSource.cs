@@ -15,23 +15,12 @@ namespace Steeltoe.Configuration.Placeholder;
 /// ${some:config:reference?default_if_not_present}
 /// ]]></code>
 /// </summary>
-public sealed class PlaceholderResolverSource : IConfigurationSource
+internal sealed class PlaceholderResolverSource : IConfigurationSource
 {
     private readonly IConfigurationRoot _configuration;
 
     internal IList<IConfigurationSource> Sources { get; }
     internal ILoggerFactory LoggerFactory { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PlaceholderResolverSource" /> class.
-    /// </summary>
-    /// <param name="sources">
-    /// The configuration sources to use.
-    /// </param>
-    public PlaceholderResolverSource(IList<IConfigurationSource> sources)
-        : this(sources, NullLoggerFactory.Instance)
-    {
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlaceholderResolverSource" /> class.
@@ -49,17 +38,6 @@ public sealed class PlaceholderResolverSource : IConfigurationSource
 
         Sources = sources.ToList();
         LoggerFactory = loggerFactory;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PlaceholderResolverSource" /> class.
-    /// </summary>
-    /// <param name="root">
-    /// The root configuration to use.
-    /// </param>
-    public PlaceholderResolverSource(IConfigurationRoot root)
-        : this(root, NullLoggerFactory.Instance)
-    {
     }
 
     /// <summary>

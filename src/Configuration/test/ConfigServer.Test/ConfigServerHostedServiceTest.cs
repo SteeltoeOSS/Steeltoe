@@ -4,6 +4,7 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Configuration.Placeholder;
 using Xunit;
 
@@ -48,7 +49,7 @@ public sealed class ConfigServerHostedServiceTest
             {
                 Enabled = false
             })
-        });
+        }, NullLoggerFactory.Instance);
 
         var configurationRoot = new ConfigurationRoot(new List<IConfigurationProvider>
         {

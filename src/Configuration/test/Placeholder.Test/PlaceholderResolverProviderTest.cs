@@ -86,7 +86,7 @@ public sealed class PlaceholderResolverProviderTest
         builder.AddInMemoryCollection(settings);
         List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
-        var holder = new PlaceholderResolverProvider(providers);
+        var holder = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
 
         Assert.False(holder.TryGet("nokey", out string val));
         Assert.True(holder.TryGet("key1", out val));
@@ -114,7 +114,7 @@ public sealed class PlaceholderResolverProviderTest
         builder.AddInMemoryCollection(settings);
         List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
-        var holder = new PlaceholderResolverProvider(providers);
+        var holder = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
 
         Assert.False(holder.TryGet("nokey", out string val));
         Assert.True(holder.TryGet("key1", out val));
@@ -175,7 +175,7 @@ public sealed class PlaceholderResolverProviderTest
 
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var holder = new PlaceholderResolverProvider(new List<IConfigurationProvider>(configurationRoot.Providers));
+        var holder = new PlaceholderResolverProvider(new List<IConfigurationProvider>(configurationRoot.Providers), NullLoggerFactory.Instance);
         IChangeToken token = holder.GetReloadToken();
         Assert.NotNull(token);
         Assert.False(token.HasChanged);
@@ -209,7 +209,7 @@ public sealed class PlaceholderResolverProviderTest
         builder.AddInMemoryCollection(settings);
         List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
-        var holder = new PlaceholderResolverProvider(providers);
+        var holder = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
         Assert.Null(holder.Configuration);
         holder.Load();
         Assert.NotNull(holder.Configuration);
@@ -258,7 +258,7 @@ public sealed class PlaceholderResolverProviderTest
 
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var holder = new PlaceholderResolverProvider(configurationRoot);
+        var holder = new PlaceholderResolverProvider(configurationRoot, NullLoggerFactory.Instance);
         Assert.True(holder.TryGet("spring:cloud:config:name", out string val));
         Assert.Equal("myName", val);
 
@@ -284,7 +284,7 @@ public sealed class PlaceholderResolverProviderTest
         builder.AddInMemoryCollection(settings);
         List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
-        var holder = new PlaceholderResolverProvider(providers);
+        var holder = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
         IEnumerable<string> result = holder.GetChildKeys(Array.Empty<string>(), "spring");
 
         Assert.NotNull(result);

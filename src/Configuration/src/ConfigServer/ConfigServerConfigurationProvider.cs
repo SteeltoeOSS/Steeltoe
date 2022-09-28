@@ -921,7 +921,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider
 
         return new ConfigurationRoot(new List<IConfigurationProvider>
         {
-            new PlaceholderResolverProvider(root.Providers.ToList())
+            new PlaceholderResolverProvider(root.Providers.ToList(), NullLoggerFactory.Instance)
         });
     }
 

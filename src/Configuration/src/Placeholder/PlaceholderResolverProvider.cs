@@ -17,7 +17,7 @@ namespace Steeltoe.Configuration.Placeholder;
 /// ${some:config:reference?default_if_not_present}
 /// ]]></code>
 /// </summary>
-public sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
+internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
 {
     internal ILogger<PlaceholderResolverProvider> Logger { get; }
 
@@ -36,18 +36,6 @@ public sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// <param name="root">
     /// The configuration the provider uses when resolving placeholders.
     /// </param>
-    public PlaceholderResolverProvider(IConfigurationRoot root)
-        : this(root, NullLoggerFactory.Instance)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PlaceholderResolverProvider" /> class. The new placeholder resolver wraps the provided configuration
-    /// root.
-    /// </summary>
-    /// <param name="root">
-    /// The configuration the provider uses when resolving placeholders.
-    /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
@@ -58,18 +46,6 @@ public sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
 
         Configuration = root;
         Logger = loggerFactory.CreateLogger<PlaceholderResolverProvider>();
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PlaceholderResolverProvider" /> class. The new placeholder resolver wraps the provided configuration
-    /// providers. The <see cref="Configuration" /> will be created from these providers.
-    /// </summary>
-    /// <param name="providers">
-    /// The configuration providers the resolver uses when resolving placeholders.
-    /// </param>
-    public PlaceholderResolverProvider(IList<IConfigurationProvider> providers)
-        : this(providers, NullLoggerFactory.Instance)
-    {
     }
 
     /// <summary>

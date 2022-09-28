@@ -64,7 +64,7 @@ public sealed class PlaceholderResolverSourceTest
             memSource
         };
 
-        var source = new PlaceholderResolverSource(sources);
+        var source = new PlaceholderResolverSource(sources, NullLoggerFactory.Instance);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<PlaceholderResolverProvider>(provider);
     }
