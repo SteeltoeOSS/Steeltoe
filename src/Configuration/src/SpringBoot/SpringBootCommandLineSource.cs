@@ -10,7 +10,7 @@ namespace Steeltoe.Configuration.SpringBoot;
 /// <summary>
 /// Configuration source used in creating a <see cref="SpringBootCommandLineProvider" /> that translates spring-style command-line arguments to .NET.
 /// </summary>
-public sealed class SpringBootCommandLineSource : IConfigurationSource
+internal sealed class SpringBootCommandLineSource : IConfigurationSource
 {
     internal IConfiguration Configuration { get; }
 

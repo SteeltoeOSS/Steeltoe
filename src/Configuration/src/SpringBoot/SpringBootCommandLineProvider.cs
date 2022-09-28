@@ -11,7 +11,7 @@ namespace Steeltoe.Configuration.SpringBoot;
 /// <summary>
 /// Configuration provider that expands command-line '.' delimited configuration key/value pairs that start with "spring." to .NET compatible form.
 /// </summary>
-public sealed class SpringBootCommandLineProvider : ConfigurationProvider
+internal sealed class SpringBootCommandLineProvider : ConfigurationProvider
 {
     private const string KeyPrefix = "spring.";
     private readonly IConfiguration _configuration;

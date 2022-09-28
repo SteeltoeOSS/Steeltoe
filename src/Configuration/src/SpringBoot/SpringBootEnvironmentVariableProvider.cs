@@ -10,7 +10,7 @@ namespace Steeltoe.Configuration.SpringBoot;
 /// Configuration provider that expands the contents of the SPRING_APPLICATION_JSON environment variable, using Spring-style '.' delimited configuration
 /// key/value pairs to .NET compatible form.
 /// </summary>
-public sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigurationProvider
+internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigurationProvider
 {
     private const string SpringApplicationJson = "SPRING_APPLICATION_JSON";
     private readonly string _springApplicationJson;

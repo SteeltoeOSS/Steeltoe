@@ -9,7 +9,7 @@ namespace Steeltoe.Configuration.SpringBoot;
 /// <summary>
 /// Configuration source used in creating a <see cref="SpringBootEnvironmentVariableProvider" />.
 /// </summary>
-public sealed class SpringBootEnvironmentVariableSource : IConfigurationSource
+internal sealed class SpringBootEnvironmentVariableSource : IConfigurationSource
 {
     /// <summary>
     /// Builds a <see cref="SpringBootEnvironmentVariableProvider" /> from the sources.
