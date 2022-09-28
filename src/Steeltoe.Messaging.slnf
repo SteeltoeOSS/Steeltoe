@@ -1,0 +1,24 @@
+{
+  "solution": {
+    "path": "Steeltoe.All.sln",
+    "projects": [
+      "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
+      "Common\\src\\Common.Expression\\Steeltoe.Common.Expression.csproj",
+      "Common\\src\\Common.RetryPolly\\Steeltoe.Common.RetryPolly.csproj",
+      "Common\\src\\Common\\Steeltoe.Common.csproj",
+      "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Configuration\\src\\Abstractions\\Steeltoe.Extensions.Configuration.Abstractions.csproj",
+      "Configuration\\src\\CloudFoundry\\Steeltoe.Extensions.Configuration.CloudFoundry.csproj",
+      "Configuration\\src\\SpringBoot\\Steeltoe.Extensions.Configuration.SpringBoot.csproj",
+      "Connectors\\src\\Abstractions\\Steeltoe.Connector.Abstractions.csproj",
+      "Connectors\\src\\CloudFoundry\\Steeltoe.Connector.CloudFoundry.csproj",
+      "Connectors\\src\\Connector\\Steeltoe.Connector.csproj",
+      "Messaging\\src\\Abstractions\\Steeltoe.Messaging.Abstractions.csproj",
+      "Messaging\\src\\Messaging\\Steeltoe.Messaging.csproj",
+      "Messaging\\src\\RabbitMQ\\Steeltoe.Messaging.RabbitMQ.csproj",
+      "Messaging\\test\\Benchmarks\\Channel\\ChannelBenchmark.csproj",
+      "Messaging\\test\\Messaging.Test\\Steeltoe.Messaging.Test.csproj",
+      "Messaging\\test\\RabbitMQ.Test\\Steeltoe.Messaging.RabbitMQ.Test.csproj"
+    ]
+  }
+}

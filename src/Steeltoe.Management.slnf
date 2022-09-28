@@ -1,0 +1,31 @@
+{
+  "solution": {
+    "path": "Steeltoe.All.sln",
+    "projects": [
+      "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
+      "Common\\src\\Common.Http\\Steeltoe.Common.Http.csproj",
+      "Common\\src\\Common.Kubernetes\\Steeltoe.Common.Kubernetes.csproj",
+      "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
+      "Common\\src\\Common\\Steeltoe.Common.csproj",
+      "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Configuration\\src\\Abstractions\\Steeltoe.Extensions.Configuration.Abstractions.csproj",
+      "Configuration\\src\\CloudFoundry\\Steeltoe.Extensions.Configuration.CloudFoundry.csproj",
+      "Configuration\\src\\Placeholder\\Steeltoe.Extensions.Configuration.Placeholder.csproj",
+      "Discovery\\src\\Abstractions\\Steeltoe.Discovery.Abstractions.csproj",
+      "Logging\\src\\Abstractions\\Steeltoe.Extensions.Logging.Abstractions.csproj",
+      "Logging\\src\\DynamicLogger\\Steeltoe.Extensions.Logging.DynamicLogger.csproj",
+      "Logging\\src\\DynamicSerilog\\Steeltoe.Extensions.Logging.DynamicSerilog.csproj",
+      "Management\\src\\Abstractions\\Steeltoe.Management.Abstractions.csproj",
+      "Management\\src\\Endpoint\\Steeltoe.Management.Endpoint.csproj",
+      "Management\\src\\Kubernetes\\Steeltoe.Management.Kubernetes.csproj",
+      "Management\\src\\OpenTelemetry\\Steeltoe.Management.OpenTelemetry.csproj",
+      "Management\\src\\Task\\Steeltoe.Management.Task.csproj",
+      "Management\\src\\Tracing\\Steeltoe.Management.Tracing.csproj",
+      "Management\\test\\Endpoint.Test\\Steeltoe.Management.Endpoint.Test.csproj",
+      "Management\\test\\Kubernetes.Test\\Steeltoe.Management.Kubernetes.Test.csproj",
+      "Management\\test\\OpenTelemetry.Test\\Steeltoe.OpenTelemetry.Test.csproj",
+      "Management\\test\\Task.Test\\Steeltoe.Management.Task.Test.csproj",
+      "Management\\test\\Tracing.Test\\Steeltoe.Management.Tracing.Test.csproj"
+    ]
+  }
+}

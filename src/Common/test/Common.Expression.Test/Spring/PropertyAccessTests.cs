@@ -40,9 +40,9 @@ public class PropertyAccessTests : AbstractExpressionTests
     }
 
     /*
-         * The standard reflection resolver cannot find properties on null objects but some
-         * supplied resolver might be able to - so null shouldn't crash the reflection resolver.
-         */
+     * The standard reflection resolver cannot find properties on null objects but some
+     * supplied resolver might be able to - so null shouldn't crash the reflection resolver.
+     */
     [Fact]
     public void TestAccessingOnNullObject()
     {

@@ -20,7 +20,7 @@ public class MessageHeaderAccessorTest
     [Fact]
     public void ExistingHeaders()
     {
-        IDictionary<string, object> map = new Dictionary<string, object>
+        HeadersDictionary map = new Dictionary<string, object>
         {
             { "foo", "bar" },
             { "bar", "baz" }
@@ -39,7 +39,7 @@ public class MessageHeaderAccessorTest
     [Fact]
     public void ExistingHeadersModification()
     {
-        IDictionary<string, object> map = new Dictionary<string, object>
+        HeadersDictionary map = new Dictionary<string, object>
         {
             { "foo", "bar" },
             { "bar", "baz" }
@@ -82,7 +82,7 @@ public class MessageHeaderAccessorTest
     [Fact]
     public void RemoveHeaders()
     {
-        IDictionary<string, object> map = new Dictionary<string, object>
+        HeadersDictionary map = new Dictionary<string, object>
         {
             { "foo", "bar" },
             { "bar", "baz" }
@@ -102,7 +102,7 @@ public class MessageHeaderAccessorTest
     [Fact]
     public void CopyHeaders()
     {
-        IDictionary<string, object> map1 = new Dictionary<string, object>
+        HeadersDictionary map1 = new Dictionary<string, object>
         {
             { "foo", "bar" }
         };
@@ -110,7 +110,7 @@ public class MessageHeaderAccessorTest
         IMessage<string> message = Message.Create("payload", map1);
         var accessor = new MessageHeaderAccessor(message);
 
-        IDictionary<string, object> map2 = new Dictionary<string, object>
+        HeadersDictionary map2 = new Dictionary<string, object>
         {
             { "foo", "BAR" },
             { "bar", "baz" }
@@ -127,7 +127,7 @@ public class MessageHeaderAccessorTest
     [Fact]
     public void CopyHeadersIfAbsent()
     {
-        IDictionary<string, object> map1 = new Dictionary<string, object>
+        HeadersDictionary map1 = new Dictionary<string, object>
         {
             { "foo", "bar" }
         };
@@ -135,7 +135,7 @@ public class MessageHeaderAccessorTest
         IMessage<string> message = Message.Create("payload", map1);
         var accessor = new MessageHeaderAccessor(message);
 
-        IDictionary<string, object> map2 = new Dictionary<string, object>
+        HeadersDictionary map2 = new Dictionary<string, object>
         {
             { "foo", "BAR" },
             { "bar", "baz" }
@@ -338,7 +338,7 @@ public class MessageHeaderAccessorTest
         Assert.NotNull(headers.Timestamp);
     }
 
-    private static IDictionary<string, object> SingletonMap(string key, object value)
+    private static HeadersDictionary SingletonMap(string key, object value)
     {
         return new Dictionary<string, object>
         {
