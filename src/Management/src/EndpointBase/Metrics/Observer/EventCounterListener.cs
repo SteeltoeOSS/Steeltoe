@@ -21,6 +21,9 @@ public class EventCounterListener : EventListener
     private readonly string _eventSourceName = "System.Runtime";
     private readonly string _eventName = "EventCounters";
     private readonly IMetricsObserverOptions _options;
+    private readonly bool _isInitialized = false;
+
+    private readonly Dictionary<string, string> _refreshInterval = new () { { "EventCounterIntervalSec", "1" } }; // TODO: Make it configurable
 
     private ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new ();
     private ConcurrentDictionary<string, ObservableGauge<long>> _longMeasureMetrics = new ();
@@ -28,10 +31,14 @@ public class EventCounterListener : EventListener
     private ConcurrentDictionary<string, double> _lastDoubleValue = new ();
     private ConcurrentDictionary<string, long> _lastLongValue = new ();
 
+    private ConcurrentBag<EventSource> _eventSources = new ();
+
     public EventCounterListener(IMetricsObserverOptions options, ILogger<EventCounterListener> logger = null)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
         _logger = logger;
+        _isInitialized = true;
+        ProcessPreInitEventSources();
     }
 
     /// <summary>
@@ -43,6 +50,11 @@ public class EventCounterListener : EventListener
         if (eventData == null)
         {
             throw new ArgumentNullException(nameof(eventData));
+        }
+
+        if (!_isInitialized)
+        {
+            return;
         }
 
         try
@@ -68,17 +80,34 @@ public class EventCounterListener : EventListener
             throw new ArgumentNullException(nameof(eventSource));
         }
 
+        if (!_isInitialized)
+        {
+           _eventSources.Add(eventSource);
+        }
+
         if (_eventSourceName.Equals(eventSource.Name, StringComparison.OrdinalIgnoreCase))
         {
-            var refreshInterval = new Dictionary<string, string>() { { "EventCounterIntervalSec", "1" } }; // TODO: Make it configurable
-            try
-            {
-                EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All, refreshInterval);
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex.Message, ex);
-            }
+            SafeEnableEvents(eventSource);
+        }
+    }
+
+    private void ProcessPreInitEventSources()
+    {
+        foreach (var eventSource in _eventSources)
+        {
+            SafeEnableEvents(eventSource);
+        }
+    }
+
+    private void SafeEnableEvents(EventSource eventSource)
+    {
+        try
+        {
+            EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All, _refreshInterval);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex.Message, ex);
         }
     }
 
