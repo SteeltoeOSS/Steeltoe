@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
+namespace Steeltoe.Configuration.Placeholder.Test;
 
 public sealed class StartupForAddPlaceholderResolver
 {

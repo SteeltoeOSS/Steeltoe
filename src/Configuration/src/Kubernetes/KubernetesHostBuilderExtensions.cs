@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes;
+namespace Steeltoe.Configuration.Kubernetes;
 
 public static class KubernetesHostBuilderExtensions
 {

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.RandomValue.Test;
+namespace Steeltoe.Configuration.RandomValue.Test;
 
 public sealed class RandomValueExtensionsTest
 {

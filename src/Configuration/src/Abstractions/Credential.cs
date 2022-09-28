@@ -4,7 +4,7 @@
 
 using System.ComponentModel;
 
-namespace Steeltoe.Extensions.Configuration;
+namespace Steeltoe.Configuration;
 
 [TypeConverter(typeof(CredentialConverter))]
 public sealed class Credential : Dictionary<string, Credential>

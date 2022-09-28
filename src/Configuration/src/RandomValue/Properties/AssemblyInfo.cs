@@ -4,4 +4,4 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Extensions.Configuration.RandomValue.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.RandomValue.Test")]

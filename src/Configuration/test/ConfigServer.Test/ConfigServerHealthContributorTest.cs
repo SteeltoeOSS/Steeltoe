@@ -4,10 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Extensions.Configuration.Placeholder;
+using Steeltoe.Configuration.Placeholder;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class ConfigServerHealthContributorTest
 {

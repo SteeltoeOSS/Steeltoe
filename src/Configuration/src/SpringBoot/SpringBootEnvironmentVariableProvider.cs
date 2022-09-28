@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration.Json;
 
-namespace Steeltoe.Extensions.Configuration.SpringBoot;
+namespace Steeltoe.Configuration.SpringBoot;
 
 /// <summary>
 /// Configuration provider that expands the contents of the SPRING_APPLICATION_JSON environment variable, using Spring-style '.' delimited configuration

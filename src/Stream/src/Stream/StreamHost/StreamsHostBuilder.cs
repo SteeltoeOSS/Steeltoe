@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Extensions.Configuration.SpringBoot;
+using Steeltoe.Configuration.SpringBoot;
 using Steeltoe.Stream.Extensions;
 
 namespace Steeltoe.Stream.StreamHost;

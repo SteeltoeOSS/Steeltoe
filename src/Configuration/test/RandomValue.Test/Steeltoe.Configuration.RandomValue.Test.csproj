@@ -6,6 +6,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\RandomValue\Steeltoe.Extensions.Configuration.RandomValue.csproj" />
+    <ProjectReference Include="..\..\src\RandomValue\Steeltoe.Configuration.RandomValue.csproj" />
   </ItemGroup>
 </Project>

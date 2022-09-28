@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Extensions.Configuration;
+namespace Steeltoe.Configuration;
 
 public interface IPlaceholderResolverProvider : IConfigurationProvider
 {

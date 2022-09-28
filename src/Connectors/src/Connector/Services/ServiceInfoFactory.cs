@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common;
-using Steeltoe.Extensions.Configuration;
+using Steeltoe.Configuration;
 
 namespace Steeltoe.Connector.Services;
 

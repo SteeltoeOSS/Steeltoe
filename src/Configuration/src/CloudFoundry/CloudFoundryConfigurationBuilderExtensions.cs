@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry;
+namespace Steeltoe.Configuration.CloudFoundry;
 
 public static class CloudFoundryConfigurationBuilderExtensions
 {

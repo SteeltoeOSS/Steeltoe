@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connector.EntityFrameworkCore.Test;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Xunit;
 
 namespace Steeltoe.Connector.PostgreSql.EntityFrameworkCore.Test;

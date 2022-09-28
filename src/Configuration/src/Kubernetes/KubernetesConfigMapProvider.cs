@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 using Steeltoe.Common.Kubernetes;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes;
+namespace Steeltoe.Configuration.Kubernetes;
 
 internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
 {

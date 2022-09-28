@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry;
+namespace Steeltoe.Configuration.CloudFoundry;
 
 public static class CloudFoundryHostBuilderExtensions
 {

@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class ConfigurationSettingsHelperTest
 {

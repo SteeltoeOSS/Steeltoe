@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.SpringBoot;
+namespace Steeltoe.Configuration.SpringBoot;
 
 public static class SpringBootHostBuilderExtensions
 {

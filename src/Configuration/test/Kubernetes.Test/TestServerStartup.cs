@@ -4,7 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
+namespace Steeltoe.Configuration.Kubernetes.Test;
 
 public sealed class TestServerStartup
 {

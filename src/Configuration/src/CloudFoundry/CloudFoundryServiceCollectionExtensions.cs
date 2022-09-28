@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry;
+namespace Steeltoe.Configuration.CloudFoundry;
 
 /// <summary>
 /// Extension methods for adding services related to CloudFoundry.

@@ -7,10 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Configuration.CloudFoundry;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class ConfigServerServiceCollectionExtensionsTest
 {

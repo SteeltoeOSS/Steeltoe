@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connector.MongoDb;
 using Steeltoe.Connector.MongoDb.Test;
 using Steeltoe.Connector.MySql;
@@ -15,7 +16,6 @@ using Steeltoe.Connector.Redis.Test;
 using Steeltoe.Connector.Services;
 using Steeltoe.Connector.SqlServer;
 using Steeltoe.Connector.SqlServer.Test;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Xunit;
 
 namespace Steeltoe.Connector.Test;

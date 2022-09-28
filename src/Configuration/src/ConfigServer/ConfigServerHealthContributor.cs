@@ -7,9 +7,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Extensions.Configuration.Placeholder;
+using Steeltoe.Configuration.Placeholder;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer;
+namespace Steeltoe.Configuration.ConfigServer;
 
 public sealed class ConfigServerHealthContributor : IHealthContributor
 {

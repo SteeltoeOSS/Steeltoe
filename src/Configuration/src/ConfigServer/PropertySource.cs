@@ -7,7 +7,7 @@ using Steeltoe.Common;
 // https://github.com/dotnet/runtime/issues/30258
 #pragma warning disable S4004 // Collection properties should be readonly
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer;
+namespace Steeltoe.Configuration.ConfigServer;
 
 public sealed class PropertySource
 {

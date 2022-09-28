@@ -4,4 +4,4 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Extensions.Configuration.SpringBoot.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.SpringBoot.Test")]

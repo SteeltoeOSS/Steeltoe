@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
+namespace Steeltoe.Configuration.CloudFoundry.Test;
 
 public sealed class CloudFoundryConfigurationProviderTest
 {

@@ -4,4 +4,4 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Extensions.Configuration.Placeholder.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.Placeholder.Test")]

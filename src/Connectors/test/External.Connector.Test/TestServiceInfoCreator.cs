@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Configuration;
 using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
-using Steeltoe.Extensions.Configuration;
 
 namespace External.Connector.Test;
 

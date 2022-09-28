@@ -6,10 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
+using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Discovery;
-using Steeltoe.Extensions.Configuration.Placeholder;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer;
+namespace Steeltoe.Configuration.ConfigServer;
 
 /// <summary>
 /// Replace bootstrapped components used by <see cref="ConfigServerConfigurationProvider" /> with objects provided by Dependency Injection.

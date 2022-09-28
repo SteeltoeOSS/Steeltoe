@@ -5,7 +5,7 @@
 #pragma warning disable S4004 // Collection properties should be readonly
 // https://github.com/dotnet/runtime/issues/30258
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer;
+namespace Steeltoe.Configuration.ConfigServer;
 
 public sealed class ConfigEnvironment
 {

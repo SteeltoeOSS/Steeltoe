@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry;
+namespace Steeltoe.Configuration.CloudFoundry;
 
 internal sealed class JsonStreamConfigurationSource : JsonConfigurationSource
 {

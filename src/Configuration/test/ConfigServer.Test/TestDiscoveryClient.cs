@@ -5,7 +5,7 @@
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Test;
 
 internal sealed class TestDiscoveryClient : IDiscoveryClient
 {

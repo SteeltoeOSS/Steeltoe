@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes;
+namespace Steeltoe.Configuration.Kubernetes;
 
 public static class KubernetesConfigurationBuilderExtensions
 {
@@ -70,7 +70,7 @@ public static class KubernetesConfigurationBuilderExtensions
         ArgumentGuard.NotNull(configurationBuilder);
         ArgumentGuard.NotNull(loggerFactory);
 
-        ILogger logger = loggerFactory.CreateLogger("Steeltoe.Extensions.Configuration.Kubernetes");
+        ILogger logger = loggerFactory.CreateLogger(typeof(KubernetesConfigurationBuilderExtensions).Namespace!);
 
         var appInfo = new KubernetesApplicationOptions(configurationBuilder.Build());
 

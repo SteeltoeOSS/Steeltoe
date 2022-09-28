@@ -6,9 +6,9 @@ using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Utils.IO;
+using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;

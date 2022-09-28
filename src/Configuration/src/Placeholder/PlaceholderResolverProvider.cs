@@ -9,7 +9,7 @@ using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
 
-namespace Steeltoe.Extensions.Configuration.Placeholder;
+namespace Steeltoe.Configuration.Placeholder;
 
 /// <summary>
 /// Configuration provider that resolves placeholders. A placeholder takes the form of:

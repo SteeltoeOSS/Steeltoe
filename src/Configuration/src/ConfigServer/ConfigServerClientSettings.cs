@@ -4,7 +4,7 @@
 
 using System.Security.Cryptography.X509Certificates;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer;
+namespace Steeltoe.Configuration.ConfigServer;
 
 /// <summary>
 /// Holds the settings used to configure the Spring Cloud Config Server provider <see cref="ConfigServerConfigurationProvider" />.

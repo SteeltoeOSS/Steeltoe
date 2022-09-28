@@ -9,7 +9,7 @@ using RichardSzalay.MockHttp;
 using Steeltoe.Common.Kubernetes;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
+namespace Steeltoe.Configuration.Kubernetes.Test;
 
 public sealed class KubernetesSecretProviderTest
 {

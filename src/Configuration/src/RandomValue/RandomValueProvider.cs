@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.RandomValue;
+namespace Steeltoe.Configuration.RandomValue;
 
 /// <summary>
 /// Configuration provider that provides random values. Note: This code was inspired by the Spring Boot equivalent class.

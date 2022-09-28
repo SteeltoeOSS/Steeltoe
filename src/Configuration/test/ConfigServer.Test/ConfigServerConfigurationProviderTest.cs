@@ -14,7 +14,7 @@ using Steeltoe.Common.Discovery;
 using Xunit;
 using Xunit.Sdk;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class ConfigServerConfigurationProviderTest
 {

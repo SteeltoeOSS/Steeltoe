@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Kubernetes;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes;
+namespace Steeltoe.Configuration.Kubernetes;
 
 internal sealed class KubernetesConfigSourceSettings
 {

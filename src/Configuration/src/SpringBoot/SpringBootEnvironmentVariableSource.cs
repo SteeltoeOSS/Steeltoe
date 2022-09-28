@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Extensions.Configuration.SpringBoot;
+namespace Steeltoe.Configuration.SpringBoot;
 
 /// <summary>
 /// Configuration source used in creating a <see cref="SpringBootEnvironmentVariableProvider" />.

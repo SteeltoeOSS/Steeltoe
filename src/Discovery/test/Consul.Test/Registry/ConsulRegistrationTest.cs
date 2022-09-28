@@ -5,9 +5,9 @@
 using Consul;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Util;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Registry.Test;

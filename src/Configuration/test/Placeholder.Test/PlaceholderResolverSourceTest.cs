@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
+namespace Steeltoe.Configuration.Placeholder.Test;
 
 public sealed class PlaceholderResolverSourceTest
 {

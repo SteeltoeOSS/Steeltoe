@@ -5,7 +5,7 @@
 using System.ComponentModel;
 using System.Globalization;
 
-namespace Steeltoe.Extensions.Configuration;
+namespace Steeltoe.Configuration;
 
 public sealed class CredentialConverter : TypeConverter
 {

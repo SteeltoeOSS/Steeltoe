@@ -8,11 +8,11 @@ namespace Steeltoe.Bootstrap.AutoConfiguration;
 
 public static class SteeltoeAssemblies
 {
-    public const string SteeltoeExtensionsConfigurationCloudFoundry = "Steeltoe.Extensions.Configuration.CloudFoundry";
-    public const string SteeltoeExtensionsConfigurationConfigServer = "Steeltoe.Extensions.Configuration.ConfigServer";
-    public const string SteeltoeExtensionsConfigurationKubernetes = "Steeltoe.Extensions.Configuration.Kubernetes";
-    public const string SteeltoeExtensionsConfigurationRandomValue = "Steeltoe.Extensions.Configuration.RandomValue";
-    public const string SteeltoeExtensionsConfigurationPlaceholder = "Steeltoe.Extensions.Configuration.Placeholder";
+    public const string SteeltoeExtensionsConfigurationCloudFoundry = "Steeltoe.Configuration.CloudFoundry";
+    public const string SteeltoeExtensionsConfigurationConfigServer = "Steeltoe.Configuration.ConfigServer";
+    public const string SteeltoeExtensionsConfigurationKubernetes = "Steeltoe.Configuration.Kubernetes";
+    public const string SteeltoeExtensionsConfigurationRandomValue = "Steeltoe.Configuration.RandomValue";
+    public const string SteeltoeExtensionsConfigurationPlaceholder = "Steeltoe.Configuration.Placeholder";
     public const string SteeltoeConnector = "Steeltoe.Connector";
     public const string SteeltoeDiscoveryClient = "Steeltoe.Discovery.Client";
     public const string SteeltoeExtensionsLoggingDynamicSerilog = "Steeltoe.Extensions.Logging.DynamicSerilog";

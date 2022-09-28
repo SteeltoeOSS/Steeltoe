@@ -6,7 +6,7 @@ using k8s;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
+namespace Steeltoe.Configuration.Kubernetes.Test;
 
 public sealed class KubernetesConfigurationBuilderExtensionsTest
 {

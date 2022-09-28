@@ -4,7 +4,7 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class HttpRequestInfo
 {

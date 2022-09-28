@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes;
+namespace Steeltoe.Configuration.Kubernetes;
 
 /// <summary>
 /// Replaces bootstrapped components used by KubernetesConfigurationProvider with objects provided by Dependency Injection.

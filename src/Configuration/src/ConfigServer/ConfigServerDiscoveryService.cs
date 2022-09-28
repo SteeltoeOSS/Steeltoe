@@ -12,7 +12,7 @@ using Steeltoe.Common.Logging;
 using Steeltoe.Discovery;
 using Steeltoe.Discovery.Client;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer;
+namespace Steeltoe.Configuration.ConfigServer;
 
 internal sealed class ConfigServerDiscoveryService
 {

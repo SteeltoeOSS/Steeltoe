@@ -6,9 +6,9 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Configuration\src\ConfigServer\Steeltoe.Extensions.Configuration.ConfigServer.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\src\Kubernetes\Steeltoe.Extensions.Configuration.Kubernetes.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\src\RandomValue\Steeltoe.Extensions.Configuration.RandomValue.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\ConfigServer\Steeltoe.Configuration.ConfigServer.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\Kubernetes\Steeltoe.Configuration.Kubernetes.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\RandomValue\Steeltoe.Configuration.RandomValue.csproj" />
     <ProjectReference Include="..\..\..\Discovery\src\Client\Steeltoe.Discovery.Client.csproj" />
     <ProjectReference Include="..\..\..\Discovery\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicSerilog\Steeltoe.Extensions.Logging.DynamicSerilog.csproj" />

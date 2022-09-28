@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connector.MySql.Test;
 using Steeltoe.Connector.Redis.Test;
 using Steeltoe.Connector.Services;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Xunit;
 
 namespace Steeltoe.Connector.Test;

@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
+namespace Steeltoe.Configuration.SpringBoot.Test;
 
 public sealed class TestServerStartup
 {

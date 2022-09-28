@@ -13,7 +13,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
+namespace Steeltoe.Configuration.Kubernetes.Test;
 
 public sealed class KubernetesHostBuilderExtensionsTest
 {

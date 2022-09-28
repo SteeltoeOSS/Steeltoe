@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer;
+namespace Steeltoe.Configuration.ConfigServer;
 
 /// <summary>
 /// Extension methods for adding services related to Spring Cloud Config Server.

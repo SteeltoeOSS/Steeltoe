@@ -17,10 +17,10 @@ using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Logging;
+using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Discovery;
-using Steeltoe.Extensions.Configuration.Placeholder;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer;
+namespace Steeltoe.Configuration.ConfigServer;
 
 /// <summary>
 /// A Spring Cloud Config Server based <see cref="ConfigurationProvider" />.

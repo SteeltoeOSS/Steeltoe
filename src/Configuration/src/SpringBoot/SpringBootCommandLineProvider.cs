@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.SpringBoot;
+namespace Steeltoe.Configuration.SpringBoot;
 
 /// <summary>
 /// Configuration provider that expands command-line '.' delimited configuration key/value pairs that start with "spring." to .NET compatible form.

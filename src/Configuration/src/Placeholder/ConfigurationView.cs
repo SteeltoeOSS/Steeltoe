@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.Placeholder;
+namespace Steeltoe.Configuration.Placeholder;
 
 /// <summary>
 /// Specialized implementation of <see cref="IConfigurationRoot" /> that does not call <see cref="Reload" /> on providers.

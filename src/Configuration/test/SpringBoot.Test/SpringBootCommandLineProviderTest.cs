@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
+namespace Steeltoe.Configuration.SpringBoot.Test;
 
 public sealed class SpringBootCommandLineProviderTest
 {

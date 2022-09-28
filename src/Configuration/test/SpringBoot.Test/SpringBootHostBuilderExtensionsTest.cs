@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
+namespace Steeltoe.Configuration.SpringBoot.Test;
 
 public sealed class SpringBootHostBuilderExtensionsTest
 {

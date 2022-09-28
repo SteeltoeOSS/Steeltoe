@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Integration.Test;
+namespace Steeltoe.Configuration.ConfigServer.Integration.Test;
 
 internal sealed class TestServerStartup
 {

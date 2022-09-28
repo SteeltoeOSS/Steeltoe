@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes;
+namespace Steeltoe.Configuration.Kubernetes;
 
 public static class KubernetesServiceCollectionExtensions
 {

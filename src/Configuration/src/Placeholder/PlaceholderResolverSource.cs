@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.Placeholder;
+namespace Steeltoe.Configuration.Placeholder;
 
 /// <summary>
 /// Configuration source used in creating a <see cref="PlaceholderResolverProvider" /> that resolves placeholders. A placeholder takes the form of:

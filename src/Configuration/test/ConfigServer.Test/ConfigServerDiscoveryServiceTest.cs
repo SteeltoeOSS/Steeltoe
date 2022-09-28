@@ -9,7 +9,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class ConfigServerDiscoveryServiceTest
 {

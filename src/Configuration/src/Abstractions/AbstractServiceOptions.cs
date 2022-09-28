@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Options;
 
-namespace Steeltoe.Extensions.Configuration;
+namespace Steeltoe.Configuration;
 
 /// <summary>
 /// Represents a service in ASP.NET configuration, containing nested services grouped by type.

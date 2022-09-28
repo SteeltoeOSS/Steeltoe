@@ -7,7 +7,7 @@ For more information on how to use this component see the online [Steeltoe docum
 ```
 // Program.cs
 
-using Steeltoe.Extensions.Configuration.SpringBoot;
+using Steeltoe.Configuration.SpringBoot;
 
 ... 
 internal static class Program

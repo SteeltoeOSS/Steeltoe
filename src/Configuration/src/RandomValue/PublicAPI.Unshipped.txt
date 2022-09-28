@@ -1,18 +1,18 @@
-﻿override Steeltoe.Extensions.Configuration.RandomValue.RandomValueProvider.GetChildKeys(System.Collections.Generic.IEnumerable<string> earlierKeys, string parentPath) -> System.Collections.Generic.IEnumerable<string>
-override Steeltoe.Extensions.Configuration.RandomValue.RandomValueProvider.Load() -> void
-override Steeltoe.Extensions.Configuration.RandomValue.RandomValueProvider.Set(string key, string value) -> void
-override Steeltoe.Extensions.Configuration.RandomValue.RandomValueProvider.TryGet(string key, out string value) -> bool
-static Steeltoe.Extensions.Configuration.RandomValue.RandomValueExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-static Steeltoe.Extensions.Configuration.RandomValue.RandomValueExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-static Steeltoe.Extensions.Configuration.RandomValue.RandomValueExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, string prefix) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-static Steeltoe.Extensions.Configuration.RandomValue.RandomValueExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, string prefix, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-Steeltoe.Extensions.Configuration.RandomValue.RandomValueExtensions
-Steeltoe.Extensions.Configuration.RandomValue.RandomValueProvider
-Steeltoe.Extensions.Configuration.RandomValue.RandomValueProvider.RandomValueProvider(string prefix) -> void
-Steeltoe.Extensions.Configuration.RandomValue.RandomValueProvider.RandomValueProvider(string prefix, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
-Steeltoe.Extensions.Configuration.RandomValue.RandomValueSource
-Steeltoe.Extensions.Configuration.RandomValue.RandomValueSource.Build(Microsoft.Extensions.Configuration.IConfigurationBuilder builder) -> Microsoft.Extensions.Configuration.IConfigurationProvider
-Steeltoe.Extensions.Configuration.RandomValue.RandomValueSource.RandomValueSource() -> void
-Steeltoe.Extensions.Configuration.RandomValue.RandomValueSource.RandomValueSource(Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
-Steeltoe.Extensions.Configuration.RandomValue.RandomValueSource.RandomValueSource(string prefix) -> void
-Steeltoe.Extensions.Configuration.RandomValue.RandomValueSource.RandomValueSource(string prefix, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
+override Steeltoe.Configuration.RandomValue.RandomValueProvider.GetChildKeys(System.Collections.Generic.IEnumerable<string> earlierKeys, string parentPath) -> System.Collections.Generic.IEnumerable<string>
+override Steeltoe.Configuration.RandomValue.RandomValueProvider.Load() -> void
+override Steeltoe.Configuration.RandomValue.RandomValueProvider.Set(string key, string value) -> void
+override Steeltoe.Configuration.RandomValue.RandomValueProvider.TryGet(string key, out string value) -> bool
+static Steeltoe.Configuration.RandomValue.RandomValueExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
+static Steeltoe.Configuration.RandomValue.RandomValueExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
+static Steeltoe.Configuration.RandomValue.RandomValueExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, string prefix) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
+static Steeltoe.Configuration.RandomValue.RandomValueExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, string prefix, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
+Steeltoe.Configuration.RandomValue.RandomValueExtensions
+Steeltoe.Configuration.RandomValue.RandomValueProvider
+Steeltoe.Configuration.RandomValue.RandomValueProvider.RandomValueProvider(string prefix) -> void
+Steeltoe.Configuration.RandomValue.RandomValueProvider.RandomValueProvider(string prefix, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
+Steeltoe.Configuration.RandomValue.RandomValueSource
+Steeltoe.Configuration.RandomValue.RandomValueSource.Build(Microsoft.Extensions.Configuration.IConfigurationBuilder builder) -> Microsoft.Extensions.Configuration.IConfigurationProvider
+Steeltoe.Configuration.RandomValue.RandomValueSource.RandomValueSource() -> void
+Steeltoe.Configuration.RandomValue.RandomValueSource.RandomValueSource(Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
+Steeltoe.Configuration.RandomValue.RandomValueSource.RandomValueSource(string prefix) -> void
+Steeltoe.Configuration.RandomValue.RandomValueSource.RandomValueSource(string prefix, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void

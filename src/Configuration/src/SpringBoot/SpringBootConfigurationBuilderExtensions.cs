@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.SpringBoot;
+namespace Steeltoe.Configuration.SpringBoot;
 
 public static class SpringBootConfigurationBuilderExtensions
 {

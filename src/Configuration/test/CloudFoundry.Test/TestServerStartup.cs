@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
+namespace Steeltoe.Configuration.CloudFoundry.Test;
 
 public sealed class TestServerStartup
 {

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.RandomValue;
+namespace Steeltoe.Configuration.RandomValue;
 
 public static class RandomValueExtensions
 {
