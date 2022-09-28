@@ -7,7 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
-public sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
+internal sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
 {
     private readonly ICloudFoundrySettingsReader _settingsReader;
 
