@@ -16,7 +16,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     private readonly ConcurrentDictionary<string, Filter> _runningFilters;
     private protected readonly IEnumerable<IDynamicMessageProcessor> MessageProcessors;
 
-    private Func<string, LogLevel, bool> _filter;
+    private Filter _filter;
     private ConcurrentDictionary<string, MessageProcessingLogger> _loggers = new();
 
     private protected ILoggerProvider DelegateProvider { get; set; }
@@ -124,7 +124,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     /// </param>
     public void SetLogLevel(string category, LogLevel? level)
     {
-        Func<string, LogLevel, bool> filter = null;
+        Filter filter = null;
 
         if (level != null)
         {
@@ -212,7 +212,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     /// <returns>
     /// A filter function for log level.
     /// </returns>
-    private protected Func<string, LogLevel, bool> GetFilter(string name)
+    private protected Filter GetFilter(string name)
     {
         // check if there are any applicable filters
         if (_runningFilters.Any())
@@ -274,7 +274,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     /// <returns>
     /// Minimum log level to be logged by this category of logger.
     /// </returns>
-    private LogLevel GetLogLevelFromFilter(string category, Func<string, LogLevel, bool> filter)
+    private LogLevel GetLogLevelFromFilter(string category, Filter filter)
     {
         for (int i = 0; i < 6; i++)
         {

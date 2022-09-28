@@ -34,7 +34,7 @@ public class DynamicConsoleLoggerProvider : DynamicLoggerProviderBase
 
     private static InitialLevels GetInitialLevelsFromOptions(IOptionsMonitor<LoggerFilterOptions> filterOptions)
     {
-        var runningLevelFilters = new Dictionary<string, Func<string, LogLevel, bool>>();
+        var runningLevelFilters = new Dictionary<string, Filter>();
         var originalLevels = new Dictionary<string, LogLevel>();
         Filter filter = null;
 
