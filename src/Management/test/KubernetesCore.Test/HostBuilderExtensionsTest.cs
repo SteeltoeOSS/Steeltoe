@@ -21,6 +21,7 @@ namespace Steeltoe.Management.Kubernetes.Test;
 public class HostBuilderExtensionsTest
 {
     [Fact]
+    [Trait("Category", "SkipOnLinux")]
     public async Task AddKubernetesActuators_IHostBuilder_AddsAndActivatesActuators()
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
@@ -43,6 +44,7 @@ public class HostBuilderExtensionsTest
     }
 
     [Fact]
+    [Trait("Category", "SkipOnLinux")]
     public async Task AddKubernetesActuatorsWithConventions_IHostBuilder_AddsAndActivatesActuatorsAddAllActuators()
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithSecureRouting);
@@ -78,6 +80,7 @@ public class HostBuilderExtensionsTest
     }
 
     [Fact]
+    [Trait("Category", "SkipOnLinux")]
     public async Task AddKubernetesActuatorsWithConventions_IWebHostBuilder_AddsAndActivatesActuatorsAddAllActuators()
     {
         var hostBuilder = new WebHostBuilder();
