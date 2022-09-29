@@ -143,7 +143,7 @@ public class DefaultMessageHandlerMethodFactoryTest
 
     internal sealed class SampleBean
     {
-        public readonly Dictionary<string, bool> Invocations = new();
+        public Dictionary<string, bool> Invocations { get; } = new();
 
         public void SimpleString(string value)
         {

@@ -5,19 +5,11 @@
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.Common.Util;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test;
 
 public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
 {
-    private readonly ITestOutputHelper _output;
-
-    public HystrixMetricsPublisherFactoryTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
-
     [Fact]
     public void TestSingleInitializePerKey()
     {
@@ -112,8 +104,8 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
 
     private sealed class TestHystrixMetricsPublisher : HystrixMetricsPublisher
     {
-        public readonly AtomicInteger CommandCounter = new();
-        public readonly AtomicInteger ThreadCounter = new();
+        public AtomicInteger CommandCounter { get; } = new();
+        public AtomicInteger ThreadCounter { get; } = new();
 
         public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandGroupKey,
             HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)

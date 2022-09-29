@@ -4,9 +4,9 @@
 
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
+namespace Steeltoe.Configuration.CloudFoundry.Test;
 
-public class JsonStreamConfigurationProviderTest
+public sealed class JsonStreamConfigurationProviderTest
 {
     [Fact]
     public void Load_LoadsProvidedStream()
@@ -80,8 +80,8 @@ public class JsonStreamConfigurationProviderTest
                     }]
                 }";
 
-        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
-        var provider = new JsonStreamConfigurationProvider(new JsonStreamConfigurationSource(memStream));
+        using Stream stream = CloudFoundryConfigurationProvider.GetStream(environment);
+        var provider = new JsonStreamConfigurationProvider(new JsonStreamConfigurationSource(stream));
         provider.Load();
 
         Assert.True(provider.TryGet("p-config-server:0:name", out string value));

@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry;
+namespace Steeltoe.Configuration.CloudFoundry;
 
-public class Limits
+public sealed class Limits
 {
     public int Disk { get; set; } = -1;
 

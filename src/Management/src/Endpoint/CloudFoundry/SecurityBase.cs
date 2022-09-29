@@ -4,7 +4,6 @@
 
 using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Security;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
@@ -69,10 +68,6 @@ public class SecurityBase
         var auth = new AuthenticationHeaderValue("bearer", token);
         request.Headers.Authorization = auth;
 
-        // If certificate validation is disabled, inject a callback to handle properly
-        HttpClientHelper.ConfigureCertificateValidation(_options.ValidateCertificates, out SecurityProtocolType prevProtocols,
-            out RemoteCertificateValidationCallback prevValidator);
-
         try
         {
             _logger?.LogDebug("GetPermissionsAsync({uri}, {token})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
@@ -96,10 +91,6 @@ public class SecurityBase
             _logger?.LogError(e, "Cloud Foundry returned exception while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
 
             return new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
-        }
-        finally
-        {
-            HttpClientHelper.RestoreCertificateValidation(_options.ValidateCertificates, prevProtocols, prevValidator);
         }
     }
 

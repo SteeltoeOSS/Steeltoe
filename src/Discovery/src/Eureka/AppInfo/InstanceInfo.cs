@@ -26,7 +26,7 @@ public class InstanceInfo
     public string AppGroupName { get; internal set; }
 
     [JsonPropertyName("IpAddr")]
-    public string IpAddress { get; internal set; }
+    public string IPAddress { get; internal set; }
 
     public string Sid
     {
@@ -158,7 +158,7 @@ public class InstanceInfo
         sb.Append(',');
         sb.Append($"HostName={HostName}");
         sb.Append(',');
-        sb.Append($"IpAddr={IpAddress}");
+        sb.Append($"IpAddr={IPAddress}");
         sb.Append(',');
         sb.Append($"Status={Status}");
         sb.Append(',');
@@ -194,15 +194,15 @@ public class InstanceInfo
 
         string defaultAddress = instanceConfig.GetHostName(false);
 
-        if (instanceConfig.PreferIpAddress || string.IsNullOrEmpty(defaultAddress))
+        if (instanceConfig.PreferIPAddress || string.IsNullOrEmpty(defaultAddress))
         {
-            defaultAddress = instanceConfig.IpAddress;
+            defaultAddress = instanceConfig.IPAddress;
         }
 
         info.AppName = instanceConfig.AppName.ToUpperInvariant();
         info.AppGroupName = instanceConfig.AppGroupName?.ToUpperInvariant();
         info.DataCenterInfo = instanceConfig.DataCenterInfo;
-        info.IpAddress = instanceConfig.IpAddress;
+        info.IPAddress = instanceConfig.IPAddress;
         info.HostName = defaultAddress;
         info.Port = instanceConfig.NonSecurePort == -1 ? EurekaInstanceConfiguration.DefaultNonSecurePort : instanceConfig.NonSecurePort;
         info.IsInsecurePortEnabled = instanceConfig.IsNonSecurePortEnabled;
@@ -247,7 +247,7 @@ public class InstanceInfo
             info._sid = json.Sid ?? "na";
             info.AppName = json.AppName;
             info.AppGroupName = json.AppGroupName;
-            info.IpAddress = json.IpAddress;
+            info.IPAddress = json.IPAddress;
             info.Port = json.Port?.Port ?? 0;
             info.IsInsecurePortEnabled = json.Port != null && json.Port.Enabled;
             info.SecurePort = json.SecurePort?.Port ?? 0;
@@ -284,7 +284,7 @@ public class InstanceInfo
             Sid = Sid ?? "na",
             AppName = AppName,
             AppGroupName = AppGroupName,
-            IpAddress = IpAddress,
+            IPAddress = IPAddress,
             Port = new JsonInstanceInfo.JsonPortWrapper(IsInsecurePortEnabled, Port),
             SecurePort = new JsonInstanceInfo.JsonPortWrapper(IsSecurePortEnabled, SecurePort),
             HomePageUrl = HomePageUrl,

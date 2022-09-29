@@ -9,9 +9,9 @@ using RichardSzalay.MockHttp;
 using Steeltoe.Common.Kubernetes;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
+namespace Steeltoe.Configuration.Kubernetes.Test;
 
-public class KubernetesSecretProviderTest
+public sealed class KubernetesSecretProviderTest
 {
     [Fact]
     public void KubernetesSecretProvider_ThrowsOnNulls()
@@ -67,7 +67,7 @@ public class KubernetesSecretProviderTest
         provider.Load();
         await Task.Delay(50);
 
-        Assert.True(provider.Polling, "Provider has begun polling");
+        Assert.True(provider.IsPolling, "Provider has begun polling");
     }
 
     [Fact]

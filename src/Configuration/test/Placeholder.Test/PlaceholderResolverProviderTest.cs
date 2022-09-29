@@ -4,57 +4,71 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
+namespace Steeltoe.Configuration.Placeholder.Test;
 
-public class PlaceholderResolverProviderTest
+public sealed class PlaceholderResolverProviderTest
 {
     [Fact]
-    public void Constructor_ThrowsIfConfigNull()
+    public void Constructor_WithConfiguration_ThrowsIfNulls()
     {
-        const IConfigurationRoot configuration = null;
+        const IConfigurationRoot nullConfiguration = null;
+        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
+        var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(configuration));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(nullConfiguration, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(configuration, null));
     }
 
     [Fact]
-    public void Constructor_ThrowsIfListIConfigurationProviderNull()
+    public void Constructor_WithProviders_ThrowsIfNulls()
     {
-        const IList<IConfigurationProvider> providers = null;
+        const IList<IConfigurationProvider> nullProviders = null;
+        var providers = new List<IConfigurationProvider>();
+        var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(providers));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(nullProviders, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(providers, null));
     }
 
     [Fact]
     public void Constructor_WithConfiguration()
     {
-        var holder = new PlaceholderResolverProvider(new ConfigurationBuilder().Build());
-        Assert.NotNull(holder.Configuration);
-        Assert.Empty(holder.InnerProviders);
+        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
+
+        var provider = new PlaceholderResolverProvider(configuration, NullLoggerFactory.Instance);
+
+        Assert.NotNull(provider.Configuration);
+        Assert.Empty(provider.Providers);
     }
 
     [Fact]
-    public void Constructor_WithListIConfigurationProvider()
+    public void Constructor_WithProviders()
     {
         var providers = new List<IConfigurationProvider>();
-        var holder = new PlaceholderResolverProvider(providers);
-        Assert.Null(holder.Configuration);
-        Assert.Same(providers, holder.InnerProviders);
+
+        var provider = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
+
+        Assert.Null(provider.Configuration);
+        Assert.Same(providers, provider.Providers);
     }
 
     [Fact]
     public void Constructor_WithLoggerFactory()
     {
+        var providers = new List<IConfigurationProvider>();
+        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
         var loggerFactory = new LoggerFactory();
 
-        var holder = new PlaceholderResolverProvider(new List<IConfigurationProvider>(), loggerFactory);
-        Assert.NotNull(holder.Logger);
+        var provider = new PlaceholderResolverProvider(providers, loggerFactory);
+        Assert.NotNull(provider.Logger);
 
-        holder = new PlaceholderResolverProvider(new ConfigurationBuilder().Build(), loggerFactory);
-        Assert.NotNull(holder.Logger);
+        provider = new PlaceholderResolverProvider(configuration, loggerFactory);
+        Assert.NotNull(provider.Logger);
     }
 
     [Fact]
@@ -72,7 +86,7 @@ public class PlaceholderResolverProviderTest
         builder.AddInMemoryCollection(settings);
         List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
-        var holder = new PlaceholderResolverProvider(providers);
+        var holder = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
 
         Assert.False(holder.TryGet("nokey", out string val));
         Assert.True(holder.TryGet("key1", out val));
@@ -100,7 +114,7 @@ public class PlaceholderResolverProviderTest
         builder.AddInMemoryCollection(settings);
         List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
-        var holder = new PlaceholderResolverProvider(providers);
+        var holder = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
 
         Assert.False(holder.TryGet("nokey", out string val));
         Assert.True(holder.TryGet("key1", out val));
@@ -161,7 +175,7 @@ public class PlaceholderResolverProviderTest
 
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var holder = new PlaceholderResolverProvider(new List<IConfigurationProvider>(configurationRoot.Providers));
+        var holder = new PlaceholderResolverProvider(new List<IConfigurationProvider>(configurationRoot.Providers), NullLoggerFactory.Instance);
         IChangeToken token = holder.GetReloadToken();
         Assert.NotNull(token);
         Assert.False(token.HasChanged);
@@ -195,7 +209,7 @@ public class PlaceholderResolverProviderTest
         builder.AddInMemoryCollection(settings);
         List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
-        var holder = new PlaceholderResolverProvider(providers);
+        var holder = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
         Assert.Null(holder.Configuration);
         holder.Load();
         Assert.NotNull(holder.Configuration);
@@ -244,7 +258,7 @@ public class PlaceholderResolverProviderTest
 
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var holder = new PlaceholderResolverProvider(configurationRoot);
+        var holder = new PlaceholderResolverProvider(configurationRoot, NullLoggerFactory.Instance);
         Assert.True(holder.TryGet("spring:cloud:config:name", out string val));
         Assert.Equal("myName", val);
 
@@ -270,7 +284,7 @@ public class PlaceholderResolverProviderTest
         builder.AddInMemoryCollection(settings);
         List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
-        var holder = new PlaceholderResolverProvider(providers);
+        var holder = new PlaceholderResolverProvider(providers, NullLoggerFactory.Instance);
         IEnumerable<string> result = holder.GetChildKeys(Array.Empty<string>(), "spring");
 
         Assert.NotNull(result);

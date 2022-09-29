@@ -17,9 +17,11 @@ public class TestObserverBase<T> : ObserverBase<T>
     private readonly CountdownEvent _latch;
     private readonly ITestOutputHelper _output;
 
-    public volatile int TickCount;
+    private volatile int _tickCount;
 
-    public volatile bool StreamRunning;
+    public bool StreamRunning { get; set; }
+
+    public int TickCount => _tickCount;
 
     public TestObserverBase(ITestOutputHelper output, CountdownEvent latch)
     {
@@ -41,9 +43,9 @@ public class TestObserverBase<T> : ObserverBase<T>
 
     protected override void OnNextCore(T value)
     {
-        TickCount++;
+        _tickCount++;
 
-        if (TickCount >= StableTickCount)
+        if (_tickCount >= StableTickCount)
         {
             StreamRunning = true;
         }

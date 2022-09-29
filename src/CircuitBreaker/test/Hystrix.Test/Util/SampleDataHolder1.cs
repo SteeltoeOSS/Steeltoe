@@ -8,10 +8,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
 
 internal static class SampleDataHolder1
 {
-    /*
-     * Array of [milliseconds, latency]
-     */
-    public static int[][] Data =
+    // Array of [milliseconds, latency]
+    public static int[][] Data { get; } =
     {
         new[] { 0, 3 }, new[] { 43, 33 }, new[] { 45, 11 }, new[] { 45, 1 }, new[] { 68, 13 }, new[] { 88, 10 }, new[] { 158, 2 }, new[] { 158, 4 },
         new[] { 169, 12 }, new[] { 267, 2 }, new[] { 342, 2 }, new[] { 438, 2 }, new[] { 464, 7 }, new[] { 504, 2 }, new[] { 541, 6 }, new[] { 541, 2 },

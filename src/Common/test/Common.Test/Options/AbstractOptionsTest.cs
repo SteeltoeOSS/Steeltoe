@@ -7,36 +7,32 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Options;
 
-public class AbstractOptionsTest
+public sealed class AbstractOptionsTest
 {
     [Fact]
-    public void Constructors_ThrowsOnNulls()
+    public void Constructor_ThrowsOnNull()
     {
-        const IConfigurationRoot root = null;
-        const IConfiguration config = null;
-
-        Assert.Throws<ArgumentNullException>(() => new TestOptions(root, "foobar"));
-        Assert.Throws<ArgumentNullException>(() => new TestOptions(config));
+        Assert.Throws<ArgumentNullException>(() => new TestOptions(null, "foobar"));
     }
 
     [Fact]
     public void Constructors_BindsValues()
     {
-        var builder = new ConfigurationBuilder();
+        var builder1 = new ConfigurationBuilder();
 
-        builder.AddInMemoryCollection(new Dictionary<string, string>
+        builder1.AddInMemoryCollection(new Dictionary<string, string>
         {
             { "foo", "bar" }
         });
 
-        IConfigurationRoot root = builder.Build();
-        IConfiguration config = root;
+        IConfigurationRoot root = builder1.Build();
+        IConfiguration configuration = root;
 
-        var opt1 = new TestOptions(root);
-        Assert.Equal("bar", opt1.Foo);
+        var options1 = new TestOptions(root, null);
+        Assert.Equal("bar", options1.Foo);
 
-        var opt2 = new TestOptions(config);
-        Assert.Equal("bar", opt2.Foo);
+        var options2 = new TestOptions(configuration, null);
+        Assert.Equal("bar", options2.Foo);
 
         var builder2 = new ConfigurationBuilder();
 
@@ -46,7 +42,7 @@ public class AbstractOptionsTest
         });
 
         IConfigurationRoot root2 = builder2.Build();
-        var opt3 = new TestOptions(root2, "prefix");
-        Assert.Equal("bar", opt3.Foo);
+        var options3 = new TestOptions(root2, "prefix");
+        Assert.Equal("bar", options3.Foo);
     }
 }

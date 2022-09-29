@@ -10,6 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Connector\Steeltoe.Connector.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Extensions.Configuration.CloudFoundry.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Configuration.CloudFoundry.csproj" />
   </ItemGroup>
 </Project>

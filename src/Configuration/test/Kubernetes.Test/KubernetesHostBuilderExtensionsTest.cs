@@ -13,9 +13,9 @@ using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
+namespace Steeltoe.Configuration.Kubernetes.Test;
 
-public class KubernetesHostBuilderExtensionsTest
+public sealed class KubernetesHostBuilderExtensionsTest
 {
     [Fact]
     public void AddKubernetesConfiguration_DefaultWebHost_AddsConfig()

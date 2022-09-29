@@ -34,7 +34,7 @@ public class ConsulDiscoveryOptionsTest
         Assert.NotNull(opts.HostName);
         Assert.Null(opts.InstanceGroup);
         Assert.Null(opts.InstanceZone);
-        Assert.False(opts.PreferIpAddress);
+        Assert.False(opts.PreferIPAddress);
         Assert.False(opts.PreferAgentAddress);
         Assert.False(opts.QueryPassing);
         Assert.Equal("http", opts.Scheme);
@@ -44,7 +44,7 @@ public class ConsulDiscoveryOptionsTest
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
             // TODO: this is null on MacOS
-            Assert.NotNull(opts.IpAddress);
+            Assert.NotNull(opts.IPAddress);
         }
     }
 
@@ -56,7 +56,7 @@ public class ConsulDiscoveryOptionsTest
         mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo
         {
             Hostname = "FromMock",
-            IpAddress = "254.254.254.254"
+            IPAddress = "254.254.254.254"
         }).Verifiable();
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
@@ -81,7 +81,7 @@ public class ConsulDiscoveryOptionsTest
         mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo
         {
             Hostname = "FromMock",
-            IpAddress = "254.254.254.254"
+            IPAddress = "254.254.254.254"
         }).Verifiable();
 
         var appSettings = new Dictionary<string, string>
@@ -101,7 +101,7 @@ public class ConsulDiscoveryOptionsTest
         opts.ApplyNetUtils();
 
         Assert.Equal("FromMock", opts.HostName);
-        Assert.Equal("254.254.254.254", opts.IpAddress);
+        Assert.Equal("254.254.254.254", opts.IPAddress);
         mockNetUtils.Verify(n => n.FindFirstNonLoopbackHostInfo(), Times.Once);
     }
 

@@ -9,11 +9,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Configuration;
 
 public sealed class MessageListenerTestContainer : IMessageListenerContainer
 {
-    internal bool StopInvoked;
-    internal bool StartInvoked;
-    internal bool DestroyInvoked;
-    internal bool InitializationInvoked;
-    internal IRabbitListenerEndpoint Endpoint;
+    internal bool StopInvoked { get; set; }
+    internal bool StartInvoked { get; set; }
+    internal bool DestroyInvoked { get; set; }
+    internal bool InitializationInvoked { get; set; }
+    internal IRabbitListenerEndpoint Endpoint { get; }
 
     public bool IsStarted => StartInvoked && InitializationInvoked;
 

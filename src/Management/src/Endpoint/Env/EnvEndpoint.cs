@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using Steeltoe.Extensions.Configuration;
+using Steeltoe.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Env;
 

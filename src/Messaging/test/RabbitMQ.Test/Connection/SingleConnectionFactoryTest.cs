@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using Moq;
 using Steeltoe.Common.Util;
 using Xunit;
@@ -50,9 +49,9 @@ public class SingleConnectionFactoryTest : AbstractConnectionFactoryTest
         mockConnectionFactory.Verify(c => c.CreateConnection(It.IsAny<string>()));
     }
 
-    protected override AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
+    protected override AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory connectionFactory)
     {
-        var scf = new SingleConnectionFactory(connectionFactory, loggerFactory);
+        var scf = new SingleConnectionFactory(connectionFactory, null);
         return scf;
     }
 

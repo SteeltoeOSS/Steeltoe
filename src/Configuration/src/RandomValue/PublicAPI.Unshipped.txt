@@ -1,0 +1,5 @@
+static Steeltoe.Configuration.RandomValue.RandomValueExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
+static Steeltoe.Configuration.RandomValue.RandomValueExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
+static Steeltoe.Configuration.RandomValue.RandomValueExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, string prefix) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
+static Steeltoe.Configuration.RandomValue.RandomValueExtensions.AddRandomValueSource(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, string prefix, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
+Steeltoe.Configuration.RandomValue.RandomValueExtensions

@@ -25,7 +25,7 @@ public class EurekaInstanceConfigTest : AbstractBaseTest
         Assert.Equal(EurekaInstanceConfiguration.DefaultLeaseRenewalIntervalInSeconds, configuration.LeaseRenewalIntervalInSeconds);
         Assert.Equal(EurekaInstanceConfiguration.DefaultLeaseExpirationDurationInSeconds, configuration.LeaseExpirationDurationInSeconds);
         Assert.Equal($"{thisHostName}:{configuration.SecurePort}", configuration.SecureVirtualHostName);
-        Assert.Equal(thisHostAddress, configuration.IpAddress);
+        Assert.Equal(thisHostAddress, configuration.IPAddress);
         Assert.Equal(EurekaInstanceConfiguration.DefaultAppName, configuration.AppName);
         Assert.Equal(EurekaInstanceConfiguration.DefaultStatusPageUrlPath, configuration.StatusPageUrlPath);
         Assert.Equal(EurekaInstanceConfiguration.DefaultHomePageUrlPath, configuration.HomePageUrlPath);

@@ -6,13 +6,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry;
+namespace Steeltoe.Configuration.CloudFoundry;
 
 internal sealed class JsonStreamConfigurationSource : JsonConfigurationSource
 {
-    internal MemoryStream Stream { get; }
+    internal Stream Stream { get; }
 
-    internal JsonStreamConfigurationSource(MemoryStream stream)
+    internal JsonStreamConfigurationSource(Stream stream)
     {
         ArgumentGuard.NotNull(stream);
 
@@ -21,6 +21,8 @@ internal sealed class JsonStreamConfigurationSource : JsonConfigurationSource
 
     public override IConfigurationProvider Build(IConfigurationBuilder builder)
     {
+        ArgumentGuard.NotNull(builder);
+
         return new JsonStreamConfigurationProvider(this);
     }
 }

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using Moq;
 using RabbitMQ.Client.Events;
 using Steeltoe.Common.Util;
@@ -1511,9 +1510,9 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         Assert.False(cf.PublisherConnectionFactory.IsPublisherConfirms);
     }
 
-    protected override AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
+    protected override AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory connectionFactory)
     {
-        return new CachingConnectionFactory(connectionFactory, loggerFactory);
+        return new CachingConnectionFactory(connectionFactory);
     }
 
     private void TestConsumerChannelPhysicallyClosedWhenNotIsOpenGuts(bool confirms)

@@ -4,9 +4,9 @@
 
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Test;
 
-public class ConfigServerClientSettingsTest
+public sealed class ConfigServerClientSettingsTest
 {
     [Fact]
     public void DefaultConstructor_InitializedWithDefaults()

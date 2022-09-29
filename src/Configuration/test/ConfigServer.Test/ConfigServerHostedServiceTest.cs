@@ -4,12 +4,13 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Extensions.Configuration.Placeholder;
+using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Configuration.Placeholder;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Test;
 
-public class ConfigServerHostedServiceTest
+public sealed class ConfigServerHostedServiceTest
 {
     [Fact]
     public void Constructor_ThrowsOnNull()
@@ -25,7 +26,7 @@ public class ConfigServerHostedServiceTest
             new ConfigServerConfigurationProvider(new ConfigServerClientSettings
             {
                 Enabled = false
-            })
+            }, NullLoggerFactory.Instance)
         });
 
         var service = new ConfigServerHostedService(configurationRoot, null);
@@ -47,8 +48,8 @@ public class ConfigServerHostedServiceTest
             new ConfigServerConfigurationProvider(new ConfigServerClientSettings
             {
                 Enabled = false
-            })
-        });
+            }, NullLoggerFactory.Instance)
+        }, NullLoggerFactory.Instance);
 
         var configurationRoot = new ConfigurationRoot(new List<IConfigurationProvider>
         {

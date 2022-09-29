@@ -6,8 +6,8 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
+using Steeltoe.Configuration;
 using Steeltoe.Connector.Services;
-using Steeltoe.Extensions.Configuration;
 
 namespace Steeltoe.Connector;
 

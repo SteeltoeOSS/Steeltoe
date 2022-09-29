@@ -10,7 +10,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Integration.Test;
 
 // NOTE: Some of the tests assume a running Spring Cloud Config Server is started
 //       with repository data for application: foo, profile: development
@@ -20,7 +20,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 //          eg. git clone https://github.com/spring-cloud/spring-cloud-config.git
 //              cd spring-cloud-config\spring-cloud-config-server
 //              mvn spring-boot:run
-public class ConfigServerConfigurationExtensionsIntegrationTest
+public sealed class ConfigServerConfigurationExtensionsIntegrationTest
 {
     [Fact]
     [Trait("Category", "Integration")]

@@ -7,9 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
+namespace Steeltoe.Configuration.CloudFoundry.Test;
 
-public class CloudFoundryServiceCollectionExtensionsTest
+public sealed class CloudFoundryServiceCollectionExtensionsTest
 {
     [Fact]
     public void ConfigureCloudFoundryOptions_ThrowsIfServiceCollectionNull()
@@ -44,11 +44,11 @@ public class CloudFoundryServiceCollectionExtensionsTest
         services.ConfigureCloudFoundryOptions(configurationRoot);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var app = serviceProvider.GetService<IOptions<CloudFoundryApplicationOptions>>();
+        var app = serviceProvider.GetRequiredService<IOptions<CloudFoundryApplicationOptions>>();
         Assert.NotNull(app.Value);
         Assert.Equal("foo", app.Value.ApplicationName);
         Assert.Equal("playground", app.Value.SpaceName);
-        var service = serviceProvider.GetService<IOptions<CloudFoundryServicesOptions>>();
+        var service = serviceProvider.GetRequiredService<IOptions<CloudFoundryServicesOptions>>();
         Assert.NotNull(service.Value);
     }
 
@@ -58,7 +58,7 @@ public class CloudFoundryServiceCollectionExtensionsTest
         const IServiceCollection services = null;
         const IConfigurationRoot configurationRoot = null;
 
-        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(configurationRoot, "foobar"));
+        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServicesOptions>(configurationRoot, "foobar"));
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class CloudFoundryServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         const IConfigurationRoot configurationRoot = null;
 
-        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(configurationRoot, "foobar"));
+        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServicesOptions>(configurationRoot, "foobar"));
     }
 
     [Fact]
@@ -76,8 +76,8 @@ public class CloudFoundryServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(configurationRoot, null));
-        Assert.Throws<ArgumentException>(() => services.ConfigureCloudFoundryService<MySqlServiceOption>(configurationRoot, string.Empty));
+        Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryService<MySqlServicesOptions>(configurationRoot, null));
+        Assert.Throws<ArgumentException>(() => services.ConfigureCloudFoundryService<MySqlServicesOptions>(configurationRoot, string.Empty));
     }
 
     [Fact]
@@ -127,27 +127,27 @@ public class CloudFoundryServiceCollectionExtensionsTest
                     }
                 }";
 
-        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        using Stream stream = CloudFoundryConfigurationProvider.GetStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(stream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot configurationRoot = builder.Build();
         var services = new ServiceCollection();
         services.AddOptions();
 
-        services.ConfigureCloudFoundryService<MySqlServiceOption>(configurationRoot, "mySql2");
+        services.ConfigureCloudFoundryService<MySqlServicesOptions>(configurationRoot, "mySql2");
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var snapShot = serviceProvider.GetRequiredService<IOptionsSnapshot<MySqlServiceOption>>();
-        var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<MySqlServiceOption>>();
-        MySqlServiceOption snapOpt = snapShot.Get("mySql2");
-        MySqlServiceOption monOpt = monitor.Get("mySql2");
-        Assert.NotNull(snapOpt);
-        Assert.NotNull(monOpt);
+        var snapshot = serviceProvider.GetRequiredService<IOptionsSnapshot<MySqlServicesOptions>>();
+        var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<MySqlServicesOptions>>();
+        MySqlServicesOptions optionsInSnapshot = snapshot.Get("mySql2");
+        MySqlServicesOptions optionsInMonitor = monitor.Get("mySql2");
+        Assert.NotNull(optionsInSnapshot);
+        Assert.NotNull(optionsInMonitor);
 
-        Assert.Equal("mySql2", snapOpt.Name);
-        Assert.Equal("p-mysql", snapOpt.Label);
-        Assert.Equal("mySql2", monOpt.Name);
-        Assert.Equal("p-mysql", monOpt.Label);
+        Assert.Equal("mySql2", optionsInSnapshot.Name);
+        Assert.Equal("p-mysql", optionsInSnapshot.Label);
+        Assert.Equal("mySql2", optionsInMonitor.Name);
+        Assert.Equal("p-mysql", optionsInMonitor.Label);
     }
 
     [Fact]
@@ -197,37 +197,37 @@ public class CloudFoundryServiceCollectionExtensionsTest
                     }
                 }";
 
-        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        using Stream stream = CloudFoundryConfigurationProvider.GetStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(stream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot configurationRoot = builder.Build();
         var services = new ServiceCollection();
         services.AddOptions();
 
-        services.ConfigureCloudFoundryServices<MySqlServiceOption>(configurationRoot, "p-mysql");
+        services.ConfigureCloudFoundryServices<MySqlServicesOptions>(configurationRoot, "p-mysql");
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var snapShot = serviceProvider.GetRequiredService<IOptionsSnapshot<MySqlServiceOption>>();
-        var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<MySqlServiceOption>>();
+        var snapshot = serviceProvider.GetRequiredService<IOptionsSnapshot<MySqlServicesOptions>>();
+        var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<MySqlServicesOptions>>();
 
-        MySqlServiceOption snapOpt1 = snapShot.Get("mySql1");
-        MySqlServiceOption monOpt1 = monitor.Get("mySql1");
-        Assert.NotNull(snapOpt1);
-        Assert.NotNull(monOpt1);
+        MySqlServicesOptions optionsInSnapshot1 = snapshot.Get("mySql1");
+        MySqlServicesOptions optionsInMonitor1 = monitor.Get("mySql1");
+        Assert.NotNull(optionsInSnapshot1);
+        Assert.NotNull(optionsInMonitor1);
 
-        Assert.Equal("mySql1", snapOpt1.Name);
-        Assert.Equal("p-mysql", snapOpt1.Label);
-        Assert.Equal("mySql1", monOpt1.Name);
-        Assert.Equal("p-mysql", monOpt1.Label);
+        Assert.Equal("mySql1", optionsInSnapshot1.Name);
+        Assert.Equal("p-mysql", optionsInSnapshot1.Label);
+        Assert.Equal("mySql1", optionsInMonitor1.Name);
+        Assert.Equal("p-mysql", optionsInMonitor1.Label);
 
-        MySqlServiceOption snapOpt2 = snapShot.Get("mySql2");
-        MySqlServiceOption monOpt2 = monitor.Get("mySql2");
-        Assert.NotNull(snapOpt2);
-        Assert.NotNull(monOpt2);
+        MySqlServicesOptions optionsInSnapshot2 = snapshot.Get("mySql2");
+        MySqlServicesOptions optionsInMonitor2 = monitor.Get("mySql2");
+        Assert.NotNull(optionsInSnapshot2);
+        Assert.NotNull(optionsInMonitor2);
 
-        Assert.Equal("mySql2", snapOpt2.Name);
-        Assert.Equal("p-mysql", snapOpt2.Label);
-        Assert.Equal("mySql2", monOpt2.Name);
-        Assert.Equal("p-mysql", monOpt2.Label);
+        Assert.Equal("mySql2", optionsInSnapshot2.Name);
+        Assert.Equal("p-mysql", optionsInSnapshot2.Label);
+        Assert.Equal("mySql2", optionsInMonitor2.Name);
+        Assert.Equal("p-mysql", optionsInMonitor2.Label);
     }
 }

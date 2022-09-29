@@ -1060,7 +1060,7 @@ public class ApplicationsTest : AbstractBaseTest
             InstanceId = "InstanceId",
             AppName = "myApp",
             AppGroupName = "AppGroupName",
-            IpAddress = "IpAddr",
+            IPAddress = "IPAddress",
             Sid = "Sid",
             Port = new JsonInstanceInfo.JsonPortWrapper(true, 100),
             SecurePort = new JsonInstanceInfo.JsonPortWrapper(false, 100),
@@ -1136,7 +1136,7 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.Equal("InstanceId", info.InstanceId);
         Assert.Equal("myApp", info.AppName);
         Assert.Equal("AppGroupName", info.AppGroupName);
-        Assert.Equal("IpAddr", info.IpAddress);
+        Assert.Equal("IPAddress", info.IPAddress);
         Assert.Equal("Sid", info.Sid);
         Assert.Equal(100, info.Port);
         Assert.True(info.IsInsecurePortEnabled);
@@ -1178,7 +1178,7 @@ public class ApplicationsTest : AbstractBaseTest
             // InstanceId = "InstanceId",
             AppName = "myApp",
             AppGroupName = "AppGroupName",
-            IpAddress = "IpAddr",
+            IPAddress = "IPAddress",
             Sid = "Sid",
             Port = new JsonInstanceInfo.JsonPortWrapper(true, 100),
             SecurePort = new JsonInstanceInfo.JsonPortWrapper(false, 100),

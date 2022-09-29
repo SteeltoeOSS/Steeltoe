@@ -14,6 +14,7 @@ using Steeltoe.Common.Http;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Common.Utils.IO;
+using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connector;
 using Steeltoe.Discovery.Client.SimpleClients;
 using Steeltoe.Discovery.Consul;
@@ -23,7 +24,6 @@ using Steeltoe.Discovery.Eureka;
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Kubernetes;
 using Steeltoe.Discovery.Kubernetes.Discovery;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test;

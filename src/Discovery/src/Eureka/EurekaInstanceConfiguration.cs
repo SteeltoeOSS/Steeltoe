@@ -65,13 +65,13 @@ public class EurekaInstanceConfiguration : IEurekaInstanceConfig
     // eureka:instance:secureHealthCheckUrl
     public virtual string SecureHealthCheckUrl { get; set; }
 
-    // eureka:instance:preferIpAddress
-    public virtual bool PreferIpAddress { get; set; }
+    // eureka:instance:preferIPAddress
+    public virtual bool PreferIPAddress { get; set; }
 
     // eureka:instance:hostName
     public virtual string HostName { get; set; }
 
-    public virtual string IpAddress { get; set; }
+    public virtual string IPAddress { get; set; }
 
     public virtual string AppGroupName { get; set; }
 
@@ -109,14 +109,14 @@ public class EurekaInstanceConfiguration : IEurekaInstanceConfig
         LeaseExpirationDurationInSeconds = DefaultLeaseExpirationDurationInSeconds;
         VirtualHostName = $"{HostName}:{NonSecurePort}";
         SecureVirtualHostName = $"{HostName}:{SecurePort}";
-        IpAddress = thisHostAddress;
+        IPAddress = thisHostAddress;
         AppName = DefaultAppName;
         StatusPageUrlPath = DefaultStatusPageUrlPath;
         HomePageUrlPath = DefaultHomePageUrlPath;
         HealthCheckUrlPath = DefaultHealthCheckUrlPath;
         MetadataMap = new Dictionary<string, string>();
         DataCenterInfo = new DataCenterInfo(DataCenterName.MyOwn);
-        PreferIpAddress = false;
+        PreferIPAddress = false;
     }
 
     public void ApplyNetUtils()
@@ -130,7 +130,7 @@ public class EurekaInstanceConfiguration : IEurekaInstanceConfig
                 HostName = host.Hostname;
             }
 
-            IpAddress = host.IpAddress;
+            IPAddress = host.IPAddress;
         }
     }
 

@@ -10,9 +10,9 @@ using RichardSzalay.MockHttp;
 using Steeltoe.Common.Kubernetes;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
+namespace Steeltoe.Configuration.Kubernetes.Test;
 
-public class KubernetesConfigMapProviderTest
+public sealed class KubernetesConfigMapProviderTest
 {
     [Fact]
     public void KubernetesConfigMapProvider_ThrowsOnNulls()
@@ -69,7 +69,7 @@ public class KubernetesConfigMapProviderTest
         provider.Load();
         await Task.Delay(50);
 
-        Assert.True(provider.Polling, "Provider has begun polling");
+        Assert.True(provider.IsPolling, "Provider has begun polling");
     }
 
     [Fact]

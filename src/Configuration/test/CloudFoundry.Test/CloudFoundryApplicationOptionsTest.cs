@@ -5,9 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
+namespace Steeltoe.Configuration.CloudFoundry.Test;
 
-public class CloudFoundryApplicationOptionsTest
+public sealed class CloudFoundryApplicationOptionsTest
 {
     [Fact]
     public void Constructor_WithNoVcapApplicationConfiguration()
@@ -37,9 +37,9 @@ public class CloudFoundryApplicationOptionsTest
         Assert.Null(options.Uris);
         Assert.Null(options.Version);
         Assert.Null(options.Instance_IP);
-        Assert.Null(options.InstanceIp);
+        Assert.Null(options.InstanceIP);
         Assert.Null(options.Internal_IP);
-        Assert.Null(options.InternalIp);
+        Assert.Null(options.InternalIP);
         Assert.Equal(-1, options.DiskLimit);
         Assert.Equal(-1, options.FileDescriptorLimit);
         Assert.Equal(-1, options.InstanceIndex);
@@ -79,8 +79,8 @@ public class CloudFoundryApplicationOptionsTest
                 }
             }";
 
-        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        using Stream stream = CloudFoundryConfigurationProvider.GetStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(stream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot configurationRoot = builder.Build();
 

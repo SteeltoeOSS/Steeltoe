@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry;
+namespace Steeltoe.Configuration.CloudFoundry;
 
 public static class ServiceCollectionExtensions
 {
@@ -18,6 +18,8 @@ public static class ServiceCollectionExtensions
     /// </param>
     public static IServiceCollection RegisterCloudFoundryApplicationInstanceInfo(this IServiceCollection serviceCollection)
     {
+        ArgumentGuard.NotNull(serviceCollection);
+
         ServiceDescriptor appInfo = serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
 
         if (appInfo?.ImplementationType?.IsAssignableFrom(typeof(CloudFoundryApplicationOptions)) != true)

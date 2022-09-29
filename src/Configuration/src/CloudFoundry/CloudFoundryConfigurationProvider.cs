@@ -5,9 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry;
+namespace Steeltoe.Configuration.CloudFoundry;
 
-public class CloudFoundryConfigurationProvider : ConfigurationProvider
+internal sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
 {
     private readonly ICloudFoundrySettingsReader _settingsReader;
 
@@ -25,17 +25,20 @@ public class CloudFoundryConfigurationProvider : ConfigurationProvider
         Process();
     }
 
-    internal static MemoryStream GetMemoryStream(string json)
+    internal static Stream GetStream(string json)
     {
-        var memStream = new MemoryStream();
-        var textWriter = new StreamWriter(memStream);
-        textWriter.Write(json);
-        textWriter.Flush();
-        memStream.Seek(0, SeekOrigin.Begin);
-        return memStream;
+        var stream = new MemoryStream();
+
+        using (var textWriter = new StreamWriter(stream, leaveOpen: true))
+        {
+            textWriter.Write(json);
+        }
+
+        stream.Seek(0, SeekOrigin.Begin);
+        return stream;
     }
 
-    internal void AddDiegoVariables(IDictionary<string, string> data)
+    private void AddDiegoVariables(IDictionary<string, string> data)
     {
         if (!data.ContainsKey("vcap:application:instance_id"))
         {
@@ -52,8 +55,8 @@ public class CloudFoundryConfigurationProvider : ConfigurationProvider
             data["vcap:application:port"] = !string.IsNullOrEmpty(_settingsReader.InstancePort) ? _settingsReader.InstancePort : "-1";
         }
 
-        data["vcap:application:instance_ip"] = _settingsReader.InstanceIp;
-        data["vcap:application:internal_ip"] = _settingsReader.InstanceInternalIp;
+        data["vcap:application:instance_ip"] = _settingsReader.InstanceIP;
+        data["vcap:application:internal_ip"] = _settingsReader.InstanceInternalIP;
     }
 
     private void Process()
@@ -64,9 +67,9 @@ public class CloudFoundryConfigurationProvider : ConfigurationProvider
 
         if (!string.IsNullOrEmpty(appJson))
         {
-            MemoryStream memStream = GetMemoryStream(appJson);
+            using Stream stream = GetStream(appJson);
             var builder = new ConfigurationBuilder();
-            builder.Add(new JsonStreamConfigurationSource(memStream));
+            builder.Add(new JsonStreamConfigurationSource(stream));
             IConfigurationRoot applicationData = builder.Build();
 
             if (applicationData != null)
@@ -80,9 +83,9 @@ public class CloudFoundryConfigurationProvider : ConfigurationProvider
 
         if (!string.IsNullOrEmpty(appServicesJson))
         {
-            MemoryStream memStream = GetMemoryStream(appServicesJson);
+            using Stream stream = GetStream(appServicesJson);
             var builder = new ConfigurationBuilder();
-            builder.Add(new JsonStreamConfigurationSource(memStream));
+            builder.Add(new JsonStreamConfigurationSource(stream));
             IConfigurationRoot servicesData = builder.Build();
 
             if (servicesData != null)
@@ -96,26 +99,19 @@ public class CloudFoundryConfigurationProvider : ConfigurationProvider
 
     private void LoadData(string prefix, IEnumerable<IConfigurationSection> sections, IDictionary<string, string> data)
     {
-        if (sections == null || !sections.Any())
+        if (sections != null)
         {
-            return;
-        }
-
-        foreach (IConfigurationSection section in sections)
-        {
-            LoadSection(prefix, section, data);
-            LoadData(prefix, section.GetChildren(), data);
+            foreach (IConfigurationSection section in sections)
+            {
+                LoadSection(prefix, section, data);
+                LoadData(prefix, section.GetChildren(), data);
+            }
         }
     }
 
     private void LoadSection(string prefix, IConfigurationSection section, IDictionary<string, string> data)
     {
-        if (section == null)
-        {
-            return;
-        }
-
-        if (string.IsNullOrEmpty(section.Value))
+        if (section == null || string.IsNullOrEmpty(section.Value))
         {
             return;
         }

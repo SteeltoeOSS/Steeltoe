@@ -10,5 +10,5 @@ namespace Steeltoe.Stream.Binder;
 /// </summary>
 public class Spy
 {
-    public Func<bool, object> Receive;
+    public Func<bool, object> Receive { get; set; }
 }

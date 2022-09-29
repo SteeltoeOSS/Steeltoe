@@ -149,19 +149,21 @@ public class MessageProducerSupportEndpointTest
 
     private sealed class SuccessfulErrorService : IMessageProcessor
     {
-        public volatile IMessage LastMessage;
+        private volatile IMessage _lastMessage;
+
+        public IMessage LastMessage => _lastMessage;
 
         public object ProcessMessage(IMessage message)
         {
-            LastMessage = message;
+            _lastMessage = message;
             return null;
         }
     }
 
     private sealed class CustomEndpoint : AbstractEndpoint
     {
-        public int Count;
-        public bool Stopped;
+        public int Count { get; set; }
+        public bool Stopped { get; set; }
 
         public CustomEndpoint(IApplicationContext context)
             : base(context)

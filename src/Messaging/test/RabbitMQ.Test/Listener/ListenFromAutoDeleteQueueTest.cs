@@ -180,8 +180,8 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
 
     private sealed class AppendingListener : IReplyingMessageListener<string, string>
     {
-        public readonly ConcurrentQueue<string> Queue = new();
-        public readonly CountdownEvent Latch = new(1);
+        public ConcurrentQueue<string> Queue { get; } = new();
+        public CountdownEvent Latch { get; } = new(1);
 
         public string HandleMessage(string input)
         {

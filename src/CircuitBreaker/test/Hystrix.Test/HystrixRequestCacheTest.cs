@@ -4,19 +4,11 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixRequestCacheTest : HystrixTestBase
 {
-    private readonly ITestOutputHelper _output;
-
-    public HystrixRequestCacheTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
-
     [Fact]
     public void TestCache()
     {
@@ -47,10 +39,10 @@ public class HystrixRequestCacheTest : HystrixTestBase
         }
         finally
         {
-            context.Dispose();
+            Context.Dispose();
         }
 
-        context = HystrixRequestContext.InitializeContext();
+        Context = HystrixRequestContext.InitializeContext();
 
         try
         {
@@ -61,14 +53,14 @@ public class HystrixRequestCacheTest : HystrixTestBase
         }
         finally
         {
-            context.Dispose();
+            Context.Dispose();
         }
     }
 
     [Fact]
     public async Task TestCacheWithoutContext()
     {
-        context.Dispose();
+        Context.Dispose();
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1")).Get<Task<string>>("any"));
@@ -95,7 +87,7 @@ public class HystrixRequestCacheTest : HystrixTestBase
     [Fact]
     public async Task TestCacheWithoutRequestContext()
     {
-        context.Dispose();
+        Context.Dispose();
 
         var cache1 = HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1"));
         Task<string> t1 = Task.FromResult("a1");

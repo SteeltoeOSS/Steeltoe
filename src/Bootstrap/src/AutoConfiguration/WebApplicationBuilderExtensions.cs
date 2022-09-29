@@ -8,6 +8,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
+using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Configuration.ConfigServer;
+using Steeltoe.Configuration.Kubernetes;
+using Steeltoe.Configuration.Placeholder;
+using Steeltoe.Configuration.RandomValue;
 using Steeltoe.Connector;
 using Steeltoe.Connector.MongoDb;
 using Steeltoe.Connector.MySql;
@@ -17,11 +22,6 @@ using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Redis;
 using Steeltoe.Connector.SqlServer;
 using Steeltoe.Discovery.Client;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
-using Steeltoe.Extensions.Configuration.ConfigServer;
-using Steeltoe.Extensions.Configuration.Kubernetes;
-using Steeltoe.Extensions.Configuration.Placeholder;
-using Steeltoe.Extensions.Configuration.RandomValue;
 using Steeltoe.Extensions.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Kubernetes;
@@ -60,8 +60,8 @@ public static class WebApplicationBuilderExtensions
         ILoggerFactory loggerFactory = null)
     {
         AssemblyExtensions.ExcludedAssemblies = exclusions ?? new List<string>();
-        _loggerFactory = loggerFactory;
-        _logger = loggerFactory?.CreateLogger(LoggerName) ?? NullLogger.Instance;
+        _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
+        _logger = _loggerFactory.CreateLogger(LoggerName);
 
         if (!webApplicationBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServer))
         {
@@ -162,7 +162,7 @@ public static class WebApplicationBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireKubernetesConfiguration(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Configuration.AddKubernetes(loggerFactory: _loggerFactory);
+        webApplicationBuilder.Configuration.AddKubernetes(_loggerFactory);
         webApplicationBuilder.Services.AddKubernetesConfigurationServices();
         Log(LogMessages.WireKubernetesConfiguration);
     }

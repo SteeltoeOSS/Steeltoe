@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
 
 public class MetricsStartup
 {
-    public IConfiguration Configuration;
+    public IConfiguration Configuration { get; }
 
     public MetricsStartup(IConfiguration configuration)
     {

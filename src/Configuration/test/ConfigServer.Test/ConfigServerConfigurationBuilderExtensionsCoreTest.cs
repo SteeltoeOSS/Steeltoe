@@ -9,9 +9,9 @@ using Steeltoe.Common;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Test;
 
-public class ConfigServerConfigurationBuilderExtensionsCoreTest
+public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
 {
     private readonly Dictionary<string, string> _quickTests = new()
     {

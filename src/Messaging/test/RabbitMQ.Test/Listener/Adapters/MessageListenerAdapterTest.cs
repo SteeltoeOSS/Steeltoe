@@ -192,7 +192,7 @@ public class MessageListenerAdapterTest
 
     public class SimpleService : IService
     {
-        public string Called;
+        public string Called { get; private set; }
 
         public string Handle(string input)
         {

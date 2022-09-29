@@ -636,7 +636,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var foh = new FooObjectHolder();
         var context = new StandardEvaluationContext(foh);
 
-        var expression = (SpelExpression)Parser.ParseExpression("Foo?.Object");
+        var expression = (SpelExpression)Parser.ParseExpression("Foo?.TheObject");
         Assert.Equal("hello", expression.GetValue(context));
         foh.Foo = null;
         Assert.Null(expression.GetValue(context));
@@ -4974,7 +4974,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void PlusNeedingCheckCast_SPR12426()
     {
-        _expression = Parser.ParseExpression("Object + ' world'");
+        _expression = Parser.ParseExpression("TheObject + ' world'");
         object v = _expression.GetValue(new FooObject());
         Assert.Equal("hello world", v);
         AssertCanCompile(_expression);
@@ -5846,6 +5846,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 #pragma warning disable S1144 // Unused private types or members should be removed
 #pragma warning disable S2326 // Unused type parameters should be removed
 #pragma warning disable S1118 // Utility classes should not have public constructors
+#pragma warning disable SA1401 // Fields should be private
 
     public static class AHolder
     {
@@ -5878,7 +5879,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
+#pragma warning disable S3898 // Value types should implement "IEquatable<T>"
     public struct A
+#pragma warning restore S3898 // Value types should implement "IEquatable<T>"
     {
         public int Value;
 
@@ -7067,11 +7070,11 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class FooObject
     {
-        public object Object => "hello";
+        public object TheObject => "hello";
 
         public object GetObject()
         {
-            return Object;
+            return TheObject;
         }
     }
 

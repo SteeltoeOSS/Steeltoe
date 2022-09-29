@@ -69,9 +69,9 @@ public class HystrixSyncTaskSchedulerTest
 
     private sealed class TaskActionClass
     {
-        public readonly int Value;
-        public bool Stop;
-        public ITestOutputHelper Output;
+        public int Value { get; }
+        public bool Stop { get; set; }
+        public ITestOutputHelper Output { get; }
 
         public TaskActionClass(ITestOutputHelper output, int val)
         {

@@ -4,9 +4,9 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry;
+namespace Steeltoe.Configuration.CloudFoundry;
 
-public class CloudFoundryConfigurationSource : IConfigurationSource
+internal sealed class CloudFoundryConfigurationSource : IConfigurationSource
 {
     public ICloudFoundrySettingsReader SettingsReader { get; set; }
 

@@ -8,7 +8,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test;
 
 internal sealed class BrokenLoadBalancer : ILoadBalancer
 {
-    internal List<Tuple<Uri, Uri, TimeSpan, Exception>> Stats = new();
+    internal List<Tuple<Uri, Uri, TimeSpan, Exception>> Stats { get; } = new();
 
     /// <summary>
     /// Throws exceptions when you try to resolve services.

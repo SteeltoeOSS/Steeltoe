@@ -5,9 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
+namespace Steeltoe.Configuration.CloudFoundry.Test;
 
-public class JsonStreamConfigurationSourceTest
+public sealed class JsonStreamConfigurationSourceTest
 {
     [Fact]
     public void Constructor_Throws_StreamNull()
@@ -43,8 +43,8 @@ public class JsonStreamConfigurationSourceTest
                   ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
                   }";
 
-        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
-        var source = new JsonStreamConfigurationSource(memStream);
+        using Stream stream = CloudFoundryConfigurationProvider.GetStream(environment);
+        var source = new JsonStreamConfigurationSource(stream);
         var builder = new ConfigurationBuilder();
         builder.Add(source);
         IConfigurationRoot root = builder.Build();

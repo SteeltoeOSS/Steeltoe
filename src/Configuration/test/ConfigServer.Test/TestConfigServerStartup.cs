@@ -5,11 +5,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Test;
 
-public class TestConfigServerStartup
+public sealed class TestConfigServerStartup
 {
-    public static CountdownEvent InitialRequestLatch = new(1);
+    public static CountdownEvent InitialRequestLatch { get; private set; } = new(1);
 
     public static string Response { get; set; }
 

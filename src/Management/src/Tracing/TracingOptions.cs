@@ -20,7 +20,7 @@ public class TracingOptions : ITracingOptions
     private readonly IApplicationInstanceInfo _applicationInstanceInfo;
 
     /// <inheritdoc />
-    public string Name => _applicationInstanceInfo?.ApplicationNameInContext(SteeltoeComponent.Management, $"{ConfigurationPrefix}:name");
+    public string Name => _applicationInstanceInfo?.GetApplicationNameInContext(SteeltoeComponent.Management, $"{ConfigurationPrefix}:name");
 
     /// <inheritdoc />
     public string IngressIgnorePattern { get; set; }

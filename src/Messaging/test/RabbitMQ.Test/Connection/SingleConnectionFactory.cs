@@ -16,22 +16,22 @@ public class SingleConnectionFactory : AbstractConnectionFactory
 
     public SharedConnectionProxy Connection { get; private set; }
 
-    public SingleConnectionFactory(ILoggerFactory loggerFactory = null)
+    public SingleConnectionFactory(ILoggerFactory loggerFactory)
         : this((string)null, loggerFactory)
     {
     }
 
-    public SingleConnectionFactory(int port, ILoggerFactory loggerFactory = null)
+    public SingleConnectionFactory(int port, ILoggerFactory loggerFactory)
         : this(null, port, loggerFactory)
     {
     }
 
-    public SingleConnectionFactory(string hostname, ILoggerFactory loggerFactory = null)
+    public SingleConnectionFactory(string hostname, ILoggerFactory loggerFactory)
         : this(hostname, RabbitOptions.DefaultPort, loggerFactory)
     {
     }
 
-    public SingleConnectionFactory(string hostname, int port, ILoggerFactory loggerFactory = null)
+    public SingleConnectionFactory(string hostname, int port, ILoggerFactory loggerFactory)
         : base(new RC.ConnectionFactory(), loggerFactory)
     {
         if (string.IsNullOrEmpty(hostname))
@@ -44,14 +44,14 @@ public class SingleConnectionFactory : AbstractConnectionFactory
         ServiceName = DefaultServiceName;
     }
 
-    public SingleConnectionFactory(Uri uri, ILoggerFactory loggerFactory = null)
+    public SingleConnectionFactory(Uri uri, ILoggerFactory loggerFactory)
         : base(new RC.ConnectionFactory(), loggerFactory)
     {
         Uri = uri;
         ServiceName = DefaultServiceName;
     }
 
-    public SingleConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory = null)
+    public SingleConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory)
         : base(rabbitConnectionFactory, loggerFactory)
     {
         ServiceName = DefaultServiceName;
@@ -155,7 +155,7 @@ public class SingleConnectionFactory : AbstractConnectionFactory
             }
         }
 
-        public SharedConnectionProxy(SingleConnectionFactory factory, IConnection target, ILogger logger = null)
+        internal SharedConnectionProxy(SingleConnectionFactory factory, IConnection target, ILogger logger = null)
         {
             _logger = logger;
             _factory = factory;

@@ -74,7 +74,7 @@ public class KubernetesApplicationOptionsTest
         Assert.Equal("not-default2", appInfo.Secrets.Sources.First().Namespace);
         Assert.True(appInfo.Reload.Secrets);
         Assert.True(appInfo.Reload.ConfigMaps);
-        Assert.Equal(ReloadMethods.Event, appInfo.Reload.Mode);
+        Assert.Equal(ReloadMethod.Event, appInfo.Reload.Mode);
         Assert.Equal(30, appInfo.Reload.Period);
     }
 

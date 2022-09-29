@@ -87,7 +87,7 @@ public static class PropertyPlaceholderHelper
             return property;
         }
 
-        int startIndex = property.IndexOf(Prefix);
+        int startIndex = property.IndexOf(Prefix, StringComparison.Ordinal);
 
         if (startIndex == -1)
         {
@@ -122,7 +122,7 @@ public static class PropertyPlaceholderHelper
 
                 if (propVal == null)
                 {
-                    int separatorIndex = placeholder.IndexOf(Separator);
+                    int separatorIndex = placeholder.IndexOf(Separator, StringComparison.Ordinal);
 
                     if (separatorIndex != -1)
                     {
@@ -234,7 +234,7 @@ public static class PropertyPlaceholderHelper
             return -1;
         }
 
-        return builder.ToString().IndexOf(str, start);
+        return builder.ToString().IndexOf(str, start, StringComparison.Ordinal);
     }
 
     private static string Substring(this StringBuilder builder, int start, int end)

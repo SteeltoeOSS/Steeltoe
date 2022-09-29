@@ -5,11 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Options;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer;
+namespace Steeltoe.Configuration.ConfigServer;
 
-public class ConfigServerClientSettingsOptions : AbstractOptions
+public sealed class ConfigServerClientSettingsOptions : AbstractOptions
 {
-    public const string ConfigurationPrefix = "spring:cloud:config";
+    internal const string ConfigurationPrefix = "spring:cloud:config";
 
     public bool Enabled { get; set; } = ConfigServerClientSettings.DefaultProviderEnabled;
 
@@ -83,13 +83,13 @@ public class ConfigServerClientSettingsOptions : AbstractOptions
 
     public string ClientId => Client_Id;
 
-    public Dictionary<string, string> Headers { get; set; }
+    public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
 
     public ConfigServerClientSettings Settings
     {
         get
         {
-            var settings = new ConfigServerClientSettings
+            ConfigServerClientSettings settings = new()
             {
                 Enabled = Enabled,
                 FailFast = FailFast,
@@ -103,7 +103,6 @@ public class ConfigServerClientSettingsOptions : AbstractOptions
                 TokenTtl = TokenTtl,
                 TokenRenewRate = TokenRenewRate,
                 DisableTokenRenewal = DisableTokenRenewal,
-                Headers = Headers,
 
                 Environment = Env,
                 Label = Label,
@@ -123,10 +122,16 @@ public class ConfigServerClientSettingsOptions : AbstractOptions
                 HealthTimeToLive = HealthTimeToLive
             };
 
+            foreach ((string key, string value) in Headers)
+            {
+                settings.Headers[key] = value;
+            }
+
             return settings;
         }
     }
 
+    // This constructor is for use with IOptions.
     public ConfigServerClientSettingsOptions()
     {
     }
@@ -136,8 +141,8 @@ public class ConfigServerClientSettingsOptions : AbstractOptions
     {
     }
 
-    public ConfigServerClientSettingsOptions(IConfiguration config)
-        : base(config)
+    public ConfigServerClientSettingsOptions(IConfiguration configuration)
+        : base(configuration)
     {
     }
 }

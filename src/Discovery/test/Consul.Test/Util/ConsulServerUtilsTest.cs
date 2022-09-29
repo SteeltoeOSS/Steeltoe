@@ -30,7 +30,7 @@ public class ConsulServerUtilsTest
     }
 
     [Fact]
-    public void FixIpv6Address_Fixes()
+    public void FixIPv6Address_Fixes()
     {
         string s1 = ConsulServerUtils.FixIPv6Address("fc00:ec:cd::242:ac11:c");
         Assert.Equal("[fc00:ec:cd:0:0:242:ac11:c]", s1);

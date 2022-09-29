@@ -5,9 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
+namespace Steeltoe.Configuration.CloudFoundry.Test;
 
-public class CloudFoundryServiceOptionsTest
+public sealed class CloudFoundryServiceOptionsTest
 {
     [Fact]
     public void Constructor_WithNoVcapServicesConfiguration()
@@ -20,7 +20,7 @@ public class CloudFoundryServiceOptionsTest
         Assert.NotNull(options);
         Assert.NotNull(options.Services);
         Assert.Empty(options.Services);
-        Assert.Empty(options.GetServicesList());
+        Assert.Empty(options.GetAllServices());
     }
 
     [Fact]
@@ -46,8 +46,8 @@ public class CloudFoundryServiceOptionsTest
                     }
                 }";
 
-        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        using Stream stream = CloudFoundryConfigurationProvider.GetStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(stream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot configurationRoot = builder.Build();
 
@@ -59,7 +59,7 @@ public class CloudFoundryServiceOptionsTest
         Assert.NotNull(options.Services["p-config-server"]);
         Assert.Single(options.Services["p-config-server"]);
 
-        Service service = options.GetInstancesOfType("p-config-server").First();
+        Service service = options.GetServicesOfType("p-config-server").First();
         Assert.Equal("p-config-server", service.Label);
         Assert.Equal("My Config Server", service.Name);
         Assert.Equal("standard", service.Plan);
@@ -145,8 +145,8 @@ public class CloudFoundryServiceOptionsTest
                     }
                 }";
 
-        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        using Stream stream = CloudFoundryConfigurationProvider.GetStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(stream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot configurationRoot = builder.Build();
 
@@ -154,7 +154,7 @@ public class CloudFoundryServiceOptionsTest
 
         Assert.NotNull(options.Services);
         Assert.Single(options.Services);
-        Service service = options.GetInstancesOfType("p-rabbitmq").First();
+        Service service = options.GetServicesOfType("p-rabbitmq").First();
         Assert.Equal("p-rabbitmq", service.Label);
         Assert.Equal("rabbitmq", service.Name);
         Assert.Equal("standard", service.Plan);
@@ -221,8 +221,8 @@ public class CloudFoundryServiceOptionsTest
                     }
                 }";
 
-        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        using Stream stream = CloudFoundryConfigurationProvider.GetStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(stream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot configurationRoot = builder.Build();
 
@@ -232,10 +232,10 @@ public class CloudFoundryServiceOptionsTest
         Assert.Single(options.Services);
         Assert.NotNull(options.Services["p-mysql"]);
 
-        Assert.Equal(2, options.GetServicesList().Count());
+        Assert.Equal(2, options.GetAllServices().Count());
 
-        Service service1 = options.GetServicesList().First(n => n.Name == "mySql1");
-        Service service2 = options.GetServicesList().First(n => n.Name == "mySql2");
+        Service service1 = options.GetAllServices().First(n => n.Name == "mySql1");
+        Service service2 = options.GetAllServices().First(n => n.Name == "mySql2");
         Assert.NotNull(service1);
         Assert.NotNull(service2);
         Assert.Equal("p-mysql", service1.Label);
@@ -274,8 +274,8 @@ public class CloudFoundryServiceOptionsTest
     }
 }";
 
-        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        using Stream stream = CloudFoundryConfigurationProvider.GetStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(stream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot configurationRoot = builder.Build();
 
@@ -287,7 +287,7 @@ public class CloudFoundryServiceOptionsTest
         Assert.NotNull(options.Services["p-config-server"]);
         Assert.Single(options.Services["p-config-server"]);
 
-        Service firstService = options.GetServicesList().First();
+        Service firstService = options.GetAllServices().First();
         Assert.Equal("p-config-server", firstService.Label);
         Assert.Equal("My Config Server", firstService.Name);
         Assert.Equal("standard", firstService.Plan);
@@ -331,8 +331,8 @@ public class CloudFoundryServiceOptionsTest
                     }
                 }";
 
-        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        using Stream stream = CloudFoundryConfigurationProvider.GetStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(stream);
         IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
         IConfigurationRoot configurationRoot = builder.Build();
         var options = new CloudFoundryServicesOptions(configurationRoot);
@@ -343,7 +343,7 @@ public class CloudFoundryServiceOptionsTest
         Assert.NotNull(options.Services["p-config-server"]);
         Assert.Single(options.Services["p-config-server"]);
 
-        Service service = options.GetServicesList().First();
+        Service service = options.GetAllServices().First();
         Assert.Equal("p-config-server", service.Label);
         Assert.Equal("My Config Server", service.Name);
         Assert.Equal("standard", service.Plan);

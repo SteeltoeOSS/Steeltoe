@@ -5,13 +5,13 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry;
+namespace Steeltoe.Configuration.CloudFoundry;
 
 public static class CloudFoundryConfigurationBuilderExtensions
 {
     public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder)
     {
-        return configurationBuilder.AddCloudFoundry(null);
+        return AddCloudFoundry(configurationBuilder, null);
     }
 
     public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder, ICloudFoundrySettingsReader settingsReader)

@@ -11,13 +11,8 @@ internal sealed class TestOptions : AbstractOptions
 {
     public string Foo { get; set; }
 
-    public TestOptions(IConfigurationRoot root, string prefix)
-        : base(root, prefix)
-    {
-    }
-
-    public TestOptions(IConfiguration config)
-        : base(config)
+    public TestOptions(IConfiguration configuration, string sectionPrefix)
+        : base(configuration, sectionPrefix)
     {
     }
 }

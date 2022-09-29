@@ -4,9 +4,9 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Test;
 
-public class HttpRequestInfo
+public sealed class HttpRequestInfo
 {
     public string Method { get; set; }
 

@@ -4,9 +4,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Configuration;
+using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connector.Services;
-using Steeltoe.Extensions.Configuration;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 namespace Steeltoe.Connector.CloudFoundry;
 

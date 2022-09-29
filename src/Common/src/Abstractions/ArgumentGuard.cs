@@ -12,14 +12,14 @@ namespace Steeltoe.Common;
 
 public static class ArgumentGuard
 {
-    public static void NotNull<T>([NotNull] T? value, [CallerArgumentExpression("value")] string? parameterName = null)
+    public static void NotNull<T>([ValidatedNotNull] [NotNull] T? value, [CallerArgumentExpression("value")] string? parameterName = null)
     {
         AssertNoDotInParameterName(parameterName);
 
         ArgumentNullException.ThrowIfNull(value, parameterName);
     }
 
-    public static void NotNullOrEmpty<T>([NotNull] IEnumerable<T>? value, [CallerArgumentExpression("value")] string? parameterName = null)
+    public static void NotNullOrEmpty<T>([ValidatedNotNull] [NotNull] IEnumerable<T>? value, [CallerArgumentExpression("value")] string? parameterName = null)
     {
         AssertNoDotInParameterName(parameterName);
 
@@ -31,7 +31,7 @@ public static class ArgumentGuard
         }
     }
 
-    public static void NotNullOrEmpty([NotNull] string? value, [CallerArgumentExpression("value")] string? parameterName = null)
+    public static void NotNullOrEmpty([ValidatedNotNull] [NotNull] string? value, [CallerArgumentExpression("value")] string? parameterName = null)
     {
         AssertNoDotInParameterName(parameterName);
 
@@ -43,7 +43,7 @@ public static class ArgumentGuard
         }
     }
 
-    public static void NotNullOrWhiteSpace([NotNull] string? value, [CallerArgumentExpression("value")] string? parameterName = null)
+    public static void NotNullOrWhiteSpace([ValidatedNotNull] [NotNull] string? value, [CallerArgumentExpression("value")] string? parameterName = null)
     {
         AssertNoDotInParameterName(parameterName);
 

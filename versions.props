@@ -35,6 +35,7 @@
     <EFCoreTestVersion>6.0.*</EFCoreTestVersion>
     <EFCoreOracleTestVersion>6.21.*</EFCoreOracleTestVersion>
     <NerdbankGitVersioningVersion>3.5.*</NerdbankGitVersioningVersion>
+    <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
 
     <!--
       Exposed dependencies, observable by Steeltoe consumers.

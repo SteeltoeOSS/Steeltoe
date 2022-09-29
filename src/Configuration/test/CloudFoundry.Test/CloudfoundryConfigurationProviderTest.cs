@@ -5,9 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
+namespace Steeltoe.Configuration.CloudFoundry.Test;
 
-public class CloudFoundryConfigurationProviderTest
+public sealed class CloudFoundryConfigurationProviderTest
 {
     [Fact]
     public void Constructor_NullReader()

@@ -30,7 +30,7 @@ public static class ConfigurationValuesHelper
     }
 
     /// <summary>
-    /// Get setting from configuration searching the given configPrefix keys in order. Returns the first element with key.
+    /// Get setting from configuration searching the given sectionPrefix keys in order. Returns the first element with key.
     /// </summary>
     /// <param name="key">
     /// The key of the element to return.
@@ -41,15 +41,15 @@ public static class ConfigurationValuesHelper
     /// <param name="defaultValue">
     /// The default Value if no configuration is found.
     /// </param>
-    /// <param name="configPrefixes">
+    /// <param name="sectionPrefixes">
     /// The prefixes to search for in given order.
     /// </param>
     /// <returns>
     /// Configuration value.
     /// </returns>
-    public static string GetSetting(string key, IConfiguration configuration, string defaultValue, params string[] configPrefixes)
+    public static string GetSetting(string key, IConfiguration configuration, string defaultValue, params string[] sectionPrefixes)
     {
-        foreach (string prefix in configPrefixes)
+        foreach (string prefix in sectionPrefixes)
         {
             IConfigurationSection section = configuration.GetSection(prefix);
             string result = section.GetValue<string>(key);

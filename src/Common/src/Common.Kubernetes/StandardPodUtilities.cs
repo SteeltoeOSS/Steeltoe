@@ -9,7 +9,7 @@ using Microsoft.Rest;
 using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes;
+namespace Steeltoe.Configuration.Kubernetes;
 
 public class StandardPodUtilities : IPodUtilities
 {

@@ -44,7 +44,7 @@ public class MessageHandlerTest
 
     public class Foo
     {
-        public List<IMessage> MessagingMessages;
+        public List<IMessage> MessagingMessages { get; private set; }
 
         public void Listen1(List<IMessage> mMessages)
         {

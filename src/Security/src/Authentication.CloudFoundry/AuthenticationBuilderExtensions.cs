@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Security.Authentication.Mtls;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;

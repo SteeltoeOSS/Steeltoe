@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Hosting.Test;
 
 public class TestServerStartup
 {
-    public List<string> ExpectedAddresses { get; set; }
+    public List<string> ExpectedAddresses { get; private set; }
 
     public TestServerStartup()
     {

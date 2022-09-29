@@ -191,15 +191,23 @@ public class TaskSchedulerChannelTest
 
     private sealed class TestHandler : IMessageHandler
     {
-        public readonly CountdownEvent Latch;
+        private volatile Thread _thread;
+        private volatile bool _shouldFail;
+        private int _count;
 
-        public int Count;
-
-        public volatile Thread Thread;
-
-        public volatile bool ShouldFail;
+        public CountdownEvent Latch { get; }
 
         public string ServiceName { get; set; } = nameof(TestHandler);
+
+        public Thread Thread => _thread;
+
+        public bool ShouldFail
+        {
+            get => _shouldFail;
+            set => _shouldFail = value;
+        }
+
+        public int Count => _count;
 
         public TestHandler(CountdownEvent latch)
         {
@@ -208,14 +216,14 @@ public class TaskSchedulerChannelTest
 
         public void HandleMessage(IMessage message)
         {
-            Thread = Thread.CurrentThread;
+            _thread = Thread.CurrentThread;
 
             if (ShouldFail)
             {
                 throw new Exception("intentional test failure");
             }
 
-            Interlocked.Increment(ref Count);
+            Interlocked.Increment(ref _count);
             Latch.Signal();
         }
     }
@@ -223,9 +231,12 @@ public class TaskSchedulerChannelTest
     private sealed class BeforeHandleInterceptor : AbstractTaskSchedulerChannelInterceptor
     {
         private readonly CountdownEvent _latch;
-        public int Counter;
-        public volatile bool AfterHandledInvoked;
-        public IMessage MessageToReturn;
+        private volatile bool _afterHandledInvoked;
+
+        public int Counter { get; private set; }
+        public IMessage MessageToReturn { get; set; }
+
+        public bool AfterHandledInvoked => _afterHandledInvoked;
 
         public BeforeHandleInterceptor()
         {
@@ -246,7 +257,7 @@ public class TaskSchedulerChannelTest
 
         public override void AfterMessageHandled(IMessage message, IMessageChannel channel, IMessageHandler handler, Exception exception)
         {
-            AfterHandledInvoked = true;
+            _afterHandledInvoked = true;
             _latch?.Signal();
         }
     }

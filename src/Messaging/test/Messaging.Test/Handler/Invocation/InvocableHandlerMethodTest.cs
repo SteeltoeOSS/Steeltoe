@@ -346,10 +346,10 @@ public class InvocableHandlerMethodTest
 
     internal sealed class Handler2
     {
-        public long InvocationCount;
-        public double DoubleValue;
-        public int IntValue;
-        public object ObjectValue;
+        public long InvocationCount { get; private set; }
+        public double DoubleValue { get; private set; }
+        public int IntValue { get; private set; }
+        public object ObjectValue { get; private set; }
 
         public string HandleNullablePrimitive(int? intArg, string stringArg)
         {

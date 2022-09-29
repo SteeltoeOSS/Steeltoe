@@ -5,7 +5,7 @@
 using k8s;
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes;
+namespace Steeltoe.Configuration.Kubernetes;
 
 internal sealed class KubernetesConfigMapSource : IConfigurationSource
 {

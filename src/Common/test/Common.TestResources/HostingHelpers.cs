@@ -9,7 +9,12 @@ namespace Steeltoe.Common;
 
 public static class HostingHelpers
 {
-    public static IHostEnvironment GetHostingEnvironment(string environmentName = "EnvironmentName")
+    public static IHostEnvironment GetHostingEnvironment()
+    {
+        return GetHostingEnvironment("EnvironmentName");
+    }
+
+    public static IHostEnvironment GetHostingEnvironment(string environmentName)
     {
         return new HostingEnvironment
         {

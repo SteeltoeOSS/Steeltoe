@@ -10,10 +10,10 @@ namespace Steeltoe.Messaging.RabbitMQ;
 
 public abstract class AbstractTest
 {
-    protected virtual ServiceCollection CreateContainer(ConfigurationBuilder configurationBuilder = null)
+    protected virtual ServiceCollection CreateContainer()
     {
         var services = new ServiceCollection();
-        configurationBuilder ??= new ConfigurationBuilder();
+        var configurationBuilder = new ConfigurationBuilder();
 
         IConfigurationRoot configuration = configurationBuilder.Build();
         services.AddSingleton<IConfiguration>(configuration);

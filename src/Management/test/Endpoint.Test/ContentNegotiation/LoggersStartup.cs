@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
 
 public class LoggersStartup
 {
-    public IConfiguration Configuration;
+    public IConfiguration Configuration { get; }
 
     public LoggersStartup(IConfiguration configuration)
     {

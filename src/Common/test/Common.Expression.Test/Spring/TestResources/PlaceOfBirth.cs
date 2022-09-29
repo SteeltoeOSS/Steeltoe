@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
 
 public class PlaceOfBirth
 {
-    public string Country;
+    public string Country { get; set; }
 
     public string City { get; set; }
 

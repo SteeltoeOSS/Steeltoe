@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="Steeltoe Debug" Description="Code quality rules for Steeltoe debug builds" ToolsVersion="17.0">
   <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
     <Rule Id="S100" Action="Warning" />
@@ -7,10 +7,9 @@
     <Rule Id="S1075" Action="None" />
     <Rule Id="S108" Action="Info" />
     <Rule Id="S110" Action="Warning" />
-    <Rule Id="S1104" Action="Info" />
+    <Rule Id="S1104" Action="None" />
     <Rule Id="S1135" Action="Info" />
     <Rule Id="S1151" Action="Warning" />
-    <Rule Id="S1168" Action="Info" />
     <Rule Id="S1172" Action="Info" />
     <Rule Id="S1185" Action="Info" />
     <Rule Id="S1186" Action="None" />
@@ -29,6 +28,7 @@
     <Rule Id="S2187" Action="None" />
     <Rule Id="S2327" Action="Warning" />
     <Rule Id="S2342" Action="Warning" />
+    <Rule Id="S2360" Action="Warning" />
     <Rule Id="S2387" Action="Warning" />
     <Rule Id="S2437" Action="Warning" />
     <Rule Id="S2583" Action="Info" />
@@ -46,19 +46,26 @@
     <Rule Id="S3597" Action="None" />
     <Rule Id="S3598" Action="None" />
     <Rule Id="S3776" Action="Info" />
+    <Rule Id="S3872" Action="Warning" />
+    <Rule Id="S3874" Action="Warning" />
     <Rule Id="S3884" Action="None" />
     <Rule Id="S3889" Action="None" />
+    <Rule Id="S3898" Action="Warning" />
     <Rule Id="S3906" Action="Warning" />
     <Rule Id="S3908" Action="Warning" />
     <Rule Id="S3925" Action="None" />
     <Rule Id="S3926" Action="None" />
     <Rule Id="S3927" Action="None" />
     <Rule Id="S3937" Action="Warning" />
+    <Rule Id="S3956" Action="Warning" />
     <Rule Id="S3962" Action="Warning" />
     <Rule Id="S3993" Action="Warning" />
     <Rule Id="S3998" Action="None" />
+    <Rule Id="S4004" Action="Warning" />
     <Rule Id="S4022" Action="Warning" />
+    <Rule Id="S4023" Action="Warning" />
     <Rule Id="S4039" Action="Warning" />
+    <Rule Id="S4059" Action="Warning" />
     <Rule Id="S4060" Action="Warning" />
     <Rule Id="S4061" Action="None" />
     <Rule Id="S4159" Action="None" />
@@ -150,7 +157,6 @@
     <Rule Id="SA1217" Action="Info" />
     <Rule Id="SA1309" Action="None" />
     <Rule Id="SA1400" Action="None" />
-    <Rule Id="SA1401" Action="None" />
     <Rule Id="SA1402" Action="None" />
     <Rule Id="SA1407" Action="None" />
     <Rule Id="SA1408" Action="None" />

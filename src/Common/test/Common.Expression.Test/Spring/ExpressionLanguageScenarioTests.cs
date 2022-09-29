@@ -277,7 +277,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
     public class TestClass
     {
-        public string Str;
+        public string Str { get; set; }
 
         public int Property { get; set; }
     }

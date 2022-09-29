@@ -9,6 +9,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
+using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Configuration.ConfigServer;
+using Steeltoe.Configuration.Kubernetes;
+using Steeltoe.Configuration.Placeholder;
+using Steeltoe.Configuration.RandomValue;
 using Steeltoe.Connector;
 using Steeltoe.Connector.MongoDb;
 using Steeltoe.Connector.MySql;
@@ -18,11 +23,6 @@ using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Redis;
 using Steeltoe.Connector.SqlServer;
 using Steeltoe.Discovery.Client;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
-using Steeltoe.Extensions.Configuration.ConfigServer;
-using Steeltoe.Extensions.Configuration.Kubernetes;
-using Steeltoe.Extensions.Configuration.Placeholder;
-using Steeltoe.Extensions.Configuration.RandomValue;
 using Steeltoe.Extensions.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Metrics;
@@ -60,8 +60,8 @@ public static class HostBuilderExtensions
     public static IHostBuilder AddSteeltoe(this IHostBuilder hostBuilder, IEnumerable<string> exclusions = null, ILoggerFactory loggerFactory = null)
     {
         AssemblyExtensions.ExcludedAssemblies = exclusions ?? new List<string>();
-        _loggerFactory = loggerFactory;
-        ILogger logger = loggerFactory?.CreateLogger(LoggerName) ?? NullLogger.Instance;
+        _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
+        ILogger logger = _loggerFactory.CreateLogger(LoggerName);
         hostBuilder.Properties[LoggerName] = logger;
 
         if (!hostBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServer))
@@ -126,22 +126,18 @@ public static class HostBuilderExtensions
         return false;
     }
 
-    private static bool WireIfAnyLoaded(this IHostBuilder hostBuilder, Action<IHostBuilder> action, params string[] assembly)
+    private static void WireIfAnyLoaded(this IHostBuilder hostBuilder, Action<IHostBuilder> action, params string[] assembly)
     {
         if (assembly.Any(AssemblyExtensions.IsAssemblyLoaded))
         {
             action(hostBuilder);
-            return true;
         }
-
-        return false;
     }
 
-    private static IHostBuilder Log(this IHostBuilder host, string message)
+    private static void Log(this IHostBuilder host, string message)
     {
         var logger = (ILogger)host.Properties[LoggerName];
         logger.LogInformation(message);
-        return host;
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -160,7 +156,7 @@ public static class HostBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireKubernetesConfiguration(this IHostBuilder hostBuilder)
     {
-        hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddKubernetes(loggerFactory: _loggerFactory))
+        hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddKubernetes(_loggerFactory))
             .ConfigureServices(serviceCollection => serviceCollection.AddKubernetesConfigurationServices()).Log(LogMessages.WireKubernetesConfiguration);
     }
 

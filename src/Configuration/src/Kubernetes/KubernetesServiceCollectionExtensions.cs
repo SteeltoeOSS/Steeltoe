@@ -3,20 +3,23 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes;
+namespace Steeltoe.Configuration.Kubernetes;
 
 public static class KubernetesServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds KubernetesApplicationInstanceInfo and ensures startup loggers are replaced by runtime loggers.
+    /// Adds <see cref="KubernetesApplicationOptions" /> and ensures startup loggers are replaced by runtime loggers.
     /// </summary>
     /// <param name="services">
-    /// Your <see cref="IServiceCollection" />.
+    /// The service container.
     /// </param>
     public static IServiceCollection AddKubernetesConfigurationServices(this IServiceCollection services)
     {
+        ArgumentGuard.NotNull(services);
+
         return services.AddKubernetesApplicationInstanceInfo().AddHostedService<KubernetesHostedService>();
     }
 }

@@ -12,11 +12,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class TestableExecutionHook : HystrixCommandExecutionHook
 {
-    internal StringBuilder ExecutionSequence = new();
-    internal List<Notification<object>> CommandEmissions = new();
-    internal List<Notification<object>> ExecutionEmissions = new();
-    internal List<Notification<object>> FallbackEmissions = new();
-    public ITestOutputHelper Output;
+    internal StringBuilder ExecutionSequence { get; } = new();
+    internal List<Notification<object>> CommandEmissions { get; } = new();
+    internal List<Notification<object>> ExecutionEmissions { get; } = new();
+    internal List<Notification<object>> FallbackEmissions { get; } = new();
+    public ITestOutputHelper Output { get; set; }
 
     public TestableExecutionHook()
     {

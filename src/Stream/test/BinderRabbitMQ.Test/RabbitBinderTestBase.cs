@@ -26,9 +26,9 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
     private static readonly string BigExceptionMessage = new('x', 10_000);
     private bool _isDisposed;
 
-    protected RabbitTestBinder testBinder;
+    protected RabbitTestBinder TestBinder { get; set; }
 
-    protected int maxStackTraceSize;
+    protected int MaxStackTraceSize { get; set; }
 
     protected RabbitBinderTestBase(ITestOutputHelper output)
         : base(output, new XunitLoggerFactory(output))
@@ -80,9 +80,9 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
         }
     }
 
-    protected override RabbitTestBinder GetBinder(RabbitBindingsOptions bindingsOptions = null)
+    protected override RabbitTestBinder GetBinder(RabbitBindingsOptions bindingsOptions)
     {
-        if (testBinder == null)
+        if (TestBinder == null)
         {
             var options = new RabbitOptions
             {
@@ -94,10 +94,10 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
             var binderOptions = new TestOptionsMonitor<RabbitBinderOptions>(null);
             var rabbitBindingsOptions = new TestOptionsMonitor<RabbitBindingsOptions>(bindingsOptions ?? new RabbitBindingsOptions());
 
-            testBinder = new RabbitTestBinder(ccf, rabbitOptions, binderOptions, rabbitBindingsOptions, LoggerFactory);
+            TestBinder = new RabbitTestBinder(ccf, rabbitOptions, binderOptions, rabbitBindingsOptions, LoggerFactory);
         }
 
-        return testBinder;
+        return TestBinder;
     }
 
     protected DirectMessageListenerContainer VerifyContainer(RabbitInboundChannelAdapter endpoint)
@@ -122,7 +122,12 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
         return container;
     }
 
-    protected Exception BigCause(Exception innerException = null, int recursionDepth = 0)
+    protected Exception BigCause(Exception innerException)
+    {
+        return BigCause(innerException, 0);
+    }
+
+    private Exception BigCause(Exception innerException, int recursionDepth)
     {
         if (recursionDepth > 1000)
         {
@@ -136,7 +141,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
         }
         catch (Exception ex)
         {
-            if (ex.StackTrace != null && ex.StackTrace.Length > maxStackTraceSize)
+            if (ex.StackTrace != null && ex.StackTrace.Length > MaxStackTraceSize)
             {
                 return ex;
             }
@@ -149,9 +154,9 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
 
     protected void Cleanup()
     {
-        if (testBinder != null)
+        if (TestBinder != null)
         {
-            Cleanup(testBinder);
+            Cleanup(TestBinder);
         }
 
         if (CachingConnectionFactory != null)
@@ -161,7 +166,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
             CachingConnectionFactory = null;
         }
 
-        testBinder = null;
+        TestBinder = null;
     }
 
     private void Cleanup(RabbitTestBinder binder)

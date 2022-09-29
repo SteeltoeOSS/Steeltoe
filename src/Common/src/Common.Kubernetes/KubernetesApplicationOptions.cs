@@ -6,9 +6,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Common.Kubernetes;
 
-public class KubernetesApplicationOptions : ApplicationInstanceInfo
+public sealed class KubernetesApplicationOptions : ApplicationInstanceInfo
 {
-    public static string PlatformConfigurationRoot => "spring:cloud:kubernetes";
+    private const string PlatformConfigurationRoot = "spring:cloud:kubernetes";
 
     protected override string PlatformRoot => PlatformConfigurationRoot;
 
@@ -29,15 +29,16 @@ public class KubernetesApplicationOptions : ApplicationInstanceInfo
     public KubernetesConfiguration Config { get; set; }
 
     /// <summary>
-    /// Gets or sets configuration properties of secrets.
+    /// Gets or sets configuration properties of Secrets.
     /// </summary>
     public WatchableResource Secrets { get; set; }
 
     /// <summary>
-    /// Gets or sets the character used to separate the app and environment names when used for retrieving configuration maps or secrets.
+    /// Gets or sets the character used to separate the app and environment names when used for retrieving ConfigMaps or Secrets.
     /// </summary>
     public string NameEnvironmentSeparator { get; set; } = ".";
 
+    // This constructor is for use with IOptions.
     public KubernetesApplicationOptions()
     {
     }
@@ -46,9 +47,9 @@ public class KubernetesApplicationOptions : ApplicationInstanceInfo
         : base(configuration.GetSection(PlatformConfigurationRoot))
     {
         // override base class's use of configuration sub-section so that we can find spring:application:name
-        this.configuration = configuration;
+        Configuration = configuration;
 
-        Name ??= ApplicationNameInContext(SteeltoeComponent.Kubernetes);
+        Name ??= GetApplicationNameInContext(SteeltoeComponent.Kubernetes);
         Config ??= new KubernetesConfiguration();
         Secrets ??= new WatchableResource();
         Reload ??= new ReloadSettings();

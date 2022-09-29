@@ -179,7 +179,7 @@ public class MapTests : AbstractExpressionTests
 
     public class MapHolder
     {
-        public IDictionary Foo;
+        public IDictionary Foo { get; }
 
         public MapHolder()
         {

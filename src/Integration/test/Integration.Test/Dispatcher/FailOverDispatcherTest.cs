@@ -223,8 +223,8 @@ public class FailOverDispatcherTest
 
     public class CountingTestEndpoint : IMessageHandler
     {
-        public int Counter;
-        public bool ShouldAccept;
+        public int Counter { get; private set; }
+        public bool ShouldAccept { get; }
 
         public string ServiceName { get; set; } = nameof(CountingTestEndpoint);
 
@@ -246,8 +246,8 @@ public class FailOverDispatcherTest
 
     public class LatchedProcessor : IMessageProcessor
     {
-        public int Counter;
-        public CountdownEvent Latch;
+        public int Counter { get; private set; }
+        public CountdownEvent Latch { get; }
 
         public LatchedProcessor(CountdownEvent latch)
         {

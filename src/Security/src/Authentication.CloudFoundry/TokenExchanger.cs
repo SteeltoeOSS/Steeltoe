@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Security;
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
@@ -48,17 +46,7 @@ public class TokenExchanger
         HttpRequestMessage requestMessage = GetTokenRequestMessage(requestParameters, targetUrl);
         _logger?.LogDebug("Exchanging code {code} for token at {accessTokenUrl}", code, targetUrl);
 
-        HttpClientHelper.ConfigureCertificateValidation(_options.ValidateCertificates, out SecurityProtocolType protocolType,
-            out RemoteCertificateValidationCallback prevValidator);
-
-        try
-        {
-            return await _httpClient.SendAsync(requestMessage, cancellationToken);
-        }
-        finally
-        {
-            HttpClientHelper.RestoreCertificateValidation(_options.ValidateCertificates, protocolType, prevValidator);
-        }
+        return await _httpClient.SendAsync(requestMessage, cancellationToken);
     }
 
     /// <summary>
@@ -107,17 +95,7 @@ public class TokenExchanger
     {
         HttpRequestMessage requestMessage = GetTokenRequestMessage(ClientCredentialsTokenRequestParameters(), targetUrl);
 
-        HttpClientHelper.ConfigureCertificateValidation(_options.ValidateCertificates, out SecurityProtocolType protocolType,
-            out RemoteCertificateValidationCallback prevValidator);
-
-        try
-        {
-            return await _httpClient.SendAsync(requestMessage);
-        }
-        finally
-        {
-            HttpClientHelper.RestoreCertificateValidation(_options.ValidateCertificates, protocolType, prevValidator);
-        }
+        return await _httpClient.SendAsync(requestMessage);
     }
 
     /// <summary>

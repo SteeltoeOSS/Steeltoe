@@ -5,18 +5,33 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
+namespace Steeltoe.Configuration.Placeholder.Test;
 
-public class PlaceholderResolverSourceTest
+public sealed class PlaceholderResolverSourceTest
 {
     [Fact]
-    public void Constructor_ThrowsIfNulls()
+    public void Constructor_WithSources_ThrowsIfNulls()
     {
-        const IList<IConfigurationSource> sources = null;
+        const IList<IConfigurationSource> nullSources = null;
+        var sources = new List<IConfigurationSource>();
+        var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(sources));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(nullSources, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(sources, null));
+    }
+
+    [Fact]
+    public void Constructor_WithConfiguration_ThrowsIfNulls()
+    {
+        const IConfigurationRoot nullConfiguration = null;
+        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
+        var loggerFactory = NullLoggerFactory.Instance;
+
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(nullConfiguration, loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(configuration, null));
     }
 
     [Fact]
@@ -49,7 +64,7 @@ public class PlaceholderResolverSourceTest
             memSource
         };
 
-        var source = new PlaceholderResolverSource(sources);
+        var source = new PlaceholderResolverSource(sources, NullLoggerFactory.Instance);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<PlaceholderResolverProvider>(provider);
     }

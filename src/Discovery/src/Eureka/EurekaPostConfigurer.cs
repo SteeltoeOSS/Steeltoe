@@ -77,9 +77,9 @@ public static class EurekaPostConfigurer
 
         if (EurekaInstanceConfiguration.DefaultAppName.Equals(options.AppName))
         {
-            string springAppName = instanceInfo?.ApplicationNameInContext(SteeltoeComponent.Discovery);
+            string springAppName = instanceInfo?.GetApplicationNameInContext(SteeltoeComponent.Discovery);
 
-            // this is a bit of a hack, but depending on how we got here, ApplicationNameInContext may or may not know about VCAP
+            // this is a bit of a hack, but depending on how we got here, GetApplicationNameInContext may or may not know about VCAP
             if (Platform.IsCloudFoundry && springAppName == Assembly.GetEntryAssembly().GetName().Name && !string.IsNullOrEmpty(instanceInfo?.ApplicationName))
             {
                 options.AppName = instanceInfo.ApplicationName;
@@ -224,10 +224,10 @@ public static class EurekaPostConfigurer
     private static void UpdateWithDefaultsForDirect(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
     {
         UpdateWithDefaults(si, instOptions);
-        instOptions.PreferIpAddress = true;
+        instOptions.PreferIPAddress = true;
         instOptions.NonSecurePort = si.ApplicationInfo.Port;
         instOptions.SecurePort = si.ApplicationInfo.Port;
-        instOptions.InstanceId = $"{si.ApplicationInfo.InternalIp}:{si.ApplicationInfo.InstanceId}";
+        instOptions.InstanceId = $"{si.ApplicationInfo.InternalIP}:{si.ApplicationInfo.InstanceId}";
     }
 
     private static void UpdateWithDefaultsForRoute(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
@@ -249,7 +249,7 @@ public static class EurekaPostConfigurer
             instOptions.HostName = si.ApplicationInfo.Uris.First();
         }
 
-        instOptions.IpAddress = si.ApplicationInfo.InternalIp;
+        instOptions.IPAddress = si.ApplicationInfo.InternalIP;
 
         IDictionary<string, string> map = instOptions.MetadataMap;
         map[CFAppGuid] = si.ApplicationInfo.ApplicationId;

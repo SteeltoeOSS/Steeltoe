@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
 
 public class HealthStartup
 {
-    public IConfiguration Configuration;
+    public IConfiguration Configuration { get; }
 
     public HealthStartup(IConfiguration configuration)
     {

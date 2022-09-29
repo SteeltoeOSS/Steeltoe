@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Extensions.Configuration;
+using Steeltoe.Configuration;
 using Xunit;
 
 namespace Steeltoe.Connector.Services.Test;
@@ -22,7 +22,7 @@ public class PostgresServiceInfoFactoryTest
             },
             Name = "postgresService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -50,7 +50,7 @@ public class PostgresServiceInfoFactoryTest
         var s = new Service
         {
             Name = "postgresService",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -80,7 +80,7 @@ public class PostgresServiceInfoFactoryTest
             Label = "elephantsql",
             Name = "postgresService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -115,7 +115,7 @@ public class PostgresServiceInfoFactoryTest
             },
             Name = "mySqlService",
             Plan = "100mb-dev",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -149,7 +149,7 @@ public class PostgresServiceInfoFactoryTest
             },
             Name = "postgresService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },
@@ -192,7 +192,7 @@ public class PostgresServiceInfoFactoryTest
             },
             Name = "postgresService",
             Plan = "free",
-            Credentials = new Credential
+            Credentials =
             {
                 { "hostname", new Credential("192.168.0.90") },
                 { "port", new Credential("3306") },

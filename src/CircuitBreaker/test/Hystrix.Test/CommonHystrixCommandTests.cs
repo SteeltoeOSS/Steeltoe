@@ -4,7 +4,6 @@
 
 using System.Reactive.Linq;
 using FluentAssertions;
-using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
@@ -12,8 +11,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 public abstract class CommonHystrixCommandTests<TCommand> : HystrixTestBase
     where TCommand : HystrixCommand<int>
 {
-    public HystrixOptionsStrategy TestOptionsFactory = new TestOptionsFactory();
-
     protected abstract void AssertHooksOnSuccess(Func<TCommand> ctor, Action<TCommand> assertion);
 
     protected abstract void AssertHooksOnFailure(Func<TCommand> ctor, Action<TCommand> assertion);

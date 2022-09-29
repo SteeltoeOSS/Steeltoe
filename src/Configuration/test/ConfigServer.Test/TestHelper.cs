@@ -5,7 +5,7 @@
 using System.Reflection;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public static class TestHelper
 {
@@ -45,6 +45,6 @@ public static class TestHelper
         Assert.Null(settings.Username);
         Assert.Null(settings.Password);
         Assert.Null(settings.Token);
-        Assert.Null(settings.Headers);
+        Assert.Empty(settings.Headers);
     }
 }

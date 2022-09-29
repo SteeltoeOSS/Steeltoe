@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -17,96 +16,6 @@ public class HttpClientHelperTest
     {
         HttpClient client = HttpClientHelper.GetHttpClient(false, 100);
         Assert.Equal(100, client.Timeout.TotalMilliseconds);
-    }
-
-    [Fact]
-    public void ConfigureCertificateValidation_ValidateFalse()
-    {
-        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
-        ServicePointManager.ServerCertificateValidationCallback = null;
-
-        HttpClientHelper.ConfigureCertificateValidation(false, out _, out _);
-
-        if (Platform.IsNetCore)
-        {
-            Assert.Equal(SecurityProtocolType.Tls, ServicePointManager.SecurityProtocol);
-            Assert.Null(ServicePointManager.ServerCertificateValidationCallback);
-        }
-
-        if (Platform.IsFullFramework)
-        {
-            Assert.Equal(SecurityProtocolType.Tls12, ServicePointManager.SecurityProtocol);
-            Assert.NotNull(ServicePointManager.ServerCertificateValidationCallback);
-        }
-    }
-
-    [Fact]
-    public void ConfigureCertificateValidation_ValidateTrue()
-    {
-        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
-        ServicePointManager.ServerCertificateValidationCallback = null;
-
-        HttpClientHelper.ConfigureCertificateValidation(true, out _, out _);
-
-        if (Platform.IsNetCore)
-        {
-            Assert.Equal(SecurityProtocolType.Tls, ServicePointManager.SecurityProtocol);
-            Assert.Null(ServicePointManager.ServerCertificateValidationCallback);
-        }
-
-        if (Platform.IsFullFramework)
-        {
-            Assert.Equal(SecurityProtocolType.Tls, ServicePointManager.SecurityProtocol);
-            Assert.Null(ServicePointManager.ServerCertificateValidationCallback);
-        }
-    }
-
-    [Fact]
-    public void RestoreCertificateValidation_ValidateFalse()
-    {
-        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-        ServicePointManager.ServerCertificateValidationCallback = (_, _, _, _) => true;
-
-        const RemoteCertificateValidationCallback prevValidator = null;
-        const SecurityProtocolType protocolType = SecurityProtocolType.Tls;
-
-        HttpClientHelper.RestoreCertificateValidation(false, protocolType, prevValidator);
-
-        if (Platform.IsNetCore)
-        {
-            Assert.Equal(SecurityProtocolType.Tls12, ServicePointManager.SecurityProtocol);
-            Assert.NotNull(ServicePointManager.ServerCertificateValidationCallback);
-        }
-
-        if (Platform.IsFullFramework)
-        {
-            Assert.Equal(SecurityProtocolType.Tls, ServicePointManager.SecurityProtocol);
-            Assert.Null(ServicePointManager.ServerCertificateValidationCallback);
-        }
-    }
-
-    [Fact]
-    public void RestoreCertificateValidation_ValidateTrue()
-    {
-        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-        ServicePointManager.ServerCertificateValidationCallback = (_, _, _, _) => true;
-
-        const RemoteCertificateValidationCallback prevValidator = null;
-        const SecurityProtocolType protocolType = SecurityProtocolType.Tls;
-
-        HttpClientHelper.RestoreCertificateValidation(true, protocolType, prevValidator);
-
-        if (Platform.IsNetCore)
-        {
-            Assert.Equal(SecurityProtocolType.Tls12, ServicePointManager.SecurityProtocol);
-            Assert.NotNull(ServicePointManager.ServerCertificateValidationCallback);
-        }
-
-        if (Platform.IsFullFramework)
-        {
-            Assert.Equal(SecurityProtocolType.Tls12, ServicePointManager.SecurityProtocol);
-            Assert.NotNull(ServicePointManager.ServerCertificateValidationCallback);
-        }
     }
 
     [Fact]
@@ -171,14 +80,6 @@ public class HttpClientHelperTest
     public void GetDisableDelegate_ReturnsExpected()
     {
         Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> del1 = HttpClientHelper.GetDisableDelegate();
-
-        if (Platform.IsFullFramework)
-        {
-            Assert.Null(del1);
-        }
-        else
-        {
-            Assert.NotNull(del1);
-        }
+        Assert.NotNull(del1);
     }
 }

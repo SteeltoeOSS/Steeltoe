@@ -10,12 +10,10 @@ namespace Steeltoe.Management.Endpoint.Test.Infrastructure;
 internal sealed class TestOutputLogger : ILogger
 {
     private readonly ITestOutputHelper _output;
-    private readonly string _category;
 
-    public TestOutputLogger(ITestOutputHelper output, string category)
+    public TestOutputLogger(ITestOutputHelper output)
     {
         _output = output;
-        _category = category;
     }
 
     public IDisposable BeginScope<TState>(TState state)

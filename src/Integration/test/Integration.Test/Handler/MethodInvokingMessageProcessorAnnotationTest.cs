@@ -17,7 +17,6 @@ namespace Steeltoe.Integration.Handler;
 
 public class MethodInvokingMessageProcessorAnnotationTest
 {
-    private static volatile int _concurrencyFailures;
     private readonly TestService _testService = new();
     private readonly Employee _employee = new("oleg", "zhurakousky");
 
@@ -292,7 +291,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
 
     public class TestService
     {
-        public ISet<string> Ids = new HashSet<string>();
+        public ISet<string> Ids { get; } = new HashSet<string>();
 
         public IDictionary MapOnly(IDictionary map)
         {
@@ -408,12 +407,6 @@ public class MethodInvokingMessageProcessorAnnotationTest
 
         public string HeaderId(string payload, [Header("id")] string id)
         {
-            // logger.debug(id);
-            if (Ids.Contains(id))
-            {
-                _concurrencyFailures++;
-            }
-
             Ids.Add(id);
             return "foo";
         }

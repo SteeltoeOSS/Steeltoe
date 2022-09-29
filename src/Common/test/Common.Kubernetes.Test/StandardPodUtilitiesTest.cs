@@ -7,7 +7,7 @@ using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Configuration;
 using RichardSzalay.MockHttp;
-using Steeltoe.Extensions.Configuration.Kubernetes;
+using Steeltoe.Configuration.Kubernetes;
 using Xunit;
 
 namespace Steeltoe.Common.Kubernetes.Test;

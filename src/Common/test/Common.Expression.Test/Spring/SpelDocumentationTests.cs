@@ -474,10 +474,10 @@ public class SpelDocumentationTests : AbstractExpressionTests
 
     public class InstituteOfElectricalAndElectronicsEngineers
     {
-        public Inventor[] Members = new Inventor[1];
-        public List<object> Members2 = new();
-        public Dictionary<string, object> Officers = new();
-        public List<Dictionary<string, object>> Reverse = new();
+        public Inventor[] Members { get; } = new Inventor[1];
+        public List<object> Members2 { get; } = new();
+        public Dictionary<string, object> Officers { get; } = new();
+        public List<Dictionary<string, object>> Reverse { get; } = new();
 
         public string Name { get; set; }
 

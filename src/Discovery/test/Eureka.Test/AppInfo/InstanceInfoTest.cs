@@ -36,7 +36,7 @@ public class InstanceInfoTest : AbstractBaseTest
             InstanceId = "InstanceId",
             AppName = "AppName",
             AppGroupName = "AppGroupName",
-            IpAddress = "IpAddr",
+            IPAddress = "IPAddress",
             Sid = "Sid",
             Port = new JsonInstanceInfo.JsonPortWrapper(true, 100),
             SecurePort = new JsonInstanceInfo.JsonPortWrapper(false, 100),
@@ -79,7 +79,7 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.Equal("InstanceId", info.InstanceId);
         Assert.Equal("AppName", info.AppName);
         Assert.Equal("AppGroupName", info.AppGroupName);
-        Assert.Equal("IpAddr", info.IpAddress);
+        Assert.Equal("IPAddress", info.IPAddress);
         Assert.Equal("Sid", info.Sid);
         Assert.Equal(100, info.Port);
         Assert.True(info.IsInsecurePortEnabled);
@@ -124,7 +124,7 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(configuration.GetHostName(false), info.InstanceId);
         Assert.Equal(EurekaInstanceConfiguration.DefaultAppName.ToUpperInvariant(), info.AppName);
         Assert.Null(info.AppGroupName);
-        Assert.Equal(configuration.IpAddress, info.IpAddress);
+        Assert.Equal(configuration.IPAddress, info.IPAddress);
         Assert.Equal("na", info.Sid);
         Assert.Equal(80, info.Port);
         Assert.True(info.IsInsecurePortEnabled);
@@ -173,7 +173,7 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(configuration.GetHostName(false), info.InstanceId);
         Assert.Equal(EurekaInstanceConfiguration.DefaultAppName.ToUpperInvariant(), info.AppName);
         Assert.Null(info.AppGroupName);
-        Assert.Equal(configuration.IpAddress, info.IpAddress);
+        Assert.Equal(configuration.IPAddress, info.IPAddress);
         Assert.Equal("na", info.Sid);
         Assert.Equal(80, info.Port);
         Assert.False(info.IsInsecurePortEnabled);
@@ -219,7 +219,7 @@ public class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(configuration.GetHostName(false), instanceInfo.InstanceId);
         Assert.Equal(EurekaInstanceConfiguration.DefaultAppName.ToUpperInvariant(), instanceInfo.AppName);
         Assert.Null(instanceInfo.AppGroupName);
-        Assert.Equal(configuration.IpAddress, instanceInfo.IpAddress);
+        Assert.Equal(configuration.IPAddress, instanceInfo.IPAddress);
         Assert.Equal("na", instanceInfo.Sid);
         Assert.NotNull(instanceInfo.Port);
         Assert.Equal(80, instanceInfo.Port.Port);

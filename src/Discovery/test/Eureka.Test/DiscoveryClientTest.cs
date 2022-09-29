@@ -191,7 +191,7 @@ public class DiscoveryClientTest : AbstractBaseTest
             InstanceId = "localhost:foo",
             HostName = "localhost",
             AppName = "FOO",
-            IpAddress = "192.168.56.1",
+            IPAddress = "192.168.56.1",
             Status = InstanceStatus.Starting
         };
 
@@ -262,7 +262,7 @@ public class DiscoveryClientTest : AbstractBaseTest
             InstanceId = "localhost:foo",
             HostName = "localhost",
             AppName = "FOO",
-            IpAddress = "192.168.56.1",
+            IPAddress = "192.168.56.1",
             Status = InstanceStatus.Starting
         };
 
@@ -304,7 +304,7 @@ public class DiscoveryClientTest : AbstractBaseTest
             InstanceId = "localhost:foo",
             HostName = "localhost",
             AppName = "FOO",
-            IpAddress = "192.168.56.1",
+            IPAddress = "192.168.56.1",
             Status = InstanceStatus.Starting
         };
 
@@ -346,7 +346,7 @@ public class DiscoveryClientTest : AbstractBaseTest
             InstanceId = "localhost:foo",
             HostName = "localhost",
             AppName = "FOO",
-            IpAddress = "192.168.56.1",
+            IPAddress = "192.168.56.1",
             Status = InstanceStatus.Starting
         };
 
@@ -390,7 +390,7 @@ public class DiscoveryClientTest : AbstractBaseTest
             InstanceId = "localhost:foo",
             HostName = "localhost",
             AppName = "FOO",
-            IpAddress = "192.168.56.1",
+            IPAddress = "192.168.56.1",
             Status = InstanceStatus.Starting
         };
 
@@ -426,7 +426,7 @@ public class DiscoveryClientTest : AbstractBaseTest
             InstanceId = "localhost:foo",
             HostName = "localhost",
             AppName = "FOO",
-            IpAddress = "192.168.56.1",
+            IPAddress = "192.168.56.1",
             Status = InstanceStatus.Starting
         };
 

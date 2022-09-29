@@ -20,7 +20,7 @@ internal sealed class JsonInstanceInfo
     public string AppGroupName { get; set; }
 
     [JsonPropertyName("ipAddr")]
-    public string IpAddress { get; set; }
+    public string IPAddress { get; set; }
 
     [JsonPropertyName("sid")]
     public string Sid { get; set; }

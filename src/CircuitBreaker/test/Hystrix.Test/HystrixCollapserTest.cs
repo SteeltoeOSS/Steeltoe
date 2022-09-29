@@ -545,7 +545,7 @@ public class HystrixCollapserTest : HystrixTestBase
         RequestCollapserFactory.RequestCollapserRequestVariable<List<string>, string, string> rv =
             RequestCollapserFactory.GetRequestVariable<List<string>, string, string>(new TestRequestCollapser(_output, timer, 1).CollapserKey.Name);
 
-        context.Dispose();
+        Context.Dispose();
 
         Assert.NotNull(rv);
 
@@ -632,7 +632,7 @@ public class HystrixCollapserTest : HystrixTestBase
         RequestCollapserFactory.RequestCollapserRequestVariable<List<string>, string, string> rv =
             RequestCollapserFactory.GetRequestVariable<List<string>, string, string>(new TestRequestCollapser(_output, timer, 1).CollapserKey.Name);
 
-        context.Dispose();
+        Context.Dispose();
 
         Assert.NotNull(rv);
 
@@ -1682,11 +1682,10 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private class TestRequestCollapser : HystrixCollapser<List<string>, string, string>
     {
-        protected readonly string Value;
-        protected readonly ConcurrentQueue<HystrixCommand<List<string>>> CommandsExecuted;
-        protected readonly ITestOutputHelper Output;
+        protected ConcurrentQueue<HystrixCommand<List<string>>> CommandsExecuted { get; }
+        protected ITestOutputHelper Output { get; }
 
-        public override string RequestArgument => Value;
+        public override string RequestArgument { get; }
 
         public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, int value)
             : this(output, timer, value.ToString())
@@ -1738,7 +1737,7 @@ public class HystrixCollapserTest : HystrixTestBase
             : base(CollapserKeyFromString(timer), scope, timer,
                 GetOptions(CollapserKeyFromString(timer), defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds), CreateMetrics())
         {
-            Value = value;
+            RequestArgument = value;
             CommandsExecuted = executionLog;
             Output = output;
         }
@@ -1943,7 +1942,7 @@ public class HystrixCollapserTest : HystrixTestBase
             {
                 if (_cacheEnabled)
                 {
-                    return $"aCacheKey_{Value}";
+                    return $"aCacheKey_{RequestArgument}";
                 }
 
                 return null;
@@ -2027,7 +2026,7 @@ public class HystrixCollapserTest : HystrixTestBase
     {
         private readonly object _lock = new();
         private readonly ITestOutputHelper _output;
-        public readonly ConcurrentDictionary<ATask, ATask> Tasks = new();
+        public ConcurrentDictionary<ATask, ATask> Tasks { get; } = new();
 
         public TestCollapserTimer(ITestOutputHelper output)
         {
@@ -2089,11 +2088,11 @@ public class HystrixCollapserTest : HystrixTestBase
         private const int Delay = 10;
         private readonly object _lock = new();
         private readonly ITestOutputHelper _output;
-        public readonly TestTimerListener Task;
 
         // our relative time that we'll use
-        public volatile int Time;
-        public volatile int ExecutionCount;
+        private volatile int _time;
+        private volatile int _executionCount;
+        public TestTimerListener Task { get; }
 
         public ATask(ITestOutputHelper output, TestTimerListener task)
         {
@@ -2105,15 +2104,15 @@ public class HystrixCollapserTest : HystrixTestBase
         {
             lock (_lock)
             {
-                Time += timeInMilliseconds;
+                _time += timeInMilliseconds;
 
                 if (Task != null)
                 {
-                    if (ExecutionCount == 0)
+                    if (_executionCount == 0)
                     {
-                        _output.WriteLine("ExecutionCount 0 => Time: " + Time + " Delay: " + Delay);
+                        _output.WriteLine("ExecutionCount 0 => Time: " + _time + " Delay: " + Delay);
 
-                        if (Time >= Delay)
+                        if (_time >= Delay)
                         {
                             // first execution, we're past the delay time
                             ExecuteTask();
@@ -2121,9 +2120,9 @@ public class HystrixCollapserTest : HystrixTestBase
                     }
                     else
                     {
-                        _output.WriteLine("ExecutionCount 1+ => Time: " + Time + " Delay: " + Delay);
+                        _output.WriteLine("ExecutionCount 1+ => Time: " + _time + " Delay: " + Delay);
 
-                        if (Time >= Delay)
+                        if (_time >= Delay)
                         {
                             // subsequent executions, we're past the interval time
                             ExecuteTask();
@@ -2139,17 +2138,17 @@ public class HystrixCollapserTest : HystrixTestBase
             {
                 _output.WriteLine("Executing task ...");
                 Task.Tick();
-                Time = 0; // we reset time after each execution
-                ExecutionCount++;
-                _output.WriteLine("executionCount: " + ExecutionCount);
+                _time = 0; // we reset time after each execution
+                _executionCount++;
+                _output.WriteLine("executionCount: " + _executionCount);
             }
         }
     }
 
     private sealed class TestTimerListener : ITimerListener
     {
-        public readonly ITimerListener ActualListener;
-        public readonly AtomicInteger Count = new();
+        public ITimerListener ActualListener { get; }
+        public AtomicInteger Count { get; } = new();
 
         public int IntervalTimeInMilliseconds => 10;
 
@@ -2239,8 +2238,8 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private sealed class Pair<TAa, TBb>
     {
-        public readonly TAa Aa;
-        public readonly TBb Bb;
+        public TAa Aa { get; }
+        public TBb Bb { get; }
 
         public Pair(TAa a, TBb b)
         {

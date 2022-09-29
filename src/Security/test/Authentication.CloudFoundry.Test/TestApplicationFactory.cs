@@ -16,7 +16,7 @@ public class TestApplicationFactory<TStartup> : WebApplicationFactory<TStartup>
 {
     private readonly IReadOnlyDictionary<string, string> _configuration;
 
-    public TestApplicationFactory(IReadOnlyDictionary<string, string> configuration = null)
+    internal TestApplicationFactory(IReadOnlyDictionary<string, string> configuration = null)
     {
         _configuration = configuration ?? ImmutableDictionary<string, string>.Empty;
     }

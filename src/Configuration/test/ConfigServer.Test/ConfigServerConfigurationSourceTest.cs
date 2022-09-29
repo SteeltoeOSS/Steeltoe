@@ -5,21 +5,41 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Test;
 
-public class ConfigServerConfigurationSourceTest
+public sealed class ConfigServerConfigurationSourceTest
 {
     [Fact]
-    public void Constructors__ThrowsIfNulls()
+    public void Constructors_ThrowsIfNulls()
     {
-        const ConfigServerClientSettings settings = null;
+        const IConfiguration nullConfiguration = null;
+        const ConfigServerClientSettings nullConfigServerClientSettings = null;
+        const ILoggerFactory nullLoggerFactory = null;
+        const List<IConfigurationSource> nullSources = null;
 
-        Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IConfiguration)null));
-        Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, null, null));
-        Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IList<IConfigurationSource>)null));
-        Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, new List<IConfigurationSource>()));
+        var configServerClientSettings = new ConfigServerClientSettings();
+        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
+        var sources = new List<IConfigurationSource>();
+        var properties = new Dictionary<string, object>();
+
+        Assert.Throws<ArgumentNullException>(() =>
+            new ConfigServerConfigurationSource(nullConfigServerClientSettings, configuration, NullLoggerFactory.Instance));
+
+        Assert.Throws<ArgumentNullException>(() =>
+            new ConfigServerConfigurationSource(configServerClientSettings, nullConfiguration, NullLoggerFactory.Instance));
+
+        Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(configServerClientSettings, configuration, nullLoggerFactory));
+
+        Assert.Throws<ArgumentNullException>(() =>
+            new ConfigServerConfigurationSource(nullConfigServerClientSettings, sources, properties, NullLoggerFactory.Instance));
+
+        Assert.Throws<ArgumentNullException>(() =>
+            new ConfigServerConfigurationSource(configServerClientSettings, nullSources, properties, NullLoggerFactory.Instance));
+
+        Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(configServerClientSettings, sources, properties, null));
     }
 
     [Fact]
@@ -41,7 +61,7 @@ public class ConfigServerConfigurationSourceTest
         }, factory);
 
         Assert.Equal(settings, source.DefaultSettings);
-        Assert.Equal(factory, source.LogFactory);
+        Assert.Equal(factory, source.LoggerFactory);
         Assert.Null(source.Configuration);
         Assert.NotSame(sources, source.Sources);
         Assert.Single(source.Sources);
@@ -52,7 +72,7 @@ public class ConfigServerConfigurationSourceTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection().Build();
         source = new ConfigServerConfigurationSource(settings, configurationRoot, factory);
         Assert.Equal(settings, source.DefaultSettings);
-        Assert.Equal(factory, source.LogFactory);
+        Assert.Equal(factory, source.LoggerFactory);
         Assert.NotNull(source.Configuration);
         var root = source.Configuration as IConfigurationRoot;
         Assert.NotNull(root);
@@ -70,7 +90,7 @@ public class ConfigServerConfigurationSourceTest
             memSource
         };
 
-        var source = new ConfigServerConfigurationSource(settings, sources);
+        var source = new ConfigServerConfigurationSource(settings, sources, null, NullLoggerFactory.Instance);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<ConfigServerConfigurationProvider>(provider);
     }

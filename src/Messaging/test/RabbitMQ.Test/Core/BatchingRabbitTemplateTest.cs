@@ -716,7 +716,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
 
     private sealed class TestConditionalRejectingErrorHandler : ConditionalRejectingErrorHandler
     {
-        public bool HandleErrorCalled;
+        public bool HandleErrorCalled { get; private set; }
 
         public override bool HandleError(Exception exception)
         {
@@ -727,7 +727,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
 
     private sealed class EmptyListener : IMessageListener
     {
-        public int Count;
+        public int Count { get; private set; }
 
         public AcknowledgeMode ContainerAckMode { get; set; }
 
@@ -743,10 +743,10 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
 
     private sealed class TestDebatchListener : IMessageListener
     {
-        public readonly List<IMessage> Received;
-        public readonly List<bool> LastInBatch;
-        public readonly AtomicInteger BatchSize;
-        public readonly CountdownEvent Latch;
+        public List<IMessage> Received { get; }
+        public List<bool> LastInBatch { get; }
+        public AtomicInteger BatchSize { get; }
+        public CountdownEvent Latch { get; }
 
         public AcknowledgeMode ContainerAckMode { get; set; }
 

@@ -4,7 +4,6 @@
 
 using System.Net;
 using System.Net.Http.Json;
-using System.Net.Security;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
@@ -110,10 +109,6 @@ public class EurekaHttpClient : IEurekaHttpClient
         // For retries
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
-
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri($"{serviceUrl}apps/{info.AppName}");
             HttpRequestMessage request = GetRequestMessage(HttpMethod.Post, requestUri);
@@ -147,10 +142,6 @@ public class EurekaHttpClient : IEurekaHttpClient
             catch (Exception e)
             {
                 logger?.LogError(e, "RegisterAsync Failed, request was made to {requestUri}, retry: {retry}", requestUri.ToMaskedUri(), retry);
-            }
-            finally
-            {
-                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -190,10 +181,6 @@ public class EurekaHttpClient : IEurekaHttpClient
 
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
-
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri($"{serviceUrl}apps/{info.AppName}/{id}", queryArgs);
             HttpRequestMessage request = GetRequestMessage(HttpMethod.Put, requestUri);
@@ -249,10 +236,6 @@ public class EurekaHttpClient : IEurekaHttpClient
             catch (Exception e)
             {
                 logger?.LogError(e, "SendHeartBeatAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
-            }
-            finally
-            {
-                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -313,9 +296,6 @@ public class EurekaHttpClient : IEurekaHttpClient
         // For retries
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
-
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri($"{serviceUrl}apps/{appName}");
             HttpRequestMessage request = GetRequestMessage(HttpMethod.Get, requestUri);
@@ -353,10 +333,6 @@ public class EurekaHttpClient : IEurekaHttpClient
             catch (Exception e)
             {
                 logger?.LogError(e, "GetApplicationAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
-            }
-            finally
-            {
-                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -409,10 +385,6 @@ public class EurekaHttpClient : IEurekaHttpClient
         // For retries
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
-
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri($"{serviceUrl}apps/{appName}/{id}");
             HttpRequestMessage request = GetRequestMessage(HttpMethod.Delete, requestUri);
@@ -433,10 +405,6 @@ public class EurekaHttpClient : IEurekaHttpClient
             catch (Exception e)
             {
                 logger?.LogError(e, "CancelAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
-            }
-            finally
-            {
-                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -471,10 +439,6 @@ public class EurekaHttpClient : IEurekaHttpClient
         // For retries
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
-
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri($"{serviceUrl}apps/{appName}/{id}/status", queryArgs);
             HttpRequestMessage request = GetRequestMessage(HttpMethod.Delete, requestUri);
@@ -503,10 +467,6 @@ public class EurekaHttpClient : IEurekaHttpClient
             catch (Exception e)
             {
                 logger?.LogError(e, "DeleteStatusOverrideAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
-            }
-            finally
-            {
-                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -542,10 +502,6 @@ public class EurekaHttpClient : IEurekaHttpClient
         // For retries
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
-
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri($"{serviceUrl}apps/{appName}/{id}/status", queryArgs);
             HttpRequestMessage request = GetRequestMessage(HttpMethod.Put, requestUri);
@@ -574,10 +530,6 @@ public class EurekaHttpClient : IEurekaHttpClient
             catch (Exception e)
             {
                 logger?.LogError(e, "StatusUpdateAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
-            }
-            finally
-            {
-                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -776,10 +728,6 @@ public class EurekaHttpClient : IEurekaHttpClient
         // For retries
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
-
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri(serviceUrl + path);
             HttpRequestMessage request = GetRequestMessage(HttpMethod.Get, requestUri);
@@ -817,10 +765,6 @@ public class EurekaHttpClient : IEurekaHttpClient
             {
                 logger?.LogError(e, "DoGetInstanceAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
-            finally
-            {
-                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
-            }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
             AddToFailingServiceUrls(serviceUrl);
@@ -848,10 +792,6 @@ public class EurekaHttpClient : IEurekaHttpClient
         // For retries
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(Configuration.ValidateCertificates, out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
-
             serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri(serviceUrl + path, queryArgs);
             HttpRequestMessage request = GetRequestMessage(HttpMethod.Get, requestUri);
@@ -897,10 +837,6 @@ public class EurekaHttpClient : IEurekaHttpClient
             catch (Exception e)
             {
                 logger?.LogError(e, "DoGetApplicationsAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
-            }
-            finally
-            {
-                HttpClientHelper.RestoreCertificateValidation(Configuration.ValidateCertificates, prevProtocols, prevValidator);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);

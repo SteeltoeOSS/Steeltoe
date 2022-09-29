@@ -81,8 +81,8 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
 
     private sealed class MockChannelAwareMessageListener : IChannelAwareMessageListener
     {
-        public readonly IChannelAwareMessageListener MessageListener;
-        public readonly CountdownEvent Latch;
+        public IChannelAwareMessageListener MessageListener { get; }
+        public CountdownEvent Latch { get; }
 
         public AcknowledgeMode ContainerAckMode { get; set; }
 

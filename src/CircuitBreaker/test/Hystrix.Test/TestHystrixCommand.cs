@@ -9,7 +9,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class TestHystrixCommand<T> : HystrixCommand<T>
 {
-    public ITestOutputHelper Output;
+    public ITestOutputHelper Output { get; set; }
 
     public virtual TestCommandBuilder Builder { get; }
 

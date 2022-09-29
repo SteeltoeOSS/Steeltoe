@@ -141,7 +141,7 @@ public static class RedisCacheTestHelpers
                 }]
             }";
 
-    public static Dictionary<string, string> SingleServerAsDictionary = new()
+    public static Dictionary<string, string> SingleServerAsDictionary { get; } = new()
     {
         { "services:p-redis:0:name", "myRedisService" },
         { "services:p-redis:0:tags:0", "redis" },

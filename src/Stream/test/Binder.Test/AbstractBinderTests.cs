@@ -36,7 +36,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
 
     protected virtual ITestOutputHelper Output { get; set; }
 
-    protected virtual ServiceCollection Services { get; set; }
+    protected virtual ServiceCollection Services { get; }
 
     protected virtual ConfigurationBuilder ConfigurationBuilder { get; set; }
 
@@ -355,7 +355,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
 
         var station = new Station
         {
-            ReadingsList = new List<Station.Readings>
+            ReadingsList =
             {
                 r1,
                 r2
@@ -445,14 +445,24 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         return ".";
     }
 
-    protected abstract TTestBinder GetBinder(RabbitBindingsOptions bindingsOptions = null);
+    protected TTestBinder GetBinder()
+    {
+        return GetBinder(null);
+    }
+
+    protected abstract TTestBinder GetBinder(RabbitBindingsOptions bindingsOptions);
 
     protected void BinderBindUnbindLatency()
     {
     }
 
-    protected ConsumerOptions GetConsumerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitConsumerOptions rabbitConsumerOptions = null,
-        RabbitBindingOptions bindingOptions = null)
+    protected ConsumerOptions GetConsumerOptions(string bindingName, RabbitBindingsOptions bindingsOptions)
+    {
+        return GetConsumerOptions(bindingName, bindingsOptions, null, null);
+    }
+
+    protected ConsumerOptions GetConsumerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitConsumerOptions rabbitConsumerOptions,
+        RabbitBindingOptions bindingOptions)
     {
         rabbitConsumerOptions ??= new RabbitConsumerOptions();
         rabbitConsumerOptions.PostProcess();
@@ -470,7 +480,12 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         return consumerOptions;
     }
 
-    protected ProducerOptions GetProducerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitBindingOptions bindingOptions = null)
+    protected ProducerOptions GetProducerOptions(string bindingName, RabbitBindingsOptions bindingsOptions)
+    {
+        return GetProducerOptions(bindingName, bindingsOptions, null);
+    }
+
+    protected ProducerOptions GetProducerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitBindingOptions bindingOptions)
     {
         var rabbitProducerOptions = new RabbitProducerOptions();
         rabbitProducerOptions.PostProcess();
@@ -578,7 +593,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
 
     public class Station
     {
-        public List<Readings> ReadingsList { get; set; }
+        public List<Readings> ReadingsList { get; } = new();
 
         public class Readings
         {

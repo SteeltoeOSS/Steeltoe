@@ -10,7 +10,7 @@ namespace Steeltoe.Stream.Binder.Rabbit;
 
 public class Client : ManagementClient
 {
-    public Client(string hostUrl = "http://localhost", string username = "guest", string password = "guest")
+    internal Client(string hostUrl = "http://localhost", string username = "guest", string password = "guest")
         : base(hostUrl, username, password)
     {
     }

@@ -13,7 +13,7 @@
       "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
       "Common\\src\\Common\\Steeltoe.Common.csproj",
       "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
-      "Configuration\\src\\Abstractions\\Steeltoe.Extensions.Configuration.Abstractions.csproj",
+      "Configuration\\src\\Abstractions\\Steeltoe.Configuration.Abstractions.csproj",
       "Connectors\\src\\Abstractions\\Steeltoe.Connector.Abstractions.csproj",
       "Connectors\\src\\Connector\\Steeltoe.Connector.csproj",
       "Discovery\\src\\Abstractions\\Steeltoe.Discovery.Abstractions.csproj"

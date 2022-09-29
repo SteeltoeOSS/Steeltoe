@@ -424,17 +424,19 @@ public class MethodInvokingMessageProcessorTest
 
     public class OverloadedMethodService
     {
-        public volatile object LastArg;
+        private volatile object _lastArg;
+
+        public object LastArg => _lastArg;
 
         public void Foo(bool b)
         {
-            LastArg = b;
+            _lastArg = b;
         }
 
         [ServiceActivator]
         public string Foo(string s)
         {
-            LastArg = s;
+            _lastArg = s;
             return s;
         }
     }

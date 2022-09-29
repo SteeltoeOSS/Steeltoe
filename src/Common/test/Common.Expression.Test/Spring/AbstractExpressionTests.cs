@@ -15,8 +15,8 @@ public abstract class AbstractExpressionTests
     protected const bool ShouldBeWritable = true;
     private static readonly bool IsDebug = bool.Parse(bool.FalseString);
     protected static readonly bool ShouldNotBeWritable;
-    protected readonly IExpressionParser Parser = new SpelExpressionParser();
-    protected readonly StandardEvaluationContext Context = TestScenarioCreator.GetTestEvaluationContext();
+    protected IExpressionParser Parser { get; } = new SpelExpressionParser();
+    protected StandardEvaluationContext Context { get; } = TestScenarioCreator.GetTestEvaluationContext();
 
     public virtual void EvaluateAndAskForReturnType(string expression, object expectedValue, Type expectedResultType)
     {

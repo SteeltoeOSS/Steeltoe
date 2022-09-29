@@ -8,7 +8,7 @@ internal sealed class SuccessfulCacheableCommand<T> : TestHystrixCommand<T>
 {
     private readonly bool _cacheEnabled;
     private readonly T _value;
-    public volatile bool Executed;
+    private volatile bool _executed;
 
     protected override string CacheKey
     {
@@ -25,6 +25,8 @@ internal sealed class SuccessfulCacheableCommand<T> : TestHystrixCommand<T>
 
     public bool IsCommandRunningInThread => CommandOptions.ExecutionIsolationStrategy.Equals(ExecutionIsolationStrategy.Thread);
 
+    public bool Executed => _executed;
+
     public SuccessfulCacheableCommand(TestCircuitBreaker circuitBreaker, bool cacheEnabled, T value)
         : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics))
     {
@@ -34,7 +36,7 @@ internal sealed class SuccessfulCacheableCommand<T> : TestHystrixCommand<T>
 
     protected override T Run()
     {
-        Executed = true;
+        _executed = true;
 
         Output?.WriteLine("successfully executed");
         return _value;

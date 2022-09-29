@@ -119,7 +119,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
 
     public class AfterReceivePostProcessors : IMessagePostProcessor
     {
-        public List<string> Headers { get; set; }
+        public List<string> Headers { get; }
 
         public AfterReceivePostProcessors(List<string> headers)
         {
@@ -166,7 +166,11 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
 
     public sealed class CustomStartupFixture : IDisposable
     {
-        public static string[] Queues =
+        private readonly CachingConnectionFactory _adminCf;
+        private readonly RabbitAdmin _admin;
+        private readonly IServiceCollection _services;
+
+        public static string[] Queues { get; } =
         {
             "test.converted",
             "test.converted.list",
@@ -182,10 +186,6 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             "test.notconverted.messagingmessagenotgeneric",
             "test.simple.direct"
         };
-
-        private readonly CachingConnectionFactory _adminCf;
-        private readonly RabbitAdmin _admin;
-        private readonly IServiceCollection _services;
 
         public ServiceProvider Provider { get; set; }
 
@@ -219,7 +219,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             Provider.Dispose();
         }
 
-        public ServiceCollection CreateContainer(IConfiguration configuration = null)
+        private ServiceCollection CreateContainer(IConfiguration configuration = null)
         {
             var services = new ServiceCollection();
             configuration ??= new ConfigurationBuilder().Build();
@@ -297,9 +297,9 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         public int IntHeader { get; set; }
 
         [RabbitListener("test.converted")]
-        public Foo2 Foo2(Foo2 foo2)
+        public Foo2 Foo2(Foo2 value)
         {
-            return foo2;
+            return value;
         }
 
         [RabbitListener("test.converted.list")]
@@ -319,9 +319,9 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         }
 
         [RabbitListener("test.converted.args1")]
-        public string Foo2(Foo2 foo2, [Header(RabbitMessageHeaders.ConsumerQueue)] string queue)
+        public string Foo2(Foo2 value, [Header(RabbitMessageHeaders.ConsumerQueue)] string queue)
         {
-            return foo2 + queue;
+            return value + queue;
         }
 
         [RabbitListener("test.converted.args2")]

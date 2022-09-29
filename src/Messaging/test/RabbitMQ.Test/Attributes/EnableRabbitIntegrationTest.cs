@@ -32,6 +32,8 @@ using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Attributes.EnableRabbitIntegrationTest;
 using RC = RabbitMQ.Client;
 
+#pragma warning disable S3872 // Parameter names should not duplicate the names of their methods
+
 namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 
 [Trait("Category", "Integration")]
@@ -691,7 +693,11 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
     public sealed class StartupFixture : IDisposable
     {
-        public static string[] Queues =
+        private readonly CachingConnectionFactory _adminCf;
+        private readonly RabbitAdmin _admin;
+        private readonly IServiceCollection _services;
+
+        public static string[] Queues { get; } =
         {
             "test.manual.container",
             "test.no.listener.yet",
@@ -752,10 +758,6 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             "erit.batch.3"
         };
 
-        private readonly CachingConnectionFactory _adminCf;
-        private readonly RabbitAdmin _admin;
-        private readonly IServiceCollection _services;
-
         public ServiceProvider Provider { get; set; }
 
         public CountdownEvent ManualContainerLatch { get; set; } = new(1);
@@ -800,7 +802,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             Provider.Dispose();
         }
 
-        public ServiceCollection CreateContainer(IConfiguration configuration = null)
+        private ServiceCollection CreateContainer(IConfiguration configuration = null)
         {
             var services = new ServiceCollection();
             configuration ??= new ConfigurationBuilder().Build();
@@ -1049,7 +1051,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         public CountdownEvent Latch { get; set; } = new(1);
 
-        public List<object> Foos { get; set; } = new();
+        public List<object> Foos { get; } = new();
 
         public CountdownEvent Batch1Latch { get; set; } = new(1);
 
@@ -1057,11 +1059,11 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         public CountdownEvent Batch3Latch { get; set; } = new(1);
 
-        public List<IMessage<byte[]>> AmqpMessagesReceived { get; set; }
+        public List<IMessage<byte[]>> AmqpMessagesReceived { get; } = new();
 
-        public List<IMessage> MessagingMessagesReceived { get; set; }
+        public List<IMessage> MessagingMessagesReceived { get; } = new();
 
-        public List<string> Batch3Strings { get; set; }
+        public List<string> Batch3Strings { get; } = new();
 
         public MyService(IApplicationContext context)
         {
@@ -1322,7 +1324,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         [RabbitListener("erit.batch.1", ContainerFactory = "consumerBatchContainerFactory")]
         public void ConsumerBatch1(List<IMessage<byte[]>> amqpMessages)
         {
-            AmqpMessagesReceived = amqpMessages;
+            AmqpMessagesReceived.Clear();
+            AmqpMessagesReceived.AddRange(amqpMessages);
 
             if (!Batch1Latch.IsSet)
             {
@@ -1333,7 +1336,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         [RabbitListener("erit.batch.2", ContainerFactory = "consumerBatchContainerFactory")]
         public void ConsumerBatch2(List<IMessage> messages)
         {
-            MessagingMessagesReceived = messages;
+            MessagingMessagesReceived.Clear();
+            MessagingMessagesReceived.AddRange(messages);
 
             if (!Batch2Latch.IsSet)
             {
@@ -1344,7 +1348,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         [RabbitListener("erit.batch.3", ContainerFactory = "consumerBatchContainerFactory")]
         public void ConsumerBatch3(List<string> strings)
         {
-            Batch3Strings = strings;
+            Batch3Strings.Clear();
+            Batch3Strings.AddRange(strings);
 
             if (!Batch3Latch.IsSet)
             {

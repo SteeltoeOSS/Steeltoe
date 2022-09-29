@@ -12,28 +12,28 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 [Trait("Category", "Integration")]
 public class RabbitTemplateSimpleRoutingConnectionFactoryTest
 {
-    protected const string ConnectionFactory1 = "foo";
-    protected const string ConnectionFactory2 = "bar";
+    protected const string ConnectionFactoryName1 = "foo";
+    protected const string ConnectionFactoryName2 = "bar";
 
-    protected RabbitTemplate routingTemplate;
+    protected RabbitTemplate RoutingTemplate { get; }
 
-    protected Mock<IConnectionFactory> cf1;
-    protected Mock<IConnectionFactory> cf2;
-    protected Mock<IConnectionFactory> defaultCF;
+    protected Mock<IConnectionFactory> ConnectionFactory1 { get; }
+    protected Mock<IConnectionFactory> ConnectionFactory2 { get; }
+    protected Mock<IConnectionFactory> DefaultConnectionFactory { get; }
 
     public RabbitTemplateSimpleRoutingConnectionFactoryTest()
     {
-        routingTemplate = new RabbitTemplate();
+        RoutingTemplate = new RabbitTemplate();
 
         var routingConnFactory = new SimpleRoutingConnectionFactory();
 
-        cf1 = new Mock<IConnectionFactory>();
-        cf2 = new Mock<IConnectionFactory>();
-        defaultCF = new Mock<IConnectionFactory>();
-        routingConnFactory.AddTargetConnectionFactory(ConnectionFactory1, cf1.Object);
-        routingConnFactory.AddTargetConnectionFactory(ConnectionFactory2, cf2.Object);
+        ConnectionFactory1 = new Mock<IConnectionFactory>();
+        ConnectionFactory2 = new Mock<IConnectionFactory>();
+        DefaultConnectionFactory = new Mock<IConnectionFactory>();
+        routingConnFactory.AddTargetConnectionFactory(ConnectionFactoryName1, ConnectionFactory1.Object);
+        routingConnFactory.AddTargetConnectionFactory(ConnectionFactoryName2, ConnectionFactory2.Object);
 
-        routingTemplate.ConnectionFactory = routingConnFactory;
+        RoutingTemplate.ConnectionFactory = routingConnFactory;
     }
 
     [Fact]
@@ -52,24 +52,24 @@ public class RabbitTemplateSimpleRoutingConnectionFactoryTest
             return channel;
         }
 
-        Mock<RC.IModel> channel1 = SetupMocks(cf1);
-        Mock<RC.IModel> channel2 = SetupMocks(cf2);
+        Mock<RC.IModel> channel1 = SetupMocks(ConnectionFactory1);
+        Mock<RC.IModel> channel2 = SetupMocks(ConnectionFactory2);
 
         // act(a): send message using connection factory 1
-        SimpleResourceHolder.Bind(routingTemplate.ConnectionFactory, ConnectionFactory1);
-        routingTemplate.ConvertSendAndReceive<string>("exchFoo", "rkFoo", "msgFoo");
-        SimpleResourceHolder.UnbindIfPossible(routingTemplate.ConnectionFactory);
+        SimpleResourceHolder.Bind(RoutingTemplate.ConnectionFactory, ConnectionFactoryName1);
+        RoutingTemplate.ConvertSendAndReceive<string>("exchFoo", "rkFoo", "msgFoo");
+        SimpleResourceHolder.UnbindIfPossible(RoutingTemplate.ConnectionFactory);
 
         // act(b): send message using connection factory 2
-        SimpleResourceHolder.Bind(routingTemplate.ConnectionFactory, ConnectionFactory2);
-        routingTemplate.ConvertSendAndReceive<string>("exchBar", "rkBar", "msgBar");
-        SimpleResourceHolder.UnbindIfPossible(routingTemplate.ConnectionFactory);
+        SimpleResourceHolder.Bind(RoutingTemplate.ConnectionFactory, ConnectionFactoryName2);
+        RoutingTemplate.ConvertSendAndReceive<string>("exchBar", "rkBar", "msgBar");
+        SimpleResourceHolder.UnbindIfPossible(RoutingTemplate.ConnectionFactory);
 
         // assert: both connection factories should be used
-        cf1.Verify(cf => cf.CreateConnection(), Times.AtLeastOnce);
+        ConnectionFactory1.Verify(cf => cf.CreateConnection(), Times.AtLeastOnce);
         channel1.Verify(c => c.BasicPublish("exchFoo", "rkFoo", It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()));
 
-        cf2.Verify(cf => cf.CreateConnection(), Times.AtLeastOnce);
+        ConnectionFactory2.Verify(cf => cf.CreateConnection(), Times.AtLeastOnce);
         channel2.Verify(c => c.BasicPublish("exchBar", "rkBar", It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()));
     }
 }

@@ -45,4 +45,14 @@
   <Target Name="ValidatePackage" AfterTargets="BeforeBuild">
     <Error Text="The 'Description' property must be set for packable project '$(MSBuildProjectName)'." Condition="'$(Description)' == ''" />
   </Target>
+
+  <ItemGroup Condition="$(MSBuildProjectName.StartsWith('Steeltoe.Configuration'))">
+    <!-- Widen the condition above as we're completing more public API reviews -->
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="$(PublicApiAnalyzersVersion)" PrivateAssets="All" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="!$(MSBuildProjectName.StartsWith('Steeltoe.Configuration'))">
+    <!-- Narrow the condition above as we're completing more public API reviews -->
+    <NoWarn>$(NoWarn);SA1401;S1168;S2360;S3872;S3874;S3898;S3956;S4004;S4023;S4059;S4487;S3900</NoWarn>
+  </PropertyGroup>
 </Project>

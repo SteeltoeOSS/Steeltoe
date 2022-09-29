@@ -2,15 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Extensions.Configuration;
+namespace Steeltoe.Configuration;
 
 /// <summary>
 /// Represents a service instance bound to an application.
 /// </summary>
-public class Service : AbstractServiceOptions
+public sealed class Service : BaseServiceOptions
 {
     /// <summary>
-    /// Gets or sets the connection information and credentials for using the service.
+    /// Gets the connection information and credentials for the service.
     /// </summary>
-    public Dictionary<string, Credential> Credentials { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public IDictionary<string, Credential> Credentials { get; } = new Dictionary<string, Credential>(StringComparer.OrdinalIgnoreCase);
 }

@@ -6,9 +6,9 @@ using k8s;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
+namespace Steeltoe.Configuration.Kubernetes.Test;
 
-public class KubernetesConfigurationBuilderExtensionsTest
+public sealed class KubernetesConfigurationBuilderExtensionsTest
 {
     private Action<KubernetesClientConfiguration> FakeClientSetup => fakeClient => fakeClient.Host = "http://127.0.0.1";
 

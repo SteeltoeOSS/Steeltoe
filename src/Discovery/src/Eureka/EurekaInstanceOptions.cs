@@ -61,7 +61,7 @@ public class EurekaInstanceOptions : EurekaInstanceConfiguration, IDiscoveryRegi
     // spring:cloud:discovery:registrationMethod changed to  eureka:instance:registrationMethod
     public virtual string RegistrationMethod { get; set; }
 
-    public override string IpAddress
+    public override string IPAddress
     {
         get => _ipAddress ?? thisHostAddress;
         set => _ipAddress = value;

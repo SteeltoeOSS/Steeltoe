@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test;
 
 public class AuthStartup
 {
-    public IConfiguration Configuration;
+    public IConfiguration Configuration { get; }
 
     public AuthStartup(IConfiguration configuration)
     {

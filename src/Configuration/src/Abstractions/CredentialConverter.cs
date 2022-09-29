@@ -5,17 +5,17 @@
 using System.ComponentModel;
 using System.Globalization;
 
-namespace Steeltoe.Extensions.Configuration;
+namespace Steeltoe.Configuration;
 
-public class CredentialConverter : TypeConverter
+public sealed class CredentialConverter : TypeConverter
 {
-    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-    {
-        return value is string stringVal ? new Credential(stringVal) : base.ConvertFrom(context, culture, value);
-    }
-
     public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
     {
         return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+    }
+
+    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+    {
+        return value is string stringValue ? new Credential(stringValue) : base.ConvertFrom(context, culture, value);
     }
 }

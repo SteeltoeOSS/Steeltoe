@@ -47,7 +47,7 @@ public class KubernetesDiscoveryClientExtension : IDiscoveryClientExtension
         }).PostConfigure<KubernetesApplicationOptions>((options, appOptions) =>
         {
             options.ServiceName =
-                appOptions.ApplicationNameInContext(SteeltoeComponent.Kubernetes, $"{ApplicationInstanceInfo.KubernetesRoot}:discovery:servicename");
+                appOptions.GetApplicationNameInContext(SteeltoeComponent.Kubernetes, $"{ApplicationInstanceInfo.KubernetesRoot}:discovery:servicename");
 
             if (options.Namespace == "default" && appOptions.NameSpace != "default")
             {

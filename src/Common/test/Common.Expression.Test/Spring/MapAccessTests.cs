@@ -107,7 +107,7 @@ public class MapAccessTests : AbstractExpressionTests
 
         public int Priority { get; set; }
 
-        public Dictionary<string, string> Properties { get; set; }
+        public Dictionary<string, string> Properties { get; }
 
         public TestBean(string name, TestBean testBean, string description, int priority, Dictionary<string, string> props)
         {

@@ -93,7 +93,7 @@ public class RollingThreadPoolMaxConcurrencyStreamTest : CommandStreamTest
         Assert.Equal(0, _stream.LatestRollingMax);
     }
 
-    /***
+    /*
      * 3 Commands,
      * Command 1 gets started in Bucket A and not completed until Bucket B
      * Commands 2 and 3 both start and end in Bucket B, and there should be a max-concurrency of 3

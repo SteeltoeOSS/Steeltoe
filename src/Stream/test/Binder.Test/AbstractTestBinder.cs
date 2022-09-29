@@ -12,9 +12,9 @@ namespace Steeltoe.Stream.Binder;
 public abstract class AbstractTestBinder<TBinder> : IBinder<IMessageChannel>
     where TBinder : AbstractBinder<IMessageChannel>
 {
-    protected HashSet<string> queues = new();
+    protected HashSet<string> Queues { get; } = new();
 
-    protected HashSet<string> exchanges = new();
+    protected HashSet<string> Exchanges { get; } = new();
 
     public Type TargetType => typeof(IMessageChannel);
 
@@ -42,7 +42,7 @@ public abstract class AbstractTestBinder<TBinder> : IBinder<IMessageChannel>
 
     public virtual IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
     {
-        queues.Add(name);
+        Queues.Add(name);
         return CoreBinder.BindConsumer(name, group, inboundTarget, consumerOptions);
     }
 
@@ -53,7 +53,7 @@ public abstract class AbstractTestBinder<TBinder> : IBinder<IMessageChannel>
 
     public IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions)
     {
-        queues.Add(name);
+        Queues.Add(name);
         return CoreBinder.BindProducer(name, outboundTarget, producerOptions);
     }
 

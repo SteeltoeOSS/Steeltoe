@@ -97,9 +97,7 @@ public class MethodInvocationTests : AbstractExpressionTests
         Assert.Equal(4, parser.ParseExpression("Counter").GetValue(eContext));
     }
 
-    /**
-         * Check on first usage (when the cachedExecutor in MethodReference is null) that the exception is not wrapped.
-         */
+    // Check on first usage (when the cachedExecutor in MethodReference is null) that the exception is not wrapped.
     [Fact]
     public void TestMethodThrowingException_SPR6941()
     {
@@ -265,8 +263,8 @@ public class MethodInvocationTests : AbstractExpressionTests
     // Simple filter
     public class LocalFilter : IMethodFilter
     {
-        public bool RemoveIfNotAnnotated;
-        public bool FilterCalled;
+        public bool RemoveIfNotAnnotated { get; set; }
+        public bool FilterCalled { get; set; }
 
         public List<MethodInfo> Filter(List<MethodInfo> methods)
         {

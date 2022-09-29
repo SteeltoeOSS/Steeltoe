@@ -48,7 +48,7 @@ public class HystrixRequestContextMiddlewareTest
 #pragma warning restore CS0618 // Type or member is obsolete
     {
         private readonly CancellationTokenSource _stoppingSource = new();
-        public bool Registered;
+        public bool Registered { get; private set; }
 
         public CancellationToken ApplicationStarted => throw new NotImplementedException();
 

@@ -6,8 +6,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class TestCircuitBreaker : ICircuitBreaker
 {
-    public readonly HystrixCommandMetrics Metrics;
     private bool _forceShortCircuit;
+    public HystrixCommandMetrics Metrics { get; }
 
     public bool IsOpen
     {

@@ -7,9 +7,9 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+namespace Steeltoe.Configuration.ConfigServer.Integration.Test;
 
-public class HomeController : Controller
+public sealed class HomeController : Controller
 {
     private readonly ConfigServerDataAsOptions _options;
     private readonly IHealthContributor _health;

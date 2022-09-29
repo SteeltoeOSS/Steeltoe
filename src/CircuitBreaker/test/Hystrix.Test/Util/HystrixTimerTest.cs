@@ -183,7 +183,7 @@ public sealed class HystrixTimerTest : IDisposable
 
     private sealed class TestListener : ITimerListener
     {
-        public readonly AtomicInteger TickCount = new();
+        public AtomicInteger TickCount { get; } = new();
 
         public int IntervalTimeInMilliseconds { get; }
 

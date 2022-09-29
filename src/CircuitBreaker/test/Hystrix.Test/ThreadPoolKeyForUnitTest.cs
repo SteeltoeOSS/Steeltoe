@@ -6,6 +6,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public static class ThreadPoolKeyForUnitTest
 {
-    public static IHystrixThreadPoolKey ThreadPoolOne = new HystrixThreadPoolKeyDefault("THREAD_POOL_ONE");
-    public static IHystrixThreadPoolKey ThreadPoolTwo = new HystrixThreadPoolKeyDefault("THREAD_POOL_TWO");
+    public static IHystrixThreadPoolKey ThreadPoolOne { get; } = new HystrixThreadPoolKeyDefault("THREAD_POOL_ONE");
+    public static IHystrixThreadPoolKey ThreadPoolTwo { get; } = new HystrixThreadPoolKeyDefault("THREAD_POOL_TWO");
 }

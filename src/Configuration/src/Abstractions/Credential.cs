@@ -4,10 +4,10 @@
 
 using System.ComponentModel;
 
-namespace Steeltoe.Extensions.Configuration;
+namespace Steeltoe.Configuration;
 
 [TypeConverter(typeof(CredentialConverter))]
-public class Credential : Dictionary<string, Credential>
+public sealed class Credential : Dictionary<string, Credential>
 {
     public string Value { get; }
 
