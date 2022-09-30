@@ -38,7 +38,8 @@ public class EventCounterListener : EventListener
         _options = options ?? throw new ArgumentNullException(nameof(options));
         _logger = logger;
         _isInitialized = true;
-        ProcessPreInitEventSources();
+
+        // ProcessPreInitEventSources();
     }
 
     /// <summary>
@@ -86,14 +87,6 @@ public class EventCounterListener : EventListener
         }
 
         if (_eventSourceName.Equals(eventSource.Name, StringComparison.OrdinalIgnoreCase))
-        {
-            SafeEnableEvents(eventSource);
-        }
-    }
-
-    private void ProcessPreInitEventSources()
-    {
-        foreach (var eventSource in _eventSources)
         {
             SafeEnableEvents(eventSource);
         }
