@@ -39,7 +39,7 @@ public class EventCounterListener : EventListener
         _logger = logger;
         _isInitialized = true;
 
-        // ProcessPreInitEventSources();
+        ProcessPreInitEventSources();
     }
 
     /// <summary>
@@ -81,12 +81,22 @@ public class EventCounterListener : EventListener
             throw new ArgumentNullException(nameof(eventSource));
         }
 
-        if (!_isInitialized)
-        {
-           _eventSources.Add(eventSource);
-        }
-
         if (_eventSourceName.Equals(eventSource.Name, StringComparison.OrdinalIgnoreCase))
+        {
+            if (!_isInitialized)
+            {
+                _eventSources.Add(eventSource);
+            }
+            else
+            {
+                SafeEnableEvents(eventSource);
+            }
+        }
+    }
+
+    private void ProcessPreInitEventSources()
+    {
+        foreach (var eventSource in _eventSources)
         {
             SafeEnableEvents(eventSource);
         }
