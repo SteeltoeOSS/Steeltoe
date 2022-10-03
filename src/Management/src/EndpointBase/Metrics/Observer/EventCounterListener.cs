@@ -110,7 +110,7 @@ public class EventCounterListener : EventListener
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex.Message, ex);
+            _logger?.LogError($"Failed to enable events: {ex.Message}", ex);
         }
     }
 
