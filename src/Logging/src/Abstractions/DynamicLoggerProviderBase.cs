@@ -97,7 +97,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
                 {
                     string name = prefix;
                     LogLevel? configured = GetConfiguredLevel(name);
-                    LogLevel effective = GetEffectiveLevel(name);
+                    LogLevel effective = GetEffectiveLevel(name) ?? effectiveDefault;
                     var configuration = new DynamicLoggerConfiguration(name, configured, effective);
 
                     if (results.ContainsKey(name) && !results[name].Equals(configuration))
@@ -245,7 +245,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     /// <returns>
     /// Minimum logging level.
     /// </returns>
-    private LogLevel GetEffectiveLevel(string name)
+    private LogLevel? GetEffectiveLevel(string name)
     {
         IEnumerable<string> prefixes = GetKeyPrefixes(name);
 
@@ -259,7 +259,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
             }
         }
 
-        return LogLevel.None;
+        return null;
     }
 
     /// <summary>
