@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net7.0;net6.0</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -17,9 +17,5 @@
     <ProjectReference Include="..\..\..\Discovery\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
     <ProjectReference Include="..\..\src\ConfigServer\Steeltoe.Configuration.ConfigServer.csproj" />
     <ProjectReference Include="..\..\src\Placeholder\Steeltoe.Configuration.Placeholder.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 </Project>

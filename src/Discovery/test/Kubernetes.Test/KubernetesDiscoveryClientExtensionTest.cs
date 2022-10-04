@@ -35,7 +35,7 @@ public class KubernetesDiscoveryClientExtensionTest
             { "spring:cloud:discovery:enabled", "false" }
         };
 
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings!).Build());
 
         KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
         ServiceProvider? provider = services.BuildServiceProvider();
@@ -55,7 +55,7 @@ public class KubernetesDiscoveryClientExtensionTest
             { "spring:cloud:kubernetes:discovery:enabled", "true" }
         };
 
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings!).Build());
 
         KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
         ServiceProvider? provider = services.BuildServiceProvider();

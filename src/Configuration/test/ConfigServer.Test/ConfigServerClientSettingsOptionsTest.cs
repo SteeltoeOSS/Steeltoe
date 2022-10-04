@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Common.Utils.IO;
+using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
@@ -19,6 +20,11 @@ public sealed class ConfigServerClientSettingsOptionsTest
     {
         IServiceCollection services = new ServiceCollection().AddOptions();
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
+
+        if (string.IsNullOrEmpty(environment.ApplicationName))
+        {
+            environment.ApplicationName = Assembly.GetEntryAssembly().GetName().Name;
+        }
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(environment);
         services.AddSingleton<IConfiguration>(_ => builder.Build());

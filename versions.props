@@ -75,4 +75,8 @@
     <LightweightEmitVersion>4.7.*</LightweightEmitVersion>
     <AspNetCoreVersion>6.0.*</AspNetCoreVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net7.0'">
+    <AspNetCoreVersion>(7-*,8.0]</AspNetCoreVersion>
+    <ExtensionsVersion>(7-*,8.0]</ExtensionsVersion>
+  </PropertyGroup>
 </Project>
