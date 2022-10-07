@@ -196,6 +196,7 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.True(result.TryGetProperty("loggers", out var loggers));
         Assert.True(result.TryGetProperty("levels", out _));
         Assert.Equal("WARN", loggers.GetProperty("Default").GetProperty("configuredLevel").GetString());
+        Assert.Equal("WARN", loggers.GetProperty("Microsoft").GetProperty("effectiveLevel").GetString());
         Assert.Equal("INFO", loggers.GetProperty("Steeltoe.Management").GetProperty("effectiveLevel").GetString());
     }
 
