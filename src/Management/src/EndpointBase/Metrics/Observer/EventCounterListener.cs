@@ -23,7 +23,7 @@ public class EventCounterListener : EventListener
     private readonly IMetricsObserverOptions _options;
     private readonly bool _isInitialized = false;
 
-    private readonly Dictionary<string, string> _refreshInterval = new () { { "EventCounterIntervalSec", "1" } }; // TODO: Make it configurable
+    private readonly Dictionary<string, string> _refreshInterval = new () { { "EventCounterIntervalSec", "1" } };
 
     private ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new ();
     private ConcurrentDictionary<string, ObservableGauge<long>> _longMeasureMetrics = new ();
