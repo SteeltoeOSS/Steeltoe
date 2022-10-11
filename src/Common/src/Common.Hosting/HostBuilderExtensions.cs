@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Common.Hosting;
@@ -109,6 +110,8 @@ public static class HostBuilderExtensions
             AddRunLocalPorts(urls, runLocalHttpPort, runLocalHttpsPort);
         }
 
+        AddManagementPorts(urls);
+
         if (urls.Any())
         {
             // setting ASPNETCORE_URLS should only be needed to override launchSettings.json
@@ -167,5 +170,17 @@ public static class HostBuilderExtensions
         {
             urls.Add($"https://*:{runLocalHttpsPort}");
         }
+    }
+
+    private static void AddManagementPorts(List<string> urls)
+    {
+        var config = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+        if(!urls.Any())
+        {
+            urls.Add(DefaultUrl);
+        }
+        urls.Add($"http://*:{config["management:endpoints:port"]}");
     }
 }
