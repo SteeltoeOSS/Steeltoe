@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -20,11 +21,16 @@ using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Info;
+using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Hosting;
 
 namespace Steeltoe.Management.Endpoint;
 
 public static class ManagementWebHostBuilderExtensions
 {
+
+    public const string ManagementPortKey = "management:endpoints:port";
+    public const string ManagementSSLKey = "management:endpoints:sslenabled";
     /// <summary>
     /// Adds the Database Migrations actuator to the application.
     /// </summary>
@@ -33,7 +39,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddDbMigrationsActuator(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls).ConfigureServices((context, collection) =>
         {
             collection.AddDbMigrationsActuator(context.Configuration);
             collection.ActivateActuatorEndpoints();
@@ -48,7 +54,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddEnvActuator(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureServices((context, collection) =>
         {
             collection.AddEnvActuator(context.Configuration);
             collection.ActivateActuatorEndpoints();
@@ -63,7 +70,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureServices((context, collection) =>
         {
             collection.AddHealthActuator(context.Configuration);
             collection.ActivateActuatorEndpoints();
@@ -81,7 +89,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder, Type[] contributors)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureServices((context, collection) =>
         {
             collection.AddHealthActuator(context.Configuration, contributors);
             collection.ActivateActuatorEndpoints();
@@ -102,7 +111,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder, IHealthAggregator aggregator, Type[] contributors)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureServices((context, collection) =>
         {
             collection.AddHealthActuator(context.Configuration, aggregator, contributors);
             collection.ActivateActuatorEndpoints();
@@ -117,7 +127,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddHeapDumpActuator(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureServices((context, collection) =>
         {
             collection.AddHeapDumpActuator(context.Configuration);
             collection.ActivateActuatorEndpoints();
@@ -132,7 +143,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddHypermediaActuator(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureServices((context, collection) =>
         {
             collection.AddHypermediaActuator(context.Configuration);
             collection.ActivateActuatorEndpoints();
@@ -147,7 +159,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureServices((context, collection) =>
         {
             collection.AddInfoActuator(context.Configuration);
             collection.ActivateActuatorEndpoints();
@@ -165,7 +178,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder hostBuilder, IInfoContributor[] contributors)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureServices((context, collection) =>
         {
             collection.AddInfoActuator(context.Configuration, contributors);
             collection.ActivateActuatorEndpoints();
@@ -180,7 +194,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddLoggersActuator(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((context, collection) =>
         {
             collection.AddLoggersActuator(context.Configuration);
             collection.ActivateActuatorEndpoints();
@@ -195,7 +210,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddMappingsActuator(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureServices((context, collection) =>
         {
             collection.AddMappingsActuator(context.Configuration);
             collection.ActivateActuatorEndpoints();
@@ -210,7 +226,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddMetricsActuator(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureServices((context, collection) =>
         {
             collection.AddMetricsActuator(context.Configuration);
             collection.ActivateActuatorEndpoints();
@@ -225,7 +242,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddRefreshActuator(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureServices((context, collection) =>
         {
             collection.AddRefreshActuator(context.Configuration);
             collection.ActivateActuatorEndpoints();
@@ -243,7 +261,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureServices((context, collection) =>
         {
             collection.AddThreadDumpActuator(context.Configuration, mediaTypeVersion);
             collection.ActivateActuatorEndpoints();
@@ -261,7 +280,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureServices((context, collection) =>
         {
             collection.AddTraceActuator(context.Configuration, mediaTypeVersion);
             collection.ActivateActuatorEndpoints();
@@ -276,7 +296,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddCloudFoundryActuator(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureServices((context, collection) =>
         {
             collection.AddCloudFoundryActuator(context.Configuration);
             collection.ActivateActuatorEndpoints();
@@ -298,7 +319,9 @@ public static class ManagementWebHostBuilderExtensions
     public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null,
         MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
-        return hostBuilder.ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ConfigureManagementUrls)
+            .ConfigureLogging(builder => builder.AddDynamicConsole())
+            .ConfigureServices((context, collection) =>
         {
             collection.AddAllActuators(context.Configuration, mediaTypeVersion);
             collection.ActivateActuatorEndpoints(configureEndpoints);
@@ -314,5 +337,38 @@ public static class ManagementWebHostBuilderExtensions
     public static IWebHostBuilder AddWavefrontMetrics(this IWebHostBuilder hostBuilder)
     {
         return hostBuilder.ConfigureServices((_, collection) => collection.AddWavefrontMetrics());
+    }
+
+    internal static void ConfigureManagementUrls(this IWebHostBuilder webHostBuilder, List<string> urls)
+    {
+        var config = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json") //Need this before the configuration is ready by .NET
+                    .Build();
+
+        var managementPort = config[ManagementPortKey];
+        var sslEnabled = config[ManagementSSLKey];
+
+        var protocol = "http";
+
+        if (bool.TryParse(sslEnabled, out var isSslEnabled) && isSslEnabled)
+        {
+            protocol = "https";
+        }
+        if (!string.IsNullOrEmpty(managementPort))
+        {
+            urls.Add($"{protocol}://*:{managementPort}"); // Just ports and protocol
+        }
+
+
+        webHostBuilder.ConfigureServices((hostContext, svc) =>
+        {
+            var serviceProvider = svc.BuildServiceProvider();
+            var startupFilter = serviceProvider.GetService<IStartupFilter>();
+            if (startupFilter != null && startupFilter.GetType().Name.Contains("AllActuatorsStartupFilter"))
+            {
+                throw new InvalidOperationException("Cant do this");
+            }
+        });
+
     }
 }

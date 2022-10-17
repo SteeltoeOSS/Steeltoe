@@ -5,3 +5,5 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Common.Hosting.Test")]
+
+[assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]

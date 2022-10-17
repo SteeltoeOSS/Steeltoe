@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Hosting;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
@@ -32,6 +33,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddDbMigrationsActuator(this WebApplicationBuilder applicationBuilder)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddDbMigrationsActuator(applicationBuilder.Configuration);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -45,6 +47,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddEnvActuator(this WebApplicationBuilder applicationBuilder)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddEnvActuator(applicationBuilder.Configuration);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -58,6 +61,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -74,6 +78,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, Type[] contributors)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration, contributors);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -93,6 +98,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, IHealthAggregator aggregator, Type[] contributors)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration, aggregator, contributors);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -106,6 +112,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHeapDumpActuator(this WebApplicationBuilder applicationBuilder)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddHeapDumpActuator(applicationBuilder.Configuration);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -119,6 +126,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHypermediaActuator(this WebApplicationBuilder applicationBuilder)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddHypermediaActuator(applicationBuilder.Configuration);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -132,6 +140,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddInfoActuator(applicationBuilder.Configuration);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -148,6 +157,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder, IInfoContributor[] contributors)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddInfoActuator(applicationBuilder.Configuration, contributors);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -161,6 +171,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddLoggersActuator(this WebApplicationBuilder applicationBuilder)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Logging.AddDynamicConsole();
         applicationBuilder.Services.AddLoggersActuator(applicationBuilder.Configuration);
         applicationBuilder.Services.ActivateActuatorEndpoints();
@@ -175,6 +186,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddMappingsActuator(this WebApplicationBuilder applicationBuilder)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddMappingsActuator(applicationBuilder.Configuration);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -188,6 +200,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddMetricsActuator(this WebApplicationBuilder applicationBuilder)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddMetricsActuator(applicationBuilder.Configuration);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -201,6 +214,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddRefreshActuator(this WebApplicationBuilder applicationBuilder)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddRefreshActuator(applicationBuilder.Configuration);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -218,6 +232,7 @@ public static class ManagementWebApplicationBuilderExtensions
     public static WebApplicationBuilder AddThreadDumpActuator(this WebApplicationBuilder applicationBuilder,
         MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddThreadDumpActuator(applicationBuilder.Configuration, mediaTypeVersion);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -234,6 +249,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder applicationBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddTraceActuator(applicationBuilder.Configuration, mediaTypeVersion);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -247,6 +263,8 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddCloudFoundryActuator(this WebApplicationBuilder applicationBuilder)
     {
+
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddCloudFoundryActuator(applicationBuilder.Configuration);
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -267,6 +285,7 @@ public static class ManagementWebApplicationBuilderExtensions
     public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder,
         Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
+        applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Logging.AddDynamicConsole();
         applicationBuilder.Services.AddAllActuators(applicationBuilder.Configuration, mediaTypeVersion);
         applicationBuilder.Services.ActivateActuatorEndpoints(configureEndpoints);

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Hosting;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
@@ -307,7 +308,8 @@ public static class ManagementHostBuilderExtensions
     public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null,
         MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
     {
-        return hostBuilder.AddDynamicLogging().ConfigureServices((context, collection) =>
+        return hostBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls)
+            .AddDynamicLogging().ConfigureServices((context, collection) =>
         {
             collection.AddAllActuators(context.Configuration, mediaTypeVersion, buildCorsPolicy);
             ActivateActuatorEndpoints(collection, configureEndpoints);

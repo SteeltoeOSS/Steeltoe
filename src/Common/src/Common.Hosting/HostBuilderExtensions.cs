@@ -14,7 +14,11 @@ public static class HostBuilderExtensions
     public const string DefaultUrl = "http://*:8080";
 
     /// <summary>
-    /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
+    /// Configure the application to listen on port(s) provided by the environment at runtime.
+    /// Specifically it adds ports and/or urls from the following environment variables: PORT, SERVERPORT, ASPNETCORE_URLS and in Kubernetes $"{appName}_SERVICE_PORT_HTTP") where appName is the prefix of HOSTNAME.
+    /// It also opens the application on the managementPort is expected to be used in conjuction with the ManagementPortMiddlware.
+    /// 
+    /// Defaults to port 8080.
     /// </summary>
     /// <param name="webHostBuilder">
     /// Your <see cref="IWebHostBuilder" />.
@@ -35,9 +39,15 @@ public static class HostBuilderExtensions
     {
         ArgumentGuard.NotNull(webHostBuilder);
 
-        return webHostBuilder.BindToPorts(runLocalHttpPort, runLocalHttpsPort);
+        return webHostBuilder.BindToPorts(runLocalHttpPort, runLocalHttpsPort, null);
     }
 
+    internal static IWebHostBuilder UseCloudHosting(this IWebHostBuilder webHostBuilder, Action<IWebHostBuilder, List<string>> configure)
+    {
+        ArgumentGuard.NotNull(webHostBuilder);
+
+        return webHostBuilder.BindToPorts(null, null, configure);
+    }
     /// <summary>
     /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
     /// </summary>
@@ -60,9 +70,14 @@ public static class HostBuilderExtensions
     {
         ArgumentGuard.NotNull(hostBuilder);
 
-        return hostBuilder.ConfigureWebHost(configure => configure.BindToPorts(runLocalHttpPort, runLocalHttpsPort));
+        return hostBuilder.ConfigureWebHost(configure => configure.BindToPorts(runLocalHttpPort, runLocalHttpsPort, null));
     }
+    internal static IHostBuilder UseCloudHosting(this IHostBuilder hostBuilder, Action<IWebHostBuilder, List<string>> configureUrls)
+    {
+        ArgumentGuard.NotNull(hostBuilder);
 
+        return hostBuilder.ConfigureWebHost(configure => configure.BindToPorts( null, null, configureUrls));
+    }
     /// <summary>
     /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
     /// </summary>
@@ -86,11 +101,23 @@ public static class HostBuilderExtensions
     {
         ArgumentGuard.NotNull(webApplicationBuilder);
 
-        webApplicationBuilder.WebHost.BindToPorts(runLocalHttpPort, runLocalHttpsPort);
+        webApplicationBuilder.WebHost.BindToPorts(runLocalHttpPort, runLocalHttpsPort, null);
+        return webApplicationBuilder;
+    }
+    internal static WebApplicationBuilder UseCloudHosting(this WebApplicationBuilder webApplicationBuilder,
+        Action<IWebHostBuilder, List<string>> configure)
+    {
+        ArgumentGuard.NotNull(webApplicationBuilder);
+
+        webApplicationBuilder.WebHost.BindToPorts(null, null, configure);
         return webApplicationBuilder;
     }
 
-    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, int? runLocalHttpPort, int? runLocalHttpsPort)
+    private static IWebHostBuilder BindToPorts(
+        this IWebHostBuilder webHostBuilder,
+        int? runLocalHttpPort,
+        int? runLocalHttpsPort,
+        Action<IWebHostBuilder,List<string>> configure)
     {
         var urls = new List<string>();
 
@@ -101,6 +128,10 @@ public static class HostBuilderExtensions
         {
             AddPortAndAspNetCoreUrls(urls, portStr, aspnetUrls);
         }
+        else if(!string.IsNullOrEmpty(aspnetUrls))
+        {
+            AddAspNetCoreUrls(urls, aspnetUrls);
+        }
         else if (Platform.IsKubernetes)
         {
             AddFromKubernetesEnv(urls);
@@ -110,23 +141,18 @@ public static class HostBuilderExtensions
             AddRunLocalPorts(urls, runLocalHttpPort, runLocalHttpsPort);
         }
 
-        AddManagementPorts(urls);
-
-        if (urls.Any())
+        if (!urls.Any())
         {
-            // setting ASPNETCORE_URLS should only be needed to override launchSettings.json
-            if (string.IsNullOrWhiteSpace(portStr) && !Platform.IsKubernetes)
-            {
-                Environment.SetEnvironmentVariable("ASPNETCORE_URLS", string.Join(";", urls));
-            }
+            urls.Add(DefaultUrl);
+        }
 
-            webHostBuilder.UseUrls(urls.ToArray());
-        }
-        else
-        {
-            Environment.SetEnvironmentVariable("ASPNETCORE_URLS", DefaultUrl);
-            webHostBuilder.UseUrls(DefaultUrl);
-        }
+        //ConfigureManagementUrls(webHostBuilder, urls);
+        configure?.Invoke(webHostBuilder, urls);
+
+        // Set ASPNETCORE_URLS for local 
+        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", string.Join(";", urls));
+
+        webHostBuilder.UseUrls(urls.ToArray());
 
         return webHostBuilder;
     }
@@ -152,6 +178,14 @@ public static class HostBuilderExtensions
         }
     }
 
+    private static void AddAspNetCoreUrls(List<string> urls, string aspnetUrls)
+    {
+        if (!string.IsNullOrEmpty(aspnetUrls))
+        {
+            urls.AddRange(aspnetUrls.Split(';'));
+        }
+    }
+
     private static void AddFromKubernetesEnv(List<string> urls)
     {
         string appName = Environment.GetEnvironmentVariable("HOSTNAME").Split("-")[0].ToUpperInvariant();
@@ -172,15 +206,5 @@ public static class HostBuilderExtensions
         }
     }
 
-    private static void AddManagementPorts(List<string> urls)
-    {
-        var config = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.json")
-                    .Build();
-        if(!urls.Any())
-        {
-            urls.Add(DefaultUrl);
-        }
-        urls.Add($"http://*:{config["management:endpoints:port"]}");
-    }
+   
 }

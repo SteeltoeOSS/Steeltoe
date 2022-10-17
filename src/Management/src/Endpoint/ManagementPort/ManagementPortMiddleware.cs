@@ -17,7 +17,7 @@ public class ManagementPortMiddleware
     private readonly ILogger<ManagementPortMiddleware> _logger;
     private readonly IManagementOptions _managementOptions;
 
-    public ManagementPortMiddleware(RequestDelegate next,  IEnumerable<IManagementOptions> managementOptions,
+    public ManagementPortMiddleware(RequestDelegate next, IEnumerable<IManagementOptions> managementOptions,
         ILogger<ManagementPortMiddleware> logger = null)
     {
         _next = next;
@@ -40,39 +40,25 @@ public class ManagementPortMiddleware
 
         if (!allowRequest)
         {
-            await ReturnErrorAsync(context);
+            await ReturnErrorAsync(context, _managementOptions.Port);
         }
-
-        await _next(context);
-
+        else
+        {
+            await _next(context);
+        }
     }
 
-    
 
 
-    private Task ReturnErrorAsync(HttpContext context)
+
+    private Task ReturnErrorAsync(HttpContext context, string managementPort)
     {
+        string errorMessage = $"Access denied to {context.Request.Path} on port {context.Request.Host.Port} since Management Port is set to {managementPort} ";
+        _logger?.LogError("ManagementMiddleWare Error: ", errorMessage);
         context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
 
-        // allowing override of 400-level errors is more likely to cause confusion than to be useful
-        //if (_managementOptions.UseStatusCodeFromResponse || (int)error.Code < 500)
-        //{
-        //    context.Response.StatusCode = (int)error.Code;
-        //}
         context.Response.StatusCode = StatusCodes.Status403Forbidden;
-        return context.Response.WriteAsync( "Forbidden");
+        return context.Response.WriteAsync(errorMessage);
     }
 
-    //private void LogError(HttpContext context, SecurityResult error)
-    //{
-    //    _logger?.LogError("Actuator Security Error: {code} - {message}", error.Code, error.Message);
-
-    //    if (_logger != null && _logger.IsEnabled(LogLevel.Trace))
-    //    {
-    //        foreach (KeyValuePair<string, StringValues> header in context.Request.Headers)
-    //        {
-    //            _logger.LogTrace("Header: {key} - {value}", header.Key, header.Value);
-    //        }
-    //    }
-    //}
 }

@@ -38,6 +38,7 @@ public static class ActuatorServiceCollectionExtensions
 
         services.AddSteeltoeCors(buildCorsPolicy);
 
+
         if (Platform.IsCloudFoundry)
         {
             services.AddCloudFoundryActuator(configuration);
