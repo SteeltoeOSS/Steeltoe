@@ -195,7 +195,6 @@ public class HostBuilderExtensionsTest
         Environment.SetEnvironmentVariable("PORT", null);
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
 
-        // configure.UseStartup<TestServerStartupDefault>();
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.UseCloudHosting();
         using WebApplication host = hostBuilder.Build();

@@ -341,11 +341,17 @@ public static class ManagementWebHostBuilderExtensions
 
     internal static void ConfigureManagementUrls(this IWebHostBuilder webHostBuilder, List<string> urls)
     {
-
         var managementPort = webHostBuilder.GetSetting(ManagementPortKey);
         var sslEnabled = webHostBuilder.GetSetting(ManagementSSLKey);
 
-       
+        if(string.IsNullOrEmpty(managementPort))
+        {
+            IConfiguration config = GetConfiguration(); // try reading directly from appsettings.json
+            managementPort = config?[ManagementPortKey];
+            sslEnabled = config?[ManagementSSLKey];
+        }
+
+
         if (!string.IsNullOrEmpty(managementPort))
         {
             var protocol = bool.TryParse(sslEnabled, out var isSslEnabled)
@@ -364,5 +370,22 @@ public static class ManagementWebHostBuilderExtensions
                 }
             });
         }
+    }
+
+    private static IConfiguration GetConfiguration()
+    {
+        IConfiguration config = null;
+        try
+        {
+          config =  new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json") //Need this before the configuration is ready by .NET
+                    .Build();
+        }
+        catch(Exception)
+        {
+            // Not much we can do ...
+        }
+
+        return config;
     }
 }
