@@ -146,7 +146,6 @@ public static class HostBuilderExtensions
             urls.Add(DefaultUrl);
         }
 
-        //ConfigureManagementUrls(webHostBuilder, urls);
         configure?.Invoke(webHostBuilder, urls);
 
         // Set ASPNETCORE_URLS for local 

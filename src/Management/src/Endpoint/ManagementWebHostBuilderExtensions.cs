@@ -341,34 +341,28 @@ public static class ManagementWebHostBuilderExtensions
 
     internal static void ConfigureManagementUrls(this IWebHostBuilder webHostBuilder, List<string> urls)
     {
-        var config = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.json") //Need this before the configuration is ready by .NET
-                    .Build();
 
-        var managementPort = config[ManagementPortKey];
-        var sslEnabled = config[ManagementSSLKey];
+        var managementPort = webHostBuilder.GetSetting(ManagementPortKey);
+        var sslEnabled = webHostBuilder.GetSetting(ManagementSSLKey);
 
-        var protocol = "http";
-
-        if (bool.TryParse(sslEnabled, out var isSslEnabled) && isSslEnabled)
-        {
-            protocol = "https";
-        }
+       
         if (!string.IsNullOrEmpty(managementPort))
         {
-            urls.Add($"{protocol}://*:{managementPort}"); // Just ports and protocol
-        }
+            var protocol = bool.TryParse(sslEnabled, out var isSslEnabled)
+                           && isSslEnabled
+                            ? "https" : "http";
 
+            urls.Add($"{protocol}://*:{managementPort}");
 
-        webHostBuilder.ConfigureServices((hostContext, svc) =>
-        {
-            var serviceProvider = svc.BuildServiceProvider();
-            var startupFilter = serviceProvider.GetService<IStartupFilter>();
-            if (startupFilter != null && startupFilter.GetType().Name.Contains("AllActuatorsStartupFilter"))
+            webHostBuilder.ConfigureServices((hostContext, svc) =>
             {
-                throw new InvalidOperationException("Cant do this");
-            }
-        });
-
+                var serviceProvider = svc.BuildServiceProvider();
+                var startupFilter = serviceProvider.GetService<IStartupFilter>();
+                if (startupFilter != null && startupFilter.GetType().Name.Contains("AllActuatorsStartupFilter"))
+                {
+                    throw new InvalidOperationException("Cant do this");
+                }
+            });
+        }
     }
 }

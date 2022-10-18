@@ -26,6 +26,8 @@ public class HostBuilderExtensionsTest
     {
         Environment.SetEnvironmentVariable("PORT", null);
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
+        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
+
         IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
 
         hostBuilder.UseCloudHosting();
@@ -98,6 +100,8 @@ public class HostBuilderExtensionsTest
     {
         Environment.SetEnvironmentVariable("PORT", null);
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
+        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
+
         IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
 
         hostBuilder.UseCloudHosting(5000, 5001);
@@ -116,6 +120,7 @@ public class HostBuilderExtensionsTest
     {
         Environment.SetEnvironmentVariable("PORT", null);
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
+        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(configure =>
         {
@@ -156,6 +161,7 @@ public class HostBuilderExtensionsTest
     {
         Environment.SetEnvironmentVariable("PORT", null);
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
+        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(configure =>
         {
