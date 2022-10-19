@@ -263,7 +263,6 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddCloudFoundryActuator(this WebApplicationBuilder applicationBuilder)
     {
-
         applicationBuilder.UseCloudHosting(ManagementWebHostBuilderExtensions.ConfigureManagementUrls);
         applicationBuilder.Services.AddCloudFoundryActuator(applicationBuilder.Configuration);
         applicationBuilder.Services.ActivateActuatorEndpoints();

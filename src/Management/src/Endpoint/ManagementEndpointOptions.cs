@@ -20,7 +20,7 @@ public class ManagementEndpointOptions : IManagementOptions
 
     public string Path { get; set; }
 
-    public string Port { get; set; } 
+    public string Port { get; set; }
 
     public List<IEndpointOptions> EndpointOptions { get; set; }
 

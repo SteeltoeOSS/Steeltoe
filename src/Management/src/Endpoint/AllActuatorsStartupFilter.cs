@@ -26,7 +26,6 @@ public class AllActuatorsStartupFilter : IStartupFilter
     {
         return app =>
         {
-          
             if (app.ApplicationServices.GetService<ICorsService>() != null)
             {
                 app.UseCors("SteeltoeManagement");

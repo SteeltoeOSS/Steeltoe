@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Common.Hosting;
@@ -14,11 +13,9 @@ public static class HostBuilderExtensions
     public const string DefaultUrl = "http://*:8080";
 
     /// <summary>
-    /// Configure the application to listen on port(s) provided by the environment at runtime.
-    /// Specifically it adds ports and/or urls from the following environment variables: PORT, SERVERPORT, ASPNETCORE_URLS and in Kubernetes $"{appName}_SERVICE_PORT_HTTP") where appName is the prefix of HOSTNAME.
-    /// It also opens the application on the managementPort is expected to be used in conjuction with the ManagementPortMiddlware.
-    /// 
-    /// Defaults to port 8080.
+    /// Configure the application to listen on port(s) provided by the environment at runtime. Specifically it adds ports and/or urls from the following
+    /// environment variables: PORT, SERVERPORT, ASPNETCORE_URLS and in Kubernetes $"{appName}_SERVICE_PORT_HTTP") where appName is the prefix of HOSTNAME.
+    /// It also opens the application on the managementPort is expected to be used in conjuction with the ManagementPortMiddlware. Defaults to port 8080.
     /// </summary>
     /// <param name="webHostBuilder">
     /// Your <see cref="IWebHostBuilder" />.
@@ -48,6 +45,7 @@ public static class HostBuilderExtensions
 
         return webHostBuilder.BindToPorts(null, null, configure);
     }
+
     /// <summary>
     /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
     /// </summary>
@@ -72,12 +70,14 @@ public static class HostBuilderExtensions
 
         return hostBuilder.ConfigureWebHost(configure => configure.BindToPorts(runLocalHttpPort, runLocalHttpsPort, null));
     }
+
     internal static IHostBuilder UseCloudHosting(this IHostBuilder hostBuilder, Action<IWebHostBuilder, List<string>> configureUrls)
     {
         ArgumentGuard.NotNull(hostBuilder);
 
-        return hostBuilder.ConfigureWebHost(configure => configure.BindToPorts( null, null, configureUrls));
+        return hostBuilder.ConfigureWebHost(configure => configure.BindToPorts(null, null, configureUrls));
     }
+
     /// <summary>
     /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
     /// </summary>
@@ -104,8 +104,8 @@ public static class HostBuilderExtensions
         webApplicationBuilder.WebHost.BindToPorts(runLocalHttpPort, runLocalHttpsPort, null);
         return webApplicationBuilder;
     }
-    internal static WebApplicationBuilder UseCloudHosting(this WebApplicationBuilder webApplicationBuilder,
-        Action<IWebHostBuilder, List<string>> configure)
+
+    internal static WebApplicationBuilder UseCloudHosting(this WebApplicationBuilder webApplicationBuilder, Action<IWebHostBuilder, List<string>> configure)
     {
         ArgumentGuard.NotNull(webApplicationBuilder);
 
@@ -113,11 +113,8 @@ public static class HostBuilderExtensions
         return webApplicationBuilder;
     }
 
-    private static IWebHostBuilder BindToPorts(
-        this IWebHostBuilder webHostBuilder,
-        int? runLocalHttpPort,
-        int? runLocalHttpsPort,
-        Action<IWebHostBuilder,List<string>> configure)
+    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, int? runLocalHttpPort, int? runLocalHttpsPort,
+        Action<IWebHostBuilder, List<string>> configure)
     {
         var urls = new List<string>();
 
@@ -128,7 +125,7 @@ public static class HostBuilderExtensions
         {
             AddPortAndAspNetCoreUrls(urls, portStr, aspnetUrls);
         }
-        else if(!string.IsNullOrEmpty(aspnetUrls))
+        else if (!string.IsNullOrEmpty(aspnetUrls))
         {
             AddAspNetCoreUrls(urls, aspnetUrls);
         }
@@ -204,6 +201,4 @@ public static class HostBuilderExtensions
             urls.Add($"https://*:{runLocalHttpsPort}");
         }
     }
-
-   
 }
