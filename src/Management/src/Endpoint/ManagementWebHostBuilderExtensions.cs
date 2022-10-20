@@ -349,8 +349,7 @@ public static class ManagementWebHostBuilderExtensions
 
         try
         {
-            config = new ConfigurationBuilder().AddJsonFile("appsettings.json") //Need this before the configuration is ready by .NET
-                .Build();
+            config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
         }
         catch (Exception)
         {
