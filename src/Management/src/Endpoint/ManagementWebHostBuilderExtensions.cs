@@ -338,7 +338,6 @@ public static class ManagementWebHostBuilderExtensions
         if (!string.IsNullOrEmpty(managementPort))
         {
             string protocol = bool.TryParse(sslEnabled, out bool isSslEnabled) && isSslEnabled ? "https" : "http";
-
             urls.Add($"{protocol}://*:{managementPort}");
         }
     }

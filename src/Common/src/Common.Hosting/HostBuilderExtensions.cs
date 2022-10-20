@@ -15,7 +15,7 @@ public static class HostBuilderExtensions
     /// <summary>
     /// Configure the application to listen on port(s) provided by the environment at runtime. Specifically it adds ports and/or urls from the following
     /// environment variables: PORT, SERVERPORT, ASPNETCORE_URLS and in Kubernetes $"{appName}_SERVICE_PORT_HTTP") where appName is the prefix of HOSTNAME.
-    /// It also opens the application on the managementPort is expected to be used in conjuction with the ManagementPortMiddlware. Defaults to port 8080.
+    /// It also opens the application on the management port, which is expected to be used in conjunction with the ManagementPortMiddleware. Defaults to port 8080.
     /// </summary>
     /// <param name="webHostBuilder">
     /// Your <see cref="IWebHostBuilder" />.
@@ -121,29 +121,30 @@ public static class HostBuilderExtensions
         string portStr = Environment.GetEnvironmentVariable("PORT") ?? Environment.GetEnvironmentVariable("SERVER_PORT");
         string aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
 
+        // if runLocalPorts are provided, ignore the AspnetCoreUrl setting locally
+        if (!AddRunLocalPorts(urls, runLocalHttpPort, runLocalHttpsPort) && !string.IsNullOrEmpty(aspnetUrls))
+        {
+            AddAspNetCoreUrls(urls, aspnetUrls);
+        }
+
+        // Continue to respect any PORT settings 
         if (!string.IsNullOrWhiteSpace(portStr))
         {
             AddPortAndAspNetCoreUrls(urls, portStr, aspnetUrls);
         }
-        else if (!string.IsNullOrEmpty(aspnetUrls))
-        {
-            AddAspNetCoreUrls(urls, aspnetUrls);
-        }
+        // or any K8s Environment settings
         else if (Platform.IsKubernetes)
         {
             AddFromKubernetesEnv(urls);
         }
-        else
-        {
-            AddRunLocalPorts(urls, runLocalHttpPort, runLocalHttpsPort);
-        }
 
+        // if no URLS are specified in any source, use the default 
         if (!urls.Any())
         {
             urls.Add(DefaultUrl);
         }
 
-        configure?.Invoke(webHostBuilder, urls);
+        configure?.Invoke(webHostBuilder, urls); // Could conditionally add the Management:Port setting
 
         // Set ASPNETCORE_URLS for local 
         Environment.SetEnvironmentVariable("ASPNETCORE_URLS", string.Join(";", urls));
@@ -189,7 +190,7 @@ public static class HostBuilderExtensions
         urls.Add($"http://*:{foundPort ?? "80"}");
     }
 
-    private static void AddRunLocalPorts(List<string> urls, int? runLocalHttpPort = null, int? runLocalHttpsPort = null)
+    private static bool AddRunLocalPorts(List<string> urls, int? runLocalHttpPort = null, int? runLocalHttpsPort = null)
     {
         if (runLocalHttpPort != null)
         {
@@ -200,5 +201,7 @@ public static class HostBuilderExtensions
         {
             urls.Add($"https://*:{runLocalHttpsPort}");
         }
+
+        return runLocalHttpPort != null || runLocalHttpsPort != null;
     }
 }

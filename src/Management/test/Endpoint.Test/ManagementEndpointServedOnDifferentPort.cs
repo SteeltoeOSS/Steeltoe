@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.Hosting;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -35,6 +36,25 @@ public class ManagementEndpointServedOnDifferentPort
 
         string settings = hostBuilder.WebHost.GetSetting(WebHostDefaults.ServerUrlsKey);
         Assert.Contains("http://*:9090", settings);
+        ClearEnvVars();
+    }
+
+    [Fact]
+    public void AddAllActuators_WorksWithUseCloudHosting()
+    {
+        ImmutableDictionary<string, string> config = new Dictionary<string, string>
+        {
+            { "management:endpoints:port", "9090" }
+        }.ToImmutableDictionary();
+
+        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        hostBuilder.Configuration.AddInMemoryCollection(config);
+        hostBuilder.UseCloudHosting(5100);
+        hostBuilder.AddAllActuators();
+
+        string settings = hostBuilder.WebHost.GetSetting(WebHostDefaults.ServerUrlsKey);
+        Assert.Contains("http://*:9090", settings);
+        Assert.Contains("http://*:5100", settings);
         ClearEnvVars();
     }
 
