@@ -111,14 +111,14 @@ public class ManagementEndpointServedOnDifferentPort
 
         host.Start();
 
-      
         var handler = new HttpClientHandler();
         handler.ClientCertificateOptions = ClientCertificateOption.Manual;
-        handler.ServerCertificateCustomValidationCallback =
-            (httpRequestMessage, cert, cetChain, policyErrors) =>
-            {
-                return true;
-            };
+
+        handler.ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) =>
+        {
+            return true;
+        };
+
         var httpClient = new HttpClient(handler);
         await Assert.ThrowsAsync<HttpRequestException>(() => httpClient.GetAsync("http://localhost:9090/actuator"));
 
