@@ -139,6 +139,8 @@ public class HostBuilderExtensionsTest
     public void UseCloudHosting_GenericHost_MakeSureThePortIsSet()
 #pragma warning restore S2699 // Tests should include assertions
     {
+        Environment.SetEnvironmentVariable("SERVER_PORT", null);
+        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
         Environment.SetEnvironmentVariable("PORT", "5042");
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(configure =>
