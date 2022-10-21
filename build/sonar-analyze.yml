@@ -16,6 +16,16 @@ jobs:
   steps:
   - checkout: self
     fetchDepth: 0
+  - task: UseDotNet@2
+    displayName: Install .NET 6
+    inputs:
+      version: 6.0.x
+      includePreviewVersions: false
+  - task: UseDotNet@2
+    displayName: Install .NET 7
+    inputs:
+      version: 7.0.x
+      includePreviewVersions: true
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
