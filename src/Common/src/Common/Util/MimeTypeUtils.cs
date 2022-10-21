@@ -22,7 +22,6 @@ public static class MimeTypeUtils
 
     private static readonly ConcurrentDictionary<string, MimeType> CachedMimeTypes = new();
     private static readonly char[] BoundaryChars = "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-    private static readonly object Lock = new();
     public static readonly IComparer<MimeType> SpecificityComparator = new MimeType.SpecificityComparator<MimeType>();
     public static readonly MimeType All = new("*", "*");
     public static readonly MimeType ApplicationJson = new("application", "json");
@@ -34,8 +33,6 @@ public static class MimeTypeUtils
     public static readonly MimeType TextHtml = new("text", "html");
     public static readonly MimeType TextPlain = new("text", "plain");
     public static readonly MimeType TextXml = new("text", "xml");
-
-    private static volatile Random _random;
 
     public static MimeType ParseMimeType(string mimeType)
     {
@@ -131,13 +128,12 @@ public static class MimeTypeUtils
 
     public static char[] GenerateMultipartBoundary()
     {
-        Random randomToUse = InitRandom();
-        int size = randomToUse.Next(11) + 30;
+        int size = Random.Shared.Next(11) + 30;
         char[] boundary = new char[size];
 
         for (int i = 0; i < boundary.Length; i++)
         {
-            boundary[i] = BoundaryChars[randomToUse.Next(BoundaryChars.Length)];
+            boundary[i] = BoundaryChars[Random.Shared.Next(BoundaryChars.Length)];
         }
 
         return boundary;
@@ -236,26 +232,5 @@ public static class MimeTypeUtils
         {
             throw new ArgumentException($"The specified value '{mimeType}' is invalid.", ex);
         }
-    }
-
-    private static Random InitRandom()
-    {
-        Random randomToUse = _random;
-
-        if (randomToUse == null)
-        {
-            lock (Lock)
-            {
-                randomToUse = _random;
-
-                if (randomToUse == null)
-                {
-                    randomToUse = new Random();
-                    _random = randomToUse;
-                }
-            }
-        }
-
-        return randomToUse;
     }
 }

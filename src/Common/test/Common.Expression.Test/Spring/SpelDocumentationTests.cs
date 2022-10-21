@@ -86,7 +86,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     [Fact]
     public void TestXmlBasedConfig()
     {
-        Evaluate("(new Random().Next() * 100.0)>0", true, typeof(bool));
+        Evaluate("(T(Random).Shared.Next() * 100.0)>0", true, typeof(bool));
     }
 
     // Section 7.5
@@ -453,7 +453,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     [Fact]
     public void TestTemplating()
     {
-        string randomPhrase = Parser.ParseExpression("random number is ${new Random().Next()}", new TemplatedParserContext()).GetValue<string>();
+        string randomPhrase = Parser.ParseExpression("random number is ${T(Random).Shared.Next()}", new TemplatedParserContext()).GetValue<string>();
         Assert.StartsWith("random number", randomPhrase);
     }
 
