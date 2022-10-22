@@ -12,5 +12,5 @@ using Microsoft.Extensions.Configuration;
 namespace Steeltoe.Configuration;
 internal interface IConfigurationPostProcessor
 {
-    void PostProcessConfiguration(IConfigurationProvider provider, IDictionary<string, string> configData);
+    void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData);
 }

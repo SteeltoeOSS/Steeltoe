@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Physical;
 using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test
@@ -14,20 +16,25 @@ namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test
     public class ServiceBindingsTest
     {
         [Fact]
-        public void CreateFromPath()
+        public void NullPath()
         {
-            var rootDir = Path.Combine(Environment.CurrentDirectory, "resources\\k8s\\test-name-1");
-            //var rootDir = @"D:\workspace\spring-cloud-bindings\src\test\resources\k8s\test-k8s"; // Hidden & links
-            var binding = new ServiceBindingConfigurationProvider.ServiceBinding(rootDir);
-            Assert.Equal("test-name-1", binding.Name);
-            // Assert.Equal("test-k8s", binding.Name);
-            Assert.Equal("test-type-1", binding.Type);
-            Assert.Equal("test-provider-1", binding.Provider);
-            Assert.Contains("resources\\k8s\\test-name-1", binding.Path);
-            //Assert.Contains("resources\\k8s\\test-k8s", binding.Path);
-            Assert.NotNull(binding.Secrets);
-            Assert.Single(binding.Secrets);
-            Assert.Equal("test-secret-value", binding.Secrets["test-secret-key"]);
+            var b = new ServiceBindingConfigurationProvider.ServiceBindings(null);
+            Assert.Empty(b.Bindings);
+        }
+
+        [Fact]
+        public void PopulatesContent()
+        {
+            var path = new PhysicalFileProvider(GetK8SResourcesDirectory());
+            var b = new ServiceBindingConfigurationProvider.ServiceBindings(path);
+            Assert.Equal(3, b.Bindings.Count);
+        }
+
+        private static string GetK8SResourcesDirectory()
+        {
+            return Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\resources\\k8s\\");
         }
     }
+
+
 }

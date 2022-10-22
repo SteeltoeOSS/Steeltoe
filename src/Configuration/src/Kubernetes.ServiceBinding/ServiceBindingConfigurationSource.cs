@@ -21,10 +21,10 @@ internal class ServiceBindingConfigurationSource : PostProcessorConfigurationSou
     {
     }
 
-    public ServiceBindingConfigurationSource(string? serviceBindingRootDirectory)
+    public ServiceBindingConfigurationSource(string serviceBindingRootDirectory)
     {
         ServiceBindingRoot = serviceBindingRootDirectory != null ? Path.GetFullPath(serviceBindingRootDirectory) : serviceBindingRootDirectory;
-        if (ServiceBindingRoot != null)
+        if (Directory.Exists(ServiceBindingRoot))
         {
             var fileProvider = new PhysicalFileProvider(ServiceBindingRoot, ExclusionFilters.Sensitive);
             if (ReloadOnChange)
@@ -37,9 +37,9 @@ internal class ServiceBindingConfigurationSource : PostProcessorConfigurationSou
         }
     }
 
-    public IFileProvider? FileProvider { get; set; }
+    public IFileProvider FileProvider { get; set; }
 
-    public string? ServiceBindingRoot { get; set; }
+    public string ServiceBindingRoot { get; set; }
 
     public bool ReloadOnChange { get; set; }
 
@@ -51,6 +51,31 @@ internal class ServiceBindingConfigurationSource : PostProcessorConfigurationSou
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
+        if (ParentConfiguration == null)
+        {
+            ParentConfiguration = GetParentConfiguration(builder);
+        }
         return new ServiceBindingConfigurationProvider(this);
+    }
+
+    private IConfigurationRoot GetParentConfiguration(IConfigurationBuilder builder)
+    {
+        var configurationBuilder = new ConfigurationBuilder();
+
+        foreach (IConfigurationSource source in builder.Sources)
+        {
+            if (source is ServiceBindingConfigurationSource)
+            {
+                break;
+            }
+            configurationBuilder.Add(source);
+        }
+
+        foreach (KeyValuePair<string, object> pair in builder.Properties)
+        {
+            configurationBuilder.Properties.Add(pair);
+        }
+
+        return configurationBuilder.Build();
     }
 }

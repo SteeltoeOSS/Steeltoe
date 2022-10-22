@@ -13,9 +13,15 @@ namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 public class ServiceBindingTest
 {
     [Fact]
-    public void CreateFromPath_NoHiddenFiles_NoLinks()
+    public void InvalidDirectory_Throws()
     {
-        var rootDir = Path.Combine(Environment.CurrentDirectory, "resources\\k8s\\test-name-1");
+        Assert.Throws<ArgumentException>(() => new ServiceBindingConfigurationProvider.ServiceBinding("invalid"));
+    }
+
+    [Fact]
+    public void PopulatesFromFileSystem_Kubernetes()
+    {
+        var rootDir = GetK8SResourcesDirectory("test-name-1");
         var binding = new ServiceBindingConfigurationProvider.ServiceBinding(rootDir);
         Assert.Equal("test-name-1", binding.Name);
         Assert.Equal("test-type-1", binding.Type);
@@ -27,10 +33,10 @@ public class ServiceBindingTest
     }
 
     [Fact]
-    public void CreateFromPath_WithHiddenFiles_WithLinks()
+    public void PopulatesFromFileSystem_WithHiddenFilesAndLinks_Kubernetes()
     {
         // Hidden & links
-        var rootDir = Path.Combine(Environment.CurrentDirectory, "resources\\k8s\\test-k8s");
+        var rootDir = GetK8SResourcesDirectory("test-k8s");
         var binding = new ServiceBindingConfigurationProvider.ServiceBinding(rootDir);
         Assert.Equal("test-k8s", binding.Name);
         Assert.Equal("test-type-1", binding.Type);
@@ -39,5 +45,9 @@ public class ServiceBindingTest
         Assert.NotNull(binding.Secrets);
         Assert.Single(binding.Secrets);
         Assert.Equal("test-secret-value", binding.Secrets["test-secret-key"]);
+    }
+    private static string GetK8SResourcesDirectory(string name)
+    {
+        return Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\resources\\k8s\\{name}");
     }
 }

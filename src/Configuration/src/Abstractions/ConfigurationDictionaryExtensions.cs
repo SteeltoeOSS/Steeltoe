@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration;
-internal static class PostProcessorExtensions
+internal static class ConfigurationDictionaryExtensions
 {
     public static IEnumerable<string> Filter(this IDictionary<string, string> configData, string keyPrefix, string keySuffix, string keyValue)
     {

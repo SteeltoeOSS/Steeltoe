@@ -12,15 +12,16 @@ using Microsoft.Extensions.Configuration;
 namespace Steeltoe.Configuration;
 internal abstract class PostProcessorConfigurationProvider : ConfigurationProvider
 {
-    private readonly PostProcessorConfigurationSource _source;
+    public PostProcessorConfigurationSource Source { get; }
+
     protected PostProcessorConfigurationProvider(PostProcessorConfigurationSource source)
     {
-        _source = source;
+        Source = source;
     }
 
     protected virtual void PostProcessConfiguration()
     {
-        foreach (var processor in _source.RegisteredProcessors)
+        foreach (var processor in Source.RegisteredProcessors)
         {
             processor.PostProcessConfiguration(this, Data);
         }

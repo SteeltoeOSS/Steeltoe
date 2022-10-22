@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
@@ -17,7 +18,7 @@ public class ServiceBindingConfigurationProviderTest
     {
         // Not optional, should throw
         var source = new ServiceBindingConfigurationSource();
-        var provider = new ServiceBindingConfigurationProvider(source);
+               var provider = new ServiceBindingConfigurationProvider(source);
         Assert.Throws<DirectoryNotFoundException>(() => provider.Load());
 
         // Optional, no throw
@@ -29,17 +30,44 @@ public class ServiceBindingConfigurationProviderTest
         provider.Load();
     }
 
+    [Fact]
+    public void EnvironmentVariableSet_InvalidDirectory()
+    {
+        var rootDir = GetK8SResourcesDirectory("invalid");
+        Environment.SetEnvironmentVariable(ServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDir);
+        try
+        {
+            // Not optional, should throw
+            var source = new ServiceBindingConfigurationSource();
+            var provider = new ServiceBindingConfigurationProvider(source);
+            Assert.Throws<DirectoryNotFoundException>(() => provider.Load());
+
+            // Optional, no throw
+            source = new ServiceBindingConfigurationSource()
+            {
+                Optional = true
+            };
+            provider = new ServiceBindingConfigurationProvider(source);
+            provider.Load();
+
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(ServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, null);
+        }
+    }
 
     [Fact]
-    public void EnvironmentVariableSet()
+    public void EnvironmentVariableSet_ValidDirectory()
     {
-        var rootDir = Path.Combine(Environment.CurrentDirectory, "resources\\k8s");
+        var rootDir = GetK8SResourcesDirectory(null);
         Environment.SetEnvironmentVariable(ServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDir);
         try
         {
             var source = new ServiceBindingConfigurationSource();
             var provider = new ServiceBindingConfigurationProvider(source);
             provider.Load();
+
             Assert.True(provider.TryGet("k8s:bindings:test-name-1:type", out string value));
             Assert.Equal("test-type-1", value);
             Assert.True(provider.TryGet("k8s:bindings:test-name-1:provider", out value));
@@ -69,46 +97,67 @@ public class ServiceBindingConfigurationProviderTest
     }
 
     [Fact]
-    public void PostProcessorRuns()
+    public void NoBindings()
     {
-        var rootDir = Path.Combine(Environment.CurrentDirectory, "resources\\k8s");
-        Environment.SetEnvironmentVariable(ServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDir);
-        try
+        var builder = new ConfigurationBuilder();
+        builder.Add(new ServiceBindingConfigurationSource(GetEmptyK8SResourcesDirectory()));    
+        var configuration = builder.Build();
+        Assert.NotNull(configuration);
+        Assert.Throws<InvalidOperationException>(() => configuration.GetRequiredSection("k8s"));
+    }
+
+
+    [Fact]
+    public void PostProcessors_DisabledbyDefault()
+    {
+        var rootDir = GetK8SResourcesDirectory(null);
+
+        var source = new ServiceBindingConfigurationSource(rootDir);
+        var postProcessor = new TestPostProcessor();
+        source.RegisterPostProcessor(postProcessor);
+
+        var provider = new ServiceBindingConfigurationProvider(source);
+        provider.Load();
+
+        Assert.False(postProcessor.PostProcessorCalled);
+    }
+
+    [Fact]
+    public void PostProcessors_CanBeEnabled()
+    {
+        var rootDir = GetK8SResourcesDirectory(null);
+
+        var source = new ServiceBindingConfigurationSource(rootDir);
+        source.ParentConfiguration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>() { { "steeltoe:cloud:bindings:enable", "true" } })
+            .Build();
+        var postProcessor = new TestPostProcessor();
+        source.RegisterPostProcessor(postProcessor);
+
+        var provider = new ServiceBindingConfigurationProvider(source);
+        provider.Load();
+
+        Assert.True(postProcessor.PostProcessorCalled);
+    }
+
+
+    private static string GetK8SResourcesDirectory(string name)
+    {
+        return Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\resources\\k8s\\{name}");
+    }
+
+    private static string GetEmptyK8SResourcesDirectory()
+    {
+        return Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\resources\\k8s-empty\\");
+    }
+
+    private class TestPostProcessor : IConfigurationPostProcessor
+    {
+        public bool PostProcessorCalled { get; set; }
+
+        public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
         {
-            var source = new ServiceBindingConfigurationSource();
-            source.RegisterPostProcessor(new ConfigServerPostProcessor());
-
-            var provider = new ServiceBindingConfigurationProvider(source);
-            provider.Load();
-
-            Assert.True(provider.TryGet("k8s:bindings:test-config-server-1:type", out string value));
-            Assert.Equal("config", value);
-            Assert.True(provider.TryGet("k8s:bindings:test-config-server-1:provider", out value));
-            Assert.Equal("test-provider-1", value);
-
-            Assert.True(provider.TryGet("k8s:bindings:test-config-server-1:uri", out value));
-            Assert.Equal("uri-value", value);
-            Assert.True(provider.TryGet("k8s:bindings:test-config-server-1:access-token-uri", out value));
-            Assert.Equal("access-token-uri-value", value);
-            Assert.True(provider.TryGet("k8s:bindings:test-config-server-1:client-id", out value));
-            Assert.Equal("client-id-value", value);
-            Assert.True(provider.TryGet("k8s:bindings:test-config-server-1:client-secret", out value));
-            Assert.Equal("client-secret-value", value);
-
-            // Check for post processor output
-            Assert.True(provider.TryGet("spring:cloud:config:uri", out value));
-            Assert.Equal("uri-value", value);
-            Assert.True(provider.TryGet("spring:cloud:config:client:oauth2:clientId", out value));
-            Assert.Equal("client-id-value", value);
-            Assert.True(provider.TryGet("spring:cloud:config:client:oauth2:clientSecret", out value));
-            Assert.Equal("client-secret-value", value);
-            Assert.True(provider.TryGet("spring:cloud:config:client:oauth2:accessTokenUri", out value));
-            Assert.Equal("access-token-uri-value", value);
-
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable(ServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, null);
+            PostProcessorCalled = true;
         }
     }
 }
