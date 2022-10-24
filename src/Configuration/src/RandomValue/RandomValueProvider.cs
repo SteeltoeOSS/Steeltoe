@@ -16,7 +16,6 @@ internal sealed class RandomValueProvider : ConfigurationProvider
 {
     private readonly ILogger<RandomValueProvider> _logger;
     private readonly string _prefix;
-    private Random _random;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RandomValueProvider" /> class. The new placeholder resolver wraps the provided configuration.
@@ -34,7 +33,6 @@ internal sealed class RandomValueProvider : ConfigurationProvider
 
         _prefix = prefix;
         _logger = loggerFactory.CreateLogger<RandomValueProvider>();
-        _random = new Random();
     }
 
     /// <summary>
@@ -81,14 +79,6 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     }
 
     /// <summary>
-    /// Creates a new underlying random number generator.
-    /// </summary>
-    public override void Load()
-    {
-        _random = new Random();
-    }
-
-    /// <summary>
     /// Returns the immediate descendant configuration keys for a given parent path, based on this <see cref="Configuration" />'s data and the set of keys
     /// returned by all the preceding providers.
     /// </summary>
@@ -123,7 +113,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
         // random:int
         if (type.Equals("int"))
         {
-            return _random.Next().ToString();
+            return Random.Shared.Next().ToString();
         }
 
         // random:long
@@ -159,7 +149,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
 
     private long GetLong()
     {
-        return ((long)_random.Next() << 32) + _random.Next();
+        return ((long)Random.Shared.Next() << 32) + Random.Shared.Next();
     }
 
     private string GetRange(string type, string prefix)
@@ -184,11 +174,11 @@ internal sealed class RandomValueProvider : ConfigurationProvider
 
         if (tokens.Length == 1)
         {
-            return _random.Next(start);
+            return Random.Shared.Next(start);
         }
 
         int.TryParse(tokens[1], out int max);
-        return _random.Next(start, max);
+        return Random.Shared.Next(start, max);
     }
 
     private long GetNextLongInRange(string range)
@@ -210,7 +200,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     private string GetRandomBytes()
     {
         byte[] bytes = new byte[16];
-        _random.NextBytes(bytes);
+        Random.Shared.NextBytes(bytes);
         return BitConverter.ToString(bytes).Replace("-", string.Empty);
     }
 }

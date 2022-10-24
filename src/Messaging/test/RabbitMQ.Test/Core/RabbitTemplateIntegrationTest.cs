@@ -931,8 +931,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         {
             tasks.Add(Task.Run(() =>
             {
-                var random = new Random();
-                double request = random.NextDouble() * 100;
+                double request = Random.Shared.NextDouble() * 100;
                 object reply = rabbitTemplate.ConvertSendAndReceive<object>(request);
                 results.TryAdd(request, reply);
             }));
@@ -942,8 +941,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         {
             tasks.Add(Task.Run(() =>
             {
-                var random = new Random();
-                double request = random.NextDouble() * 100;
+                double request = Random.Shared.NextDouble() * 100;
 
                 var messageHeaders = new RabbitHeaderAccessor(new MessageHeaders())
                 {
