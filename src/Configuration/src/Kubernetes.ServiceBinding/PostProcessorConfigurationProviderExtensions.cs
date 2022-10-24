@@ -14,12 +14,12 @@ internal static class PostProcessorConfigurationProviderExtensions
 {
     public static bool IsBindingTypeEnabled(this PostProcessorConfigurationProvider provider, string bindingTypeKey)
     {
-        return GetValue(provider, $"steeltoe:cloud:bindings:{bindingTypeKey}:enable", true);
+        return GetValue(provider, $"steeltoe:kubernetes:bindings:{bindingTypeKey}:enable", true);
     }
 
     public static bool IsSteeltoeBindingsEnabled(this PostProcessorConfigurationProvider provider)
     {
-        return GetValue(provider, $"steeltoe:cloud:bindings:enable", false);
+        return GetValue(provider, $"steeltoe:kubernetes:bindings:enable", false);
     }
 
     private static bool GetValue(PostProcessorConfigurationProvider provider, string key, bool defaultValue)

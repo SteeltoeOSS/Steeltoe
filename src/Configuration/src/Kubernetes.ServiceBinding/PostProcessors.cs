@@ -85,7 +85,6 @@ internal sealed class CassandraPostProcessor : IConfigurationPostProcessor
     }
 }
 
-
 internal sealed class ConfigServerPostProcessor : IConfigurationPostProcessor
 {
      internal const string BindingTypeKey = "config";
@@ -138,6 +137,7 @@ internal sealed class CouchbasePostProcessor : IConfigurationPostProcessor
             });
     }
 }
+
 internal sealed class DB2PostProcessor : IConfigurationPostProcessor
 {
      internal const string BindingTypeKey = "db2";
@@ -487,6 +487,7 @@ internal sealed class RedisPostProcessor : IConfigurationPostProcessor
             });
     }
 }
+
 internal sealed class SapHanaPostProcessor : IConfigurationPostProcessor
 {
      internal const string BindingTypeKey = "hana";

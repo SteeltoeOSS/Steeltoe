@@ -1340,7 +1340,7 @@ public class PostProcessorsTest
     {
         var source = new TestPostProcessorConfigurationSource();
         source.ParentConfiguration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>() { { $"steeltoe:cloud:bindings:{bindingTypeKey}:enable", bindingTypeKeyValue.ToString() } })
+            .AddInMemoryCollection(new Dictionary<string, string>() { { $"steeltoe:kubernetes:bindings:{bindingTypeKey}:enable", bindingTypeKeyValue.ToString() } })
             .Build();
         source.RegisterPostProcessor(postProcessor);
 

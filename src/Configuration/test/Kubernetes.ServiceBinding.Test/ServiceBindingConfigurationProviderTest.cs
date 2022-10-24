@@ -129,7 +129,7 @@ public class ServiceBindingConfigurationProviderTest
 
         var source = new ServiceBindingConfigurationSource(rootDir);
         source.ParentConfiguration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>() { { "steeltoe:cloud:bindings:enable", "true" } })
+            .AddInMemoryCollection(new Dictionary<string, string>() { { "steeltoe:kubernetes:bindings:enable", "true" } })
             .Build();
         var postProcessor = new TestPostProcessor();
         source.RegisterPostProcessor(postProcessor);
