@@ -15,8 +15,7 @@ public static class HostBuilderExtensions
     /// <summary>
     /// Configure the application to listen on port(s) provided by the environment at runtime. Specifically it adds ports and/or urls from the following
     /// environment variables: PORT, SERVERPORT, ASPNETCORE_URLS and in Kubernetes $"{appName}_SERVICE_PORT_HTTP") where appName is the prefix of HOSTNAME.
-    /// It also opens the application on the management port, which is expected to be used in conjunction with the ManagementPortMiddleware. Defaults to port
-    /// 8080.
+    /// Defaults to http://*:8080.
     /// </summary>
     /// <param name="webHostBuilder">
     /// Your <see cref="IWebHostBuilder" />.
