@@ -8,8 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Trace;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.OpenTelemetry.Trace;
 using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
