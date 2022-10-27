@@ -2,18 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.Hosting;
 
 public static class HostBuilderExtensions
 {
-    public const string DefaultUrl = "http://*:8080";
-  
+    public const int DefaultPort = 8080;
+
     /// <summary>
     /// Configure the application to listen on port(s) provided by the environment at runtime. Specifically it adds ports and/or urls from the following
     /// environment variables: PORT, SERVERPORT, ASPNETCORE_URLS and in Kubernetes $"{appName}_SERVICE_PORT_HTTP") where appName is the prefix of HOSTNAME.
@@ -41,7 +40,7 @@ public static class HostBuilderExtensions
         return webHostBuilder.BindToPorts(runLocalHttpPort, runLocalHttpsPort, null);
     }
 
-    internal static IWebHostBuilder UseCloudHosting(this IWebHostBuilder webHostBuilder, Func<IWebHostBuilder, Tuple<int?,bool>> configure)
+    internal static IWebHostBuilder UseCloudHosting(this IWebHostBuilder webHostBuilder, Func<IWebHostBuilder, Tuple<int?, bool>> configure)
     {
         ArgumentGuard.NotNull(webHostBuilder);
 
@@ -115,9 +114,7 @@ public static class HostBuilderExtensions
         return webApplicationBuilder;
     }
 
-    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder,
-        int? runLocalHttpPort,
-        int? runLocalHttpsPort,
+    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, int? runLocalHttpPort, int? runLocalHttpsPort,
         Func<IWebHostBuilder, Tuple<int?, bool>> configure)
     {
         var urls = new List<string>();
@@ -128,15 +125,16 @@ public static class HostBuilderExtensions
         //AddRunLocalPorts(urls, runLocalHttpPort, runLocalHttpsPort);
         var httpPorts = new List<int>();
         var httpsPorts = new List<int>();
+
         if (runLocalHttpPort.HasValue && !httpPorts.Contains(runLocalHttpPort.Value))
         {
             httpPorts.Add(runLocalHttpPort.Value);
         }
+
         if (runLocalHttpsPort.HasValue && !httpsPorts.Contains(runLocalHttpsPort.Value))
         {
             httpsPorts.Add(runLocalHttpsPort.Value);
         }
-      
 
         // Tye PORTS
         if (!string.IsNullOrWhiteSpace(portStr))
@@ -146,52 +144,57 @@ public static class HostBuilderExtensions
         // or any K8s Environment settings
         else if (Platform.IsKubernetes)
         {
-            var k8sPort = GetPortFromKubernetesEnv();
+            int? k8sPort = GetPortFromKubernetesEnv();
+
             if (k8sPort.HasValue)
             {
                 httpPorts.Add(k8sPort.Value);
             }
         }
 
-        
-        var (managementPort, isHttps) = configure?.Invoke(webHostBuilder) ?? new Tuple<int?, bool>(null, false); // Could conditionally add the Management:Port setting
-      
+        if (!httpPorts.Any() && !httpsPorts.Any())
+        {
+            httpPorts.Add(DefaultPort);
+        }
+
+        (int? managementPort, bool isHttps) =
+            configure?.Invoke(webHostBuilder) ?? new Tuple<int?, bool>(null, false); // Could conditionally add the Management:Port setting
+
+        if (managementPort != null)
+        {
+            if (isHttps)
+            {
+                httpsPorts.Add(managementPort.Value);
+            }
+            else
+            {
+                httpPorts.Add(managementPort.Value);
+            }
+        }
+
         webHostBuilder.ConfigureKestrel(options =>
         {
-            if (!httpPorts.Any() && !httpsPorts.Any())
-            {
-                httpPorts.Add(8080);
-            }
-            if (managementPort != null)
-            {
-                if (isHttps)
-                {
-                    options.ListenAnyIP(managementPort.Value, opt => opt.UseHttps());
-                   
-                }
-                else
-                {
-                    options.ListenAnyIP(managementPort.Value);
-                }
-            }
-
-            foreach (var port in httpPorts)
+            
+            foreach (int port in httpPorts.Distinct())
             {
                 options.ListenAnyIP(port);
             }
-            foreach (var port in httpsPorts)
+
+            foreach (int port in httpsPorts.Distinct())
             {
                 options.ListenAnyIP(port, opt => opt.UseHttps());
             }
         });
+
         return webHostBuilder;
     }
 
     private static void GetPortsFromUrls(List<int> httpPorts, List<int> httpsPorts, IEnumerable<string> urls)
     {
-        foreach (var url in urls)
+        foreach (string url in urls)
         {
             var uri = new Uri(url.Replace("*", "anyhost"));
+
             if (uri.Scheme == "https")
             {
                 httpsPorts.Add(uri.Port);
@@ -218,11 +221,13 @@ public static class HostBuilderExtensions
             else
             {
                 string[] ports = portStr.Split(';');
-                if (ports.Length > 0 && int.TryParse(ports[0], out var httpPort))
+
+                if (ports.Length > 0 && int.TryParse(ports[0], out int httpPort))
                 {
                     httpPorts.Add(httpPort);
                 }
-                if (ports.Length > 1 && int.TryParse(ports[1], out var httpsPort))
+
+                if (ports.Length > 1 && int.TryParse(ports[1], out int httpsPort))
                 {
                     httpsPorts.Add(httpsPort);
                 }
@@ -234,7 +239,6 @@ public static class HostBuilderExtensions
     {
         string appName = Environment.GetEnvironmentVariable("HOSTNAME").Split("-")[0].ToUpperInvariant();
         string foundPort = Environment.GetEnvironmentVariable($"{appName}_SERVICE_PORT_HTTP");
-        return int.TryParse(foundPort, out var port) ? port : null;
+        return int.TryParse(foundPort, out int port) ? port : null;
     }
-  
 }

@@ -328,6 +328,7 @@ public static class ManagementWebHostBuilderExtensions
         string portSetting = webHostBuilder.GetSetting(ManagementPortKey);
         string sslSetting = webHostBuilder.GetSetting(ManagementSSLKey);
         int? managementPort = null;
+
         if (string.IsNullOrEmpty(portSetting))
         {
             IConfiguration config = GetConfiguration(); // try reading directly from appsettings.json
@@ -336,12 +337,14 @@ public static class ManagementWebHostBuilderExtensions
         }
 
         bool sslEnabled = false;
-        if (int.TryParse(portSetting, out var intManagementPort))
+
+        if (int.TryParse(portSetting, out int intManagementPort))
         {
             managementPort = intManagementPort;
             bool.TryParse(sslSetting, out sslEnabled);
         }
-        return new Tuple<int?, bool>( managementPort, sslEnabled);
+
+        return new Tuple<int?, bool>(managementPort, sslEnabled);
     }
 
     private static IConfiguration GetConfiguration()

@@ -35,7 +35,6 @@ public class HostBuilderExtensionsTest
         hostBuilder.UseCloudHosting();
         using IWebHost server = hostBuilder.Build();
         server.Start();
-        
 
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
         Assert.Contains("http://[::]:8080", addresses.Addresses);
@@ -48,11 +47,13 @@ public class HostBuilderExtensionsTest
         IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
 
         hostBuilder.UseCloudHosting();
-        IWebHost server = hostBuilder.Build();
+        using IWebHost server = hostBuilder.Build();
         server.Start();
 
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
         Assert.Contains("http://[::]:42", addresses.Addresses);
+
+        Environment.SetEnvironmentVariable("PORT", null);
     }
 
     [Fact]
@@ -63,7 +64,7 @@ public class HostBuilderExtensionsTest
         IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
 
         hostBuilder.UseCloudHosting();
-        IWebHost server = hostBuilder.Build();
+        using IWebHost server = hostBuilder.Build();
         server.Start();
 
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
@@ -79,7 +80,7 @@ public class HostBuilderExtensionsTest
         IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
 
         hostBuilder.UseCloudHosting();
-        IWebHost server = hostBuilder.Build();
+        using IWebHost server = hostBuilder.Build();
 
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
         Assert.Contains("http://*:80", addresses.Addresses);
@@ -89,11 +90,12 @@ public class HostBuilderExtensionsTest
     [Fact]
     public void UseCloudHosting_UsesServerPort()
     {
+
         Environment.SetEnvironmentVariable("SERVER_PORT", "42");
         IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
 
         hostBuilder.UseCloudHosting();
-        IWebHost server = hostBuilder.Build();
+        using IWebHost server = hostBuilder.Build();
         server.Start();
 
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
@@ -111,7 +113,7 @@ public class HostBuilderExtensionsTest
         IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
 
         hostBuilder.UseCloudHosting(5000, 5001);
-        IWebHost server = hostBuilder.Build();
+        using IWebHost server = hostBuilder.Build();
         server.Start();
 
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
@@ -137,7 +139,7 @@ public class HostBuilderExtensionsTest
         using IHost host = hostBuilder.Build();
         host.Start();
 
-        var addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
+        ICollection<string> addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
         Assert.NotNull(addresses);
         Assert.Contains("http://[::]:8080", addresses);
     }
@@ -157,10 +159,9 @@ public class HostBuilderExtensionsTest
         using IHost host = hostBuilder.Build();
         host.Start();
 
-        var addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
+        ICollection<string> addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
         Assert.NotNull(addresses);
         Assert.Contains("http://[::]:5042", addresses);
-
     }
 
     [Fact]
@@ -180,11 +181,10 @@ public class HostBuilderExtensionsTest
         using IHost host = hostBuilder.Build();
         host.Start();
 
-        var addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
+        ICollection<string> addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
         Assert.NotNull(addresses);
         Assert.Contains("http://[::]:5001", addresses);
         Assert.Contains("https://[::]:5002", addresses);
-
     }
 
     [Fact]
@@ -196,14 +196,13 @@ public class HostBuilderExtensionsTest
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
 
         hostBuilder.UseCloudHosting(3000, 3001);
-        var host = hostBuilder.Build();
-            host.Start();
+        using WebApplication host = hostBuilder.Build();
+        host.Start();
 
-        var addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
+        ICollection<string> addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
         Assert.NotNull(addresses);
         Assert.Contains("http://[::]:3000", addresses);
         Assert.Contains("https://[::]:3001", addresses);
-
     }
 
     [Fact]

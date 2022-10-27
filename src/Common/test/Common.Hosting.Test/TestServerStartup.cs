@@ -3,18 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
 
 namespace Steeltoe.Common.Hosting.Test;
 
 public class TestServerStartup
 {
-    public TestServerStartup()
-    {
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
     }

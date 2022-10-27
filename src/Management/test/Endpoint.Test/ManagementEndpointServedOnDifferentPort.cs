@@ -6,15 +6,14 @@ using System.Collections.Immutable;
 using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Hosting;
 using Xunit;
-using NSubstitute.Extensions;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -37,10 +36,10 @@ public class ManagementEndpointServedOnDifferentPort
         hostBuilder.Configuration.AddInMemoryCollection(config);
         hostBuilder.AddAllActuators();
 
-        var app = hostBuilder.Build();
+        WebApplication app = hostBuilder.Build();
         app.MapGet("/", () => "Hello World!");
         app.Start();
-        var addresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
+        ICollection<string> addresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
         Assert.NotNull(addresses);
         Assert.Contains("http://[::]:9090", addresses);
         Assert.Contains("http://[::]:8080", addresses);
@@ -59,15 +58,14 @@ public class ManagementEndpointServedOnDifferentPort
         hostBuilder.UseCloudHosting(5100);
         hostBuilder.AddAllActuators();
 
-        var app = hostBuilder.Build();
+        WebApplication app = hostBuilder.Build();
         app.MapGet("/", () => "Hello World!");
         app.Start();
-        var addresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
+        ICollection<string> addresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
         Assert.NotNull(addresses);
         Assert.Contains("http://[::]:9090", addresses);
         Assert.Contains("http://[::]:5100", addresses);
     }
-
 
     [Fact]
     public void AddAllActuators_WebApplication_MakeSure_SSLEnabled()
@@ -85,10 +83,10 @@ public class ManagementEndpointServedOnDifferentPort
         hostBuilder.Configuration.AddInMemoryCollection(config);
         hostBuilder.AddAllActuators();
 
-        var app = hostBuilder.Build();
+        WebApplication app = hostBuilder.Build();
         app.MapGet("/", () => "Hello World!");
         app.Start();
-        var addresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
+        ICollection<string> addresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
         Assert.NotNull(addresses);
         Assert.Contains("https://[::]:9090", addresses);
         Assert.Contains("http://[::]:8080", addresses);
@@ -97,7 +95,6 @@ public class ManagementEndpointServedOnDifferentPort
     [Fact]
     public void AddAllActuators_GenericHost_MakeSureTheManagementPortIsSet()
     {
-
         ImmutableDictionary<string, string> settings = new Dictionary<string, string>
         {
             { "management:endpoints:port", "9090" },
