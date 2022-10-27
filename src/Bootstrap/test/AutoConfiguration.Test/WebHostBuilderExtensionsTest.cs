@@ -20,6 +20,7 @@ using OpenTelemetry.Trace;
 using Oracle.ManagedDataAccess.Client;
 using RabbitMQ.Client;
 using StackExchange.Redis;
+using Steeltoe.Common;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Configuration.CloudFoundry;
@@ -35,7 +36,6 @@ using Steeltoe.Extensions.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.OpenTelemetry.Exporters;
-using Steeltoe.Management.OpenTelemetry.Trace;
 using Xunit;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration.Test;

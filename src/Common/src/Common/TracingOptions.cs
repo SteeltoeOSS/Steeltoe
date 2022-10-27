@@ -3,10 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
-using Steeltoe.Management.OpenTelemetry.Trace;
 
-namespace Steeltoe.Management.Tracing;
+namespace Steeltoe.Common;
 
 public class TracingOptions : ITracingOptions
 {
