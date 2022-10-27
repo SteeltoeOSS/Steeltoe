@@ -11,11 +11,8 @@ namespace Steeltoe.Common.Hosting.Test;
 
 public class TestServerStartup
 {
-    public List<string> ExpectedAddresses { get; private set; }
-
     public TestServerStartup()
     {
-        ExpectedAddresses = new List<string>();
     }
 
     public void ConfigureServices(IServiceCollection services)
@@ -24,8 +21,5 @@ public class TestServerStartup
 
     public void Configure(IApplicationBuilder app)
     {
-        List<string> addresses = ExpectedAddresses;
-        Assert.Equal(addresses, app.ServerFeatures.Get<IServerAddressesFeature>()?.Addresses);
-        ExpectedAddresses = null;
     }
 }

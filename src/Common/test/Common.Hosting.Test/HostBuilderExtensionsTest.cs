@@ -4,7 +4,9 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xunit;
 
@@ -31,10 +33,12 @@ public class HostBuilderExtensionsTest
         IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
 
         hostBuilder.UseCloudHosting();
-        IWebHost server = hostBuilder.Build();
+        using IWebHost server = hostBuilder.Build();
+        server.Start();
+        
 
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Contains("http://*:8080", addresses.Addresses);
+        Assert.Contains("http://[::]:8080", addresses.Addresses);
     }
 
     [Fact]
@@ -45,9 +49,10 @@ public class HostBuilderExtensionsTest
 
         hostBuilder.UseCloudHosting();
         IWebHost server = hostBuilder.Build();
+        server.Start();
 
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Contains("http://*:42", addresses.Addresses);
+        Assert.Contains("http://[::]:42", addresses.Addresses);
     }
 
     [Fact]
@@ -59,10 +64,11 @@ public class HostBuilderExtensionsTest
 
         hostBuilder.UseCloudHosting();
         IWebHost server = hostBuilder.Build();
+        server.Start();
 
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Contains("http://*:80", addresses.Addresses);
-        Assert.Contains("https://*:443", addresses.Addresses);
+        Assert.Contains("http://[::]:80", addresses.Addresses);
+        Assert.Contains("https://[::]:443", addresses.Addresses);
     }
 
     [Fact]
@@ -88,9 +94,10 @@ public class HostBuilderExtensionsTest
 
         hostBuilder.UseCloudHosting();
         IWebHost server = hostBuilder.Build();
+        server.Start();
 
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Contains("http://*:42", addresses.Addresses);
+        Assert.Contains("http://[::]:42", addresses.Addresses);
 
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
     }
@@ -100,80 +107,84 @@ public class HostBuilderExtensionsTest
     {
         Environment.SetEnvironmentVariable("PORT", null);
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
-        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
 
         IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
 
         hostBuilder.UseCloudHosting(5000, 5001);
         IWebHost server = hostBuilder.Build();
+        server.Start();
 
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Contains("http://*:5000", addresses.Addresses);
-        Assert.Contains("https://*:5001", addresses.Addresses);
+        Assert.Contains("http://[::]:5000", addresses.Addresses);
+        Assert.Contains("https://[::]:5001", addresses.Addresses);
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
-#pragma warning disable S2699 // Tests should include assertions
     public void UseCloudHosting_GenericHost_Default8080()
-#pragma warning restore S2699 // Tests should include assertions
     {
         Environment.SetEnvironmentVariable("PORT", null);
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
+
         Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(configure =>
         {
-            configure.UseStartup<TestServerStartupDefault>();
+            configure.UseStartup<TestServerStartup>();
             configure.UseKestrel();
         });
 
         hostBuilder.UseCloudHosting();
         using IHost host = hostBuilder.Build();
         host.Start();
+
+        var addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
+        Assert.NotNull(addresses);
+        Assert.Contains("http://[::]:8080", addresses);
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
-#pragma warning disable S2699 // Tests should include assertions
     public void UseCloudHosting_GenericHost_MakeSureThePortIsSet()
-#pragma warning restore S2699 // Tests should include assertions
     {
-        Environment.SetEnvironmentVariable("SERVER_PORT", null);
-        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
         Environment.SetEnvironmentVariable("PORT", "5042");
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(configure =>
         {
-            configure.UseStartup<TestServerStartup42>();
+            configure.UseStartup<TestServerStartup>();
             configure.UseKestrel();
         });
 
         hostBuilder.UseCloudHosting();
         using IHost host = hostBuilder.Build();
         host.Start();
+
+        var addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
+        Assert.NotNull(addresses);
+        Assert.Contains("http://[::]:5042", addresses);
+
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
     [Trait("Category", "SkipOnMacOS")] // for .NET 5+, this test produces an admin prompt on OSX
-#pragma warning disable S2699 // Tests should include assertions
     public void UseCloudHosting_GenericHost_UsesLocalPortSettings()
-#pragma warning restore S2699 // Tests should include assertions
     {
         Environment.SetEnvironmentVariable("PORT", null);
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
-        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(configure =>
         {
-            configure.UseStartup<TestServerStartupLocals>();
+            configure.UseStartup<TestServerStartup>();
             configure.UseKestrel();
         });
 
         hostBuilder.UseCloudHosting(5001, 5002);
         using IHost host = hostBuilder.Build();
         host.Start();
+
+        var addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
+        Assert.NotNull(addresses);
+        Assert.Contains("http://[::]:5001", addresses);
+        Assert.Contains("https://[::]:5002", addresses);
+
     }
 
     [Fact]
@@ -185,9 +196,14 @@ public class HostBuilderExtensionsTest
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
 
         hostBuilder.UseCloudHosting(3000, 3001);
-        string settings = hostBuilder.WebHost.GetSetting(WebHostDefaults.ServerUrlsKey);
-        Assert.Contains("http://*:3000", settings);
-        Assert.Contains("https://*:3001", settings);
+        var host = hostBuilder.Build();
+            host.Start();
+
+        var addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
+        Assert.NotNull(addresses);
+        Assert.Contains("http://[::]:3000", addresses);
+        Assert.Contains("https://[::]:3001", addresses);
+
     }
 
     [Fact]

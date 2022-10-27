@@ -6,12 +6,15 @@ using System.Collections.Immutable;
 using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Hosting;
 using Xunit;
+using NSubstitute.Extensions;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -30,13 +33,17 @@ public class ManagementEndpointServedOnDifferentPort
             { "management:endpoints:port", "9090" }
         }.ToImmutableDictionary();
 
-        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Configuration.AddInMemoryCollection(config);
         hostBuilder.AddAllActuators();
 
-        string settings = hostBuilder.WebHost.GetSetting(WebHostDefaults.ServerUrlsKey);
-        Assert.Contains("http://*:9090", settings);
-        ClearEnvVars();
+        var app = hostBuilder.Build();
+        app.MapGet("/", () => "Hello World!");
+        app.Start();
+        var addresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
+        Assert.NotNull(addresses);
+        Assert.Contains("http://[::]:9090", addresses);
+        Assert.Contains("http://[::]:8080", addresses);
     }
 
     [Fact]
@@ -47,16 +54,20 @@ public class ManagementEndpointServedOnDifferentPort
             { "management:endpoints:port", "9090" }
         }.ToImmutableDictionary();
 
-        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Configuration.AddInMemoryCollection(config);
         hostBuilder.UseCloudHosting(5100);
         hostBuilder.AddAllActuators();
 
-        string settings = hostBuilder.WebHost.GetSetting(WebHostDefaults.ServerUrlsKey);
-        Assert.Contains("http://*:9090", settings);
-        Assert.Contains("http://*:5100", settings);
-        ClearEnvVars();
+        var app = hostBuilder.Build();
+        app.MapGet("/", () => "Hello World!");
+        app.Start();
+        var addresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
+        Assert.NotNull(addresses);
+        Assert.Contains("http://[::]:9090", addresses);
+        Assert.Contains("http://[::]:5100", addresses);
     }
+
 
     [Fact]
     public void AddAllActuators_WebApplication_MakeSure_SSLEnabled()
@@ -70,20 +81,22 @@ public class ManagementEndpointServedOnDifferentPort
             { "management:endpoints:sslenabled", "true" }
         }.ToImmutableDictionary();
 
-        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Configuration.AddInMemoryCollection(config);
         hostBuilder.AddAllActuators();
 
-        string settings = hostBuilder.WebHost.GetSetting(WebHostDefaults.ServerUrlsKey);
-        Assert.Contains("https://*:9090", settings);
-        ClearEnvVars();
+        var app = hostBuilder.Build();
+        app.MapGet("/", () => "Hello World!");
+        app.Start();
+        var addresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
+        Assert.NotNull(addresses);
+        Assert.Contains("https://[::]:9090", addresses);
+        Assert.Contains("http://[::]:8080", addresses);
     }
 
     [Fact]
     public void AddAllActuators_GenericHost_MakeSureTheManagementPortIsSet()
     {
-        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
-        Environment.SetEnvironmentVariable("PORT", null);
 
         ImmutableDictionary<string, string> settings = new Dictionary<string, string>
         {
@@ -108,7 +121,6 @@ public class ManagementEndpointServedOnDifferentPort
         var httpClient = new HttpClient();
         HttpResponseMessage response = httpClient.GetAsync("http://localhost:9090/actuator").Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        ClearEnvVars();
     }
 
     [Fact]
@@ -150,7 +162,6 @@ public class ManagementEndpointServedOnDifferentPort
 
         response = await httpClient.GetAsync("http://localhost:8080");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        ClearEnvVars();
     }
 
     private void ClearEnvVars()

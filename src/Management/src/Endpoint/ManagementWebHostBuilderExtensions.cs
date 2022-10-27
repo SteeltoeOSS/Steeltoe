@@ -323,23 +323,25 @@ public static class ManagementWebHostBuilderExtensions
         return hostBuilder.ConfigureServices((_, collection) => collection.AddWavefrontMetrics());
     }
 
-    internal static void ConfigureManagementUrls(this IWebHostBuilder webHostBuilder, List<string> urls)
+    internal static Tuple<int?, bool> ConfigureManagementUrls(this IWebHostBuilder webHostBuilder)
     {
-        string managementPort = webHostBuilder.GetSetting(ManagementPortKey);
-        string sslEnabled = webHostBuilder.GetSetting(ManagementSSLKey);
-
-        if (string.IsNullOrEmpty(managementPort))
+        string portSetting = webHostBuilder.GetSetting(ManagementPortKey);
+        string sslSetting = webHostBuilder.GetSetting(ManagementSSLKey);
+        int? managementPort = null;
+        if (string.IsNullOrEmpty(portSetting))
         {
             IConfiguration config = GetConfiguration(); // try reading directly from appsettings.json
-            managementPort = config?[ManagementPortKey];
-            sslEnabled = config?[ManagementSSLKey];
+            portSetting = config?[ManagementPortKey];
+            sslSetting = config?[ManagementSSLKey];
         }
 
-        if (!string.IsNullOrEmpty(managementPort))
+        bool sslEnabled = false;
+        if (int.TryParse(portSetting, out var intManagementPort))
         {
-            string protocol = bool.TryParse(sslEnabled, out bool isSslEnabled) && isSslEnabled ? "https" : "http";
-            urls.Add($"{protocol}://*:{managementPort}");
+            managementPort = intManagementPort;
+            bool.TryParse(sslSetting, out sslEnabled);
         }
+        return new Tuple<int?, bool>( managementPort, sslEnabled);
     }
 
     private static IConfiguration GetConfiguration()
