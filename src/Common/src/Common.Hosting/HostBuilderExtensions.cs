@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.Hosting;
 
@@ -117,12 +116,10 @@ public static class HostBuilderExtensions
     private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, int? runLocalHttpPort, int? runLocalHttpsPort,
         Func<IWebHostBuilder, Tuple<int?, bool>> configure)
     {
-        var urls = new List<string>();
-
         string portStr = Environment.GetEnvironmentVariable("PORT") ?? Environment.GetEnvironmentVariable("SERVER_PORT");
         string aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
 
-        //AddRunLocalPorts(urls, runLocalHttpPort, runLocalHttpsPort);
+        // AddRunLocalPorts(urls, runLocalHttpPort, runLocalHttpsPort);
         var httpPorts = new List<int>();
         var httpsPorts = new List<int>();
 
@@ -174,7 +171,6 @@ public static class HostBuilderExtensions
 
         webHostBuilder.ConfigureKestrel(options =>
         {
-            
             foreach (int port in httpPorts.Distinct())
             {
                 options.ListenAnyIP(port);

@@ -90,7 +90,6 @@ public class HostBuilderExtensionsTest
     [Fact]
     public void UseCloudHosting_UsesServerPort()
     {
-
         Environment.SetEnvironmentVariable("SERVER_PORT", "42");
         IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
 

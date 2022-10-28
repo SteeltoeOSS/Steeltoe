@@ -44,7 +44,7 @@ public class ManagementPortMiddleware
     private Task ReturnErrorAsync(HttpContext context, string managementPort)
     {
         string errorMessage = $"Access denied to {context.Request.Path} on port {context.Request.Host.Port} since Management Port is set to {managementPort} ";
-        _logger?.LogError("ManagementMiddleWare Error: ", errorMessage);
+        _logger?.LogError("ManagementMiddleWare Error: {0}", errorMessage);
         context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
 
         context.Response.StatusCode = StatusCodes.Status404NotFound;
