@@ -41,7 +41,7 @@ public class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
                 writer.WriteEndObject();
             }
 
-            if (health.Groups != null && health.Groups.Count() > 0)
+            if (health.Groups?.Any() == true)
             {
                 writer.WritePropertyName("groups");
                 JsonSerializer.Serialize(writer, health.Groups, options);
