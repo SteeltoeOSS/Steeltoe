@@ -116,13 +116,33 @@ public static class HostBuilderExtensions
     private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, int? runLocalHttpPort, int? runLocalHttpsPort,
         Func<IWebHostBuilder, Tuple<int?, bool>> configure)
     {
+        (List<int> httpPorts, List<int> httpsPorts) = GetPortsFromConfiguration(webHostBuilder, runLocalHttpPort, runLocalHttpsPort, configure);
+
+        webHostBuilder.ConfigureKestrel(options =>
+        {
+            foreach (int port in httpPorts.Distinct())
+            {
+                options.ListenAnyIP(port);
+            }
+
+            foreach (int port in httpsPorts.Distinct())
+            {
+                options.ListenAnyIP(port, opt => opt.UseHttps());
+            }
+        });
+
+        return webHostBuilder;
+    }
+
+    internal static Tuple<List<int>, List<int>> GetPortsFromConfiguration(IWebHostBuilder webHostBuilder, int? runLocalHttpPort, int? runLocalHttpsPort,
+        Func<IWebHostBuilder, Tuple<int?, bool>> configure)
+    {
+        List<int> httpPorts = new();
+        List<int> httpsPorts = new();
         string portStr = Environment.GetEnvironmentVariable("PORT") ?? Environment.GetEnvironmentVariable("SERVER_PORT");
         string aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
 
         // AddRunLocalPorts(urls, runLocalHttpPort, runLocalHttpsPort);
-        var httpPorts = new List<int>();
-        var httpsPorts = new List<int>();
-
         if (runLocalHttpPort.HasValue && !httpPorts.Contains(runLocalHttpPort.Value))
         {
             httpPorts.Add(runLocalHttpPort.Value);
@@ -169,20 +189,7 @@ public static class HostBuilderExtensions
             }
         }
 
-        webHostBuilder.ConfigureKestrel(options =>
-        {
-            foreach (int port in httpPorts.Distinct())
-            {
-                options.ListenAnyIP(port);
-            }
-
-            foreach (int port in httpsPorts.Distinct())
-            {
-                options.ListenAnyIP(port, opt => opt.UseHttps());
-            }
-        });
-
-        return webHostBuilder;
+        return new Tuple<List<int>, List<int>>(httpPorts, httpsPorts);
     }
 
     private static void GetPortsFromUrls(List<int> httpPorts, List<int> httpsPorts, IEnumerable<string> urls)

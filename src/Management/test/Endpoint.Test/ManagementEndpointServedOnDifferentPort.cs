@@ -6,9 +6,8 @@ using System.Collections.Immutable;
 using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,11 +18,6 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public class ManagementEndpointServedOnDifferentPort
 {
-    public ManagementEndpointServedOnDifferentPort()
-    {
-        ClearEnvVars();
-    }
-
     [Fact]
     public void AddAllActuators_WebApplication_MakeSureTheManagementPortIsSet()
     {
@@ -35,14 +29,17 @@ public class ManagementEndpointServedOnDifferentPort
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Configuration.AddInMemoryCollection(config);
         hostBuilder.AddAllActuators();
+        hostBuilder.WebHost.UseTestServer();
 
         WebApplication app = hostBuilder.Build();
         app.MapGet("/", () => "Hello World!");
         app.Start();
-        ICollection<string> addresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
-        Assert.NotNull(addresses);
-        Assert.Contains("http://[::]:9090", addresses);
-        Assert.Contains("http://[::]:8080", addresses);
+
+        HttpClient httpClient = app.GetTestServer().CreateClient();
+        HttpResponseMessage response = httpClient.GetAsync("http://localhost:9090/actuator").Result;
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response = httpClient.GetAsync("http://localhost:8080").Result;
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
@@ -57,14 +54,17 @@ public class ManagementEndpointServedOnDifferentPort
         hostBuilder.Configuration.AddInMemoryCollection(config);
         hostBuilder.UseCloudHosting(5100);
         hostBuilder.AddAllActuators();
+        hostBuilder.WebHost.UseTestServer();
 
         WebApplication app = hostBuilder.Build();
         app.MapGet("/", () => "Hello World!");
         app.Start();
-        ICollection<string> addresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
-        Assert.NotNull(addresses);
-        Assert.Contains("http://[::]:9090", addresses);
-        Assert.Contains("http://[::]:5100", addresses);
+
+        HttpClient httpClient = app.GetTestServer().CreateClient();
+        HttpResponseMessage response = httpClient.GetAsync("https://localhost:9090/actuator").Result;
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response = httpClient.GetAsync("http://localhost:5100").Result;
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
@@ -82,14 +82,17 @@ public class ManagementEndpointServedOnDifferentPort
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Configuration.AddInMemoryCollection(config);
         hostBuilder.AddAllActuators();
+        hostBuilder.WebHost.UseTestServer();
 
         WebApplication app = hostBuilder.Build();
         app.MapGet("/", () => "Hello World!");
         app.Start();
-        ICollection<string> addresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
-        Assert.NotNull(addresses);
-        Assert.Contains("https://[::]:9090", addresses);
-        Assert.Contains("http://[::]:8080", addresses);
+
+        HttpClient httpClient = app.GetTestServer().CreateClient();
+        HttpResponseMessage response = httpClient.GetAsync("https://localhost:9090/actuator").Result;
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response = httpClient.GetAsync("http://localhost:8080").Result;
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
@@ -107,15 +110,15 @@ public class ManagementEndpointServedOnDifferentPort
                 webhostBuilder.Configure(app => app.UseRouting());
                 webhostBuilder.ConfigureServices(svc => svc.AddRouting());
                 webhostBuilder.UseSetting("management:endpoints:port", "9090");
-                webhostBuilder.UseKestrel();
                 webhostBuilder.AddAllActuators();
+                webhostBuilder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
             });
 
         using IHost host = hostBuilder.Build();
 
         host.Start();
 
-        var httpClient = new HttpClient();
+        HttpClient httpClient = host.GetTestServer().CreateClient();
         HttpResponseMessage response = httpClient.GetAsync("http://localhost:9090/actuator").Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -132,38 +135,19 @@ public class ManagementEndpointServedOnDifferentPort
             webhostBuilder.ConfigureServices(svc => svc.AddRouting());
             webhostBuilder.UseSetting("management:endpoints:port", "9090");
             webhostBuilder.UseSetting("management:endpoints:sslenabled", "true");
-            webhostBuilder.UseKestrel();
+            webhostBuilder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+
             webhostBuilder.AddAllActuators();
         });
 
         using IHost host = hostBuilder.Build();
 
         host.Start();
-
-        var handler = new HttpClientHandler();
-        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
-
-        handler.ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) =>
-        {
-            return true;
-        };
-
-        var httpClient = new HttpClient(handler);
-        await Assert.ThrowsAsync<HttpRequestException>(() => httpClient.GetAsync("http://localhost:9090/actuator"));
-
+        HttpClient httpClient = host.GetTestServer().CreateClient();
         HttpResponseMessage response = await httpClient.GetAsync("https://localhost:9090/actuator");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         response = await httpClient.GetAsync("http://localhost:8080/actuator");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
-        response = await httpClient.GetAsync("http://localhost:8080");
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-    }
-
-    private void ClearEnvVars()
-    {
-        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
-        Environment.SetEnvironmentVariable("PORT", null);
     }
 }

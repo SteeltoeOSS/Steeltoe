@@ -4,9 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 using Xunit;
 
@@ -30,28 +28,18 @@ public class HostBuilderExtensionsTest
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
         Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
-
-        hostBuilder.UseCloudHosting();
-        using IWebHost server = hostBuilder.Build();
-        server.Start();
-
-        var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Contains("http://[::]:8080", addresses.Addresses);
+        (List<int> httpPorts, List<int> httpsPorts) = HostBuilderExtensions.GetPortsFromConfiguration(null, null, null, null);
+        Assert.Contains(8080, httpPorts);
+        Assert.Empty(httpsPorts);
     }
 
     [Fact]
     public void UseCloudHosting_MakeSureThePortIsSet()
     {
         Environment.SetEnvironmentVariable("PORT", "42");
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
-
-        hostBuilder.UseCloudHosting();
-        using IWebHost server = hostBuilder.Build();
-        server.Start();
-
-        var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Contains("http://[::]:42", addresses.Addresses);
+        (List<int> httpPorts, List<int> httpsPorts) = HostBuilderExtensions.GetPortsFromConfiguration(null, null, null, null);
+        Assert.Contains(42, httpPorts);
+        Assert.Empty(httpsPorts);
 
         Environment.SetEnvironmentVariable("PORT", null);
     }
@@ -61,15 +49,10 @@ public class HostBuilderExtensionsTest
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
         Environment.SetEnvironmentVariable("PORT", "80;443");
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
-
-        hostBuilder.UseCloudHosting();
-        using IWebHost server = hostBuilder.Build();
-        server.Start();
-
-        var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Contains("http://[::]:80", addresses.Addresses);
-        Assert.Contains("https://[::]:443", addresses.Addresses);
+        (List<int> httpPorts, List<int> httpsPorts) = HostBuilderExtensions.GetPortsFromConfiguration(null, null, null, null);
+        Assert.Contains(80, httpPorts);
+        Assert.Contains(443, httpsPorts);
+        Environment.SetEnvironmentVariable("PORT", null);
     }
 
     [Fact]
@@ -77,28 +60,21 @@ public class HostBuilderExtensionsTest
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "http://*:80;https://*:443");
         Environment.SetEnvironmentVariable("PORT", "88;4443");
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
+        (List<int> httpPorts, List<int> httpsPorts) = HostBuilderExtensions.GetPortsFromConfiguration(null, null, null, null);
+        Assert.Contains(80, httpPorts);
+        Assert.Contains(443, httpsPorts);
 
-        hostBuilder.UseCloudHosting();
-        using IWebHost server = hostBuilder.Build();
-
-        var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Contains("http://*:80", addresses.Addresses);
-        Assert.Contains("https://*:443", addresses.Addresses);
+        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
+        Environment.SetEnvironmentVariable("PORT", null);
     }
 
     [Fact]
     public void UseCloudHosting_UsesServerPort()
     {
         Environment.SetEnvironmentVariable("SERVER_PORT", "42");
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
-
-        hostBuilder.UseCloudHosting();
-        using IWebHost server = hostBuilder.Build();
-        server.Start();
-
-        var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Contains("http://[::]:42", addresses.Addresses);
+        (List<int> httpPorts, List<int> httpsPorts) = HostBuilderExtensions.GetPortsFromConfiguration(null, null, null, null);
+        Assert.Contains(42, httpPorts);
+        Assert.Empty(httpsPorts);
 
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
     }
@@ -109,99 +85,28 @@ public class HostBuilderExtensionsTest
         Environment.SetEnvironmentVariable("PORT", null);
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
-
-        hostBuilder.UseCloudHosting(5000, 5001);
-        using IWebHost server = hostBuilder.Build();
-        server.Start();
-
-        var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Contains("http://[::]:5000", addresses.Addresses);
-        Assert.Contains("https://[::]:5001", addresses.Addresses);
+        (List<int> httpPorts, List<int> httpsPorts) = HostBuilderExtensions.GetPortsFromConfiguration(null, 5000, 5001, null);
+        Assert.Contains(5000, httpPorts);
+        Assert.Contains(5001, httpsPorts);
     }
 
+#pragma warning disable S2699 // Tests should include assertions
     [Fact]
     public void UseCloudHosting_GenericHost_Default8080()
     {
         Environment.SetEnvironmentVariable("PORT", null);
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
-
         Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(configure =>
         {
             configure.UseStartup<TestServerStartup>();
-            configure.UseKestrel();
+            configure.UseTestServer();
         });
 
         hostBuilder.UseCloudHosting();
         using IHost host = hostBuilder.Build();
         host.Start();
-
-        ICollection<string> addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
-        Assert.NotNull(addresses);
-        Assert.Contains("http://[::]:8080", addresses);
-    }
-
-    [Fact]
-    public void UseCloudHosting_GenericHost_MakeSureThePortIsSet()
-    {
-        Environment.SetEnvironmentVariable("PORT", "5042");
-
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(configure =>
-        {
-            configure.UseStartup<TestServerStartup>();
-            configure.UseKestrel();
-        });
-
-        hostBuilder.UseCloudHosting();
-        using IHost host = hostBuilder.Build();
-        host.Start();
-
-        ICollection<string> addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
-        Assert.NotNull(addresses);
-        Assert.Contains("http://[::]:5042", addresses);
-    }
-
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")] // for .NET 5+, this test produces an admin prompt on OSX
-    public void UseCloudHosting_GenericHost_UsesLocalPortSettings()
-    {
-        Environment.SetEnvironmentVariable("PORT", null);
-        Environment.SetEnvironmentVariable("SERVER_PORT", null);
-
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(configure =>
-        {
-            configure.UseStartup<TestServerStartup>();
-            configure.UseKestrel();
-        });
-
-        hostBuilder.UseCloudHosting(5001, 5002);
-        using IHost host = hostBuilder.Build();
-        host.Start();
-
-        ICollection<string> addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
-        Assert.NotNull(addresses);
-        Assert.Contains("http://[::]:5001", addresses);
-        Assert.Contains("https://[::]:5002", addresses);
-    }
-
-    [Fact]
-    public void UseCloudHosting_WebApplication_UsesLocalPortSettings()
-    {
-        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
-        Environment.SetEnvironmentVariable("PORT", null);
-        Environment.SetEnvironmentVariable("SERVER_PORT", null);
-        WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
-
-        hostBuilder.UseCloudHosting(3000, 3001);
-        using WebApplication host = hostBuilder.Build();
-        host.Start();
-
-        ICollection<string> addresses = host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>().Addresses;
-        Assert.NotNull(addresses);
-        Assert.Contains("http://[::]:3000", addresses);
-        Assert.Contains("https://[::]:3001", addresses);
     }
 
     [Fact]
@@ -213,27 +118,10 @@ public class HostBuilderExtensionsTest
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.UseCloudHosting();
+        hostBuilder.WebHost.UseTestServer();
         using WebApplication host = hostBuilder.Build();
         host.Start();
-
-        var addressFeature = ((IApplicationBuilder)host).ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Single(addressFeature.Addresses);
-        Assert.Equal("http://[::]:8080", addressFeature.Addresses.First());
     }
 
-    [Fact]
-    public void UseCloudHosting_WebApplication_MakeSureThePortIsSet()
-    {
-        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
-        Environment.SetEnvironmentVariable("PORT", "5042");
-        WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
-
-        hostBuilder.UseCloudHosting();
-        using WebApplication host = hostBuilder.Build();
-        host.Start();
-
-        var addressFeature = ((IApplicationBuilder)host).ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Single(addressFeature.Addresses);
-        Assert.Equal("http://[::]:5042", addressFeature.Addresses.First());
-    }
+#pragma warning restore S2699 // Tests should include assertions
 }
