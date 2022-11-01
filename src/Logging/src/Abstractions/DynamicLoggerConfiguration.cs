@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Extensions.Logging;
+namespace Steeltoe.Logging;
 
 public class DynamicLoggerConfiguration : ILoggerConfiguration
 {

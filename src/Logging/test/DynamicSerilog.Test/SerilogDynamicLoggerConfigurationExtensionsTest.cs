@@ -7,7 +7,7 @@ using Serilog;
 using Serilog.Events;
 using Xunit;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
+namespace Steeltoe.Logging.DynamicSerilog.Test;
 
 public class SerilogDynamicLoggerConfigurationExtensionsTest
 {
@@ -18,7 +18,7 @@ public class SerilogDynamicLoggerConfigurationExtensionsTest
         {
             { "Serilog:MinimumLevel:Default", "Error" },
             { "Serilog:MinimumLevel:Override:Microsoft", "Warning" },
-            { "Serilog:MinimumLevel:Override:Steeltoe.Extensions", "Verbose" },
+            { "Serilog:MinimumLevel:Override:Steeltoe.Logging", "Verbose" },
             { "Serilog:MinimumLevel:Override:Steeltoe", "Information" }
         };
 
@@ -30,7 +30,7 @@ public class SerilogDynamicLoggerConfigurationExtensionsTest
         Assert.Equal(LogEventLevel.Error, serilogOptions.MinimumLevel.Default);
         Assert.Equal(LogEventLevel.Warning, serilogOptions.MinimumLevel.Override["Microsoft"]);
         Assert.Equal(LogEventLevel.Information, serilogOptions.MinimumLevel.Override["Steeltoe"]);
-        Assert.Equal(LogEventLevel.Verbose, serilogOptions.MinimumLevel.Override["Steeltoe.Extensions"]);
+        Assert.Equal(LogEventLevel.Verbose, serilogOptions.MinimumLevel.Override["Steeltoe.Logging"]);
         Assert.NotNull(serilogOptions.GetSerilogConfiguration());
     }
 
@@ -55,14 +55,14 @@ public class SerilogDynamicLoggerConfigurationExtensionsTest
     public void SerilogOptions_Set_Correctly_Via_LoggerConfiguration()
     {
         LoggerConfiguration loggerConfiguration = new LoggerConfiguration().MinimumLevel.Debug().MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            .MinimumLevel.Override("Steeltoe.Extensions", LogEventLevel.Verbose).MinimumLevel.Override("Steeltoe", LogEventLevel.Information);
+            .MinimumLevel.Override("Steeltoe.Logging", LogEventLevel.Verbose).MinimumLevel.Override("Steeltoe", LogEventLevel.Information);
 
         var serilogOptions = new SerilogOptions();
         serilogOptions.SetSerilogOptions(loggerConfiguration);
 
         Assert.Equal(LogEventLevel.Debug, serilogOptions.MinimumLevel.Default);
         Assert.Equal(LogEventLevel.Warning, serilogOptions.MinimumLevel.Override["Microsoft"]);
-        Assert.Equal(LogEventLevel.Verbose, serilogOptions.MinimumLevel.Override["Steeltoe.Extensions"]);
+        Assert.Equal(LogEventLevel.Verbose, serilogOptions.MinimumLevel.Override["Steeltoe.Logging"]);
         Assert.NotNull(serilogOptions.GetSerilogConfiguration());
     }
 

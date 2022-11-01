@@ -5,7 +5,7 @@
 using Serilog.Core;
 using Serilog.Events;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
+namespace Steeltoe.Logging.DynamicSerilog.Test;
 
 public class TestSink : ILogEventSink
 {

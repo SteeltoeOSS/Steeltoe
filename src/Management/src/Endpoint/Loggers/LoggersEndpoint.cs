@@ -5,7 +5,7 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using Steeltoe.Extensions.Logging;
+using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 

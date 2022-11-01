@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 
-namespace Steeltoe.Extensions.Logging;
+namespace Steeltoe.Logging.DynamicLogger;
 
 internal sealed class ConsoleLoggerOptionsSetup : ConfigureFromConfigurationOptions<ConsoleLoggerOptions>
 {

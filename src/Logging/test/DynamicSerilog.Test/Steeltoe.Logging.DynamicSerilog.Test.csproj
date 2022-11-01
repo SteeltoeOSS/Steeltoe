@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <RootNamespace>Steeltoe.Extensions.Logging.DynamicSerilog.Test</RootNamespace>
+    <RootNamespace>Steeltoe.Logging.DynamicSerilog.Test</RootNamespace>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -20,6 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DynamicSerilog\Steeltoe.Extensions.Logging.DynamicSerilog.csproj" />
+    <ProjectReference Include="..\..\src\DynamicSerilog\Steeltoe.Logging.DynamicSerilog.csproj" />
   </ItemGroup>
 </Project>

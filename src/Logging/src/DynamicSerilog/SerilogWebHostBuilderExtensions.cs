@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Serilog;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog;
+namespace Steeltoe.Logging.DynamicSerilog;
 
 public static class SerilogWebHostBuilderExtensions
 {
