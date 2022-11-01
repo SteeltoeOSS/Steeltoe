@@ -194,8 +194,7 @@ public class ConsulRegistration : IConsulRegistration
 
         if (string.IsNullOrEmpty(instanceId))
         {
-            var rand = new Random();
-            instanceId = rand.Next().ToString();
+            instanceId = Random.Shared.Next().ToString();
         }
 
         return $"{appName}:{instanceId}";
