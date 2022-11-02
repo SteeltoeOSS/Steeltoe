@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections;
+using System.Globalization;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
@@ -5862,7 +5863,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         public static string Format(string s, params object[] args)
         {
-            return string.Format(s, args);
+            return string.Format(CultureInfo.InvariantCulture, s, args);
         }
     }
 
@@ -6132,7 +6133,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public string Bar(string arg)
         {
-            return arg.ToUpper();
+            return arg.ToUpperInvariant();
         }
     }
 
@@ -6210,12 +6211,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public object GetField(string name)
         {
-            if (name.Equals("Var1"))
+            if (name == "Var1")
             {
                 return Var1;
             }
 
-            if (name.Equals("Var2"))
+            if (name == "Var2")
             {
                 return _var2;
             }
@@ -6444,7 +6445,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
                 foreach (bool b in bs)
                 {
-                    S += b.ToString();
+                    S += b.ToString(CultureInfo.InvariantCulture);
                 }
             }
         }
@@ -6459,7 +6460,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
                 foreach (short s in ss)
                 {
-                    S += s.ToString();
+                    S += s.ToString(CultureInfo.InvariantCulture);
                 }
             }
         }
@@ -6474,7 +6475,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
                 foreach (double v in args)
                 {
-                    S += v.ToString();
+                    S += v.ToString(CultureInfo.InvariantCulture);
                 }
             }
         }
@@ -6489,7 +6490,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
                 foreach (float v in args)
                 {
-                    S += v.ToString();
+                    S += v.ToString(CultureInfo.InvariantCulture);
                 }
             }
         }
@@ -6504,7 +6505,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
                 foreach (long v in args)
                 {
-                    S += v.ToString();
+                    S += v.ToString(CultureInfo.InvariantCulture);
                 }
             }
         }
@@ -6519,7 +6520,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
                 foreach (byte v in args)
                 {
-                    S += v.ToString();
+                    S += v.ToString(CultureInfo.InvariantCulture);
                 }
             }
         }
@@ -6534,7 +6535,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
                 foreach (char v in args)
                 {
-                    S += v.ToString();
+                    S += v.ToString(CultureInfo.InvariantCulture);
                 }
             }
         }

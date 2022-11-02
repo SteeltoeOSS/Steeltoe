@@ -34,7 +34,7 @@ public class AnnotatedMethodFilter : IMethodFilter
                 continue;
             }
 
-            if (!string.IsNullOrEmpty(_methodName) && !_methodName.Equals(method.Name))
+            if (!string.IsNullOrEmpty(_methodName) && _methodName != method.Name)
             {
                 continue;
             }

@@ -45,7 +45,7 @@ public class RabbitMQProviderConnectorFactory
 
         foreach (MethodInfo ci in declaredMethods)
         {
-            if (ci.Name.Equals("SetUri"))
+            if (ci.Name == "SetUri")
             {
                 return ci;
             }

@@ -529,7 +529,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
         foreach (IQueue queue in queues)
         {
-            if (!queue.QueueName.StartsWith("amq."))
+            if (!queue.QueueName.StartsWith("amq.", StringComparison.Ordinal))
             {
                 _logger?.LogDebug("Declaring Queue '{queueName}'", queue.QueueName);
 
@@ -698,7 +698,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
     private bool IsImplicitQueueBinding(IBinding binding)
     {
-        return IsDefaultExchange(binding.Exchange) && binding.Destination.Equals(binding.RoutingKey);
+        return IsDefaultExchange(binding.Exchange) && binding.Destination == binding.RoutingKey;
     }
 
     private void DoInitialize()

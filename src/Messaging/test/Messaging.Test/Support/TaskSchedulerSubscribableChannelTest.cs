@@ -26,7 +26,7 @@ public class TaskSchedulerSubscribableChannelTest
     public void MessageMustNotBeNull()
     {
         var ex = Assert.Throws<ArgumentNullException>(() => Channel.Send(null));
-        Assert.Contains("message", ex.Message);
+        Assert.Contains("message", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class TaskSchedulerSubscribableChannelTest
         {
             exceptionThrown = true;
             Assert.Equal(ex, actualException.InnerException);
-            Assert.Contains("My exception", actualException.InnerException.Message);
+            Assert.Contains("My exception", actualException.InnerException.Message, StringComparison.Ordinal);
         }
 
         Assert.True(exceptionThrown);

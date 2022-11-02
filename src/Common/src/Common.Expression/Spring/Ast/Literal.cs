@@ -20,7 +20,7 @@ public abstract class Literal : SpelNode
     {
         try
         {
-            int value = int.Parse(numberToken, radix);
+            int value = int.Parse(numberToken, radix, CultureInfo.InvariantCulture);
 
             if (radix == NumberStyles.HexNumber && value < 0)
             {
@@ -40,7 +40,7 @@ public abstract class Literal : SpelNode
     {
         try
         {
-            long value = long.Parse(numberToken, radix);
+            long value = long.Parse(numberToken, radix, CultureInfo.InvariantCulture);
 
             if (radix == NumberStyles.HexNumber && value < 0)
             {
@@ -63,12 +63,12 @@ public abstract class Literal : SpelNode
 
             if (isFloat)
             {
-                float value = float.Parse(toParse);
+                float value = float.Parse(toParse, CultureInfo.InvariantCulture);
                 return new FloatLiteral(numberToken, startPos, endPos, value);
             }
             else
             {
-                double value = double.Parse(toParse);
+                double value = double.Parse(toParse, CultureInfo.InvariantCulture);
                 return new RealLiteral(numberToken, startPos, endPos, value);
             }
         }

@@ -183,7 +183,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         string tempPassword = Password;
         bool resetPassword = false;
 
-        if (Password?.Contains(",") == true)
+        if (Password?.Contains(',') == true)
         {
             Password = string.Empty;
             resetPassword = true;

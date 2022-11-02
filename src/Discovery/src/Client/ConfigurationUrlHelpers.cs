@@ -21,10 +21,12 @@ public static class ConfigurationUrlHelpers
 
             foreach (string address in addresses)
             {
-                if (!Uri.TryCreate(address, UriKind.Absolute, out Uri uri) && (address.Contains("*") || address.Contains("::") || address.Contains("+")))
+                if (!Uri.TryCreate(address, UriKind.Absolute, out Uri uri) && (address.Contains('*') ||
+                    address.Contains("::", StringComparison.Ordinal) || address.Contains('+')))
                 {
-                    Uri.TryCreate(address.Replace("*", WildcardHost).Replace("::", $"{WildcardHost}:").Replace("+", $"{WildcardHost}"), UriKind.Absolute,
-                        out uri);
+                    Uri.TryCreate(
+                        address.Replace("*", WildcardHost, StringComparison.Ordinal).Replace("::", $"{WildcardHost}:", StringComparison.Ordinal)
+                            .Replace("+", $"{WildcardHost}", StringComparison.Ordinal), UriKind.Absolute, out uri);
                 }
 
                 uris.Add(uri);

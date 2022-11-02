@@ -4,6 +4,7 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
@@ -41,7 +42,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
     public override void ProcessEvent(string eventName, object value)
     {
-        if (!StopEvent.Equals(eventName))
+        if (eventName != StopEvent)
         {
             return;
         }
@@ -154,7 +155,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     protected internal string GetTimeTaken(TimeSpan duration)
     {
         long timeInMilliseconds = (long)duration.TotalMilliseconds;
-        return timeInMilliseconds.ToString();
+        return timeInMilliseconds.ToString(CultureInfo.InvariantCulture);
     }
 
     protected internal string GetAuthType(HttpRequest request)
@@ -208,7 +209,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     protected internal Dictionary<string, object> GetHeaders(int status, IHeaderDictionary headers)
     {
         Dictionary<string, object> result = GetHeaders(headers);
-        result.Add("status", status.ToString());
+        result.Add("status", status.ToString(CultureInfo.InvariantCulture));
         return result;
     }
 

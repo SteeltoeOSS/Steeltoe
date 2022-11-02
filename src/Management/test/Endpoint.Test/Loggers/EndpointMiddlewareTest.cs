@@ -162,7 +162,9 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.False(options.ExactMatch);
         Assert.Equal("/actuator/loggers/{**_}", options.GetContextPath(new ActuatorManagementOptions()));
         Assert.Equal("/cloudfoundryapplication/loggers/{**_}", options.GetContextPath(new CloudFoundryManagementOptions()));
-        Assert.Collection(options.AllowedVerbs, verb => Assert.Contains("Get", verb), verb => Assert.Contains("Post", verb));
+
+        Assert.Collection(options.AllowedVerbs, verb => Assert.Contains("Get", verb, StringComparison.Ordinal),
+            verb => Assert.Contains("Post", verb, StringComparison.Ordinal));
     }
 
     [Fact]

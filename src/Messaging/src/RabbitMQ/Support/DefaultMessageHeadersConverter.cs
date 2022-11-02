@@ -124,7 +124,7 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
             {
                 string key = entry.Key;
 
-                if (RabbitMessageHeaders.XDelay.Equals(key))
+                if (key == RabbitMessageHeaders.XDelay)
                 {
                     object value = entry.Value;
 
@@ -192,8 +192,9 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
 
         foreach (KeyValuePair<string, object> entry in source)
         {
-            if (!entry.Key.StartsWith(MessageHeaders.Internal) && !entry.Key.StartsWith(RabbitMessageHeaders.RabbitProperty) &&
-                entry.Key != MessageHeaders.IdName && entry.Key != MessageHeaders.TimestampName)
+            if (!entry.Key.StartsWith(MessageHeaders.Internal, StringComparison.Ordinal) &&
+                !entry.Key.StartsWith(RabbitMessageHeaders.RabbitProperty, StringComparison.Ordinal) && entry.Key != MessageHeaders.IdName &&
+                entry.Key != MessageHeaders.TimestampName)
             {
                 writableHeaders[entry.Key] = ConvertHeaderValueIfNecessary(entry.Value);
             }

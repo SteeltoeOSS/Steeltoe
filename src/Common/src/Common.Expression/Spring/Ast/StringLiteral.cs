@@ -14,8 +14,8 @@ public class StringLiteral : Literal
         : base(payload, startPos, endPos)
     {
         string valueWithinQuotes = value.Substring(1, value.Length - 1 - 1);
-        valueWithinQuotes = valueWithinQuotes.Replace("''", "'");
-        valueWithinQuotes = valueWithinQuotes.Replace("\"\"", "\"");
+        valueWithinQuotes = valueWithinQuotes.Replace("''", "'", StringComparison.Ordinal);
+        valueWithinQuotes = valueWithinQuotes.Replace("\"\"", "\"", StringComparison.Ordinal);
         _value = new TypedValue(valueWithinQuotes);
         exitTypeDescriptor = TypeDescriptor.String;
     }

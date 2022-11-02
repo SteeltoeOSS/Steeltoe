@@ -374,7 +374,7 @@ public class SpelParserTests
     {
         Assert.Equal(expectedMessage, ex.MessageCode);
         Assert.Equal(expectedPosition, ex.Position);
-        Assert.Contains(ex.ExpressionString, ex.Message);
+        Assert.Contains(ex.ExpressionString, ex.Message, StringComparison.Ordinal);
     }
 
     private void CheckNumber(string expression, object value, Type type)

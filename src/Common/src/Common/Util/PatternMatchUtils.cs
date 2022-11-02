@@ -17,7 +17,7 @@ public static class PatternMatchUtils
 
         if (firstIndex == -1)
         {
-            return pattern.Equals(str);
+            return pattern == str;
         }
 
         if (firstIndex == 0)
@@ -31,7 +31,7 @@ public static class PatternMatchUtils
 
             if (nextIndex == -1)
             {
-                return str.EndsWith(pattern.Substring(1));
+                return str.EndsWith(pattern.Substring(1), StringComparison.Ordinal);
             }
 
             string part = pattern.Substring(1, nextIndex - 1);
@@ -41,7 +41,7 @@ public static class PatternMatchUtils
                 return SimpleMatch(pattern.Substring(nextIndex), str);
             }
 
-            int partIndex = str.IndexOf(part);
+            int partIndex = str.IndexOf(part, StringComparison.Ordinal);
 
             while (partIndex != -1)
             {
@@ -50,13 +50,13 @@ public static class PatternMatchUtils
                     return true;
                 }
 
-                partIndex = str.IndexOf(part, partIndex + 1);
+                partIndex = str.IndexOf(part, partIndex + 1, StringComparison.Ordinal);
             }
 
             return false;
         }
 
-        return str.Length >= firstIndex && pattern.Substring(0, firstIndex).Equals(str.Substring(0, firstIndex)) &&
+        return str.Length >= firstIndex && pattern.Substring(0, firstIndex) == str.Substring(0, firstIndex) &&
             SimpleMatch(pattern.Substring(firstIndex), str.Substring(firstIndex));
     }
 

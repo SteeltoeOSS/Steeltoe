@@ -109,7 +109,7 @@ public abstract class AbstractTest
 
         foreach (string name in names)
         {
-            string dir = currentDirectory.Replace("Stream.Test", name);
+            string dir = currentDirectory.Replace("Stream.Test", name, StringComparison.Ordinal);
             results.Add(dir);
         }
 
@@ -127,7 +127,7 @@ public abstract class AbstractTest
 
         foreach (string prop in properties)
         {
-            string[] split = prop.Split("=");
+            string[] split = prop.Split('=');
             split[0] = split[0].Replace('.', ':');
             result.Add(new KeyValuePair<string, string>(split[0], split[1]));
         }

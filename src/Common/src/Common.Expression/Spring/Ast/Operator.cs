@@ -156,14 +156,14 @@ public abstract class Operator : SpelNode
             }
         }
 
-        if (left is string && right is string)
+        if (left is string leftString && right is string rightString)
         {
-            return left.Equals(right);
+            return leftString == rightString;
         }
 
-        if (left is bool && right is bool)
+        if (left is bool leftBool && right is bool rightBool)
         {
-            return left.Equals(right);
+            return leftBool == rightBool;
         }
 
         if (ObjectUtils.NullSafeEquals(left, right))

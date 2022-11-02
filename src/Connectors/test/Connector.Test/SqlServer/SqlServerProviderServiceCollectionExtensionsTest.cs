@@ -30,10 +30,10 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         const IConfigurationRoot configurationRoot = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(configurationRoot));
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(configurationRoot, "foobar"));
-        Assert.Contains(nameof(services), ex2.Message);
+        Assert.Contains(nameof(services), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -43,10 +43,10 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         const string serviceName = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddSqlServerConnection(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex.Message);
+        Assert.Contains(nameof(serviceName), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddSqlServerConnection(configurationRoot, "foobar"));
-        Assert.Contains("foobar", ex.Message);
+        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddSqlServerConnection(configurationRoot));
-        Assert.Contains("Multiple", ex.Message);
+        Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -115,11 +115,11 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
-        Assert.Contains("de5aa3a747c134b3d8780f8cc80be519e", connString);
-        Assert.Contains("1433", connString);
-        Assert.Contains("192.168.0.80", connString);
-        Assert.Contains("uf33b2b30783a4087948c30f6c3b0c90f", connString);
-        Assert.Contains("Pefbb929c1e0945b5bab5b8f0d110c503", connString);
+        Assert.Contains("de5aa3a747c134b3d8780f8cc80be519e", connString, StringComparison.Ordinal);
+        Assert.Contains("1433", connString, StringComparison.Ordinal);
+        Assert.Contains("192.168.0.80", connString, StringComparison.Ordinal);
+        Assert.Contains("uf33b2b30783a4087948c30f6c3b0c90f", connString, StringComparison.Ordinal);
+        Assert.Contains("Pefbb929c1e0945b5bab5b8f0d110c503", connString, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -139,9 +139,9 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
-        Assert.Contains("Initial Catalog=testdb", connString);
-        Assert.Contains("1433", connString);
-        Assert.Contains("Data Source=ajaganathansqlserver", connString);
+        Assert.Contains("Initial Catalog=testdb", connString, StringComparison.Ordinal);
+        Assert.Contains("1433", connString, StringComparison.Ordinal);
+        Assert.Contains("Data Source=ajaganathansqlserver", connString, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -161,14 +161,14 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
-        Assert.Contains("f1egl8ify4;", connString); // database
-        Assert.Contains("fe049939-64f1-44f5-9f84-073ed5c82088.database.windows.net,1433", connString); // host:port
-        Assert.Contains("rgmm5zlri4;", connString); // user
-        Assert.Contains("737mAU1pj6HcBxzw;", connString); // password
+        Assert.Contains("f1egl8ify4;", connString, StringComparison.Ordinal); // database
+        Assert.Contains("fe049939-64f1-44f5-9f84-073ed5c82088.database.windows.net,1433", connString, StringComparison.Ordinal); // host:port
+        Assert.Contains("rgmm5zlri4;", connString, StringComparison.Ordinal); // user
+        Assert.Contains("737mAU1pj6HcBxzw;", connString, StringComparison.Ordinal); // password
 
         // other components of the url from the service broker should carry through to the connection string
-        Assert.Contains("encrypt=true;", connString);
-        Assert.Contains("trustServerCertificate=true", connString);
+        Assert.Contains("encrypt=true;", connString, StringComparison.Ordinal);
+        Assert.Contains("trustServerCertificate=true", connString, StringComparison.Ordinal);
     }
 
     [Fact]

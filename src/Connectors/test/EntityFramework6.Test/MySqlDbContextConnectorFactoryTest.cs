@@ -19,7 +19,7 @@ public class MySqlDbContextConnectorFactoryTest
         const Type dbContextType = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new MySqlDbContextConnectorFactory(si, options, dbContextType));
-        Assert.Contains(nameof(dbContextType), ex.Message);
+        Assert.Contains(nameof(dbContextType), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class MySqlDbContextConnectorFactoryTest
         Type dbContextType = typeof(BadMySqlDbContext);
 
         var ex = Assert.Throws<ConnectorException>(() => new MySqlDbContextConnectorFactory(si, options, dbContextType).Create(null));
-        Assert.Contains("BadMySqlDbContext", ex.Message);
+        Assert.Contains("BadMySqlDbContext", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

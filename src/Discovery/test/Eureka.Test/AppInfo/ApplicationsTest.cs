@@ -14,7 +14,7 @@ public class ApplicationsTest : AbstractBaseTest
     public void ApplicationListConstructor__ThrowsIfListNull()
     {
         var ex = Assert.Throws<ArgumentNullException>(() => new Applications(null));
-        Assert.Contains("apps", ex.Message);
+        Assert.Contains("apps", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class ApplicationsTest : AbstractBaseTest
     {
         var apps = new Applications();
         var ex = Assert.Throws<ArgumentNullException>(() => apps.Add(null));
-        Assert.Contains("app", ex.Message);
+        Assert.Contains("app", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public class ApplicationsTest : AbstractBaseTest
 
         foreach (InstanceInfo instance in instances)
         {
-            Assert.True(instance.InstanceId.Equals("id3") || instance.InstanceId.Equals("id4"));
+            Assert.True(instance.InstanceId == "id3" || instance.InstanceId == "id4");
         }
     }
 
@@ -265,8 +265,8 @@ public class ApplicationsTest : AbstractBaseTest
         IList<Application> registered = apps.GetRegisteredApplications();
         Assert.NotNull(registered);
         Assert.Equal(2, registered.Count);
-        Assert.True(registered[0].Name.Equals("app1") || registered[0].Name.Equals("app2"));
-        Assert.True(registered[1].Name.Equals("app1") || registered[1].Name.Equals("app2"));
+        Assert.True(registered[0].Name == "app1" || registered[0].Name == "app2");
+        Assert.True(registered[1].Name == "app1" || registered[1].Name == "app2");
     }
 
     [Fact]
@@ -397,7 +397,7 @@ public class ApplicationsTest : AbstractBaseTest
     {
         var apps = new Applications();
         var ex = Assert.Throws<ArgumentNullException>(() => apps.GetRegisteredApplication(null));
-        Assert.Contains("appName", ex.Message);
+        Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -405,7 +405,7 @@ public class ApplicationsTest : AbstractBaseTest
     {
         var apps = new Applications();
         var ex = Assert.Throws<ArgumentNullException>(() => apps.GetInstancesBySecureVirtualHostName(null));
-        Assert.Contains("secureVirtualHostName", ex.Message);
+        Assert.Contains("secureVirtualHostName", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -413,7 +413,7 @@ public class ApplicationsTest : AbstractBaseTest
     {
         var apps = new Applications();
         var ex = Assert.Throws<ArgumentNullException>(() => apps.GetInstancesByVirtualHostName(null));
-        Assert.Contains("virtualHostName", ex.Message);
+        Assert.Contains("virtualHostName", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -25,12 +25,12 @@ public class VariableReference : SpelNode
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        if (_name.Equals(This))
+        if (_name == This)
         {
             return state.GetActiveContextObject();
         }
 
-        if (_name.Equals(Root))
+        if (_name == Root)
         {
             ITypedValue obj = state.RootContextObject;
             exitTypeDescriptor = CodeFlow.ToDescriptorFromObject(obj.Value);
@@ -69,7 +69,7 @@ public class VariableReference : SpelNode
 
     public override bool IsWritable(ExpressionState state)
     {
-        return !(_name.Equals(This) || _name.Equals(Root));
+        return !(_name == This || _name == Root);
     }
 
     public override bool IsCompilable()
@@ -79,7 +79,7 @@ public class VariableReference : SpelNode
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
-        if (_name.Equals(Root))
+        if (_name == Root)
         {
             CodeFlow.LoadTarget(gen);
         }
@@ -96,12 +96,12 @@ public class VariableReference : SpelNode
 
     protected internal override IValueRef GetValueRef(ExpressionState state)
     {
-        if (_name.Equals(This))
+        if (_name == This)
         {
             return new TypedValueHolderValueRef(state.GetActiveContextObject(), this);
         }
 
-        if (_name.Equals(Root))
+        if (_name == Root)
         {
             return new TypedValueHolderValueRef(state.RootContextObject, this);
         }

@@ -40,7 +40,7 @@ public class MultiMethodRabbitListenerEndpoint : MethodRabbitListenerEndpoint
             IInvocableHandlerMethod handler = MessageHandlerMethodFactory.CreateInvocableHandlerMethod(Instance, method);
             invocableHandlerMethods.Add(handler);
 
-            if (method.Equals(DefaultMethod))
+            if (method == DefaultMethod)
             {
                 defaultHandler = handler;
             }

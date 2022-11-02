@@ -22,9 +22,9 @@ public class ServiceFactoryResolver : IServiceResolver
         Type result = null;
         name = serviceName;
 
-        if (serviceName.StartsWith("T(") && context.TypeLocator != null)
+        if (serviceName.StartsWith("T(", StringComparison.Ordinal) && context.TypeLocator != null)
         {
-            int endParen = serviceName.LastIndexOf(")");
+            int endParen = serviceName.LastIndexOf(')');
 
             if (endParen > 0)
             {

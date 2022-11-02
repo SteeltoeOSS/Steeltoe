@@ -35,7 +35,7 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
         string token = string.Empty;
         string uri = Options.Uri;
 
-        if (Options.Uri.StartsWith("proxy://"))
+        if (Options.Uri.StartsWith("proxy://", StringComparison.Ordinal))
         {
             uri = $"http{Options.Uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
         }
@@ -81,7 +81,7 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
 
                         IDictionary<string, string> tags = GetTags(metricPoint.Tags);
 
-                        _wavefrontSender.SendMetric(metric.Name.ToLower(), doubleValue, timestamp, Options.Source, tags);
+                        _wavefrontSender.SendMetric(metric.Name.ToLowerInvariant(), doubleValue, timestamp, Options.Source, tags);
                         metricCount++;
                     }
                 }
@@ -94,8 +94,10 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
                         // TODO: Setup custom aggregations to compute distributions
                         IDictionary<string, string> tags = GetTags(metricPoint.Tags);
 
-                        _wavefrontSender.SendMetric($"{metric.Name.ToLower()}_count", metricPoint.GetHistogramCount(), timestamp, Options.Source, tags);
-                        _wavefrontSender.SendMetric($"{metric.Name.ToLower()}_sum", metricPoint.GetHistogramSum(), timestamp, Options.Source, tags);
+                        _wavefrontSender.SendMetric($"{metric.Name.ToLowerInvariant()}_count", metricPoint.GetHistogramCount(), timestamp, Options.Source,
+                            tags);
+
+                        _wavefrontSender.SendMetric($"{metric.Name.ToLowerInvariant()}_sum", metricPoint.GetHistogramSum(), timestamp, Options.Source, tags);
                         metricCount += 2;
                     }
                 }
@@ -113,8 +115,8 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
     private IDictionary<string, string> GetTags(ReadOnlyTagCollection inputTags)
     {
         IDictionary<string, string> tags = inputTags.AsDictionary();
-        tags.Add("application", Options.Name.ToLower());
-        tags.Add("service", Options.Service.ToLower());
+        tags.Add("application", Options.Name.ToLowerInvariant());
+        tags.Add("service", Options.Service.ToLowerInvariant());
         tags.Add("component", "wavefront-metrics-exporter");
         return tags;
     }

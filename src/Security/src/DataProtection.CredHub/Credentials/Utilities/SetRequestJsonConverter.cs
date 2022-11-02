@@ -24,7 +24,7 @@ public class SetRequestJsonConverter : JsonConverter<CredentialSetRequest>
         {
             if (prop.GetValue(value.Value) != null || options.DefaultIgnoreCondition != JsonIgnoreCondition.WhenWritingNull)
             {
-                writer.WriteString(prop.Name.ToLower(), prop.GetValue(value.Value)?.ToString());
+                writer.WriteString(prop.Name.ToLowerInvariant(), prop.GetValue(value.Value)?.ToString());
             }
         }
 

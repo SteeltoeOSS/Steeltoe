@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Reflection;
 using Moq;
 using Steeltoe.Messaging.Handler;
@@ -84,7 +85,7 @@ public class InvocableHandlerMethodTest
 
         _resolvers = new HandlerMethodArgumentResolverComposite();
         var ex = Assert.Throws<MethodArgumentResolutionException>(() => Invoke(new Handler(), method));
-        Assert.Contains("Could not resolve parameter [0]", ex.Message);
+        Assert.Contains("Could not resolve parameter [0]", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -162,11 +163,11 @@ public class InvocableHandlerMethodTest
         _resolvers.AddResolver(new StubArgumentResolver(typeof(int?), "__not_an_int__"));
         _resolvers.AddResolver(new StubArgumentResolver("value"));
         var ex = Assert.Throws<InvalidOperationException>(() => Invoke(new Handler(), method));
-        Assert.Contains("Endpoint [", ex.Message);
-        Assert.Contains("Method [", ex.Message);
-        Assert.Contains("with argument values:", ex.Message);
-        Assert.Contains("[0] [type=System.String] [value=__not_an_int__]", ex.Message);
-        Assert.Contains("[1] [type=System.String] [value=value", ex.Message);
+        Assert.Contains("Endpoint [", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("Method [", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("with argument values:", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("[0] [type=System.String] [value=__not_an_int__]", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("[1] [type=System.String] [value=value", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -332,7 +333,7 @@ public class InvocableHandlerMethodTest
     {
         public string Handle(int? intArg, string stringArg)
         {
-            return $"{(intArg.HasValue ? intArg.Value.ToString() : "null")}-{stringArg ?? "null"}";
+            return $"{(intArg.HasValue ? intArg.Value.ToString(CultureInfo.InvariantCulture) : "null")}-{stringArg ?? "null"}";
         }
 
         public void Handle(double amount)
@@ -356,7 +357,7 @@ public class InvocableHandlerMethodTest
         public string HandleNullablePrimitive(int? intArg, string stringArg)
         {
             InvocationCount++;
-            return $"{(intArg == null ? "null" : intArg.Value.ToString())}-{stringArg ?? "null"}";
+            return $"{(intArg == null ? "null" : intArg.Value.ToString(CultureInfo.InvariantCulture))}-{stringArg ?? "null"}";
         }
 
         public void HandleSinglePrimitiveReturnVoid(double value)
@@ -396,7 +397,7 @@ public class InvocableHandlerMethodTest
         public Task<string> HandleAsyncStringMethodAsync(int? intArg, string stringArg)
         {
             InvocationCount++;
-            string result = $"{(intArg == null ? "null" : intArg.Value.ToString())}-{stringArg ?? "null"}";
+            string result = $"{(intArg == null ? "null" : intArg.Value.ToString(CultureInfo.InvariantCulture))}-{stringArg ?? "null"}";
             return Task.FromResult(result);
         }
     }

@@ -72,7 +72,7 @@ public abstract class CommonHystrixCommandTests<TCommand> : HystrixTestBase
         IHystrixRequestLog currentRequestLog = HystrixRequestLog.CurrentRequestLog;
 
         Assert.Equal(numCommands, currentRequestLog.AllExecutedCommands.Count);
-        Assert.DoesNotContain("Executed", currentRequestLog.GetExecutedCommandsAsString());
+        Assert.DoesNotContain("Executed", currentRequestLog.GetExecutedCommandsAsString(), StringComparison.Ordinal);
         Assert.True(currentRequestLog.AllExecutedCommands.First().ExecutionEvents.Count >= 1);
 
         // Most commands should have 1 execution event, but fallbacks / responses from cache can cause more than 1.  They should never have 0

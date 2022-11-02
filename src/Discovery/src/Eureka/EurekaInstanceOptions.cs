@@ -72,7 +72,7 @@ public class EurekaInstanceOptions : EurekaInstanceConfiguration, IDiscoveryRegi
         get => GetHostName(false);
         set
         {
-            if (!value.Equals(base.HostName))
+            if (value != base.HostName)
             {
                 _hostName = value;
             }
@@ -123,7 +123,7 @@ public class EurekaInstanceOptions : EurekaInstanceConfiguration, IDiscoveryRegi
                     NonSecurePortEnabled = false;
                 }
 
-                if (!address.Host.Equals(wildcardHostname) && !address.Host.Equals("0.0.0.0"))
+                if (address.Host != wildcardHostname && address.Host != "0.0.0.0")
                 {
                     HostName = address.Host;
                 }

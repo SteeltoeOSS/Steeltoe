@@ -324,7 +324,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
             return num;
         }
 
-        public string HeadersWithExpressions([Header("emp.FirstName")] string firstName, [Header("emp.LastName.ToUpper()")] string lastName)
+        public string HeadersWithExpressions([Header("emp.FirstName")] string firstName, [Header("emp.LastName.ToUpperInvariant()")] string lastName)
         {
             return $"{lastName}, {firstName}";
         }
@@ -403,7 +403,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
 
         public string HeaderNameWithHyphen([Header("foo-bar")] string foobar)
         {
-            return foobar.ToUpper();
+            return foobar.ToUpperInvariant();
         }
 
         public string HeaderId(string payload, [Header("id")] string id)

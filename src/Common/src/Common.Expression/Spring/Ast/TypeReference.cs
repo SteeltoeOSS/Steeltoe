@@ -35,9 +35,9 @@ public class TypeReference : SpelNode
             throw new InvalidOperationException("No type name");
         }
 
-        if (!typeName.Contains(".") && char.IsLower(typeName[0]))
+        if (!typeName.Contains('.') && char.IsLower(typeName[0]))
         {
-            SpelTypeCode tc = SpelTypeCode.ForName(typeName.ToUpper());
+            SpelTypeCode tc = SpelTypeCode.ForName(typeName.ToUpperInvariant());
 
             if (tc != SpelTypeCode.Object)
             {

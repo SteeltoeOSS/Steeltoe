@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -16,6 +17,6 @@ public class BoolStringJsonConverter : JsonConverter<bool>
 
     public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(value.ToString().ToLower());
+        writer.WriteStringValue(value.ToString(CultureInfo.InvariantCulture).ToLowerInvariant());
     }
 }

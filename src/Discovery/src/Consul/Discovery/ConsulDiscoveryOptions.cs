@@ -57,7 +57,7 @@ public class ConsulDiscoveryOptions
     public string Scheme
     {
         get => _scheme;
-        set => _scheme = value?.ToLower();
+        set => _scheme = value?.ToLowerInvariant();
     }
 
     /// <summary>
@@ -229,7 +229,7 @@ public class ConsulDiscoveryOptions
         if (addresses.Any() && !UseNetUtils && UseAspNetCoreUrls && Port == 0)
         {
             // prefer https
-            Uri configAddress = addresses.FirstOrDefault(u => u.Scheme.Equals("https"));
+            Uri configAddress = addresses.FirstOrDefault(u => u.Scheme == "https");
 
             if (configAddress == null)
             {
@@ -239,7 +239,7 @@ public class ConsulDiscoveryOptions
             Port = configAddress.Port;
 
             // only set the host if it isn't a wildcard
-            if (!configAddress.Host.Equals(wildcardHostname) && !configAddress.Host.Equals("0.0.0.0"))
+            if (configAddress.Host != wildcardHostname && configAddress.Host != "0.0.0.0")
             {
                 HostName = configAddress.Host;
             }

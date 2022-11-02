@@ -31,7 +31,7 @@ public class ExceptionDepthComparator : IComparer<Type>
 
     private int GetDepth(Type declaredException, Type exceptionToMatch, int depth)
     {
-        if (exceptionToMatch.Equals(declaredException))
+        if (exceptionToMatch == declaredException)
         {
             // Found it!
             return depth;

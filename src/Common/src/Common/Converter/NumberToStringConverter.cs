@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
+
 namespace Steeltoe.Common.Converter;
 
 public class NumberToStringConverter : AbstractGenericConverter
@@ -13,7 +15,7 @@ public class NumberToStringConverter : AbstractGenericConverter
 
     public override object Convert(object source, Type sourceType, Type targetType)
     {
-        return System.Convert.ToString(source);
+        return System.Convert.ToString(source, CultureInfo.InvariantCulture);
     }
 
     private static ISet<(Type SourceType, Type TargetType)> GetConvertiblePairs()

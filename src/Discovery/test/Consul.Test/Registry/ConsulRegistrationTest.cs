@@ -85,7 +85,7 @@ public class ConsulRegistrationTest
 
         // default value is assembly name
         var result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
-        Assert.Equal(TestHelpers.EntryAssemblyName.Replace(".", "-"), result.Service.Name);
+        Assert.Equal(TestHelpers.EntryAssemblyName.Replace('.', '-'), result.Service.Name);
 
         // followed by spring:application:name
         appsettings.Add("spring:application:name", "SpringApplicationName");
@@ -152,7 +152,7 @@ public class ConsulRegistrationTest
 
         IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
         string result = ConsulRegistration.GetDefaultInstanceId(new ApplicationInstanceInfo(configuration));
-        Assert.StartsWith("serviceName:", result);
+        Assert.StartsWith("serviceName:", result, StringComparison.Ordinal);
 
         appsettings.Add("spring:application:instance_id", "springid");
         configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
@@ -184,7 +184,7 @@ public class ConsulRegistrationTest
         options.InstanceId = null;
 
         result = ConsulRegistration.GetInstanceId(options, new ApplicationInstanceInfo(configurationRoot));
-        Assert.StartsWith("foobar-", result);
+        Assert.StartsWith("foobar-", result, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -236,7 +236,7 @@ public class ConsulRegistrationTest
 
         var reg = ConsulRegistration.CreateRegistration(options, new ApplicationInstanceInfo(configurationRoot));
 
-        Assert.StartsWith("foobar-", reg.InstanceId);
+        Assert.StartsWith("foobar-", reg.InstanceId, StringComparison.Ordinal);
         Assert.False(reg.IsSecure);
         Assert.Equal("foobar", reg.ServiceId);
         Assert.Equal(options.HostName, reg.Host);
@@ -246,7 +246,7 @@ public class ConsulRegistrationTest
         Assert.NotNull(reg.Service);
 
         Assert.Equal(hostName, reg.Service.Address);
-        Assert.StartsWith("foobar-", reg.Service.ID);
+        Assert.StartsWith("foobar-", reg.Service.ID, StringComparison.Ordinal);
         Assert.Equal("foobar", reg.Service.Name);
         Assert.Equal(1100, reg.Service.Port);
         Assert.NotNull(reg.Service.Check);

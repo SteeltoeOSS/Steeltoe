@@ -61,7 +61,7 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
 
     private static string NormalizeKey(string key)
     {
-        return key.Replace("__", ":");
+        return key.Replace("__", ":", StringComparison.Ordinal);
     }
 
     private void EnableReloading()

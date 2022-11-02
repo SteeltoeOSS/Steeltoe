@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Security.Authentication;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
@@ -298,12 +299,12 @@ public class RabbitOptions
 
         private string TrimPrefix(string input)
         {
-            if (input.StartsWith(PrefixAmqp))
+            if (input.StartsWith(PrefixAmqp, StringComparison.Ordinal))
             {
                 input = input.Substring(PrefixAmqp.Length);
                 SecureConnection = false;
             }
-            else if (input.StartsWith(PrefixAmqpSecure))
+            else if (input.StartsWith(PrefixAmqpSecure, StringComparison.Ordinal))
             {
                 input = input.Substring(PrefixAmqpSecure.Length);
                 SecureConnection = true;
@@ -314,12 +315,12 @@ public class RabbitOptions
 
         private string ParseUsernameAndPassword(string input)
         {
-            if (input.Contains("@"))
+            if (input.Contains('@'))
             {
-                string[] split = input.Split("@", StringSplitOptions.RemoveEmptyEntries);
+                string[] split = input.Split('@', StringSplitOptions.RemoveEmptyEntries);
                 string credentials = split[0];
                 input = split[1];
-                split = credentials.Split(":", StringSplitOptions.RemoveEmptyEntries);
+                split = credentials.Split(':', StringSplitOptions.RemoveEmptyEntries);
                 Username = split[0];
 
                 if (split.Length > 0)
@@ -362,7 +363,7 @@ public class RabbitOptions
             else
             {
                 Host = input.Substring(0, portIndex);
-                Port = int.Parse(input.Substring(portIndex + 1));
+                Port = int.Parse(input.Substring(portIndex + 1), CultureInfo.InvariantCulture);
             }
         }
     }

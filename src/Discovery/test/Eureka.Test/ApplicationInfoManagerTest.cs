@@ -37,7 +37,7 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
     public void Initialize_Throws_IfInstanceConfigNull()
     {
         var ex = Assert.Throws<ArgumentNullException>(() => ApplicationInfoManager.Instance.Initialize(null));
-        Assert.Contains("instanceConfig", ex.Message);
+        Assert.Contains("instanceConfig", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

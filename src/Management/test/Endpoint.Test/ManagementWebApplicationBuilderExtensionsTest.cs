@@ -121,9 +121,9 @@ public class ManagementWebApplicationBuilderExtensionsTest
         HttpResponseMessage livenessResult = await client.GetAsync("actuator/health/liveness");
         HttpResponseMessage readinessResult = await client.GetAsync("actuator/health/readiness");
         Assert.Equal(HttpStatusCode.OK, livenessResult.StatusCode);
-        Assert.Contains("\"LivenessState\":\"CORRECT\"", await livenessResult.Content.ReadAsStringAsync());
+        Assert.Contains("\"LivenessState\":\"CORRECT\"", await livenessResult.Content.ReadAsStringAsync(), StringComparison.Ordinal);
         Assert.Equal(HttpStatusCode.OK, readinessResult.StatusCode);
-        Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await readinessResult.Content.ReadAsStringAsync());
+        Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await readinessResult.Content.ReadAsStringAsync(), StringComparison.Ordinal);
 
         // confirm that the Readiness state will be changed to refusing traffic when ApplicationStopping fires
         var availability = host.Services.GetService<ApplicationAvailability>();

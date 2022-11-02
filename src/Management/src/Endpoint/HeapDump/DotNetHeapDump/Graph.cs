@@ -1906,7 +1906,7 @@ internal sealed class SpanningTree
     internal static string ToDotNetRegEx(string str)
     {
         // A leading @ sign means the rest is a .NET regular expression.  (Undocumented, not really needed yet.)
-        if (str.StartsWith("@"))
+        if (str.StartsWith('@'))
         {
             return str.Substring(1);
         }
@@ -1917,7 +1917,7 @@ internal sealed class SpanningTree
         str = str.Replace(@"\^", @"^");         // ^ means anchor at the beginning.  
         str = str.Replace(@"\|", @"|");         // | means is the or operator  
         str = str.Replace(@"\{", "(");
-        str = str.Replace("}", ")");
+        str = str.Replace('}', ')');
         return str;
     }
 
@@ -2522,7 +2522,7 @@ internal sealed class GraphSampler
                 stats.TotalCount++;
                 stats.TotalMetric += node.Size;
                 totalSize += node.Size;
-                Debug.Assert(node.Size != 0 || typeName.StartsWith("[") || typeName == "UNDEFINED");
+                Debug.Assert(node.Size != 0 || typeName.StartsWith('[') || typeName == "UNDEFINED");
                 if (IsSampledNode(newNodeIdx) || newNodeIdx == PotentialNode)
                 {
                     if (nodeIdx != m_graph.RootIndex)

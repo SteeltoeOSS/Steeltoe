@@ -36,12 +36,12 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;
 
-        if (context.Request.Method.Equals("POST"))
+        if (context.Request.Method == "POST")
         {
             // POST - change a logger level
             var paths = new List<string>();
             logger?.LogDebug("Incoming path: {path}", request.Path.Value);
-            paths.Add(managementOptions == null ? Endpoint.Path : $"{managementOptions.Path}/{Endpoint.Path}".Replace("//", "/"));
+            paths.Add(managementOptions == null ? Endpoint.Path : $"{managementOptions.Path}/{Endpoint.Path}".Replace("//", "/", StringComparison.Ordinal));
 
             foreach (string path in paths.Distinct())
             {

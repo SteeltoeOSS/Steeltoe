@@ -36,7 +36,7 @@ internal sealed class TestExceptionResolver : AbstractExceptionHandlerMethodReso
 
         foreach (MethodInfo method in methods)
         {
-            if (method.Name.StartsWith("Handle") && method.Name.EndsWith("Exception"))
+            if (method.Name.StartsWith("Handle", StringComparison.Ordinal) && method.Name.EndsWith("Exception", StringComparison.Ordinal))
             {
                 results.Add(method);
             }

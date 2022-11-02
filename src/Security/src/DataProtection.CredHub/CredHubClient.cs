@@ -74,7 +74,7 @@ public class CredHubClient : ICredHubClient
 
         if (string.IsNullOrEmpty(uaaOverrideUrl))
         {
-            HttpResponseMessage info = await _httpClient.GetAsync($"{_baseCredHubUrl.Replace("/api", "/info")}");
+            HttpResponseMessage info = await _httpClient.GetAsync($"{_baseCredHubUrl.Replace("/api", "/info", StringComparison.Ordinal)}");
 
             var infoResponse = await HandleErrorParseResponseAsync<CredHubServerInfo>(info, "GET /info from CredHub Server");
 

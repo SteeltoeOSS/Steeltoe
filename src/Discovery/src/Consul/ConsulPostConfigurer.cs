@@ -20,7 +20,7 @@ public static class ConsulPostConfigurer
     /// </param>
     public static void ValidateConsulOptions(ConsulOptions options)
     {
-        if ((Platform.IsContainerized || Platform.IsCloudHosted) && options.Host.Equals("localhost"))
+        if ((Platform.IsContainerized || Platform.IsCloudHosted) && options.Host == "localhost")
         {
             throw new InvalidOperationException(
                 $"Consul URL {options.Scheme}://{options.Host}:{options.Port} is not valid in containerized or cloud environments. Please configure Consul:Host with a non-localhost server.");

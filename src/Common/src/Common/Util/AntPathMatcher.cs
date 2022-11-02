@@ -112,7 +112,7 @@ public class AntPathMatcher : IPathMatcher
             {
                 for (; segment < pathParts.Length; segment++)
                 {
-                    if (pathStarted || (segment == 0 && !pattern.StartsWith(_pathSeparator)))
+                    if (pathStarted || (segment == 0 && !pattern.StartsWith(_pathSeparator, StringComparison.Ordinal)))
                     {
                         builder.Append(_pathSeparator);
                     }
@@ -158,7 +158,7 @@ public class AntPathMatcher : IPathMatcher
 
         bool pattern1ContainsUriVar = pattern1.IndexOf('{') != -1;
 
-        if (!pattern1.Equals(pattern2) && !pattern1ContainsUriVar && Match(pattern1, pattern2))
+        if (pattern1 != pattern2 && !pattern1ContainsUriVar && Match(pattern1, pattern2))
         {
             // /* + /hotel -> /hotel ; "/*.*" + "/*.html" -> /*.html
             // However /user + /user -> /usr/user ; /{foo} + /bar -> /{foo}/bar
@@ -167,21 +167,21 @@ public class AntPathMatcher : IPathMatcher
 
         // /hotels/* + /booking -> /hotels/booking
         // /hotels/* + booking -> /hotels/booking
-        if (pattern1.EndsWith(_pathSeparatorPatternCache.EndsOnWildCard))
+        if (pattern1.EndsWith(_pathSeparatorPatternCache.EndsOnWildCard, StringComparison.Ordinal))
         {
             return Concat(pattern1.Substring(0, pattern1.Length - 2), pattern2);
         }
 
         // /hotels/** + /booking -> /hotels/**/booking
         // /hotels/** + booking -> /hotels/**/booking
-        if (pattern1.EndsWith(_pathSeparatorPatternCache.EndsOnDoubleWildCard))
+        if (pattern1.EndsWith(_pathSeparatorPatternCache.EndsOnDoubleWildCard, StringComparison.Ordinal))
         {
             return Concat(pattern1, pattern2);
         }
 
-        int starDotPos1 = pattern1.IndexOf("*.");
+        int starDotPos1 = pattern1.IndexOf("*.", StringComparison.Ordinal);
 
-        if (pattern1ContainsUriVar || starDotPos1 == -1 || _pathSeparator.Equals("."))
+        if (pattern1ContainsUriVar || starDotPos1 == -1 || _pathSeparator == ".")
         {
             // simply concatenate the two patterns
             return Concat(pattern1, pattern2);
@@ -191,8 +191,8 @@ public class AntPathMatcher : IPathMatcher
         int dotPos2 = pattern2.IndexOf('.');
         string file2 = dotPos2 == -1 ? pattern2 : pattern2.Substring(0, dotPos2);
         string ext2 = dotPos2 == -1 ? string.Empty : pattern2.Substring(dotPos2);
-        bool ext1All = ext1.Equals(".*") || ext1 == string.Empty;
-        bool ext2All = ext2.Equals(".*") || ext2 == string.Empty;
+        bool ext1All = ext1 == ".*" || ext1 == string.Empty;
+        bool ext2All = ext2 == ".*" || ext2 == string.Empty;
 
         if (!ext1All && !ext2All)
         {
@@ -210,7 +210,7 @@ public class AntPathMatcher : IPathMatcher
 
     protected virtual bool DoMatch(string pattern, string path, bool fullMatch, IDictionary<string, string> uriTemplateVariables)
     {
-        if (path.StartsWith(_pathSeparator) != pattern.StartsWith(_pathSeparator))
+        if (path.StartsWith(_pathSeparator, StringComparison.Ordinal) != pattern.StartsWith(_pathSeparator, StringComparison.Ordinal))
         {
             return false;
         }
@@ -234,7 +234,7 @@ public class AntPathMatcher : IPathMatcher
         {
             string patternDir = patternDirs[patternIdxStart];
 
-            if ("**".Equals(patternDir))
+            if (patternDir == "**")
             {
                 break;
             }
@@ -253,7 +253,7 @@ public class AntPathMatcher : IPathMatcher
             // Path is exhausted, only match if rest of pattern is * or **'s
             if (patternIdxStart > patternIdxEnd)
             {
-                return pattern.EndsWith(_pathSeparator) == path.EndsWith(_pathSeparator);
+                return pattern.EndsWith(_pathSeparator, StringComparison.Ordinal) == path.EndsWith(_pathSeparator, StringComparison.Ordinal);
             }
 
             if (!fullMatch)
@@ -261,14 +261,14 @@ public class AntPathMatcher : IPathMatcher
                 return true;
             }
 
-            if (patternIdxStart == patternIdxEnd && patternDirs[patternIdxStart].Equals("*") && path.EndsWith(_pathSeparator))
+            if (patternIdxStart == patternIdxEnd && patternDirs[patternIdxStart] == "*" && path.EndsWith(_pathSeparator, StringComparison.Ordinal))
             {
                 return true;
             }
 
             for (int i = patternIdxStart; i <= patternIdxEnd; i++)
             {
-                if (!patternDirs[i].Equals("**"))
+                if (patternDirs[i] != "**")
                 {
                     return false;
                 }
@@ -283,7 +283,7 @@ public class AntPathMatcher : IPathMatcher
             return false;
         }
 
-        if (!fullMatch && "**".Equals(patternDirs[patternIdxStart]))
+        if (!fullMatch && patternDirs[patternIdxStart] == "**")
         {
             // Path start definitely matches due to "**" part in pattern.
             return true;
@@ -294,7 +294,7 @@ public class AntPathMatcher : IPathMatcher
         {
             string patternDir = patternDirs[patternIdxEnd];
 
-            if (patternDir.Equals("**"))
+            if (patternDir == "**")
             {
                 break;
             }
@@ -313,7 +313,7 @@ public class AntPathMatcher : IPathMatcher
             // String is exhausted
             for (int i = patternIdxStart; i <= patternIdxEnd; i++)
             {
-                if (!patternDirs[i].Equals("**"))
+                if (patternDirs[i] != "**")
                 {
                     return false;
                 }
@@ -328,7 +328,7 @@ public class AntPathMatcher : IPathMatcher
 
             for (int i = patternIdxStart + 1; i <= patternIdxEnd; i++)
             {
-                if (patternDirs[i].Equals("**"))
+                if (patternDirs[i] == "**")
                 {
                     patIdxTmp = i;
                     break;
@@ -384,7 +384,7 @@ public class AntPathMatcher : IPathMatcher
 
         for (int i = patternIdxStart; i <= patternIdxEnd; i++)
         {
-            if (!patternDirs[i].Equals("**"))
+            if (patternDirs[i] != "**")
             {
                 return false;
             }
@@ -480,8 +480,8 @@ public class AntPathMatcher : IPathMatcher
 
     private string Concat(string path1, string path2)
     {
-        bool path1EndsWithSeparator = path1.EndsWith(_pathSeparator);
-        bool path2StartsWithSeparator = path2.StartsWith(_pathSeparator);
+        bool path1EndsWithSeparator = path1.EndsWith(_pathSeparator, StringComparison.Ordinal);
+        bool path2StartsWithSeparator = path2.StartsWith(_pathSeparator, StringComparison.Ordinal);
 
         if (path1EndsWithSeparator && path2StartsWithSeparator)
         {
@@ -557,7 +557,7 @@ public class AntPathMatcher : IPathMatcher
         int skipped = 0;
         path = path.Substring(pos);
 
-        while (path.StartsWith(separator))
+        while (path.StartsWith(separator, StringComparison.Ordinal))
         {
             skipped += separator.Length;
             path = path.Substring(separator.Length);
@@ -615,8 +615,8 @@ public class AntPathMatcher : IPathMatcher
                 return -1;
             }
 
-            bool pattern1EqualsPath = pattern1.Equals(_path);
-            bool pattern2EqualsPath = pattern2.Equals(_path);
+            bool pattern1EqualsPath = pattern1 == _path;
+            bool pattern2EqualsPath = pattern2 == _path;
 
             if (pattern1EqualsPath && pattern2EqualsPath)
             {
@@ -711,8 +711,8 @@ public class AntPathMatcher : IPathMatcher
                 if (_pattern != null)
                 {
                     InitCounters();
-                    _catchAllPattern = _pattern.Equals("/**");
-                    IsPrefixPattern = !_catchAllPattern && _pattern.EndsWith("/**");
+                    _catchAllPattern = _pattern == "/**";
+                    IsPrefixPattern = !_catchAllPattern && _pattern.EndsWith("/**", StringComparison.Ordinal);
                 }
 
                 if (UriVars == 0)
@@ -741,7 +741,7 @@ public class AntPathMatcher : IPathMatcher
                                 DoubleWildcards++;
                                 pos += 2;
                             }
-                            else if (pos > 0 && !_pattern.Substring(pos - 1).Equals(".*"))
+                            else if (pos > 0 && _pattern.Substring(pos - 1) != ".*")
                             {
                                 SingleWildcards++;
                                 pos++;
@@ -784,15 +784,15 @@ public class AntPathMatcher : IPathMatcher
                 patternBuilder.Append(Quote(pattern, end, matcher.Index));
                 string match = matcher.Value;
 
-                if ("?".Equals(match))
+                if (match == "?")
                 {
                     patternBuilder.Append('.');
                 }
-                else if ("*".Equals(match))
+                else if (match == "*")
                 {
                     patternBuilder.Append(".*");
                 }
-                else if (match.StartsWith("{") && match.EndsWith("}"))
+                else if (match.StartsWith('{') && match.EndsWith('}'))
                 {
                     int colonIdx = match.IndexOf(':');
 

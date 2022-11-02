@@ -43,7 +43,7 @@ public class AggregateMessageDeliveryException : MessageDeliveryException
             return string.Empty;
         }
 
-        if (!baseMessage.EndsWith(".", StringComparison.Ordinal))
+        if (!baseMessage.EndsWith('.'))
         {
             return $"{baseMessage}.";
         }

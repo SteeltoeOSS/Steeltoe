@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Xunit;
@@ -87,9 +88,9 @@ public class EurekaServerHealthContributorTest
 
         contrib.AddFetchStatus(configuration, results, 0);
         Assert.Contains("fetch", results.Details.Keys);
-        Assert.Contains("Not yet successfully connected", (string)results.Details["fetch"]);
+        Assert.Contains("Not yet successfully connected", (string)results.Details["fetch"], StringComparison.Ordinal);
         Assert.Contains("fetchTime", results.Details.Keys);
-        Assert.Contains("UNKNOWN", (string)results.Details["fetchTime"]);
+        Assert.Contains("UNKNOWN", (string)results.Details["fetchTime"], StringComparison.Ordinal);
         Assert.Contains("fetchStatus", results.Details.Keys);
         Assert.Equal("UNKNOWN", results.Details["fetchStatus"]);
 
@@ -98,9 +99,9 @@ public class EurekaServerHealthContributorTest
         var dateTime = new DateTime(ticks);
         contrib.AddFetchStatus(configuration, results, ticks);
         Assert.Contains("fetch", results.Details.Keys);
-        Assert.Contains("Reporting failures", (string)results.Details["fetch"]);
+        Assert.Contains("Reporting failures", (string)results.Details["fetch"], StringComparison.Ordinal);
         Assert.Contains("fetchTime", results.Details.Keys);
-        Assert.Equal(dateTime.ToString("s"), (string)results.Details["fetchTime"]);
+        Assert.Equal(dateTime.ToString("s", CultureInfo.InvariantCulture), (string)results.Details["fetchTime"]);
         Assert.Contains("fetchFailures", results.Details.Keys);
         Assert.Equal(10, (long)results.Details["fetchFailures"]);
         Assert.Contains("fetchStatus", results.Details.Keys);
@@ -127,9 +128,9 @@ public class EurekaServerHealthContributorTest
 
         contrib.AddHeartbeatStatus(clientConfig, instanceConfig, results, 0);
         Assert.Contains("heartbeat", results.Details.Keys);
-        Assert.Contains("Not yet successfully connected", (string)results.Details["heartbeat"]);
+        Assert.Contains("Not yet successfully connected", (string)results.Details["heartbeat"], StringComparison.Ordinal);
         Assert.Contains("heartbeatTime", results.Details.Keys);
-        Assert.Contains("UNKNOWN", (string)results.Details["heartbeatTime"]);
+        Assert.Contains("UNKNOWN", (string)results.Details["heartbeatTime"], StringComparison.Ordinal);
         Assert.Contains("heartbeatStatus", results.Details.Keys);
         Assert.Equal("UNKNOWN", results.Details["heartbeatStatus"]);
 
@@ -138,9 +139,9 @@ public class EurekaServerHealthContributorTest
         var dateTime = new DateTime(ticks);
         contrib.AddHeartbeatStatus(clientConfig, instanceConfig, results, ticks);
         Assert.Contains("heartbeat", results.Details.Keys);
-        Assert.Contains("Reporting failures", (string)results.Details["heartbeat"]);
+        Assert.Contains("Reporting failures", (string)results.Details["heartbeat"], StringComparison.Ordinal);
         Assert.Contains("heartbeatTime", results.Details.Keys);
-        Assert.Equal(dateTime.ToString("s"), (string)results.Details["heartbeatTime"]);
+        Assert.Equal(dateTime.ToString("s", CultureInfo.InvariantCulture), (string)results.Details["heartbeatTime"]);
         Assert.Contains("heartbeatFailures", results.Details.Keys);
         Assert.Equal(10, (long)results.Details["heartbeatFailures"]);
         Assert.Contains("heartbeatStatus", results.Details.Keys);

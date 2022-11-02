@@ -35,7 +35,7 @@ public class WavefrontTraceExporter : BaseExporter<Activity>
         string token = string.Empty;
         string uri = _options.Uri;
 
-        if (_options.Uri.StartsWith("proxy://"))
+        if (_options.Uri.StartsWith("proxy://", StringComparison.Ordinal))
         {
             uri = $"http{_options.Uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
         }
@@ -62,7 +62,7 @@ public class WavefrontTraceExporter : BaseExporter<Activity>
         {
             try
             {
-                if (activity.Tags.Any(t => t.Key == "http.url" && !t.Value.Contains(_options.Uri)))
+                if (activity.Tags.Any(t => t.Key == "http.url" && !t.Value.Contains(_options.Uri, StringComparison.Ordinal)))
                 {
                     _wavefrontSender.SendSpan(activity.OperationName, DateTimeUtils.UnixTimeMilliseconds(activity.StartTimeUtc), activity.Duration.Milliseconds,
                         _options.Source, Guid.Parse(activity.TraceId.ToString()), FromActivitySpanId(activity.SpanId), new List<Guid>
@@ -86,8 +86,8 @@ public class WavefrontTraceExporter : BaseExporter<Activity>
     private IList<KeyValuePair<string, string>> GetTags(IEnumerable<KeyValuePair<string, string>> inputTags)
     {
         List<KeyValuePair<string, string>> tags = inputTags.ToList();
-        tags.Add(new KeyValuePair<string, string>("application", _options.Name.ToLower()));
-        tags.Add(new KeyValuePair<string, string>("service", _options.Service.ToLower()));
+        tags.Add(new KeyValuePair<string, string>("application", _options.Name.ToLowerInvariant()));
+        tags.Add(new KeyValuePair<string, string>("service", _options.Service.ToLowerInvariant()));
         tags.Add(new KeyValuePair<string, string>("component", "wavefront-trace-exporter"));
         return tags;
     }

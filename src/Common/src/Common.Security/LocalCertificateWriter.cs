@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Security;
 public class LocalCertificateWriter
 {
     public static readonly string AppBasePath =
-        AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.LastIndexOf($"{Path.DirectorySeparatorChar}bin"));
+        AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.LastIndexOf($"{Path.DirectorySeparatorChar}bin", StringComparison.Ordinal));
 
     internal string CertificateFilenamePrefix { get; set; } = "SteeltoeInstance";
 

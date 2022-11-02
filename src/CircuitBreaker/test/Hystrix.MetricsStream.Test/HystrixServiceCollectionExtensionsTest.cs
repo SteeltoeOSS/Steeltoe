@@ -21,19 +21,19 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConfigStream());
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMetricsStream(configuration));
-        Assert.Contains(nameof(services), ex2.Message);
+        Assert.Contains(nameof(services), ex2.Message, StringComparison.Ordinal);
 
         var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams(configuration));
-        Assert.Contains(nameof(services), ex3.Message);
+        Assert.Contains(nameof(services), ex3.Message, StringComparison.Ordinal);
 
         var ex4 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixRequestEventStream());
-        Assert.Contains(nameof(services), ex4.Message);
+        Assert.Contains(nameof(services), ex4.Message, StringComparison.Ordinal);
 
         var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams(configuration));
-        Assert.Contains(nameof(services), ex5.Message);
+        Assert.Contains(nameof(services), ex5.Message, StringComparison.Ordinal);
     }
 
     [Fact]

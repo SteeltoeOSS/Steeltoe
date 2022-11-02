@@ -39,7 +39,7 @@ public abstract class AbstractHeaderMapper<T> : IHeaderMapper<T>
     {
         string propertyName = headerName;
 
-        if (!string.IsNullOrEmpty(_outboundPrefix) && !propertyName.StartsWith(_outboundPrefix))
+        if (!string.IsNullOrEmpty(_outboundPrefix) && !propertyName.StartsWith(_outboundPrefix, StringComparison.Ordinal))
         {
             propertyName = _outboundPrefix + headerName;
         }
@@ -51,7 +51,7 @@ public abstract class AbstractHeaderMapper<T> : IHeaderMapper<T>
     {
         string headerName = propertyName;
 
-        if (!string.IsNullOrEmpty(_inboundPrefix) && !headerName.StartsWith(_inboundPrefix))
+        if (!string.IsNullOrEmpty(_inboundPrefix) && !headerName.StartsWith(_inboundPrefix, StringComparison.Ordinal))
         {
             headerName = _inboundPrefix + propertyName;
         }

@@ -24,7 +24,7 @@ public class RedisHealthContributor : IHealthContributor
     private MethodInfo _pingMethod;
     private MethodInfo _getMethod;
 
-    private bool IsMicrosoftImplementation => _implType.FullName.Contains("Microsoft");
+    private bool IsMicrosoftImplementation => _implType.FullName.Contains("Microsoft", StringComparison.Ordinal);
 
     public string Id => IsMicrosoftImplementation ? "Redis-Cache" : "Redis";
 

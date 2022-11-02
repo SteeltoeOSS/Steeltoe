@@ -15,7 +15,7 @@ public class ServiceInfoTest
         const string id = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceInfo(id));
-        Assert.Contains(nameof(id), ex.Message);
+        Assert.Contains(nameof(id), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

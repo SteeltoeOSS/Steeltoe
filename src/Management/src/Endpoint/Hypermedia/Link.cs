@@ -17,6 +17,6 @@ public class Link
     public Link(string href)
     {
         Href = href;
-        Templated = href.Contains("{");
+        Templated = href.Contains('{');
     }
 }

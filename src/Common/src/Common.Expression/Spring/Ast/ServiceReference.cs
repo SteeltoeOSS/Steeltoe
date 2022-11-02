@@ -40,7 +40,7 @@ public class ServiceReference : SpelNode
         var sb = new StringBuilder();
         sb.Append('@');
 
-        if (!_serviceName.Contains("."))
+        if (!_serviceName.Contains('.'))
         {
             sb.Append(_serviceName);
         }

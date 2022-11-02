@@ -98,11 +98,11 @@ public class PostgresProviderConfigurerTest
 
         var configurer = new PostgresProviderConfigurer();
         string opts = configurer.Configure(null, options);
-        Assert.Contains("Host=localhost;", opts);
-        Assert.Contains("Port=1234;", opts);
-        Assert.Contains("Username=username;", opts);
-        Assert.Contains("Password=password;", opts);
-        Assert.Contains("Database=database;", opts);
+        Assert.Contains("Host=localhost;", opts, StringComparison.Ordinal);
+        Assert.Contains("Port=1234;", opts, StringComparison.Ordinal);
+        Assert.Contains("Username=username;", opts, StringComparison.Ordinal);
+        Assert.Contains("Password=password;", opts, StringComparison.Ordinal);
+        Assert.Contains("Database=database;", opts, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -122,10 +122,10 @@ public class PostgresProviderConfigurerTest
 
         string configuration = configurer.Configure(si, options);
 
-        Assert.Contains("Host=192.168.0.90;", configuration);
-        Assert.Contains("Port=5432;", configuration);
-        Assert.Contains("Username=Dd6O1BPXUHdrmzbP;", configuration);
-        Assert.Contains("Password=7E1LxXnlH2hhlPVt;", configuration);
-        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;", configuration);
+        Assert.Contains("Host=192.168.0.90;", configuration, StringComparison.Ordinal);
+        Assert.Contains("Port=5432;", configuration, StringComparison.Ordinal);
+        Assert.Contains("Username=Dd6O1BPXUHdrmzbP;", configuration, StringComparison.Ordinal);
+        Assert.Contains("Password=7E1LxXnlH2hhlPVt;", configuration, StringComparison.Ordinal);
+        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;", configuration, StringComparison.Ordinal);
     }
 }

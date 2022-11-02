@@ -55,7 +55,7 @@ public class EnableRabbitTest
     public async Task NoRabbitAdminConfiguration()
     {
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServicesAsync(typeof(FullBean)));
-        Assert.Contains("rabbitAdmin", exception.Message);
+        Assert.Contains("rabbitAdmin", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -109,14 +109,14 @@ public class EnableRabbitTest
     public async Task UnknownFactory()
     {
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServicesAsync(typeof(CustomBean)));
-        Assert.Contains("customFactory", exception.Message);
+        Assert.Contains("customFactory", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
     public async Task InvalidPriorityConfiguration()
     {
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServicesAsync(typeof(InvalidPriorityBean)));
-        Assert.Contains("NotANumber", exception.Message);
+        Assert.Contains("NotANumber", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]

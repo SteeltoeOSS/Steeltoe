@@ -28,7 +28,7 @@ public class LocalCertificateWriterTest
         Assert.NotNull(rootCertificate);
         Assert.NotNull(intermediateCert);
         Assert.NotNull(clientCert);
-        Assert.Contains($"OU=space:{spaceId}", clientCert.Subject);
-        Assert.Contains($"OU=organization:{orgId}", clientCert.Subject);
+        Assert.Contains($"OU=space:{spaceId}", clientCert.Subject, StringComparison.Ordinal);
+        Assert.Contains($"OU=organization:{orgId}", clientCert.Subject, StringComparison.Ordinal);
     }
 }

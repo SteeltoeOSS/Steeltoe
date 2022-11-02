@@ -4,6 +4,7 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
@@ -40,7 +41,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
 
     public override void ProcessEvent(string eventName, object value)
     {
-        if (!StopEvent.Equals(eventName))
+        if (eventName != StopEvent)
         {
             return;
         }
@@ -98,7 +99,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
     protected internal string GetTimeTaken(TimeSpan duration)
     {
         long timeInMilliseconds = (long)duration.TotalMilliseconds;
-        return timeInMilliseconds.ToString();
+        return timeInMilliseconds.ToString(CultureInfo.InvariantCulture);
     }
 
     protected internal string GetRequestUri(HttpRequest request)

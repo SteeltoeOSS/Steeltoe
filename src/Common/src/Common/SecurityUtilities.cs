@@ -27,6 +27,6 @@ public static class SecurityUtilities
             return inputString;
         }
 
-        return WebUtility.HtmlEncode(inputString.Replace("\r", string.Empty).Replace("\n", string.Empty));
+        return WebUtility.HtmlEncode(inputString.Replace("\r", string.Empty, StringComparison.Ordinal).Replace("\n", string.Empty, StringComparison.Ordinal));
     }
 }

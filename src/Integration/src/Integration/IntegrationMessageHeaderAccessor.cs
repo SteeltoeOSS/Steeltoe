@@ -135,28 +135,28 @@ public class IntegrationMessageHeaderAccessor : MessageHeaderAccessor
         {
             base.VerifyType(headerName, headerValue);
 
-            if (ExpirationDate.Equals(headerName))
+            if (headerName == ExpirationDate)
             {
                 if (!(headerValue is DateTime || headerValue is long))
                 {
                     throw new ArgumentException($"The '{headerName}' header value must be a {typeof(DateTime)} or {typeof(long)}.", nameof(headerValue));
                 }
             }
-            else if (SequenceNumber.Equals(headerName) || SequenceSize.Equals(headerName) || Priority.Equals(headerName))
+            else if (headerName == SequenceNumber || headerName == SequenceSize || headerName == Priority)
             {
                 if (headerValue is not int)
                 {
                     throw new ArgumentException($"The '{headerName}' header value must be a {typeof(int)}.", nameof(headerValue));
                 }
             }
-            else if (RoutingSlip.Equals(headerName))
+            else if (headerName == RoutingSlip)
             {
                 if (headerValue is not IDictionary<string, object>)
                 {
                     throw new ArgumentException($"The '{headerName}' header value must be a IDictionary<string, object>.", nameof(headerValue));
                 }
             }
-            else if (DuplicateMessage.Equals(headerName) && headerValue is not bool)
+            else if (headerName == DuplicateMessage && headerValue is not bool)
             {
                 throw new ArgumentException($"The '{headerName}' header value must be a {typeof(bool)}.", nameof(headerValue));
             }

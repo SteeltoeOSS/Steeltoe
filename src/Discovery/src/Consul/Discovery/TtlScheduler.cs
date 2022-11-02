@@ -90,7 +90,7 @@ public class TtlScheduler : IScheduler
 
             string checkId = instanceId;
 
-            if (!checkId.StartsWith("service:"))
+            if (!checkId.StartsWith("service:", StringComparison.Ordinal))
             {
                 checkId = $"service:{checkId}";
             }

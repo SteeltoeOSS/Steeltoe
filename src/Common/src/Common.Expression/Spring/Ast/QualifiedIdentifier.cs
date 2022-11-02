@@ -26,7 +26,7 @@ public class QualifiedIdentifier : SpelNode
             {
                 object value = children[i].GetValueInternal(state).Value;
 
-                if (i > 0 && (value == null || !value.ToString().StartsWith("$")))
+                if (i > 0 && (value == null || !value.ToString().StartsWith('$')))
                 {
                     sb.Append('.');
                 }

@@ -25,7 +25,7 @@ public class MethodInvocationTests : AbstractExpressionTests
     {
         Evaluate("new String('hello')[2]", "l", typeof(string));
         Evaluate("new String('hello')[2].Equals('l'[0])", true, typeof(bool));
-        Evaluate("'HELLO'.ToLower()", "hello", typeof(string));
+        Evaluate("'HELLO'.ToLowerInvariant()", "hello", typeof(string));
         Evaluate("'   abcba '.Trim()", "abcba", typeof(string));
     }
 
@@ -129,7 +129,7 @@ public class MethodInvocationTests : AbstractExpressionTests
 
         Context.SetVariable("bar", 4);
         var ex = Assert.Throws<ExpressionInvocationTargetException>(() => expr.GetValue(Context));
-        Assert.Contains("TestException", ex.InnerException.GetType().Name);
+        Assert.Contains("TestException", ex.InnerException.GetType().Name, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -258,7 +258,7 @@ public class MethodInvocationTests : AbstractExpressionTests
 
         public object Resolve(IEvaluationContext context, string serviceName)
         {
-            return "service".Equals(serviceName) ? Service : null;
+            return serviceName == "service" ? Service : null;
         }
     }
 

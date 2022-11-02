@@ -55,7 +55,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
     {
         RabbitTemplate template = _context.GetRabbitTemplate();
         string reply = template.ConvertSendAndReceive<string>("auto.exch", "auto.rk", "foo");
-        Assert.StartsWith("FOO", reply);
+        Assert.StartsWith("FOO", reply, StringComparison.Ordinal);
         var myService = _context.GetService<MyService>();
         Assert.NotNull(myService);
         Assert.True(myService.ChannelBoundOk);
@@ -66,7 +66,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
     {
         RabbitTemplate template = _context.GetRabbitTemplate();
         string reply = template.ConvertSendAndReceive<string>("test.simple.declare", "foo");
-        Assert.StartsWith("FOO", reply);
+        Assert.StartsWith("FOO", reply, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
     {
         RabbitTemplate template = _context.GetRabbitTemplate();
         string received = template.ConvertSendAndReceive<string>("auto.exch", "auto.anon.atts.rk", "foo");
-        Assert.StartsWith("foo:", received);
+        Assert.StartsWith("foo:", received, StringComparison.Ordinal);
         var queue = new Queue(received.Substring(4), true, true, true);
         IRabbitAdmin admin = _context.GetRabbitAdmin();
         admin.DeclareQueue(queue);
@@ -158,7 +158,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         await container.StartAsync();
         RabbitTemplate template = _context.GetRabbitTemplate();
         string reply = template.ConvertSendAndReceive<string>("test.simple.direct", "foo");
-        Assert.StartsWith("FOOfoo", reply);
+        Assert.StartsWith("FOOfoo", reply, StringComparison.Ordinal);
         Assert.Equal(2, container.ConsumersPerQueue);
     }
 
@@ -167,7 +167,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
     {
         RabbitTemplate template = _context.GetRabbitTemplate();
         string reply = template.ConvertSendAndReceive<string>("test.simple.direct2", "foo");
-        Assert.StartsWith("FOOfoo", reply);
+        Assert.StartsWith("FOOfoo", reply, StringComparison.Ordinal);
         var registry = _context.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
         var container = registry.GetListenerContainer("directWithConcurrency") as DirectMessageListenerContainer;
         Assert.Equal(3, container.ConsumersPerQueue);
@@ -366,7 +366,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         IMessage reply = template.SendAndReceive("test.reply", request);
         Assert.Equal("content", MessageTestUtils.ExtractText(reply));
         Assert.Equal("fooValue", reply.Headers.Get<string>("foo"));
-        Assert.StartsWith(strategy.TagPrefix, reply.Headers.Get<string>("bar"));
+        Assert.StartsWith(strategy.TagPrefix, reply.Headers.Get<string>("bar"), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -428,7 +428,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         Assert.IsType<ListenerExecutionFailedException>(cause);
         Exception cause2 = cause.InnerException;
         Assert.IsType<MessageConversionException>(cause2);
-        Assert.Contains("Cannot convert from [String] to [DateTime]", cause2.Message);
+        Assert.Contains("Cannot convert from [String] to [DateTime]", cause2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -514,8 +514,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         HttpResponseMessage result = await client.GetAsync("http://localhost:15672/api/queues/%2F/" + "amqp656");
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string content = await result.Content.ReadAsStringAsync();
-        Assert.Contains("test-empty", content);
-        Assert.Contains("test-null", content);
+        Assert.Contains("test-empty", content, StringComparison.Ordinal);
+        Assert.Contains("test-null", content, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -524,7 +524,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         RabbitTemplate template = _context.GetRabbitTemplate();
         template.ThrowReceivedExceptions = true;
         var e = Assert.Throws<InvalidOperationException>(() => template.ConvertSendAndReceive<string>("test.return.exceptions", "foo"));
-        Assert.Contains("return this", e.Message);
+        Assert.Contains("return this", e.Message, StringComparison.Ordinal);
         template.ThrowReceivedExceptions = false;
         Assert.IsType<InvalidOperationException>(template.ConvertSendAndReceive<object>("test.return.exceptions", "foo"));
     }
@@ -543,8 +543,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         RabbitTemplate template = _context.GetRabbitTemplate();
         template.ThrowReceivedExceptions = true;
         var e = Assert.Throws<InvalidOperationException>(() => template.ConvertSendAndReceive<string>("test.pojo.errors2", "foo"));
-        Assert.Contains("from error handler", e.Message);
-        Assert.Contains("return this", e.InnerException.Message);
+        Assert.Contains("from error handler", e.Message, StringComparison.Ordinal);
+        Assert.Contains("return this", e.InnerException.Message, StringComparison.Ordinal);
         template.ThrowReceivedExceptions = false;
         Assert.NotNull(_fixture.ErrorHandlerChannel.Value);
     }
@@ -1077,14 +1077,14 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         public string HandleWithDeclare(string foo, RC.IModel channel)
         {
             ChannelBoundOk = TxRabbitTemplate.Execute(c => c.Equals(channel));
-            return foo.ToUpper() + Thread.CurrentThread.Name;
+            return foo.ToUpperInvariant() + Thread.CurrentThread.Name;
         }
 
         [DeclareQueue(Name = "${jjjj?test.simple.declare}", Durable = "True")]
         [RabbitListener("${jjjj?test.simple.declare}")]
         public string HandleWithSimpleDeclare(string foo)
         {
-            return foo.ToUpper() + Thread.CurrentThread.Name;
+            return foo.ToUpperInvariant() + Thread.CurrentThread.Name;
         }
 
         [DeclareAnonymousQueue("myAnonymous")]
@@ -1108,7 +1108,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         [RabbitListener(Binding = "auto.fanout.binding")]
         public string HandleWithFanOut(string foo)
         {
-            return foo.ToUpper() + foo.ToUpper();
+            return foo.ToUpperInvariant() + foo.ToUpperInvariant();
         }
 
         [DeclareAnonymousQueue("anon2")]
@@ -1117,7 +1117,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         [RabbitListener(Binding = "auto.exch.anon.rk")]
         public string HandleWithDeclareAnon(string foo)
         {
-            return foo.ToUpper();
+            return foo.ToUpperInvariant();
         }
 
         [DeclareAnonymousQueue("anon3", AutoDelete = "True", Exclusive = "True", Durable = "True")]
@@ -1132,37 +1132,37 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         [RabbitListener("test.simple", Group = "testGroup")]
         public string Capitalize(string foo)
         {
-            return foo.ToUpper();
+            return foo.ToUpperInvariant();
         }
 
         [RabbitListener("test.header", Group = "testGroup")]
         public string CapitalizeWithHeader([Payload] string content, [Header] string prefix)
         {
-            return prefix + content.ToUpper();
+            return prefix + content.ToUpperInvariant();
         }
 
         [RabbitListener("test.simple.direct", Id = "direct", AutoStartup = "${no:property:here?False}", ContainerFactory = "directListenerContainerFactory")]
         public string CapitalizeDirect1(string foo)
         {
-            return foo.ToUpper() + foo + Thread.CurrentThread.Name;
+            return foo.ToUpperInvariant() + foo + Thread.CurrentThread.Name;
         }
 
         [RabbitListener("test.simple.direct2", Id = "directWithConcurrency", Concurrency = "${ffffx?3}", ContainerFactory = "directListenerContainerFactory")]
         public string CapitalizeDirect2(string foo)
         {
-            return foo.ToUpper() + foo + Thread.CurrentThread.Name;
+            return foo.ToUpperInvariant() + foo + Thread.CurrentThread.Name;
         }
 
         [RabbitListener("test.comma.1", "test.comma.2", "test,with,commas", "test.comma.3", "test.comma.4", Group = "commas")]
         public string MultiQueuesConfig(string foo)
         {
-            return foo.ToUpper() + foo;
+            return foo.ToUpperInvariant() + foo;
         }
 
         [RabbitListener("test.message")]
         public string CapitalizeWithMessage(IMessage<string> message)
         {
-            return message.Headers.Get<string>("prefix") + message.Payload.ToUpper();
+            return message.Headers.Get<string>("prefix") + message.Payload.ToUpperInvariant();
         }
 
         [RabbitListener("test.reply")]
@@ -1175,14 +1175,14 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         [SendTo("${foo:bar?test.sendTo.reply}")]
         public string CapitalizeAndSendTo(string foo)
         {
-            return foo.ToUpper();
+            return foo.ToUpperInvariant();
         }
 
         [RabbitListener("test.sendTo.spel")]
         [SendTo("test.sendTo.reply.spel")]
         public string CapitalizeAndSendToSpel(string foo)
         {
-            return foo.ToUpper() + foo;
+            return foo.ToUpperInvariant() + foo;
         }
 
         [RabbitListener("test.sendTo.runtimespel")]
@@ -1229,7 +1229,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         })]
         public string HandleWithHeadersExchange(string foo)
         {
-            return foo.ToUpper();
+            return foo.ToUpperInvariant();
         }
 
         [RabbitListener(Id = "defaultDLX", Binding = "amqp656.binding")]
@@ -1279,7 +1279,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         {
             var bar = new Bar
             {
-                Field = input.ToUpper()
+                Field = input.ToUpperInvariant()
             };
 
             var headers = new MessageHeaders(new Dictionary<string, object>
@@ -1293,14 +1293,14 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         [RabbitListener("test.amqp.message")]
         public IMessage<byte[]> AmqpMessage(string input)
         {
-            return (IMessage<byte[]>)MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(input.ToUpper())).SetHeader(MessageHeaders.ContentType, "text/plain")
-                .SetHeader("foo", "bar").Build();
+            return (IMessage<byte[]>)MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(input.ToUpperInvariant()))
+                .SetHeader(MessageHeaders.ContentType, "text/plain").SetHeader("foo", "bar").Build();
         }
 
         [RabbitListener("test.bytes.to.string")]
         public string BytesToString(string input)
         {
-            return input.ToUpper();
+            return input.ToUpperInvariant();
         }
 
         [RabbitListener("manual.acks.1", Id = "manual.acks.1", AckMode = "Manual")]
@@ -1318,7 +1318,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         private static string InnerManual(string input, RC.IModel channel, ulong tag)
         {
             channel.BasicAck(tag, false);
-            return input.ToUpper();
+            return input.ToUpperInvariant();
         }
 
         [RabbitListener("erit.batch.1", ContainerFactory = "consumerBatchContainerFactory")]
@@ -1368,7 +1368,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
     {
         public string TestAnnotationInheritance(string foo)
         {
-            return foo.ToUpper();
+            return foo.ToUpperInvariant();
         }
     }
 
@@ -1465,7 +1465,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         [SendTo("${foo:bar?sendTo.replies}")]
         public string Bar(Bar bar)
         {
-            if (bar.Field.Equals("crash"))
+            if (bar.Field == "crash")
             {
                 throw new Exception("Test reply from error handler");
             }
@@ -1505,7 +1505,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
     {
         public string TestAnnotationInheritance(string foo)
         {
-            return $"{foo.ToUpper()}BAR";
+            return $"{foo.ToUpperInvariant()}BAR";
         }
     }
 
@@ -1594,7 +1594,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         public object HandleError(IMessage originalMessage, IMessage message, ListenerExecutionFailedException exception)
         {
             var barPayload = message.Payload as Bar;
-            string upperPayload = barPayload.Field.ToUpper();
+            string upperPayload = barPayload.Field.ToUpperInvariant();
             return $"{upperPayload}{upperPayload} {exception.InnerException.Message}";
         }
     }

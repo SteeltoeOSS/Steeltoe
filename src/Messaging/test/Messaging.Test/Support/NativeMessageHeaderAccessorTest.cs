@@ -206,7 +206,7 @@ public class NativeMessageHeaderAccessorTest
         headerAccessor.SetNativeHeader("foo", "bar");
         headerAccessor.SetImmutable();
         var ex = Assert.Throws<InvalidOperationException>(() => headerAccessor.SetNativeHeader("foo", "baz"));
-        Assert.Contains("Already immutable", ex.Message);
+        Assert.Contains("Already immutable", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -283,7 +283,7 @@ public class NativeMessageHeaderAccessorTest
         headerAccessor.AddNativeHeader("foo", "bar");
         headerAccessor.SetImmutable();
         var ex = Assert.Throws<InvalidOperationException>(() => headerAccessor.AddNativeHeader("foo", "baz"));
-        Assert.Contains("Already immutable", ex.Message);
+        Assert.Contains("Already immutable", ex.Message, StringComparison.Ordinal);
     }
 
     // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.

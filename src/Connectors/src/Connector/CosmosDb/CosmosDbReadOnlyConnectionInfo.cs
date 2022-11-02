@@ -30,7 +30,7 @@ public class CosmosDbReadOnlyConnectionInfo : IConnectionInfo
 
     public bool IsSameType(IServiceInfo serviceInfo)
     {
-        return serviceInfo is CosmosDbServiceInfo && serviceInfo.Id.Contains("readonly");
+        return serviceInfo is CosmosDbServiceInfo && serviceInfo.Id.Contains("readonly", StringComparison.Ordinal);
     }
 
     private Connection GetConnection(CosmosDbServiceInfo info, IConfiguration configuration)

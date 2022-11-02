@@ -335,8 +335,8 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
             cause = cause.InnerException;
         }
 
-        Assert.Contains("code=403", rootCause.Message);
-        Assert.Contains("operation not permitted on the default exchange", rootCause.Message);
+        Assert.Contains("code=403", rootCause.Message, StringComparison.Ordinal);
+        Assert.Contains("operation not permitted on the default exchange", rootCause.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -362,8 +362,8 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
             cause = cause.InnerException;
         }
 
-        Assert.Contains("code=403", rootCause.Message);
-        Assert.Contains("operation not permitted on the default exchange", rootCause.Message);
+        Assert.Contains("code=403", rootCause.Message, StringComparison.Ordinal);
+        Assert.Contains("operation not permitted on the default exchange", rootCause.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -404,7 +404,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
             {
                 Exception inner = e.InnerException;
 
-                if (inner.Message.Contains("exchange type 'x-delayed-message'"))
+                if (inner.Message.Contains("exchange type 'x-delayed-message'", StringComparison.Ordinal))
                 {
                     return; // Broker doesn't support?
                 }
@@ -485,7 +485,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         }
         catch (Exception e)
         {
-            return e.Message.Contains("RESOURCE_LOCKED");
+            return e.Message.Contains("RESOURCE_LOCKED", StringComparison.Ordinal);
         }
         finally
         {

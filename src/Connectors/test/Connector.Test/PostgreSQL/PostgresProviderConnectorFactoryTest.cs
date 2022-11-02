@@ -18,7 +18,7 @@ public class PostgresProviderConnectorFactoryTest
         const PostgresServiceInfo si = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new PostgresProviderConnectorFactory(si, options, typeof(NpgsqlConnection)));
-        Assert.Contains(nameof(options), ex.Message);
+        Assert.Contains(nameof(options), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
