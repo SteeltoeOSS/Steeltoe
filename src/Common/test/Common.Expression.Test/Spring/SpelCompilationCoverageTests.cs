@@ -21,6 +21,7 @@ namespace Steeltoe.Common.Expression.Test.Spring;
 
 public class SpelCompilationCoverageTests : AbstractExpressionTests
 {
+    private const string InvariantCulturePropertyAccess = "T(System.Globalization.CultureInfo).InvariantCulture";
     private IExpression _expression;
 
     [Fact]
@@ -1403,17 +1404,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("T(float).Parse('3.0') < 4.0f");
+        _expression = Parse($"T(float).Parse('3.0',{InvariantCulturePropertyAccess}) < 4.0f");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("T(float).Parse('3.0') < T(Single).Parse('3.0')");
+        _expression = Parse($"T(float).Parse('3.0',{InvariantCulturePropertyAccess}) < T(Single).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("5.0f < T(float).Parse('3.0')");
+        _expression = Parse($"5.0f < T(float).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
@@ -1433,17 +1434,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("T(double).Parse('3.0') < 4.0d");
+        _expression = Parse($"T(double).Parse('3.0',{InvariantCulturePropertyAccess}) < 4.0d");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("T(double).Parse('3.0') < T(double).Parse('3.0')");
+        _expression = Parse($"T(double).Parse('3.0',{InvariantCulturePropertyAccess}) < T(double).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("5.0d < T(double).Parse('3.0')");
+        _expression = Parse($"5.0d < T(double).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
@@ -1534,17 +1535,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("T(float).Parse('3.0') <= 4.0f");
+        _expression = Parse($"T(float).Parse('3.0',{InvariantCulturePropertyAccess}) <= 4.0f");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("T(float).Parse('3.0') <= T(Single).Parse('3.0')");
+        _expression = Parse($"T(float).Parse('3.0',{InvariantCulturePropertyAccess}) <= T(Single).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("5.0f <= T(float).Parse('3.0')");
+        _expression = Parse($"5.0f <= T(float).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
@@ -1564,17 +1565,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("T(double).Parse('3.0') <= 4.0d");
+        _expression = Parse($"T(double).Parse('3.0',{InvariantCulturePropertyAccess}) <= 4.0d");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("T(double).Parse('3.0') <= T(double).Parse('3.0')");
+        _expression = Parse($"T(double).Parse('3.0',{InvariantCulturePropertyAccess}) <= T(double).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("5.0d <= T(double).Parse('3.0')");
+        _expression = Parse($"5.0d <= T(double).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
@@ -1665,17 +1666,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("T(float).Parse('3.0') > 4.0f");
+        _expression = Parse($"T(float).Parse('3.0',{InvariantCulturePropertyAccess}) > 4.0f");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("T(float).Parse('3.0') > T(Single).Parse('3.0')");
+        _expression = Parse($"T(float).Parse('3.0',{InvariantCulturePropertyAccess}) > T(Single).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("5.0f > T(float).Parse('3.0')");
+        _expression = Parse($"5.0f > T(float).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
@@ -1695,17 +1696,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("T(double).Parse('3.0') > 4.0d");
+        _expression = Parse($"T(double).Parse('3.0',{InvariantCulturePropertyAccess}) > 4.0d");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("T(double).Parse('3.0') > T(double).Parse('3.0')");
+        _expression = Parse($"T(double).Parse('3.0',{InvariantCulturePropertyAccess}) > T(double).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("5.0d > T(double).Parse('3.0')");
+        _expression = Parse($"5.0d > T(double).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
@@ -1796,17 +1797,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("T(float).Parse('3.0') >= 4.0f");
+        _expression = Parse($"T(float).Parse('3.0',{InvariantCulturePropertyAccess}) >= 4.0f");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("T(float).Parse('3.0') >= T(Single).Parse('3.0')");
+        _expression = Parse($"T(float).Parse('3.0',{InvariantCulturePropertyAccess}) >= T(Single).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("5.0f >= T(float).Parse('3.0')");
+        _expression = Parse($"5.0f >= T(float).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
@@ -1826,17 +1827,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("T(double).Parse('3.0') >= 4.0d");
+        _expression = Parse($"T(double).Parse('3.0',{InvariantCulturePropertyAccess}) >= 4.0d");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("T(double).Parse('3.0') >= T(double).Parse('3.0')");
+        _expression = Parse($"T(double).Parse('3.0',{InvariantCulturePropertyAccess}) >= T(double).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("5.0d >= T(double).Parse('3.0')");
+        _expression = Parse($"5.0d >= T(double).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
@@ -1963,17 +1964,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("T(float).Parse('3.0') == 4.0f");
+        _expression = Parse($"T(float).Parse('3.0',{InvariantCulturePropertyAccess}) == 4.0f");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("T(float).Parse('3.0') == T(Single).Parse('3.0')");
+        _expression = Parse($"T(float).Parse('3.0',{InvariantCulturePropertyAccess}) == T(Single).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("5.0f == T(float).Parse('3.0')");
+        _expression = Parse($"5.0f == T(float).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
@@ -1993,17 +1994,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("T(double).Parse('3.0') == 4.0d");
+        _expression = Parse($"T(double).Parse('3.0',{InvariantCulturePropertyAccess}) == 4.0d");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("T(double).Parse('3.0') == T(double).Parse('3.0')");
+        _expression = Parse($"T(double).Parse('3.0',{InvariantCulturePropertyAccess}) == T(double).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("5.0d == T(double).Parse('3.0')");
+        _expression = Parse($"5.0d == T(double).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
@@ -2120,17 +2121,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("T(float).Parse('3.0') != 4.0f");
+        _expression = Parse($"T(float).Parse('3.0',{InvariantCulturePropertyAccess}) != 4.0f");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("T(float).Parse('3.0') != T(Single).Parse('3.0')");
+        _expression = Parse($"T(float).Parse('3.0',{InvariantCulturePropertyAccess}) != T(Single).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("5.0f != T(float).Parse('3.0')");
+        _expression = Parse($"5.0f != T(float).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
@@ -2150,17 +2151,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("T(double).Parse('3.0') != 4.0d");
+        _expression = Parse($"T(double).Parse('3.0',{InvariantCulturePropertyAccess}) != 4.0d");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        _expression = Parse("T(double).Parse('3.0') != T(double).Parse('3.0')");
+        _expression = Parse($"T(double).Parse('3.0',{InvariantCulturePropertyAccess}) != T(double).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>());
 
-        _expression = Parse("5.0d != T(double).Parse('3.0')");
+        _expression = Parse($"5.0d != T(double).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.True(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
@@ -2496,7 +2497,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.Equal(2.5d, _expression.GetValue());
 
-        _expression = Parse("+T(Double).Parse('2.5')");
+        _expression = Parse($"+T(Double).Parse('2.5',{InvariantCulturePropertyAccess})");
         Assert.Equal(2.5d, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(2.5d, _expression.GetValue());
@@ -2516,12 +2517,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.Equal(4, _expression.GetValue());
 
-        _expression = Parse("T(Single).Parse('2.0')+6");
+        _expression = Parse($"T(Single).Parse('2.0',{InvariantCulturePropertyAccess})+6");
         Assert.Equal(8.0f, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(8.0f, _expression.GetValue());
 
-        _expression = Parse("T(float).Parse('2.0')+T(float).Parse('3.0')");
+        _expression = Parse($"T(float).Parse('2.0',{InvariantCulturePropertyAccess})+T(float).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.Equal(5.0f, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(5.0f, _expression.GetValue());
@@ -2841,12 +2842,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.Equal(1, _expression.GetValue());
 
-        _expression = Parse("T(Single).Parse('2.0')-6");
+        _expression = Parse($"T(Single).Parse('2.0',{InvariantCulturePropertyAccess})-6");
         Assert.Equal(-4.0f, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(-4.0f, _expression.GetValue());
 
-        _expression = Parse("T(float).Parse('8.0')-T(float).Parse('3.0')");
+        _expression = Parse($"T(float).Parse('8.0',{InvariantCulturePropertyAccess})-T(float).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.Equal(5.0f, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(5.0f, _expression.GetValue());
@@ -3444,12 +3445,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.Equal(12D, _expression.GetValue());
 
-        _expression = Parse("T(float).Parse('2.0')*6");
+        _expression = Parse($"T(float).Parse('2.0',{InvariantCulturePropertyAccess})*6");
         Assert.Equal(12.0f, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(12.0f, _expression.GetValue());
 
-        _expression = Parse("T(Single).Parse('8.0')*T(float).Parse('3.0')");
+        _expression = Parse($"T(Single).Parse('8.0',{InvariantCulturePropertyAccess})*T(float).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.Equal(24.0f, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(24.0f, _expression.GetValue());
@@ -3474,7 +3475,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.Equal(16L, _expression.GetValue());
 
-        _expression = Parse("T(float).Parse('8.0')*-T(Single).Parse('3.0')");
+        _expression = Parse($"T(float).Parse('8.0',{InvariantCulturePropertyAccess})*-T(Single).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.Equal(-24.0f, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(-24.0f, _expression.GetValue());
@@ -3503,12 +3504,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.Equal(1d, _expression.GetValue());
 
-        _expression = Parse("T(float).Parse('6.0')/2");
+        _expression = Parse($"T(float).Parse('6.0',{InvariantCulturePropertyAccess})/2");
         Assert.Equal(3.0f, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(3.0f, _expression.GetValue());
 
-        _expression = Parse("T(Single).Parse('8.0')/T(float).Parse('2.0')");
+        _expression = Parse($"T(Single).Parse('8.0',{InvariantCulturePropertyAccess})/T(float).Parse('2.0',{InvariantCulturePropertyAccess})");
         Assert.Equal(4.0f, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(4.0f, _expression.GetValue());
@@ -3533,7 +3534,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.Equal(4L, _expression.GetValue());
 
-        _expression = Parse("T(float).Parse('8.0')/-T(Single).Parse('4.0')");
+        _expression = Parse($"T(float).Parse('8.0',{InvariantCulturePropertyAccess})/-T(Single).Parse('4.0',{InvariantCulturePropertyAccess})");
         Assert.Equal(-2.0f, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(-2.0f, _expression.GetValue());
@@ -3575,17 +3576,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.Equal(3.0d, _expression.GetValue());
 
-        _expression = Parse("T(float).Parse('6.0')%2");
+        _expression = Parse($"T(float).Parse('6.0',{InvariantCulturePropertyAccess})%2");
         Assert.Equal(0.0f, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(0.0f, _expression.GetValue());
 
-        _expression = Parse("T(Single).Parse('6.0')%4");
+        _expression = Parse($"T(Single).Parse('6.0',{InvariantCulturePropertyAccess})%4");
         Assert.Equal(2.0f, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(2.0f, _expression.GetValue());
 
-        _expression = Parse("T(Single).Parse('8.0')%T(float).Parse('3.0')");
+        _expression = Parse($"T(Single).Parse('8.0',{InvariantCulturePropertyAccess})%T(float).Parse('3.0',{InvariantCulturePropertyAccess})");
         Assert.Equal(2.0f, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(2.0f, _expression.GetValue());
@@ -3610,7 +3611,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.Equal(1L, _expression.GetValue());
 
-        _expression = Parse("T(float).Parse('9.0')%-T(float).Parse('4.0')");
+        _expression = Parse($"T(float).Parse('9.0',{InvariantCulturePropertyAccess})%-T(float).Parse('4.0',{InvariantCulturePropertyAccess})");
         Assert.Equal(1.0f, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(1.0f, _expression.GetValue());
@@ -5626,7 +5627,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void MethodReferenceValueType()
     {
         // static method on unboxed value type
-        _expression = Parser.ParseExpression("T(DateTime).Parse('2/16/2008 12:15:12 PM')");
+        _expression = Parser.ParseExpression($"T(DateTime).Parse('2/16/2008 12:15:12 PM',{InvariantCulturePropertyAccess})");
         var resultI = _expression.GetValue<DateTime>();
         AssertCanCompile(_expression);
         var resultC = _expression.GetValue<DateTime>();

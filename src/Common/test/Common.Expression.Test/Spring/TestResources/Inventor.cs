@@ -162,7 +162,7 @@ public class Inventor
 
     public string PrintDoubles(double[] d)
     {
-        return $"{{{string.Join(", ", d)}}}";
+        return $"{{{string.Join(", ", d.Select(x => x.ToString(CultureInfo.InvariantCulture)))}}}";
     }
 
     public List<string> GetDoublesAsStringList()

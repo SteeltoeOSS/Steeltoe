@@ -96,7 +96,14 @@ public abstract class Literal : SpelNode
 
     public override string ToString()
     {
-        return GetLiteralValue().Value.ToString();
+        object value = GetLiteralValue().Value;
+
+        if (value is IFormattable formattable)
+        {
+            return formattable.ToString(null, CultureInfo.InvariantCulture);
+        }
+
+        return value.ToString();
     }
 
     public override string ToStringAst()

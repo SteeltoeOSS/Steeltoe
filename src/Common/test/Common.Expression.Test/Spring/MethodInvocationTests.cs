@@ -311,7 +311,7 @@ public class MethodInvocationTests : AbstractExpressionTests
         [Annotation]
         public string DoIt(double d)
         {
-            return $"double {d:F1}";
+            return FormattableString.Invariant($"double {d:F1}");
         }
     }
 

@@ -338,8 +338,8 @@ public class SpelParserTests
     [Fact]
     public void ParseMethodsOnNumbers()
     {
-        CheckNumber("3.14.ToString()", "3.14", typeof(string));
-        CheckNumber("3.ToString()", "3", typeof(string));
+        CheckNumber("3.14.ToString(T(System.Globalization.CultureInfo).InvariantCulture)", "3.14", typeof(string));
+        CheckNumber("3.ToString(T(System.Globalization.CultureInfo).InvariantCulture)", "3", typeof(string));
     }
 
     [Fact]

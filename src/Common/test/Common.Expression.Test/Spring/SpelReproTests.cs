@@ -32,7 +32,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SWF1086()
     {
-        Evaluate("PrintDouble(T(Decimal).Parse('14.35'))", "14.35", typeof(string));
+        Evaluate("PrintDouble(T(Decimal).Parse('14.35',T(System.Globalization.CultureInfo).InvariantCulture))", "14.35", typeof(string));
     }
 
     [Fact]
