@@ -11,7 +11,7 @@ using Serilog.Context;
 using Steeltoe.Common;
 using Xunit;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
+namespace Steeltoe.Logging.DynamicSerilog.Test;
 
 public class SerilogDynamicLoggerProviderTest
 {

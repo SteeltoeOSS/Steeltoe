@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Logging;
+namespace Steeltoe.Logging.DynamicLogger;
 
 public static class DynamicLoggerHostBuilderExtensions
 {

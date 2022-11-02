@@ -8,7 +8,7 @@ using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog;
+namespace Steeltoe.Logging.DynamicSerilog;
 
 /// <summary>
 /// Implements a subset of the Serilog Options needed for SerilogDynamicProvider.

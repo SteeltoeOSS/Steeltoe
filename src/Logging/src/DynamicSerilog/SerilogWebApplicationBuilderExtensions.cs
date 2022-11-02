@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Serilog;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog;
+namespace Steeltoe.Logging.DynamicSerilog;
 
 public static class SerilogWebApplicationBuilderExtensions
 {

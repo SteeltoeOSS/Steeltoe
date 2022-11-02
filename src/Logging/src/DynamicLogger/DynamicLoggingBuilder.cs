@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Logging;
+namespace Steeltoe.Logging.DynamicLogger;
 
 public static class DynamicLoggingBuilder
 {

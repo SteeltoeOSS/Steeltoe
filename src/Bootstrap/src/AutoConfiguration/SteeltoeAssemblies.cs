@@ -15,7 +15,7 @@ public static class SteeltoeAssemblies
     public const string SteeltoeExtensionsConfigurationPlaceholder = "Steeltoe.Configuration.Placeholder";
     public const string SteeltoeConnector = "Steeltoe.Connector";
     public const string SteeltoeDiscoveryClient = "Steeltoe.Discovery.Client";
-    public const string SteeltoeExtensionsLoggingDynamicSerilog = "Steeltoe.Extensions.Logging.DynamicSerilog";
+    public const string SteeltoeExtensionsLoggingDynamicSerilog = "Steeltoe.Logging.DynamicSerilog";
     public const string SteeltoeManagementEndpoint = "Steeltoe.Management.Endpoint";
     public const string SteeltoeManagementKubernetes = "Steeltoe.Management.Kubernetes";
     public const string SteeltoeManagementTracing = "Steeltoe.Management.Tracing";

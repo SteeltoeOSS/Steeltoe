@@ -11,7 +11,7 @@ using Serilog.Events;
 using Serilog.Exceptions;
 using Xunit;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
+namespace Steeltoe.Logging.DynamicSerilog.Test;
 
 public class SerilogDynamicWebHostBuilderTest
 {
@@ -45,7 +45,7 @@ public class SerilogDynamicWebHostBuilderTest
     {
         var appsettings = new Dictionary<string, string>
         {
-            { "Serilog:Using:0", "Steeltoe.Extensions.Logging.DynamicSerilog.Test" },
+            { "Serilog:Using:0", "Steeltoe.Logging.DynamicSerilog.Test" },
             { "Serilog:MinimumLevel:Default", "Error" },
             { "Serilog:MinimumLevel:Override:Microsoft", "Warning" },
             { "Serilog:WriteTo:Name", "TestSink" }

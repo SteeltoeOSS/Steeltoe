@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace Steeltoe.Extensions.Logging.Test;
+namespace Steeltoe.Logging.DynamicLogger.Test;
 
 public class DynamicLoggingBuilderTest
 {
@@ -20,7 +20,7 @@ public class DynamicLoggingBuilderTest
         ["Logging:Console:LogLevel:Default"] = "Information",
         ["Logging:Console:LogLevel:A.B.C.D"] = "Critical",
         ["Logging:Console:DisableColors"] = "True",
-        ["Logging:LogLevel:Steeltoe.Extensions.Logging.Test"] = "Information",
+        ["Logging:LogLevel:Steeltoe.Logging.DynamicLogger.Test"] = "Information",
         ["Logging:LogLevel:Default"] = "Warning"
     };
 
@@ -131,7 +131,7 @@ public class DynamicLoggingBuilderTest
 
         // change the log level and confirm it worked
         var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicConsoleLoggerProvider;
-        provider.SetLogLevel("Steeltoe.Extensions.Logging.Test", LogLevel.Trace);
+        provider.SetLogLevel("Steeltoe.Logging.DynamicLogger.Test", LogLevel.Trace);
         Assert.True(logger.IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
     }
 

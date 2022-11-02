@@ -14,7 +14,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Extensions.Logging;
+using Steeltoe.Logging;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 

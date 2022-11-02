@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Filter = System.Func<string, Microsoft.Extensions.Logging.LogLevel, bool>;
 
-namespace Steeltoe.Extensions.Logging;
+namespace Steeltoe.Logging;
 
 public class DynamicLoggerProviderBase : IDynamicLoggerProvider
 {

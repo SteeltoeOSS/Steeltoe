@@ -5,7 +5,7 @@
 using System.Text;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
-using Steeltoe.Extensions.Logging;
+using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Tracing;
 

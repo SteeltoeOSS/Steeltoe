@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
-using Steeltoe.Extensions.Logging;
+using Steeltoe.Logging;
 using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
