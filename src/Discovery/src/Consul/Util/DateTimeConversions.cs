@@ -13,7 +13,9 @@ public static class DateTimeConversions
     {
         ArgumentGuard.NotNullOrWhiteSpace(time);
 
+#pragma warning disable S4040 // Strings should be normalized to uppercase
         time = time.ToLowerInvariant();
+#pragma warning restore S4040 // Strings should be normalized to uppercase
 
         if (time.EndsWith("ms", StringComparison.Ordinal))
         {

@@ -129,7 +129,9 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
         foreach (KeyValuePair<string, StringValues> h in headers)
         {
             // Add filtering
+#pragma warning disable S4040 // Strings should be normalized to uppercase
             result.Add(h.Key.ToLowerInvariant(), h.Value.ToArray());
+#pragma warning restore S4040 // Strings should be normalized to uppercase
         }
 
         return result;

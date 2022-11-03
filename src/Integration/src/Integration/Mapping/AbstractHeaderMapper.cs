@@ -321,13 +321,17 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
             foreach (string pattern in patterns)
             {
+#pragma warning disable S4040 // Strings should be normalized to uppercase
                 Patterns.Add(pattern.ToLowerInvariant());
+#pragma warning restore S4040 // Strings should be normalized to uppercase
             }
         }
 
         public bool MatchHeader(string headerName)
         {
+#pragma warning disable S4040 // Strings should be normalized to uppercase
             string header = headerName.ToLowerInvariant();
+#pragma warning restore S4040 // Strings should be normalized to uppercase
 
             foreach (string pattern in Patterns)
             {
@@ -358,13 +362,18 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
         {
             ArgumentGuard.NotNull(pattern);
 
+#pragma warning disable S4040 // Strings should be normalized to uppercase
             Pattern = pattern.ToLowerInvariant();
+#pragma warning restore S4040 // Strings should be normalized to uppercase
+
             Negate = negate;
         }
 
         public bool MatchHeader(string headerName)
         {
+#pragma warning disable S4040 // Strings should be normalized to uppercase
             string header = headerName.ToLowerInvariant();
+#pragma warning restore S4040 // Strings should be normalized to uppercase
 
             if (PatternMatchUtils.SimpleMatch(Pattern, header))
             {

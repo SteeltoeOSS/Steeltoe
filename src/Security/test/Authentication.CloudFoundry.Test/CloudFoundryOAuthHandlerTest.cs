@@ -42,7 +42,7 @@ public class CloudFoundryOAuthHandlerTest
 
         Assert.NotNull(handler.LastRequest);
         Assert.Equal(HttpMethod.Post, handler.LastRequest.Method);
-        Assert.Equal(opts.TokenEndpoint.ToLowerInvariant(), handler.LastRequest.RequestUri.ToString().ToLowerInvariant());
+        Assert.Equal(opts.TokenEndpoint, handler.LastRequest.RequestUri.ToString(), StringComparer.OrdinalIgnoreCase);
 
         Assert.NotNull(resp);
         Assert.NotNull(resp.Response);
@@ -75,7 +75,7 @@ public class CloudFoundryOAuthHandlerTest
 
         Assert.NotNull(handler.LastRequest);
         Assert.Equal(HttpMethod.Post, handler.LastRequest.Method);
-        Assert.Equal(opts.TokenEndpoint.ToLowerInvariant(), handler.LastRequest.RequestUri.ToString().ToLowerInvariant());
+        Assert.Equal(opts.TokenEndpoint, handler.LastRequest.RequestUri.ToString(), StringComparer.OrdinalIgnoreCase);
 
         Assert.NotNull(resp);
         Assert.NotNull(resp.Error);
@@ -184,7 +184,7 @@ public class CloudFoundryOAuthHandlerTest
 
         Assert.NotNull(handler.LastRequest);
         Assert.Equal(HttpMethod.Post, handler.LastRequest.Method);
-        Assert.Equal(opts.TokenInfoUrl.ToLowerInvariant(), handler.LastRequest.RequestUri.ToString().ToLowerInvariant());
+        Assert.Equal(opts.TokenInfoUrl, handler.LastRequest.RequestUri.ToString(), StringComparer.OrdinalIgnoreCase);
 
         Assert.Equal("testssouser", identity.Name);
         Assert.Equal(4, identity.Claims.Count());

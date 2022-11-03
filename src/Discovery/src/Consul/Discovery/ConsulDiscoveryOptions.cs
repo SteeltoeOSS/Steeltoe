@@ -57,7 +57,9 @@ public class ConsulDiscoveryOptions
     public string Scheme
     {
         get => _scheme;
+#pragma warning disable S4040 // Strings should be normalized to uppercase
         set => _scheme = value?.ToLowerInvariant();
+#pragma warning restore S4040 // Strings should be normalized to uppercase
     }
 
     /// <summary>

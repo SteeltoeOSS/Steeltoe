@@ -115,8 +115,11 @@ public class MimeType : IComparable<MimeType>
 
         CheckToken(type);
         CheckToken(subtype);
+
+#pragma warning disable S4040 // Strings should be normalized to uppercase
         Type = type.ToLowerInvariant();
         Subtype = subtype.ToLowerInvariant();
+#pragma warning restore S4040 // Strings should be normalized to uppercase
 
         if (parameters.Count > 0)
         {

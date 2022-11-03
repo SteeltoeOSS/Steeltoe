@@ -171,7 +171,9 @@ public class ConsulRegistration : IConsulRegistration
         }
 
         // store the secure flag in the tags so that clients will be able to figure out whether to use http or https automatically
+#pragma warning disable S4040 // Strings should be normalized to uppercase
         tags.Add($"secure={(options.Scheme == "https").ToString(CultureInfo.InvariantCulture).ToLowerInvariant()}");
+#pragma warning restore S4040 // Strings should be normalized to uppercase
 
         return tags.ToArray();
     }

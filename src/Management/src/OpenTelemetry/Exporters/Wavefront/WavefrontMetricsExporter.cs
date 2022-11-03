@@ -81,7 +81,10 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
 
                         IDictionary<string, string> tags = GetTags(metricPoint.Tags);
 
+#pragma warning disable S4040 // Strings should be normalized to uppercase
                         _wavefrontSender.SendMetric(metric.Name.ToLowerInvariant(), doubleValue, timestamp, Options.Source, tags);
+#pragma warning restore S4040 // Strings should be normalized to uppercase
+
                         metricCount++;
                     }
                 }
@@ -94,10 +97,13 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
                         // TODO: Setup custom aggregations to compute distributions
                         IDictionary<string, string> tags = GetTags(metricPoint.Tags);
 
+#pragma warning disable S4040 // Strings should be normalized to uppercase
                         _wavefrontSender.SendMetric($"{metric.Name.ToLowerInvariant()}_count", metricPoint.GetHistogramCount(), timestamp, Options.Source,
                             tags);
 
                         _wavefrontSender.SendMetric($"{metric.Name.ToLowerInvariant()}_sum", metricPoint.GetHistogramSum(), timestamp, Options.Source, tags);
+#pragma warning restore S4040 // Strings should be normalized to uppercase
+
                         metricCount += 2;
                     }
                 }
@@ -115,8 +121,12 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
     private IDictionary<string, string> GetTags(ReadOnlyTagCollection inputTags)
     {
         IDictionary<string, string> tags = inputTags.AsDictionary();
+
+#pragma warning disable S4040 // Strings should be normalized to uppercase
         tags.Add("application", Options.Name.ToLowerInvariant());
         tags.Add("service", Options.Service.ToLowerInvariant());
+#pragma warning restore S4040 // Strings should be normalized to uppercase
+
         tags.Add("component", "wavefront-metrics-exporter");
         return tags;
     }

@@ -78,8 +78,10 @@ public static class KubernetesConfigurationBuilderExtensions
         {
             logger.LogTrace("Steeltoe Kubernetes is enabled");
 
+#pragma warning disable S4040 // Strings should be normalized to uppercase
             string lowercaseAppName = appInfo.Name.ToLowerInvariant();
             string lowercaseAppEnvName = $"{appInfo.Name}{appInfo.NameEnvironmentSeparator}{appInfo.EnvironmentName}".ToLowerInvariant();
+#pragma warning restore S4040 // Strings should be normalized to uppercase
 
             IKubernetes kubernetesClient = KubernetesClientHelpers.GetKubernetesClient(appInfo, configureClient, logger);
 

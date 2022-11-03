@@ -42,7 +42,9 @@ public abstract class AbstractServiceConnectorOptions
 
     protected internal void AddKeyValue(StringBuilder sb, string key, bool? value)
     {
+#pragma warning disable S4040 // Strings should be normalized to uppercase
         AddKeyValue(sb, key, value?.ToString(CultureInfo.InvariantCulture).ToLowerInvariant());
+#pragma warning restore S4040 // Strings should be normalized to uppercase
     }
 
     /// <summary>
