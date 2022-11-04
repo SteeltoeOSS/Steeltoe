@@ -73,6 +73,10 @@
     <Rule Id="S4487" Action="Warning" />
     <Rule Id="S4583" Action="None" />
     <Rule Id="S5773" Action="None" />
+    <Rule Id="S6419" Action="None" />
+    <Rule Id="S6420" Action="None" />
+    <Rule Id="S6422" Action="None" />
+    <Rule Id="S6424" Action="None" />
     <Rule Id="S881" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">

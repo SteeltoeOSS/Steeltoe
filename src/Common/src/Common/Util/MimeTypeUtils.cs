@@ -151,7 +151,10 @@ public static class MimeTypeUtils
         int index = mimeType.IndexOf(';');
         string fullType = (index >= 0 ? mimeType.Substring(0, index) : mimeType).Trim();
 
-        ArgumentGuard.NotNullOrEmpty(fullType, nameof(mimeType));
+        if (string.IsNullOrEmpty(fullType))
+        {
+            throw new ArgumentException("mimeType must contain a value before the ';' separator.", nameof(mimeType));
+        }
 
         if (fullType == MimeType.WildcardType)
         {
