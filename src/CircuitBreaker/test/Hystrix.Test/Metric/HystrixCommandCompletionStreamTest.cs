@@ -4,10 +4,10 @@
 
 using System.Reactive;
 using System.Reactive.Linq;
-using Steeltoe.CircuitBreaker.Hystrix.Test;
+using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.Metric;
 
 public class HystrixCommandCompletionStreamTest : CommandStreamTest
 {

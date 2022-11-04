@@ -11,7 +11,7 @@ using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Extensions;
 
-namespace Steeltoe.Stream;
+namespace Steeltoe.Stream.Test;
 
 public abstract class AbstractTest
 {

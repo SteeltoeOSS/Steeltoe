@@ -13,13 +13,15 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Test.Connection;
 using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Configuration.Binding;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
 [Trait("Category", "Integration")]
 public class RabbitAdminTest : AbstractTest

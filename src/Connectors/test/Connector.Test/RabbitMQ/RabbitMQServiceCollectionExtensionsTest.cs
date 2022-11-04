@@ -7,9 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.RabbitMQ;
 using Xunit;
 
-namespace Steeltoe.Connector.RabbitMQ.Test;
+namespace Steeltoe.Connector.Test.RabbitMQ;
 
 public class RabbitMQServiceCollectionExtensionsTest
 {

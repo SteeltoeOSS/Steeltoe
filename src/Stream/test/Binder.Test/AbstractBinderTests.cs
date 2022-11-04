@@ -24,7 +24,7 @@ using Steeltoe.Stream.Converter;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Binder.Test;
 
 public abstract class AbstractBinderTests<TTestBinder, TBinder>
     where TTestBinder : AbstractTestBinder<TBinder>

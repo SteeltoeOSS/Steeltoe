@@ -3,12 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Expression.Internal.Spring.TestResources;
+using Steeltoe.Common.Expression.Test.Spring.TestResources;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public class MethodInvocationTests : AbstractExpressionTests
 {

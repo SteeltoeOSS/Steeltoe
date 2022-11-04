@@ -3,9 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Stream.Configuration;
 using Xunit;
+using BinderOptions = Steeltoe.Stream.Configuration.BinderOptions;
 
-namespace Steeltoe.Stream.Configuration;
+namespace Steeltoe.Stream.Test.Configuration;
 
 public class BindingServiceOptionsTest
 {

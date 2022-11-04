@@ -4,9 +4,10 @@
 
 using System.Data.SqlClient;
 using Steeltoe.Connector.Services;
+using Steeltoe.Connector.SqlServer;
 using Xunit;
 
-namespace Steeltoe.Connector.SqlServer.Test;
+namespace Steeltoe.Connector.Test.SqlServer;
 
 public class SqlServerProviderConnectorFactoryTest
 {

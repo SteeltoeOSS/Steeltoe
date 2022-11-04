@@ -4,9 +4,10 @@
 
 using System.Net;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Net;
 using Xunit;
 
-namespace Steeltoe.Common.Net.Test;
+namespace Steeltoe.Common.Test.Net;
 
 public class InetUtilsTest
 {

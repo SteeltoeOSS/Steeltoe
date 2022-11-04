@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Moq;
+using Steeltoe.Messaging.Support;
 using Xunit;
-using static Steeltoe.Messaging.Support.Test.TaskSchedulerSubscribableChannelTest;
+using static Steeltoe.Messaging.Test.Support.TaskSchedulerSubscribableChannelTest;
 
-namespace Steeltoe.Messaging.Support.Test;
+namespace Steeltoe.Messaging.Test.Support;
 
 public class TaskSchedulerSubscribableChannelWriterTest
 {

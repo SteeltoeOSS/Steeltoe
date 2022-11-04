@@ -4,7 +4,7 @@
 
 using Steeltoe.Stream.Binder;
 
-namespace Steeltoe.Stream.Partitioning;
+namespace Steeltoe.Stream.Test.Partitioning;
 
 public class CustomPartitionSelectorClass : IPartitionSelectorStrategy
 {

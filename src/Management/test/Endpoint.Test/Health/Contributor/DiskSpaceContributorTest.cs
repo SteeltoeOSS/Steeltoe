@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Health.Contributor;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Health.Contributor.Test;
+namespace Steeltoe.Management.Endpoint.Test.Health.Contributor;
 
 public class DiskSpaceContributorTest : BaseTest
 {

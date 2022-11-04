@@ -6,10 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging;
+using Steeltoe.Stream.Extensions;
 using Steeltoe.Stream.Messaging;
 using Xunit;
 
-namespace Steeltoe.Stream.Extensions;
+namespace Steeltoe.Stream.Test.Extensions;
 
 public class EnableBindingsExtensionsTest
 {

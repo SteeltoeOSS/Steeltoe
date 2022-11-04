@@ -10,8 +10,7 @@ using Steeltoe.Common;
 namespace Steeltoe.Logging.DynamicSerilog.Test;
 
 /// <summary>
-/// Serilog automatically adds the sink from IConfiguration when provided; Needed for "Serilog:Using" = [
-/// "Steeltoe.Logging.DynamicSerilog.Test" ].
+/// Serilog automatically adds the sink from IConfiguration when provided; Needed for "Serilog:Using" = [ "Steeltoe.Logging.DynamicSerilog.Test" ].
 /// </summary>
 public static class LoggerSinkConfigurationExtensions
 {

@@ -10,6 +10,7 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Channel;
+using Steeltoe.Integration.Rabbit.Inbound;
 using Steeltoe.Integration.Rabbit.Support;
 using Steeltoe.Integration.Transformer;
 using Steeltoe.Messaging;
@@ -27,7 +28,7 @@ using Steeltoe.Messaging.Support;
 using Xunit;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Integration.Rabbit.Inbound;
+namespace Steeltoe.Integration.RabbitMQ.Test.Inbound;
 
 public class InboundEndpointTest
 {

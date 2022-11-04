@@ -2,9 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Discovery;
 using Xunit;
 
-namespace Steeltoe.Common.Discovery.Test;
+namespace Steeltoe.Common.Test.Discovery;
 
 public class ConfigurationServiceInstanceProviderTest
 {

@@ -7,13 +7,14 @@ using Microsoft.Extensions.Options;
 using NSubstitute;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Security;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
 using Xunit;
 using MicrosoftHealth = Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Steeltoe.Management.Endpoint.Health.Test;
+namespace Steeltoe.Management.Endpoint.Test.Health;
 
 public class HealthEndpointCoreTest : BaseTest
 {

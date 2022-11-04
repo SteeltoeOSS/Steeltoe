@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Metrics;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Test;
+namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
 public class MetricsObserverOptionsTest : BaseTest
 {

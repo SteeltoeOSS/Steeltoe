@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia.Test;
+namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 
 public class EndpointMiddlewareTest : BaseTest
 {

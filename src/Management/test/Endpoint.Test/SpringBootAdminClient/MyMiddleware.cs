@@ -5,7 +5,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 
-namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test;
+namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
 public class MyMiddleware : IMiddleware
 {

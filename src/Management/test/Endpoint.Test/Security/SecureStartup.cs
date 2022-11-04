@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Management.Endpoint.Security.Test;
+namespace Steeltoe.Management.Endpoint.Test.Security;
 
 public class SecureStartup : Startup
 {

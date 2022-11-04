@@ -3,9 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Connector.Services;
+using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connector.SqlServer.EntityFramework6;
 using Xunit;
 
-namespace Steeltoe.Connector.SqlServer.EntityFramework6.Test;
+namespace Steeltoe.Connector.EntityFramework6.Test;
 
 public class SqlServerDbContextConnectorFactoryTest
 {

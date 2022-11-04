@@ -7,9 +7,10 @@ using Microsoft.Extensions.Configuration;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test;
+namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
 public class SpringBootAdminClientHostedServiceTest
 {

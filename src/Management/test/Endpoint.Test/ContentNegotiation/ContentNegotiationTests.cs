@@ -8,9 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Logging.DynamicLogger;
 using Xunit;
-using static Steeltoe.Management.Endpoint.ContentNegotiation.Test.TestStartupExtensions;
+using static Steeltoe.Management.Endpoint.Test.ContentNegotiation.TestStartupExtensions;
 
-namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
+namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
 public class ContentNegotiationTests
 {

@@ -4,12 +4,12 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Logging;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Management.Endpoint.Loggers.Test;
+namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
 public class LoggersEndpointTest : BaseTest
 {

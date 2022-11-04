@@ -4,7 +4,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 
-namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
+namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
 public static class TestStartupExtensions
 {

@@ -9,7 +9,7 @@ using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
 [Trait("Category", "Integration")]
 public class DlqExpiryTests : IClassFixture<DlqStartupFixture>

@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Contexts;
+namespace Steeltoe.Common.Expression.Test.Contexts;
 
 public class DictionaryAccessorTests
 {

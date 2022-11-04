@@ -6,9 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.Oracle;
 using Xunit;
 
-namespace Steeltoe.Connector.Oracle.Test;
+namespace Steeltoe.Connector.Test.Oracle;
 
 public class OracleServiceCollectionExtensionsTest
 {

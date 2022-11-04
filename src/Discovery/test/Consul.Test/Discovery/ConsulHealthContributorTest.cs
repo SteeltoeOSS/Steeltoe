@@ -5,10 +5,11 @@
 using Consul;
 using Moq;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Discovery.Consul.Discovery;
 using Xunit;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
-namespace Steeltoe.Discovery.Consul.Discovery.Test;
+namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
 public class ConsulHealthContributorTest
 {

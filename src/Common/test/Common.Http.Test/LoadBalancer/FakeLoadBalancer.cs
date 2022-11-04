@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.LoadBalancer;
 
-namespace Steeltoe.Common.Http.LoadBalancer.Test;
+namespace Steeltoe.Common.Http.Test.LoadBalancer;
 
 /// <summary>
 /// A bad fake load balancer that only resolves requests for "replaceme" as "someresolvedhost".

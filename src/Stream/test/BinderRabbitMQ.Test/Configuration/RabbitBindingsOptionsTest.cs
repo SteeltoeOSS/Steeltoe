@@ -10,7 +10,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace Steeltoe.Stream.Binder.Rabbit.Configuration;
+namespace Steeltoe.Stream.Binder.RabbitMQ.Test.Configuration;
 
 public class RabbitBindingsOptionsTest
 {

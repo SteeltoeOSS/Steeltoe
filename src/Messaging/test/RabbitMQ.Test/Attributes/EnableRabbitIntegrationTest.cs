@@ -16,6 +16,7 @@ using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes;
+using Steeltoe.Messaging.RabbitMQ.Attributes;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
@@ -26,18 +27,17 @@ using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Support.Converter;
-using Steeltoe.Messaging.RabbitMQ.Test;
+using Steeltoe.Messaging.RabbitMQ.Test.Test;
 using Steeltoe.Messaging.Support;
 using Xunit;
-using static Steeltoe.Messaging.RabbitMQ.Attributes.EnableRabbitIntegrationTest;
 using RC = RabbitMQ.Client;
 
 #pragma warning disable S3872 // Parameter names should not duplicate the names of their methods
 
-namespace Steeltoe.Messaging.RabbitMQ.Attributes;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 [Trait("Category", "Integration")]
-public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
+public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegrationTest.StartupFixture>
 {
     private readonly IApplicationContext _context;
     private readonly IServiceProvider _provider;

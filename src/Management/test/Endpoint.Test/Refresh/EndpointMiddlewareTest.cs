@@ -12,10 +12,10 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Refresh;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Refresh.Test;
+namespace Steeltoe.Management.Endpoint.Test.Refresh;
 
 public class EndpointMiddlewareTest : BaseTest
 {

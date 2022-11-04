@@ -6,11 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging;
+using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Messaging;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Test.Binder;
 
 public class InputOutputBindingOrderTest : AbstractTest
 {

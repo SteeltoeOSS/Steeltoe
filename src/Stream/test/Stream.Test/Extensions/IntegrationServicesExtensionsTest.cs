@@ -10,7 +10,7 @@ using Steeltoe.Integration.Support.Converter;
 using Steeltoe.Messaging;
 using Xunit;
 
-namespace Steeltoe.Stream.Extensions;
+namespace Steeltoe.Stream.Test.Extensions;
 
 public class IntegrationServicesExtensionsTest
 {

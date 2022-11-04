@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 
-namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
+namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
 public class CloudFoundryStartup
 {

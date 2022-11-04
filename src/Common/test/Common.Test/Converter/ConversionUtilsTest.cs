@@ -4,9 +4,10 @@
 
 using System.Collections;
 using System.Collections.ObjectModel;
+using Steeltoe.Common.Converter;
 using Xunit;
 
-namespace Steeltoe.Common.Converter.Test;
+namespace Steeltoe.Common.Test.Converter;
 
 public class ConversionUtilsTest
 {

@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
+using Steeltoe.CircuitBreaker.Hystrix.Serial;
 using Steeltoe.Common.Util;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Serial.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.Serial;
 
 public class SerialHystrixRequestEventsTest
 {

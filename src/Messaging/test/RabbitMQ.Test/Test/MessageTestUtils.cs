@@ -5,7 +5,7 @@
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Support;
 
-namespace Steeltoe.Messaging.RabbitMQ.Test;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Test;
 
 internal static class MessageTestUtils
 {

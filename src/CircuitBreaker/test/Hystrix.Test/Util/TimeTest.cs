@@ -6,7 +6,7 @@ using System.Diagnostics;
 using Steeltoe.Common.Util;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.Util;
 
 public class TimeTest
 {

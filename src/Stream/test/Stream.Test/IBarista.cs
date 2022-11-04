@@ -5,7 +5,7 @@
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
 
-namespace Steeltoe.Stream;
+namespace Steeltoe.Stream.Test;
 
 public interface IBarista
 {

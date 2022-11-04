@@ -4,9 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Management.Endpoint.Mappings;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Mappings.Test;
+namespace Steeltoe.Management.Endpoint.Test.Mappings;
 
 public class ServiceCollectionTests
 {

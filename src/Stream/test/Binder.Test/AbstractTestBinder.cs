@@ -7,7 +7,7 @@ using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Configuration;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Binder.Test;
 
 public abstract class AbstractTestBinder<TBinder> : IBinder<IMessageChannel>
     where TBinder : AbstractBinder<IMessageChannel>

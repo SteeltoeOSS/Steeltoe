@@ -4,9 +4,10 @@
 
 using Moq;
 using Steeltoe.Stream.Binder;
+using Steeltoe.Stream.Binding;
 using Xunit;
 
-namespace Steeltoe.Stream.Binding;
+namespace Steeltoe.Stream.Test.Binding;
 
 public class BindingLifecycleTests
 {

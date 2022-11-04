@@ -13,6 +13,7 @@ using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Batch;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support;
@@ -20,7 +21,7 @@ using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
 [Trait("Category", "Integration")]
 public sealed class BatchingRabbitTemplateTest : IDisposable

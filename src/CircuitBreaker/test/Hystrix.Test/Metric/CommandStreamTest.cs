@@ -3,11 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
-using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.Common.Util;
 using Xunit.Abstractions;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.Metric;
 
 public abstract class CommandStreamTest : HystrixTestBase
 {

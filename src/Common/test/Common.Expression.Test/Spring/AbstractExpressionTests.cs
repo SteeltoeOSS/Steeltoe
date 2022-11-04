@@ -4,11 +4,13 @@
 
 using System.Collections;
 using System.Text;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public abstract class AbstractExpressionTests
 {

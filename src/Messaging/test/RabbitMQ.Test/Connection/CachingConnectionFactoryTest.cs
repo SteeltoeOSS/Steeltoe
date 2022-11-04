@@ -5,12 +5,13 @@
 using Moq;
 using RabbitMQ.Client.Events;
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Xunit;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
 public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 {

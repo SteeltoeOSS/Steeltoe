@@ -7,10 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Metrics;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Test;
+namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
 public class EndpointServiceCollectionExtensionsTest : BaseTest
 {

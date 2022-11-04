@@ -6,13 +6,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
+using Steeltoe.Integration.Endpoint;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 using Xunit;
 
-namespace Steeltoe.Integration.Endpoint.Test;
+namespace Steeltoe.Integration.Test.Endpoint;
 
 public class CorrelationIdTest
 {

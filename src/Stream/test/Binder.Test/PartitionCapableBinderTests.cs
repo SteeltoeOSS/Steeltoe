@@ -16,7 +16,7 @@ using Steeltoe.Stream.Configuration;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Binder.Test;
 
 public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : AbstractBinderTests<TTestBinder, TBinder>
     where TTestBinder : AbstractTestBinder<TBinder>

@@ -4,10 +4,11 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Xunit;
 
-namespace Steeltoe.Integration.Channel.Test;
+namespace Steeltoe.Integration.Test.Channel;
 
 public class PublishSubscribeChannelTest
 {

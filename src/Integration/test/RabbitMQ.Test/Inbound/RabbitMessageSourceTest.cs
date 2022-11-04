@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Acks;
+using Steeltoe.Integration.Rabbit.Inbound;
 using Steeltoe.Integration.Rabbit.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ;
@@ -17,7 +18,7 @@ using Steeltoe.Messaging.RabbitMQ.Support;
 using Xunit;
 using R = RabbitMQ.Client;
 
-namespace Steeltoe.Integration.Rabbit.Inbound;
+namespace Steeltoe.Integration.RabbitMQ.Test.Inbound;
 
 public class RabbitMessageSourceTest
 {

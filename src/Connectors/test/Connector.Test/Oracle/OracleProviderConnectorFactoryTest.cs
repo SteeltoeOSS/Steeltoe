@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Oracle.ManagedDataAccess.Client;
+using Steeltoe.Connector.Oracle;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Oracle.Test;
+namespace Steeltoe.Connector.Test.Oracle;
 
 public class OracleProviderConnectorFactoryTest
 {

@@ -6,7 +6,7 @@ using EasyNetQ.Management.Client;
 using EasyNetQ.Management.Client.Model;
 using EnqBinding = EasyNetQ.Management.Client.Model.Binding;
 
-namespace Steeltoe.Stream.Binder.Rabbit;
+namespace Steeltoe.Stream.Binder.RabbitMQ.Test;
 
 public class Client : ManagementClient
 {

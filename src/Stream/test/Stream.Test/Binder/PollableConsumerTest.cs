@@ -14,11 +14,12 @@ using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
+using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Configuration;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Test.Binder;
 
 public class PollableConsumerTest : AbstractTest
 {

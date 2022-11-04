@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.EntityFrameworkCore.Test;
+using Steeltoe.Connector.SqlServer.EntityFrameworkCore;
 using Xunit;
 
-namespace Steeltoe.Connector.SqlServer.EntityFrameworkCore.Test;
+namespace Steeltoe.Connector.EntityFrameworkCore.Test;
 
 public class SqlServerDbContextOptionsExtensionsTest
 {

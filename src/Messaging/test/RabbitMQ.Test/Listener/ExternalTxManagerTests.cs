@@ -6,11 +6,12 @@ using Moq;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using Xunit;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
 public class ExternalTxManagerTests
 {

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.RabbitMQ.Attributes;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
@@ -16,12 +17,11 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Xunit;
-using static Steeltoe.Messaging.RabbitMQ.Attributes.AsyncListenerTest;
 
-namespace Steeltoe.Messaging.RabbitMQ.Attributes;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 [Trait("Category", "Integration")]
-public class AsyncListenerTest : IClassFixture<StartupFixture>
+public class AsyncListenerTest : IClassFixture<AsyncListenerTest.StartupFixture>
 {
     private readonly ServiceProvider _provider;
     private readonly StartupFixture _fixture;

@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Hosting;
 
-namespace Steeltoe.Stream.StreamHost;
+namespace Steeltoe.Stream.Test.StreamsHost;
 
 public sealed class FakeHostedService : IHostedService, IDisposable
 {

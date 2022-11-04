@@ -4,14 +4,14 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry.Test;
+namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
 public class CloudFoundryEndpointTest : BaseTest
 {

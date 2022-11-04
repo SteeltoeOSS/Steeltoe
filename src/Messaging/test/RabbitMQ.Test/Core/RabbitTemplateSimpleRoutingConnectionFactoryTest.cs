@@ -4,10 +4,11 @@
 
 using Moq;
 using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using Xunit;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
 [Trait("Category", "Integration")]
 public class RabbitTemplateSimpleRoutingConnectionFactoryTest

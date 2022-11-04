@@ -3,13 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reactive.Linq;
-using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
-using Steeltoe.CircuitBreaker.Hystrix.Test;
+using Steeltoe.CircuitBreaker.Hystrix.Metric;
+using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.Common.Util;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.Metric.Consumer;
 
 public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
 {

@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.Support;
 using Xunit;
 using HeadersDictionary = System.Collections.Generic.IDictionary<string, object>;
 
-namespace Steeltoe.Messaging.Support.Test;
+namespace Steeltoe.Messaging.Test.Support;
 
 public class MessageHeaderAccessorTest
 {

@@ -4,9 +4,10 @@
 
 using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Converter;
+using Steeltoe.Messaging.Core;
 using Xunit;
 
-namespace Steeltoe.Messaging.Core.Test;
+namespace Steeltoe.Messaging.Test.Core;
 
 public class MessageReceivingTemplateTest
 {

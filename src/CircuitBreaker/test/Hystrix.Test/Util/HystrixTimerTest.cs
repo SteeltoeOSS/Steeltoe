@@ -3,11 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.CircuitBreaker.Hystrix.Strategy;
+using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.Common.Util;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.Util;
 
 public sealed class HystrixTimerTest : IDisposable
 {

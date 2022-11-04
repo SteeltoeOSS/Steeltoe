@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Expression.Internal.Spring.TestResources;
+using Steeltoe.Common.Expression.Test.Spring.TestResources;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public class SetValueTests : AbstractExpressionTests
 {
@@ -40,7 +42,7 @@ public class SetValueTests : AbstractExpressionTests
     [Fact]
     public void TestSetElementOfNull()
     {
-        SetValueExpectError("new Steeltoe.Common.Expression.Spring.TestResources.Inventor().Inventions[1]", SpelMessage.CannotIndexIntoNullValue);
+        SetValueExpectError($"new {typeof(Inventor).FullName}().Inventions[1]", SpelMessage.CannotIndexIntoNullValue);
     }
 
     [Fact]

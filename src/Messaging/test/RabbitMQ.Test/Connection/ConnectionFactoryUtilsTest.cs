@@ -4,9 +4,10 @@
 
 using Moq;
 using Steeltoe.Common.Transaction;
+using Steeltoe.Messaging.RabbitMQ.Connection;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
 public class ConnectionFactoryUtilsTest
 {

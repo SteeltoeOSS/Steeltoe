@@ -4,9 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.MongoDb;
 using Xunit;
 
-namespace Steeltoe.Connector.MongoDb.Test;
+namespace Steeltoe.Connector.Test.MongoDb;
 
 public class MongoDbConnectionInfoTest
 {

@@ -4,9 +4,10 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Steeltoe.Stream.Binder;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Test.Binder;
 
 public class DefaultBinderTypeRegistryTest : AbstractTest
 {

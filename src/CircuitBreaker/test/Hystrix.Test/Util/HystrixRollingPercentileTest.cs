@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CircuitBreaker.Hystrix.Test;
+using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.Common.Util;
 using Xunit;
 using Xunit.Abstractions;
 using static Steeltoe.CircuitBreaker.Hystrix.Util.HystrixRollingPercentile;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.Util;
 
 public class HystrixRollingPercentileTest
 {

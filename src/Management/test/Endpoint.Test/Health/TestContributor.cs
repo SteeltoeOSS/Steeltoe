@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.HealthChecks;
 
-namespace Steeltoe.Management.Endpoint.Health.Test;
+namespace Steeltoe.Management.Endpoint.Test.Health;
 
 internal sealed class TestContributor : IHealthContributor
 {

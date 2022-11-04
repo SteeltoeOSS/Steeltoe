@@ -4,9 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test;
+namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
 public class SpringBootAdminClientOptionsTest
 {

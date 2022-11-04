@@ -7,9 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.PostgreSql;
 using Xunit;
 
-namespace Steeltoe.Connector.PostgreSql.Test;
+namespace Steeltoe.Connector.Test.PostgreSQL;
 
 /// <summary>
 /// Tests for the extension method that adds both the DbConnection and the health check.

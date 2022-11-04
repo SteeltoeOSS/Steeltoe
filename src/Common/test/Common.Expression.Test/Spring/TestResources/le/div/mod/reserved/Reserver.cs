@@ -4,7 +4,7 @@
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable IDE1006 // Naming Styles
-namespace Steeltoe.Common.Expression.Internal.Spring.TestResources.le.div.mod.reserved;
+namespace Steeltoe.Common.Expression.Test.Spring.TestResources.le.div.mod.reserved;
 #pragma warning restore IDE1006 // Naming Styles
 #pragma warning restore SA1300 // Element should begin with upper-case letter
 
