@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.EntityFrameworkCore;
+using Steeltoe.Connector.PostgreSql;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Connector.PostgreSql.EntityFrameworkCore;
+namespace Steeltoe.Connector.EntityFrameworkCore.PostgreSql;
 
-public static class PostgresDbContextOptionsExtensions
+public static class PostgreSqlDbContextOptionsExtensions
 {
     public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IConfiguration configuration,
         object npgsqlOptionsAction = null)

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.SqlServer.EntityFrameworkCore;
+using Steeltoe.Connector.EntityFrameworkCore.SqlServer;
 using Xunit;
 
 namespace Steeltoe.Connector.EntityFrameworkCore.Test;

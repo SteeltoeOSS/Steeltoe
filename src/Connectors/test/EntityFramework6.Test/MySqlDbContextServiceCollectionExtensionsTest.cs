@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.MySql.EntityFramework6;
+using Steeltoe.Connector.EntityFramework6.Mysql;
 using Xunit;
 
 namespace Steeltoe.Connector.EntityFramework6.Test;
@@ -25,10 +25,10 @@ public class MySqlDbContextServiceCollectionExtensionsTest
         const IServiceCollection services = null;
         const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, configurationRoot));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodMySqlDbContext>(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, configurationRoot, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodMySqlDbContext>(configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
     }
 
@@ -38,10 +38,10 @@ public class MySqlDbContextServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, configuration));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodMySqlDbContext>(configuration));
         Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, configuration, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodMySqlDbContext>(configuration, "foobar"));
         Assert.Contains(nameof(configuration), ex2.Message);
     }
 
@@ -52,7 +52,7 @@ public class MySqlDbContextServiceCollectionExtensionsTest
         const IConfigurationRoot configurationRoot = null;
         const string serviceName = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, configurationRoot, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodMySqlDbContext>(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -62,7 +62,7 @@ public class MySqlDbContextServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, configurationRoot);
+        services.AddDbContext<GoodMySqlDbContext>(configurationRoot);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var service = serviceProvider.GetService<GoodMySqlDbContext>();
@@ -78,7 +78,7 @@ public class MySqlDbContextServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, configurationRoot, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodMySqlDbContext>(configurationRoot, "foobar"));
         Assert.Contains("foobar", ex.Message);
     }
 
@@ -94,7 +94,7 @@ public class MySqlDbContextServiceCollectionExtensionsTest
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, configurationRoot));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodMySqlDbContext>(configurationRoot));
         Assert.Contains("Multiple", ex.Message);
     }
 
@@ -110,8 +110,8 @@ public class MySqlDbContextServiceCollectionExtensionsTest
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
 
-        MySqlDbContextServiceCollectionExtensions.AddDbContext<GoodMySqlDbContext>(services, configurationRoot);
-        MySqlDbContextServiceCollectionExtensions.AddDbContext<Good2MySqlDbContext>(services, configurationRoot);
+        services.AddDbContext<GoodMySqlDbContext>(configurationRoot);
+        services.AddDbContext<Good2MySqlDbContext>(configurationRoot);
 
         ServiceProvider built = services.BuildServiceProvider();
         var service = built.GetService<GoodMySqlDbContext>();

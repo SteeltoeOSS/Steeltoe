@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.SqlServer.EntityFramework6;
+using Steeltoe.Connector.EntityFramework6.SqlServer;
 using Xunit;
 
 namespace Steeltoe.Connector.EntityFramework6.Test;
@@ -25,10 +25,10 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
         const IServiceCollection services = null;
         const IConfigurationRoot configurationRoot = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, configurationRoot));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(configurationRoot));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, configurationRoot, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(configurationRoot, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
     }
 
@@ -38,10 +38,10 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, configuration));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(configuration));
         Assert.Contains(nameof(configuration), ex.Message);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, configuration, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(configuration, "foobar"));
         Assert.Contains(nameof(configuration), ex2.Message);
     }
 
@@ -52,7 +52,7 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
         const IConfigurationRoot configurationRoot = null;
         const string serviceName = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, configurationRoot, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(configurationRoot, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -62,7 +62,7 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, configurationRoot);
+        services.AddDbContext<GoodSqlServerDbContext>(configurationRoot);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var service = serviceProvider.GetService<GoodSqlServerDbContext>();
@@ -78,7 +78,7 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, configurationRoot, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodSqlServerDbContext>(configurationRoot, "foobar"));
         Assert.Contains("foobar", ex.Message);
     }
 
@@ -94,7 +94,7 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, configurationRoot));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodSqlServerDbContext>(configurationRoot));
         Assert.Contains("Multiple", ex.Message);
     }
 
@@ -109,8 +109,8 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
 
-        SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, configurationRoot);
-        SqlServerDbContextServiceCollectionExtensions.AddDbContext<Good2SqlServerDbContext>(services, configurationRoot);
+        services.AddDbContext<GoodSqlServerDbContext>(configurationRoot);
+        services.AddDbContext<Good2SqlServerDbContext>(configurationRoot);
 
         ServiceProvider built = services.BuildServiceProvider();
         var service = built.GetService<GoodSqlServerDbContext>();

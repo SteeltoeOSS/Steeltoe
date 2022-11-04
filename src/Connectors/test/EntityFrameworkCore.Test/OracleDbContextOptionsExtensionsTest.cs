@@ -4,7 +4,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector.Oracle.EntityFrameworkCore;
+using Steeltoe.Connector.EntityFrameworkCore.Oracle;
 using Xunit;
 
 namespace Steeltoe.Connector.EntityFrameworkCore.Test;

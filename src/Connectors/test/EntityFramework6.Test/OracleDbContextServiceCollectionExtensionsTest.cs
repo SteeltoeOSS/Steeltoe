@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connector.EntityFramework6.Oracle;
 using Xunit;
 
 namespace Steeltoe.Connector.EntityFramework6.Test;
