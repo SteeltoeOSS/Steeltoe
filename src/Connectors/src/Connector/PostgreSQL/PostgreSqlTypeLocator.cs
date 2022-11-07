@@ -4,6 +4,7 @@
 
 using Steeltoe.Common.Reflection;
 
+// ReSharper disable once CheckNamespace
 namespace Steeltoe.Connector.PostgreSql;
 
 /// <summary>
