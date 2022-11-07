@@ -8,14 +8,14 @@ using Xunit;
 
 namespace Steeltoe.Connector.Test.PostgreSQL;
 
-public class PostgresProviderConfigurerTest
+public class PostgreSqlProviderConfigurerTest
 {
     [Fact]
-    public void UpdateConfiguration_WithNullPostgresServiceInfo_ReturnsExpected()
+    public void UpdateConfiguration_WithNullPostgreSqlServiceInfo_ReturnsExpected()
     {
-        var configurer = new PostgresProviderConfigurer();
+        var configurer = new PostgreSqlProviderConfigurer();
 
-        var options = new PostgresProviderConnectorOptions
+        var options = new PostgreSqlProviderConnectorOptions
         {
             Host = "localhost",
             Port = 1234,
@@ -35,11 +35,11 @@ public class PostgresProviderConfigurerTest
     }
 
     [Fact]
-    public void UpdateConfiguration_WithPostgresServiceInfo_ReturnsExpected()
+    public void UpdateConfiguration_WithPostgreSqlServiceInfo_ReturnsExpected()
     {
-        var configurer = new PostgresProviderConfigurer();
+        var configurer = new PostgreSqlProviderConfigurer();
 
-        var options = new PostgresProviderConnectorOptions
+        var options = new PostgreSqlProviderConnectorOptions
         {
             Host = "localhost",
             Port = 1234,
@@ -48,7 +48,7 @@ public class PostgresProviderConfigurerTest
             Database = "database"
         };
 
-        var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+        var si = new PostgreSqlServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
         configurer.UpdateConfiguration(si, options);
 
@@ -60,11 +60,11 @@ public class PostgresProviderConfigurerTest
     }
 
     [Fact]
-    public void UpdateConfiguration_WithPostgresServiceInfo_UriEncoded_ReturnsExpected()
+    public void UpdateConfiguration_WithPostgreSqlServiceInfo_UriEncoded_ReturnsExpected()
     {
-        var configurer = new PostgresProviderConfigurer();
+        var configurer = new PostgreSqlProviderConfigurer();
 
-        var options = new PostgresProviderConnectorOptions
+        var options = new PostgreSqlProviderConnectorOptions
         {
             Host = "localhost",
             Port = 1234,
@@ -73,7 +73,7 @@ public class PostgresProviderConfigurerTest
             Database = "database"
         };
 
-        var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:%247E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+        var si = new PostgreSqlServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:%247E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
         configurer.UpdateConfiguration(si, options);
 
@@ -87,7 +87,7 @@ public class PostgresProviderConfigurerTest
     [Fact]
     public void Configure_NoServiceInfo_ReturnsExpected()
     {
-        var options = new PostgresProviderConnectorOptions
+        var options = new PostgreSqlProviderConnectorOptions
         {
             Host = "localhost",
             Port = 1234,
@@ -96,7 +96,7 @@ public class PostgresProviderConfigurerTest
             Database = "database"
         };
 
-        var configurer = new PostgresProviderConfigurer();
+        var configurer = new PostgreSqlProviderConfigurer();
         string opts = configurer.Configure(null, options);
         Assert.Contains("Host=localhost;", opts);
         Assert.Contains("Port=1234;", opts);
@@ -108,7 +108,7 @@ public class PostgresProviderConfigurerTest
     [Fact]
     public void Configure_ServiceInfoOverridesConfig_ReturnsExpected()
     {
-        var options = new PostgresProviderConnectorOptions
+        var options = new PostgreSqlProviderConnectorOptions
         {
             Host = "localhost",
             Port = 1234,
@@ -117,8 +117,8 @@ public class PostgresProviderConfigurerTest
             Database = "database"
         };
 
-        var configurer = new PostgresProviderConfigurer();
-        var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+        var configurer = new PostgreSqlProviderConfigurer();
+        var si = new PostgreSqlServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
         string configuration = configurer.Configure(si, options);
 

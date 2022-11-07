@@ -8,14 +8,14 @@ using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.PostgreSql;
 
-public class PostgresProviderConnectorFactory
+public class PostgreSqlProviderConnectorFactory
 {
-    private readonly PostgresServiceInfo _info;
-    private readonly PostgresProviderConnectorOptions _config;
-    private readonly PostgresProviderConfigurer _configurer = new();
+    private readonly PostgreSqlServiceInfo _info;
+    private readonly PostgreSqlProviderConnectorOptions _config;
+    private readonly PostgreSqlProviderConfigurer _configurer = new();
     private readonly Type _type;
 
-    public PostgresProviderConnectorFactory(PostgresServiceInfo serviceInfo, PostgresProviderConnectorOptions options, Type type)
+    public PostgreSqlProviderConnectorFactory(PostgreSqlServiceInfo serviceInfo, PostgreSqlProviderConnectorOptions options, Type type)
     {
         ArgumentGuard.NotNull(options);
 
@@ -24,7 +24,7 @@ public class PostgresProviderConnectorFactory
         _type = type;
     }
 
-    internal PostgresProviderConnectorFactory()
+    internal PostgreSqlProviderConnectorFactory()
     {
     }
 

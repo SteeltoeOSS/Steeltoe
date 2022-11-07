@@ -8,15 +8,15 @@ using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.PostgreSql;
 
-public class PostgresProviderConfigurer
+public class PostgreSqlProviderConfigurer
 {
-    internal string Configure(PostgresServiceInfo si, PostgresProviderConnectorOptions configuration)
+    internal string Configure(PostgreSqlServiceInfo si, PostgreSqlProviderConnectorOptions configuration)
     {
         UpdateConfiguration(si, configuration);
         return configuration.ToString();
     }
 
-    internal void UpdateConfiguration(PostgresServiceInfo si, PostgresProviderConnectorOptions configuration)
+    internal void UpdateConfiguration(PostgreSqlServiceInfo si, PostgreSqlProviderConnectorOptions configuration)
     {
         if (si == null)
         {

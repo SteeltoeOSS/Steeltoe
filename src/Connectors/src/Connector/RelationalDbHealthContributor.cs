@@ -48,10 +48,10 @@ public class RelationalDbHealthContributor : IHealthContributor
     {
         ArgumentGuard.NotNull(configuration);
 
-        var info = configuration.GetSingletonServiceInfo<PostgresServiceInfo>();
-        Type postgresConnection = ReflectionHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
-        var options = new PostgresProviderConnectorOptions(configuration);
-        var factory = new PostgresProviderConnectorFactory(info, options, postgresConnection);
+        var info = configuration.GetSingletonServiceInfo<PostgreSqlServiceInfo>();
+        Type postgreSqlConnection = ReflectionHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
+        var options = new PostgreSqlProviderConnectorOptions(configuration);
+        var factory = new PostgreSqlProviderConnectorFactory(info, options, postgreSqlConnection);
         var connection = factory.Create(null) as IDbConnection;
         return new RelationalDbHealthContributor(connection, logger);
     }

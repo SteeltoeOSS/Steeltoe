@@ -4,21 +4,21 @@
 
 namespace Steeltoe.Connector.Services;
 
-public class PostgresServiceInfoFactory : RelationalServiceInfoFactory
+public class PostgreSqlServiceInfoFactory : RelationalServiceInfoFactory
 {
     private static readonly string[] Schemes =
     {
-        PostgresServiceInfo.PostgresScheme,
-        PostgresServiceInfo.PostgresJdbcScheme
+        PostgreSqlServiceInfo.PostgreSqlScheme,
+        PostgreSqlServiceInfo.PostgreSqlJdbcScheme
     };
 
-    public PostgresServiceInfoFactory()
+    public PostgreSqlServiceInfoFactory()
         : base(new Tags("postgresql"), Schemes)
     {
     }
 
     public override IServiceInfo Create(string id, string url)
     {
-        return new PostgresServiceInfo(id, url);
+        return new PostgreSqlServiceInfo(id, url);
     }
 }

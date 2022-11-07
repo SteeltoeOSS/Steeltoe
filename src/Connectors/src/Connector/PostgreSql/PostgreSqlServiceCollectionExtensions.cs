@@ -12,7 +12,7 @@ using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.PostgreSql;
 
-public static class PostgresServiceCollectionExtensions
+public static class PostgreSqlServiceCollectionExtensions
 {
     /// <summary>
     /// Add an IHealthContributor to a ServiceCollection for PostgreSQL.
@@ -29,13 +29,13 @@ public static class PostgresServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddPostgresHealthContributor(this IServiceCollection services, IConfiguration configuration,
+    public static IServiceCollection AddPostgreSqlHealthContributor(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
 
-        var info = configuration.GetSingletonServiceInfo<PostgresServiceInfo>();
+        var info = configuration.GetSingletonServiceInfo<PostgreSqlServiceInfo>();
 
         DoAdd(services, info, configuration, contextLifetime);
         return services;
@@ -59,23 +59,23 @@ public static class PostgresServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddPostgresHealthContributor(this IServiceCollection services, IConfiguration configuration, string serviceName,
+    public static IServiceCollection AddPostgreSqlHealthContributor(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
         ArgumentGuard.NotNull(configuration);
 
-        var info = configuration.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+        var info = configuration.GetRequiredServiceInfo<PostgreSqlServiceInfo>(serviceName);
 
         DoAdd(services, info, configuration, contextLifetime);
         return services;
     }
 
-    private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime)
+    private static void DoAdd(IServiceCollection services, PostgreSqlServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime)
     {
-        var options = new PostgresProviderConnectorOptions(configuration);
-        var factory = new PostgresProviderConnectorFactory(info, options, PostgreSqlTypeLocator.NpgsqlConnection);
+        var options = new PostgreSqlProviderConnectorOptions(configuration);
+        var factory = new PostgreSqlProviderConnectorFactory(info, options, PostgreSqlTypeLocator.NpgsqlConnection);
 
         services.Add(new ServiceDescriptor(typeof(IHealthContributor),
             ctx => new RelationalDbHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),

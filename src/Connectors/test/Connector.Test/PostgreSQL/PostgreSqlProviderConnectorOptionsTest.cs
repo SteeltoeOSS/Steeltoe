@@ -10,14 +10,14 @@ using Xunit;
 
 namespace Steeltoe.Connector.Test.PostgreSQL;
 
-public class PostgresProviderConnectorOptionsTest
+public class PostgreSqlProviderConnectorOptionsTest
 {
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
         const IConfiguration configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new PostgresProviderConnectorOptions(configuration));
+        var ex = Assert.Throws<ArgumentNullException>(() => new PostgreSqlProviderConnectorOptions(configuration));
         Assert.Contains(nameof(configuration), ex.Message);
     }
 
@@ -37,7 +37,7 @@ public class PostgresProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new PostgresProviderConnectorOptions(configurationRoot);
+        var options = new PostgreSqlProviderConnectorOptions(configurationRoot);
         Assert.Equal("localhost", options.Host);
         Assert.Equal(1234, options.Port);
         Assert.Equal("password", options.Password);
@@ -58,7 +58,7 @@ public class PostgresProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new PostgresProviderConnectorOptions(configurationRoot);
+        var options = new PostgreSqlProviderConnectorOptions(configurationRoot);
 
         Assert.StartsWith(appsettings["postgres:client:ConnectionString"], options.ToString());
     }
@@ -83,7 +83,7 @@ public class PostgresProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new PostgresProviderConnectorOptions(configurationRoot);
+        var options = new PostgreSqlProviderConnectorOptions(configurationRoot);
 
         Assert.Equal(expected, options.ToString());
     }
@@ -99,7 +99,7 @@ public class PostgresProviderConnectorOptionsTest
 
         // add environment variables as Cloud Foundry would
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVcapEdb);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapEdb);
 
         // add settings to configuration
         var configurationBuilder = new ConfigurationBuilder();
@@ -108,7 +108,7 @@ public class PostgresProviderConnectorOptionsTest
         configurationBuilder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new PostgresProviderConnectorOptions(configurationRoot);
+        var options = new PostgreSqlProviderConnectorOptions(configurationRoot);
 
         Assert.NotEqual(appsettings["postgres:client:ConnectionString"], options.ToString());
     }
@@ -125,7 +125,7 @@ public class PostgresProviderConnectorOptionsTest
 
         // add environment variables as Cloud Foundry would
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVcapEdb);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapEdb);
 
         // add settings to configuration
         var configurationBuilder = new ConfigurationBuilder();
@@ -134,7 +134,7 @@ public class PostgresProviderConnectorOptionsTest
         configurationBuilder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var options = new PostgresProviderConnectorOptions(configurationRoot);
+        var options = new PostgreSqlProviderConnectorOptions(configurationRoot);
 
         Assert.DoesNotContain(appsettings["postgres:client:ConnectionString"], options.ToString());
         Assert.EndsWith($"Search Path={options.SearchPath};", options.ToString());

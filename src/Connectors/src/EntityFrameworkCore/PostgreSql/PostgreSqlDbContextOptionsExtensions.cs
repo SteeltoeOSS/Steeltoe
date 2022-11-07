@@ -80,13 +80,13 @@ public static class PostgreSqlDbContextOptionsExtensions
 
     private static string GetConnection(IConfiguration configuration, string serviceName = null)
     {
-        PostgresServiceInfo info = string.IsNullOrEmpty(serviceName)
-            ? configuration.GetSingletonServiceInfo<PostgresServiceInfo>()
-            : configuration.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+        PostgreSqlServiceInfo info = string.IsNullOrEmpty(serviceName)
+            ? configuration.GetSingletonServiceInfo<PostgreSqlServiceInfo>()
+            : configuration.GetRequiredServiceInfo<PostgreSqlServiceInfo>(serviceName);
 
-        var options = new PostgresProviderConnectorOptions(configuration);
+        var options = new PostgreSqlProviderConnectorOptions(configuration);
 
-        var factory = new PostgresProviderConnectorFactory(info, options, null);
+        var factory = new PostgreSqlProviderConnectorFactory(info, options, null);
         return factory.CreateConnectionString();
     }
 
@@ -102,7 +102,7 @@ public static class PostgreSqlDbContextOptionsExtensions
 
         if (extensionType == null)
         {
-            throw new ConnectorException("Unable to find UseNpgsql extension, are you missing Postgres EntityFramework Core assembly");
+            throw new ConnectorException("Unable to find UseNpgsql extension, are you missing PostgreSQL EntityFramework Core assembly?");
         }
 
         object result = ReflectionHelpers.Invoke(useMethod, null, new[]
