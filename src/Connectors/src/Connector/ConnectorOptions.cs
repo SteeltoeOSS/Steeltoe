@@ -6,12 +6,12 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Connector;
 
-public class ConnectorIOptions<T> : IOptions<T>
+public class ConnectorOptions<T> : IOptions<T>
     where T : class, new()
 {
     public T Value { get; protected internal set; }
 
-    public ConnectorIOptions(T value)
+    public ConnectorOptions(T value)
     {
         Value = value;
     }
