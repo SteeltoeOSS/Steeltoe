@@ -4,6 +4,9 @@
 
 using OpenTelemetry.Metrics;
 using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
+using Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
+using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 
 namespace Steeltoe.Management.OpenTelemetry.Metrics;
 

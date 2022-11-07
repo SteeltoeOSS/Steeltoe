@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
-using Steeltoe.Configuration.Kubernetes;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Info;
 

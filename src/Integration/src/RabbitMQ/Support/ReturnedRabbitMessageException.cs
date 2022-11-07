@@ -4,7 +4,7 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Integration.Rabbit.Support;
+namespace Steeltoe.Integration.RabbitMQ.Support;
 
 public class ReturnedRabbitMessageException : MessagingException
 {

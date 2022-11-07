@@ -9,8 +9,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;

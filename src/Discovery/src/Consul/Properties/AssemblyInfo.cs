@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
-using Steeltoe.Discovery;
+using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul;
 
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Consul.Test")]

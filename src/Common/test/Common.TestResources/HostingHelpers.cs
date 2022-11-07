@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.Internal;
 
-namespace Steeltoe.Common;
+namespace Steeltoe.Common.TestResources;
 
 public static class HostingHelpers
 {

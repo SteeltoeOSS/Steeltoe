@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Password;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Value;
 using Xunit;
 
 namespace Steeltoe.Security.DataProtection.CredHub.Test;

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Connector.Test.Services;

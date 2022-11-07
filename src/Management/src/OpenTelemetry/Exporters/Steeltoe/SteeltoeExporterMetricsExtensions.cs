@@ -5,7 +5,7 @@
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 
-namespace Steeltoe.Management.OpenTelemetry.Exporters;
+namespace Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
 
 public static class SteeltoeExporterMetricsExtensions
 {

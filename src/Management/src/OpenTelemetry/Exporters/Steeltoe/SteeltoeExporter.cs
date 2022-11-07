@@ -6,7 +6,7 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 
-namespace Steeltoe.Management.OpenTelemetry.Exporters;
+namespace Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
 
 /// <summary>
 /// Exporter of OpenTelemetry metrics to Steeltoe Format.

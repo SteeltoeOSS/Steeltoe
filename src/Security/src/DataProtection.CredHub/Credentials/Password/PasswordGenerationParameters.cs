@@ -4,7 +4,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub;
+namespace Steeltoe.Security.DataProtection.CredHub.Credentials.Password;
 
 /// <summary>
 /// Parameters for generating a new password credential. All parameters are optional.

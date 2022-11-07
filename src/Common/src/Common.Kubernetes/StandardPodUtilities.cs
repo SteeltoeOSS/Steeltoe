@@ -6,10 +6,8 @@ using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
-using Steeltoe.Common;
-using Steeltoe.Common.Kubernetes;
 
-namespace Steeltoe.Configuration.Kubernetes;
+namespace Steeltoe.Common.Kubernetes;
 
 public class StandardPodUtilities : IPodUtilities
 {

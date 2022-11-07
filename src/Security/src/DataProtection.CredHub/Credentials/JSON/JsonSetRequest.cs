@@ -4,7 +4,7 @@
 
 using System.Text.Json;
 
-namespace Steeltoe.Security.DataProtection.CredHub;
+namespace Steeltoe.Security.DataProtection.CredHub.Credentials.Json;
 
 public class JsonSetRequest : CredentialSetRequest
 {

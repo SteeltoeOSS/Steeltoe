@@ -6,12 +6,11 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
-using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using Wavefront.SDK.CSharp.DirectIngestion;
 using Wavefront.SDK.CSharp.Entities.Metrics;
 
-namespace Steeltoe.Management.OpenTelemetry.Exporters;
+namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 
 public class WavefrontMetricsExporter : BaseExporter<Metric>
 {

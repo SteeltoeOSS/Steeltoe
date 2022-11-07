@@ -5,6 +5,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Placeholder;
 using Xunit;
 

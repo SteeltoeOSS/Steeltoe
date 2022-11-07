@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Options;
 
-namespace Steeltoe.Common;
+namespace Steeltoe.Common.TestResources;
 
 public class TestOptionsMonitor<T> : IOptionsMonitor<T>
 {

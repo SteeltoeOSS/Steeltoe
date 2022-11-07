@@ -7,7 +7,7 @@ using Steeltoe.Integration.Mapping;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ;
 
-namespace Steeltoe.Integration.Rabbit.Support;
+namespace Steeltoe.Integration.RabbitMQ.Support;
 
 public class DefaultRabbitHeaderMapper : AbstractHeaderMapper<IMessageHeaders>, IRabbitHeaderMapper
 {

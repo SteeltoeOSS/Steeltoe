@@ -6,7 +6,7 @@ using RabbitMQ.Client;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 
-namespace Steeltoe.Integration.Rabbit.Support;
+namespace Steeltoe.Integration.RabbitMQ.Support;
 
 public class ManualAckListenerExecutionFailedException : ListenerExecutionFailedException
 {

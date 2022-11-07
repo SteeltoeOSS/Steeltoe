@@ -4,8 +4,9 @@
 
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
-namespace Steeltoe.Common.Diagnostics;
+namespace Steeltoe.Management.Diagnostics;
 
 public abstract class DiagnosticObserver : IDiagnosticObserver
 {

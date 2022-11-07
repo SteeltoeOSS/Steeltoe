@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.LoadBalancer;
 using Steeltoe.Discovery;
 
-namespace Steeltoe.Common.Discovery;
+namespace Steeltoe.Common.Http.Discovery;
 
 public class DiscoveryHttpClientHandlerBase
 {

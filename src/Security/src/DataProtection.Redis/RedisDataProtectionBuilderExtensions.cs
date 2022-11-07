@@ -9,9 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Security.DataProtection.Redis;
 
-namespace Steeltoe.Security.DataProtection;
+namespace Steeltoe.Security.DataProtection.Redis;
 
 public static class RedisDataProtectionBuilderExtensions
 {
