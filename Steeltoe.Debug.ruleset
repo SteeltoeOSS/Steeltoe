@@ -37,6 +37,7 @@
     <Rule Id="S2674" Action="Warning" />
     <Rule Id="S2699" Action="Info" />
     <Rule Id="S2737" Action="Info" />
+    <Rule Id="S2955" Action="Warning" />
     <Rule Id="S3011" Action="None" />
     <Rule Id="S3052" Action="Warning" />
     <Rule Id="S3241" Action="Info" />

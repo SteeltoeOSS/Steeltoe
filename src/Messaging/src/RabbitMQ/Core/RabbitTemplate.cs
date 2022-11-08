@@ -2266,7 +2266,7 @@ public class RabbitTemplate
 
         TReply reply = receiveAndReplyCallback(messageAsTReceive);
 
-        if (reply != null)
+        if (reply is not null)
         {
             DoSendReply(replyToAddressCallback, channel, receiveMessage, reply);
         }

@@ -7,6 +7,7 @@ using Steeltoe.Messaging.Converter;
 namespace Steeltoe.Messaging.Core;
 
 public abstract class AbstractMessageReceivingTemplate<TDestination> : AbstractMessageSendingTemplate<TDestination>, IMessageReceivingOperations<TDestination>
+    where TDestination : class
 {
     protected virtual TDestination RequiredDefaultReceiveDestination
     {

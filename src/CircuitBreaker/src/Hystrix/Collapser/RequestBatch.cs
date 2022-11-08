@@ -74,7 +74,7 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                     collapsedRequest.CompletionSource = tcs;
 
                     CollapsedRequest<TRequestResponse, TRequestArgument> existing =
-                        arg == null ? GetOrAddNullArg(collapsedRequest) : _argumentMap.GetOrAdd(arg, collapsedRequest);
+                        arg is null ? GetOrAddNullArg(collapsedRequest) : _argumentMap.GetOrAdd(arg, collapsedRequest);
 
                     /*
                      * If the argument already exists in the batch, then there are 2 options:
@@ -302,42 +302,5 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
         }
 
         return _nullArg.Value;
-    }
-
-    // Best-effort attempt to remove an argument from a batch.  This may get invoked when a cancellation occurs somewhere downstream.
-    // This method finds the argument in the batch, and removes it.
-    internal void Remove(TRequestArgument arg)
-    {
-        if (_batchStarted.Value)
-        {
-            // nothing we can do
-            return;
-        }
-
-        if (_batchLock.TryEnterReadLock(1))
-        {
-            try
-            {
-                /* double-check now that we have the lock - if the batch is started, deleting is useless */
-                if (_batchStarted.Value)
-                {
-                    return;
-                }
-
-                if (arg == null)
-                {
-                    _nullArg.Value = null;
-                }
-
-                if (_argumentMap.TryRemove(arg, out _))
-                {
-                    // Log
-                }
-            }
-            finally
-            {
-                _batchLock.ExitReadLock();
-            }
-        }
     }
 }

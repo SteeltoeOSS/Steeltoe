@@ -286,7 +286,7 @@ public class Indexer : SpelNode
         Type targetType = typeof(T);
         var result = (T)converter.ConvertValue(value, value == null ? typeof(object) : value.GetType(), targetType);
 
-        if (result == null)
+        if (result is null)
         {
             throw new InvalidOperationException($"Null conversion result for index [{value}]");
         }

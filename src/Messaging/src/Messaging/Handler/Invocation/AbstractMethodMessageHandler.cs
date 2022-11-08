@@ -11,6 +11,7 @@ using Steeltoe.Messaging.Support;
 namespace Steeltoe.Messaging.Handler.Invocation;
 
 public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
+    where T : class
 {
     private readonly List<string> _destinationPrefixes = new();
     private readonly List<IHandlerMethodArgumentResolver> _customArgumentResolvers = new();
