@@ -1,9 +1,7 @@
-trigger:
-  branches:
-    include:
-    - main
-    - release/*
+pr:
   paths:
+    include:
+    - '*'  # must quote since "*" is a YAML reserved character; we want a string
     exclude:
     - README.md
     - roadmaps/*
