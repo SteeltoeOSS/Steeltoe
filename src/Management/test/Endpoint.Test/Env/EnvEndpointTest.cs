@@ -7,12 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Configuration.Placeholder;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Management.Endpoint.Env.Test;
+namespace Steeltoe.Management.Endpoint.Test.Env;
 
 public class EnvEndpointTest : BaseTest
 {

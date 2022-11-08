@@ -9,8 +9,10 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Services;
+using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connector.SqlServer.EntityFramework6;
 
-namespace Steeltoe.Connector.SqlServer.EntityFramework6;
+namespace Steeltoe.Connector.EntityFramework6.SqlServer;
 
 public static class SqlServerDbContextServiceCollectionExtensions
 {

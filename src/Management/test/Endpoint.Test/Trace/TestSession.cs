@@ -4,7 +4,7 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace Steeltoe.Management.Endpoint.Trace.Test;
+namespace Steeltoe.Management.Endpoint.Test.Trace;
 
 internal sealed class TestSession : ISession
 {

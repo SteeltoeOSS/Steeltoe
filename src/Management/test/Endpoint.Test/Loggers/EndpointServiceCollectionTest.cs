@@ -6,10 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Loggers;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Loggers.Test;
+namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
 public class EndpointServiceCollectionTest : BaseTest
 {

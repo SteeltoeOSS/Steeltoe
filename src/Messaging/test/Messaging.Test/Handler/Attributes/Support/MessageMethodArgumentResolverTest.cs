@@ -5,10 +5,11 @@
 using System.Reflection;
 using Moq;
 using Steeltoe.Messaging.Converter;
+using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
+namespace Steeltoe.Messaging.Test.Handler.Attributes.Support;
 
 public class MessageMethodArgumentResolverTest
 {

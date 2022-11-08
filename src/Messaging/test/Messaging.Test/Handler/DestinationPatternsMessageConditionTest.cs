@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.Handler;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Handler.Test;
+namespace Steeltoe.Messaging.Test.Handler;
 
 public class DestinationPatternsMessageConditionTest
 {

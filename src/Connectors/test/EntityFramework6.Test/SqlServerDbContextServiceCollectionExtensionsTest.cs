@@ -6,9 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.EntityFramework6.SqlServer;
 using Xunit;
 
-namespace Steeltoe.Connector.SqlServer.EntityFramework6.Test;
+namespace Steeltoe.Connector.EntityFramework6.Test;
 
 public class SqlServerDbContextServiceCollectionExtensionsTest
 {
@@ -86,7 +87,7 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", Steeltoe.TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVcap);
 
         var builder = new ConfigurationBuilder();
@@ -101,7 +102,7 @@ public class SqlServerDbContextServiceCollectionExtensionsTest
     public void AddDbContexts_WithVCAPs_AddsDbContexts()
     {
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", Steeltoe.TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcap);
 
         var builder = new ConfigurationBuilder();

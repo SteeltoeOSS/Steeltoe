@@ -37,8 +37,10 @@ using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Retry;
 using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 using Steeltoe.Messaging.Support;
+using Steeltoe.Stream.Binder.Rabbit;
 using Steeltoe.Stream.Binder.Rabbit.Provisioning;
 using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
+using Steeltoe.Stream.Binder.Test;
 using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Converter;
 using Steeltoe.Stream.Provisioning;
@@ -50,7 +52,7 @@ using Message = Steeltoe.Messaging.Message;
 using Queue = Steeltoe.Messaging.RabbitMQ.Configuration.Queue;
 using RabbitBinding = Steeltoe.Messaging.RabbitMQ.Configuration.Binding;
 
-namespace Steeltoe.Stream.Binder.Rabbit;
+namespace Steeltoe.Stream.Binder.RabbitMQ.Test;
 
 [Trait("Category", "Integration")]
 public sealed class RabbitBinderTests : RabbitBinderTestBase

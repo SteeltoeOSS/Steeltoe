@@ -4,10 +4,11 @@
 
 using System.Text;
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Converter.Test;
+namespace Steeltoe.Messaging.Test.Converter;
 
 public class StringMessageConverterTest
 {

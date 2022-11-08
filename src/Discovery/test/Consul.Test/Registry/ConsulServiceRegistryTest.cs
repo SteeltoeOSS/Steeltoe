@@ -7,9 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Discovery.Consul.Registry;
 using Xunit;
 
-namespace Steeltoe.Discovery.Consul.Registry.Test;
+namespace Steeltoe.Discovery.Consul.Test.Registry;
 
 public class ConsulServiceRegistryTest
 {

@@ -3,12 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Management.Endpoint.Refresh.Test;
+namespace Steeltoe.Management.Endpoint.Test.Refresh;
 
 public class RefreshEndpointTest : BaseTest
 {

@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Moq;
+using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Support;
-using Steeltoe.Messaging.Test;
 using Xunit;
 
-namespace Steeltoe.Messaging.Core.Test;
+namespace Steeltoe.Messaging.Test.Core;
 
 public class GenericMessagingTemplateTest
 {

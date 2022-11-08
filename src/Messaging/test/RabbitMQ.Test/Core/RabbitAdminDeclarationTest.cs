@@ -11,14 +11,14 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Xunit;
-using static Steeltoe.Messaging.RabbitMQ.Core.RabbitAdminDeclarationTest;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
-public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTestStartupFixture>
+public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTest.RabbitAdminDeclarationTestStartupFixture>
 {
     private readonly RabbitAdminDeclarationTestStartupFixture _fixture;
 

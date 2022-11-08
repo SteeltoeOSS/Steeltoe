@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.EntityFrameworkCore;
 using Steeltoe.Connector.Services;
+using Steeltoe.Connector.SqlServer;
 
-namespace Steeltoe.Connector.SqlServer.EntityFrameworkCore;
+namespace Steeltoe.Connector.EntityFrameworkCore.SqlServer;
 
 public static class SqlServerDbContextOptionsExtensions
 {

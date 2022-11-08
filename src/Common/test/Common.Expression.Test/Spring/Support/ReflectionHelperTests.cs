@@ -4,10 +4,12 @@
 
 using System.Collections;
 using System.Reflection;
+using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Support;
+namespace Steeltoe.Common.Expression.Test.Spring.Support;
 
 public class ReflectionHelperTests : AbstractExpressionTests
 {

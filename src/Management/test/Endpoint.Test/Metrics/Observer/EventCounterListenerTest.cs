@@ -3,13 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using OpenTelemetry.Metrics;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
+namespace Steeltoe.Management.Endpoint.Test.Metrics.Observer;
 
 public class EventCounterListenerTest : BaseTest
 {

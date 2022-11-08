@@ -4,10 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry.Test;
+namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
 public class EndpointServiceCollectionTest : BaseTest
 {

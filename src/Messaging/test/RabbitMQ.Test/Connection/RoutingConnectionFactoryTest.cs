@@ -4,11 +4,12 @@
 
 using Moq;
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Xunit;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
 public class RoutingConnectionFactoryTest
 {

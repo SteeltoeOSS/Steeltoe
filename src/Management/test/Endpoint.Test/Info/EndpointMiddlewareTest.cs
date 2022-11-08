@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
-using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Info;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Info.Test;
+namespace Steeltoe.Management.Endpoint.Test.Info;
 
 public class EndpointMiddlewareTest : BaseTest
 {

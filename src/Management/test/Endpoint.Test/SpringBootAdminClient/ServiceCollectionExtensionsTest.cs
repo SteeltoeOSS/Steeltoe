@@ -5,16 +5,17 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test;
+namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
 public class ServiceCollectionExtensionsTest
 {
     [Fact]
     public void AddSpringBootAdminClient_ThrowsOnNull()
     {
-        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddSpringBootAdminClient(null));
+        var ex = Assert.Throws<ArgumentNullException>(() => Endpoint.SpringBootAdminClient.ServiceCollectionExtensions.AddSpringBootAdminClient(null));
         Assert.Contains("services", ex.Message);
     }
 

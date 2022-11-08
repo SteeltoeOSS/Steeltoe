@@ -5,9 +5,10 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Services.Test;
+namespace Steeltoe.Connector.Test.Services;
 
 public class HystrixRabbitMQServiceInfoFactoryTest
 {

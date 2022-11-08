@@ -3,10 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using RabbitMQ.Client;
+using Steeltoe.Messaging.RabbitMQ.Connection;
 using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
+using IConnection = Steeltoe.Messaging.RabbitMQ.Connection.IConnection;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
 [Trait("Category", "Integration")]
 public class CachePropertiesTest

@@ -12,6 +12,7 @@ using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Attributes;
 using Steeltoe.Integration.Configuration;
 using Steeltoe.Integration.Extensions;
+using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes;
@@ -20,7 +21,7 @@ using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Integration.Handler;
+namespace Steeltoe.Integration.Test.Handler;
 
 public class MethodInvokingMessageProcessorTest
 {

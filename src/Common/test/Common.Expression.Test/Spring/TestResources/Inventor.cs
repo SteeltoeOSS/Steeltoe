@@ -6,7 +6,7 @@
 #pragma warning disable S4004 // Collection properties should be readonly
 // ReSharper disable InconsistentNaming
 
-namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
+namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
 public class Inventor
 {

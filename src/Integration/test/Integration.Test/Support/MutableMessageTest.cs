@@ -2,10 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Xunit;
 
-namespace Steeltoe.Integration.Support.Test;
+namespace Steeltoe.Integration.Test.Support;
 
 public class MutableMessageTest
 {

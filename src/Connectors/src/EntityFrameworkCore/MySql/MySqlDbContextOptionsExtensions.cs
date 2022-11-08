@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.EntityFrameworkCore;
+using Steeltoe.Connector.MySql;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Connector.MySql.EntityFrameworkCore;
+namespace Steeltoe.Connector.EntityFrameworkCore.MySql;
 
 public static class MySqlDbContextOptionsExtensions
 {

@@ -5,7 +5,7 @@
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Binder;
 
-namespace Steeltoe.Stream.Partitioning;
+namespace Steeltoe.Stream.Test.Partitioning;
 
 public class CustomPartitionKeyExtractorClassTwo : IPartitionKeyExtractorStrategy
 {

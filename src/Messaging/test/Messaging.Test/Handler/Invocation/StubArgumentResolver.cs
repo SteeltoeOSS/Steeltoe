@@ -3,8 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Messaging.Handler.Invocation;
 
-namespace Steeltoe.Messaging.Handler.Invocation.Test;
+namespace Steeltoe.Messaging.Test.Handler.Invocation;
 
 internal sealed class StubArgumentResolver : IHandlerMethodArgumentResolver
 {

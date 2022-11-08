@@ -5,11 +5,12 @@
 using System.Text;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
+using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Support;
 using Xunit;
 using HeadersDictionary = System.Collections.Generic.IDictionary<string, object>;
 
-namespace Steeltoe.Messaging.Core.Test;
+namespace Steeltoe.Messaging.Test.Core;
 
 public class MessageSendingTemplateTest
 {

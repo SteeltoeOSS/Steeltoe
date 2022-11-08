@@ -8,13 +8,14 @@ using Moq;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
+using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Extensions;
 using Steeltoe.Stream.TestBinder;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Test.Binder;
 
 public class ErrorBindingTest : AbstractTest
 {

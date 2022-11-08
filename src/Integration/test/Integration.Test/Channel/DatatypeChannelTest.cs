@@ -6,13 +6,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
+using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Support.Converter;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Integration.Channel.Test;
+namespace Steeltoe.Integration.Test.Channel;
 
 public class DataTypeChannelTest
 {

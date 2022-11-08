@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Lifecycle;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Test.Binder;
 
 public class LifecycleBinderTest : AbstractTest
 {

@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Connector.Hystrix;
 using Xunit;
 
-namespace Steeltoe.Connector.Hystrix.Test;
+namespace Steeltoe.Connector.Test.Hystrix;
 
 public class HystrixProviderConfigurationTest
 {

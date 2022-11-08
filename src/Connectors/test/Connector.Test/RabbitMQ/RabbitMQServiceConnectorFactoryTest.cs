@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using RabbitMQ.Client;
+using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.RabbitMQ.Test;
+namespace Steeltoe.Connector.Test.RabbitMQ;
 
 public class RabbitMQServiceConnectorFactoryTest
 {

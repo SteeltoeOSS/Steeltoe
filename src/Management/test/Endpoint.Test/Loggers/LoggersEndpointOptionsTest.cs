@@ -4,10 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Loggers;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Loggers.Test;
+namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
 public class LoggersEndpointOptionsTest : BaseTest
 {

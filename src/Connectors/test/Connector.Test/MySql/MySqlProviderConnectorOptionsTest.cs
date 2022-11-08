@@ -4,9 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.MySql;
 using Xunit;
 
-namespace Steeltoe.Connector.MySql.Test;
+namespace Steeltoe.Connector.Test.MySql;
 
 public class MySqlProviderConnectorOptionsTest
 {

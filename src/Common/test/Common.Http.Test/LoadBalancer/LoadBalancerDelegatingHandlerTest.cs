@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using Steeltoe.Common.Http.Test;
+using Steeltoe.Common.Http.LoadBalancer;
 using Xunit;
 
-namespace Steeltoe.Common.Http.LoadBalancer.Test;
+namespace Steeltoe.Common.Http.Test.LoadBalancer;
 
 public class LoadBalancerDelegatingHandlerTest
 {

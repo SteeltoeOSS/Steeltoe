@@ -6,9 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.Hystrix;
 using Xunit;
 
-namespace Steeltoe.Connector.Hystrix.Test;
+namespace Steeltoe.Connector.Test.Hystrix;
 
 public class HystrixProviderServiceCollectionExtensionsTest
 {

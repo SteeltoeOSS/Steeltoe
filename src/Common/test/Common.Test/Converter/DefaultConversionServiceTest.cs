@@ -7,9 +7,10 @@ using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Text;
+using Steeltoe.Common.Converter;
 using Xunit;
 
-namespace Steeltoe.Common.Converter.Test;
+namespace Steeltoe.Common.Test.Converter;
 
 public class DefaultConversionServiceTest
 {

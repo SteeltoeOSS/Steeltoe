@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Moq;
+using Steeltoe.Messaging.RabbitMQ.Connection;
 using Xunit;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
 public abstract class AbstractConnectionFactoryTest
 {

@@ -8,12 +8,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal.Contexts;
+using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Integration.Handler;
+namespace Steeltoe.Integration.Test.Handler;
 
 public class MethodInvokingMessageProcessorAnnotationTest
 {

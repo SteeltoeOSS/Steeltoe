@@ -4,7 +4,7 @@
 
 using System.Text;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Binder.Test;
 
 public static class TestExtensions
 {

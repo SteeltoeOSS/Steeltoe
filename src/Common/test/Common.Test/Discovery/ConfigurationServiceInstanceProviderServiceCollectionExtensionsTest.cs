@@ -4,10 +4,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
-namespace Steeltoe.Common.Discovery.Test;
+namespace Steeltoe.Common.Test.Discovery;
 
 public class ConfigurationServiceInstanceProviderServiceCollectionExtensionsTest
 {

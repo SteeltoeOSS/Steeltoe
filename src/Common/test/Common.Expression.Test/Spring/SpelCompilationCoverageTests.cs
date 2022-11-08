@@ -6,15 +6,17 @@ using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring;
 using Steeltoe.Common.Expression.Internal.Spring.Ast;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Expression.Spring.TestData;
+using Steeltoe.Common.Expression.Test.Spring.TestData;
 using Xunit;
 
 // ReSharper disable InconsistentNaming
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public class SpelCompilationCoverageTests : AbstractExpressionTests
 {
@@ -3688,28 +3690,28 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("Format:Format:1", _expression.GetValue<string>());
 
         _expression = Parser.ParseExpression(
-            "T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).MethodA().MethodA().MethodB())");
+            $"T(String).Format('Format:{{0}}', T({typeof(SpelCompilationCoverageTests).FullName}$StaticsHelper).MethodA().MethodA().MethodB())");
 
         Assert.Equal("Format:mb", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("Format:mb", _expression.GetValue<string>());
 
         _expression = Parser.ParseExpression(
-            "T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).Fielda.Fielda.Fieldb)");
+            $"T(String).Format('Format:{{0}}', T({typeof(SpelCompilationCoverageTests).FullName}$StaticsHelper).Fielda.Fielda.Fieldb)");
 
         Assert.Equal("Format:fb", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("Format:fb", _expression.GetValue<string>());
 
         _expression = Parser.ParseExpression(
-            "T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).PropertyA.PropertyA.PropertyB)");
+            $"T(String).Format('Format:{{0}}', T({typeof(SpelCompilationCoverageTests).FullName}$StaticsHelper).PropertyA.PropertyA.PropertyB)");
 
         Assert.Equal("Format:pb", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("Format:pb", _expression.GetValue<string>());
 
         _expression = Parser.ParseExpression(
-            "T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).Fielda.MethodA().PropertyA.Fieldb)");
+            $"T(String).Format('Format:{{0}}', T({typeof(SpelCompilationCoverageTests).FullName}$StaticsHelper).Fielda.MethodA().PropertyA.Fieldb)");
 
         Assert.Equal("Format:fb", _expression.GetValue<string>());
         AssertCanCompile(_expression);
@@ -3881,7 +3883,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // Assert.Equal("123", _expression.GetValue());
         // AssertCanCompile(_expression);
         // Assert.Equal("123", _expression.GetValue());
-        const string testClass8 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass8";
+        string testClass8 = $"{typeof(SpelCompilationCoverageTests).FullName}$TestClass8";
 
         // multi arg ctor that includes primitives
         _expression = Parser.ParseExpression($"new {testClass8}(42,'123',4.0d,True)");
@@ -3905,7 +3907,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(42, tc8.I);
 
         // private class, can't compile it
-        const string testClass9 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass9";
+        string testClass9 = $"{typeof(SpelCompilationCoverageTests).FullName}$TestClass9";
         _expression = Parser.ParseExpression($"new {testClass9}(42)");
         Assert.IsType<TestClass9>(_expression.GetValue());
         AssertCantCompile(_expression);
@@ -5599,7 +5601,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(resultI, resultC);
 
         // instance field on unboxed value type
-        _expression = Parser.ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$AHolder).GetA().Value");
+        _expression = Parser.ParseExpression($"T({typeof(SpelCompilationCoverageTests).FullName}$AHolder).GetA().Value");
         Assert.Equal(20, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(20, _expression.GetValue());
@@ -5630,7 +5632,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(resultI, resultC);
 
         // instance method on unboxed value type
-        _expression = Parser.ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$AHolder).GetA().Method()");
+        _expression = Parser.ParseExpression($"T({typeof(SpelCompilationCoverageTests).FullName}$AHolder).GetA().Method()");
         Assert.Equal(20, _expression.GetValue());
         AssertCanCompile(_expression);
         Assert.Equal(20, _expression.GetValue());

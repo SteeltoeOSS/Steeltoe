@@ -5,7 +5,7 @@
 using System.Text;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 
-namespace Steeltoe.Messaging.RabbitMQ.Configuration;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Configuration;
 
 public sealed class MessageListenerTestContainer : IMessageListenerContainer
 {

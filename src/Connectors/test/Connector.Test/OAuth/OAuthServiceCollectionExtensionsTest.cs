@@ -6,9 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.OAuth;
 using Xunit;
 
-namespace Steeltoe.Connector.OAuth.Test;
+namespace Steeltoe.Connector.Test.OAuth;
 
 public class OAuthServiceCollectionExtensionsTest
 {

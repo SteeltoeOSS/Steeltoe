@@ -3,9 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net.Sockets;
+using Steeltoe.Messaging.Handler.Attributes;
+using Steeltoe.Messaging.Handler.Attributes.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
+namespace Steeltoe.Messaging.Test.Handler.Attributes.Support;
 
 public class AttributeExceptionHandlerMethodResolverTest
 {

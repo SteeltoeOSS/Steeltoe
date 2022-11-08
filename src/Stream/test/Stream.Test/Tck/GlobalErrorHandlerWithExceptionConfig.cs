@@ -5,7 +5,7 @@
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 
-namespace Steeltoe.Stream.Tck;
+namespace Steeltoe.Stream.Test.Tck;
 
 public class GlobalErrorHandlerWithExceptionConfig
 {

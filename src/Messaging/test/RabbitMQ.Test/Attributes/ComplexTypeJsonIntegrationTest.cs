@@ -6,17 +6,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Messaging.RabbitMQ.Attributes;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Xunit;
-using static Steeltoe.Messaging.RabbitMQ.Attributes.ComplexTypeJsonIntegrationTest;
 
-namespace Steeltoe.Messaging.RabbitMQ.Attributes;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 [Trait("Category", "Integration")]
-public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
+public class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJsonIntegrationTest.StartupFixture>
 {
     public const string TestQueue = "test.complex.send.and.receive";
     public const string TestQueue2 = "test.complex.receive";

@@ -4,7 +4,7 @@
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Steeltoe.Management.Endpoint.DbMigrations.Test;
+namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 
 public class MockDbContext : DbContext
 {

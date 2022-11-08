@@ -4,7 +4,7 @@
 
 using System.Data.Entity;
 
-namespace Steeltoe.Connector.SqlServer.EntityFramework6.Test;
+namespace Steeltoe.Connector.EntityFramework6.Test;
 
 public class Good2SqlServerDbContext : DbContext
 {

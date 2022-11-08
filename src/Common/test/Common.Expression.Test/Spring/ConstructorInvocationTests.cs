@@ -2,12 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Expression.Internal.Spring.TestResources;
+using Steeltoe.Common.Expression.Test.Spring.TestResources;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public class ConstructorInvocationTests : AbstractExpressionTests
 {
@@ -32,7 +34,7 @@ public class ConstructorInvocationTests : AbstractExpressionTests
         // On 3 it will exit normally
         // In each case it increments the Tester field 'counter' when invoked
         var parser = new SpelExpressionParser();
-        IExpression expr = parser.ParseExpression("new Steeltoe.Common.Expression.Internal.Spring.ConstructorInvocationTests$Tester(#bar).I");
+        IExpression expr = parser.ParseExpression($"new {typeof(ConstructorInvocationTests).FullName}$Tester(#bar).I");
 
         // Normal exit
         StandardEvaluationContext eContext = TestScenarioCreator.GetTestEvaluationContext();
@@ -108,43 +110,43 @@ public class ConstructorInvocationTests : AbstractExpressionTests
     public void TestVarargsInvocation01()
     {
         // Calling 'Fruit(String... strings)'
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Fruit('a','b','c').StringsCount", 3, typeof(int));
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Fruit('a').StringsCount", 1, typeof(int));
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Fruit().StringsCount", 0, typeof(int));
+        Evaluate($"new {typeof(Fruit).FullName}('a','b','c').StringsCount", 3, typeof(int));
+        Evaluate($"new {typeof(Fruit).FullName}('a').StringsCount", 1, typeof(int));
+        Evaluate($"new {typeof(Fruit).FullName}().StringsCount", 0, typeof(int));
 
         // all need converting to strings
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Fruit(1,2,3).StringsCount", 3, typeof(int));
+        Evaluate($"new {typeof(Fruit).FullName}(1,2,3).StringsCount", 3, typeof(int));
 
         // needs string conversion
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Fruit(1).StringsCount", 1, typeof(int));
+        Evaluate($"new {typeof(Fruit).FullName}(1).StringsCount", 1, typeof(int));
 
         // first and last need conversion
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Fruit(1,'a',3.0d).StringsCount", 3, typeof(int));
+        Evaluate($"new {typeof(Fruit).FullName}(1,'a',3.0d).StringsCount", 3, typeof(int));
     }
 
     [Fact]
     public void TestVarargsInvocation02()
     {
         // Calling 'Fruit(int i, String... strings)' - returns int+length_of_strings
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Fruit(5,'a','b','c').StringsCount", 8, typeof(int));
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Fruit(2,'a').StringsCount", 3, typeof(int));
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Fruit(4).StringsCount", 4, typeof(int));
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Fruit(8,2,3).StringsCount", 10, typeof(int));
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Fruit(9).StringsCount", 9, typeof(int));
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Fruit(2,'a',3.0d).StringsCount", 4, typeof(int));
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Fruit(8,StringArrayOfThreeItems).StringsCount", 11, typeof(int));
+        Evaluate($"new {typeof(Fruit).FullName}(5,'a','b','c').StringsCount", 8, typeof(int));
+        Evaluate($"new {typeof(Fruit).FullName}(2,'a').StringsCount", 3, typeof(int));
+        Evaluate($"new {typeof(Fruit).FullName}(4).StringsCount", 4, typeof(int));
+        Evaluate($"new {typeof(Fruit).FullName}(8,2,3).StringsCount", 10, typeof(int));
+        Evaluate($"new {typeof(Fruit).FullName}(9).StringsCount", 9, typeof(int));
+        Evaluate($"new {typeof(Fruit).FullName}(2,'a',3.0d).StringsCount", 4, typeof(int));
+        Evaluate($"new {typeof(Fruit).FullName}(8,StringArrayOfThreeItems).StringsCount", 11, typeof(int));
     }
 
     [Fact]
     public void TestWidening01()
     {
         // widening of int 3 to double 3 is OK
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.WidenDouble(3).D", 3.0d, typeof(double));
+        Evaluate($"new {typeof(WidenDouble).FullName}(3).D", 3.0d, typeof(double));
 
         // Evaluate("new Double(3)", 3.0d, typeof(double));
 
         // widening of int 3 to long 3 is OK
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.WidenLong(3).L", 3L, typeof(long));
+        Evaluate($"new {typeof(WidenLong).FullName}(3).L", 3L, typeof(long));
 
         // Evaluate("new Long(3)", 3L, typeof(long));
     }
@@ -153,7 +155,7 @@ public class ConstructorInvocationTests : AbstractExpressionTests
     public void TestArgumentConversion01()
     {
         // Closest ctor will be new Company(String) and converter supports Double>String
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Company(1.1d).Address", "1.1", typeof(string));
+        Evaluate($"new {typeof(Company).FullName}(1.1d).Address", "1.1", typeof(string));
     }
 
     public class DummyConstructorResolver : IConstructorResolver

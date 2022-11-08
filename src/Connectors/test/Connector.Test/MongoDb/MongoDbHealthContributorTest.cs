@@ -5,10 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connector.MongoDb;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.MongoDb.Test;
+namespace Steeltoe.Connector.Test.MongoDb;
 
 public class MongoDbHealthContributorTest
 {

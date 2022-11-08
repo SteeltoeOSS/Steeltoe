@@ -8,9 +8,10 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Stream.Extensions;
 using Xunit;
 
-namespace Steeltoe.Stream.Extensions;
+namespace Steeltoe.Stream.Test.Extensions;
 
 public class CoreServicesExtensionsTest
 {
