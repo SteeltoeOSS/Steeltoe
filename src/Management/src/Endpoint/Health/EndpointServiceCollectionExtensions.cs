@@ -94,7 +94,7 @@ public static class EndpointServiceCollectionExtensions
         services.TryAddSingleton<ApplicationAvailability>();
     }
 
-    public static void AddHealthContributors(IServiceCollection services, params Type[] contributors)
+    public static void AddHealthContributors(this IServiceCollection services, params Type[] contributors)
     {
         var descriptors = new List<ServiceDescriptor>();
 

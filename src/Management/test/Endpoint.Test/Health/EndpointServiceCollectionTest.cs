@@ -99,7 +99,7 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddHealthContributors_AddsServices()
     {
         var services = new ServiceCollection();
-        EndpointServiceCollectionExtensions.AddHealthContributors(services, typeof(TestContributor));
+        services.AddHealthContributors(typeof(TestContributor));
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
         Assert.NotNull(contributors);

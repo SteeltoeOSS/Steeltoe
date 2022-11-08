@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
-using Steeltoe.Messaging.RabbitMQ.Host;
+using Steeltoe.Messaging.RabbitMQ.Hosting;
 using Xunit;
 using RC = RabbitMQ.Client;
 

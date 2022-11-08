@@ -9,7 +9,7 @@ using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Core;
 
-namespace Steeltoe.Messaging.RabbitMQ.Host;
+namespace Steeltoe.Messaging.RabbitMQ.Hosting;
 
 public class RabbitHostService : IHostedService
 {

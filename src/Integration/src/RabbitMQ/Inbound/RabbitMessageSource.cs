@@ -15,8 +15,6 @@ using Steeltoe.Messaging.RabbitMQ.Batch;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using IConnection = Steeltoe.Messaging.RabbitMQ.Connection.IConnection;
-using IConnectionFactory = Steeltoe.Messaging.RabbitMQ.Connection.IConnectionFactory;
 using RabbitConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using RC = RabbitMQ.Client;
 

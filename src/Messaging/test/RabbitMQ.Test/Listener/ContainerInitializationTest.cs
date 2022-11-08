@@ -12,7 +12,7 @@ using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using Steeltoe.Messaging.RabbitMQ.Host;
+using Steeltoe.Messaging.RabbitMQ.Hosting;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Xunit;
 using RC = RabbitMQ.Client;
