@@ -4,7 +4,6 @@
 
 using System.Reflection;
 using System.Reflection.Emit;
-using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
@@ -151,7 +150,7 @@ public class Elvis : SpelNode
             TypeDescriptor conditionDescriptor = children[0].ExitDescriptor;
             TypeDescriptor ifNullValueDescriptor = children[1].ExitDescriptor;
 
-            if (ObjectUtils.NullSafeEquals(conditionDescriptor, ifNullValueDescriptor))
+            if (Equals(conditionDescriptor, ifNullValueDescriptor))
             {
                 exitTypeDescriptor = conditionDescriptor;
             }

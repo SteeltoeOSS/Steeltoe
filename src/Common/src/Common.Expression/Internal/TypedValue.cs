@@ -38,13 +38,12 @@ public class TypedValue : ITypedValue
             return false;
         }
 
-        return ObjectUtils.NullSafeEquals(Value, otherTv.Value) && ((TypeDescriptor == null && otherTv.TypeDescriptor == null) ||
-            ObjectUtils.NullSafeEquals(TypeDescriptor, otherTv.TypeDescriptor));
+        return ObjectEquality.ObjectOrCollectionEquals(Value, otherTv.Value) && TypeDescriptor == otherTv.TypeDescriptor;
     }
 
     public override int GetHashCode()
     {
-        return ObjectUtils.NullSafeHashCode(Value);
+        return ObjectEquality.GetObjectOrCollectionHashCode(Value);
     }
 
     public override string ToString()

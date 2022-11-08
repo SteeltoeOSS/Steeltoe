@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection.Emit;
-using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
@@ -110,7 +109,7 @@ public class Ternary : SpelNode
             TypeDescriptor leftDescriptor = children[1].ExitDescriptor;
             TypeDescriptor rightDescriptor = children[2].ExitDescriptor;
 
-            if (ObjectUtils.NullSafeEquals(leftDescriptor, rightDescriptor))
+            if (Equals(leftDescriptor, rightDescriptor))
             {
                 exitTypeDescriptor = leftDescriptor;
             }
