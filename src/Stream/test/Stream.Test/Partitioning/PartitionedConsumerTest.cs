@@ -10,7 +10,7 @@ using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Messaging;
 using Xunit;
 
-namespace Steeltoe.Stream.Partitioning;
+namespace Steeltoe.Stream.Test.Partitioning;
 
 public class PartitionedConsumerTest : AbstractTest
 {

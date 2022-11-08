@@ -13,16 +13,16 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using Xunit;
-using static Steeltoe.Messaging.RabbitMQ.Core.FixedReplyQueueDeadLetterTest;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
 [Trait("Category", "Integration")]
-public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixture>
+public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyQueueDeadLetterTest.FixedReplyStartupFixture>
 {
     private readonly ServiceProvider _provider;
     private readonly FixedReplyStartupFixture _fixture;

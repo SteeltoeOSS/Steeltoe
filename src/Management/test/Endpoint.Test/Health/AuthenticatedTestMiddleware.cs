@@ -5,7 +5,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 
-namespace Steeltoe.Management.Endpoint.Health.Test;
+namespace Steeltoe.Management.Endpoint.Test.Health;
 
 internal sealed class AuthenticatedTestMiddleware
 {

@@ -15,6 +15,7 @@ using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
@@ -22,10 +23,11 @@ using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
+using Steeltoe.Messaging.RabbitMQ.Test.Connection;
 using Xunit;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
 [Trait("Category", "Integration")]
 public abstract class RabbitTemplateIntegrationTest : IDisposable

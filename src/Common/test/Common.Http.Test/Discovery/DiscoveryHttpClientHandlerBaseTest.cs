@@ -6,7 +6,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery;
 using Xunit;
 
-namespace Steeltoe.Common.Http.Test;
+namespace Steeltoe.Common.Http.Test.Discovery;
 
 public class DiscoveryHttpClientHandlerBaseTest
 {

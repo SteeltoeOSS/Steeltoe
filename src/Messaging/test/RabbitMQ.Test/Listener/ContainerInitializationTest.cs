@@ -13,11 +13,12 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Host;
+using Steeltoe.Messaging.RabbitMQ.Listener;
 using Xunit;
 using RC = RabbitMQ.Client;
 using SimpleMessageConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter.SimpleMessageConverter;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
 [Trait("Category", "Integration")]
 public sealed class ContainerInitializationTest : AbstractTest, IDisposable

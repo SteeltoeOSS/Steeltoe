@@ -5,9 +5,10 @@
 using System.Text;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
+using Steeltoe.Stream.Binder;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Test.Binder;
 
 public class MessageConverterTest
 {

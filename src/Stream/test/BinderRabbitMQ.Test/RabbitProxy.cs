@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Stream.Binder.Rabbit;
+namespace Steeltoe.Stream.Binder.RabbitMQ.Test;
 
 public class RabbitProxy
 {

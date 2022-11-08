@@ -5,9 +5,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Messaging;
+using Steeltoe.Stream.Binder;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Test.Binder;
 
 public class BinderFactoryConfigurationTest : AbstractTest
 {

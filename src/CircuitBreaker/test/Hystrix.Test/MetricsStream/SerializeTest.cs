@@ -7,10 +7,10 @@ using System.Reactive.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using Steeltoe.CircuitBreaker.Hystrix.Test;
+using Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.MetricsStream;
 
 public class SerializeTest : HystrixTestBase
 {

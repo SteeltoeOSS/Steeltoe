@@ -4,9 +4,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.MySql.Test;
-using Steeltoe.Connector.Redis.Test;
 using Steeltoe.Connector.Services;
+using Steeltoe.Connector.Test.MySql;
+using Steeltoe.Connector.Test.Redis;
 using Xunit;
 
 namespace Steeltoe.Connector.Test;

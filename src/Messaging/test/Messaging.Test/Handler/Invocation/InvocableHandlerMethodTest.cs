@@ -4,10 +4,12 @@
 
 using System.Reflection;
 using Moq;
+using Steeltoe.Messaging.Handler;
+using Steeltoe.Messaging.Handler.Invocation;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Messaging.Handler.Invocation.Test;
+namespace Steeltoe.Messaging.Test.Handler.Invocation;
 
 public class InvocableHandlerMethodTest
 {

@@ -8,10 +8,11 @@ using Moq;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
 [Trait("Category", "Integration")]
 public sealed class ListenFromAutoDeleteQueueTest : IDisposable

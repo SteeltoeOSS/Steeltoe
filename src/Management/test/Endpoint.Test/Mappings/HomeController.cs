@@ -4,7 +4,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace Steeltoe.Management.Endpoint.Mappings.Test;
+namespace Steeltoe.Management.Endpoint.Test.Mappings;
 
 public class HomeController : Controller
 {

@@ -4,7 +4,7 @@
 
 using System.Data.Common;
 
-namespace Steeltoe.Management.Endpoint.DbMigrations.Test;
+namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 
 public class SomeDbException : DbException
 {

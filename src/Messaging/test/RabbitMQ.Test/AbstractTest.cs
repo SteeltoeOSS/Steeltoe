@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 
-namespace Steeltoe.Messaging.RabbitMQ;
+namespace Steeltoe.Messaging.RabbitMQ.Test;
 
 public abstract class AbstractTest
 {

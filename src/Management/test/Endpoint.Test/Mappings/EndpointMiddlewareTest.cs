@@ -12,10 +12,10 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Mappings;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Mappings.Test;
+namespace Steeltoe.Management.Endpoint.Test.Mappings;
 
 public class EndpointMiddlewareTest : BaseTest
 {
@@ -76,8 +76,9 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
 
-        const string expected =
-            "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"Steeltoe.Management.Endpoint.Mappings.Test.HomeController\":[{\"handler\":\"Steeltoe.Management.Endpoint.Mappings.Test.Person Index()\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json]}\"}]}}}}}";
+        string expected = "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"" + typeof(HomeController).FullName + "\":[{\"handler\":\"" +
+            typeof(Person).FullName +
+            " Index()\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json]}\"}]}}}}}";
 
         Assert.Equal(expected, json);
     }

@@ -7,9 +7,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
+using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
 
-namespace Steeltoe.Management.Endpoint.Health.Test;
+namespace Steeltoe.Management.Endpoint.Test.Health;
 
 public class Startup
 {

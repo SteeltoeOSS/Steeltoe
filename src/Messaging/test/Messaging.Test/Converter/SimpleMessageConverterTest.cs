@@ -2,10 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Converter.Test;
+namespace Steeltoe.Messaging.Test.Converter;
 
 public class SimpleMessageConverterTest
 {

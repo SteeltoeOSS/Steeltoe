@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.Converter;
 using Xunit;
 
-namespace Steeltoe.Messaging.Converter.Test;
+namespace Steeltoe.Messaging.Test.Converter;
 
 public class DefaultContentTypeResolverTest
 {

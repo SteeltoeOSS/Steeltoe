@@ -5,10 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Http.LoadBalancer;
 using Steeltoe.Common.LoadBalancer;
 using Xunit;
 
-namespace Steeltoe.Common.Http.LoadBalancer.Test;
+namespace Steeltoe.Common.Http.Test.LoadBalancer;
 
 public class LoadBalancerHttpClientBuilderExtensionsTest
 {

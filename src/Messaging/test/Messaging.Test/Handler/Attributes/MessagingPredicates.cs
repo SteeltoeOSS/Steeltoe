@@ -3,8 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Messaging.Handler.Attributes;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Test;
+namespace Steeltoe.Messaging.Test.Handler.Attributes;
 
 internal sealed class MessagingPredicates
 {

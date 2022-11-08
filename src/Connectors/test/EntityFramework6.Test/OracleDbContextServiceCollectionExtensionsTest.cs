@@ -5,10 +5,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.EntityFramework6;
+using Steeltoe.Connector.EntityFramework6.Oracle;
 using Xunit;
 
-namespace Steeltoe.Connector.Oracle.EntityFramework6.Test;
+namespace Steeltoe.Connector.EntityFramework6.Test;
 
 public class OracleDbContextServiceCollectionExtensionsTest
 {

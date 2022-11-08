@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Expression.Internal.Spring;
 using Steeltoe.Common.Expression.Internal.Spring.Ast;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public class OperatorTests : AbstractExpressionTests
 {
@@ -34,11 +35,7 @@ public class OperatorTests : AbstractExpressionTests
         Evaluate("'abc' == new System.Text.StringBuilder('abc').ToString()", true, typeof(bool));
         Evaluate("'abc' == 'def'", false, typeof(bool));
         Evaluate("'abc' == null", false, typeof(bool));
-
-        Evaluate(
-            "new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$SubComparable() == new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$OtherSubComparable()",
-            true, typeof(bool));
-
+        Evaluate($"new {typeof(OperatorTests).FullName}$SubComparable() == new {typeof(OperatorTests).FullName}$OtherSubComparable()", true, typeof(bool));
         Evaluate("3 eq 5", false, typeof(bool));
         Evaluate("5 eQ 3", false, typeof(bool));
         Evaluate("6 Eq 6", true, typeof(bool));
@@ -60,10 +57,7 @@ public class OperatorTests : AbstractExpressionTests
         Evaluate("'abc' eq new System.Text.StringBuilder('abc').ToString()", true, typeof(bool));
         Evaluate("'abc' eq 'def'", false, typeof(bool));
         Evaluate("'abc' eq null", false, typeof(bool));
-
-        Evaluate(
-            "new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$SubComparable() eq new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$OtherSubComparable()",
-            true, typeof(bool));
+        Evaluate($"new {typeof(OperatorTests).FullName}$SubComparable() eq new {typeof(OperatorTests).FullName}$OtherSubComparable()", true, typeof(bool));
     }
 
     [Fact]
@@ -90,11 +84,7 @@ public class OperatorTests : AbstractExpressionTests
         Evaluate("'abc' != new System.Text.StringBuilder('abc').ToString()", false, typeof(bool));
         Evaluate("'abc' != 'def'", true, typeof(bool));
         Evaluate("'abc' != null", true, typeof(bool));
-
-        Evaluate(
-            "new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$SubComparable() != new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$OtherSubComparable()",
-            false, typeof(bool));
-
+        Evaluate($"new {typeof(OperatorTests).FullName}$SubComparable() != new {typeof(OperatorTests).FullName}$OtherSubComparable()", false, typeof(bool));
         Evaluate("3 ne 5", true, typeof(bool));
         Evaluate("5 nE 3", true, typeof(bool));
         Evaluate("6 Ne 6", false, typeof(bool));
@@ -116,10 +106,7 @@ public class OperatorTests : AbstractExpressionTests
         Evaluate("'abc' ne new System.Text.StringBuilder('abc').ToString()", false, typeof(bool));
         Evaluate("'abc' ne 'def'", true, typeof(bool));
         Evaluate("'abc' ne null", true, typeof(bool));
-
-        Evaluate(
-            "new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$SubComparable() ne new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$OtherSubComparable()",
-            false, typeof(bool));
+        Evaluate($"new {typeof(OperatorTests).FullName}$SubComparable() ne new {typeof(OperatorTests).FullName}$OtherSubComparable()", false, typeof(bool));
     }
 
     [Fact]

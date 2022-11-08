@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Test;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia.Test;
+namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 
 public class HypermediaEndpointOptionsTest : BaseTest
 {

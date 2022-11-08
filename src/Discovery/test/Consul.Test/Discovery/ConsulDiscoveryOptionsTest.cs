@@ -7,9 +7,10 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Steeltoe.Common.Net;
+using Steeltoe.Discovery.Consul.Discovery;
 using Xunit;
 
-namespace Steeltoe.Discovery.Consul.Discovery.Test;
+namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
 public class ConsulDiscoveryOptionsTest
 {

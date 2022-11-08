@@ -5,12 +5,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 using Xunit;
 
-namespace Steeltoe.Integration.Channel.Test;
+namespace Steeltoe.Integration.Test.Channel;
 
 public class DispatchingChannelErrorHandlingTest
 {

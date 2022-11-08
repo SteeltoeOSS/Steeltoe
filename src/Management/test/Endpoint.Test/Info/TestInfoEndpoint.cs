@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Info;
 
-namespace Steeltoe.Management.Endpoint.Info.Test;
+namespace Steeltoe.Management.Endpoint.Test.Info;
 
 internal sealed class TestInfoEndpoint : InfoEndpoint
 {

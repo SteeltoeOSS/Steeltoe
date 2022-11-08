@@ -4,7 +4,7 @@
 
 using System.Security.Principal;
 
-namespace Steeltoe.Management.Endpoint.Trace.Test;
+namespace Steeltoe.Management.Endpoint.Test.Trace;
 
 internal sealed class MyIdentity : IIdentity
 {

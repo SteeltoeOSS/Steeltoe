@@ -13,12 +13,13 @@ using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using Xunit;
 using SimpleMessageConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter.SimpleMessageConverter;
 
-namespace Steeltoe.Messaging.RabbitMQ.Extensions;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Extensions;
 
 public class RabbitServiceExtensionsTest
 {

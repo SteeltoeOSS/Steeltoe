@@ -3,9 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public static class SpelUtilities
 {

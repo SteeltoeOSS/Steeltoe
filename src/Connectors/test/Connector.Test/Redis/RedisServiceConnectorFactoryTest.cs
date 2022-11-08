@@ -4,10 +4,11 @@
 
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using StackExchange.Redis;
+using Steeltoe.Connector.Redis;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Redis.Test;
+namespace Steeltoe.Connector.Test.Redis;
 
 [Collection("Redis")]
 public class RedisServiceConnectorFactoryTest

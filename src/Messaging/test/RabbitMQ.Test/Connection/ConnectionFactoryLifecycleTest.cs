@@ -7,13 +7,15 @@ using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client.Events;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
+using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
+using IConnection = RabbitMQ.Client.IConnection;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
 [Trait("Category", "Integration")]
 public class ConnectionFactoryLifecycleTest : AbstractTest
@@ -67,7 +69,7 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
         var connection = cf.CreateConnection() as ChannelCachingConnectionProxy;
         var listener = new TestBlockedListener(blockedConnectionLatch, unblockedConnectionLatch);
         connection.AddBlockedListener(listener);
-        global::RabbitMQ.Client.IConnection amqConnection = connection.Target.Connection;
+        IConnection amqConnection = connection.Target.Connection;
         amqConnection.HandleConnectionBlocked("Test connection blocked");
         Assert.True(blockedConnectionLatch.Wait(TimeSpan.FromSeconds(10)));
         amqConnection.HandleConnectionUnblocked();

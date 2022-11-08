@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 
-namespace Steeltoe.Management.Endpoint.Health.Test;
+namespace Steeltoe.Management.Endpoint.Test.Health;
 
 public sealed class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
 {

@@ -7,9 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.MongoDb;
 using Xunit;
 
-namespace Steeltoe.Connector.MongoDb.Test;
+namespace Steeltoe.Connector.Test.MongoDb;
 
 public class MongoDbProviderServiceCollectionExtensionsTest
 {

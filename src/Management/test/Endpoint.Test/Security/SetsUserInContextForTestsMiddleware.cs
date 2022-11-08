@@ -5,7 +5,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 
-namespace Steeltoe.Management.Endpoint.Security.Test;
+namespace Steeltoe.Management.Endpoint.Test.Security;
 
 /// <summary>
 /// Adds a fake claim for Testing Authenticate test cases.

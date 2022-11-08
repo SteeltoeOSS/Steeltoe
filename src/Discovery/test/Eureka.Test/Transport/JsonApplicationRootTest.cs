@@ -3,11 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json;
-using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Transport;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Client.Test.Transport;
+namespace Steeltoe.Discovery.Eureka.Test.Transport;
 
 public class JsonApplicationRootTest : AbstractBaseTest
 {

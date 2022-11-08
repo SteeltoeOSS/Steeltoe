@@ -6,9 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.MySql;
 using Xunit;
 
-namespace Steeltoe.Connector.MySql.Test;
+namespace Steeltoe.Connector.Test.MySql;
 
 /// <summary>
 /// Tests for the extension method that adds just the health check.

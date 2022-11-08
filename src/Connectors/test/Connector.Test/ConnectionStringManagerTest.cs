@@ -5,17 +5,17 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connector.MongoDb;
-using Steeltoe.Connector.MongoDb.Test;
 using Steeltoe.Connector.MySql;
-using Steeltoe.Connector.MySql.Test;
 using Steeltoe.Connector.PostgreSql;
-using Steeltoe.Connector.PostgreSql.Test;
 using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Redis;
-using Steeltoe.Connector.Redis.Test;
 using Steeltoe.Connector.Services;
 using Steeltoe.Connector.SqlServer;
-using Steeltoe.Connector.SqlServer.Test;
+using Steeltoe.Connector.Test.MongoDb;
+using Steeltoe.Connector.Test.MySql;
+using Steeltoe.Connector.Test.PostgreSQL;
+using Steeltoe.Connector.Test.Redis;
+using Steeltoe.Connector.Test.SqlServer;
 using Xunit;
 
 namespace Steeltoe.Connector.Test;

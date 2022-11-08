@@ -11,7 +11,7 @@ using Steeltoe.Stream.Extensions;
 using Steeltoe.Stream.TestBinder;
 using Xunit;
 
-namespace Steeltoe.Stream.Tck;
+namespace Steeltoe.Stream.Test.Tck;
 
 public class ErrorHandlingTest : AbstractTest
 {

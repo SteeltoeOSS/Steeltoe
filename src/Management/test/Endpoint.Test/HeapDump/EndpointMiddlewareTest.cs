@@ -12,11 +12,11 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Test;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.HeapDump.Test;
+namespace Steeltoe.Management.Endpoint.Test.HeapDump;
 
 public class EndpointMiddlewareTest : BaseTest
 {

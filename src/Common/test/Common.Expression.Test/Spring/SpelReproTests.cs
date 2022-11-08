@@ -6,6 +6,8 @@ using System.Collections;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Util;
@@ -17,7 +19,7 @@ using Xunit;
 #pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable SA1401 // Fields should be private
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public class SpelReproTests : AbstractExpressionTests
 {
@@ -88,10 +90,10 @@ public class SpelReproTests : AbstractExpressionTests
 
         // Expression expr = new SpelExpressionParser().ParseRaw("T(java.util.Map$Entry)");
         // Assert.Equal(typeof(), expr.GetValue(context)).isEqualTo(typeof(Map.Entry));
-        IExpression expr = new SpelExpressionParser().ParseRaw("T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$Outer$Inner).Run()");
+        IExpression expr = new SpelExpressionParser().ParseRaw($"T({typeof(SpelReproTests).FullName}$Outer$Inner).Run()");
         Assert.Equal(12, expr.GetValue(context));
 
-        expr = new SpelExpressionParser().ParseRaw("new Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$Outer$Inner().Run2()");
+        expr = new SpelExpressionParser().ParseRaw($"new {typeof(SpelReproTests).FullName}$Outer$Inner().Run2()");
         Assert.Equal(13, expr.GetValue(context));
     }
 
@@ -730,7 +732,7 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var context = new StandardEvaluationContext();
         var parser = new SpelExpressionParser();
-        IExpression expression = parser.ParseRaw("T(Steeltoe.Common.Expression.Internal.Spring.TestResources.le.div.mod.reserved.Reserver).Const");
+        IExpression expression = parser.ParseRaw($"T({typeof(TestResources.le.div.mod.reserved.Reserver).FullName}).Const");
         object value = expression.GetValue(context);
         Assert.Equal(TestResources.le.div.mod.reserved.Reserver.Const, value);
     }
@@ -1322,7 +1324,7 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var sec = new StandardEvaluationContext();
         sec.AddPropertyAccessor(new MapAccessor());
-        IExpression exp = new SpelExpressionParser().ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$MapWithConstant).X");
+        IExpression exp = new SpelExpressionParser().ParseExpression($"T({typeof(SpelReproTests).FullName}$MapWithConstant).X");
         Assert.Equal(1, exp.GetValue(sec));
     }
 
@@ -1398,7 +1400,7 @@ public class SpelReproTests : AbstractExpressionTests
     public void SPR12808()
     {
         var parser = new SpelExpressionParser();
-        IExpression expression = parser.ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$DistanceEnforcer).From(#no)");
+        IExpression expression = parser.ParseExpression($"T({typeof(SpelReproTests).FullName}$DistanceEnforcer).From(#no)");
         var sec = new StandardEvaluationContext();
         sec.SetVariable("no", 1);
         Assert.StartsWith("Integer", expression.GetValue(sec).ToString());

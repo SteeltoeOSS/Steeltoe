@@ -9,14 +9,15 @@ using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Support.Converter;
-using Steeltoe.Messaging.RabbitMQ.Test;
+using Steeltoe.Messaging.RabbitMQ.Test.Test;
 using Xunit;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Listener.Adapters;
 
 public class MessagingMessageListenerAdapterTest : AbstractTest
 {

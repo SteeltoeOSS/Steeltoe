@@ -8,10 +8,11 @@ using Moq;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
 public class ErrorHandlerTests
 {

@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using RabbitMQ.Client;
+using Steeltoe.Connector.Hystrix;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Hystrix.Test;
+namespace Steeltoe.Connector.Test.Hystrix;
 
 public class HystrixProviderConnectorFactoryTest
 {

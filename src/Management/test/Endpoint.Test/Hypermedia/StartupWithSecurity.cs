@@ -5,9 +5,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia.Test;
+namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 
 public class StartupWithSecurity
 {

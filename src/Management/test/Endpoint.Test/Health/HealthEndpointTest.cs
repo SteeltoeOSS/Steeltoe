@@ -6,14 +6,15 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Security;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Management.Endpoint.Health.Test;
+namespace Steeltoe.Management.Endpoint.Test.Health;
 
 public class HealthEndpointTest : BaseTest
 {

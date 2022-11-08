@@ -5,7 +5,7 @@
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Configuration;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Binder.Test;
 
 public class AbstractPollableConsumerTestBinder<TBinder> : AbstractTestBinder<TBinder>, IPollableConsumerBinder<IMessageHandler>
     where TBinder : AbstractBinder<IMessageChannel>

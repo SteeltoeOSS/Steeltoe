@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
+using Steeltoe.Common.Util;
 using Xunit;
 
-namespace Steeltoe.Common.Util.Test;
+namespace Steeltoe.Common.Test.Util;
 
 public class MimeTypeTest
 {

@@ -5,7 +5,7 @@
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
 public class MessageHeaderTest
 {

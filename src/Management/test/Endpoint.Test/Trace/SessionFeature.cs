@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 
-namespace Steeltoe.Management.Endpoint.Trace.Test;
+namespace Steeltoe.Management.Endpoint.Test.Trace;
 
 internal sealed class SessionFeature : ISessionFeature
 {

@@ -5,11 +5,13 @@
 using System.Reflection;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
+using Steeltoe.Messaging.Handler;
 using Steeltoe.Messaging.Handler.Attributes.Support;
+using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Handler.Invocation.Test;
+namespace Steeltoe.Messaging.Test.Handler.Invocation;
 
 public class MethodMessageHandlerTest
 {

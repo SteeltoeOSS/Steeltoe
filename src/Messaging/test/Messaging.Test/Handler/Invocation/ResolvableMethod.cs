@@ -4,9 +4,9 @@
 
 using System.Reflection;
 using Steeltoe.Common;
-using static Steeltoe.Messaging.Handler.Attributes.Test.MessagingPredicates;
+using static Steeltoe.Messaging.Test.Handler.Attributes.MessagingPredicates;
 
-namespace Steeltoe.Messaging.Handler.Invocation.Test;
+namespace Steeltoe.Messaging.Test.Handler.Invocation;
 
 internal sealed class ResolvableMethod
 {

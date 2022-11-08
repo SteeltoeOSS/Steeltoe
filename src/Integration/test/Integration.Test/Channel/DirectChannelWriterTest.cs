@@ -5,11 +5,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Xunit;
-using static Steeltoe.Integration.Channel.Test.DirectChannelTest;
+using static Steeltoe.Integration.Test.Channel.DirectChannelTest;
 
-namespace Steeltoe.Integration.Channel.Test;
+namespace Steeltoe.Integration.Test.Channel;
 
 public class DirectChannelWriterTest
 {

@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.EntityFrameworkCore;
-using Steeltoe.Connector.EntityFrameworkCore.Test;
+using Steeltoe.Connector.EntityFrameworkCore.MySql;
+using Steeltoe.Connector.MySql;
 using Xunit;
 using OfficialMySqlConnection = MySql.Data.MySqlClient.MySqlConnection;
 using PomeloMySqlConnection = MySqlConnector.MySqlConnection;
 
-namespace Steeltoe.Connector.MySql.EntityFrameworkCore.Test;
+namespace Steeltoe.Connector.EntityFrameworkCore.Test;
 
 public class MySqlDbContextOptionsExtensionsTest
 {

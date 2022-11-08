@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using Steeltoe.Discovery.Eureka.Test;
+using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Transport.Test;
+namespace Steeltoe.Discovery.Eureka.Test.Transport;
 
 public class EurekaHttpClientTest : AbstractBaseTest
 {

@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Support.Test;
+namespace Steeltoe.Messaging.Test.Support;
 
 public class MessageBuilderTest
 {

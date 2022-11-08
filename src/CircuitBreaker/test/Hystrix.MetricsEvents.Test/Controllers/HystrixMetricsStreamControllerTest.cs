@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
+using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test.Controllers;
 
 public class HystrixMetricsStreamControllerTest : HystrixTestBase
 {

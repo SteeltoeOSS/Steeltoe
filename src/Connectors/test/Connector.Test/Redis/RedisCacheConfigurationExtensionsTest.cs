@@ -4,9 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.Redis;
 using Xunit;
 
-namespace Steeltoe.Connector.Redis.Test;
+namespace Steeltoe.Connector.Test.Redis;
 
 public class RedisCacheConfigurationExtensionsTest
 {

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
@@ -18,7 +19,7 @@ using Xunit;
 // While you're at it, catch specific exceptions (use `when` condition to narrow down) instead of System.Exception.
 #pragma warning disable S108 // Nested blocks of code should not be left empty
 
-namespace Steeltoe.Integration.Channel.Test;
+namespace Steeltoe.Integration.Test.Channel;
 
 public class MixedDispatcherConfigurationScenarioTest
 {

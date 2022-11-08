@@ -5,9 +5,11 @@
 using System.Text;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support.Converter;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Support.Converter;
 
 public class ContentTypeDelegatingMessageConverterTest
 {

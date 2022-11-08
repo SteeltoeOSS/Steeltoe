@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Hosting;
 
-namespace Steeltoe.Messaging.RabbitMQ.Host;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Host;
 
 public sealed class MockRabbitHostedService : IHostedService, IDisposable
 {

@@ -5,7 +5,7 @@
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public class ParsingTests
 {

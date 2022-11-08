@@ -4,7 +4,7 @@
 
 using RabbitMQ.Client;
 
-namespace Steeltoe.Integration.Rabbit;
+namespace Steeltoe.Integration.RabbitMQ.Test;
 
 public class MockRabbitBasicProperties : IBasicProperties
 {

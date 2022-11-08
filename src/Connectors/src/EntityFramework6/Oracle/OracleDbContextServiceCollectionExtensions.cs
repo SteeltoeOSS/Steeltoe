@@ -12,7 +12,7 @@ using Steeltoe.Connector.Oracle;
 using Steeltoe.Connector.Oracle.EntityFramework6;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Connector.EntityFramework6;
+namespace Steeltoe.Connector.EntityFramework6.Oracle;
 
 public static class OracleDbContextServiceCollectionExtensions
 {

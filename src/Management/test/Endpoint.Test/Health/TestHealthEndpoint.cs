@@ -4,9 +4,10 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Security;
 
-namespace Steeltoe.Management.Endpoint.Health.Test;
+namespace Steeltoe.Management.Endpoint.Test.Health;
 
 internal sealed class TestHealthEndpoint : HealthEndpoint
 {

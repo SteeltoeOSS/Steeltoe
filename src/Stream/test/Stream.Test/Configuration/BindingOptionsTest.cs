@@ -4,7 +4,7 @@
 
 using Xunit;
 
-namespace Steeltoe.Stream.Configuration;
+namespace Steeltoe.Stream.Test.Configuration;
 
 public class BindingOptionsTest
 {

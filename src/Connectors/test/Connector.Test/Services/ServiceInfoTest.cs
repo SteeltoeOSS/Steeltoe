@@ -5,7 +5,7 @@
 using Steeltoe.Common;
 using Xunit;
 
-namespace Steeltoe.Connector.Services.Test;
+namespace Steeltoe.Connector.Test.Services;
 
 public class ServiceInfoTest
 {
