@@ -544,8 +544,6 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     protected internal async Task<ConfigEnvironment> RemoteLoadAsync(string[] requestUris, string label)
     {
-        const string statusMessage = "Config Server returned status {0} invoking path {1}";
-
         // Get client if not already set
         _httpClient ??= GetHttpClient(_settings);
 
@@ -575,8 +573,8 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             {
                 using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
-                // Log status
-                _logger.LogInformation(statusMessage, response.StatusCode, WebUtility.UrlEncode(requestUri));
+                var message = $"Config Server returned status: {response.StatusCode} invoking path: {WebUtility.UrlEncode(requestUri)}";
+                _logger.LogInformation(message);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -589,7 +587,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                     if (response.StatusCode >= HttpStatusCode.BadRequest)
                     {
                         // HttpClientErrorException
-                        throw new HttpRequestException(string.Format(statusMessage, response.StatusCode, WebUtility.UrlEncode(requestUri)));
+                        throw new HttpRequestException(message);
                     }
                     else
                     {
@@ -633,8 +631,6 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     [Obsolete("Will be removed in next release. See RemoteLoadAsync(string[], string)")]
     protected internal virtual async Task<ConfigEnvironment> RemoteLoadAsync(string requestUri)
     {
-        const string statusMessage = "Config Server returned status {0} invoking path {1}";
-
         // Get client if not already set
         _httpClient ??= GetHttpClient(_settings);
 
@@ -649,8 +645,8 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         {
             using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
-            // Log status
-            _logger.LogInformation(statusMessage, response.StatusCode, WebUtility.UrlEncode(requestUri));
+            var message = $"Config Server returned status: {response.StatusCode} invoking path: {WebUtility.UrlEncode(requestUri)}";
+            _logger.LogInformation(message);
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 if (response.StatusCode == HttpStatusCode.NotFound)
@@ -661,7 +657,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                 // Throw if status >= 400
                 if (response.StatusCode >= HttpStatusCode.BadRequest)
                 {
-                    throw new HttpRequestException(string.Format(statusMessage, response.StatusCode, WebUtility.UrlEncode(requestUri)));
+                    throw new HttpRequestException(message);
                 }
                 else
                 {
