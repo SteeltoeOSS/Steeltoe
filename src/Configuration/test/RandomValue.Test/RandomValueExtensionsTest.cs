@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -91,7 +92,7 @@ public sealed class RandomValueExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
         string value = configurationRoot["random:int[4,10]"];
         Assert.NotNull(value);
-        int val = int.Parse(value);
+        int val = int.Parse(value, CultureInfo.InvariantCulture);
         Assert.InRange(val, 4, 10);
     }
 
@@ -106,7 +107,7 @@ public sealed class RandomValueExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
         string value = configurationRoot["random:int(10)"];
         Assert.NotNull(value);
-        int val = int.Parse(value);
+        int val = int.Parse(value, CultureInfo.InvariantCulture);
         Assert.InRange(val, 0, 10);
     }
 
@@ -134,7 +135,7 @@ public sealed class RandomValueExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
         string value = configurationRoot["random:long[4,10]"];
         Assert.NotNull(value);
-        int val = int.Parse(value);
+        int val = int.Parse(value, CultureInfo.InvariantCulture);
         Assert.InRange(val, 4, 10);
     }
 
@@ -149,7 +150,7 @@ public sealed class RandomValueExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
         string value = configurationRoot["random:long(10)"];
         Assert.NotNull(value);
-        int val = int.Parse(value);
+        int val = int.Parse(value, CultureInfo.InvariantCulture);
         Assert.InRange(val, 0, 10);
     }
 }

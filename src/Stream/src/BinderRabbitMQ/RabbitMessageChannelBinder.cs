@@ -203,7 +203,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
                     ? extendedProperties.ConfirmAckChannel
                     : IntegrationContextUtils.NullChannelBeanName;
 
-                if (!ackChannelBeanName.Equals(IntegrationContextUtils.NullChannelBeanName) &&
+                if (ackChannelBeanName != IntegrationContextUtils.NullChannelBeanName &&
                     !ApplicationContext.ContainsService<IMessageChannel>(ackChannelBeanName))
                 {
                     var ackChannel = new IntegrationChannel.DirectChannel(ApplicationContext);

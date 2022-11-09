@@ -56,7 +56,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         catch (ListenerExecutionFailedException ex)
         {
             Assert.IsType<ArgumentException>(ex.InnerException);
-            Assert.Contains("Expected test exception", ex.InnerException.Message);
+            Assert.Contains("Expected test exception", ex.InnerException.Message, StringComparison.Ordinal);
         }
         catch (Exception ex)
         {
@@ -80,7 +80,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         catch (ListenerExecutionFailedException ex)
         {
             Assert.IsType<ArgumentException>(ex.InnerException);
-            Assert.Contains("Expected test exception", ex.InnerException.Message);
+            Assert.Contains("Expected test exception", ex.InnerException.Message, StringComparison.Ordinal);
         }
         catch (Exception ex)
         {
@@ -106,7 +106,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         catch (ListenerExecutionFailedException ex)
         {
             Assert.IsType<ArgumentException>(ex.InnerException);
-            Assert.Contains("Expected test exception", ex.InnerException.Message);
+            Assert.Contains("Expected test exception", ex.InnerException.Message, StringComparison.Ordinal);
         }
         catch (Exception ex)
         {
@@ -126,7 +126,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         }
         catch (ReplyFailureException ex)
         {
-            Assert.Contains("Failed to send reply", ex.Message);
+            Assert.Contains("Failed to send reply", ex.Message, StringComparison.Ordinal);
         }
         catch (Exception ex)
         {

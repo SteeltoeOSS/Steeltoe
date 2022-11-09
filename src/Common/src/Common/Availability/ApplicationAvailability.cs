@@ -58,7 +58,7 @@ public class ApplicationAvailability
     /// </param>
     public void SetAvailabilityState(string stateKey, IAvailabilityState newState, string caller)
     {
-        if ((stateKey.Equals(LivenessKey) && newState is not LivenessState) || (stateKey.Equals(ReadinessKey) && newState is not ReadinessState))
+        if ((stateKey == LivenessKey && newState is not LivenessState) || (stateKey == ReadinessKey && newState is not ReadinessState))
         {
             throw new InvalidOperationException($"{stateKey} state can only be of type {stateKey}State");
         }

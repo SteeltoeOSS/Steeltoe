@@ -423,6 +423,6 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         // https://github.com/spring-cloud-samples/config-repo/Config resource 'file [/tmp/config-repo-4389533880216684481/application.yml' via location '' (document #0)"
         Assert.StartsWith(
             "UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/Config",
-            result);
+            result, StringComparison.Ordinal);
     }
 }

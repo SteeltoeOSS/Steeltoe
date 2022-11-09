@@ -56,7 +56,7 @@ public class ContentTypeDelegatingMessageConverterTest
         catch (Exception e)
         {
             Assert.IsType<MessageConversionException>(e);
-            Assert.Contains("No delegate converter", e.Message);
+            Assert.Contains("No delegate converter", e.Message, StringComparison.Ordinal);
         }
     }
 

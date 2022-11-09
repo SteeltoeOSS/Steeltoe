@@ -32,7 +32,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SWF1086()
     {
-        Evaluate("PrintDouble(T(Decimal).Parse('14.35'))", "14.35", typeof(string));
+        Evaluate("PrintDouble(T(Decimal).Parse('14.35',T(System.Globalization.CultureInfo).InvariantCulture))", "14.35", typeof(string));
     }
 
     [Fact]
@@ -384,7 +384,7 @@ public class SpelReproTests : AbstractExpressionTests
             Assert.Equal(SpelMessage.ExceptionDuringServiceResolution, see.MessageCode);
             Assert.Equal("goo", see.Inserts[0]);
             Assert.True(see.InnerException is AccessException);
-            Assert.StartsWith("DONT", see.InnerException.Message);
+            Assert.StartsWith("DONT", see.InnerException.Message, StringComparison.Ordinal);
         }
 
         // bean exists
@@ -1158,9 +1158,9 @@ public class SpelReproTests : AbstractExpressionTests
     // public void SPR10125()
     // {
     //    var context = new StandardEvaluationContext();
-    //    var fromInterface = parser.ParseExpression("T(" + typeof(StaticFinalImpl1).FullName.Replace("+", "$") + ").VALUE").GetValue<string>(context);
+    //    var fromInterface = parser.ParseExpression("T(" + typeof(StaticFinalImpl1).FullName.Replace('+', '$') + ").VALUE").GetValue<string>(context);
     //    Assert.Equal("interfaceValue", fromInterface);
-    //    var fromClass = parser.ParseExpression("T(" + typeof(StaticFinalImpl2).FullName.Replace("+", "$") + ").VALUE").GetValue<string>(context);
+    //    var fromClass = parser.ParseExpression("T(" + typeof(StaticFinalImpl2).FullName.Replace('+', '$') + ").VALUE").GetValue<string>(context);
     //    Assert.Equal("interfaceValue", fromClass);
     // }
 
@@ -1180,7 +1180,7 @@ public class SpelReproTests : AbstractExpressionTests
     public void SPR10328()
     {
         var ex = Assert.Throws<SpelParseException>(() => Parser.ParseExpression("$[]"));
-        Assert.Contains("EL1071E: A required selection expression has not been specified", ex.Message);
+        Assert.Contains("EL1071E: A required selection expression has not been specified", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1259,7 +1259,7 @@ public class SpelReproTests : AbstractExpressionTests
         var rootObject = new Spr11142();
         IExpression expression = parser.ParseExpression("Something");
         var ex = Assert.Throws<SpelEvaluationException>(() => expression.GetValue(context, rootObject));
-        Assert.Contains("''Something'' cannot be found", ex.Message);
+        Assert.Contains("''Something'' cannot be found", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1403,13 +1403,13 @@ public class SpelReproTests : AbstractExpressionTests
         IExpression expression = parser.ParseExpression($"T({typeof(SpelReproTests).FullName}$DistanceEnforcer).From(#no)");
         var sec = new StandardEvaluationContext();
         sec.SetVariable("no", 1);
-        Assert.StartsWith("Integer", expression.GetValue(sec).ToString());
+        Assert.StartsWith("Integer", expression.GetValue(sec).ToString(), StringComparison.Ordinal);
         sec = new StandardEvaluationContext();
         sec.SetVariable("no", 1.0F);
-        Assert.StartsWith("ValueType", expression.GetValue(sec).ToString());
+        Assert.StartsWith("ValueType", expression.GetValue(sec).ToString(), StringComparison.Ordinal);
         sec = new StandardEvaluationContext();
         sec.SetVariable("no", "1.0");
-        Assert.StartsWith("Object", expression.GetValue(sec).ToString());
+        Assert.StartsWith("Object", expression.GetValue(sec).ToString(), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1603,7 +1603,7 @@ public class SpelReproTests : AbstractExpressionTests
     private void DoTestSpr10146(string expression, string expectedMessage)
     {
         var ex = Assert.Throws<SpelParseException>(() => new SpelExpressionParser().ParseExpression(expression));
-        Assert.Contains(expectedMessage, ex.Message);
+        Assert.Contains(expectedMessage, ex.Message, StringComparison.Ordinal);
     }
 
     private void CheckTemplateParsing(string expression, string expectedValue)
@@ -1790,12 +1790,12 @@ public class SpelReproTests : AbstractExpressionTests
     {
         public override Type FindType(string typeName)
         {
-            if (typeName.Equals("Spr5899Class"))
+            if (typeName == "Spr5899Class")
             {
                 return typeof(Spr5899Class);
             }
 
-            if (typeName.Equals("Outer"))
+            if (typeName == "Outer")
             {
                 return typeof(Outer);
             }
@@ -1928,22 +1928,22 @@ public class SpelReproTests : AbstractExpressionTests
     {
         public object Resolve(IEvaluationContext context, string serviceName)
         {
-            if (serviceName.Equals("foo"))
+            if (serviceName == "foo")
             {
                 return "custard";
             }
 
-            if (serviceName.Equals("foo.bar"))
+            if (serviceName == "foo.bar")
             {
                 return "trouble";
             }
 
-            if (serviceName.Equals("&foo"))
+            if (serviceName == "&foo")
             {
                 return "foo factory";
             }
 
-            if (serviceName.Equals("goo"))
+            if (serviceName == "goo")
             {
                 throw new AccessException("DONT ASK ME ABOUT GOO");
             }
@@ -2334,7 +2334,7 @@ public class SpelReproTests : AbstractExpressionTests
 
         public override bool Equals(object obj)
         {
-            return ReferenceEquals(this, obj) || (obj is TestClass2 other && _str.Equals(other._str));
+            return ReferenceEquals(this, obj) || (obj is TestClass2 other && _str == other._str);
         }
 
         public override int GetHashCode()
@@ -2359,7 +2359,7 @@ public class SpelReproTests : AbstractExpressionTests
 
         public object Resolve(IEvaluationContext context, string serviceName)
         {
-            return serviceName.Equals("bean") ? this : null;
+            return serviceName == "bean" ? this : null;
         }
     }
 

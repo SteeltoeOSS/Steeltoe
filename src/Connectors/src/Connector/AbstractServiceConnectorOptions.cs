@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
@@ -36,12 +37,14 @@ public abstract class AbstractServiceConnectorOptions
 
     protected internal void AddKeyValue(StringBuilder sb, string key, int? value)
     {
-        AddKeyValue(sb, key, value?.ToString());
+        AddKeyValue(sb, key, value?.ToString(CultureInfo.InvariantCulture));
     }
 
     protected internal void AddKeyValue(StringBuilder sb, string key, bool? value)
     {
-        AddKeyValue(sb, key, value?.ToString().ToLowerInvariant());
+#pragma warning disable S4040 // Strings should be normalized to uppercase
+        AddKeyValue(sb, key, value?.ToString(CultureInfo.InvariantCulture).ToLowerInvariant());
+#pragma warning restore S4040 // Strings should be normalized to uppercase
     }
 
     /// <summary>

@@ -188,7 +188,7 @@ public class MethodMessageHandlerTest
         {
             string methodName = method.Name;
 
-            if (methodName.StartsWith("Handler"))
+            if (methodName.StartsWith("Handler", StringComparison.Ordinal))
             {
                 return $"/{methodName}";
             }
@@ -217,7 +217,7 @@ public class MethodMessageHandlerTest
         {
             string destination = GetLookupDestination(GetDestination(message));
             Assert.NotNull(destination);
-            return mapping.Equals(destination) || _pathMatcher.Match(mapping, destination) ? mapping : null;
+            return mapping == destination || _pathMatcher.Match(mapping, destination) ? mapping : null;
         }
 
         protected override IComparer<string> GetMappingComparer(IMessage message)

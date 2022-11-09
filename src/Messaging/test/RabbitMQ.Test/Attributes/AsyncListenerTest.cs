@@ -218,7 +218,7 @@ public class AsyncListenerTest : IClassFixture<AsyncListenerTest.StartupFixture>
                 return Task.FromException<string>(new Exception("Future.exception"));
             }
 
-            return Task.FromResult(foo.ToUpper());
+            return Task.FromResult(foo.ToUpperInvariant());
         }
 
         [RabbitListener("queue2", Id = "bar")]
@@ -229,7 +229,7 @@ public class AsyncListenerTest : IClassFixture<AsyncListenerTest.StartupFixture>
                 return Task.FromException<string>(new Exception("Mono.error()"));
             }
 
-            return Task.FromResult(foo.ToUpper());
+            return Task.FromResult(foo.ToUpperInvariant());
         }
 
         [RabbitListener("queue3", Id = "baz")]
@@ -237,7 +237,7 @@ public class AsyncListenerTest : IClassFixture<AsyncListenerTest.StartupFixture>
         {
             return Task.FromResult(new List<string>
             {
-                foo.ToUpper()
+                foo.ToUpperInvariant()
             });
         }
 

@@ -196,6 +196,6 @@ public class ContentNegotiationTests
         HttpResponseMessage result = await client.GetAsync(epPath);
 
         IEnumerable<string> contentHeaders = result.Content.Headers.GetValues("Content-Type");
-        Assert.Contains(contentHeaders, header => header.StartsWith(contentType));
+        Assert.Contains(contentHeaders, header => header.StartsWith(contentType, StringComparison.Ordinal));
     }
 }

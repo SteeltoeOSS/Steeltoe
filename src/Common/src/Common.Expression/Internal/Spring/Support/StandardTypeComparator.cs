@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
+
 namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
 public class StandardTypeComparator : ITypeComparator
@@ -40,29 +42,29 @@ public class StandardTypeComparator : ITypeComparator
 
         if (firstObject is decimal || secondObject is decimal)
         {
-            decimal leftNum = Convert.ToDecimal(firstObject);
-            decimal rightNum = Convert.ToDecimal(secondObject);
+            decimal leftNum = Convert.ToDecimal(firstObject, CultureInfo.InvariantCulture);
+            decimal rightNum = Convert.ToDecimal(secondObject, CultureInfo.InvariantCulture);
             return leftNum.CompareTo(rightNum);
         }
 
         if (firstObject is double || secondObject is double)
         {
-            double leftNum = Convert.ToDouble(firstObject);
-            double rightNum = Convert.ToDouble(secondObject);
+            double leftNum = Convert.ToDouble(firstObject, CultureInfo.InvariantCulture);
+            double rightNum = Convert.ToDouble(secondObject, CultureInfo.InvariantCulture);
             return leftNum.CompareTo(rightNum);
         }
 
         if (firstObject is float || secondObject is float)
         {
-            float leftNum = Convert.ToSingle(firstObject);
-            float rightNum = Convert.ToSingle(secondObject);
+            float leftNum = Convert.ToSingle(firstObject, CultureInfo.InvariantCulture);
+            float rightNum = Convert.ToSingle(secondObject, CultureInfo.InvariantCulture);
             return leftNum.CompareTo(rightNum);
         }
 
         if (firstObject is long || secondObject is long)
         {
-            long leftNum = Convert.ToInt64(firstObject);
-            long rightNum = Convert.ToInt64(secondObject);
+            long leftNum = Convert.ToInt64(firstObject, CultureInfo.InvariantCulture);
+            long rightNum = Convert.ToInt64(secondObject, CultureInfo.InvariantCulture);
             return leftNum.CompareTo(rightNum);
         }
 

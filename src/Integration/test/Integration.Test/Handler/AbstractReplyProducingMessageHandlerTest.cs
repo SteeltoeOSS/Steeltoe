@@ -50,7 +50,7 @@ public class AbstractReplyProducingMessageHandlerTest
         }
         catch (MessagingException e)
         {
-            Assert.Contains("AbstractReplyProducingMessageHandler", e.Message);
+            Assert.Contains("AbstractReplyProducingMessageHandler", e.Message, StringComparison.Ordinal);
         }
     }
 

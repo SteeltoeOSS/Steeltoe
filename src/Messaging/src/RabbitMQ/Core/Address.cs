@@ -29,7 +29,7 @@ public class Address
             ExchangeName = string.Empty;
             RoutingKey = string.Empty;
         }
-        else if (address.StartsWith(AmqRabbitMQReplyTo))
+        else if (address.StartsWith(AmqRabbitMQReplyTo, StringComparison.Ordinal))
         {
             RoutingKey = address;
             ExchangeName = string.Empty;

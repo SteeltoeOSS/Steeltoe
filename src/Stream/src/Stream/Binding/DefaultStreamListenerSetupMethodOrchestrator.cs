@@ -54,7 +54,7 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
     {
         object bean = ActivatorUtilities.CreateInstance(Context.ServiceProvider, implementationType);
 
-        if (typeof(void).Equals(method.ReturnType))
+        if (method.ReturnType == typeof(void))
         {
             method.Invoke(bean, arguments);
         }
@@ -102,7 +102,7 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
 
         string defaultOutputChannel = streamListenerMethod.GetOutboundBindingTargetName();
 
-        if (typeof(void).Equals(method.ReturnType))
+        if (method.ReturnType == typeof(void))
         {
             if (!string.IsNullOrEmpty(defaultOutputChannel))
             {

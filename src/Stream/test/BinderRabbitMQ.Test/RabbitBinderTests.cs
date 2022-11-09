@@ -73,7 +73,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var endpoint = GetFieldValue<RabbitOutboundEndpoint>(producerBinding, "Lifecycle");
 
         Assert.True(endpoint.HeadersMappedLast);
-        Assert.Contains("PassThrough", endpoint.Template.MessageConverter.GetType().Name);
+        Assert.Contains("PassThrough", endpoint.Template.MessageConverter.GetType().Name, StringComparison.Ordinal);
 
         ConsumerOptions consumerProps = GetConsumerOptions("input", bindingsOptions);
         RabbitConsumerOptions rabbitConsumerOptions = bindingsOptions.GetRabbitConsumerOptions("input");
@@ -83,7 +83,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         IBinding consumerBinding = binder.BindConsumer("bad.0", "test", moduleInputChannel, consumerProps);
 
         var inbound = GetFieldValue<RabbitInboundChannelAdapter>(consumerBinding, "Lifecycle");
-        Assert.Contains("PassThrough", inbound.MessageConverter.GetType().Name);
+        Assert.Contains("PassThrough", inbound.MessageConverter.GetType().Name, StringComparison.Ordinal);
         var container = GetPropertyValue<DirectMessageListenerContainer>(inbound, "MessageListenerContainer");
         Assert.NotNull(container);
 
@@ -280,7 +280,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
         Assert.NotNull(container);
         Assert.Equal(AcknowledgeMode.Auto, container.AcknowledgeMode);
-        Assert.StartsWith(rabbitConsumerOptions.Prefix, container.GetQueueNames()[0]);
+        Assert.StartsWith(rabbitConsumerOptions.Prefix, container.GetQueueNames()[0], StringComparison.Ordinal);
         Assert.True(container.Exclusive);
         Assert.True(container.IsChannelTransacted);
         Assert.True(container.Exclusive);
@@ -470,7 +470,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         string queueName = container.GetQueueNames()[0];
 
-        Assert.StartsWith("anonymous.", queueName);
+        Assert.StartsWith("anonymous.", queueName, StringComparison.Ordinal);
         Assert.True(container.IsRunning);
 
         consumerBinding.UnbindAsync();
@@ -493,7 +493,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
 
         string queueName = container.GetQueueNames()[0];
-        Assert.StartsWith("customPrefix.", queueName);
+        Assert.StartsWith("customPrefix.", queueName, StringComparison.Ordinal);
         Assert.True(container.IsRunning);
 
         consumerBinding.UnbindAsync();
@@ -2030,7 +2030,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         string delimiter = GetDestinationNameDelimiter();
         string dest = $"{GetExpectedRoutingBaseDestination($"'part{delimiter}0'", "test")} + '-' + Headers['{BinderHeaders.PartitionHeader}']";
 
-        Assert.Contains(dest, routingExpression);
+        Assert.Contains(dest, routingExpression, StringComparison.Ordinal);
     }
 
     protected override string GetExpectedRoutingBaseDestination(string name, string group)
@@ -2134,7 +2134,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
             {
                 boundErrorChannelMessage.GetAndSet(message);
                 string stackTrace = new StackTrace().ToString();
-                hasRecovererInCallStack.GetAndSet(stackTrace.Contains("ErrorMessageSendingRecoverer"));
+                hasRecovererInCallStack.GetAndSet(stackTrace.Contains("ErrorMessageSendingRecoverer", StringComparison.Ordinal));
             }
         });
 

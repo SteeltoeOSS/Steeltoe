@@ -290,7 +290,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyQueueDeadLe
         public string HandleMessage(string foo)
         {
             Thread.Sleep(500);
-            return foo.ToUpper();
+            return foo.ToUpperInvariant();
         }
     }
 

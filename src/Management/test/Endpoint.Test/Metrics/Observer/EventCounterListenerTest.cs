@@ -90,7 +90,7 @@ public class EventCounterListenerTest : BaseTest
         {
             List<KeyValuePair<string, List<MetricSample>>> summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
 
-            if (!exclusions.Contains(metric.Replace("System.Runtime.", string.Empty)))
+            if (!exclusions.Contains(metric.Replace("System.Runtime.", string.Empty, StringComparison.Ordinal)))
             {
                 Assert.NotNull(summary);
                 Assert.True(summary.Count > 0, $"Expected metrics for {metric}");

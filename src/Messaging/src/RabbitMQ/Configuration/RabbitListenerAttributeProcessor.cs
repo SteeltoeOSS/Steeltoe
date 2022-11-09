@@ -468,9 +468,8 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         }
         else
         {
-            throw new InvalidOperationException(string.Format(
-                "RabbitListenerAttribute " + what + " can't resolve {0} as a String[] or a String " + (canBeQueue ? "or a Queue" : string.Empty),
-                resolvedValue));
+            throw new InvalidOperationException(
+                $"RabbitListenerAttribute {what} can't resolve {resolvedValue} as a String[] or a String{(canBeQueue ? " or a Queue" : string.Empty)}");
         }
     }
 

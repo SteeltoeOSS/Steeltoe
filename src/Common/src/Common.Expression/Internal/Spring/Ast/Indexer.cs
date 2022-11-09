@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections;
+using System.Globalization;
 using System.Reflection;
 using System.Reflection.Emit;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
@@ -556,8 +557,8 @@ public class Indexer : SpelNode
 
             try
             {
-                if (_indexer._cachedReadName != null && _indexer._cachedReadName.Equals(_name) && _indexer._cachedReadTargetType != null &&
-                    _indexer._cachedReadTargetType.Equals(targetObjectRuntimeClass))
+                if (_indexer._cachedReadName != null && _indexer._cachedReadName == _name && _indexer._cachedReadTargetType != null &&
+                    _indexer._cachedReadTargetType == targetObjectRuntimeClass)
                 {
                     // It is OK to use the cached accessor
                     IPropertyAccessor accessor = _indexer._cachedReadAccessor;
@@ -611,8 +612,8 @@ public class Indexer : SpelNode
 
             try
             {
-                if (_indexer._cachedWriteName != null && _indexer._cachedWriteName.Equals(_name) && _indexer._cachedWriteTargetType != null &&
-                    _indexer._cachedWriteTargetType.Equals(contextObjectClass))
+                if (_indexer._cachedWriteName != null && _indexer._cachedWriteName == _name && _indexer._cachedWriteTargetType != null &&
+                    _indexer._cachedWriteTargetType == contextObjectClass)
                 {
                     // It is OK to use the cached accessor
                     IPropertyAccessor accessor = _indexer._cachedWriteAccessor;
@@ -830,7 +831,7 @@ public class Indexer : SpelNode
                 throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.StringIndexOutOfBounds, _target.Length, _index);
             }
 
-            return new TypedValue(_target[_index].ToString());
+            return new TypedValue(_target[_index].ToString(CultureInfo.InvariantCulture));
         }
 
         public void SetValue(object newValue)

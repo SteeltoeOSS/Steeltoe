@@ -52,7 +52,7 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
 
                 foreach (string line in lines)
                 {
-                    if (line.StartsWith("#") || !line.StartsWith("git.", StringComparison.OrdinalIgnoreCase))
+                    if (line.StartsWith('#') || !line.StartsWith("git.", StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
                     }
@@ -65,7 +65,7 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
                     }
 
                     string key = keyVal[0].Trim().Replace('.', ':');
-                    string val = keyVal[1].Replace("\\:", ":");
+                    string val = keyVal[1].Replace("\\:", ":", StringComparison.Ordinal);
 
                     dict[key] = val;
                 }

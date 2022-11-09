@@ -121,7 +121,7 @@ public class CorrelationIdTest
         public object ProcessMessage(IMessage message)
         {
             string str = message.Payload as string;
-            return str.ToUpper();
+            return str.ToUpperInvariant();
         }
     }
 

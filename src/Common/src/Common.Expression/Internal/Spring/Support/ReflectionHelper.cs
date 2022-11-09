@@ -32,7 +32,7 @@ public static class ReflectionHelper
                     match = null;
                 }
             }
-            else if (!expectedArg.Equals(suppliedArg))
+            else if (expectedArg != suppliedArg)
             {
                 // if (suppliedArg.IsAssignableTo(expectedArg))
                 if (expectedArg.IsAssignableFrom(suppliedArg))
@@ -90,7 +90,7 @@ public static class ReflectionHelper
 
                 while (superClass != null)
                 {
-                    if (currentParamType.Equals(superClass))
+                    if (currentParamType == superClass)
                     {
                         result += 2;
                         superClass = null;
@@ -149,7 +149,7 @@ public static class ReflectionHelper
             }
             else
             {
-                if (!expectedArg.Equals(suppliedArg))
+                if (expectedArg != suppliedArg)
                 {
                     if (expectedArg.IsAssignableFrom(suppliedArg))
                     {
@@ -176,8 +176,7 @@ public static class ReflectionHelper
             return null;
         }
 
-        if (suppliedArgTypes.Count == expectedArgTypes.Count &&
-            expectedArgTypes[expectedArgTypes.Count - 1].Equals(suppliedArgTypes[suppliedArgTypes.Count - 1]))
+        if (suppliedArgTypes.Count == expectedArgTypes.Count && expectedArgTypes[expectedArgTypes.Count - 1] == suppliedArgTypes[suppliedArgTypes.Count - 1])
         {
             // Special case: there is one parameter left and it is an array and it matches the varargs
             // expected argument - that is a match, the caller has already built the array. Proceed with it.

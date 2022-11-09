@@ -13,12 +13,12 @@
     <SqlClientVersion>4.8.*</SqlClientVersion>
     <MicrosoftAzureCosmosVersion>3.28.*</MicrosoftAzureCosmosVersion>
     <StackExchangeVersion>2.6.*</StackExchangeVersion>
-    <CoverletVersion>3.1.*</CoverletVersion>
-    <FluentAssertionsVersion>6.7.*</FluentAssertionsVersion>
+    <CoverletVersion>3.2.*</CoverletVersion>
+    <FluentAssertionsVersion>6.8.*</FluentAssertionsVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <MockHttpVersion>6.0.*</MockHttpVersion>
     <MoqVersion>4.18.*</MoqVersion>
-    <TestSdkVersion>17.2.*</TestSdkVersion>
+    <TestSdkVersion>17.3.*</TestSdkVersion>
     <XunitVersion>2.4.*</XunitVersion>
     <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
     <XunitStudioVersion>2.4.*</XunitStudioVersion>
@@ -28,7 +28,7 @@
     <SerilogEnrichersThreadVersion>3.1.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.2.*</SerilogExceptionsVersion>
     <SerilogSinksDebugVersion>2.0.*</SerilogSinksDebugVersion>
-    <SonarAnalyzerVersion>8.40.*</SonarAnalyzerVersion>
+    <SonarAnalyzerVersion>8.47.*</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>1.1.*</SourceLinkGitHubVersion>
     <StyleCopVersion>1.2.0-beta.435</StyleCopVersion>
     <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>

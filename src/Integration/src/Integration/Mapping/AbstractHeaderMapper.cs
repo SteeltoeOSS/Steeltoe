@@ -91,15 +91,15 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
         foreach (string pattern in patterns)
         {
-            if (StandardRequestHeaderNamePattern.Equals(pattern))
+            if (pattern == StandardRequestHeaderNamePattern)
             {
                 matchers.Add(new ContentBasedHeaderMatcher(true, RequestHeaderNames));
             }
-            else if (StandardReplyHeaderNamePattern.Equals(pattern))
+            else if (pattern == StandardReplyHeaderNamePattern)
             {
                 matchers.Add(new ContentBasedHeaderMatcher(true, ReplyHeaderNames));
             }
-            else if (NonStandardHeaderNamePattern.Equals(pattern))
+            else if (pattern == NonStandardHeaderNamePattern)
             {
                 matchers.Add(new PrefixBasedMatcher(false, StandardHeaderPrefix));
             }
@@ -108,12 +108,12 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
                 string thePattern = pattern;
                 bool negate = false;
 
-                if (pattern.StartsWith("!"))
+                if (pattern.StartsWith('!'))
                 {
                     thePattern = pattern[1..];
                     negate = true;
                 }
-                else if (pattern.StartsWith("\\!"))
+                else if (pattern.StartsWith("\\!", StringComparison.Ordinal))
                 {
                     thePattern = pattern[1..];
                 }
@@ -214,7 +214,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
             {
                 try
                 {
-                    if (!headerName.StartsWith(StandardHeaderPrefix))
+                    if (!headerName.StartsWith(StandardHeaderPrefix, StringComparison.Ordinal))
                     {
                         string key = CreateTargetPropertyName(headerName, true);
                         PopulateUserDefinedHeader(key, value, target);
@@ -321,13 +321,17 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
             foreach (string pattern in patterns)
             {
-                Patterns.Add(pattern.ToLower());
+#pragma warning disable S4040 // Strings should be normalized to uppercase
+                Patterns.Add(pattern.ToLowerInvariant());
+#pragma warning restore S4040 // Strings should be normalized to uppercase
             }
         }
 
         public bool MatchHeader(string headerName)
         {
-            string header = headerName.ToLower();
+#pragma warning disable S4040 // Strings should be normalized to uppercase
+            string header = headerName.ToLowerInvariant();
+#pragma warning restore S4040 // Strings should be normalized to uppercase
 
             foreach (string pattern in Patterns)
             {
@@ -358,13 +362,18 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
         {
             ArgumentGuard.NotNull(pattern);
 
-            Pattern = pattern.ToLower();
+#pragma warning disable S4040 // Strings should be normalized to uppercase
+            Pattern = pattern.ToLowerInvariant();
+#pragma warning restore S4040 // Strings should be normalized to uppercase
+
             Negate = negate;
         }
 
         public bool MatchHeader(string headerName)
         {
-            string header = headerName.ToLower();
+#pragma warning disable S4040 // Strings should be normalized to uppercase
+            string header = headerName.ToLowerInvariant();
+#pragma warning restore S4040 // Strings should be normalized to uppercase
 
             if (PatternMatchUtils.SimpleMatch(Pattern, header))
             {
@@ -391,7 +400,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
         public bool MatchHeader(string headerName)
         {
-            bool result = Match == headerName.StartsWith(Prefix);
+            bool result = Match == headerName.StartsWith(Prefix, StringComparison.Ordinal);
             return result;
         }
     }

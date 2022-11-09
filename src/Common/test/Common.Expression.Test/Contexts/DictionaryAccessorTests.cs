@@ -29,7 +29,7 @@ public class DictionaryAccessorTests
         // assertThat(ex.getValue(sec, testMap)).isEqualTo("bar");
 
         // compound expression
-        ex = sep.ParseExpression("foo.ToUpper()");
+        ex = sep.ParseExpression("foo.ToUpperInvariant()");
         Assert.Equal("BAR", ex.GetValue(sec, testMap));
 
         // assertThat(SpelCompiler.compile(ex)).isTrue();
@@ -37,7 +37,7 @@ public class DictionaryAccessorTests
 
         // nested map
         Dictionary<string, Dictionary<string, object>> nestedMap = GetNestedTestDictionary();
-        ex = sep.ParseExpression("aaa.foo.ToUpper()");
+        ex = sep.ParseExpression("aaa.foo.ToUpperInvariant()");
         Assert.Equal("BAR", ex.GetValue(sec, nestedMap));
 
         // assertThat(SpelCompiler.compile(ex)).isTrue();

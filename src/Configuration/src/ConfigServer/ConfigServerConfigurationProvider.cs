@@ -375,7 +375,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
 
                 if (metaData.TryGetValue("configPath", out string path))
                 {
-                    if (uri.EndsWith("/", StringComparison.Ordinal) && path.StartsWith("/", StringComparison.Ordinal))
+                    if (uri.EndsWith('/') && path.StartsWith('/'))
                     {
                         uri = uri.Substring(0, uri.Length - 1);
                     }
@@ -595,13 +595,13 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
             // If label contains slash, replace it
             if (label.Contains('/'))
             {
-                label = label.Replace("/", "(_)");
+                label = label.Replace("/", "(_)", StringComparison.Ordinal);
             }
 
             path = $"{path}/{label.Trim()}";
         }
 
-        if (!baseRawUri.EndsWith("/", StringComparison.Ordinal))
+        if (!baseRawUri.EndsWith('/'))
         {
             path = $"/{path}";
         }
@@ -696,13 +696,14 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
 
         string UnEscapeString(string src)
         {
-            return src.Replace(EscapeString + DotDelimiterString, DotDelimiterString).Replace(EscapeString + EscapeString, EscapeString);
+            return src.Replace(EscapeString + DotDelimiterString, DotDelimiterString, StringComparison.Ordinal)
+                .Replace(EscapeString + EscapeString, EscapeString, StringComparison.Ordinal);
         }
     }
 
     protected internal string ConvertArrayKey(string key)
     {
-        return ArrayRegex.Replace(key, match => match.Value.Replace("[", ":").Replace("]", string.Empty));
+        return ArrayRegex.Replace(key, match => match.Value.Replace('[', ':').Replace("]", string.Empty, StringComparison.Ordinal));
     }
 
     private string ConvertValue(object value)
@@ -786,9 +787,9 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
     {
         string rawUri = Settings.RawUris[0];
 
-        if (!rawUri.EndsWith("/", StringComparison.Ordinal))
+        if (!rawUri.EndsWith('/'))
         {
-            rawUri += "/";
+            rawUri += '/';
         }
 
         return rawUri + VaultRenewPath;

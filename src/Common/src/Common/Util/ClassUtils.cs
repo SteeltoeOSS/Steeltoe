@@ -56,7 +56,7 @@ public static class ClassUtils
 
     public static MethodInfo GetInterfaceMethodIfPossible(MethodInfo method)
     {
-        if (!method.IsPublic || method.DeclaringType.IsInterface)
+        if (!method.IsPublic || method.IsStatic || method.DeclaringType.IsInterface)
         {
             return method;
         }

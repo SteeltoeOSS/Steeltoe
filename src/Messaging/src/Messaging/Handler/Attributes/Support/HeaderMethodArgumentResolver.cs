@@ -60,7 +60,7 @@ public class HeaderMethodArgumentResolver : AbstractNamedValueMethodArgumentReso
     {
         IDictionary<string, List<string>> nativeHeaders = GetNativeHeaders(message);
 
-        if (name.StartsWith("nativeHeaders."))
+        if (name.StartsWith("nativeHeaders.", StringComparison.Ordinal))
         {
             name = name.Substring("nativeHeaders.".Length);
         }

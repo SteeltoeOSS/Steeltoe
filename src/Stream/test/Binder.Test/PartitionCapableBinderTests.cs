@@ -97,7 +97,7 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
 
         ConsumerOptions consumerOptions = GetConsumerOptions("output", bindingsOptions);
 
-        string testDestination = $"testDestination{Guid.NewGuid().ToString().Replace("-", string.Empty)}";
+        string testDestination = $"testDestination{Guid.NewGuid().ToString().Replace("-", string.Empty, StringComparison.Ordinal)}";
 
         producerOptions.RequiredGroups = new List<string>
         {
@@ -128,7 +128,7 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         BindingOptions producerBindingOptions = CreateProducerBindingOptions(producerOptions);
         DirectChannel output = CreateBindableChannel("output", producerBindingOptions);
 
-        string testDestination = $"testDestination{Guid.NewGuid().ToString().Replace("-", string.Empty)}";
+        string testDestination = $"testDestination{Guid.NewGuid().ToString().Replace("-", string.Empty, StringComparison.Ordinal)}";
 
         producerOptions.RequiredGroups = new List<string>
         {
@@ -306,6 +306,6 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         string routingExpression = GetEndpointRouting(endpoint);
         string delimiter = GetDestinationNameDelimiter();
         string dest = $"{GetExpectedRoutingBaseDestination($"part{delimiter}0", "test")}-' + Headers['partition']";
-        Assert.Contains(dest, routingExpression);
+        Assert.Contains(dest, routingExpression, StringComparison.Ordinal);
     }
 }

@@ -33,7 +33,7 @@ public class StandardPodUtilities : IPodUtilities
         {
             string hostname = Environment.GetEnvironmentVariable("HOSTNAME");
             HttpOperationResponse<V1PodList> rsp = await _kubernetes.ListNamespacedPodWithHttpMessagesAsync(_applicationOptions.NameSpace);
-            pod = rsp.Body.Items?.FirstOrDefault(p => p.Metadata.Name.Equals(hostname));
+            pod = rsp.Body.Items?.FirstOrDefault(p => p.Metadata.Name == hostname);
         }
         catch (Exception e)
         {

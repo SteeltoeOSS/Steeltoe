@@ -584,7 +584,7 @@ public class PollableConsumerTest : AbstractTest
     {
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
-            return MessageBuilder.WithPayload(Encoding.UTF8.GetString((byte[])message.Payload).ToUpper()).CopyHeaders(message.Headers).Build();
+            return MessageBuilder.WithPayload(Encoding.UTF8.GetString((byte[])message.Payload).ToUpperInvariant()).CopyHeaders(message.Headers).Build();
         }
     }
 
@@ -592,7 +592,7 @@ public class PollableConsumerTest : AbstractTest
     {
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
-            return MessageBuilder.WithPayload(((string)message.Payload).ToUpper()).CopyHeaders(message.Headers).Build();
+            return MessageBuilder.WithPayload(((string)message.Payload).ToUpperInvariant()).CopyHeaders(message.Headers).Build();
         }
     }
 

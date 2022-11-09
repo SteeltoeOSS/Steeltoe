@@ -26,7 +26,7 @@ public class SpringBootAdminClientOptionsTest
         var ex = Assert.Throws<NullReferenceException>(() =>
             new SpringBootAdminClientOptions(new ConfigurationBuilder().Build(), new ApplicationInstanceInfo()));
 
-        Assert.Contains(":BasePath in order to register with Spring Boot Admin", ex.Message);
+        Assert.Contains(":BasePath in order to register with Spring Boot Admin", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

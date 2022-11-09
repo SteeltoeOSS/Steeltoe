@@ -37,14 +37,14 @@ public class DestinationPatternsMessageCondition : AbstractMessageCondition<Dest
 
     private static ISet<string> PrependLeadingSlash(string[] patterns, IRouteMatcher routeMatcher)
     {
-        bool slashSeparator = routeMatcher.Combine("a", "a").Equals("a/a");
+        bool slashSeparator = routeMatcher.Combine("a", "a") == "a/a";
         ISet<string> result = new HashSet<string>();
 
         foreach (string pat in patterns)
         {
             string pattern = pat;
 
-            if (slashSeparator && !string.IsNullOrEmpty(pattern) && !pattern.StartsWith("/"))
+            if (slashSeparator && !string.IsNullOrEmpty(pattern) && !pattern.StartsWith('/'))
             {
                 pattern = $"/{pattern}";
             }

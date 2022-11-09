@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
+using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry.Metrics;
@@ -124,7 +125,7 @@ public class EventSourceListener : EventListener
                 doubleValue = dValue;
                 break;
             case bool boolValue:
-                longValue = Convert.ToInt64(boolValue);
+                longValue = Convert.ToInt64(boolValue, CultureInfo.InvariantCulture);
                 break;
             default:
                 _logger?.LogDebug($"Unhandled type at {metricName} - {payloadValue.GetType()} - {payloadValue}");

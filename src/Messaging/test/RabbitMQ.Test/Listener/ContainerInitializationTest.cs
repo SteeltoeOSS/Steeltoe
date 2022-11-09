@@ -46,7 +46,7 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
         catch (LifecycleException le)
         {
             Assert.IsType<InvalidOperationException>(le.InnerException.InnerException);
-            Assert.Contains("mismatchedQueuesFatal", le.InnerException.InnerException.Message);
+            Assert.Contains("mismatchedQueuesFatal", le.InnerException.InnerException.Message, StringComparison.Ordinal);
         }
     }
 
@@ -69,7 +69,7 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
         catch (LifecycleException le)
         {
             Assert.IsType<InvalidOperationException>(le.InnerException.InnerException);
-            Assert.Contains("mismatchedQueuesFatal", le.InnerException.InnerException.Message);
+            Assert.Contains("mismatchedQueuesFatal", le.InnerException.InnerException.Message, StringComparison.Ordinal);
         }
     }
 

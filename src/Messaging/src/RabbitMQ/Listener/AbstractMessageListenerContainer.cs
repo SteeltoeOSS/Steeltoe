@@ -831,10 +831,9 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
                 if (MismatchedQueuesFatal)
                 {
-                    throw new InvalidOperationException(string.Format(
-                        "When 'mismatchedQueuesFatal' is 'true', there must be exactly " +
-                        "one RabbitAdmin in the context or you must inject one into this container; found: {0} " + " for container {1}", admins.Count(),
-                        ToString()));
+                    throw new InvalidOperationException("When 'mismatchedQueuesFatal' is 'true', there must be exactly " +
+                        $"one RabbitAdmin in the context or you must inject one into this container; found: {admins.Count()} " +
+                        $" for container {ToString()}");
                 }
             }
         }

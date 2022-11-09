@@ -78,7 +78,7 @@ public class OracleProviderConfigurerTest
         string connectionString =
             $"User Id={options.Username};Password={options.Password};Data Source={options.Server}:{options.Port}/{options.ServiceName};Connection Timeout={options.ConnectionTimeout}";
 
-        Assert.StartsWith(connectionString, configuration);
+        Assert.StartsWith(connectionString, configuration, StringComparison.Ordinal);
     }
 
     [Fact]

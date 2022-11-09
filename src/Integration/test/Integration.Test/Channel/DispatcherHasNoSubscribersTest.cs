@@ -28,7 +28,7 @@ public class DispatcherHasNoSubscribersTest
         }
         catch (MessagingException e)
         {
-            Assert.Contains("Dispatcher has no subscribers", e.Message);
+            Assert.Contains("Dispatcher has no subscribers", e.Message, StringComparison.Ordinal);
         }
     }
 
@@ -55,7 +55,7 @@ public class DispatcherHasNoSubscribersTest
         }
         catch (MessagingException e)
         {
-            Assert.Contains("Dispatcher has no subscribers", e.Message);
+            Assert.Contains("Dispatcher has no subscribers", e.Message, StringComparison.Ordinal);
         }
     }
 }

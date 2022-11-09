@@ -50,7 +50,7 @@ public static class ActuatorRouteBuilderExtensions
             not null when endpointType.IsAssignableFrom(typeof(TraceEndpoint)) => (typeof(TraceEndpointMiddleware), typeof(ITraceOptions)),
             not null when endpointType.IsAssignableFrom(typeof(HttpTraceEndpoint)) => (typeof(HttpTraceEndpointMiddleware), typeof(ITraceOptions)),
             not null when endpointType.IsAssignableFrom(typeof(CloudFoundryEndpoint)) => (typeof(CloudFoundryEndpointMiddleware), typeof(ICloudFoundryOptions)),
-            _ => throw new InvalidOperationException($"Could not find middleware for Type: {endpointType.Name} ")
+            _ => throw new InvalidOperationException($"Could not find middleware for Type: {endpointType?.Name} ")
         };
     }
 

@@ -26,13 +26,13 @@ public class RedisCacheConfigurationExtensionsTest
         var options = new RedisCacheConnectorOptions();
 
         var ex = Assert.Throws<ArgumentNullException>(() => configuration.CreateRedisServiceConnectorFactory("foobar"));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => configuration.CreateRedisServiceConnectorFactory(connectorConfiguration, "foobar"));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
 
         var ex3 = Assert.Throws<ArgumentNullException>(() => configuration.CreateRedisServiceConnectorFactory(options, "foobar"));
-        Assert.Contains(nameof(configuration), ex3.Message);
+        Assert.Contains(nameof(configuration), ex3.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class RedisCacheConfigurationExtensionsTest
         const IConfigurationRoot connectorConfiguration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => configurationRoot.CreateRedisServiceConnectorFactory(connectorConfiguration, "foobar"));
-        Assert.Contains(nameof(connectorConfiguration), ex.Message);
+        Assert.Contains(nameof(connectorConfiguration), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class RedisCacheConfigurationExtensionsTest
         const RedisCacheConnectorOptions connectorOptions = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => configurationRoot.CreateRedisServiceConnectorFactory(connectorOptions, "foobar"));
-        Assert.Contains(nameof(connectorOptions), ex.Message);
+        Assert.Contains(nameof(connectorOptions), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -62,13 +62,13 @@ public class RedisCacheConfigurationExtensionsTest
         var options = new RedisCacheConnectorOptions();
 
         var ex = Assert.Throws<ConnectorException>(() => configurationRoot.CreateRedisServiceConnectorFactory("foobar"));
-        Assert.Contains("foobar", ex.Message);
+        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ConnectorException>(() => configurationRoot.CreateRedisServiceConnectorFactory(configurationRoot, "foobar"));
-        Assert.Contains("foobar", ex2.Message);
+        Assert.Contains("foobar", ex2.Message, StringComparison.Ordinal);
 
         var ex3 = Assert.Throws<ConnectorException>(() => configurationRoot.CreateRedisServiceConnectorFactory(options, "foobar"));
-        Assert.Contains("foobar", ex3.Message);
+        Assert.Contains("foobar", ex3.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -104,12 +104,12 @@ public class RedisCacheConfigurationExtensionsTest
         var options = new RedisCacheConnectorOptions();
 
         var ex = Assert.Throws<ConnectorException>(() => configurationRoot.CreateRedisServiceConnectorFactory());
-        Assert.Contains("Multiple", ex.Message);
+        Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ConnectorException>(() => configurationRoot.CreateRedisServiceConnectorFactory(configurationRoot));
-        Assert.Contains("Multiple", ex2.Message);
+        Assert.Contains("Multiple", ex2.Message, StringComparison.Ordinal);
 
         var ex3 = Assert.Throws<ConnectorException>(() => configurationRoot.CreateRedisServiceConnectorFactory(options));
-        Assert.Contains("Multiple", ex3.Message);
+        Assert.Contains("Multiple", ex3.Message, StringComparison.Ordinal);
     }
 }

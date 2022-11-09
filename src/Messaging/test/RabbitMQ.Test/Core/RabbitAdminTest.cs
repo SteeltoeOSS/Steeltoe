@@ -179,13 +179,13 @@ public class RabbitAdminTest : AbstractTest
             connectionFactory.CreateConnection().Close();
             logs.Sort();
             Assert.NotEmpty(logs);
-            Assert.Contains("(testex.ad), durable:True, auto-delete:True", logs[0]);
-            Assert.Contains("(testex.all), durable:False, auto-delete:True", logs[1]);
-            Assert.Contains("(testex.nonDur), durable:False, auto-delete:False", logs[2]);
-            Assert.Contains("(testq.ad) durable:True, auto-delete:True, exclusive:False", logs[3]);
-            Assert.Contains("(testq.all) durable:False, auto-delete:True, exclusive:True", logs[4]);
-            Assert.Contains("(testq.excl) durable:True, auto-delete:False, exclusive:True", logs[5]);
-            Assert.Contains("(testq.nonDur) durable:False, auto-delete:False, exclusive:False", logs[6]);
+            Assert.Contains("(testex.ad), durable:True, auto-delete:True", logs[0], StringComparison.Ordinal);
+            Assert.Contains("(testex.all), durable:False, auto-delete:True", logs[1], StringComparison.Ordinal);
+            Assert.Contains("(testex.nonDur), durable:False, auto-delete:False", logs[2], StringComparison.Ordinal);
+            Assert.Contains("(testq.ad) durable:True, auto-delete:True, exclusive:False", logs[3], StringComparison.Ordinal);
+            Assert.Contains("(testq.all) durable:False, auto-delete:True, exclusive:True", logs[4], StringComparison.Ordinal);
+            Assert.Contains("(testq.excl) durable:True, auto-delete:False, exclusive:True", logs[5], StringComparison.Ordinal);
+            Assert.Contains("(testq.nonDur) durable:False, auto-delete:False, exclusive:False", logs[6], StringComparison.Ordinal);
         }
         finally
         {
@@ -425,8 +425,8 @@ public class RabbitAdminTest : AbstractTest
 
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string content = await result.Content.ReadAsStringAsync();
-        Assert.Contains("x-queue-master-locator", content);
-        Assert.Contains("client-local", content);
+        Assert.Contains("x-queue-master-locator", content, StringComparison.Ordinal);
+        Assert.Contains("client-local", content, StringComparison.Ordinal);
 
         queue = new AnonymousQueue
         {
@@ -446,8 +446,8 @@ public class RabbitAdminTest : AbstractTest
 
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         content = await result.Content.ReadAsStringAsync();
-        Assert.DoesNotContain("x-queue-master-locator", content);
-        Assert.DoesNotContain("client-local", content);
+        Assert.DoesNotContain("x-queue-master-locator", content, StringComparison.Ordinal);
+        Assert.DoesNotContain("client-local", content, StringComparison.Ordinal);
         cf.Destroy();
     }
 

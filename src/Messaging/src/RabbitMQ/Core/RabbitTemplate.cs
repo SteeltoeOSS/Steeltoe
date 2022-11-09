@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -1347,7 +1348,7 @@ public class RabbitTemplate
             cancellationToken.ThrowIfCancellationRequested();
 
             var pendingReply = new PendingReply();
-            string messageTag = Interlocked.Increment(ref _messageTagProvider).ToString();
+            string messageTag = Interlocked.Increment(ref _messageTagProvider).ToString(CultureInfo.InvariantCulture);
             ReplyHolder.TryAdd(messageTag, pendingReply);
             string replyTo;
 
@@ -1985,7 +1986,7 @@ public class RabbitTemplate
         cancellationToken.ThrowIfCancellationRequested();
 
         var pendingReply = new PendingReply();
-        string messageTag = Interlocked.Increment(ref _messageTagProvider).ToString();
+        string messageTag = Interlocked.Increment(ref _messageTagProvider).ToString(CultureInfo.InvariantCulture);
 
         if (UserCorrelationId)
         {

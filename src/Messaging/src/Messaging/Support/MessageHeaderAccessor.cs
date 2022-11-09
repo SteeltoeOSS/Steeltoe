@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Text;
 using Steeltoe.Common.Util;
 
@@ -93,7 +94,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
                 return null;
             }
 
-            return value is long longVal ? longVal : long.Parse(value.ToString());
+            return value is long longVal ? longVal : long.Parse(value.ToString(), CultureInfo.InvariantCulture);
         }
     }
 
@@ -297,7 +298,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
         {
             if (!string.IsNullOrEmpty(pattern))
             {
-                if (pattern.Contains("*"))
+                if (pattern.Contains('*'))
                 {
                     headersToRemove.AddRange(GetMatchingHeaderNames(pattern, headers));
                 }
@@ -376,7 +377,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
 
     protected virtual bool IsReadOnly(string headerName)
     {
-        return Messaging.MessageHeaders.IdName.Equals(headerName) || Messaging.MessageHeaders.TimestampName.Equals(headerName);
+        return headerName == Messaging.MessageHeaders.IdName || headerName == Messaging.MessageHeaders.TimestampName;
     }
 
     protected virtual void VerifyType(string headerName, object headerValue)
@@ -386,7 +387,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
             return;
         }
 
-        if (!Messaging.MessageHeaders.ErrorChannelName.Equals(headerName) &&
+        if (headerName != Messaging.MessageHeaders.ErrorChannelName &&
             !Messaging.MessageHeaders.ReplyChannelName.EndsWith(headerName, StringComparison.Ordinal))
         {
             return;

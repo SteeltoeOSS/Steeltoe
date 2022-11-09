@@ -177,7 +177,7 @@ public class IndexingTests
         }
         catch (EvaluationException ex)
         {
-            Assert.StartsWith("EL1053E", ex.Message);
+            Assert.StartsWith("EL1053E", ex.Message, StringComparison.Ordinal);
         }
     }
 
@@ -253,7 +253,7 @@ public class IndexingTests
         }
         catch (EvaluationException ex)
         {
-            Assert.StartsWith("EL1027E", ex.Message);
+            Assert.StartsWith("EL1027E", ex.Message, StringComparison.Ordinal);
         }
     }
 
@@ -275,7 +275,7 @@ public class IndexingTests
         }
         catch (EvaluationException ex)
         {
-            Assert.StartsWith("EL1053E", ex.Message);
+            Assert.StartsWith("EL1053E", ex.Message, StringComparison.Ordinal);
         }
     }
 
@@ -297,7 +297,7 @@ public class IndexingTests
         }
         catch (EvaluationException ex)
         {
-            Assert.StartsWith("EL1053E", ex.Message);
+            Assert.StartsWith("EL1053E", ex.Message, StringComparison.Ordinal);
         }
     }
 

@@ -40,7 +40,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
         Type type = target as Type ?? target.GetType();
 
-        if (type.IsArray && name.Equals("Length"))
+        if (type.IsArray && name == "Length")
         {
             return true;
         }
@@ -84,7 +84,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
         Type type = target as Type ?? target.GetType();
 
-        if (type.IsArray && name.Equals("Length"))
+        if (type.IsArray && name == "Length")
         {
             if (target is Type)
             {
@@ -403,7 +403,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
         foreach (FieldInfo field in fields)
         {
-            if (field.Name.Equals(name) && (!mustBeStatic || field.IsStatic))
+            if (field.Name == name && (!mustBeStatic || field.IsStatic))
             {
                 return field;
             }
@@ -482,7 +482,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
     {
         Type type = target as Type ?? target.GetType();
 
-        if (type.IsArray && name.Equals("Length"))
+        if (type.IsArray && name == "Length")
         {
             return typeof(int);
         }
@@ -573,7 +573,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
                 return false;
             }
 
-            return _type == otherKey._type && _property.Equals(otherKey._property) && _targetIsClass == otherKey._targetIsClass;
+            return _type == otherKey._type && _property == otherKey._property && _targetIsClass == otherKey._targetIsClass;
         }
 
         public override int GetHashCode()
@@ -588,11 +588,11 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
         public int CompareTo(PropertyCacheKey other)
         {
-            int result = _type.Name.CompareTo(_type.Name);
+            int result = string.Compare(_type.Name, _type.Name, StringComparison.Ordinal);
 
             if (result == 0)
             {
-                result = _property.CompareTo(other._property);
+                result = string.Compare(_property, other._property, StringComparison.Ordinal);
             }
 
             return result;
@@ -645,7 +645,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             {
                 string getterName = $"get_{Capitalize(name)}";
 
-                if (getterName.Equals(method.Name))
+                if (getterName == method.Name)
                 {
                     return true;
                 }
@@ -654,7 +654,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             }
 
             var field = (FieldInfo)Member;
-            return field.Name.Equals(name);
+            return field.Name == name;
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)

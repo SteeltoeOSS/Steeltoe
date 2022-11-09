@@ -12,7 +12,7 @@ internal static class ConfigurationUtils
 
     public static bool IsExpression(string expression)
     {
-        if (expression.StartsWith("#{") && expression.EndsWith("}"))
+        if (expression.StartsWith("#{", StringComparison.Ordinal) && expression.EndsWith('}'))
         {
             return true;
         }

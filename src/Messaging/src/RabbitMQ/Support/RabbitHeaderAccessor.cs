@@ -328,7 +328,7 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
     {
         base.VerifyType(headerName, headerValue);
 
-        if (RabbitMessageHeaders.Priority.Equals(headerName) && headerValue is not int)
+        if (headerName == RabbitMessageHeaders.Priority && headerValue is not int)
         {
             throw new ArgumentException($"The '{headerName}' header value must be an {nameof(Int32)}.", nameof(headerName));
         }

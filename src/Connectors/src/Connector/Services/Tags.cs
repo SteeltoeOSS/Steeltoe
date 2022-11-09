@@ -46,7 +46,7 @@ public class Tags
         {
             foreach (string t in Values)
             {
-                if (tag.StartsWith(t))
+                if (tag.StartsWith(t, StringComparison.Ordinal))
                 {
                     return true;
                 }

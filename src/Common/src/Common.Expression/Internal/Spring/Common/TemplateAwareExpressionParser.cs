@@ -49,7 +49,7 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
 
         while (startIdx < expressionString.Length)
         {
-            int prefixIndex = expressionString.IndexOf(prefix, startIdx);
+            int prefixIndex = expressionString.IndexOf(prefix, startIdx, StringComparison.Ordinal);
 
             if (prefixIndex >= startIdx)
             {
@@ -126,7 +126,7 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
         // string literals are "..." or '...' and these may contain unmatched brackets
         int pos = afterPrefixIndex;
         int maxLength = expressionString.Length;
-        int nextSuffix = expressionString.IndexOf(suffix, afterPrefixIndex);
+        int nextSuffix = expressionString.IndexOf(suffix, afterPrefixIndex, StringComparison.Ordinal);
 
         if (nextSuffix == -1)
         {

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
+
 namespace Steeltoe.Common.Util;
 
 public class FixedBackOff : IBackOff
@@ -53,7 +55,7 @@ public class FixedBackOff : IBackOff
 
         public override string ToString()
         {
-            string attemptValue = _backOff.MaxAttempts == int.MaxValue ? "unlimited" : _backOff.MaxAttempts.ToString();
+            string attemptValue = _backOff.MaxAttempts == int.MaxValue ? "unlimited" : _backOff.MaxAttempts.ToString(CultureInfo.InvariantCulture);
             return $"FixedBackOff{{interval={_backOff.Interval}, currentAttempts={_currentAttempts}, maxAttempts={attemptValue}}}";
         }
     }

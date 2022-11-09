@@ -90,7 +90,7 @@ public class ReflectiveMethodResolver : IMethodResolver
 
             foreach (MethodInfo method in methodsToIterate)
             {
-                if (method.Name.Equals(name))
+                if (method.Name == name)
                 {
                     ParameterInfo[] parameters = method.GetParameters();
                     int paramCount = parameters.Length;

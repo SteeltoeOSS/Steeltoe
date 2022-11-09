@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Steeltoe.Messaging;
 
 namespace Steeltoe.Integration.Support;
@@ -82,7 +83,7 @@ public class MutableMessageHeaders : MessageHeaders
         if (headers != null && headers.ContainsKey(TimestampName))
         {
             object timestamp = headers[TimestampName];
-            return timestamp is string strTimestamp ? long.Parse(strTimestamp) : (long)timestamp;
+            return timestamp is string strTimestamp ? long.Parse(strTimestamp, CultureInfo.InvariantCulture) : (long)timestamp;
         }
 
         return null;

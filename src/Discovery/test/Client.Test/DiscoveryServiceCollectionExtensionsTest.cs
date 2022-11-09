@@ -112,10 +112,9 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         var discoveryClient = serviceProvider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
         var eurekaHttpClient = discoveryClient.HttpClient as EurekaHttpClient;
 
-        var httpClient =
-            eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name.Equals("httpClient")).GetValue(eurekaHttpClient) as HttpClient;
+        var httpClient = eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name == "httpClient").GetValue(eurekaHttpClient) as HttpClient;
 
-        var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name.Equals("_handler")).GetValue(httpClient) as DelegatingHandler;
+        var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name == "_handler").GetValue(httpClient) as DelegatingHandler;
         object innerHandler = GetInnerHttpHandler(handler);
 
         Assert.NotNull(discoveryClient);
@@ -149,7 +148,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddDiscoveryClient(configurationRoot, "foobar"));
-        Assert.Contains("foobar", ex.Message);
+        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -231,7 +230,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         IConfigurationRoot configurationRoot = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddDiscoveryClient(configurationRoot));
-        Assert.Contains("Multiple", ex.Message);
+        Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -347,7 +346,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         {
         }));
 
-        Assert.Contains(nameof(serviceCollection), ex.Message);
+        Assert.Contains(nameof(serviceCollection), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -473,10 +472,9 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         var discoveryClient = serviceProvider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
         var eurekaHttpClient = discoveryClient.HttpClient as EurekaHttpClient;
 
-        var httpClient =
-            eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name.Equals("httpClient")).GetValue(eurekaHttpClient) as HttpClient;
+        var httpClient = eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name == "httpClient").GetValue(eurekaHttpClient) as HttpClient;
 
-        var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name.Equals("_handler")).GetValue(httpClient) as DelegatingHandler;
+        var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name == "_handler").GetValue(httpClient) as DelegatingHandler;
         object innerHandler = GetInnerHttpHandler(handler);
 
         Assert.NotNull(discoveryClient);
@@ -493,7 +491,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         ServiceProvider sp = services.BuildServiceProvider();
 
         var ex = Assert.Throws<ConnectorException>(() => sp.GetService<IDiscoveryClient>());
-        Assert.Contains("foobar", ex.Message);
+        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -576,7 +574,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         ServiceProvider sp = services.BuildServiceProvider();
 
         var ex = Assert.Throws<ConnectorException>(() => sp.GetService<IDiscoveryClient>());
-        Assert.Contains("Multiple", ex.Message);
+        Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -742,7 +740,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
             builder.UseEureka();
         }));
 
-        Assert.Contains("Multiple IDiscoveryClient implementations have been registered", exception.Message);
+        Assert.Contains("Multiple IDiscoveryClient implementations have been registered", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -757,7 +755,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
             builder.UseEureka();
         }));
 
-        Assert.Contains("Multiple IDiscoveryClient implementations have been registered", exception.Message);
+        Assert.Contains("Multiple IDiscoveryClient implementations have been registered", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]

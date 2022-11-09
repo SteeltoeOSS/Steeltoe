@@ -39,7 +39,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     [Fact]
     public void TestMethodInvocation()
     {
-        Evaluate("'Hello World'.ToUpper()", "HELLO WORLD", typeof(string));
+        Evaluate("'Hello World'.ToUpperInvariant()", "HELLO WORLD", typeof(string));
     }
 
     [Fact]
@@ -452,7 +452,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     public void TestTemplating()
     {
         string randomPhrase = Parser.ParseExpression("random number is ${T(Random).Shared.Next()}", new TemplatedParserContext()).GetValue<string>();
-        Assert.StartsWith("random number", randomPhrase);
+        Assert.StartsWith("random number", randomPhrase, StringComparison.Ordinal);
     }
 
     public static class StringUtils

@@ -159,7 +159,7 @@ public class StreamListenerAttributeProcessor
     {
         string resolvedValue = value;
 
-        if (value.StartsWith("#{") && value.EndsWith("}"))
+        if (value.StartsWith("#{", StringComparison.Ordinal) && value.EndsWith('}'))
         {
             resolvedValue = value.Substring(2, value.Length - 2 - 1);
         }

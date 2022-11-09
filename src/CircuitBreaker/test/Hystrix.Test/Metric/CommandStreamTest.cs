@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.Common.Util;
 using Xunit.Abstractions;
@@ -186,7 +187,7 @@ public abstract class CommandStreamTest : HystrixTestBase
         private readonly int _arg;
         private readonly ITestOutputHelper _output;
 
-        protected override string CacheKey => _arg.ToString();
+        protected override string CacheKey => _arg.ToString(CultureInfo.InvariantCulture);
         public bool CommandCreated { get; set; }
 
         public override int RequestArgument => _arg;

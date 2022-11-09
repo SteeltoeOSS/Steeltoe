@@ -18,7 +18,7 @@ public class CosmosDbConnectorFactoryTest
         const CosmosDbServiceInfo si = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorFactory(si, options, typeof(CosmosClient)));
-        Assert.Contains(nameof(options), ex.Message);
+        Assert.Contains(nameof(options), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

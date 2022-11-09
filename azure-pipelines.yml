@@ -55,7 +55,6 @@ jobs:
       extraProperties: |
           sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/*opencover.xml
           sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)/*.trx
-          sonar.exclusions=$(Build.SourcesDirectory)/src/Management/src/Diagnostics*
           sonar.coverage.exclusions=**/test/**/*
   - task: DotNetCoreCLI@2
     displayName: dotnet build

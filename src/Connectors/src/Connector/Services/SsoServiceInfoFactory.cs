@@ -35,7 +35,7 @@ public class SsoServiceInfoFactory : ServiceInfoFactory
 
     internal string UpdateUaaScheme(string uaaString)
     {
-        if (uaaString.StartsWith("uaa:"))
+        if (uaaString.StartsWith("uaa:", StringComparison.Ordinal))
         {
             return $"https:{uaaString.Substring(4)}";
         }

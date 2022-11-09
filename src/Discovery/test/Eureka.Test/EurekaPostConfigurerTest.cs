@@ -258,7 +258,7 @@ public class EurekaPostConfigurerTest
         Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
 
         var exception = Assert.Throws<InvalidOperationException>(() => EurekaPostConfigurer.UpdateConfiguration(null, new EurekaClientOptions()));
-        Assert.Contains(EurekaClientConfiguration.DefaultServerServiceUrl, exception.Message);
+        Assert.Contains(EurekaClientConfiguration.DefaultServerServiceUrl, exception.Message, StringComparison.Ordinal);
         Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", null);
     }
 

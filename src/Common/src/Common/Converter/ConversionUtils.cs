@@ -335,7 +335,7 @@ public static class ConversionUtils
 
         foreach (MethodInfo method in methods)
         {
-            if (methodName.Equals(method.Name))
+            if (methodName == method.Name)
             {
                 candidates.Add(method);
             }

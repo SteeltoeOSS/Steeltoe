@@ -31,10 +31,10 @@ public class MySqlProviderServiceCollectionExtensionsTest
         const IConfigurationRoot configurationRoot = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(configurationRoot));
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(configurationRoot, "foobar"));
-        Assert.Contains(nameof(services), ex2.Message);
+        Assert.Contains(nameof(services), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -44,10 +44,10 @@ public class MySqlProviderServiceCollectionExtensionsTest
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
         const string serviceName = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddMySqlConnection(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex.Message);
+        Assert.Contains(nameof(serviceName), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddMySqlConnection(configurationRoot, "foobar"));
-        Assert.Contains("foobar", ex.Message);
+        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddMySqlConnection(configurationRoot));
-        Assert.Contains("Multiple", ex.Message);
+        Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -135,11 +135,11 @@ public class MySqlProviderServiceCollectionExtensionsTest
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
-        Assert.Contains("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString);
-        Assert.Contains("3306", connString);
-        Assert.Contains("192.168.0.90", connString);
-        Assert.Contains("Dd6O1BPXUHdrmzbP", connString);
-        Assert.Contains("7E1LxXnlH2hhlPVt", connString);
+        Assert.Contains("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString, StringComparison.Ordinal);
+        Assert.Contains("3306", connString, StringComparison.Ordinal);
+        Assert.Contains("192.168.0.90", connString, StringComparison.Ordinal);
+        Assert.Contains("Dd6O1BPXUHdrmzbP", connString, StringComparison.Ordinal);
+        Assert.Contains("7E1LxXnlH2hhlPVt", connString, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -159,11 +159,11 @@ public class MySqlProviderServiceCollectionExtensionsTest
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
-        Assert.Contains("ub6oyk1kkh", connString); // database
-        Assert.Contains("3306", connString); // port
-        Assert.Contains("451200b4-c29d-4346-9a0a-70bc109bb6e9.mysql.database.azure.com", connString); // host
-        Assert.Contains("wj7tsxai7i@451200b4-c29d-4346-9a0a-70bc109bb6e9", connString); // user
-        Assert.Contains("10PUO82Uhqk8F2ii", connString); // password
+        Assert.Contains("ub6oyk1kkh", connString, StringComparison.Ordinal); // database
+        Assert.Contains("3306", connString, StringComparison.Ordinal); // port
+        Assert.Contains("451200b4-c29d-4346-9a0a-70bc109bb6e9.mysql.database.azure.com", connString, StringComparison.Ordinal); // host
+        Assert.Contains("wj7tsxai7i@451200b4-c29d-4346-9a0a-70bc109bb6e9", connString, StringComparison.Ordinal); // user
+        Assert.Contains("10PUO82Uhqk8F2ii", connString, StringComparison.Ordinal); // password
     }
 
     [Fact]

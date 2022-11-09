@@ -14,9 +14,9 @@ public class QueueNameTest
     public void TestAnonymous()
     {
         var q = new AnonymousQueue();
-        Assert.StartsWith("spring.gen-", q.QueueName);
+        Assert.StartsWith("spring.gen-", q.QueueName, StringComparison.Ordinal);
         q = new AnonymousQueue(new Base64UrlNamingStrategy("foo-"));
-        Assert.StartsWith("foo-", q.QueueName);
+        Assert.StartsWith("foo-", q.QueueName, StringComparison.Ordinal);
         q = new AnonymousQueue(GuidNamingStrategy.Default);
         Assert.Matches("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}", q.QueueName);
     }

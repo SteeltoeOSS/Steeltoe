@@ -40,6 +40,6 @@ public class DataCenterInfoTest : AbstractBaseTest
     {
         var info = new JsonInstanceInfo.JsonDataCenterInfo("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", "FooBar");
         var ex = Assert.Throws<ArgumentException>(() => DataCenterInfo.FromJson(info));
-        Assert.Contains("Unsupported datacenter name", ex.Message);
+        Assert.Contains("Unsupported datacenter name", ex.Message, StringComparison.Ordinal);
     }
 }

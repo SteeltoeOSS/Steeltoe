@@ -31,10 +31,10 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
         const IConfigurationRoot configurationRoot = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgreSqlConnection(configurationRoot));
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddPostgreSqlConnection(configurationRoot, "foobar"));
-        Assert.Contains(nameof(services), ex2.Message);
+        Assert.Contains(nameof(services), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -44,10 +44,10 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgreSqlConnection(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddPostgreSqlConnection(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
         const string serviceName = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgreSqlConnection(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex.Message);
+        Assert.Contains(nameof(serviceName), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddPostgreSqlConnection(configurationRoot, "foobar"));
-        Assert.Contains("foobar", ex.Message);
+        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddPostgreSqlConnection(configurationRoot));
-        Assert.Contains("Multiple", ex.Message);
+        Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -114,11 +114,11 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
-        Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString);
-        Assert.Contains("5432", connString);
-        Assert.Contains("postgres.testcloud.com", connString);
-        Assert.Contains("lmu7c96mgl99b2t1hvdgd5q94v", connString);
-        Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString);
+        Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString, StringComparison.Ordinal);
+        Assert.Contains("5432", connString, StringComparison.Ordinal);
+        Assert.Contains("postgres.testcloud.com", connString, StringComparison.Ordinal);
+        Assert.Contains("lmu7c96mgl99b2t1hvdgd5q94v", connString, StringComparison.Ordinal);
+        Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -140,11 +140,11 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
-        Assert.Contains("Host=2980cfbe-e198-46fd-8f81-966584bb4678.postgres.database.azure.com;", connString);
-        Assert.Contains("Port=5432;", connString);
-        Assert.Contains("Database=g01w0qnrb7;", connString);
-        Assert.Contains("Username=c2cdhwt4nd@2980cfbe-e198-46fd-8f81-966584bb4678;", connString);
-        Assert.Contains("Password=Dko4PGJAsQyEj5gj;", connString);
+        Assert.Contains("Host=2980cfbe-e198-46fd-8f81-966584bb4678.postgres.database.azure.com;", connString, StringComparison.Ordinal);
+        Assert.Contains("Port=5432;", connString, StringComparison.Ordinal);
+        Assert.Contains("Database=g01w0qnrb7;", connString, StringComparison.Ordinal);
+        Assert.Contains("Username=c2cdhwt4nd@2980cfbe-e198-46fd-8f81-966584bb4678;", connString, StringComparison.Ordinal);
+        Assert.Contains("Password=Dko4PGJAsQyEj5gj;", connString, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -166,13 +166,13 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
-        Assert.Contains("Host=10.194.45.174;", connString);
-        Assert.Contains("Port=5432;", connString);
-        Assert.Contains("Database=postgresample;", connString);
-        Assert.Contains("Username=steeltoe7b59f5b8a34bce2a3cf873061cfb5815;", connString);
-        Assert.Contains("Password=!DQ4Wm!r4omt$h1929!$;", connString);
-        Assert.Contains("sslmode=Require;", connString);
-        Assert.Contains("pooling=true;", connString);
+        Assert.Contains("Host=10.194.45.174;", connString, StringComparison.Ordinal);
+        Assert.Contains("Port=5432;", connString, StringComparison.Ordinal);
+        Assert.Contains("Database=postgresample;", connString, StringComparison.Ordinal);
+        Assert.Contains("Username=steeltoe7b59f5b8a34bce2a3cf873061cfb5815;", connString, StringComparison.Ordinal);
+        Assert.Contains("Password=!DQ4Wm!r4omt$h1929!$;", connString, StringComparison.Ordinal);
+        Assert.Contains("sslmode=Require;", connString, StringComparison.Ordinal);
+        Assert.Contains("pooling=true;", connString, StringComparison.Ordinal);
     }
 
     [Fact]

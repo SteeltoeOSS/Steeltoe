@@ -216,10 +216,10 @@ public class HostBuilderExtensionsTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response = await testClient.GetAsync("/actuator/health/liveness");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("\"LivenessState\":\"CORRECT\"", await response.Content.ReadAsStringAsync());
+        Assert.Contains("\"LivenessState\":\"CORRECT\"", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
         response = await testClient.GetAsync("/actuator/health/readiness");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync());
+        Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -303,8 +303,8 @@ public class HostBuilderExtensionsTest
 
         Assert.NotNull(instrumentations);
         Assert.Equal(2, instrumentations.Count);
-        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
-        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
+        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http", StringComparison.Ordinal));
+        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore", StringComparison.Ordinal));
     }
 
     [Fact]

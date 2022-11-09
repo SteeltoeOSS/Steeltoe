@@ -64,7 +64,7 @@ public class ConstructorInvocationTests : AbstractExpressionTests
         // way out
         eContext.SetVariable("bar", 4);
         var ex = Assert.Throws<SpelEvaluationException>(() => expr.GetValue(eContext));
-        Assert.Contains("Tester", ex.Message);
+        Assert.Contains("Tester", ex.Message, StringComparison.Ordinal);
 
         // A problem occurred whilst attempting to construct an object of type
         // 'org.springframework.expression.spel.ConstructorInvocationTests$Tester'

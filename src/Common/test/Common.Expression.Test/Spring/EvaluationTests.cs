@@ -625,7 +625,7 @@ public class EvaluationTests : AbstractExpressionTests
         var filter = new CustomMethodFilter();
         var ex = Assert.Throws<InvalidOperationException>(() => context.RegisterMethodFilter(typeof(string), filter));
 
-        Assert.Contains(ex.Message, "Method filter cannot be set as the reflective method resolver is not in use");
+        Assert.Contains(ex.Message, "Method filter cannot be set as the reflective method resolver is not in use", StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1363,7 +1363,7 @@ public class EvaluationTests : AbstractExpressionTests
     {
         public object Resolve(IEvaluationContext context, string serviceName)
         {
-            if (serviceName.Equals("foo") || serviceName.Equals("bar"))
+            if (serviceName == "foo" || serviceName == "bar")
             {
                 return new Spr9751_2();
             }

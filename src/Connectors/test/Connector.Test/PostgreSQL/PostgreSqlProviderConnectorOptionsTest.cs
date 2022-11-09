@@ -18,7 +18,7 @@ public class PostgreSqlProviderConnectorOptionsTest
         const IConfiguration configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new PostgreSqlProviderConnectorOptions(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class PostgreSqlProviderConnectorOptionsTest
 
         var options = new PostgreSqlProviderConnectorOptions(configurationRoot);
 
-        Assert.StartsWith(appsettings["postgres:client:ConnectionString"], options.ToString());
+        Assert.StartsWith(appsettings["postgres:client:ConnectionString"], options.ToString(), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class PostgreSqlProviderConnectorOptionsTest
 
         var options = new PostgreSqlProviderConnectorOptions(configurationRoot);
 
-        Assert.DoesNotContain(appsettings["postgres:client:ConnectionString"], options.ToString());
-        Assert.EndsWith($"Search Path={options.SearchPath};", options.ToString());
+        Assert.DoesNotContain(appsettings["postgres:client:ConnectionString"], options.ToString(), StringComparison.Ordinal);
+        Assert.EndsWith($"Search Path={options.SearchPath};", options.ToString(), StringComparison.Ordinal);
     }
 }

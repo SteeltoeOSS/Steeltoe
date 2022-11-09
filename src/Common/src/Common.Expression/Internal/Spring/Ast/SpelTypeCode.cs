@@ -37,7 +37,7 @@ public class SpelTypeCode
 
     public static SpelTypeCode ForName(string name)
     {
-        if (!Names.TryGetValue(name.ToUpper(), out SpelTypeCode result))
+        if (!Names.TryGetValue(name.ToUpperInvariant(), out SpelTypeCode result))
         {
             return Object;
         }

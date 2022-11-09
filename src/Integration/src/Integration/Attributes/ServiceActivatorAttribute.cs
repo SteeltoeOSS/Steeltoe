@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
+
 namespace Steeltoe.Integration.Attributes;
 
 [AttributeUsage(AttributeTargets.Method)]
@@ -38,33 +40,33 @@ public sealed class ServiceActivatorAttribute : Attribute
     {
         InputChannel = inputChannel;
         OutputChannel = outputChannel;
-        RequiresReply = requiresReply.ToString();
+        RequiresReply = requiresReply.ToString(CultureInfo.InvariantCulture);
     }
 
     public ServiceActivatorAttribute(string inputChannel, string outputChannel, bool requiresReply, int sendTimeout)
     {
         InputChannel = inputChannel;
         OutputChannel = outputChannel;
-        RequiresReply = requiresReply.ToString();
-        SendTimeout = sendTimeout.ToString();
+        RequiresReply = requiresReply.ToString(CultureInfo.InvariantCulture);
+        SendTimeout = sendTimeout.ToString(CultureInfo.InvariantCulture);
     }
 
     public ServiceActivatorAttribute(string inputChannel, string outputChannel, bool requiresReply, int sendTimeout, bool autoStartup)
     {
         InputChannel = inputChannel;
         OutputChannel = outputChannel;
-        RequiresReply = requiresReply.ToString();
-        SendTimeout = sendTimeout.ToString();
-        AutoStartup = autoStartup.ToString();
+        RequiresReply = requiresReply.ToString(CultureInfo.InvariantCulture);
+        SendTimeout = sendTimeout.ToString(CultureInfo.InvariantCulture);
+        AutoStartup = autoStartup.ToString(CultureInfo.InvariantCulture);
     }
 
     public ServiceActivatorAttribute(string inputChannel, string outputChannel, bool requiresReply, int sendTimeout, bool autoStartup, int phase)
     {
         InputChannel = inputChannel;
         OutputChannel = outputChannel;
-        RequiresReply = requiresReply.ToString();
-        SendTimeout = sendTimeout.ToString();
-        AutoStartup = autoStartup.ToString();
-        Phase = phase.ToString();
+        RequiresReply = requiresReply.ToString(CultureInfo.InvariantCulture);
+        SendTimeout = sendTimeout.ToString(CultureInfo.InvariantCulture);
+        AutoStartup = autoStartup.ToString(CultureInfo.InvariantCulture);
+        Phase = phase.ToString(CultureInfo.InvariantCulture);
     }
 }

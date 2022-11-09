@@ -47,8 +47,8 @@ public class EndpointMiddlewareTest : BaseTest
         string json = await rdr.ReadToEndAsync();
         Assert.NotNull(json);
         Assert.NotEqual("[]", json);
-        Assert.StartsWith("[", json);
-        Assert.EndsWith("]", json);
+        Assert.StartsWith("[", json, StringComparison.Ordinal);
+        Assert.EndsWith("]", json, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -69,8 +69,8 @@ public class EndpointMiddlewareTest : BaseTest
         string json = await result.Content.ReadAsStringAsync();
         Assert.NotNull(json);
         Assert.NotEqual("[]", json);
-        Assert.StartsWith("[", json);
-        Assert.EndsWith("]", json);
+        Assert.StartsWith("[", json, StringComparison.Ordinal);
+        Assert.EndsWith("]", json, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -93,8 +93,8 @@ public class EndpointMiddlewareTest : BaseTest
             string json = await result.Content.ReadAsStringAsync();
             Assert.NotNull(json);
             Assert.NotEqual("{}", json);
-            Assert.StartsWith("{", json);
-            Assert.EndsWith("}", json);
+            Assert.StartsWith("{", json, StringComparison.Ordinal);
+            Assert.EndsWith("}", json, StringComparison.Ordinal);
         }
     }
 

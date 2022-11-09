@@ -36,7 +36,7 @@ public static class CredHubHostBuilderExtensions
         string vcapServices = Environment.GetEnvironmentVariable("VCAP_SERVICES");
 
         // don't bother interpolating if there aren't any credhub references
-        if (vcapServices != null && vcapServices.Contains("credhub-ref"))
+        if (vcapServices != null && vcapServices.Contains("credhub-ref", StringComparison.Ordinal))
         {
             webHostBuilder.ConfigureAppConfiguration((_, configuration) =>
             {

@@ -44,7 +44,7 @@ public class UriInfoTest
     {
         const string uri = "mysql://joe@localhost:1527/big_db";
         var ex = Assert.Throws<ArgumentException>(() => new UriInfo(uri));
-        Assert.Contains("joe", ex.Message);
+        Assert.Contains("joe", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

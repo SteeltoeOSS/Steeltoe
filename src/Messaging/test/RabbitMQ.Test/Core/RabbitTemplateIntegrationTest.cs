@@ -105,7 +105,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             {
                 if (e.InnerException is InvalidOperationException)
                 {
-                    Assert.Contains("Channel closed during transaction", e.InnerException.Message);
+                    Assert.Contains("Channel closed during transaction", e.InnerException.Message, StringComparison.Ordinal);
                 }
                 else
                 {
@@ -319,7 +319,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         byte[] body = ex.ReturnedMessage.Payload as byte[];
         Assert.NotNull(body);
         Assert.Equal("undeliverable", EncodingUtils.Utf8.GetString(body));
-        Assert.Contains(ex.ReplyText, "NO_ROUTE");
+        Assert.Contains(ex.ReplyText, "NO_ROUTE", StringComparison.Ordinal);
         Assert.Empty(Template.ReplyHolder);
     }
 
@@ -1004,7 +1004,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         };
 
         rabbitTemplate.Send(Message.Create(Encoding.UTF8.GetBytes("test"), messageProperties.MessageHeaders));
-        rabbitTemplate.ReceiveAndReply<string, string>(str => str.ToUpper());
+        rabbitTemplate.ReceiveAndReply<string, string>(str => str.ToUpperInvariant());
 
         Template.ReceiveTimeout = 20000;
         IMessage result = Template.Receive(ReplyQueueName);
@@ -1145,7 +1145,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             Assert.Equal(60, shutdownArgs.ClassId);
             Assert.Equal(40, shutdownArgs.MethodId);
             Assert.Equal(404, shutdownArgs.ReplyCode);
-            Assert.Contains("NOT_FOUND", shutdownArgs.ReplyText);
+            Assert.Contains("NOT_FOUND", shutdownArgs.ReplyText, StringComparison.Ordinal);
         }
 
         var signal = new RC.ShutdownEventArgs(RC.ShutdownInitiator.Library, 320, "CONNECTION_FORCED", 10, 0);
@@ -1153,7 +1153,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         Assert.True(connLatch.Wait(TimeSpan.FromSeconds(10)));
         Assert.Equal(10, shutdown.Value.Args.ClassId);
-        Assert.Contains("CONNECTION_FORCED", shutdown.Value.Args.ReplyText);
+        Assert.Contains("CONNECTION_FORCED", shutdown.Value.Args.ReplyText, StringComparison.Ordinal);
         Assert.Equal(320, shutdown.Value.Args.ReplyCode);
     }
 
@@ -1284,16 +1284,16 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
             if (expectUsedTemp)
             {
-                Assert.False(replyToWas.Value.StartsWith(Address.AmqRabbitMQReplyTo));
+                Assert.False(replyToWas.Value.StartsWith(Address.AmqRabbitMQReplyTo, StringComparison.Ordinal));
             }
             else
             {
-                Assert.StartsWith(Address.AmqRabbitMQReplyTo, replyToWas.Value);
+                Assert.StartsWith(Address.AmqRabbitMQReplyTo, replyToWas.Value, StringComparison.Ordinal);
             }
         }
         catch (Exception e)
         {
-            Assert.Contains("404", e.InnerException.InnerException.Message);
+            Assert.Contains("404", e.InnerException.InnerException.Message, StringComparison.Ordinal);
         }
         finally
         {
@@ -1559,7 +1559,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 #pragma warning disable S1144 // Unused private types or members should be removed
         public string HandleMessage(string message)
         {
-            return message.ToUpper();
+            return message.ToUpperInvariant();
         }
 #pragma warning restore S1144 // Unused private types or members should be removed
     }
@@ -1577,7 +1577,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         public IMessage HandleMessage(IMessage message)
         {
             _replyToWas.Value = message.Headers.ReplyTo();
-            return Message.Create(Encoding.UTF8.GetBytes(Encoding.UTF8.GetString((byte[])message.Payload).ToUpper()), message.Headers);
+            return Message.Create(Encoding.UTF8.GetBytes(Encoding.UTF8.GetString((byte[])message.Payload).ToUpperInvariant()), message.Headers);
         }
 #pragma warning restore S1144 // Unused private types or members should be removed
     }
@@ -1629,7 +1629,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         {
             try
             {
-                byte[] newPayload = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString((byte[])message.Payload).ToUpper());
+                byte[] newPayload = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString((byte[])message.Payload).ToUpperInvariant());
                 return Message.Create(newPayload, message.Headers);
             }
             catch (Exception e)

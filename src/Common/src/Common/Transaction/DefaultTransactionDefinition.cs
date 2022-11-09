@@ -43,7 +43,7 @@ public class DefaultTransactionDefinition : AbstractTransactionDefinition
 
     public override bool Equals(object obj)
     {
-        return ReferenceEquals(this, obj) || (obj is ITransactionDefinition && ToString().Equals(obj.ToString()));
+        return ReferenceEquals(this, obj) || (obj is ITransactionDefinition && ToString() == obj.ToString());
     }
 
     public override int GetHashCode()

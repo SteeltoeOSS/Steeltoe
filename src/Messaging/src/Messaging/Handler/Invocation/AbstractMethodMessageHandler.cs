@@ -230,7 +230,7 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
 
         foreach (string prefix in _destinationPrefixes)
         {
-            if (destination.StartsWith(prefix))
+            if (destination.StartsWith(prefix, StringComparison.Ordinal))
             {
                 return destination[prefix.Length..];
             }

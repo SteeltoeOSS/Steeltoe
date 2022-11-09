@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -111,15 +112,15 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     private string GetRandomValue(string type)
     {
         // random:int
-        if (type.Equals("int"))
+        if (type == "int")
         {
-            return Random.Shared.Next().ToString();
+            return Random.Shared.Next().ToString(CultureInfo.InvariantCulture);
         }
 
         // random:long
-        if (type.Equals("long"))
+        if (type == "long")
         {
-            return GetLong().ToString();
+            return GetLong().ToString(CultureInfo.InvariantCulture);
         }
 
         // random:int(10), random:int(10,20), random:int[10], random:int[10,20]
@@ -127,7 +128,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
 
         if (range != null)
         {
-            return GetNextIntInRange(range).ToString();
+            return GetNextIntInRange(range).ToString(CultureInfo.InvariantCulture);
         }
 
         // random:long(10), random:long(10,20), random:long[10], random:long[10,20]
@@ -135,11 +136,11 @@ internal sealed class RandomValueProvider : ConfigurationProvider
 
         if (range != null)
         {
-            return GetNextLongInRange(range).ToString();
+            return GetNextLongInRange(range).ToString(CultureInfo.InvariantCulture);
         }
 
         // random:uuid
-        if (type.Equals("uuid"))
+        if (type == "uuid")
         {
             return Guid.NewGuid().ToString();
         }
@@ -201,6 +202,6 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     {
         byte[] bytes = new byte[16];
         Random.Shared.NextBytes(bytes);
-        return BitConverter.ToString(bytes).Replace("-", string.Empty);
+        return BitConverter.ToString(bytes).Replace("-", string.Empty, StringComparison.Ordinal);
     }
 }

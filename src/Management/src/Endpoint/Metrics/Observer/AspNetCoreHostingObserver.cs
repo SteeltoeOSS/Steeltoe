@@ -4,6 +4,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
@@ -110,7 +111,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
     protected internal IEnumerable<KeyValuePair<string, object>> GetLabelSets(HttpContext arg)
     {
         string uri = arg.Request.Path.ToString();
-        string statusCode = arg.Response.StatusCode.ToString();
+        string statusCode = arg.Response.StatusCode.ToString(CultureInfo.InvariantCulture);
         string exception = GetException(arg);
 
         return new Dictionary<string, object>

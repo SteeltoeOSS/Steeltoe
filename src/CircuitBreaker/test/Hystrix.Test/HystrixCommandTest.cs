@@ -422,8 +422,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         int mainThreadId = Thread.CurrentThread.ManagedThreadId;
 
         // semaphore should be on the calling thread
-        Assert.True(commandThread.Value.ManagedThreadId.Equals(mainThreadId));
-        Assert.True(subscribeThread.Value.ManagedThreadId.Equals(mainThreadId));
+        Assert.True(commandThread.Value.ManagedThreadId == mainThreadId);
+        Assert.True(subscribeThread.Value.ManagedThreadId == mainThreadId);
     }
 
     [Fact]
@@ -983,7 +983,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         // This is a case where we knowingly walk away from executing Hystrix threads. They should have an in-flight status ("Executed").  You should avoid this in a production environment
         IHystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
         Assert.Equal(3, requestLog.AllExecutedCommands.Count);
-        Assert.Contains("Executed", requestLog.GetExecutedCommandsAsString());
+        Assert.Contains("Executed", requestLog.GetExecutedCommandsAsString(), StringComparison.Ordinal);
 
         // block on the outstanding work, so we don't inadvertently affect any other tests
         long startTime = DateTime.Now.Ticks / 10000;
@@ -1499,7 +1499,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         // verifies that some executions failed
         // Assert.Equal(sharedSemaphore.numberOfPermits.get().longValue(), failureCount.get());
         IHystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
-        Assert.Contains("SEMAPHORE_REJECTED", requestLog.GetExecutedCommandsAsString());
+        Assert.Contains("SEMAPHORE_REJECTED", requestLog.GetExecutedCommandsAsString(), StringComparison.Ordinal);
         Assert.Equal(0, circuitBreaker.Metrics.CurrentConcurrentExecutionCount);
     }
 

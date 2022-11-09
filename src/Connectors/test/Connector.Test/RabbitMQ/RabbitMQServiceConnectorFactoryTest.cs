@@ -18,7 +18,7 @@ public class RabbitMQServiceConnectorFactoryTest
         const RabbitMQServiceInfo si = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new RabbitMQProviderConnectorFactory(si, options, typeof(ConnectionFactory)));
-        Assert.Contains(nameof(options), ex.Message);
+        Assert.Contains(nameof(options), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

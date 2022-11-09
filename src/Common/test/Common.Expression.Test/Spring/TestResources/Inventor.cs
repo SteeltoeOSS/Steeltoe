@@ -6,6 +6,8 @@
 #pragma warning disable S4004 // Collection properties should be readonly
 // ReSharper disable InconsistentNaming
 
+using System.Globalization;
+
 namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
 public class Inventor
@@ -155,12 +157,12 @@ public class Inventor
 
     public string PrintDouble(double d)
     {
-        return d.ToString("F2");
+        return d.ToString("F2", CultureInfo.InvariantCulture);
     }
 
     public string PrintDoubles(double[] d)
     {
-        return $"{{{string.Join(", ", d)}}}";
+        return $"{{{string.Join(", ", d.Select(x => x.ToString(CultureInfo.InvariantCulture)))}}}";
     }
 
     public List<string> GetDoublesAsStringList()

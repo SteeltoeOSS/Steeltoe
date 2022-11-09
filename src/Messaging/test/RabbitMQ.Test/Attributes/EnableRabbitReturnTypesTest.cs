@@ -202,7 +202,7 @@ public class EnableRabbitReturnTypesTest
         {
             _output.WriteLine("Listen1Async " + input);
 
-            if ("3".Equals(input))
+            if (input == "3")
             {
                 return new Three();
             }
@@ -215,7 +215,7 @@ public class EnableRabbitReturnTypesTest
         {
             _output.WriteLine("Listen2Async " + input);
 
-            if ("3".Equals(input))
+            if (input == "3")
             {
                 return new Three();
             }
@@ -241,7 +241,7 @@ public class EnableRabbitReturnTypesTest
         {
             _output.WriteLine("Listen4Async " + input);
 
-            if ("3".Equals(input))
+            if (input == "3")
             {
                 return new Three();
             }

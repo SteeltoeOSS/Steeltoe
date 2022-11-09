@@ -187,7 +187,7 @@ public class InboundEndpointTest
         Assert.NotNull(errorMessage);
         var payload = errorMessage.Payload as MessagingException;
         Assert.NotNull(payload);
-        Assert.Contains("Dispatcher has no", payload.Message);
+        Assert.Contains("Dispatcher has no", payload.Message, StringComparison.Ordinal);
         var deliveryAttempts = payload.FailedMessage.Headers.Get<AtomicInteger>(IntegrationMessageHeaderAccessor.DeliveryAttempt);
         Assert.NotNull(deliveryAttempts);
         Assert.Equal(3, deliveryAttempts.Value);

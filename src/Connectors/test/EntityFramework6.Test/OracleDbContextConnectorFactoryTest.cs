@@ -19,7 +19,7 @@ public class OracleDbContextConnectorFactoryTest
         const Type dbContextType = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new OracleDbContextConnectorFactory(si, options, dbContextType));
-        Assert.Contains(nameof(dbContextType), ex.Message);
+        Assert.Contains(nameof(dbContextType), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class OracleDbContextConnectorFactoryTest
         Type dbContextType = typeof(BadOracleDbContext);
 
         var ex = Assert.Throws<ConnectorException>(() => new OracleDbContextConnectorFactory(si, options, dbContextType).Create(null));
-        Assert.Contains("BadOracleDbContext", ex.Message);
+        Assert.Contains("BadOracleDbContext", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

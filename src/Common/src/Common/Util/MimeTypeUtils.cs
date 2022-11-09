@@ -108,7 +108,7 @@ public static class MimeTypeUtils
 
         string built = builder.ToString();
 
-        if (built.EndsWith(", "))
+        if (built.EndsWith(", ", StringComparison.Ordinal))
         {
             built = built.Substring(0, built.Length - 2);
         }
@@ -151,9 +151,12 @@ public static class MimeTypeUtils
         int index = mimeType.IndexOf(';');
         string fullType = (index >= 0 ? mimeType.Substring(0, index) : mimeType).Trim();
 
-        ArgumentGuard.NotNullOrEmpty(fullType, nameof(mimeType));
+        if (string.IsNullOrEmpty(fullType))
+        {
+            throw new ArgumentException("mimeType must contain a value before the ';' separator.", nameof(mimeType));
+        }
 
-        if (MimeType.WildcardType.Equals(fullType))
+        if (fullType == MimeType.WildcardType)
         {
             fullType = "*/*";
         }
@@ -173,7 +176,7 @@ public static class MimeTypeUtils
         string type = fullType.Substring(0, subIndex);
         string subtype = fullType.Substring(subIndex + 1, fullType.Length - type.Length - 1);
 
-        if (MimeType.WildcardType.Equals(type) && !MimeType.WildcardType.Equals(subtype))
+        if (type == MimeType.WildcardType && subtype != MimeType.WildcardType)
         {
             throw new ArgumentException($"{mimeType} wildcard type is legal only in '*/*' (all mime types)", nameof(mimeType));
         }

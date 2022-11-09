@@ -331,7 +331,7 @@ public class GenericMessagingTemplateTest
                 const string expected = "Reply message received but the receiving thread has exited due to a timeout";
                 string actual = ex.Message;
 
-                if (!expected.Equals(actual))
+                if (actual != expected)
                 {
                     Failure = new InvalidOperationException($"Unexpected error: '{actual}'");
                 }

@@ -120,7 +120,9 @@ public static class EurekaClientService
                     continue;
                 }
 
+#pragma warning disable S4040 // Strings should be normalized to uppercase
                 names.Add(app.Name.ToLowerInvariant());
+#pragma warning restore S4040 // Strings should be normalized to uppercase
             }
 
             return names;
