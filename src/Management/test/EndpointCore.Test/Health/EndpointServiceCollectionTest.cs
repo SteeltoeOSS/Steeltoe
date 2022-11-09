@@ -90,7 +90,7 @@ public class EndpointServiceCollectionTest : BaseTest
         var contribs = serviceProvider.GetServices<IHealthContributor>();
         Assert.NotNull(contribs);
         var contribsList = contribs.ToList();
-        Assert.Equal(3, contribsList.Count);
+        Assert.Equal(4, contribsList.Count);
         var availability = serviceProvider.GetService<ApplicationAvailability>();
         Assert.NotNull(availability);
     }

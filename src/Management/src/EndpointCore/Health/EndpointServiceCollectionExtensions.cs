@@ -89,5 +89,5 @@ public static class EndpointServiceCollectionExtensions
         services.TryAddEnumerable(descriptors);
     }
 
-    internal static Type[] DefaultHealthContributors => new Type[] { typeof(DiskSpaceContributor), typeof(LivenessHealthContributor), typeof(ReadinessHealthContributor) };
+    internal static Type[] DefaultHealthContributors => new Type[] { typeof(DiskSpaceContributor), typeof(LivenessHealthContributor), typeof(PingHealthContributor), typeof(ReadinessHealthContributor) };
 }
