@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using RabbitMQ.Client;
+using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.RabbitMQ.Test;
+namespace Steeltoe.Connector.Test.RabbitMQ;
 
 public class RabbitMQServiceConnectorFactoryTest
 {
@@ -17,7 +18,7 @@ public class RabbitMQServiceConnectorFactoryTest
         const RabbitMQServiceInfo si = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new RabbitMQProviderConnectorFactory(si, options, typeof(ConnectionFactory)));
-        Assert.Contains(nameof(options), ex.Message);
+        Assert.Contains(nameof(options), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

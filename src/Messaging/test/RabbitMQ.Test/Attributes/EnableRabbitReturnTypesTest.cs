@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Messaging.RabbitMQ.Attributes;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
@@ -13,7 +14,7 @@ using Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Messaging.RabbitMQ.Attributes;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 [Trait("Category", "Integration")]
 public class EnableRabbitReturnTypesTest
@@ -201,7 +202,7 @@ public class EnableRabbitReturnTypesTest
         {
             _output.WriteLine("Listen1Async " + input);
 
-            if ("3".Equals(input))
+            if (input == "3")
             {
                 return new Three();
             }
@@ -214,7 +215,7 @@ public class EnableRabbitReturnTypesTest
         {
             _output.WriteLine("Listen2Async " + input);
 
-            if ("3".Equals(input))
+            if (input == "3")
             {
                 return new Three();
             }
@@ -240,7 +241,7 @@ public class EnableRabbitReturnTypesTest
         {
             _output.WriteLine("Listen4Async " + input);
 
-            if ("3".Equals(input))
+            if (input == "3")
             {
                 return new Three();
             }

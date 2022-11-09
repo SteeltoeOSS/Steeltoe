@@ -88,7 +88,7 @@ public static class HostBuilderExtensions
         {
             urls.Add($"http://*:{port}");
         }
-        else if (portStr.Contains(";"))
+        else if (portStr.Contains(';'))
         {
             if (!string.IsNullOrEmpty(aspnetUrls))
             {
@@ -105,7 +105,7 @@ public static class HostBuilderExtensions
 
     private static void AddFromKubernetesEnv(List<string> urls)
     {
-        string appName = Environment.GetEnvironmentVariable("HOSTNAME").Split("-")[0].ToUpperInvariant();
+        string appName = Environment.GetEnvironmentVariable("HOSTNAME").Split('-')[0].ToUpperInvariant();
         string foundPort = Environment.GetEnvironmentVariable($"{appName}_SERVICE_PORT_HTTP");
         urls.Add($"http://*:{foundPort ?? "80"}");
     }

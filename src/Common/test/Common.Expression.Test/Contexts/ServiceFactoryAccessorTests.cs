@@ -5,13 +5,15 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Expression.Internal.Spring;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Services;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Contexts;
+namespace Steeltoe.Common.Expression.Test.Contexts;
 
 public class ServiceFactoryAccessorTests
 {
@@ -38,12 +40,12 @@ public class ServiceFactoryAccessorTests
             ServiceResolver = new ServiceFactoryResolver(appContext)
         };
 
-        IExpression expr = new SpelExpressionParser().ParseRaw("@'T(Steeltoe.Common.Expression.Internal.Contexts.ServiceFactoryAccessorTests$Car)car'.Color");
+        IExpression expr = new SpelExpressionParser().ParseRaw($"@'T({typeof(ServiceFactoryAccessorTests).FullName}$Car)car'.Color");
         Assert.Equal("red", expr.GetValue<string>(context));
         expr = new SpelExpressionParser().ParseRaw("@car.Color");
         Assert.Equal("red", expr.GetValue<string>(context));
 
-        expr = new SpelExpressionParser().ParseRaw("@'T(Steeltoe.Common.Expression.Internal.Contexts.ServiceFactoryAccessorTests$Boat)boat'.Color");
+        expr = new SpelExpressionParser().ParseRaw($"@'T({typeof(ServiceFactoryAccessorTests).FullName}$Boat)boat'.Color");
         Assert.Equal("blue", expr.GetValue<string>(context));
         expr = new SpelExpressionParser().ParseRaw("@boat.Color");
         Assert.Equal("blue", expr.GetValue<string>(context));

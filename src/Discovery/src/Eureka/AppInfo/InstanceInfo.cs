@@ -224,7 +224,7 @@ public class InstanceInfo
         {
             InstanceInfo me = ApplicationInfoManager.Instance.InstanceInfo;
 
-            if (me != null && info.InstanceId.Equals(me.InstanceId))
+            if (me != null && info.InstanceId == me.InstanceId)
             {
                 info.IsCoordinatingDiscoveryServer = true;
             }
@@ -322,7 +322,7 @@ public class InstanceInfo
             return new Dictionary<string, string>();
         }
 
-        if (json.TryGetValue("@class", out string value) && value.Equals("java.util.Collections$EmptyMap"))
+        if (json.TryGetValue("@class", out string value) && value == "java.util.Collections$EmptyMap")
         {
             return new Dictionary<string, string>();
         }

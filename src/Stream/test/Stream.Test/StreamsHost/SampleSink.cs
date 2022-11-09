@@ -5,7 +5,7 @@
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 
-namespace Steeltoe.Stream.StreamHost;
+namespace Steeltoe.Stream.Test.StreamsHost;
 
 [EnableBinding(typeof(ISink))]
 public class SampleSink

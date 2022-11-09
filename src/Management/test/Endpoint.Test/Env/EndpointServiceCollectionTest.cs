@@ -6,10 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Env;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Env.Test;
+namespace Steeltoe.Management.Endpoint.Test.Env;
 
 public class EndpointServiceCollectionTest : BaseTest
 {
@@ -20,7 +20,7 @@ public class EndpointServiceCollectionTest : BaseTest
         IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddEnvActuator());
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
         Assert.Throws<InvalidOperationException>(() => services2.AddEnvActuator());
     }
 

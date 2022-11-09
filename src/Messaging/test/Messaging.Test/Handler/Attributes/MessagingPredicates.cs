@@ -3,8 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Messaging.Handler.Attributes;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Test;
+namespace Steeltoe.Messaging.Test.Handler.Attributes;
 
 internal sealed class MessagingPredicates
 {
@@ -62,7 +63,7 @@ internal sealed class MessagingPredicates
         public bool Test(ParameterInfo parameter)
         {
             var annotation = parameter.GetCustomAttribute<DestinationVariableAttribute>();
-            return annotation != null && (_value == null || annotation.Name.Equals(_value));
+            return annotation != null && (_value == null || annotation.Name == _value);
         }
     }
 

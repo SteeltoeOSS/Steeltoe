@@ -2,11 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring;
 using Steeltoe.Common.Expression.Internal.Spring.Ast;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
+namespace Steeltoe.Common.Expression.Test.Spring.Standard;
 
 public class SpelParserTests
 {
@@ -335,8 +338,8 @@ public class SpelParserTests
     [Fact]
     public void ParseMethodsOnNumbers()
     {
-        CheckNumber("3.14.ToString()", "3.14", typeof(string));
-        CheckNumber("3.ToString()", "3", typeof(string));
+        CheckNumber("3.14.ToString(T(System.Globalization.CultureInfo).InvariantCulture)", "3.14", typeof(string));
+        CheckNumber("3.ToString(T(System.Globalization.CultureInfo).InvariantCulture)", "3", typeof(string));
     }
 
     [Fact]
@@ -371,7 +374,7 @@ public class SpelParserTests
     {
         Assert.Equal(expectedMessage, ex.MessageCode);
         Assert.Equal(expectedPosition, ex.Position);
-        Assert.Contains(ex.ExpressionString, ex.Message);
+        Assert.Contains(ex.ExpressionString, ex.Message, StringComparison.Ordinal);
     }
 
     private void CheckNumber(string expression, object value, Type type)

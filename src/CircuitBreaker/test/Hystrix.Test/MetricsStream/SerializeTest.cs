@@ -7,10 +7,10 @@ using System.Reactive.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using Steeltoe.CircuitBreaker.Hystrix.Test;
+using Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.MetricsStream;
 
 public class SerializeTest : HystrixTestBase
 {
@@ -57,10 +57,10 @@ public class SerializeTest : HystrixTestBase
 
         Assert.NotNull(cmdData["type"]);
         string type = cmdData["type"].Value<string>();
-        Assert.True("HystrixCommand".Equals(type) || "HystrixThreadPool".Equals(type));
+        Assert.True(type == "HystrixCommand" || type == "HystrixThreadPool");
         Assert.NotNull(cmdData["name"]);
         string name = cmdData["name"].Value<string>();
-        Assert.True("MyCommand".Equals(name) || "MyCommandGroup".Equals(name));
+        Assert.True(name == "MyCommand" || name == "MyCommandGroup");
 
         subscription.Dispose();
     }

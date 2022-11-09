@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CircuitBreaker.Hystrix.Test;
+using Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.MetricsStream;
 
 public class HystrixMetricsStreamOptionsTest : HystrixTestBase
 {

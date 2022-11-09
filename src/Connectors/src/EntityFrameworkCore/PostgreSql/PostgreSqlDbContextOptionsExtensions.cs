@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.EntityFrameworkCore;
+using Steeltoe.Connector.PostgreSql;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Connector.PostgreSql.EntityFrameworkCore;
+namespace Steeltoe.Connector.EntityFrameworkCore.PostgreSql;
 
-public static class PostgresDbContextOptionsExtensions
+public static class PostgreSqlDbContextOptionsExtensions
 {
     public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IConfiguration configuration,
         object npgsqlOptionsAction = null)
@@ -69,7 +69,7 @@ public static class PostgresDbContextOptionsExtensions
 
     private static bool MatchesSignature(MethodBase method, IReadOnlyList<Type> parameterTypes)
     {
-        if (method.IsPublic && method.IsStatic && method.Name.Equals("UseNpgsql", StringComparison.Ordinal))
+        if (method.IsPublic && method.IsStatic && method.Name == "UseNpgsql")
         {
             ParameterInfo[] parameters = method.GetParameters();
             return parameters.Length == 3 && parameters[0].ParameterType == parameterTypes[0] && parameters[1].ParameterType == parameterTypes[1];

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Filter = System.Func<string, Microsoft.Extensions.Logging.LogLevel, bool>;
 
-namespace Steeltoe.Extensions.Logging;
+namespace Steeltoe.Logging;
 
 public class MessageProcessingLogger : ILogger
 {

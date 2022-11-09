@@ -15,10 +15,10 @@ public sealed class CloudFoundryConfigurationBuilderExtensionsTest
         const IConfigurationBuilder configurationBuilder = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddCloudFoundry());
-        Assert.Contains(nameof(configurationBuilder), ex.Message);
+        Assert.Contains(nameof(configurationBuilder), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddCloudFoundry(null));
-        Assert.Contains(nameof(configurationBuilder), ex2.Message);
+        Assert.Contains(nameof(configurationBuilder), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]

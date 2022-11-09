@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Steeltoe.Management.Endpoint.Health.Test;
+namespace Steeltoe.Management.Endpoint.Test.Health;
 
 public class TestHealthCheck : IHealthCheck
 {

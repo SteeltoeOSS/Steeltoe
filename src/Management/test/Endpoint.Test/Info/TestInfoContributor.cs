@@ -4,7 +4,7 @@
 
 using Steeltoe.Management.Info;
 
-namespace Steeltoe.Management.Endpoint.Info.Test;
+namespace Steeltoe.Management.Endpoint.Test.Info;
 
 internal sealed class TestInfoContributor : IInfoContributor
 {

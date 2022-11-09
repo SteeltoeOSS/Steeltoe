@@ -8,13 +8,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
+using Steeltoe.Integration.Rabbit.Outbound;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Xunit;
 
-namespace Steeltoe.Integration.Rabbit.Outbound;
+namespace Steeltoe.Integration.RabbitMQ.Test.Outbound;
 
 public class OutboundEndpointTest
 {

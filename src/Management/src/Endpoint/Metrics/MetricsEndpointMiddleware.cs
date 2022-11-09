@@ -83,7 +83,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
             return GetMetricName(request, Endpoint.Path);
         }
 
-        string path = $"{managementOptions.Path}/{Endpoint.Id}".Replace("//", "/");
+        string path = $"{managementOptions.Path}/{Endpoint.Id}".Replace("//", "/", StringComparison.Ordinal);
         string metricName = GetMetricName(request, path);
 
         return metricName;

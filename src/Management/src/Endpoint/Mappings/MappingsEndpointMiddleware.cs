@@ -102,7 +102,7 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
             if (desc is ControllerActionDescriptor descriptor)
             {
                 if (apiContext.Results.Any() &&
-                    mappingDescriptions.Any(description => description.Value.Any(n => n.Handler.Equals(descriptor.MethodInfo.ToString()))))
+                    mappingDescriptions.Any(description => description.Value.Any(n => n.Handler == descriptor.MethodInfo.ToString())))
                 {
                     continue;
                 }

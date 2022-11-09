@@ -2,9 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Discovery.Eureka.Util;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Util.Test;
+namespace Steeltoe.Discovery.Eureka.Test.Util;
 
 public class DateTimeConversionsTest
 {
@@ -13,7 +14,7 @@ public class DateTimeConversionsTest
     {
         DateTime dt = new DateTime(2016, 3, 14, 16, 42, 21, DateTimeKind.Local).AddMilliseconds(708);
         var ex = Assert.Throws<ArgumentException>(() => DateTimeConversions.ToJavaMillis(dt));
-        Assert.Contains("DateTime kind must be UTC.", ex.Message);
+        Assert.Contains("DateTime kind must be UTC.", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

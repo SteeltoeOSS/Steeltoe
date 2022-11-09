@@ -16,11 +16,12 @@ using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Configuration;
+using Steeltoe.Stream.Extensions;
 using Steeltoe.Stream.Messaging;
-using Steeltoe.Stream.StreamHost;
+using Steeltoe.Stream.Test.StreamsHost;
 using Xunit;
 
-namespace Steeltoe.Stream.Extensions;
+namespace Steeltoe.Stream.Test.Extensions;
 
 public class StreamServicesExtensionsTest
 {

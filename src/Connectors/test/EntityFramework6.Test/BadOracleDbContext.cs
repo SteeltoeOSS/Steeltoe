@@ -4,7 +4,7 @@
 
 using System.Data.Entity;
 
-namespace Steeltoe.Connector.Oracle.EntityFramework6.Test;
+namespace Steeltoe.Connector.EntityFramework6.Test;
 
 public class BadOracleDbContext : DbContext
 {

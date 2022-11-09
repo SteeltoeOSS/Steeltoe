@@ -4,11 +4,12 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
 using Xunit;
 
-namespace Steeltoe.Integration.Channel.Test;
+namespace Steeltoe.Integration.Test.Channel;
 
 public class DispatcherHasNoSubscribersTest
 {
@@ -27,7 +28,7 @@ public class DispatcherHasNoSubscribersTest
         }
         catch (MessagingException e)
         {
-            Assert.Contains("Dispatcher has no subscribers", e.Message);
+            Assert.Contains("Dispatcher has no subscribers", e.Message, StringComparison.Ordinal);
         }
     }
 
@@ -54,7 +55,7 @@ public class DispatcherHasNoSubscribersTest
         }
         catch (MessagingException e)
         {
-            Assert.Contains("Dispatcher has no subscribers", e.Message);
+            Assert.Contains("Dispatcher has no subscribers", e.Message, StringComparison.Ordinal);
         }
     }
 }

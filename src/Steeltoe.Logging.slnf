@@ -5,11 +5,11 @@
       "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
       "Common\\src\\Common\\Steeltoe.Common.csproj",
       "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
-      "Logging\\src\\Abstractions\\Steeltoe.Extensions.Logging.Abstractions.csproj",
-      "Logging\\src\\DynamicLogger\\Steeltoe.Extensions.Logging.DynamicLogger.csproj",
-      "Logging\\src\\DynamicSerilog\\Steeltoe.Extensions.Logging.DynamicSerilog.csproj",
-      "Logging\\test\\DynamicLogger.Test\\Steeltoe.Extensions.Logging.DynamicLogger.Test.csproj",
-      "Logging\\test\\DynamicSerilog.Test\\Steeltoe.Extensions.Logging.DynamicSerilog.Test.csproj"
+      "Logging\\src\\Abstractions\\Steeltoe.Logging.Abstractions.csproj",
+      "Logging\\src\\DynamicLogger\\Steeltoe.Logging.DynamicLogger.csproj",
+      "Logging\\src\\DynamicSerilog\\Steeltoe.Logging.DynamicSerilog.csproj",
+      "Logging\\test\\DynamicLogger.Test\\Steeltoe.Logging.DynamicLogger.Test.csproj",
+      "Logging\\test\\DynamicSerilog.Test\\Steeltoe.Logging.DynamicSerilog.Test.csproj"
     ]
   }
 }

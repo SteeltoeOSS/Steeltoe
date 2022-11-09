@@ -8,10 +8,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.EntityFrameworkCore.Test;
+using Steeltoe.Connector.EntityFrameworkCore.PostgreSql;
 using Xunit;
 
-namespace Steeltoe.Connector.PostgreSql.EntityFrameworkCore.Test;
+namespace Steeltoe.Connector.EntityFrameworkCore.Test;
 
 public class PostgresDbContextOptionsExtensionsTest
 {
@@ -29,16 +29,16 @@ public class PostgresDbContextOptionsExtensionsTest
         const IConfigurationRoot configurationRoot = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseNpgsql(configurationRoot));
-        Assert.Contains(nameof(optionsBuilder), ex.Message);
+        Assert.Contains(nameof(optionsBuilder), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseNpgsql(configurationRoot, "foobar"));
-        Assert.Contains(nameof(optionsBuilder), ex2.Message);
+        Assert.Contains(nameof(optionsBuilder), ex2.Message, StringComparison.Ordinal);
 
         var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseNpgsql(configurationRoot));
-        Assert.Contains(nameof(optionsBuilder), ex3.Message);
+        Assert.Contains(nameof(optionsBuilder), ex3.Message, StringComparison.Ordinal);
 
         var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseNpgsql(configurationRoot, "foobar"));
-        Assert.Contains(nameof(optionsBuilder), ex4.Message);
+        Assert.Contains(nameof(optionsBuilder), ex4.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -49,16 +49,16 @@ public class PostgresDbContextOptionsExtensionsTest
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseNpgsql(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseNpgsql(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
 
         var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseNpgsql(configuration));
-        Assert.Contains(nameof(configuration), ex3.Message);
+        Assert.Contains(nameof(configuration), ex3.Message, StringComparison.Ordinal);
 
         var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseNpgsql(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex4.Message);
+        Assert.Contains(nameof(configuration), ex4.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -70,10 +70,10 @@ public class PostgresDbContextOptionsExtensionsTest
         const string serviceName = null;
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseNpgsql(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex2.Message);
+        Assert.Contains(nameof(serviceName), ex2.Message, StringComparison.Ordinal);
 
         var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseNpgsql(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex4.Message);
+        Assert.Contains(nameof(serviceName), ex4.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class PostgresDbContextOptionsExtensionsTest
         services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(configurationRoot, "foobar"));
 
         var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
-        Assert.Contains("foobar", ex.Message);
+        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class PostgresDbContextOptionsExtensionsTest
         services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(configurationRoot));
 
         var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
-        Assert.Contains("Multiple", ex.Message);
+        Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -147,11 +147,11 @@ public class PostgresDbContextOptionsExtensionsTest
         string connString = con.ConnectionString;
         Assert.NotNull(connString);
 
-        Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString);
-        Assert.Contains("5432", connString);
-        Assert.Contains("postgres.testcloud.com", connString);
-        Assert.Contains("lmu7c96mgl99b2t1hvdgd5q94v", connString);
-        Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString);
+        Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString, StringComparison.Ordinal);
+        Assert.Contains("5432", connString, StringComparison.Ordinal);
+        Assert.Contains("postgres.testcloud.com", connString, StringComparison.Ordinal);
+        Assert.Contains("lmu7c96mgl99b2t1hvdgd5q94v", connString, StringComparison.Ordinal);
+        Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -180,11 +180,11 @@ public class PostgresDbContextOptionsExtensionsTest
         string connString = con.ConnectionString;
         Assert.NotNull(connString);
 
-        Assert.Contains("Host=10.194.59.205", connString);
-        Assert.Contains("Port=5432", connString);
-        Assert.Contains("Username=testrolee93ccf859894dc60dcd53218492b37b4", connString);
-        Assert.Contains("Password=Qp!1mB1$Zk2T!$!D85_E", connString);
-        Assert.Contains("Database=steeltoe", connString);
+        Assert.Contains("Host=10.194.59.205", connString, StringComparison.Ordinal);
+        Assert.Contains("Port=5432", connString, StringComparison.Ordinal);
+        Assert.Contains("Username=testrolee93ccf859894dc60dcd53218492b37b4", connString, StringComparison.Ordinal);
+        Assert.Contains("Password=Qp!1mB1$Zk2T!$!D85_E", connString, StringComparison.Ordinal);
+        Assert.Contains("Database=steeltoe", connString, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -216,10 +216,10 @@ public class PostgresDbContextOptionsExtensionsTest
         string connString = con.ConnectionString;
         Assert.NotNull(connString);
 
-        Assert.Contains("Host=10.194.59.205", connString);
-        Assert.Contains("Port=5432", connString);
-        Assert.Contains("Username=testrolee93ccf859894dc60dcd53218492b37b4", connString);
-        Assert.Contains("Password=Qp!1mB1$Zk2T!$!D85_E", connString);
-        Assert.Contains("Database=steeltoe", connString);
+        Assert.Contains("Host=10.194.59.205", connString, StringComparison.Ordinal);
+        Assert.Contains("Port=5432", connString, StringComparison.Ordinal);
+        Assert.Contains("Username=testrolee93ccf859894dc60dcd53218492b37b4", connString, StringComparison.Ordinal);
+        Assert.Contains("Password=Qp!1mB1$Zk2T!$!D85_E", connString, StringComparison.Ordinal);
+        Assert.Contains("Database=steeltoe", connString, StringComparison.Ordinal);
     }
 }

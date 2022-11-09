@@ -865,7 +865,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     {
         RC.IModel channel = conn.CreateBareChannel(transactional);
 
-        if (!ConfirmType.None.Equals(_confirmType))
+        if (_confirmType != ConfirmType.None)
         {
             try
             {

@@ -3,13 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Xunit;
 
 #pragma warning disable S4004 // Collection properties should be readonly
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public class IndexingTests
 {
@@ -175,7 +177,7 @@ public class IndexingTests
         }
         catch (EvaluationException ex)
         {
-            Assert.StartsWith("EL1053E", ex.Message);
+            Assert.StartsWith("EL1053E", ex.Message, StringComparison.Ordinal);
         }
     }
 
@@ -251,7 +253,7 @@ public class IndexingTests
         }
         catch (EvaluationException ex)
         {
-            Assert.StartsWith("EL1027E", ex.Message);
+            Assert.StartsWith("EL1027E", ex.Message, StringComparison.Ordinal);
         }
     }
 
@@ -273,7 +275,7 @@ public class IndexingTests
         }
         catch (EvaluationException ex)
         {
-            Assert.StartsWith("EL1053E", ex.Message);
+            Assert.StartsWith("EL1053E", ex.Message, StringComparison.Ordinal);
         }
     }
 
@@ -295,7 +297,7 @@ public class IndexingTests
         }
         catch (EvaluationException ex)
         {
-            Assert.StartsWith("EL1053E", ex.Message);
+            Assert.StartsWith("EL1053E", ex.Message, StringComparison.Ordinal);
         }
     }
 

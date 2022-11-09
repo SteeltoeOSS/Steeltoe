@@ -18,7 +18,7 @@ public sealed class KubernetesConfigurationBuilderExtensionsTest
         const IConfigurationBuilder configurationBuilder = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddKubernetes());
-        Assert.Contains(nameof(configurationBuilder), ex.Message);
+        Assert.Contains(nameof(configurationBuilder), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

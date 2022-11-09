@@ -21,7 +21,7 @@ internal static class CloudFoundryOpenIdConnectConfigurer
         // make sure id has scopes
         foreach (string scope in scopes.Split(' '))
         {
-            if (!claimsId.Claims.Any(c => c.Type == "scope" && c.Value.Equals(scope)))
+            if (!claimsId.Claims.Any(c => c.Type == "scope" && c.Value == scope))
             {
                 claimsId.AddClaim(new Claim("scope", scope));
             }

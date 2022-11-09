@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Oracle.ManagedDataAccess.Client;
+using Steeltoe.Connector.Oracle;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Oracle.Test;
+namespace Steeltoe.Connector.Test.Oracle;
 
 public class OracleProviderConnectorFactoryTest
 {
@@ -17,7 +18,7 @@ public class OracleProviderConnectorFactoryTest
         const OracleServiceInfo si = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new OracleProviderConnectorFactory(si, options, typeof(OracleConnection)));
-        Assert.Contains(nameof(options), ex.Message);
+        Assert.Contains(nameof(options), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

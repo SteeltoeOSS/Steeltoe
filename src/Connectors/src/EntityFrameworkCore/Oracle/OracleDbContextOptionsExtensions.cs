@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.EntityFrameworkCore;
+using Steeltoe.Connector.Oracle;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Connector.Oracle.EntityFrameworkCore;
+namespace Steeltoe.Connector.EntityFrameworkCore.Oracle;
 
 public static class OracleDbContextOptionsExtensions
 {

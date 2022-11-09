@@ -10,13 +10,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Logging;
+using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Loggers;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Loggers.Test;
+namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
 public class EndpointMiddlewareTest : BaseTest
 {
@@ -162,7 +162,9 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.False(options.ExactMatch);
         Assert.Equal("/actuator/loggers/{**_}", options.GetContextPath(new ActuatorManagementOptions()));
         Assert.Equal("/cloudfoundryapplication/loggers/{**_}", options.GetContextPath(new CloudFoundryManagementOptions()));
-        Assert.Collection(options.AllowedVerbs, verb => Assert.Contains("Get", verb), verb => Assert.Contains("Post", verb));
+
+        Assert.Collection(options.AllowedVerbs, verb => Assert.Contains("Get", verb, StringComparison.Ordinal),
+            verb => Assert.Contains("Post", verb, StringComparison.Ordinal));
     }
 
     [Fact]

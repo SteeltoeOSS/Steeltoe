@@ -32,8 +32,8 @@ public class TestServerCertificateStartup
 
         app.Run(async context =>
         {
-            AuthorizationResult authorizationResult =
-                await authorizationService.AuthorizeAsync(context.User, null, context.Request.Path.Value.Replace("/", string.Empty));
+            AuthorizationResult authorizationResult = await authorizationService.AuthorizeAsync(context.User, null,
+                context.Request.Path.Value.Replace("/", string.Empty, StringComparison.Ordinal));
 
             if (!authorizationResult.Succeeded)
             {

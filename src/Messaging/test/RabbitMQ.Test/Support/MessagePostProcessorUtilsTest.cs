@@ -5,9 +5,10 @@
 using Steeltoe.Common.Order;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Support;
 
 public class MessagePostProcessorUtilsTest
 {

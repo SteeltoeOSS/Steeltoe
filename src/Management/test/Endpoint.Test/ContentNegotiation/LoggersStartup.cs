@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Loggers;
 
-namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
+namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
 public class LoggersStartup
 {

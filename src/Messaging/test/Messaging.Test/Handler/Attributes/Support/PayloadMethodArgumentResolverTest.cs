@@ -6,10 +6,12 @@ using System.Globalization;
 using System.Reflection;
 using System.Text;
 using Steeltoe.Messaging.Converter;
+using Steeltoe.Messaging.Handler.Attributes;
+using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
+namespace Steeltoe.Messaging.Test.Handler.Attributes.Support;
 
 public class PayloadMethodArgumentResolverTest
 {
@@ -90,7 +92,7 @@ public class PayloadMethodArgumentResolverTest
     {
         IMessage notEmptyMessage = MessageBuilder.WithPayload(123).Build();
         var ex = Assert.Throws<MessageConversionException>(() => _resolver.ResolveArgument(_paramAnnotatedRequired, notEmptyMessage));
-        Assert.Contains("Cannot convert", ex.Message);
+        Assert.Contains("Cannot convert", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

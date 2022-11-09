@@ -35,8 +35,8 @@ public class SqlServerDbContextConnectorFactory : SqlServerProviderConnectorFact
 
         if (result == null)
         {
-            throw new ConnectorException(string.Format("Unable to create instance of '{0}', are you missing 'public {0}(string connectionString)' constructor",
-                ConnectorType));
+            throw new ConnectorException(
+                $"Unable to create instance of '{ConnectorType}', are you missing 'public {ConnectorType}(string connectionString)' constructor");
         }
 
         return result;

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Xunit;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
+namespace Steeltoe.Logging.DynamicSerilog.Test;
 
 public class SerilogDynamicLoggingBuilderTest
 {
@@ -68,7 +68,9 @@ public class SerilogDynamicLoggingBuilderTest
         // change the log level and confirm it worked
         var provider = services.GetRequiredService(typeof(ILoggerProvider)) as SerilogDynamicProvider;
         provider.SetLogLevel("A.B.C.D", LogLevel.Trace);
-        IEnumerable<LogLevel> levels = provider.GetLoggerConfigurations().Where(c => c.Name.StartsWith("A.B.C.D")).Select(x => x.EffectiveLevel);
+
+        IEnumerable<LogLevel> levels = provider.GetLoggerConfigurations().Where(c => c.Name.StartsWith("A.B.C.D", StringComparison.Ordinal))
+            .Select(x => x.EffectiveLevel);
 
         Assert.NotNull(levels);
         Assert.True(levels.All(x => x == LogLevel.Trace));

@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Contexts;
+namespace Steeltoe.Common.Expression.Test.Contexts;
 
 public class DictionaryAccessorTests
 {
@@ -27,7 +29,7 @@ public class DictionaryAccessorTests
         // assertThat(ex.getValue(sec, testMap)).isEqualTo("bar");
 
         // compound expression
-        ex = sep.ParseExpression("foo.ToUpper()");
+        ex = sep.ParseExpression("foo.ToUpperInvariant()");
         Assert.Equal("BAR", ex.GetValue(sec, testMap));
 
         // assertThat(SpelCompiler.compile(ex)).isTrue();
@@ -35,7 +37,7 @@ public class DictionaryAccessorTests
 
         // nested map
         Dictionary<string, Dictionary<string, object>> nestedMap = GetNestedTestDictionary();
-        ex = sep.ParseExpression("aaa.foo.ToUpper()");
+        ex = sep.ParseExpression("aaa.foo.ToUpperInvariant()");
         Assert.Equal("BAR", ex.GetValue(sec, nestedMap));
 
         // assertThat(SpelCompiler.compile(ex)).isTrue();

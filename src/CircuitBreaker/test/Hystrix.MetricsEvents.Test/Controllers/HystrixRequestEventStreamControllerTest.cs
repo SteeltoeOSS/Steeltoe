@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
-using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
+using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test.Controllers;
 
 public class HystrixRequestEventStreamControllerTest : HystrixTestBase
 {
@@ -67,7 +67,7 @@ public class HystrixRequestEventStreamControllerTest : HystrixTestBase
         reader.Dispose();
 
         Assert.False(string.IsNullOrEmpty(data));
-        Assert.StartsWith("data: ", data);
+        Assert.StartsWith("data: ", data, StringComparison.Ordinal);
         string jsonObject = data.Substring(6);
         var list = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonObject);
         Assert.NotNull(list);

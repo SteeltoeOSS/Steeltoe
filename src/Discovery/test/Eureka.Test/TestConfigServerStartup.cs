@@ -26,7 +26,7 @@ public class TestConfigServerStartup
     {
         app.Run(async context =>
         {
-            if (!string.IsNullOrEmpty(Host) && !Host.Equals(context.Request.Host.Value))
+            if (!string.IsNullOrEmpty(Host) && Host != context.Request.Host.Value)
             {
                 context.Response.StatusCode = 500;
                 return;

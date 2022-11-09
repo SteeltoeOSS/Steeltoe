@@ -220,11 +220,11 @@ public class GenericConversionService : IConversionService, IConverterRegistry
 
         public int CompareTo(ConverterCacheKey other)
         {
-            int result = _sourceType.ToString().CompareTo(other._sourceType.ToString());
+            int result = string.Compare(_sourceType.ToString(), other._sourceType.ToString(), StringComparison.Ordinal);
 
             if (result == 0)
             {
-                result = _targetType.ToString().CompareTo(other._targetType.ToString());
+                result = string.Compare(_targetType.ToString(), other._targetType.ToString(), StringComparison.Ordinal);
             }
 
             return result;

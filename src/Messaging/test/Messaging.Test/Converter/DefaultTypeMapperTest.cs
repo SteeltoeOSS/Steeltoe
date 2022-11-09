@@ -2,10 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Converter;
+namespace Steeltoe.Messaging.Test.Converter;
 
 public class DefaultTypeMapperTest
 {
@@ -72,7 +73,7 @@ public class DefaultTypeMapperTest
         MessageHeaderAccessor accessor = MessageHeaderAccessor.GetMutableAccessor(_headers);
         accessor.SetHeader(_typeMapper.ClassIdFieldName, typeof(List<>).FullName);
         var exception = Assert.Throws<MessageConversionException>(() => _typeMapper.ToType(accessor.MessageHeaders));
-        Assert.Contains("Could not resolve ", exception.Message);
+        Assert.Contains("Could not resolve ", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -124,7 +125,7 @@ public class DefaultTypeMapperTest
         accessor.SetHeader(_typeMapper.KeyClassIdFieldName, typeof(string).ToString());
 
         var exception = Assert.Throws<MessageConversionException>(() => _typeMapper.ToType(accessor.MessageHeaders));
-        Assert.Contains("Could not resolve ", exception.Message);
+        Assert.Contains("Could not resolve ", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]

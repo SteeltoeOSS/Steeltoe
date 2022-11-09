@@ -13,11 +13,12 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Host;
+using Steeltoe.Messaging.RabbitMQ.Listener;
 using Xunit;
 using RC = RabbitMQ.Client;
 using SimpleMessageConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter.SimpleMessageConverter;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
 [Trait("Category", "Integration")]
 public sealed class ContainerInitializationTest : AbstractTest, IDisposable
@@ -45,7 +46,7 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
         catch (LifecycleException le)
         {
             Assert.IsType<InvalidOperationException>(le.InnerException.InnerException);
-            Assert.Contains("mismatchedQueuesFatal", le.InnerException.InnerException.Message);
+            Assert.Contains("mismatchedQueuesFatal", le.InnerException.InnerException.Message, StringComparison.Ordinal);
         }
     }
 
@@ -68,7 +69,7 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
         catch (LifecycleException le)
         {
             Assert.IsType<InvalidOperationException>(le.InnerException.InnerException);
-            Assert.Contains("mismatchedQueuesFatal", le.InnerException.InnerException.Message);
+            Assert.Contains("mismatchedQueuesFatal", le.InnerException.InnerException.Message, StringComparison.Ordinal);
         }
     }
 

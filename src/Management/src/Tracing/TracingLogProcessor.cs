@@ -4,8 +4,8 @@
 
 using System.Text;
 using OpenTelemetry.Trace;
-using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.OpenTelemetry.Trace;
+using Steeltoe.Common;
+using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Tracing;
 

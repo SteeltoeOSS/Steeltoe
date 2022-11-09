@@ -72,7 +72,7 @@ public static class EndPointExtensions
 
     public static IManagementOptions OptionsForContext(this IEnumerable<IManagementOptions> managementOptions, string requestPath, ILogger logger = null)
     {
-        IManagementOptions match = managementOptions.FirstOrDefault(option => requestPath.StartsWith(option.Path));
+        IManagementOptions match = managementOptions.FirstOrDefault(option => requestPath.StartsWith(option.Path, StringComparison.Ordinal));
 
         if (match != null)
         {
@@ -100,18 +100,18 @@ public static class EndPointExtensions
     {
         string contextPath = managementOptions.Path;
 
-        if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(options.Path))
+        if (!contextPath.EndsWith('/') && !string.IsNullOrEmpty(options.Path))
         {
-            contextPath += "/";
+            contextPath += '/';
         }
 
         contextPath += options.Path;
 
         if (!options.ExactMatch)
         {
-            if (!contextPath.EndsWith("/"))
+            if (!contextPath.EndsWith('/'))
             {
-                contextPath += "/";
+                contextPath += '/';
             }
 
             contextPath += "{**_}";

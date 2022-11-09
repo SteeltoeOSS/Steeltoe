@@ -4,9 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.Redis;
 using Xunit;
 
-namespace Steeltoe.Connector.Redis.Test;
+namespace Steeltoe.Connector.Test.Redis;
 
 [Collection("Redis")]
 public class RedisCacheConnectorOptionsTest
@@ -17,7 +18,7 @@ public class RedisCacheConnectorOptionsTest
         const IConfiguration configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new RedisCacheConnectorOptions(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

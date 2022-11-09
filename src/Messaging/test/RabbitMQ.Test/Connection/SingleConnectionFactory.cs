@@ -4,9 +4,10 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
+using Steeltoe.Messaging.RabbitMQ.Connection;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
 public class SingleConnectionFactory : AbstractConnectionFactory
 {

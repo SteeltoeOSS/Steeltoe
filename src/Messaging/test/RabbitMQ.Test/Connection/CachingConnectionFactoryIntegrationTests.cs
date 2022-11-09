@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging.RabbitMQ.Configuration;
+using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
@@ -10,7 +11,7 @@ using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
 [Trait("Category", "Integration")]
 public sealed class CachingConnectionFactoryIntegrationTests : IDisposable
@@ -322,7 +323,7 @@ public sealed class CachingConnectionFactoryIntegrationTests : IDisposable
     {
         var connection = _connectionFactory.CreateConnection() as ChannelCachingConnectionProxy;
         RC.IConnection rabbitConnection = connection.Target.Connection;
-        Assert.StartsWith(CFIntegrationConnectionName, rabbitConnection.ClientProvidedName);
+        Assert.StartsWith(CFIntegrationConnectionName, rabbitConnection.ClientProvidedName, StringComparison.Ordinal);
     }
 
     [Fact]

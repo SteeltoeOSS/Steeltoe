@@ -5,10 +5,10 @@
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Health;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Health.Test;
+namespace Steeltoe.Management.Endpoint.Test.Health;
 
 public class HealthEndpointOptionsTest : BaseTest
 {

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Xunit;
 
-namespace Steeltoe.Extensions.Logging.DynamicLogger.Test;
+namespace Steeltoe.Logging.DynamicLogger.Test;
 
 public class DynamicLoggerHostBuilderExtensionsTest
 {

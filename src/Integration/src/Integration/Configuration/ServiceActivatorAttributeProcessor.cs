@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Attributes;
@@ -158,7 +159,7 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
 
                 if (!string.IsNullOrEmpty(phase))
                 {
-                    endpoint.Phase = int.Parse(phase);
+                    endpoint.Phase = int.Parse(phase, CultureInfo.InvariantCulture);
                 }
             }
         }

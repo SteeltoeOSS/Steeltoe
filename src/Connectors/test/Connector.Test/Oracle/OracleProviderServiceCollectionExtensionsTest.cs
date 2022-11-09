@@ -6,9 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.Oracle;
 using Xunit;
 
-namespace Steeltoe.Connector.Oracle.Test;
+namespace Steeltoe.Connector.Test.Oracle;
 
 public class OracleProviderServiceCollectionExtensionsTest
 {
@@ -19,10 +20,10 @@ public class OracleProviderServiceCollectionExtensionsTest
         const IConfigurationRoot configurationRoot = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddOracleConnection(configurationRoot));
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddOracleConnection(configurationRoot, "foobar"));
-        Assert.Contains(nameof(services), ex2.Message);
+        Assert.Contains(nameof(services), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -32,10 +33,10 @@ public class OracleProviderServiceCollectionExtensionsTest
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddOracleConnection(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddOracleConnection(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -46,7 +47,7 @@ public class OracleProviderServiceCollectionExtensionsTest
         const string serviceName = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddOracleConnection(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex.Message);
+        Assert.Contains(nameof(serviceName), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

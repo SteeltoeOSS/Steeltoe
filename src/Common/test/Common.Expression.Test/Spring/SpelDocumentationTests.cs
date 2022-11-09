@@ -4,12 +4,13 @@
 
 using System.Reflection;
 using System.Text;
+using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Expression.Internal.Spring.TestResources;
+using Steeltoe.Common.Expression.Test.Spring.TestResources;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public class SpelDocumentationTests : AbstractExpressionTests
 {
@@ -38,7 +39,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     [Fact]
     public void TestMethodInvocation()
     {
-        Evaluate("'Hello World'.ToUpper()", "HELLO WORLD", typeof(string));
+        Evaluate("'Hello World'.ToUpperInvariant()", "HELLO WORLD", typeof(string));
     }
 
     [Fact]
@@ -86,7 +87,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     [Fact]
     public void TestXmlBasedConfig()
     {
-        Evaluate("(new Random().Next() * 100.0)>0", true, typeof(bool));
+        Evaluate("(T(Random).Shared.Next() * 100.0)>0", true, typeof(bool));
     }
 
     // Section 7.5
@@ -350,15 +351,12 @@ public class SpelDocumentationTests : AbstractExpressionTests
         var societyContext = new StandardEvaluationContext();
         societyContext.SetRootObject(new InstituteOfElectricalAndElectronicsEngineers());
 
-        var einstein = Parser
-            .ParseExpression("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Inventor('Albert Einstein',new DateTime(1879, 3, 14), 'German')")
-            .GetValue<Inventor>();
+        var einstein = Parser.ParseExpression($"new {typeof(Inventor).FullName}('Albert Einstein',new DateTime(1879, 3, 14), 'German')").GetValue<Inventor>();
 
         Assert.Equal("Albert Einstein", einstein.Name);
 
         // create new inventor instance within add method of List
-        Parser.ParseExpression("Members2.Add(new Steeltoe.Common.Expression.Internal.Spring.TestResources.Inventor('Albert Einstein', 'German'))")
-            .GetValue(societyContext);
+        Parser.ParseExpression($"Members2.Add(new {typeof(Inventor).FullName}('Albert Einstein', 'German'))").GetValue(societyContext);
     }
 
     // 7.5.8
@@ -453,8 +451,8 @@ public class SpelDocumentationTests : AbstractExpressionTests
     [Fact]
     public void TestTemplating()
     {
-        string randomPhrase = Parser.ParseExpression("random number is ${new Random().Next()}", new TemplatedParserContext()).GetValue<string>();
-        Assert.StartsWith("random number", randomPhrase);
+        string randomPhrase = Parser.ParseExpression("random number is ${T(Random).Shared.Next()}", new TemplatedParserContext()).GetValue<string>();
+        Assert.StartsWith("random number", randomPhrase, StringComparison.Ordinal);
     }
 
     public static class StringUtils

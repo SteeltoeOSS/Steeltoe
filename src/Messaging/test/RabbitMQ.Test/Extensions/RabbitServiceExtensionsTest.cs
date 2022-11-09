@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,12 +14,13 @@ using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using Xunit;
 using SimpleMessageConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter.SimpleMessageConverter;
 
-namespace Steeltoe.Messaging.RabbitMQ.Extensions;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Extensions;
 
 public class RabbitServiceExtensionsTest
 {
@@ -523,7 +525,7 @@ public class RabbitServiceExtensionsTest
         RabbitOptions rabbitOptions = provider.GetService<IOptions<RabbitOptions>>().Value;
 
         Assert.Equal(appsettings[hostPrefix], rabbitOptions.Host);
-        Assert.Equal(appsettings[portPrefix], rabbitOptions.Port.ToString());
+        Assert.Equal(appsettings[portPrefix], rabbitOptions.Port.ToString(CultureInfo.InvariantCulture));
         Assert.Equal(appsettings[usernamePrefix], rabbitOptions.Username);
         Assert.Equal(appsettings[passwordPrefix], rabbitOptions.Password);
     }

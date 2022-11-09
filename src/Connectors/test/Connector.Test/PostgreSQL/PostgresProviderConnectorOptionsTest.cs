@@ -4,9 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.PostgreSql;
 using Xunit;
 
-namespace Steeltoe.Connector.PostgreSql.Test;
+namespace Steeltoe.Connector.Test.PostgreSQL;
 
 public class PostgresProviderConnectorOptionsTest
 {
@@ -16,7 +17,7 @@ public class PostgresProviderConnectorOptionsTest
         const IConfiguration configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new PostgresProviderConnectorOptions(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -58,7 +59,7 @@ public class PostgresProviderConnectorOptionsTest
 
         var options = new PostgresProviderConnectorOptions(configurationRoot);
 
-        Assert.StartsWith(appsettings["postgres:client:ConnectionString"], options.ToString());
+        Assert.StartsWith(appsettings["postgres:client:ConnectionString"], options.ToString(), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -134,7 +135,7 @@ public class PostgresProviderConnectorOptionsTest
 
         var options = new PostgresProviderConnectorOptions(configurationRoot);
 
-        Assert.DoesNotContain(appsettings["postgres:client:ConnectionString"], options.ToString());
-        Assert.EndsWith($"Search Path={options.SearchPath};", options.ToString());
+        Assert.DoesNotContain(appsettings["postgres:client:ConnectionString"], options.ToString(), StringComparison.Ordinal);
+        Assert.EndsWith($"Search Path={options.SearchPath};", options.ToString(), StringComparison.Ordinal);
     }
 }

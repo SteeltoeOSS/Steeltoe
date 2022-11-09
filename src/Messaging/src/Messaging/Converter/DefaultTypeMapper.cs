@@ -56,7 +56,7 @@ public class DefaultTypeMapper : AbstractTypeMapper, ITypeMapper
 
     public Type GetInferredType(IMessageHeaders headers)
     {
-        if (HasInferredTypeHeader(headers) && Precedence.Equals(TypePrecedence.Inferred))
+        if (HasInferredTypeHeader(headers) && Precedence == TypePrecedence.Inferred)
         {
             return FromInferredTypeHeader(headers);
         }

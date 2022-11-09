@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.HeapDump;
 
-namespace Steeltoe.Management.Endpoint.HeapDump.Test;
+namespace Steeltoe.Management.Endpoint.Test.HeapDump;
 
 public class Startup
 {

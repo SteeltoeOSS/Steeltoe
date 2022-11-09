@@ -4,10 +4,12 @@
 
 using System.Collections;
 using System.Reflection;
+using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Support;
+namespace Steeltoe.Common.Expression.Test.Spring.Support;
 
 public class ReflectionHelperTests : AbstractExpressionTests
 {
@@ -39,8 +41,8 @@ public class ReflectionHelperTests : AbstractExpressionTests
         //        CompoundExpression  value:2
         //          IntLiteral  value:2
         //      ===> Expression '3+4+5+6+7-2' - AST end
-        Assert.Contains("===> Expression '3+4+5+6+7-2' - AST start", s);
-        Assert.Contains(" OpPlus  value:((((3 + 4) + 5) + 6) + 7)  #children:2", s);
+        Assert.Contains("===> Expression '3+4+5+6+7-2' - AST start", s, StringComparison.Ordinal);
+        Assert.Contains(" OpPlus  value:((((3 + 4) + 5) + 6) + 7)  #children:2", s, StringComparison.Ordinal);
     }
 
     [Fact]

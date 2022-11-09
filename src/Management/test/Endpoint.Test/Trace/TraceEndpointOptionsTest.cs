@@ -4,10 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Trace.Test;
+namespace Steeltoe.Management.Endpoint.Test.Trace;
 
 public class TraceEndpointOptionsTest : BaseTest
 {

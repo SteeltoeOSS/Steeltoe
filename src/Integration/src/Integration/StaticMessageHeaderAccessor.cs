@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Acks;
 using Steeltoe.Messaging;
@@ -31,7 +32,7 @@ public static class StaticMessageHeaderAccessor
             return null;
         }
 
-        return value is long longValue ? longValue : long.Parse(value.ToString());
+        return value is long longValue ? longValue : long.Parse(value.ToString(), CultureInfo.InvariantCulture);
     }
 
     public static MimeType GetContentType(IMessage message)
@@ -55,25 +56,25 @@ public static class StaticMessageHeaderAccessor
             return null;
         }
 
-        return value is long longValue ? longValue : long.Parse(value.ToString());
+        return value is long longValue ? longValue : long.Parse(value.ToString(), CultureInfo.InvariantCulture);
     }
 
     public static int? GetSequenceNumber(IMessage message)
     {
         message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out object value);
-        return value != null ? int.Parse(value.ToString()) : null;
+        return value != null ? int.Parse(value.ToString(), CultureInfo.InvariantCulture) : null;
     }
 
     public static int? GetSequenceSize(IMessage message)
     {
         message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceSize, out object value);
-        return value != null ? int.Parse(value.ToString()) : null;
+        return value != null ? int.Parse(value.ToString(), CultureInfo.InvariantCulture) : null;
     }
 
     public static int? GetPriority(IMessage message)
     {
         message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.Priority, out object value);
-        return value != null ? int.Parse(value.ToString()) : null;
+        return value != null ? int.Parse(value.ToString(), CultureInfo.InvariantCulture) : null;
     }
 
     public static IAcknowledgmentCallback GetAcknowledgmentCallback(IMessage message)

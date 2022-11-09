@@ -2,11 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Text;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public class ArrayConstructorTests : AbstractExpressionTests
 {
@@ -186,7 +189,7 @@ public class ArrayConstructorTests : AbstractExpressionTests
                     s.Append(',');
                 }
 
-                s.Append(dArray[i].ToString("F1"));
+                s.Append(dArray[i].ToString("F1", CultureInfo.InvariantCulture));
             }
         }
         else if (o is float[] fArray)
@@ -198,7 +201,7 @@ public class ArrayConstructorTests : AbstractExpressionTests
                     s.Append(',');
                 }
 
-                s.Append(fArray[i].ToString("F1"));
+                s.Append(fArray[i].ToString("F1", CultureInfo.InvariantCulture));
             }
         }
         else if (o is byte[] byArray)

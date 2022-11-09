@@ -83,7 +83,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
 
         PostProcessOutputChannel(subscribableChannel, producerOptions);
 
-        var sendingHandler = new SendingHandler(ApplicationContext, producerMessageHandler, HeaderMode.EmbeddedHeaders.Equals(producerOptions.HeaderMode),
+        var sendingHandler = new SendingHandler(ApplicationContext, producerMessageHandler, producerOptions.HeaderMode == HeaderMode.EmbeddedHeaders,
             HeadersToEmbed, UseNativeEncoding(producerOptions));
 
         sendingHandler.Initialize();

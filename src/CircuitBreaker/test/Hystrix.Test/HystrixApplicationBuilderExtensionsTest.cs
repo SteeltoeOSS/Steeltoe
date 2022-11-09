@@ -15,6 +15,6 @@ public class HystrixApplicationBuilderExtensionsTest
         const IApplicationBuilder builder = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => builder.UseHystrixRequestContext());
-        Assert.Contains(nameof(builder), ex.Message);
+        Assert.Contains(nameof(builder), ex.Message, StringComparison.Ordinal);
     }
 }

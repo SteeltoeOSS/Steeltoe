@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
+using Steeltoe.Connector.OAuth;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.OAuth.Test;
+namespace Steeltoe.Connector.Test.OAuth;
 
 public class OAuthConnectorFactoryTest
 {

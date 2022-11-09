@@ -7,12 +7,12 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Management.Endpoint.DbMigrations.Test;
+namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 
 public class DbMigrationsEndpointTests : BaseTest
 {

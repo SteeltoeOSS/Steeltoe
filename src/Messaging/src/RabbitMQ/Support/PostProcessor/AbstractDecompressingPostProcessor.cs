@@ -48,7 +48,7 @@ public abstract class AbstractDecompressingPostProcessor : IMessagePostProcessor
                     encoding = encoding.Substring(0, colonAt);
                 }
 
-                if (!GetEncoding().Equals(encoding))
+                if (GetEncoding() != encoding)
                 {
                     throw new InvalidOperationException($"Content encoding must be:{GetEncoding()}, was:{encoding}");
                 }

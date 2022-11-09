@@ -27,7 +27,7 @@ public class Base64UrlNamingStrategy : INamingStrategy
     public string GenerateName()
     {
         var uuid = Guid.NewGuid();
-        string converted = Convert.ToBase64String(uuid.ToByteArray()).Replace('+', '-').Replace('/', '_').Replace("=", string.Empty);
+        string converted = Convert.ToBase64String(uuid.ToByteArray()).Replace('+', '-').Replace('/', '_').Replace("=", string.Empty, StringComparison.Ordinal);
         return Prefix + converted;
     }
 }

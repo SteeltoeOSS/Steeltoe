@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog;
+namespace Steeltoe.Logging.DynamicSerilog;
 
 public class SerilogDynamicLoggerFactory : ILoggerFactory
 {

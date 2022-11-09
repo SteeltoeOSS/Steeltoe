@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Discovery.Eureka.Test;
+using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.AppInfo.Test;
+namespace Steeltoe.Discovery.Eureka.Test.AppInfo;
 
 public class LeaseInfoTest : AbstractBaseTest
 {

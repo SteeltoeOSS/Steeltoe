@@ -68,7 +68,7 @@ public class JsonMessageConverter : AbstractMessageConverter
             string contentType = properties.ContentType();
 
             bool isDefault = AssumeSupportedContentType && contentType is null or RabbitHeaderAccessor.DefaultContentType;
-            bool isSupported = contentType != null && contentType.Contains(SupportedContentType.Subtype);
+            bool isSupported = contentType != null && contentType.Contains(SupportedContentType.Subtype, StringComparison.Ordinal);
 
             if (isDefault || isSupported)
             {

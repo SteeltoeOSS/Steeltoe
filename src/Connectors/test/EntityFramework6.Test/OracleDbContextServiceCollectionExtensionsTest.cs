@@ -5,10 +5,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.EntityFramework6;
+using Steeltoe.Connector.EntityFramework6.Oracle;
 using Xunit;
 
-namespace Steeltoe.Connector.Oracle.EntityFramework6.Test;
+namespace Steeltoe.Connector.EntityFramework6.Test;
 
 public class OracleDbContextServiceCollectionExtensionsTest
 {
@@ -19,10 +19,10 @@ public class OracleDbContextServiceCollectionExtensionsTest
         const IConfigurationRoot configurationRoot = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(configurationRoot));
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(configurationRoot, "foobar"));
-        Assert.Contains(nameof(services), ex2.Message);
+        Assert.Contains(nameof(services), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -32,10 +32,10 @@ public class OracleDbContextServiceCollectionExtensionsTest
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class OracleDbContextServiceCollectionExtensionsTest
         const string serviceName = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodOracleDbContext>(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex.Message);
+        Assert.Contains(nameof(serviceName), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

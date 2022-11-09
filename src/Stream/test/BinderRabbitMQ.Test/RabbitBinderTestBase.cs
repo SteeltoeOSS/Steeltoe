@@ -14,11 +14,13 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
+using Steeltoe.Stream.Binder.Rabbit;
 using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
+using Steeltoe.Stream.Binder.Test;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Stream.Binder.Rabbit;
+namespace Steeltoe.Stream.Binder.RabbitMQ.Test;
 
 public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitTestBinder, RabbitMessageChannelBinder>, IDisposable
 {
@@ -107,7 +109,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
         container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
 
         Assert.Equal(AcknowledgeMode.None, container.AcknowledgeMode);
-        Assert.StartsWith("foo.props.0", container.GetQueueNames()[0]);
+        Assert.StartsWith("foo.props.0", container.GetQueueNames()[0], StringComparison.Ordinal);
         Assert.False(container.IsChannelTransacted);
         Assert.Equal(2, container.ConsumersPerQueue);
         Assert.False(container.DefaultRequeueRejected);

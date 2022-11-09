@@ -7,9 +7,10 @@ using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Text;
+using Steeltoe.Common.Converter;
 using Xunit;
 
-namespace Steeltoe.Common.Converter.Test;
+namespace Steeltoe.Common.Test.Converter;
 
 public class DefaultConversionServiceTest
 {
@@ -902,8 +903,8 @@ public class DefaultConversionServiceTest
         };
 
         var result = ConversionService.Convert<StringCollection>(strings);
-        Assert.Contains("3", result[0]);
-        Assert.Contains("9", result[1]);
+        Assert.Contains("3", result[0], StringComparison.Ordinal);
+        Assert.Contains("9", result[1], StringComparison.Ordinal);
         Assert.Equal(2, result.Count);
     }
 
@@ -1154,7 +1155,7 @@ public class DefaultConversionServiceTest
                 return false;
             }
 
-            return _value.Equals(other._value);
+            return _value == other._value;
         }
 
         public override int GetHashCode()
@@ -1200,7 +1201,7 @@ public class DefaultConversionServiceTest
                 return false;
             }
 
-            return _value.Equals(ssn._value);
+            return _value == ssn._value;
         }
 
         public override int GetHashCode()

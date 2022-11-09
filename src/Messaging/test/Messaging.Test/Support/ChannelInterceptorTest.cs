@@ -4,9 +4,10 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
+using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Support.Test;
+namespace Steeltoe.Messaging.Test.Support;
 
 public class ChannelInterceptorTest
 {

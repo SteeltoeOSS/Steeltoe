@@ -5,7 +5,7 @@
 using Steeltoe.Common;
 using Xunit;
 
-namespace Steeltoe.Connector.Services.Test;
+namespace Steeltoe.Connector.Test.Services;
 
 public class ServiceInfoTest
 {
@@ -15,7 +15,7 @@ public class ServiceInfoTest
         const string id = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceInfo(id));
-        Assert.Contains(nameof(id), ex.Message);
+        Assert.Contains(nameof(id), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

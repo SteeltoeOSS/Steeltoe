@@ -4,9 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.CosmosDb;
 using Xunit;
 
-namespace Steeltoe.Connector.CosmosDb.Test;
+namespace Steeltoe.Connector.Test.CosmosDb;
 
 public class CosmosDbConnectorOptionsTest
 {
@@ -16,7 +17,7 @@ public class CosmosDbConnectorOptionsTest
         const IConfiguration configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorOptions(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

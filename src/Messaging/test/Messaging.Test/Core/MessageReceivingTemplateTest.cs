@@ -4,9 +4,10 @@
 
 using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Converter;
+using Steeltoe.Messaging.Core;
 using Xunit;
 
-namespace Steeltoe.Messaging.Core.Test;
+namespace Steeltoe.Messaging.Test.Core;
 
 public class MessageReceivingTemplateTest
 {
@@ -151,7 +152,7 @@ public class MessageReceivingTemplateTest
         }
         catch (MessageConversionException ex)
         {
-            Assert.Contains("payload", ex.Message);
+            Assert.Contains("payload", ex.Message, StringComparison.Ordinal);
             Assert.Same(expected, ex.FailedMessage);
         }
     }
@@ -170,7 +171,7 @@ public class MessageReceivingTemplateTest
         }
         catch (MessageConversionException ex)
         {
-            Assert.Contains("payload", ex.Message);
+            Assert.Contains("payload", ex.Message, StringComparison.Ordinal);
             Assert.Same(expected, ex.FailedMessage);
         }
     }

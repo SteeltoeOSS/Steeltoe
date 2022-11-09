@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.MySql.Test;
-using Steeltoe.Connector.Redis.Test;
 using Steeltoe.Connector.Services;
+using Steeltoe.Connector.Test.MySql;
+using Steeltoe.Connector.Test.Redis;
 using Xunit;
 
 namespace Steeltoe.Connector.Test;
@@ -39,7 +40,7 @@ public class ConfigurationExtensionsTest
         var si = infos.First() as RedisServiceInfo;
         Assert.Equal(RedisCacheTestHelpers.SingleServerAsDictionary["services:p-redis:0:credentials:host"], si.Host);
         Assert.Equal(RedisCacheTestHelpers.SingleServerAsDictionary["services:p-redis:0:credentials:password"], si.Password);
-        Assert.Equal(RedisCacheTestHelpers.SingleServerAsDictionary["services:p-redis:0:credentials:port"], si.Port.ToString());
+        Assert.Equal(RedisCacheTestHelpers.SingleServerAsDictionary["services:p-redis:0:credentials:port"], si.Port.ToString(CultureInfo.InvariantCulture));
     }
 
     [Fact]

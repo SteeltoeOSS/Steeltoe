@@ -6,9 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.PostgreSql;
 using Xunit;
 
-namespace Steeltoe.Connector.PostgreSql.Test;
+namespace Steeltoe.Connector.Test.PostgreSQL;
 
 /// <summary>
 /// Tests for the extension method that adds just the health check.
@@ -28,10 +29,10 @@ public class PostgreSqlServiceCollectionExtensionsTest
         const IConfigurationRoot configurationRoot = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresHealthContributor(configurationRoot));
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddPostgresHealthContributor(configurationRoot, "foobar"));
-        Assert.Contains(nameof(services), ex2.Message);
+        Assert.Contains(nameof(services), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -41,10 +42,10 @@ public class PostgreSqlServiceCollectionExtensionsTest
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresHealthContributor(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddPostgresHealthContributor(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -55,7 +56,7 @@ public class PostgreSqlServiceCollectionExtensionsTest
         const string serviceName = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddPostgresHealthContributor(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex.Message);
+        Assert.Contains(nameof(serviceName), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -77,7 +78,7 @@ public class PostgreSqlServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddPostgresHealthContributor(configurationRoot, "foobar"));
-        Assert.Contains("foobar", ex.Message);
+        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

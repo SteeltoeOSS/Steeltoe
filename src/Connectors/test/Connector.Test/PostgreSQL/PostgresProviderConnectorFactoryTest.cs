@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Npgsql;
+using Steeltoe.Connector.PostgreSql;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.PostgreSql.Test;
+namespace Steeltoe.Connector.Test.PostgreSQL;
 
 public class PostgresProviderConnectorFactoryTest
 {
@@ -17,7 +18,7 @@ public class PostgresProviderConnectorFactoryTest
         const PostgresServiceInfo si = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new PostgresProviderConnectorFactory(si, options, typeof(NpgsqlConnection)));
-        Assert.Contains(nameof(options), ex.Message);
+        Assert.Contains(nameof(options), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

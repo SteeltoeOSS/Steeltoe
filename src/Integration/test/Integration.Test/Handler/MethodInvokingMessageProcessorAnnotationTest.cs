@@ -8,12 +8,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal.Contexts;
+using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Integration.Handler;
+namespace Steeltoe.Integration.Test.Handler;
 
 public class MethodInvokingMessageProcessorAnnotationTest
 {
@@ -323,7 +324,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
             return num;
         }
 
-        public string HeadersWithExpressions([Header("emp.FirstName")] string firstName, [Header("emp.LastName.ToUpper()")] string lastName)
+        public string HeadersWithExpressions([Header("emp.FirstName")] string firstName, [Header("emp.LastName.ToUpperInvariant()")] string lastName)
         {
             return $"{lastName}, {firstName}";
         }
@@ -402,7 +403,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
 
         public string HeaderNameWithHyphen([Header("foo-bar")] string foobar)
         {
-            return foobar.ToUpper();
+            return foobar.ToUpperInvariant();
         }
 
         public string HeaderId(string payload, [Header("id")] string id)

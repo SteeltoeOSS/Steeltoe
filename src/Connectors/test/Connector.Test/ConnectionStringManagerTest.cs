@@ -5,17 +5,17 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connector.MongoDb;
-using Steeltoe.Connector.MongoDb.Test;
 using Steeltoe.Connector.MySql;
-using Steeltoe.Connector.MySql.Test;
 using Steeltoe.Connector.PostgreSql;
-using Steeltoe.Connector.PostgreSql.Test;
 using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Redis;
-using Steeltoe.Connector.Redis.Test;
 using Steeltoe.Connector.Services;
 using Steeltoe.Connector.SqlServer;
-using Steeltoe.Connector.SqlServer.Test;
+using Steeltoe.Connector.Test.MongoDb;
+using Steeltoe.Connector.Test.MySql;
+using Steeltoe.Connector.Test.PostgreSQL;
+using Steeltoe.Connector.Test.Redis;
+using Steeltoe.Connector.Test.SqlServer;
 using Xunit;
 
 namespace Steeltoe.Connector.Test;
@@ -176,7 +176,7 @@ public class ConnectionStringManagerTest
     {
         var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
         var exception = Assert.Throws<ConnectorException>(() => manager.GetByTypeName(value));
-        Assert.Contains(value, exception.Message);
+        Assert.Contains(value, exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -192,14 +192,14 @@ public class ConnectionStringManagerTest
         var sqlInfo = new SqlServerServiceInfo("id", "sqlserver://host");
         var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
 
-        Assert.StartsWith("CosmosDb", manager.GetFromServiceInfo(cosmosInfo).Name);
-        Assert.StartsWith("MongoDb", manager.GetFromServiceInfo(mongoInfo).Name);
-        Assert.StartsWith("MySql", manager.GetFromServiceInfo(mysqlInfo).Name);
-        Assert.StartsWith("Oracle", manager.GetFromServiceInfo(oracleInfo).Name);
-        Assert.StartsWith("Postgres", manager.GetFromServiceInfo(postgresInfo).Name);
-        Assert.StartsWith("RabbitMQ", manager.GetFromServiceInfo(rabbitMqInfo).Name);
-        Assert.StartsWith("Redis", manager.GetFromServiceInfo(redisInfo).Name);
-        Assert.StartsWith("SqlServer", manager.GetFromServiceInfo(sqlInfo).Name);
+        Assert.StartsWith("CosmosDb", manager.GetFromServiceInfo(cosmosInfo).Name, StringComparison.Ordinal);
+        Assert.StartsWith("MongoDb", manager.GetFromServiceInfo(mongoInfo).Name, StringComparison.Ordinal);
+        Assert.StartsWith("MySql", manager.GetFromServiceInfo(mysqlInfo).Name, StringComparison.Ordinal);
+        Assert.StartsWith("Oracle", manager.GetFromServiceInfo(oracleInfo).Name, StringComparison.Ordinal);
+        Assert.StartsWith("Postgres", manager.GetFromServiceInfo(postgresInfo).Name, StringComparison.Ordinal);
+        Assert.StartsWith("RabbitMQ", manager.GetFromServiceInfo(rabbitMqInfo).Name, StringComparison.Ordinal);
+        Assert.StartsWith("Redis", manager.GetFromServiceInfo(redisInfo).Name, StringComparison.Ordinal);
+        Assert.StartsWith("SqlServer", manager.GetFromServiceInfo(sqlInfo).Name, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -207,6 +207,6 @@ public class ConnectionStringManagerTest
     {
         var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
         var exception = Assert.Throws<ConnectorException>(() => manager.GetFromServiceInfo(new Db2ServiceInfo("id", "http://idk")));
-        Assert.Contains("Db2ServiceInfo", exception.Message);
+        Assert.Contains("Db2ServiceInfo", exception.Message, StringComparison.Ordinal);
     }
 }

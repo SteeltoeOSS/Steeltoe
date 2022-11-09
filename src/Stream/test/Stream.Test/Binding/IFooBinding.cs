@@ -5,7 +5,7 @@
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
 
-namespace Steeltoe.Stream.Binding;
+namespace Steeltoe.Stream.Test.Binding;
 
 public interface IFooBinding
 {

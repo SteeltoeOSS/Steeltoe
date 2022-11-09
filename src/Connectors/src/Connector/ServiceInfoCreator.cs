@@ -108,7 +108,7 @@ public class ServiceInfoCreator
         {
             var info = si as IServiceInfo;
 
-            if (info.Id.Equals(name))
+            if (info.Id == name)
             {
                 return (TServiceInfo)info;
             }
@@ -128,7 +128,7 @@ public class ServiceInfoCreator
     /// </returns>
     public IServiceInfo GetServiceInfo(string name)
     {
-        return ServiceInfos.FirstOrDefault(info => info.Id.Equals(name));
+        return ServiceInfos.FirstOrDefault(info => info.Id == name);
     }
 
     internal IServiceInfoFactory CreateServiceInfoFactory(IEnumerable<ConstructorInfo> declaredConstructors)

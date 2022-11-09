@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Consul;
+using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Xunit;
 
-namespace Steeltoe.Discovery.Consul.Discovery.Test;
+namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
 public class ThisServiceInstanceTest
 {

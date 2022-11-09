@@ -7,10 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Metrics;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Test;
+namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
 public class EndpointServiceCollectionExtensionsTest : BaseTest
 {
@@ -21,7 +21,7 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
         IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddMetricsActuator());
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
         Assert.Throws<InvalidOperationException>(() => services2.AddMetricsActuator());
     }
 
@@ -58,7 +58,7 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
     public void AddWavefront_ThrowsWhenNull()
     {
         var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddWavefrontMetrics(null));
-        Assert.Contains("services", ex.Message);
+        Assert.Contains("services", ex.Message, StringComparison.Ordinal);
     }
 
     private IConfiguration GetConfiguration()

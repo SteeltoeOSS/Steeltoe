@@ -542,7 +542,7 @@ internal sealed class Tokenizer
         // alternativeOperatorNames)
         if (_pos - start == 2 || _pos - start == 3)
         {
-            string asString = new string(subArray).ToUpper();
+            string asString = new string(subArray).ToUpperInvariant();
             int idx = Array.BinarySearch(AlternativeOperatorNames, asString);
 
             if (idx >= 0)

@@ -15,7 +15,7 @@ public class AbstractServiceConfigurationTest
         const IConfiguration configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceOptions(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

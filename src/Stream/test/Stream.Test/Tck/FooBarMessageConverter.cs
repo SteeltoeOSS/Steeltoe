@@ -7,7 +7,7 @@ using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 
-namespace Steeltoe.Stream.Tck;
+namespace Steeltoe.Stream.Test.Tck;
 
 public class FooBarMessageConverter : AbstractMessageConverter
 {

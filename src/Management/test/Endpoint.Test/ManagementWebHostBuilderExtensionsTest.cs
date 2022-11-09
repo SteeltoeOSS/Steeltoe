@@ -15,14 +15,13 @@ using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Extensions.Logging;
-using Steeltoe.Extensions.Logging.DynamicSerilog;
+using Steeltoe.Logging.DynamicLogger;
+using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Health.Test;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
@@ -31,6 +30,7 @@ using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Info;
@@ -191,9 +191,9 @@ public class ManagementWebHostBuilderExtensionsTest
         HttpResponseMessage livenessResult = await client.GetAsync("actuator/health/liveness");
         HttpResponseMessage readinessResult = await client.GetAsync("actuator/health/readiness");
         Assert.Equal(HttpStatusCode.OK, livenessResult.StatusCode);
-        Assert.Contains("\"LivenessState\":\"CORRECT\"", await livenessResult.Content.ReadAsStringAsync());
+        Assert.Contains("\"LivenessState\":\"CORRECT\"", await livenessResult.Content.ReadAsStringAsync(), StringComparison.Ordinal);
         Assert.Equal(HttpStatusCode.OK, readinessResult.StatusCode);
-        Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await readinessResult.Content.ReadAsStringAsync());
+        Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await readinessResult.Content.ReadAsStringAsync(), StringComparison.Ordinal);
 
         // confirm that the Readiness state will be changed to refusing traffic when ApplicationStopping fires
         var availability = host.Services.GetService<ApplicationAvailability>();
@@ -356,7 +356,7 @@ public class ManagementWebHostBuilderExtensionsTest
 
         var exception = Assert.Throws<InvalidOperationException>(() => hostBuilder.AddLoggersActuator().Start());
 
-        Assert.Contains("An IDynamicLoggerProvider has already been configured! Call 'AddDynamicSerilog' earlier", exception.Message);
+        Assert.Contains("An IDynamicLoggerProvider has already been configured! Call 'AddDynamicSerilog' earlier", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -692,11 +692,11 @@ public class ManagementWebHostBuilderExtensionsTest
 
             // Assert warning is printed to Console
             string output = unConsole.ToString();
-            Assert.Contains("Warning", output);
-            Assert.Contains("OpenTelemetry for Steeltoe", output);
+            Assert.Contains("Warning", output, StringComparison.Ordinal);
+            Assert.Contains("OpenTelemetry for Steeltoe", output, StringComparison.Ordinal);
 
             // Assert Otel configuration is respected
-            Assert.Contains("Export TestCounter, Meter: TestMeter", output);
+            Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
         }
     }
 
@@ -731,14 +731,14 @@ public class ManagementWebHostBuilderExtensionsTest
 
             // Assert warning is printed to Console
             string output = unConsole.ToString();
-            Assert.Contains("Warning", output);
-            Assert.Contains("OpenTelemetry for Steeltoe", output);
+            Assert.Contains("Warning", output, StringComparison.Ordinal);
+            Assert.Contains("OpenTelemetry for Steeltoe", output, StringComparison.Ordinal);
 
             // Assert Otel configuration is respected
-            Assert.Contains("Export TestCounter, Meter: TestMeter", output);
+            Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
 
             // Assert Steeltoe configuration is respected
-            Assert.Contains("Export clr.process.uptime", output);
+            Assert.Contains("Export clr.process.uptime", output, StringComparison.Ordinal);
         }
     }
 
@@ -773,11 +773,11 @@ public class ManagementWebHostBuilderExtensionsTest
 
             // Assert warning is not printed to Console
             string output = unConsole.ToString();
-            Assert.DoesNotContain("Warning", output);
-            Assert.DoesNotContain("OpenTelemetry for Steeltoe", output);
+            Assert.DoesNotContain("Warning", output, StringComparison.Ordinal);
+            Assert.DoesNotContain("OpenTelemetry for Steeltoe", output, StringComparison.Ordinal);
 
             // Assert Otel configuration is respected
-            Assert.Contains("Export TestCounter, Meter: TestMeter", output);
+            Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
         }
     }
 }

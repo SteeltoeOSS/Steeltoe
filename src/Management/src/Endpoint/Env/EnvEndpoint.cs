@@ -116,7 +116,7 @@ public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
 
             GetFullKeyNames(provider, surrogateKey, initialKeys);
 
-            if (!initialKeys.Any(k => k.StartsWith(surrogateKey)))
+            if (!initialKeys.Any(k => k.StartsWith(surrogateKey, StringComparison.Ordinal)))
             {
                 initialKeys.Add(surrogateKey);
             }

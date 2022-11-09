@@ -20,39 +20,39 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         const string servicesParameterName = "services";
 
         var ex = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(null, _groupKey, null));
-        Assert.Contains(servicesParameterName, ex.Message);
+        Assert.Contains(servicesParameterName, ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() =>
             HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(null, _groupKey, null));
 
-        Assert.Contains(servicesParameterName, ex2.Message);
+        Assert.Contains(servicesParameterName, ex2.Message, StringComparison.Ordinal);
         var ex3 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(null, stringKey, null));
-        Assert.Contains(servicesParameterName, ex3.Message);
+        Assert.Contains(servicesParameterName, ex3.Message, StringComparison.Ordinal);
 
         var ex4 = Assert.Throws<ArgumentNullException>(() =>
             HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(null, stringKey, null));
 
-        Assert.Contains(servicesParameterName, ex4.Message);
+        Assert.Contains(servicesParameterName, ex4.Message, StringComparison.Ordinal);
 
         var ex5 = Assert.Throws<ArgumentNullException>(() =>
             HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(null, _groupKey, _commandKey, null));
 
-        Assert.Contains(servicesParameterName, ex5.Message);
+        Assert.Contains(servicesParameterName, ex5.Message, StringComparison.Ordinal);
 
         var ex6 = Assert.Throws<ArgumentNullException>(() =>
             HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(null, _groupKey, _commandKey, null));
 
-        Assert.Contains(servicesParameterName, ex6.Message);
+        Assert.Contains(servicesParameterName, ex6.Message, StringComparison.Ordinal);
 
         var ex7 = Assert.Throws<ArgumentNullException>(() =>
             HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(null, stringKey, stringKey, null));
 
-        Assert.Contains(servicesParameterName, ex7.Message);
+        Assert.Contains(servicesParameterName, ex7.Message, StringComparison.Ordinal);
 
         var ex8 = Assert.Throws<ArgumentNullException>(() =>
             HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(null, stringKey, stringKey, null));
 
-        Assert.Contains(servicesParameterName, ex8.Message);
+        Assert.Contains(servicesParameterName, ex8.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -63,21 +63,21 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         const string groupKeyParameterName = "groupKey";
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>((IHystrixCommandGroupKey)null, null));
-        Assert.Contains(groupKeyParameterName, ex.Message);
+        Assert.Contains(groupKeyParameterName, ex.Message, StringComparison.Ordinal);
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>((IHystrixCommandGroupKey)null, null));
-        Assert.Contains(groupKeyParameterName, ex2.Message);
+        Assert.Contains(groupKeyParameterName, ex2.Message, StringComparison.Ordinal);
         var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>((string)null, null));
-        Assert.Contains(groupKeyParameterName, ex3.Message);
+        Assert.Contains(groupKeyParameterName, ex3.Message, StringComparison.Ordinal);
         var ex4 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>((string)null, null));
-        Assert.Contains(groupKeyParameterName, ex4.Message);
+        Assert.Contains(groupKeyParameterName, ex4.Message, StringComparison.Ordinal);
         var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(null, _commandKey, null));
-        Assert.Contains(groupKeyParameterName, ex5.Message);
+        Assert.Contains(groupKeyParameterName, ex5.Message, StringComparison.Ordinal);
         var ex6 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(null, _commandKey, null));
-        Assert.Contains(groupKeyParameterName, ex6.Message);
+        Assert.Contains(groupKeyParameterName, ex6.Message, StringComparison.Ordinal);
         var ex7 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(null, stringKey, null));
-        Assert.Contains(groupKeyParameterName, ex7.Message);
+        Assert.Contains(groupKeyParameterName, ex7.Message, StringComparison.Ordinal);
         var ex8 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(null, stringKey, null));
-        Assert.Contains(groupKeyParameterName, ex8.Message);
+        Assert.Contains(groupKeyParameterName, ex8.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -88,21 +88,21 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         const string configParameterName = "config";
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(_groupKey, null));
-        Assert.Contains(configParameterName, ex.Message);
+        Assert.Contains(configParameterName, ex.Message, StringComparison.Ordinal);
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(_groupKey, null));
-        Assert.Contains(configParameterName, ex2.Message);
+        Assert.Contains(configParameterName, ex2.Message, StringComparison.Ordinal);
         var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(stringKey, null));
-        Assert.Contains(configParameterName, ex3.Message);
+        Assert.Contains(configParameterName, ex3.Message, StringComparison.Ordinal);
         var ex4 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(stringKey, null));
-        Assert.Contains(configParameterName, ex4.Message);
+        Assert.Contains(configParameterName, ex4.Message, StringComparison.Ordinal);
         var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(_groupKey, _commandKey, null));
-        Assert.Contains(configParameterName, ex5.Message);
+        Assert.Contains(configParameterName, ex5.Message, StringComparison.Ordinal);
         var ex6 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(_groupKey, _commandKey, null));
-        Assert.Contains(configParameterName, ex6.Message);
+        Assert.Contains(configParameterName, ex6.Message, StringComparison.Ordinal);
         var ex7 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(stringKey, stringKey, null));
-        Assert.Contains(configParameterName, ex7.Message);
+        Assert.Contains(configParameterName, ex7.Message, StringComparison.Ordinal);
         var ex8 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(stringKey, stringKey, null));
-        Assert.Contains(configParameterName, ex8.Message);
+        Assert.Contains(configParameterName, ex8.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -113,13 +113,13 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         const string commandKeyParameterName = "commandKey";
 
         var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(_groupKey, null, null));
-        Assert.Contains(commandKeyParameterName, ex5.Message);
+        Assert.Contains(commandKeyParameterName, ex5.Message, StringComparison.Ordinal);
         var ex6 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(_groupKey, null, null));
-        Assert.Contains(commandKeyParameterName, ex6.Message);
+        Assert.Contains(commandKeyParameterName, ex6.Message, StringComparison.Ordinal);
         var ex7 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(stringKey, null, null));
-        Assert.Contains(commandKeyParameterName, ex7.Message);
+        Assert.Contains(commandKeyParameterName, ex7.Message, StringComparison.Ordinal);
         var ex8 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<IDummyCommand, DummyCommand>(stringKey, null, null));
-        Assert.Contains(commandKeyParameterName, ex8.Message);
+        Assert.Contains(commandKeyParameterName, ex8.Message, StringComparison.Ordinal);
     }
 
     [Fact]

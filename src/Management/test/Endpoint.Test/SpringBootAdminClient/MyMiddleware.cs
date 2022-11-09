@@ -5,7 +5,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 
-namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test;
+namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
 public class MyMiddleware : IMiddleware
 {
@@ -20,7 +20,7 @@ public class MyMiddleware : IMiddleware
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (context.Request.Path.Value.EndsWith("instances"))
+        if (context.Request.Path.Value.EndsWith("instances", StringComparison.Ordinal))
         {
             var dictionary = await JsonSerializer.DeserializeAsync<Dictionary<string, object>>(context.Request.Body);
             context.Response.Headers.Add("Content-Type", "application/json");

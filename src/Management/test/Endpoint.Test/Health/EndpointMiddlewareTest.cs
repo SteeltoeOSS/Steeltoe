@@ -11,13 +11,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Security;
-using Steeltoe.Management.Endpoint.Test;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Health.Test;
+namespace Steeltoe.Management.Endpoint.Test.Health;
 
 public class EndpointMiddlewareTest : BaseTest
 {
@@ -122,10 +122,10 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.NotNull(health);
         Assert.True(health.ContainsKey("status"));
         Assert.True(health.ContainsKey("details"));
-        Assert.Contains("diskSpace", health["details"].ToString());
+        Assert.Contains("diskSpace", health["details"].ToString(), StringComparison.Ordinal);
         Assert.True(health.ContainsKey("status"), "Health should contain key: status");
         Assert.True(health.ContainsKey("details"), "Health should contain key: details");
-        Assert.Contains("diskSpace", health["details"].ToString());
+        Assert.Contains("diskSpace", health["details"].ToString(), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -148,7 +148,7 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.NotNull(health);
         Assert.True(health.ContainsKey("status"), "Health should contain key: status");
         Assert.True(health.ContainsKey("details"), "Health should contain key: details");
-        Assert.Contains("diskSpace", health["details"].ToString());
+        Assert.Contains("diskSpace", health["details"].ToString(), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -176,8 +176,8 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.False(health.ContainsKey("details"), "Health should not contain key: details");
         Assert.True(health.ContainsKey("components"), "Health should contain key: components");
         string componentString = health["components"].ToString() ?? string.Empty;
-        Assert.Contains("diskSpace", componentString);
-        Assert.Contains("details", componentString);
+        Assert.Contains("diskSpace", componentString, StringComparison.Ordinal);
+        Assert.Contains("details", componentString, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -199,7 +199,7 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.NotNull(health);
         Assert.True(health.ContainsKey("status"));
         Assert.True(health.ContainsKey("details"));
-        Assert.Contains("diskSpace", health["details"].ToString());
+        Assert.Contains("diskSpace", health["details"].ToString(), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -238,7 +238,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             string json = await result.Content.ReadAsStringAsync();
             Assert.NotNull(json);
-            Assert.Contains("\"status\":\"UP\"", json);
+            Assert.Contains("\"status\":\"UP\"", json, StringComparison.Ordinal);
         }
 
         builder = new WebHostBuilder().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
@@ -254,7 +254,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Equal(HttpStatusCode.ServiceUnavailable, downResult.StatusCode);
             string downJson = await downResult.Content.ReadAsStringAsync();
             Assert.NotNull(downJson);
-            Assert.Contains("\"status\":\"DOWN\"", downJson);
+            Assert.Contains("\"status\":\"DOWN\"", downJson, StringComparison.Ordinal);
         }
 
         builder = new WebHostBuilder().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
@@ -270,7 +270,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Equal(HttpStatusCode.ServiceUnavailable, outResult.StatusCode);
             string outJson = await outResult.Content.ReadAsStringAsync();
             Assert.NotNull(outJson);
-            Assert.Contains("\"status\":\"OUT_OF_SERVICE\"", outJson);
+            Assert.Contains("\"status\":\"OUT_OF_SERVICE\"", outJson, StringComparison.Ordinal);
         }
 
         builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
@@ -286,7 +286,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
             string unknownJson = await unknownResult.Content.ReadAsStringAsync();
             Assert.NotNull(unknownJson);
-            Assert.Contains("\"status\":\"UNKNOWN\"", unknownJson);
+            Assert.Contains("\"status\":\"UNKNOWN\"", unknownJson, StringComparison.Ordinal);
         }
 
         builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
@@ -302,7 +302,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
             string unknownJson = await unknownResult.Content.ReadAsStringAsync();
             Assert.NotNull(unknownJson);
-            Assert.Contains("\"status\":\"UP\"", unknownJson);
+            Assert.Contains("\"status\":\"UP\"", unknownJson, StringComparison.Ordinal);
         }
 
         builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
@@ -319,7 +319,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Equal(HttpStatusCode.OK, downResult.StatusCode);
             string downJson = await downResult.Content.ReadAsStringAsync();
             Assert.NotNull(downJson);
-            Assert.Contains("\"status\":\"DOWN\"", downJson);
+            Assert.Contains("\"status\":\"DOWN\"", downJson, StringComparison.Ordinal);
         }
     }
 
@@ -338,7 +338,7 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
         string unknownJson = await unknownResult.Content.ReadAsStringAsync();
         Assert.NotNull(unknownJson);
-        Assert.Contains("\"status\":\"UP\"", unknownJson);
+        Assert.Contains("\"status\":\"UP\"", unknownJson, StringComparison.Ordinal);
     }
 
     [Fact]

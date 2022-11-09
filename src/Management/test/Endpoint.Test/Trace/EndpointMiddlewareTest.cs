@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Logging;
+using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Trace.Test;
+namespace Steeltoe.Management.Endpoint.Test.Trace;
 
 public class EndpointMiddlewareTest : BaseTest
 {

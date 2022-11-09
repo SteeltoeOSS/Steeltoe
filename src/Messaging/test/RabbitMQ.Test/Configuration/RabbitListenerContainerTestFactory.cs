@@ -5,7 +5,7 @@
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Configuration;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Configuration;
 
 internal class RabbitListenerContainerTestFactory : IRabbitListenerContainerFactory<MessageListenerTestContainer>
 {

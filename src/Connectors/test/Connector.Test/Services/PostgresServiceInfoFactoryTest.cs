@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Configuration;
+using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Services.Test;
+namespace Steeltoe.Connector.Test.Services;
 
 public class PostgresServiceInfoFactoryTest
 {

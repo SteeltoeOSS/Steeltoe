@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Http;
 using OpenTelemetry.Metrics;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Test;
+namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
 public class MetricsEndpointMiddlewareTest : BaseTest
 {

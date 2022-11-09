@@ -5,12 +5,12 @@
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
-using Steeltoe.CircuitBreaker.Hystrix.Test;
+using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.Common.Util;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.Strategy.Concurrency;
 
 public class HystrixConcurrencyStrategyTest : HystrixTestBase
 {

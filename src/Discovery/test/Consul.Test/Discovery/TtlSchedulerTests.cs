@@ -4,9 +4,10 @@
 
 using Consul;
 using Moq;
+using Steeltoe.Discovery.Consul.Discovery;
 using Xunit;
 
-namespace Steeltoe.Discovery.Consul.Discovery.Test;
+namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
 public class TtlSchedulerTests
 {

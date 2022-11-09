@@ -4,7 +4,7 @@
 
 #pragma warning disable S4004 // Collection properties should be readonly
 
-namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
+namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
 public class TestAddress
 {

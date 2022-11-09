@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Filter = System.Func<string, Microsoft.Extensions.Logging.LogLevel, bool>;
 
-namespace Steeltoe.Extensions.Logging;
+namespace Steeltoe.Logging;
 
 public class DynamicLoggerProviderBase : IDynamicLoggerProvider
 {
@@ -139,15 +139,15 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
         else
         {
             // if setting filter level on a namespace (not actual logger) that hasn't previously been configured
-            if (!_runningFilters.Any(entry => entry.Key.Equals(category)) && filter != null)
+            if (!_runningFilters.Any(entry => entry.Key == category) && filter != null)
             {
                 _runningFilters.TryAdd(category, filter);
             }
 
             // update the filter dictionary first so that loggers can inherit changes when we reset
-            if (_runningFilters.Any(entry => entry.Key.StartsWith(category)))
+            if (_runningFilters.Any(entry => entry.Key.StartsWith(category, StringComparison.Ordinal)))
             {
-                foreach (KeyValuePair<string, Filter> runningFilter in _runningFilters.Where(entry => entry.Key.StartsWith(category)))
+                foreach (KeyValuePair<string, Filter> runningFilter in _runningFilters.Where(entry => entry.Key.StartsWith(category, StringComparison.Ordinal)))
                 {
                     if (filter != null)
                     {
@@ -168,7 +168,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
             }
 
             // update existing loggers under this category, or reset them to what they inherit
-            foreach (KeyValuePair<string, MessageProcessingLogger> l in _loggers.Where(s => s.Key.StartsWith(category)))
+            foreach (KeyValuePair<string, MessageProcessingLogger> l in _loggers.Where(s => s.Key.StartsWith(category, StringComparison.Ordinal)))
             {
                 l.Value.Filter = filter ?? GetFilter(category);
             }

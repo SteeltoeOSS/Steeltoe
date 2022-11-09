@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Configuration;
 using Xunit;
 
-namespace Steeltoe.Common.Configuration.Test;
+namespace Steeltoe.Common.Test.Configuration;
 
 public class ConfigurationValuesHelperTest
 {

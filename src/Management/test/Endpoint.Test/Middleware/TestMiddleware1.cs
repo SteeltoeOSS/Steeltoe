@@ -3,8 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.Middleware;
 
-namespace Steeltoe.Management.Endpoint.Middleware.Test;
+namespace Steeltoe.Management.Endpoint.Test.Middleware;
 
 internal sealed class TestMiddleware1 : EndpointMiddleware<string>
 {

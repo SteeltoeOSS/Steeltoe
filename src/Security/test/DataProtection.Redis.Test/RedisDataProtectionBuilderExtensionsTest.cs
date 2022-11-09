@@ -15,6 +15,6 @@ public class RedisDataProtectionBuilderExtensionsTest
         const IDataProtectionBuilder builder = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => builder.PersistKeysToRedis());
-        Assert.Contains(nameof(builder), ex.Message);
+        Assert.Contains(nameof(builder), ex.Message, StringComparison.Ordinal);
     }
 }

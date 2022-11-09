@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Info;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Info.Test;
+namespace Steeltoe.Management.Endpoint.Test.Info;
 
 public class InfoEndpointOptionsTest : BaseTest
 {

@@ -5,7 +5,7 @@
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 
-namespace Steeltoe.Stream.Binder.Rabbit;
+namespace Steeltoe.Stream.Binder.RabbitMQ.Test;
 
 internal sealed class TestChannelInterceptor : AbstractChannelInterceptor
 {

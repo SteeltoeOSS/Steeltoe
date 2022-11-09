@@ -4,9 +4,10 @@
 
 using Moq;
 using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Discovery.Consul.Registry;
 using Xunit;
 
-namespace Steeltoe.Discovery.Consul.Registry.Test;
+namespace Steeltoe.Discovery.Consul.Test.Registry;
 
 public class ConsulServiceRegistrarTest
 {

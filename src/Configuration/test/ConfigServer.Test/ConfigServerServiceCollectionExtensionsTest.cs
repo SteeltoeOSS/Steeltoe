@@ -19,7 +19,7 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
     {
         const IServiceCollection services = null;
         var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureConfigServerClientOptions());
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

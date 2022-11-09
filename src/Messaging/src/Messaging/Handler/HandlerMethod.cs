@@ -29,7 +29,7 @@ public class HandlerMethod
 
     public HandlerMethod ResolvedFromHandlerMethod { get; }
 
-    public virtual bool IsVoid => Method.ReturnType.Equals(typeof(void));
+    public virtual bool IsVoid => Method.ReturnType == typeof(void);
 
     public virtual string ShortLogMessage
     {

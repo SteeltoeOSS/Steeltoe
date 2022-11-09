@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.ComponentModel;
+using System.Globalization;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
@@ -10,7 +11,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace Steeltoe.Stream.Binder.Rabbit.Configuration;
+namespace Steeltoe.Stream.Binder.RabbitMQ.Test.Configuration;
 
 public class RabbitBindingsOptionsTest
 {
@@ -237,7 +238,7 @@ public class RabbitBindingsOptionsTest
                 else if (optionsObject is List<string>)
                 {
                     var list = optionsObject as IList<string>;
-                    value = list?[int.Parse(child.Key)];
+                    value = list?[int.Parse(child.Key, CultureInfo.InvariantCulture)];
                 }
                 else
                 {

@@ -31,7 +31,7 @@ public class StandardTypeLocator : ITypeLocator
     {
         Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
         Type result = null;
-        typeName = typeName.Replace("$", "+"); // Handle nested type syntax  a.b.C$Nested
+        typeName = typeName.Replace('$', '+'); // Handle nested type syntax  a.b.C$Nested
 
         foreach (Assembly assembly in loadedAssemblies)
         {

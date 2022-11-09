@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CircuitBreaker.Hystrix.Test;
+using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.Common.Util;
 using Xunit;
 using Xunit.Abstractions;
 using static Steeltoe.CircuitBreaker.Hystrix.Util.HystrixRollingPercentile;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.Util;
 
 public class HystrixRollingPercentileTest
 {
@@ -328,7 +328,6 @@ public class HystrixRollingPercentileTest
 
         var aggregateMetrics = new AtomicInteger(); // same as a blackhole
 
-        var r = new Random();
         var cts = new CancellationTokenSource();
 
         Task.Run(() =>
@@ -347,7 +346,7 @@ public class HystrixRollingPercentileTest
             {
                 for (int j = 1; j < numIterations / numThreads + 1; j++)
                 {
-                    int nextInt = r.Next(100);
+                    int nextInt = Random.Shared.Next(100);
                     p.AddValue(nextInt);
 
                     if (threadId == 0)
@@ -387,8 +386,6 @@ public class HystrixRollingPercentileTest
 
         var latch = new CountdownEvent(numThreads);
 
-        var r = new Random();
-
         var added = new AtomicInteger(0);
 
         for (int i = 0; i < numThreads; i++)
@@ -397,7 +394,7 @@ public class HystrixRollingPercentileTest
             {
                 for (int j = 1; j < numIterations / numThreads + 1; j++)
                 {
-                    int nextInt = r.Next(100);
+                    int nextInt = Random.Shared.Next(100);
                     p.AddValue(nextInt);
                     added.GetAndIncrement();
                 }

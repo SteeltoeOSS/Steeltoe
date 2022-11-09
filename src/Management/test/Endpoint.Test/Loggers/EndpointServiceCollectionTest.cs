@@ -5,11 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Logging.DynamicLogger;
+using Steeltoe.Management.Endpoint.Loggers;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Loggers.Test;
+namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
 public class EndpointServiceCollectionTest : BaseTest
 {
@@ -20,7 +20,7 @@ public class EndpointServiceCollectionTest : BaseTest
         IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddLoggersActuator());
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
         Assert.Throws<InvalidOperationException>(() => services2.AddLoggersActuator());
     }
 

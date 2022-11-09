@@ -5,6 +5,7 @@
 using System.Text;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
@@ -12,7 +13,7 @@ using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
 [Trait("Category", "Integration")]
 public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplateIntegrationTest
@@ -39,13 +40,13 @@ public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplat
         IMessage<byte[]> replyMessage = Message.Create(Encoding.UTF8.GetBytes("foo"), new MessageHeaders());
 
         var ex = Assert.Throws<RabbitRejectAndDoNotRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
-        Assert.Contains("No correlation header in reply", ex.Message);
+        Assert.Contains("No correlation header in reply", ex.Message, StringComparison.Ordinal);
 
         RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(replyMessage);
         accessor.CorrelationId = "foo";
 
         ex = Assert.Throws<RabbitRejectAndDoNotRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
-        Assert.Contains("Reply received after timeout", ex.Message);
+        Assert.Contains("Reply received after timeout", ex.Message, StringComparison.Ordinal);
 
         _ = Task.Run(() =>
         {
@@ -65,7 +66,7 @@ public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplat
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
         Assert.IsType<ListenerExecutionFailedException>(exception.Value);
         var listException = exception.Value as ListenerExecutionFailedException;
-        Assert.Contains("Reply received after timeout", exception.Value.InnerException.Message);
+        Assert.Contains("Reply received after timeout", exception.Value.InnerException.Message, StringComparison.Ordinal);
         Assert.Equal(replyMessage.Payload, listException.FailedMessage.Payload);
         Assert.Empty(container.InUseConsumerChannels);
     }

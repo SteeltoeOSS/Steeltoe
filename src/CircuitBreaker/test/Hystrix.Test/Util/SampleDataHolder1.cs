@@ -4,7 +4,7 @@
 
 // @formatter:wrap_array_initializer_style wrap_if_long
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.Util;
 
 internal static class SampleDataHolder1
 {

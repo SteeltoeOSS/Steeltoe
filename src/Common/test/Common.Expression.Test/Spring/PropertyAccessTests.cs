@@ -2,12 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Expression.Internal.Spring.TestResources;
+using Steeltoe.Common.Expression.Test.Spring.TestResources;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public class PropertyAccessTests : AbstractExpressionTests
 {
@@ -273,7 +275,7 @@ public class PropertyAccessTests : AbstractExpressionTests
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            if (!name.Equals("flibbles"))
+            if (name != "flibbles")
             {
                 throw new SystemException("Assertion Failed! name should be flibbles");
             }
@@ -283,7 +285,7 @@ public class PropertyAccessTests : AbstractExpressionTests
 
         public void Write(IEvaluationContext context, object target, string name, object newValue)
         {
-            if (!name.Equals("flibbles"))
+            if (name != "flibbles")
             {
                 throw new SystemException("Assertion Failed! name should be flibbles");
             }
@@ -305,7 +307,7 @@ public class PropertyAccessTests : AbstractExpressionTests
                 throw new SystemException("Assertion Failed! target should be string");
             }
 
-            return name.Equals("flibbles");
+            return name == "flibbles";
         }
     }
 

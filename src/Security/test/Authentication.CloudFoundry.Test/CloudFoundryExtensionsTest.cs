@@ -88,7 +88,7 @@ public class CloudFoundryExtensionsTest
         HttpResponseMessage result = await client.GetAsync("http://localhost/");
         Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
         string location = result.Headers.Location.ToString();
-        Assert.StartsWith("http://default_oauthserviceurl/oauth/authorize", location);
+        Assert.StartsWith("http://default_oauthserviceurl/oauth/authorize", location, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class CloudFoundryExtensionsTest
             HttpResponseMessage result = await client.GetAsync("http://localhost/");
             Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
             string location = result.Headers.Location.ToString();
-            Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location);
+            Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location, StringComparison.Ordinal);
         }
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
@@ -138,7 +138,7 @@ public class CloudFoundryExtensionsTest
         HttpResponseMessage result = await client.GetAsync("http://localhost/");
         Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
         string location = result.Headers.Location.ToString();
-        Assert.StartsWith("https://default_oauthserviceurl/oauth/authorize", location);
+        Assert.StartsWith("https://default_oauthserviceurl/oauth/authorize", location, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -146,7 +146,10 @@ public class CloudFoundryExtensionsTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", VcapServices);
-        Environment.SetEnvironmentVariable("openIdConfigResponse", OpenIdConfigResponse.Replace("default_oauthserviceurl", "login.system.testcloud.com"));
+
+        Environment.SetEnvironmentVariable("openIdConfigResponse",
+            OpenIdConfigResponse.Replace("default_oauthserviceurl", "login.system.testcloud.com", StringComparison.Ordinal));
+
         Environment.SetEnvironmentVariable("jwksResponse", JwksResponse);
 
         IWebHostBuilder builder = GetHostBuilder<TestServerOpenIdStartup>();
@@ -157,7 +160,7 @@ public class CloudFoundryExtensionsTest
             HttpResponseMessage result = await client.GetAsync("http://localhost/");
             Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
             string location = result.Headers.Location.ToString();
-            Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location);
+            Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location, StringComparison.Ordinal);
         }
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);

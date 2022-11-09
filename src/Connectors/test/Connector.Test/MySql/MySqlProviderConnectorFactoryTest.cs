@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using MySqlConnector;
+using Steeltoe.Connector.MySql;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.MySql.Test;
+namespace Steeltoe.Connector.Test.MySql;
 
 public class MySqlProviderConnectorFactoryTest
 {
@@ -17,7 +18,7 @@ public class MySqlProviderConnectorFactoryTest
         const MySqlServiceInfo si = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new MySqlProviderConnectorFactory(si, options, typeof(MySqlConnection)));
-        Assert.Contains(nameof(options), ex.Message);
+        Assert.Contains(nameof(options), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

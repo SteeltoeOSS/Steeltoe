@@ -567,7 +567,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 throw new InvalidOperationException("Expected token");
             }
 
-            if (!"T".Equals(typeName.StringValue))
+            if (typeName.StringValue != "T")
             {
                 return false;
             }
@@ -614,7 +614,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 throw new InvalidOperationException("Expected token");
             }
 
-            if (!"null".Equals(nullToken.StringValue, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(nullToken.StringValue, "null", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
@@ -842,10 +842,17 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 throw InternalException(ExpressionString.Length, SpelMessage.Ood);
             }
 
-            throw InternalException(node.StartPos, SpelMessage.NotExpectedToken, "qualified ID", node.Kind.ToString().ToLower());
+            throw InternalException(node.StartPos, SpelMessage.NotExpectedToken, "qualified ID", FormatTokenKind(node.Kind));
         }
 
         return new QualifiedIdentifier(qualifiedIdPieces.First().StartPosition, qualifiedIdPieces.Last().EndPosition, qualifiedIdPieces.ToArray());
+    }
+
+    private static string FormatTokenKind(TokenKind kind)
+    {
+#pragma warning disable S4040 // Strings should be normalized to uppercase
+        return kind.ToString().ToLowerInvariant();
+#pragma warning restore S4040 // Strings should be normalized to uppercase
     }
 
     private bool IsValidQualifiedId(Token node)
@@ -1078,7 +1085,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
         if (!Equals(t.Kind, expectedKind))
         {
-            throw InternalException(t.StartPos, SpelMessage.NotExpectedToken, expectedKind.ToString().ToLower(), t.Kind.ToString().ToLower());
+            throw InternalException(t.StartPos, SpelMessage.NotExpectedToken, FormatTokenKind(expectedKind), FormatTokenKind(t.Kind));
         }
 
         return t;
@@ -1211,7 +1218,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             return t.StringValue;
         }
 
-        return t.Kind.ToString().ToLower();
+        return FormatTokenKind(t.Kind);
     }
 
     private void CheckOperands(Token token, SpelNode left, SpelNode right)

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder.Rabbit.Configuration;
+namespace Steeltoe.Stream.Binder.RabbitMQ.Test.Configuration;
 
 public class RabbitBinderOptionsTest
 {

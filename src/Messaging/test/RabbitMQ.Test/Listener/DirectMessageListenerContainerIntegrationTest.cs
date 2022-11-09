@@ -5,11 +5,12 @@
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
 [Trait("Category", "Integration")]
 public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
@@ -118,9 +119,9 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
     {
         public string HandleMessage(string input)
         {
-            if ("foo".Equals(input) || "bar".Equals(input))
+            if (input == "foo" || input == "bar")
             {
-                return input.ToUpper();
+                return input.ToUpperInvariant();
             }
 
             return null;

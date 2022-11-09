@@ -9,11 +9,12 @@ using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
+using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.TestBinder;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Test.Binder;
 
 public class AbstractMessageChannelBinderTest : AbstractTest
 {

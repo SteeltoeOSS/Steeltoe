@@ -20,6 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Abstractions\Steeltoe.Extensions.Logging.Abstractions.csproj" />
+    <ProjectReference Include="..\Abstractions\Steeltoe.Logging.Abstractions.csproj" />
   </ItemGroup>
 </Project>

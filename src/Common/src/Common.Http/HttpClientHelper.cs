@@ -220,7 +220,7 @@ public static class HttpClientHelper
             }
 
             JsonDocument payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-            JsonElement token = payload.RootElement.EnumerateObject().FirstOrDefault(n => n.Name.Equals("access_token")).Value;
+            JsonElement token = payload.RootElement.EnumerateObject().FirstOrDefault(n => n.Name == "access_token").Value;
 
             if (httpClient is null)
             {

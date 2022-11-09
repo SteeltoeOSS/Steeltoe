@@ -2,10 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Connector.Oracle;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Oracle.Test;
+namespace Steeltoe.Connector.Test.Oracle;
 
 public class OracleProviderConfigurerTest
 {
@@ -77,7 +78,7 @@ public class OracleProviderConfigurerTest
         string connectionString =
             $"User Id={options.Username};Password={options.Password};Data Source={options.Server}:{options.Port}/{options.ServiceName};Connection Timeout={options.ConnectionTimeout}";
 
-        Assert.StartsWith(connectionString, configuration);
+        Assert.StartsWith(connectionString, configuration, StringComparison.Ordinal);
     }
 
     [Fact]

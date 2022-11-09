@@ -9,14 +9,15 @@ using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Support.Converter;
-using Steeltoe.Messaging.RabbitMQ.Test;
+using Steeltoe.Messaging.RabbitMQ.Test.Test;
 using Xunit;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Listener.Adapters;
 
 public class MessagingMessageListenerAdapterTest : AbstractTest
 {
@@ -55,7 +56,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         catch (ListenerExecutionFailedException ex)
         {
             Assert.IsType<ArgumentException>(ex.InnerException);
-            Assert.Contains("Expected test exception", ex.InnerException.Message);
+            Assert.Contains("Expected test exception", ex.InnerException.Message, StringComparison.Ordinal);
         }
         catch (Exception ex)
         {
@@ -79,7 +80,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         catch (ListenerExecutionFailedException ex)
         {
             Assert.IsType<ArgumentException>(ex.InnerException);
-            Assert.Contains("Expected test exception", ex.InnerException.Message);
+            Assert.Contains("Expected test exception", ex.InnerException.Message, StringComparison.Ordinal);
         }
         catch (Exception ex)
         {
@@ -105,7 +106,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         catch (ListenerExecutionFailedException ex)
         {
             Assert.IsType<ArgumentException>(ex.InnerException);
-            Assert.Contains("Expected test exception", ex.InnerException.Message);
+            Assert.Contains("Expected test exception", ex.InnerException.Message, StringComparison.Ordinal);
         }
         catch (Exception ex)
         {
@@ -125,7 +126,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         }
         catch (ReplyFailureException ex)
         {
-            Assert.Contains("Failed to send reply", ex.Message);
+            Assert.Contains("Failed to send reply", ex.Message, StringComparison.Ordinal);
         }
         catch (Exception ex)
         {

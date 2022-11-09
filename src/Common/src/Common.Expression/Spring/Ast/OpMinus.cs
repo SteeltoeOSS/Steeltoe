@@ -135,7 +135,7 @@ public class OpMinus : Operator
             int theInteger = integer;
 
             // Implements character - int (ie. b - 1 = a)
-            return new TypedValue(((char)(theString[0] - theInteger)).ToString());
+            return new TypedValue(((char)(theString[0] - theInteger)).ToString(CultureInfo.InvariantCulture));
         }
 
         return state.Operate(Operation.Subtract, left, right);

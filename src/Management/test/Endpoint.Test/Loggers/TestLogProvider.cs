@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Logging;
+using Steeltoe.Logging;
 
-namespace Steeltoe.Management.Endpoint.Loggers.Test;
+namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
 internal sealed class TestLogProvider : IDynamicLoggerProvider
 {

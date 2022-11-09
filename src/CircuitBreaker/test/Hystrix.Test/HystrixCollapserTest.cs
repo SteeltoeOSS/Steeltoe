@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reflection;
@@ -1057,7 +1058,7 @@ public class HystrixCollapserTest : HystrixTestBase
         catch (Exception e)
         {
             Assert.True(e.InnerException is InvalidOperationException);
-            Assert.StartsWith("No response set by", e.InnerException.Message);
+            Assert.StartsWith("No response set by", e.InnerException.Message, StringComparison.Ordinal);
         }
 
         Assert.Equal(1, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
@@ -1688,7 +1689,7 @@ public class HystrixCollapserTest : HystrixTestBase
         public override string RequestArgument { get; }
 
         public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, int value)
-            : this(output, timer, value.ToString())
+            : this(output, timer, value.ToString(CultureInfo.InvariantCulture))
         {
         }
 
@@ -1710,7 +1711,7 @@ public class HystrixCollapserTest : HystrixTestBase
 
         public TestRequestCollapser(ITestOutputHelper output, TestCollapserTimer timer, int value, int defaultMaxRequestsInBatch,
             int defaultTimerDelayInMilliseconds)
-            : this(output, timer, value.ToString(), defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds)
+            : this(output, timer, value.ToString(CultureInfo.InvariantCulture), defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds)
         {
         }
 
@@ -1804,11 +1805,11 @@ public class HystrixCollapserTest : HystrixTestBase
 
             foreach (ICollapsedRequest<string, string> request in requests)
             {
-                if (request.Argument.EndsWith("a"))
+                if (request.Argument.EndsWith('a'))
                 {
                     typeA.Add(request);
                 }
-                else if (request.Argument.EndsWith("b"))
+                else if (request.Argument.EndsWith('b'))
                 {
                     typeB.Add(request);
                 }
@@ -1900,12 +1901,12 @@ public class HystrixCollapserTest : HystrixTestBase
                 }
                 else
                 {
-                    if (request.Argument.Equals("FAILURE"))
+                    if (request.Argument == "FAILURE")
                     {
                         throw new Exception("Simulated Error");
                     }
 
-                    if (request.Argument.Equals("TIMEOUT"))
+                    if (request.Argument == "TIMEOUT")
                     {
                         try
                         {
@@ -2267,7 +2268,7 @@ public class HystrixCollapserTest : HystrixTestBase
 
             foreach (string arg in _args)
             {
-                results.Add(new Pair<string, int>(arg, int.Parse(arg)));
+                results.Add(new Pair<string, int>(arg, int.Parse(arg, CultureInfo.InvariantCulture)));
             }
 
             return results;
@@ -2328,7 +2329,7 @@ public class HystrixCollapserTest : HystrixTestBase
             {
                 foreach (ICollapsedRequest<int, string> collapsedReq in requests)
                 {
-                    if (collapsedReq.Argument.Equals(pair.Aa))
+                    if (collapsedReq.Argument == pair.Aa)
                     {
                         collapsedReq.Response = pair.Bb;
                     }

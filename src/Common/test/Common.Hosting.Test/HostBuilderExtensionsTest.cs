@@ -18,7 +18,7 @@ public class HostBuilderExtensionsTest
         const IWebHostBuilder webHostBuilder = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => webHostBuilder.UseCloudHosting());
-        Assert.Contains(nameof(webHostBuilder), ex.Message);
+        Assert.Contains(nameof(webHostBuilder), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -92,10 +92,7 @@ public class HostBuilderExtensionsTest
 
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
     }
-
- 
-
-
+    
     [Fact]
     public void UseCloudHosting_WebApplication_Default8080()
     {

@@ -5,10 +5,11 @@
 using System.Reflection;
 using Moq;
 using Steeltoe.Messaging.Converter;
+using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
+namespace Steeltoe.Messaging.Test.Handler.Attributes.Support;
 
 public class MessageMethodArgumentResolverTest
 {
@@ -71,8 +72,8 @@ public class MessageMethodArgumentResolverTest
 
         Assert.True(_resolver.SupportsParameter(parameter));
         var ex = Assert.Throws<MessageConversionException>(() => _resolver.ResolveArgument(parameter, message));
-        Assert.Contains("Int32", ex.Message);
-        Assert.Contains("String", ex.Message);
+        Assert.Contains("Int32", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("String", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -82,9 +83,9 @@ public class MessageMethodArgumentResolverTest
         ParameterInfo parameter = _method.GetParameters()[1];
         Assert.True(_resolver.SupportsParameter(parameter));
         var ex = Assert.Throws<MessageConversionException>(() => _resolver.ResolveArgument(parameter, message));
-        Assert.Contains("payload is empty", ex.Message);
-        Assert.Contains("Int32", ex.Message);
-        Assert.Contains("String", ex.Message);
+        Assert.Contains("payload is empty", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("Int32", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("String", ex.Message, StringComparison.Ordinal);
     }
 
     // [Fact]
@@ -159,8 +160,8 @@ public class MessageMethodArgumentResolverTest
         ParameterInfo parameter = _method.GetParameters()[1];
         Assert.True(_resolver.SupportsParameter(parameter));
         var ex = Assert.Throws<MessageConversionException>(() => _resolver.ResolveArgument(parameter, message));
-        Assert.Contains("Int32", ex.Message);
-        Assert.Contains("String", ex.Message);
+        Assert.Contains("Int32", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("String", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -172,9 +173,9 @@ public class MessageMethodArgumentResolverTest
         ParameterInfo parameter = _method.GetParameters()[1];
         Assert.True(_resolver.SupportsParameter(parameter));
         var ex = Assert.Throws<MessageConversionException>(() => _resolver.ResolveArgument(parameter, message));
-        Assert.Contains("payload is empty", ex.Message);
-        Assert.Contains("Int32", ex.Message);
-        Assert.Contains("String", ex.Message);
+        Assert.Contains("payload is empty", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("Int32", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("String", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

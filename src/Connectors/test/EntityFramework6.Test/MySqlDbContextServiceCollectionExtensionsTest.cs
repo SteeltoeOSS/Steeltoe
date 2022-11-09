@@ -6,9 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.EntityFramework6.Mysql;
 using Xunit;
 
-namespace Steeltoe.Connector.MySql.EntityFramework6.Test;
+namespace Steeltoe.Connector.EntityFramework6.Test;
 
 public class MySqlDbContextServiceCollectionExtensionsTest
 {
@@ -25,10 +26,10 @@ public class MySqlDbContextServiceCollectionExtensionsTest
         const IConfigurationRoot configurationRoot = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodMySqlDbContext>(configurationRoot));
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodMySqlDbContext>(configurationRoot, "foobar"));
-        Assert.Contains(nameof(services), ex2.Message);
+        Assert.Contains(nameof(services), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -38,10 +39,10 @@ public class MySqlDbContextServiceCollectionExtensionsTest
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodMySqlDbContext>(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodMySqlDbContext>(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -52,7 +53,7 @@ public class MySqlDbContextServiceCollectionExtensionsTest
         const string serviceName = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodMySqlDbContext>(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex.Message);
+        Assert.Contains(nameof(serviceName), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -78,7 +79,7 @@ public class MySqlDbContextServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodMySqlDbContext>(configurationRoot, "foobar"));
-        Assert.Contains("foobar", ex.Message);
+        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -86,7 +87,7 @@ public class MySqlDbContextServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", Steeltoe.TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
 
         var builder = new ConfigurationBuilder();
@@ -94,7 +95,7 @@ public class MySqlDbContextServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodMySqlDbContext>(configurationRoot));
-        Assert.Contains("Multiple", ex.Message);
+        Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -102,7 +103,7 @@ public class MySqlDbContextServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", Steeltoe.TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
 
         var builder = new ConfigurationBuilder();

@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry.Test;
+namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
 public class EndpointApplicationBuilderExtensionsTest : BaseTest
 {

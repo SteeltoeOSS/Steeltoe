@@ -7,9 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.RabbitMQ;
 using Xunit;
 
-namespace Steeltoe.Connector.RabbitMQ.Test;
+namespace Steeltoe.Connector.Test.RabbitMQ;
 
 public class RabbitMQServiceCollectionExtensionsTest
 {
@@ -26,10 +27,10 @@ public class RabbitMQServiceCollectionExtensionsTest
         const IConfigurationRoot configurationRoot = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(configurationRoot));
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(configurationRoot, "foobar"));
-        Assert.Contains(nameof(services), ex2.Message);
+        Assert.Contains(nameof(services), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -39,10 +40,10 @@ public class RabbitMQServiceCollectionExtensionsTest
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -53,7 +54,7 @@ public class RabbitMQServiceCollectionExtensionsTest
         const string serviceName = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex.Message);
+        Assert.Contains(nameof(serviceName), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -75,7 +76,7 @@ public class RabbitMQServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddRabbitMQConnection(configurationRoot, "foobar"));
-        Assert.Contains("foobar", ex.Message);
+        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -123,7 +124,7 @@ public class RabbitMQServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddRabbitMQConnection(configurationRoot));
-        Assert.Contains("Multiple", ex.Message);
+        Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

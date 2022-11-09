@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Support;
 
 public class RabbitHeaderAccessorTest
 {

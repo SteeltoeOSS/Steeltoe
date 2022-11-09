@@ -9,13 +9,13 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using Steeltoe.Extensions.Logging;
+using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.ThreadDump;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump.Test;
+namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 
 public class EndpointMiddlewareTest : BaseTest
 {
@@ -47,8 +47,8 @@ public class EndpointMiddlewareTest : BaseTest
         string json = await rdr.ReadToEndAsync();
         Assert.NotNull(json);
         Assert.NotEqual("[]", json);
-        Assert.StartsWith("[", json);
-        Assert.EndsWith("]", json);
+        Assert.StartsWith("[", json, StringComparison.Ordinal);
+        Assert.EndsWith("]", json, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -69,8 +69,8 @@ public class EndpointMiddlewareTest : BaseTest
         string json = await result.Content.ReadAsStringAsync();
         Assert.NotNull(json);
         Assert.NotEqual("[]", json);
-        Assert.StartsWith("[", json);
-        Assert.EndsWith("]", json);
+        Assert.StartsWith("[", json, StringComparison.Ordinal);
+        Assert.EndsWith("]", json, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -93,8 +93,8 @@ public class EndpointMiddlewareTest : BaseTest
             string json = await result.Content.ReadAsStringAsync();
             Assert.NotNull(json);
             Assert.NotEqual("{}", json);
-            Assert.StartsWith("{", json);
-            Assert.EndsWith("}", json);
+            Assert.StartsWith("{", json, StringComparison.Ordinal);
+            Assert.EndsWith("}", json, StringComparison.Ordinal);
         }
     }
 

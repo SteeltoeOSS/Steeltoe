@@ -69,7 +69,8 @@ public static class TaskWebHostExtensions
 
         if (taskName != null)
         {
-            IApplicationTask task = scope.GetServices<IApplicationTask>().FirstOrDefault(x => x.Name.ToLower() == taskName.ToLower());
+            IApplicationTask task = scope.GetServices<IApplicationTask>()
+                .FirstOrDefault(x => string.Equals(x.Name, taskName, StringComparison.OrdinalIgnoreCase));
 
             if (task != null)
             {

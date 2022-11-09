@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Moq;
+using Steeltoe.Messaging.Support;
 using Xunit;
-using static Steeltoe.Messaging.Support.Test.TaskSchedulerSubscribableChannelTest;
+using static Steeltoe.Messaging.Test.Support.TaskSchedulerSubscribableChannelTest;
 
-namespace Steeltoe.Messaging.Support.Test;
+namespace Steeltoe.Messaging.Test.Support;
 
 public class TaskSchedulerSubscribableChannelWriterTest
 {
@@ -37,7 +38,7 @@ public class TaskSchedulerSubscribableChannelWriterTest
         }
 
         Assert.NotNull(exception);
-        Assert.Contains("message", exception.Message);
+        Assert.Contains("message", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -127,7 +128,7 @@ public class TaskSchedulerSubscribableChannelWriterTest
         {
             exceptionThrown = true;
             Assert.Equal(ex, actualException.InnerException);
-            Assert.Contains("My exception", actualException.InnerException.Message);
+            Assert.Contains("My exception", actualException.InnerException.Message, StringComparison.Ordinal);
         }
 
         Assert.True(exceptionThrown);

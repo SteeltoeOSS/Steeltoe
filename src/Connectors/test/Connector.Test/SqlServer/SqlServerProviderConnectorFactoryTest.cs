@@ -4,9 +4,10 @@
 
 using System.Data.SqlClient;
 using Steeltoe.Connector.Services;
+using Steeltoe.Connector.SqlServer;
 using Xunit;
 
-namespace Steeltoe.Connector.SqlServer.Test;
+namespace Steeltoe.Connector.Test.SqlServer;
 
 public class SqlServerProviderConnectorFactoryTest
 {
@@ -16,7 +17,7 @@ public class SqlServerProviderConnectorFactoryTest
         const SqlServerProviderConnectorOptions options = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new SqlServerProviderConnectorFactory(null, options, typeof(SqlConnection)));
-        Assert.Contains(nameof(options), ex.Message);
+        Assert.Contains(nameof(options), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

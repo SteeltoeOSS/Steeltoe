@@ -56,7 +56,7 @@ public class PemConfigureCertificateOptions : IConfigureNamedOptions<Certificate
         const string rsaPrivateKeyHeader = "-----BEGIN RSA PRIVATE KEY-----";
         const string rsaPrivateKeyFooter = "-----END RSA PRIVATE KEY-----";
 
-        if (pemContents.StartsWith(rsaPrivateKeyHeader))
+        if (pemContents.StartsWith(rsaPrivateKeyHeader, StringComparison.Ordinal))
         {
             int endIdx = pemContents.IndexOf(rsaPrivateKeyFooter, rsaPrivateKeyHeader.Length, StringComparison.Ordinal);
 

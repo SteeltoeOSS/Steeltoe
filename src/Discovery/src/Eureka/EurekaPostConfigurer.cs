@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
@@ -48,7 +49,7 @@ public static class EurekaPostConfigurer
 
         string uri = si.Uri;
 
-        if (!uri.EndsWith(EurekaUriSuffix))
+        if (!uri.EndsWith(EurekaUriSuffix, StringComparison.Ordinal))
         {
             uri += EurekaUriSuffix;
         }
@@ -75,7 +76,7 @@ public static class EurekaPostConfigurer
     {
         string defaultIdEnding = $":{EurekaInstanceConfiguration.DefaultAppName}:{EurekaInstanceConfiguration.DefaultNonSecurePort}";
 
-        if (EurekaInstanceConfiguration.DefaultAppName.Equals(options.AppName))
+        if (options.AppName == EurekaInstanceConfiguration.DefaultAppName)
         {
             string springAppName = instanceInfo?.GetApplicationNameInContext(SteeltoeComponent.Discovery);
 
@@ -112,7 +113,7 @@ public static class EurekaPostConfigurer
 
         options.ApplyConfigUrls(configuration.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
 
-        if (options.InstanceId.EndsWith(defaultIdEnding))
+        if (options.InstanceId.EndsWith(defaultIdEnding, StringComparison.Ordinal))
         {
             string springInstanceId = instanceInfo?.InstanceId;
 
@@ -159,7 +160,7 @@ public static class EurekaPostConfigurer
             return;
         }
 
-        if (EurekaInstanceConfiguration.DefaultAppName.Equals(instOptions.AppName))
+        if (instOptions.AppName == EurekaInstanceConfiguration.DefaultAppName)
         {
             instOptions.AppName = si.ApplicationInfo.ApplicationName;
         }
@@ -200,7 +201,7 @@ public static class EurekaPostConfigurer
             return;
         }
 
-        if (!clientOptions.EurekaServerServiceUrls.Contains(EurekaClientConfiguration.DefaultServerServiceUrl.TrimEnd('/')))
+        if (!clientOptions.EurekaServerServiceUrls.Contains(EurekaClientConfiguration.DefaultServerServiceUrl.TrimEnd('/'), StringComparison.Ordinal))
         {
             return;
         }
@@ -253,7 +254,7 @@ public static class EurekaPostConfigurer
 
         IDictionary<string, string> map = instOptions.MetadataMap;
         map[CFAppGuid] = si.ApplicationInfo.ApplicationId;
-        map[CFInstanceIndex] = si.ApplicationInfo.InstanceIndex.ToString();
+        map[CFInstanceIndex] = si.ApplicationInfo.InstanceIndex.ToString(CultureInfo.InvariantCulture);
         map[InstanceId] = si.ApplicationInfo.InstanceId;
         map[Zone] = UnknownZone;
     }

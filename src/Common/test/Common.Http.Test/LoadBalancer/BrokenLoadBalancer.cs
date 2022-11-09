@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.LoadBalancer;
 
-namespace Steeltoe.Common.Http.LoadBalancer.Test;
+namespace Steeltoe.Common.Http.Test.LoadBalancer;
 
 internal sealed class BrokenLoadBalancer : ILoadBalancer
 {

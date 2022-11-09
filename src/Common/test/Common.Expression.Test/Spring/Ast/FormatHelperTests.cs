@@ -2,9 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Expression.Internal.Spring.Ast;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
+namespace Steeltoe.Common.Expression.Test.Spring.Ast;
 
 public class FormatHelperTests
 {
