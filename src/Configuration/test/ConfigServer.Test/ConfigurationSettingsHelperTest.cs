@@ -17,11 +17,11 @@ public sealed class ConfigurationSettingsHelperTest
         const IConfiguration configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize(sectionPrefix, settings, configuration));
-        Assert.Contains(nameof(sectionPrefix), ex.Message);
+        Assert.Contains(nameof(sectionPrefix), ex.Message, StringComparison.Ordinal);
         ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", settings, configuration));
-        Assert.Contains(nameof(settings), ex.Message);
+        Assert.Contains(nameof(settings), ex.Message, StringComparison.Ordinal);
         ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", new ConfigServerClientSettings(), configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

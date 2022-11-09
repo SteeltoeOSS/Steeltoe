@@ -248,12 +248,12 @@ public class SerilogDynamicLoggerProviderTest
         string logged = unConsole.ToString();
 
         // assert I
-        Assert.Contains(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}", logged);
-        Assert.Contains(@"Carries property A = 1", logged);
-        Assert.Contains(@"A.B.C.D.TestClass: {B=1, A=2, Application=""Sample""}", logged);
-        Assert.Contains(@"Carries A = 2 and B = 1", logged);
-        Assert.Contains(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}", logged);
-        Assert.Contains(@"Carries property A = 1, again", logged);
+        Assert.Contains(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}", logged, StringComparison.Ordinal);
+        Assert.Contains(@"Carries property A = 1", logged, StringComparison.Ordinal);
+        Assert.Contains(@"A.B.C.D.TestClass: {B=1, A=2, Application=""Sample""}", logged, StringComparison.Ordinal);
+        Assert.Contains(@"Carries A = 2 and B = 1", logged, StringComparison.Ordinal);
+        Assert.Contains(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}", logged, StringComparison.Ordinal);
+        Assert.Contains(@"Carries property A = 1, again", logged, StringComparison.Ordinal);
         Assert.Matches(new Regex(@"ThreadId:<\d+>"), logged);
     }
 
@@ -276,7 +276,7 @@ public class SerilogDynamicLoggerProviderTest
 
         string logged = unConsole.ToString();
 
-        Assert.Contains("Info {\"Info1\": \"information1\", \"Info2\": \"information2\"}", logged);
+        Assert.Contains("Info {\"Info1\": \"information1\", \"Info2\": \"information2\"}", logged, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -295,12 +295,12 @@ public class SerilogDynamicLoggerProviderTest
             string logged = unConsole.ToString();
 
             // assert I
-            Assert.Contains("Critical message", logged);
-            Assert.Contains("Error message", logged);
-            Assert.Contains("Warning message", logged);
-            Assert.Contains("Informational message", logged);
-            Assert.DoesNotContain("Debug message", logged);
-            Assert.DoesNotContain("Trace message", logged);
+            Assert.Contains("Critical message", logged, StringComparison.Ordinal);
+            Assert.Contains("Error message", logged, StringComparison.Ordinal);
+            Assert.Contains("Warning message", logged, StringComparison.Ordinal);
+            Assert.Contains("Informational message", logged, StringComparison.Ordinal);
+            Assert.DoesNotContain("Debug message", logged, StringComparison.Ordinal);
+            Assert.DoesNotContain("Trace message", logged, StringComparison.Ordinal);
         }
 
         // act II - adjust rules, expect Error and above to work
@@ -313,12 +313,12 @@ public class SerilogDynamicLoggerProviderTest
             string logged2 = unConsole.ToString();
 
             // assert II
-            Assert.Contains("Critical message", logged2);
-            Assert.Contains("Error message", logged2);
-            Assert.DoesNotContain("Warning message", logged2);
-            Assert.DoesNotContain("Informational message", logged2);
-            Assert.DoesNotContain("Debug message", logged2);
-            Assert.DoesNotContain("Trace message", logged2);
+            Assert.Contains("Critical message", logged2, StringComparison.Ordinal);
+            Assert.Contains("Error message", logged2, StringComparison.Ordinal);
+            Assert.DoesNotContain("Warning message", logged2, StringComparison.Ordinal);
+            Assert.DoesNotContain("Informational message", logged2, StringComparison.Ordinal);
+            Assert.DoesNotContain("Debug message", logged2, StringComparison.Ordinal);
+            Assert.DoesNotContain("Trace message", logged2, StringComparison.Ordinal);
         }
 
         // act III - adjust rules, expect Trace and above to work
@@ -331,12 +331,12 @@ public class SerilogDynamicLoggerProviderTest
             string logged3 = unConsole.ToString();
 
             // assert III
-            Assert.Contains("Critical message", logged3);
-            Assert.Contains("Error message", logged3);
-            Assert.Contains("Warning message", logged3);
-            Assert.Contains("Informational message", logged3);
-            Assert.Contains("Debug message", logged3);
-            Assert.Contains("Trace message", logged3);
+            Assert.Contains("Critical message", logged3, StringComparison.Ordinal);
+            Assert.Contains("Error message", logged3, StringComparison.Ordinal);
+            Assert.Contains("Warning message", logged3, StringComparison.Ordinal);
+            Assert.Contains("Informational message", logged3, StringComparison.Ordinal);
+            Assert.Contains("Debug message", logged3, StringComparison.Ordinal);
+            Assert.Contains("Trace message", logged3, StringComparison.Ordinal);
         }
 
         // act IV - adjust rules, expect nothing to work
@@ -349,12 +349,12 @@ public class SerilogDynamicLoggerProviderTest
             string logged4 = unConsole.ToString();
 
             // assert IV
-            Assert.DoesNotContain("Critical message", logged4);
-            Assert.DoesNotContain("Error message", logged4);
-            Assert.DoesNotContain("Warning message", logged4);
-            Assert.DoesNotContain("Informational message", logged4);
-            Assert.DoesNotContain("Debug message", logged4);
-            Assert.DoesNotContain("Trace message", logged4);
+            Assert.DoesNotContain("Critical message", logged4, StringComparison.Ordinal);
+            Assert.DoesNotContain("Error message", logged4, StringComparison.Ordinal);
+            Assert.DoesNotContain("Warning message", logged4, StringComparison.Ordinal);
+            Assert.DoesNotContain("Informational message", logged4, StringComparison.Ordinal);
+            Assert.DoesNotContain("Debug message", logged4, StringComparison.Ordinal);
+            Assert.DoesNotContain("Trace message", logged4, StringComparison.Ordinal);
         }
 
         // act V - reset the rules, expect Info and above to work
@@ -368,12 +368,12 @@ public class SerilogDynamicLoggerProviderTest
 
             // assert V
             Assert.NotNull(provider.GetLoggerConfigurations().First(c => c.Name == "A"));
-            Assert.Contains("Critical message", logged5);
-            Assert.Contains("Error message", logged5);
-            Assert.Contains("Warning message", logged5);
-            Assert.Contains("Informational message", logged5);
-            Assert.DoesNotContain("Debug message", logged5);
-            Assert.DoesNotContain("Trace message", logged5);
+            Assert.Contains("Critical message", logged5, StringComparison.Ordinal);
+            Assert.Contains("Error message", logged5, StringComparison.Ordinal);
+            Assert.Contains("Warning message", logged5, StringComparison.Ordinal);
+            Assert.Contains("Informational message", logged5, StringComparison.Ordinal);
+            Assert.DoesNotContain("Debug message", logged5, StringComparison.Ordinal);
+            Assert.DoesNotContain("Trace message", logged5, StringComparison.Ordinal);
         }
     }
 

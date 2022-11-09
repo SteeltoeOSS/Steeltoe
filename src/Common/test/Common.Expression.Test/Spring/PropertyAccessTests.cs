@@ -275,7 +275,7 @@ public class PropertyAccessTests : AbstractExpressionTests
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            if (!name.Equals("flibbles"))
+            if (name != "flibbles")
             {
                 throw new SystemException("Assertion Failed! name should be flibbles");
             }
@@ -285,7 +285,7 @@ public class PropertyAccessTests : AbstractExpressionTests
 
         public void Write(IEvaluationContext context, object target, string name, object newValue)
         {
-            if (!name.Equals("flibbles"))
+            if (name != "flibbles")
             {
                 throw new SystemException("Assertion Failed! name should be flibbles");
             }
@@ -307,7 +307,7 @@ public class PropertyAccessTests : AbstractExpressionTests
                 throw new SystemException("Assertion Failed! target should be string");
             }
 
-            return name.Equals("flibbles");
+            return name == "flibbles";
         }
     }
 

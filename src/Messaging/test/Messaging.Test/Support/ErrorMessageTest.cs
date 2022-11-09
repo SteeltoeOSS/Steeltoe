@@ -14,12 +14,12 @@ public class ErrorMessageTest
     {
         var em = new ErrorMessage(new Exception("foo"));
         string emString = em.ToString();
-        Assert.DoesNotContain("original", emString);
+        Assert.DoesNotContain("original", emString, StringComparison.Ordinal);
 
         em = new ErrorMessage(new Exception("foo"), Message.Create("bar"));
         emString = em.ToString();
-        Assert.Contains("original", emString);
-        Assert.Contains(em.OriginalMessage.ToString(), emString);
+        Assert.Contains("original", emString, StringComparison.Ordinal);
+        Assert.Contains(em.OriginalMessage.ToString(), emString, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -27,6 +27,6 @@ public class ErrorMessageTest
     {
         var em = new ErrorMessage(new InvalidOperationException("foo"));
         string emString = em.ToString();
-        Assert.Contains("InvalidOperationException", emString);
+        Assert.Contains("InvalidOperationException", emString, StringComparison.Ordinal);
     }
 }

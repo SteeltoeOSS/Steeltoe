@@ -92,7 +92,7 @@ public class PayloadMethodArgumentResolverTest
     {
         IMessage notEmptyMessage = MessageBuilder.WithPayload(123).Build();
         var ex = Assert.Throws<MessageConversionException>(() => _resolver.ResolveArgument(_paramAnnotatedRequired, notEmptyMessage));
-        Assert.Contains("Cannot convert", ex.Message);
+        Assert.Contains("Cannot convert", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

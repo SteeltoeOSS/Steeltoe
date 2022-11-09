@@ -86,7 +86,7 @@ public class HealthEndpointCore : HealthEndpoint
         {
             if (Options.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
             {
-                List<string> includedContributors = groupOptions.Include.Split(",").ToList();
+                List<string> includedContributors = groupOptions.Include.Split(',').ToList();
 
                 return svcOptions.CurrentValue.Registrations.Where(n => includedContributors.Contains(n.Name, StringComparer.OrdinalIgnoreCase)).ToList();
             }

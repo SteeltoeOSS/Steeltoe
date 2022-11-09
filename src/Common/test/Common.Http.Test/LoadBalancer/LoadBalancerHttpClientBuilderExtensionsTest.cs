@@ -28,7 +28,7 @@ public class LoadBalancerHttpClientBuilderExtensionsTest
 
         services.AddHttpClient("test").AddRandomLoadBalancer();
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        ServiceDescriptor serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType.Equals(typeof(RandomLoadBalancer)));
+        ServiceDescriptor serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType == typeof(RandomLoadBalancer));
 
         Assert.Single(serviceProvider.GetServices<RandomLoadBalancer>());
         Assert.NotNull(serviceEntryInCollection);
@@ -50,7 +50,7 @@ public class LoadBalancerHttpClientBuilderExtensionsTest
 
         services.AddHttpClient("test").AddRoundRobinLoadBalancer();
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        ServiceDescriptor serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType.Equals(typeof(RoundRobinLoadBalancer)));
+        ServiceDescriptor serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType == typeof(RoundRobinLoadBalancer));
 
         Assert.Single(serviceProvider.GetServices<RoundRobinLoadBalancer>());
         Assert.Equal(ServiceLifetime.Singleton, serviceEntryInCollection.Lifetime);

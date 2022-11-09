@@ -416,7 +416,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
     {
         // The 'channelName.contains("input")' is strictly for convenience to avoid
         // modifications in multiple tests
-        return CreateBindableChannel(channelName, bindingProperties, channelName.Contains("input"));
+        return CreateBindableChannel(channelName, bindingProperties, channelName.Contains("input", StringComparison.Ordinal));
     }
 
     protected DirectChannel CreateBindableChannel(string channelName, BindingOptions bindingProperties, bool inputChannel)

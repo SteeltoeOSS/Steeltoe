@@ -17,7 +17,7 @@ public class SqlServerProviderConnectorFactoryTest
         const SqlServerProviderConnectorOptions options = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new SqlServerProviderConnectorFactory(null, options, typeof(SqlConnection)));
-        Assert.Contains(nameof(options), ex.Message);
+        Assert.Contains(nameof(options), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

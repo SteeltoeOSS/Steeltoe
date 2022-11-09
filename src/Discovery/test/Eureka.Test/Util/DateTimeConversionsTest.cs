@@ -14,7 +14,7 @@ public class DateTimeConversionsTest
     {
         DateTime dt = new DateTime(2016, 3, 14, 16, 42, 21, DateTimeKind.Local).AddMilliseconds(708);
         var ex = Assert.Throws<ArgumentException>(() => DateTimeConversions.ToJavaMillis(dt));
-        Assert.Contains("DateTime kind must be UTC.", ex.Message);
+        Assert.Contains("DateTime kind must be UTC.", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

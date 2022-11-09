@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
@@ -65,7 +66,7 @@ public class MongoDbConnectorOptions : AbstractServiceConnectorOptions
 
         sb.Append("mongodb://");
         AddColonDelimitedPair(sb, Username, Password, '@');
-        AddColonDelimitedPair(sb, Server, Port.ToString());
+        AddColonDelimitedPair(sb, Server, Port.ToString(CultureInfo.InvariantCulture));
 
         if (!string.IsNullOrEmpty(Database))
         {

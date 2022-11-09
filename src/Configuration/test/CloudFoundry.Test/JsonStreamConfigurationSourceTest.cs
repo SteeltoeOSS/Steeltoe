@@ -15,7 +15,7 @@ public sealed class JsonStreamConfigurationSourceTest
         const MemoryStream stream = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new JsonStreamConfigurationSource(stream));
-        Assert.Contains(nameof(stream), ex.Message);
+        Assert.Contains(nameof(stream), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

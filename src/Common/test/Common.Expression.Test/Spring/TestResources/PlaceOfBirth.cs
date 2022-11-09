@@ -37,7 +37,7 @@ public class PlaceOfBirth
             return false;
         }
 
-        return City.Equals(other.City);
+        return City == other.City;
     }
 
     public override int GetHashCode()

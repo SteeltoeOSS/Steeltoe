@@ -67,7 +67,7 @@ public class HystrixRequestEventStreamControllerTest : HystrixTestBase
         reader.Dispose();
 
         Assert.False(string.IsNullOrEmpty(data));
-        Assert.StartsWith("data: ", data);
+        Assert.StartsWith("data: ", data, StringComparison.Ordinal);
         string jsonObject = data.Substring(6);
         var list = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonObject);
         Assert.NotNull(list);

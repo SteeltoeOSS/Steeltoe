@@ -40,8 +40,7 @@ public static class ServiceCollectionExtensions
         {
             var options = provider.GetService<ICloudFoundryOptions>();
 
-            CloudFoundryManagementOptions managementOptions =
-                provider.GetServices<IManagementOptions>().OfType<CloudFoundryManagementOptions>().SingleOrDefault();
+            CloudFoundryManagementOptions managementOptions = provider.GetServices<IManagementOptions>().OfType<CloudFoundryManagementOptions>().Single();
 
             managementOptions.EndpointOptions.Add(options);
 

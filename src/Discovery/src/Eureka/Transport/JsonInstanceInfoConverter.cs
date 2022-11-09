@@ -13,7 +13,7 @@ internal sealed class JsonInstanceInfoConverter : JsonConverter<IList<JsonInstan
     {
         var result = new List<JsonInstanceInfo>();
 
-        if (reader.TokenType.Equals(JsonTokenType.StartArray))
+        if (reader.TokenType == JsonTokenType.StartArray)
         {
             result = JsonSerializer.Deserialize<List<JsonInstanceInfo>>(ref reader, options);
         }

@@ -46,7 +46,7 @@ public class SubclassClassifier<TSource, TTarget> : IClassifier<TSource, TTarget
         bool foundValue = false;
         var value = default(TTarget);
 
-        for (Type currentType = type; !currentType.Equals(typeof(object)); currentType = currentType.BaseType)
+        for (Type currentType = type; currentType != typeof(object); currentType = currentType.BaseType)
         {
             if (TypeMap.TryGetValue(currentType, out value))
             {

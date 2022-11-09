@@ -39,7 +39,7 @@ internal static class AssemblyExtensions
             return assembly;
         }
 
-        if (args.Name.Contains(".resources"))
+        if (args.Name.Contains(".resources", StringComparison.Ordinal))
         {
             return args.RequestingAssembly;
         }

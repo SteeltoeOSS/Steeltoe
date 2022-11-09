@@ -109,7 +109,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
         container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
 
         Assert.Equal(AcknowledgeMode.None, container.AcknowledgeMode);
-        Assert.StartsWith("foo.props.0", container.GetQueueNames()[0]);
+        Assert.StartsWith("foo.props.0", container.GetQueueNames()[0], StringComparison.Ordinal);
         Assert.False(container.IsChannelTransacted);
         Assert.Equal(2, container.ConsumersPerQueue);
         Assert.False(container.DefaultRequeueRejected);

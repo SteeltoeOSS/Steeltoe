@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -524,7 +525,7 @@ public class RabbitServiceExtensionsTest
         RabbitOptions rabbitOptions = provider.GetService<IOptions<RabbitOptions>>().Value;
 
         Assert.Equal(appsettings[hostPrefix], rabbitOptions.Host);
-        Assert.Equal(appsettings[portPrefix], rabbitOptions.Port.ToString());
+        Assert.Equal(appsettings[portPrefix], rabbitOptions.Port.ToString(CultureInfo.InvariantCulture));
         Assert.Equal(appsettings[usernamePrefix], rabbitOptions.Username);
         Assert.Equal(appsettings[passwordPrefix], rabbitOptions.Password);
     }

@@ -153,7 +153,7 @@ public class HystrixRequestCache
                     return false;
                 }
             }
-            else if (!_valueCacheKey.Equals(other._valueCacheKey))
+            else if (_valueCacheKey != other._valueCacheKey)
             {
                 return false;
             }
@@ -208,7 +208,7 @@ public class HystrixRequestCache
                     return false;
                 }
             }
-            else if (!_key.Equals(other._key))
+            else if (_key != other._key)
             {
                 return false;
             }

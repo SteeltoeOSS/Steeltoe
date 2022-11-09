@@ -19,9 +19,9 @@ public class ServiceCollectionTests
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddTraceActuatorServices(configuration, MediaTypeVersion.V2));
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddTraceActuatorServices(configuration, MediaTypeVersion.V2));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
     }
 }

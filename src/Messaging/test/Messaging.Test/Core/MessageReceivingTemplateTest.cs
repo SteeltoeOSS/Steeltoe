@@ -152,7 +152,7 @@ public class MessageReceivingTemplateTest
         }
         catch (MessageConversionException ex)
         {
-            Assert.Contains("payload", ex.Message);
+            Assert.Contains("payload", ex.Message, StringComparison.Ordinal);
             Assert.Same(expected, ex.FailedMessage);
         }
     }
@@ -171,7 +171,7 @@ public class MessageReceivingTemplateTest
         }
         catch (MessageConversionException ex)
         {
-            Assert.Contains("payload", ex.Message);
+            Assert.Contains("payload", ex.Message, StringComparison.Ordinal);
             Assert.Same(expected, ex.FailedMessage);
         }
     }

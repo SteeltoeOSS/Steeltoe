@@ -34,7 +34,7 @@ public class HystrixEventsListener : EventSourceListener
 
         try
         {
-            if (AllowedEvents.Any(e => e.Equals(eventData.EventName, StringComparison.Ordinal)))
+            if (AllowedEvents.Any(e => e == eventData.EventName))
             {
                 ExtractAndRecordMetric(EventSourceName, eventData, _cktBreakerLabels);
             }

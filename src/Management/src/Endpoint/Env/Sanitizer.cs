@@ -45,7 +45,7 @@ public class Sanitizer
     {
         foreach (string part in _regexParts)
         {
-            if (value.Contains(part))
+            if (value.Contains(part, StringComparison.Ordinal))
             {
                 return true;
             }

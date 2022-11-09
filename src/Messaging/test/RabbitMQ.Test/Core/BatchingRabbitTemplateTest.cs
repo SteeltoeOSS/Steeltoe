@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Globalization;
 using System.IO.Compression;
 using System.Text;
 using Microsoft.Extensions.Configuration;
@@ -277,7 +278,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
 
             Assert.True(latch.Wait(TimeSpan.FromSeconds(60)));
             watch.Stop();
-            _testOutputHelper.WriteLine(watch.ElapsedMilliseconds.ToString());
+            _testOutputHelper.WriteLine(watch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
             Assert.Equal(count, received.Count);
         }
         finally

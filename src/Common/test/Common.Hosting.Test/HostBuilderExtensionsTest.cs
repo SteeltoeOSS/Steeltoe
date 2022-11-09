@@ -18,7 +18,7 @@ public class HostBuilderExtensionsTest
         const IWebHostBuilder webHostBuilder = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => webHostBuilder.UseCloudHosting());
-        Assert.Contains(nameof(webHostBuilder), ex.Message);
+        Assert.Contains(nameof(webHostBuilder), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -178,8 +178,8 @@ public class HostBuilderExtensionsTest
 
         hostBuilder.UseCloudHosting(3000, 3001);
         string settings = hostBuilder.WebHost.GetSetting(WebHostDefaults.ServerUrlsKey);
-        Assert.Contains("http://*:3000", settings);
-        Assert.Contains("https://*:3001", settings);
+        Assert.Contains("http://*:3000", settings, StringComparison.Ordinal);
+        Assert.Contains("https://*:3001", settings, StringComparison.Ordinal);
     }
 
     [Fact]

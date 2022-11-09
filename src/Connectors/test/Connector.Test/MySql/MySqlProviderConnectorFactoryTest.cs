@@ -18,7 +18,7 @@ public class MySqlProviderConnectorFactoryTest
         const MySqlServiceInfo si = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new MySqlProviderConnectorFactory(si, options, typeof(MySqlConnection)));
-        Assert.Contains(nameof(options), ex.Message);
+        Assert.Contains(nameof(options), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

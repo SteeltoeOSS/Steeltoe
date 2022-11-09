@@ -144,9 +144,9 @@ public class RepublishMessageRecoverer : IMessageRecoverer
 
         if (MaxStackTraceLength > 0 && stackTraceAsString.Length + exceptionMessage.Length > MaxStackTraceLength)
         {
-            if (!exceptionMessage.Equals(truncatedExceptionMessage))
+            if (exceptionMessage != truncatedExceptionMessage)
             {
-                int start = stackTraceAsString.IndexOf(exceptionMessage);
+                int start = stackTraceAsString.IndexOf(exceptionMessage, StringComparison.Ordinal);
 
                 stackTraceAsString = stackTraceAsString.Substring(0, start) + truncatedExceptionMessage +
                     stackTraceAsString.Substring(start + exceptionMessage.Length);

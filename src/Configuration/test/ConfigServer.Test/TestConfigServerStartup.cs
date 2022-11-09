@@ -66,17 +66,17 @@ public sealed class TestConfigServerStartup
 
     public int GetStatusCode(string path)
     {
-        if (!string.IsNullOrEmpty(Label) && !path.Contains(Label))
+        if (!string.IsNullOrEmpty(Label) && !path.Contains(Label, StringComparison.Ordinal))
         {
             return 404;
         }
 
-        if (!string.IsNullOrEmpty(Env) && !path.Contains(Env))
+        if (!string.IsNullOrEmpty(Env) && !path.Contains(Env, StringComparison.Ordinal))
         {
             return 404;
         }
 
-        if (!string.IsNullOrEmpty(AppName) && !path.Contains(AppName))
+        if (!string.IsNullOrEmpty(AppName) && !path.Contains(AppName, StringComparison.Ordinal))
         {
             return 404;
         }

@@ -63,7 +63,7 @@ internal sealed class MessagingPredicates
         public bool Test(ParameterInfo parameter)
         {
             var annotation = parameter.GetCustomAttribute<DestinationVariableAttribute>();
-            return annotation != null && (_value == null || annotation.Name.Equals(_value));
+            return annotation != null && (_value == null || annotation.Name == _value);
         }
     }
 

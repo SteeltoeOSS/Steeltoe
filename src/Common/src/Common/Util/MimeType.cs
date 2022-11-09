@@ -17,9 +17,9 @@ public class MimeType : IComparable<MimeType>
 
     private volatile string _toStringValue;
 
-    public bool IsWildcardType => WildcardType.Equals(Type);
+    public bool IsWildcardType => Type == WildcardType;
 
-    public bool IsWildcardSubtype => WildcardType.Equals(Subtype) || Subtype.StartsWith("*+");
+    public bool IsWildcardSubtype => Subtype == WildcardType || Subtype.StartsWith("*+", StringComparison.Ordinal);
 
     public bool IsConcrete => !IsWildcardType && !IsWildcardSubtype;
 
@@ -115,8 +115,11 @@ public class MimeType : IComparable<MimeType>
 
         CheckToken(type);
         CheckToken(subtype);
+
+#pragma warning disable S4040 // Strings should be normalized to uppercase
         Type = type.ToLowerInvariant();
         Subtype = subtype.ToLowerInvariant();
+#pragma warning restore S4040 // Strings should be normalized to uppercase
 
         if (parameters.Count > 0)
         {
@@ -148,7 +151,7 @@ public class MimeType : IComparable<MimeType>
 
         CheckToken(attribute);
 
-        if (ParamCharset.Equals(attribute))
+        if (attribute == ParamCharset)
         {
             value = Unquote(value);
             _ = Encoding.GetEncoding(value);
@@ -187,9 +190,9 @@ public class MimeType : IComparable<MimeType>
             return true;
         }
 
-        if (Type.Equals(other.Type))
+        if (Type == other.Type)
         {
-            if (Subtype.Equals(other.Subtype))
+            if (Subtype == other.Subtype)
             {
                 return true;
             }
@@ -213,7 +216,7 @@ public class MimeType : IComparable<MimeType>
                     string thisSubtypeSuffix = Subtype.Substring(thisPlusIdx + 1);
                     string otherSubtypeSuffix = other.Subtype.Substring(otherPlusIdx + 1);
 
-                    if (thisSubtypeSuffix.Equals(otherSubtypeSuffix) && WildcardType.Equals(thisSubtypeNoSuffix))
+                    if (thisSubtypeSuffix == otherSubtypeSuffix && thisSubtypeNoSuffix == WildcardType)
                     {
                         return true;
                     }
@@ -236,9 +239,9 @@ public class MimeType : IComparable<MimeType>
             return true;
         }
 
-        if (Type.Equals(other.Type))
+        if (Type == other.Type)
         {
-            if (Subtype.Equals(other.Subtype))
+            if (Subtype == other.Subtype)
             {
                 return true;
             }
@@ -261,7 +264,7 @@ public class MimeType : IComparable<MimeType>
                     string thisSubtypeSuffix = Subtype.Substring(thisPlusIdx + 1);
                     string otherSubtypeSuffix = other.Subtype.Substring(otherPlusIdx + 1);
 
-                    if (thisSubtypeSuffix.Equals(otherSubtypeSuffix) && (WildcardType.Equals(thisSubtypeNoSuffix) || WildcardType.Equals(otherSubtypeNoSuffix)))
+                    if (thisSubtypeSuffix == otherSubtypeSuffix && (thisSubtypeNoSuffix == WildcardType || otherSubtypeNoSuffix == WildcardType))
                     {
                         return true;
                     }
@@ -334,14 +337,14 @@ public class MimeType : IComparable<MimeType>
 
     public int CompareTo(MimeType other)
     {
-        int comp = Type.CompareTo(other.Type);
+        int comp = string.Compare(Type, other.Type, StringComparison.Ordinal);
 
         if (comp != 0)
         {
             return comp;
         }
 
-        comp = Subtype.CompareTo(other.Subtype);
+        comp = string.Compare(Subtype, other.Subtype, StringComparison.Ordinal);
 
         if (comp != 0)
         {
@@ -376,7 +379,7 @@ public class MimeType : IComparable<MimeType>
                 return comp;
             }
 
-            if (ParamCharset.Equals(thisAttribute))
+            if (thisAttribute == ParamCharset)
             {
                 Encoding thisCharset = Encoding;
                 Encoding otherCharset = other.Encoding;
@@ -406,7 +409,7 @@ public class MimeType : IComparable<MimeType>
                 string thisValue = Parameters[thisAttribute];
                 string otherValue = other.Parameters[otherAttribute] ?? string.Empty;
 
-                comp = thisValue.CompareTo(otherValue);
+                comp = string.Compare(thisValue, otherValue, StringComparison.Ordinal);
 
                 if (comp != 0)
                 {
@@ -443,7 +446,7 @@ public class MimeType : IComparable<MimeType>
             return false;
         }
 
-        return (s.StartsWith("\"") && s.EndsWith("\"")) || (s.StartsWith("'") && s.EndsWith("'"));
+        return (s.StartsWith('"') && s.EndsWith('"')) || (s.StartsWith('\'') && s.EndsWith('\''));
     }
 
     private bool ParametersAreEqual(MimeType other)
@@ -462,7 +465,7 @@ public class MimeType : IComparable<MimeType>
                 return false;
             }
 
-            if (ParamCharset.Equals(key))
+            if (key == ParamCharset)
             {
                 if (!ObjectUtils.NullSafeEquals(Encoding, other.Encoding))
                 {
@@ -552,7 +555,7 @@ public class MimeType : IComparable<MimeType>
                 return -1;
             }
 
-            if (!x.Type.Equals(y.Type))
+            if (x.Type != y.Type)
             {
                 // audio/basic == text/html
                 return 0;
@@ -571,7 +574,7 @@ public class MimeType : IComparable<MimeType>
                 return -1;
             }
 
-            if (!x.Subtype.Equals(y.Subtype))
+            if (x.Subtype != y.Subtype)
             {
                 // audio/basic == audio/wave
                 return 0;

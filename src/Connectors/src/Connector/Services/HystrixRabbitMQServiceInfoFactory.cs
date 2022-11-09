@@ -52,7 +52,7 @@ public class HystrixRabbitMQServiceInfoFactory : ServiceInfoFactory
             {
                 foreach (string uriScheme in UriSchemes)
                 {
-                    if (uri.StartsWith($"{uriScheme}://"))
+                    if (uri.StartsWith($"{uriScheme}://", StringComparison.Ordinal))
                     {
                         return true;
                     }

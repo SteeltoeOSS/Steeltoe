@@ -146,7 +146,7 @@ public class RabbitTemplateTest
         }
         catch (RabbitAuthenticationException e)
         {
-            Assert.Contains("foo", e.InnerException.Message);
+            Assert.Contains("foo", e.InnerException.Message, StringComparison.Ordinal);
         }
 
         Assert.Equal(3, count.Value);

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Text;
 using Consul;
 using Microsoft.Extensions.Options;
@@ -170,7 +171,9 @@ public class ConsulRegistration : IConsulRegistration
         }
 
         // store the secure flag in the tags so that clients will be able to figure out whether to use http or https automatically
-        tags.Add($"secure={(options.Scheme == "https").ToString().ToLower()}");
+#pragma warning disable S4040 // Strings should be normalized to uppercase
+        tags.Add($"secure={(options.Scheme == "https").ToString(CultureInfo.InvariantCulture).ToLowerInvariant()}");
+#pragma warning restore S4040 // Strings should be normalized to uppercase
 
         return tags.ToArray();
     }
@@ -194,7 +197,7 @@ public class ConsulRegistration : IConsulRegistration
 
         if (string.IsNullOrEmpty(instanceId))
         {
-            instanceId = Random.Shared.Next().ToString();
+            instanceId = Random.Shared.Next().ToString(CultureInfo.InvariantCulture);
         }
 
         return $"{appName}:{instanceId}";

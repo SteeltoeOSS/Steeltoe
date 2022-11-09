@@ -66,7 +66,7 @@ public class TestBase
         var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;
         Assert.NotNull(instrumentations);
         Assert.Single(instrumentations);
-        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
+        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http", StringComparison.Ordinal));
 
         Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
         var comp = Propagators.DefaultTextMapPropagator as CompositeTextMapPropagator;
@@ -88,7 +88,7 @@ public class TestBase
         var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;
         Assert.NotNull(instrumentations);
         Assert.Equal(2, instrumentations.Count);
-        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
-        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
+        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http", StringComparison.Ordinal));
+        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore", StringComparison.Ordinal));
     }
 }

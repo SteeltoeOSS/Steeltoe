@@ -114,9 +114,9 @@ public class CloudFoundrySecurityMiddleware
         {
             string contextPath = _managementOptions.Path;
 
-            if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(ep.Path))
+            if (!contextPath.EndsWith('/') && !string.IsNullOrEmpty(ep.Path))
             {
-                contextPath += "/";
+                contextPath += '/';
             }
 
             string fullPath = contextPath + ep.Path;

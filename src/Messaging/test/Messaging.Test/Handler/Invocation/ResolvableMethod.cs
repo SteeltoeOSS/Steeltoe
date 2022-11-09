@@ -64,7 +64,7 @@ internal sealed class ResolvableMethod
 
         public Builder<T> Named(string methodName)
         {
-            AddFilter($"methodName={methodName}", method => method.Name.Equals(methodName));
+            AddFilter($"methodName={methodName}", method => method.Name == methodName);
             return this;
         }
 

@@ -117,7 +117,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         const IConfigurationBuilder configurationBuilder = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(new ConfigServerClientSettings()));
-        Assert.Contains(nameof(configurationBuilder), ex.Message);
+        Assert.Contains(nameof(configurationBuilder), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         const ConfigServerClientSettings clientSettings = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(clientSettings));
-        Assert.Contains(nameof(clientSettings), ex.Message);
+        Assert.Contains(nameof(clientSettings), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

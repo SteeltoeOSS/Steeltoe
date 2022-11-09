@@ -4,6 +4,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
@@ -158,7 +159,7 @@ public class HttpClientCoreObserver : MetricsObserver
         if (response != null)
         {
             int val = (int)response.StatusCode;
-            return val.ToString();
+            return val.ToString(CultureInfo.InvariantCulture);
         }
 
         if (taskStatus == TaskStatus.Faulted)

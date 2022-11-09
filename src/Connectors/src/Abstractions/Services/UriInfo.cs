@@ -98,7 +98,7 @@ public class UriInfo
 
     protected internal Uri MakeUri(string scheme, string host, int port, string username, string password, string path, string query)
     {
-        string cleanedPath = path == null || path.StartsWith("/") ? path : $"/{path}";
+        string cleanedPath = path == null || path.StartsWith('/') ? path : $"/{path}";
         cleanedPath = query != null ? $"{cleanedPath}?{query}" : cleanedPath;
 
         if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
@@ -133,7 +133,7 @@ public class UriInfo
     {
         try
         {
-            if (uriString.StartsWith("jdbc") || uriString.Contains(";"))
+            if (uriString.StartsWith("jdbc", StringComparison.Ordinal) || uriString.Contains(';'))
             {
                 ConvertJdbcToUri(ref uriString);
             }
@@ -143,7 +143,7 @@ public class UriInfo
         catch (Exception)
         {
             // URI parsing will fail if multiple (comma separated) hosts were provided...
-            if (uriString.Contains(","))
+            if (uriString.Contains(','))
             {
                 // Slide past the protocol
                 string[] splitUri = uriString.Split('/');
@@ -160,7 +160,7 @@ public class UriInfo
                 Hosts = Host.Split(',');
 
                 // swap all the hosts out with a placeholder so we can parse the rest of the info
-                return new Uri(uriString.Replace(Host, "multipleHostsDetected"));
+                return new Uri(uriString.Replace(Host, "multipleHostsDetected", StringComparison.Ordinal));
             }
 
             return null;
@@ -169,15 +169,15 @@ public class UriInfo
 
     protected internal void ConvertJdbcToUri(ref string uriString)
     {
-        uriString = uriString.Replace("jdbc:", string.Empty).Replace(";", "&");
+        uriString = uriString.Replace("jdbc:", string.Empty, StringComparison.Ordinal).Replace(';', '&');
 
-        if (!uriString.Contains("?"))
+        if (!uriString.Contains('?'))
         {
-            int firstAmp = uriString.IndexOf("&");
+            int firstAmp = uriString.IndexOf('&');
 
             // If there is an equals sign before any ampersands, it is likely a key was included for the db name.
             // Make the database name part of the path rather than query string if possible
-            int firstEquals = uriString.IndexOf("=");
+            int firstEquals = uriString.IndexOf('=');
 
             if (firstEquals > 0 && (firstEquals < firstAmp || firstAmp == -1))
             {
@@ -188,7 +188,7 @@ public class UriInfo
                     uriString = uriString.Remove(dbNameIndex, 13);
 
                     // recalculate the location of the first '&'
-                    firstAmp = uriString.IndexOf("&");
+                    firstAmp = uriString.IndexOf('&');
                 }
             }
 

@@ -104,7 +104,7 @@ public class HealthEndpoint : AbstractEndpoint<HealthEndpointResponse, ISecurity
         {
             if (Options.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
             {
-                List<string> includedContributors = groupOptions.Include.Split(",").ToList();
+                List<string> includedContributors = groupOptions.Include.Split(',').ToList();
                 contributors = contributors.Where(n => includedContributors.Contains(n.Id, StringComparer.OrdinalIgnoreCase)).ToList();
             }
             else

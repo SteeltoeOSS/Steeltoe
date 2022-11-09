@@ -183,7 +183,7 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 
         foreach (MimeType current in SupportedMimeTypes)
         {
-            if (current.Type.Equals(mimeType.Type) && current.Subtype.Equals(mimeType.Subtype))
+            if (current.Type == mimeType.Type && current.Subtype == mimeType.Subtype)
             {
                 return true;
             }

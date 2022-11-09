@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Connector.Services;
@@ -42,19 +43,19 @@ public class PostgresProviderConfigurer
                     if (kvp.Key.Equals("sslmode", StringComparison.OrdinalIgnoreCase))
                     {
                         // Npgsql parses SSL Mode into an enum, the first character must be capitalized
-                        configuration.SslMode = FirstCharToUpper(kvp.Value);
+                        configuration.SslMode = FirstCharToUpperInvariant(kvp.Value);
                     }
-                    else if (kvp.Key.Equals("sslcert"))
+                    else if (kvp.Key == "sslcert")
                     {
                         // TODO: Map this client cert into the npgsql client cert callback
                         configuration.ClientCertificate = kvp.Value;
                     }
-                    else if (kvp.Key.Equals("sslkey"))
+                    else if (kvp.Key == "sslkey")
                     {
                         // TODO: Map this client cert into the npgsql client cert callback
                         configuration.ClientKey = kvp.Value;
                     }
-                    else if (kvp.Key.Equals("sslrootcert"))
+                    else if (kvp.Key == "sslrootcert")
                     {
                         // TODO: Map this client cert into the npgsql remote cert validation callback
                         configuration.SslRootCertificate = kvp.Value;
@@ -69,10 +70,10 @@ public class PostgresProviderConfigurer
     }
 
     // from https://stackoverflow.com/a/4405876/761468
-    private string FirstCharToUpper(string input)
+    private string FirstCharToUpperInvariant(string input)
     {
         ArgumentGuard.NotNullOrEmpty(input);
 
-        return string.Concat(input[0].ToString().ToUpper(), input.AsSpan(1));
+        return string.Concat(input[0].ToString(CultureInfo.InvariantCulture).ToUpperInvariant(), input.AsSpan(1));
     }
 }

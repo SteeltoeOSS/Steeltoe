@@ -787,7 +787,7 @@ public class CredHubClientTests
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        Assert.Contains("\"key\":123", response);
+        Assert.Contains("\"key\":123", response, StringComparison.Ordinal);
     }
 
     private Task<CredHubClient> InitializeClientAsync(MockHttpMessageHandler mockHttpMessageHandler)
@@ -803,7 +803,7 @@ public class CredHubClientTests
     private MockHttpMessageHandler InitializedHandlerWithLogin()
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
-        string infoUrl = CredHubBase.Replace("/api", "/info");
+        string infoUrl = CredHubBase.Replace("/api", "/info", StringComparison.Ordinal);
 
         mockHttpMessageHandler.Expect(HttpMethod.Get, infoUrl)
             .Respond("application/json", "{\"auth-server\": {\"url\": \"http://uaa-server\"},\"app\":{\"name\":\"CredHub\" }}");

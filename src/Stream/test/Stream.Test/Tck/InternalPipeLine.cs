@@ -14,7 +14,7 @@ public class InternalPipeLine
     [SendTo("internalchannel")]
     public string HandleA(Person value)
     {
-        return $"{{\"name\":\"{value.Name.ToUpper()}\"}}";
+        return $"{{\"name\":\"{value.Name.ToUpperInvariant()}\"}}";
     }
 
     [StreamListener("internalchannel")]

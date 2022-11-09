@@ -903,8 +903,8 @@ public class DefaultConversionServiceTest
         };
 
         var result = ConversionService.Convert<StringCollection>(strings);
-        Assert.Contains("3", result[0]);
-        Assert.Contains("9", result[1]);
+        Assert.Contains("3", result[0], StringComparison.Ordinal);
+        Assert.Contains("9", result[1], StringComparison.Ordinal);
         Assert.Equal(2, result.Count);
     }
 
@@ -1155,7 +1155,7 @@ public class DefaultConversionServiceTest
                 return false;
             }
 
-            return _value.Equals(other._value);
+            return _value == other._value;
         }
 
         public override int GetHashCode()
@@ -1201,7 +1201,7 @@ public class DefaultConversionServiceTest
                 return false;
             }
 
-            return _value.Equals(ssn._value);
+            return _value == ssn._value;
         }
 
         public override int GetHashCode()

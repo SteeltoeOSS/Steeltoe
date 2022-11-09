@@ -21,6 +21,6 @@ public class NullAwarePayloadArgumentResolver : PayloadMethodArgumentResolver
 
     protected override bool IsEmptyPayload(object payload)
     {
-        return base.IsEmptyPayload(payload) || "KafkaNull".Equals(payload.GetType().Name);
+        return base.IsEmptyPayload(payload) || payload.GetType().Name == "KafkaNull";
     }
 }

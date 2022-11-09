@@ -17,7 +17,7 @@ public class MongoDbConnectorFactoryTest
         const MongoDbServiceInfo si = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new MongoDbConnectorFactory(si, options, MongoDbTypeLocator.MongoClient));
-        Assert.Contains(nameof(options), ex.Message);
+        Assert.Contains(nameof(options), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -121,10 +121,10 @@ public class MongoDbConnectorFactoryTest
         string opts = configurer.Configure(si, options);
 
         Assert.Equal("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", opts);
-        Assert.DoesNotContain("localhost", opts);
-        Assert.DoesNotContain("1234", opts);
-        Assert.DoesNotContain("username", opts);
-        Assert.DoesNotContain("password", opts);
-        Assert.DoesNotContain("database", opts);
+        Assert.DoesNotContain("localhost", opts, StringComparison.Ordinal);
+        Assert.DoesNotContain("1234", opts, StringComparison.Ordinal);
+        Assert.DoesNotContain("username", opts, StringComparison.Ordinal);
+        Assert.DoesNotContain("password", opts, StringComparison.Ordinal);
+        Assert.DoesNotContain("database", opts, StringComparison.Ordinal);
     }
 }

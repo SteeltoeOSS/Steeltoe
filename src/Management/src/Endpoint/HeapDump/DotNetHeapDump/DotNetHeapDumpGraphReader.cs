@@ -559,8 +559,8 @@ internal sealed class DotNetHeapDumpGraphReader
                     }
                     // TODO FIX NOW these are kind of hacks
                     typeName = Regex.Replace(typeName, @"`\d+", "");
-                    typeName = typeName.Replace("[", "<");
-                    typeName = typeName.Replace("]", ">");
+                    typeName = typeName.Replace('[', '<');
+                    typeName = typeName.Replace(']', '>');
                     typeName = typeName.Replace("<>", "[]");
 
                     string moduleName;

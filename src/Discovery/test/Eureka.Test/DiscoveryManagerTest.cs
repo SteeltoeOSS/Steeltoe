@@ -28,14 +28,14 @@ public class DiscoveryManagerTest : AbstractBaseTest
         var ex = Assert.Throws<ArgumentNullException>(() =>
             DiscoveryManager.Instance.Initialize(new EurekaClientConfiguration(), (EurekaInstanceConfiguration)null));
 
-        Assert.Contains("instanceConfig", ex.Message);
+        Assert.Contains("instanceConfig", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
     public void Initialize_Throws_IfClientConfigNull()
     {
         var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryManager.Instance.Initialize(null, new EurekaInstanceConfiguration()));
-        Assert.Contains("clientConfig", ex.Message);
+        Assert.Contains("clientConfig", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

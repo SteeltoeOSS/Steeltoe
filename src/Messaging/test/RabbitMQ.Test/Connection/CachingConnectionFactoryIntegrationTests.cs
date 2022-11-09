@@ -323,7 +323,7 @@ public sealed class CachingConnectionFactoryIntegrationTests : IDisposable
     {
         var connection = _connectionFactory.CreateConnection() as ChannelCachingConnectionProxy;
         RC.IConnection rabbitConnection = connection.Target.Connection;
-        Assert.StartsWith(CFIntegrationConnectionName, rabbitConnection.ClientProvidedName);
+        Assert.StartsWith(CFIntegrationConnectionName, rabbitConnection.ClientProvidedName, StringComparison.Ordinal);
     }
 
     [Fact]

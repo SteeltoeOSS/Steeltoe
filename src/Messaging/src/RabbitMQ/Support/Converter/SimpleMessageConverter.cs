@@ -38,7 +38,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
         {
             string contentType = properties.ContentType();
 
-            if (contentType != null && contentType.StartsWith("text"))
+            if (contentType != null && contentType.StartsWith("text", StringComparison.Ordinal))
             {
                 string encoding = properties.ContentEncoding() ?? DefaultCharset;
 
@@ -52,7 +52,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
                     throw new MessageConversionException("failed to convert text-based Message content", e);
                 }
             }
-            else if (contentType != null && contentType.Equals(MessageHeaders.ContentTypeDotNetSerializedObject))
+            else if (contentType != null && contentType == MessageHeaders.ContentTypeDotNetSerializedObject)
             {
                 try
                 {
@@ -70,7 +70,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
                     throw new MessageConversionException("failed to convert serialized Message content", e);
                 }
             }
-            else if (contentType != null && contentType.Equals(MessageHeaders.ContentTypeJavaSerializedObject))
+            else if (contentType != null && contentType == MessageHeaders.ContentTypeJavaSerializedObject)
             {
                 throw new MessageConversionException($"Content type: {MessageHeaders.ContentTypeJavaSerializedObject} unsupported");
             }

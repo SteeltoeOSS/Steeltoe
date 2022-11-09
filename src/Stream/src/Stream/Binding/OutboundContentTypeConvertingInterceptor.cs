@@ -43,7 +43,7 @@ internal sealed class OutboundContentTypeConvertingInterceptor : AbstractContent
 
         if (message.Payload is string)
         {
-            ct = MimeTypeUtils.ApplicationJsonValue.Equals(oct) ? MimeTypeUtils.ApplicationJsonValue : MimeTypeUtils.TextPlainValue;
+            ct = oct == MimeTypeUtils.ApplicationJsonValue ? MimeTypeUtils.ApplicationJsonValue : MimeTypeUtils.TextPlainValue;
         }
 
         // ===== END 1.3 backward compatibility code part-1 ===
@@ -61,7 +61,7 @@ internal sealed class OutboundContentTypeConvertingInterceptor : AbstractContent
         }
 
         // ===== 1.3 backward compatibility code part-2 ===
-        if (ct != null && !ct.Equals(oct) && oct != null)
+        if (ct != null && ct != oct && oct != null)
         {
             var messageHeaders = result.Headers as MessageHeaders;
             messageHeaders.RawHeaders[MessageHeaders.ContentType] = MimeType.ToMimeType(ct);

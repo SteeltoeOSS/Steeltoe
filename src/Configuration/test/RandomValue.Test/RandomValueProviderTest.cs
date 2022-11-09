@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
@@ -56,7 +57,7 @@ public sealed class RandomValueProviderTest
         var prov = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         prov.TryGet("random:int[4,10]", out string value);
         Assert.NotNull(value);
-        int val = int.Parse(value);
+        int val = int.Parse(value, CultureInfo.InvariantCulture);
         Assert.InRange(val, 4, 10);
     }
 
@@ -66,7 +67,7 @@ public sealed class RandomValueProviderTest
         var prov = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         prov.TryGet("random:int(10)", out string value);
         Assert.NotNull(value);
-        int val = int.Parse(value);
+        int val = int.Parse(value, CultureInfo.InvariantCulture);
         Assert.InRange(val, 0, 10);
     }
 
@@ -84,7 +85,7 @@ public sealed class RandomValueProviderTest
         var prov = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         prov.TryGet("random:long[4,10]", out string value);
         Assert.NotNull(value);
-        int val = int.Parse(value);
+        int val = int.Parse(value, CultureInfo.InvariantCulture);
         Assert.InRange(val, 4, 10);
     }
 
@@ -94,7 +95,7 @@ public sealed class RandomValueProviderTest
         var prov = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         prov.TryGet("random:long(10)", out string value);
         Assert.NotNull(value);
-        int val = int.Parse(value);
+        int val = int.Parse(value, CultureInfo.InvariantCulture);
         Assert.InRange(val, 0, 10);
     }
 }

@@ -39,7 +39,7 @@ public class ObjectStringMessageConverter : AbstractMessageConverter
         {
             foreach (MimeType current in SupportedMimeTypes)
             {
-                if (current.Type.Equals(mimeType.Type))
+                if (current.Type == mimeType.Type)
                 {
                     return true;
                 }

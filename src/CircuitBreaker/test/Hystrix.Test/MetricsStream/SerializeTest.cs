@@ -57,10 +57,10 @@ public class SerializeTest : HystrixTestBase
 
         Assert.NotNull(cmdData["type"]);
         string type = cmdData["type"].Value<string>();
-        Assert.True("HystrixCommand".Equals(type) || "HystrixThreadPool".Equals(type));
+        Assert.True(type == "HystrixCommand" || type == "HystrixThreadPool");
         Assert.NotNull(cmdData["name"]);
         string name = cmdData["name"].Value<string>();
-        Assert.True("MyCommand".Equals(name) || "MyCommandGroup".Equals(name));
+        Assert.True(name == "MyCommand" || name == "MyCommandGroup");
 
         subscription.Dispose();
     }

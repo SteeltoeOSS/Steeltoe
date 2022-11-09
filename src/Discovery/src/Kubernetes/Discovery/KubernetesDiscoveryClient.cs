@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
@@ -114,7 +115,7 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
                 if (metadataProps.AddPorts)
                 {
                     Dictionary<string, string> ports = subset.Ports.Where(p => !string.IsNullOrWhiteSpace(p.Name))
-                        .ToDictionary(p => p.Name, p => p.Port.ToString());
+                        .ToDictionary(p => p.Name, p => p.Port.ToString(CultureInfo.InvariantCulture));
 
                     IDictionary<string, string> portMetadata = GetDictionaryWithPrefixedKeys(ports, metadataProps.PortsPrefix);
 
@@ -188,7 +189,7 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
         {
             endpointPort = ports.FirstOrDefault(port =>
                 string.IsNullOrEmpty(_discoveryOptions.CurrentValue.PrimaryPortName) ||
-                _discoveryOptions.CurrentValue.PrimaryPortName.ToUpper().Equals(port.Name.ToUpper()));
+                _discoveryOptions.CurrentValue.PrimaryPortName.ToUpperInvariant() == port.Name.ToUpperInvariant());
         }
 
         return endpointPort;

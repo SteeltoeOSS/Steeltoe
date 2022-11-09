@@ -119,9 +119,9 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
     {
         public string HandleMessage(string input)
         {
-            if ("foo".Equals(input) || "bar".Equals(input))
+            if (input == "foo" || input == "bar")
             {
-                return input.ToUpper();
+                return input.ToUpperInvariant();
             }
 
             return null;

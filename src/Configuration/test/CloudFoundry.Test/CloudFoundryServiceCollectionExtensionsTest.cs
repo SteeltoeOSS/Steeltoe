@@ -18,7 +18,7 @@ public sealed class CloudFoundryServiceCollectionExtensionsTest
         const IConfigurationRoot configurationRoot = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryOptions(configurationRoot));
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -28,7 +28,7 @@ public sealed class CloudFoundryServiceCollectionExtensionsTest
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureCloudFoundryOptions(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

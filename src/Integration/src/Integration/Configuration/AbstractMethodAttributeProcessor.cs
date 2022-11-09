@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
@@ -249,7 +250,7 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
 
                 if (resolvedValue != null)
                 {
-                    int value = int.Parse(resolvedValue);
+                    int value = int.Parse(resolvedValue, CultureInfo.InvariantCulture);
 
                     if (handler is AbstractMessageProducingHandler abstractHandler)
                     {

@@ -75,7 +75,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     public virtual void SetResponseAddress(string defaultReplyTo)
     {
-        if (defaultReplyTo.StartsWith(ParserContext.ExpressionPrefix))
+        if (defaultReplyTo.StartsWith(ParserContext.ExpressionPrefix, StringComparison.Ordinal))
         {
             ResponseExpression = Parser.ParseExpression(defaultReplyTo, ParserContext);
         }

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
@@ -166,7 +167,10 @@ public class EurekaHttpClient : IEurekaHttpClient
         var queryArgs = new Dictionary<string, string>
         {
             { "status", info.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps) },
-            { "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }
+            {
+                "lastDirtyTimestamp",
+                DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString(CultureInfo.InvariantCulture)
+            }
         };
 
         if (overriddenStatus != InstanceStatus.Unknown)
@@ -428,7 +432,10 @@ public class EurekaHttpClient : IEurekaHttpClient
     {
         var queryArgs = new Dictionary<string, string>
         {
-            { "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }
+            {
+                "lastDirtyTimestamp",
+                DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString(CultureInfo.InvariantCulture)
+            }
         };
 
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
@@ -491,7 +498,10 @@ public class EurekaHttpClient : IEurekaHttpClient
         var queryArgs = new Dictionary<string, string>
         {
             { "value", newStatus.ToSnakeCaseString(SnakeCaseStyle.AllCaps) },
-            { "lastDirtyTimestamp", DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString() }
+            {
+                "lastDirtyTimestamp",
+                DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc)).ToString(CultureInfo.InvariantCulture)
+            }
         };
 
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
@@ -647,7 +657,7 @@ public class EurekaHttpClient : IEurekaHttpClient
     {
         string url = new Uri(serviceUrl).ToString();
 
-        if (!url.EndsWith("/"))
+        if (!url.EndsWith('/'))
         {
             url += '/';
         }

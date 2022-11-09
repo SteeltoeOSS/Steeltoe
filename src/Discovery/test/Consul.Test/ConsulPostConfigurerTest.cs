@@ -14,7 +14,7 @@ public class ConsulPostConfigurerTest
         Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
 
         var exception = Assert.Throws<InvalidOperationException>(() => ConsulPostConfigurer.ValidateConsulOptions(new ConsulOptions()));
-        Assert.Contains("localhost", exception.Message);
+        Assert.Contains("localhost", exception.Message, StringComparison.Ordinal);
         Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", null);
     }
 }
