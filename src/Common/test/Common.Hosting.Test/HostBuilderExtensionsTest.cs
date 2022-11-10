@@ -92,7 +92,7 @@ public class HostBuilderExtensionsTest
 
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
     }
-    
+
     [Fact]
     public void UseCloudHosting_WebApplication_Default8080()
     {
