@@ -130,19 +130,19 @@ public class HostBuilderExtensionsTest
     public void UseCloudHosting_WebApplication_IsStateful()
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
-        Environment.SetEnvironmentVariable("PORT", "5042");
+        Environment.SetEnvironmentVariable("PORT", "5044");
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
 
         hostBuilder.UseCloudHosting();
         Environment.SetEnvironmentVariable("PORT", null);
-        Environment.SetEnvironmentVariable("SERVER_PORT", "42");
+        Environment.SetEnvironmentVariable("SERVER_PORT", "5055");
 
         hostBuilder.UseCloudHosting();
         using WebApplication host = hostBuilder.Build();
         host.Start();
 
         var addressFeature = ((IApplicationBuilder)host).ServerFeatures.Get<IServerAddressesFeature>();
-        Assert.Contains("http://[::]:5042", addressFeature.Addresses);
-        Assert.Contains("http://[::]:42", addressFeature.Addresses);
+        Assert.Contains("http://[::]:5044", addressFeature.Addresses);
+        Assert.Contains("http://[::]:5055", addressFeature.Addresses);
     }
 }
