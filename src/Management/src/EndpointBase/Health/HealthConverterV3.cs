@@ -3,8 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
@@ -37,6 +39,12 @@ public class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
                 }
 
                 writer.WriteEndObject();
+            }
+
+            if (health.Groups?.Any() == true)
+            {
+                writer.WritePropertyName("groups");
+                JsonSerializer.Serialize(writer, health.Groups, options);
             }
         }
 
