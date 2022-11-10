@@ -24,11 +24,11 @@ public class EurekaServiceInstance : IServiceInstance
         get
         {
             string scheme = IsSecure ? "https" : "http";
-            return new Uri($"{scheme}://{GetHost()}:{Port}");
+            return new Uri($"{scheme}://{GetHostName()}:{Port}");
         }
     }
 
-    public string Host => GetHost();
+    public string Host => GetHostName();
 
     public string InstanceId => _info.InstanceId;
 
@@ -37,7 +37,7 @@ public class EurekaServiceInstance : IServiceInstance
         _info = info;
     }
 
-    public string GetHost()
+    public string GetHostName()
     {
         return _info.HostName;
     }
