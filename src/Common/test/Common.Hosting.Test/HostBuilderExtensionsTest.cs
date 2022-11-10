@@ -92,7 +92,7 @@ public class HostBuilderExtensionsTest
 
         Environment.SetEnvironmentVariable("SERVER_PORT", null);
     }
-    
+
     [Fact]
     public void UseCloudHosting_WebApplication_Default8080()
     {
@@ -144,6 +144,5 @@ public class HostBuilderExtensionsTest
         var addressFeature = ((IApplicationBuilder)host).ServerFeatures.Get<IServerAddressesFeature>();
         Assert.Contains("http://[::]:5042", addressFeature.Addresses);
         Assert.Contains("http://[::]:42", addressFeature.Addresses);
-
     }
 }

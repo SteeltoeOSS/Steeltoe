@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Common.Hosting;
 
@@ -66,7 +65,6 @@ public static class HostBuilderExtensions
 
         if (!urls.Any())
         {
-
             urls.Add(DefaultUrl);
         }
 
@@ -75,10 +73,10 @@ public static class HostBuilderExtensions
 
     private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, List<string> urls)
     {
-        var currentSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
-        var currentUrls = currentSetting?.Split(';').ToList() ?? new();
+        string currentSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+        List<string> currentUrls = currentSetting?.Split(';').ToList() ?? new List<string>();
         currentUrls.AddRange(urls);
-        var distinctUrls = currentUrls.Distinct();
+        IEnumerable<string> distinctUrls = currentUrls.Distinct();
         return webHostBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Join(";", distinctUrls));
     }
 
