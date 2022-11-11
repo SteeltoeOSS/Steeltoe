@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 
-namespace Steeltoe.Management.Endpoint.Metrics;
+namespace Steeltoe.Management.Endpoint.Metrics.Prometheus;
 
 public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
 {

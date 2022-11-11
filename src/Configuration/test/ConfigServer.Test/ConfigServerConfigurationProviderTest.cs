@@ -10,8 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.TestResources;
 using Xunit;
 using Xunit.Sdk;
 

@@ -3,18 +3,17 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.ExceptionServices;
-using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
-using Steeltoe.Integration.Rabbit.Inbound;
-using Steeltoe.Integration.Rabbit.Outbound;
+using Steeltoe.Common.TestResources;
+using Steeltoe.Integration.RabbitMQ.Inbound;
+using Steeltoe.Integration.RabbitMQ.Outbound;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
-using Steeltoe.Stream.Binder.Rabbit;
 using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
 using Steeltoe.Stream.Binder.Test;
 using Xunit;

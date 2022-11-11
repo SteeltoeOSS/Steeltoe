@@ -4,8 +4,9 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Json;
 
-namespace Steeltoe.Security.DataProtection.CredHub;
+namespace Steeltoe.Security.DataProtection.CredHub.Credentials.Utilities;
 
 public class JsonCredentialJsonConverter : JsonConverter<JsonCredential>
 {

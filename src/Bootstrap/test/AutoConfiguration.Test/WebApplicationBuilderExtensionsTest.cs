@@ -23,6 +23,7 @@ using StackExchange.Redis;
 using Steeltoe.Common;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Kubernetes;
@@ -35,7 +36,7 @@ using Steeltoe.Logging;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Xunit;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration.Test;

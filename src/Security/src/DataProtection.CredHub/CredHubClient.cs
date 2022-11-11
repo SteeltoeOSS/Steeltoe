@@ -12,6 +12,9 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
+using Steeltoe.Security.DataProtection.CredHub.Credentials;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Certificate;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Permissions;
 
 namespace Steeltoe.Security.DataProtection.CredHub;
 

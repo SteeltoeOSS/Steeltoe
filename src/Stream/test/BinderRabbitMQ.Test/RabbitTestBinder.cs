@@ -11,9 +11,8 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
-using Steeltoe.Stream.Binder.Rabbit;
-using Steeltoe.Stream.Binder.Rabbit.Provisioning;
 using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
+using Steeltoe.Stream.Binder.RabbitMQ.Provisioning;
 using Steeltoe.Stream.Binder.Test;
 using Steeltoe.Stream.Configuration;
 

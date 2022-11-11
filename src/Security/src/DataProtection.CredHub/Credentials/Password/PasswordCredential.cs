@@ -3,8 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Utilities;
 
-namespace Steeltoe.Security.DataProtection.CredHub;
+namespace Steeltoe.Security.DataProtection.CredHub.Credentials.Password;
 
 [JsonConverter(typeof(StringCredentialJsonConverter<PasswordCredential>))]
 public class PasswordCredential : StringCredential

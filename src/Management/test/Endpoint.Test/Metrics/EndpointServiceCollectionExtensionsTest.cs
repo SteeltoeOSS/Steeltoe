@@ -5,8 +5,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common;
-using Steeltoe.Common.Diagnostics;
+using Steeltoe.Common.TestResources;
+using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
 using Xunit;
 

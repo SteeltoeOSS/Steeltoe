@@ -4,6 +4,7 @@
 
 using System.Globalization;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connector.Services;
 using Steeltoe.Connector.Test.MySql;

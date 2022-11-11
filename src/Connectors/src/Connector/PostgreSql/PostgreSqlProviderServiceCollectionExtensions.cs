@@ -14,7 +14,7 @@ using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.PostgreSql;
 
-public static class PostgresProviderServiceCollectionExtensions
+public static class PostgreSqlProviderServiceCollectionExtensions
 {
     /// <summary>
     /// Add NpgsqlConnection and its IHealthContributor to a ServiceCollection.
@@ -37,13 +37,13 @@ public static class PostgresProviderServiceCollectionExtensions
     /// <remarks>
     /// NpgsqlConnection is retrievable as both NpgsqlConnection and IDbConnection.
     /// </remarks>
-    public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration configuration,
+    public static IServiceCollection AddPostgreSqlConnection(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
 
-        var info = configuration.GetSingletonServiceInfo<PostgresServiceInfo>();
+        var info = configuration.GetSingletonServiceInfo<PostgreSqlServiceInfo>();
 
         DoAdd(services, info, configuration, contextLifetime, addSteeltoeHealthChecks);
         return services;
@@ -73,27 +73,27 @@ public static class PostgresProviderServiceCollectionExtensions
     /// <remarks>
     /// NpgsqlConnection is retrievable as both NpgsqlConnection and IDbConnection.
     /// </remarks>
-    public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration configuration, string serviceName,
+    public static IServiceCollection AddPostgreSqlConnection(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
         ArgumentGuard.NotNull(configuration);
 
-        var info = configuration.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+        var info = configuration.GetRequiredServiceInfo<PostgreSqlServiceInfo>(serviceName);
 
         DoAdd(services, info, configuration, contextLifetime, addSteeltoeHealthChecks);
         return services;
     }
 
-    private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime,
+    private static void DoAdd(IServiceCollection services, PostgreSqlServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime,
         bool addSteeltoeHealthChecks)
     {
-        Type postgresConnection = ReflectionHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
-        var options = new PostgresProviderConnectorOptions(configuration);
-        var factory = new PostgresProviderConnectorFactory(info, options, postgresConnection);
+        Type postgreSqlConnection = ReflectionHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
+        var options = new PostgreSqlProviderConnectorOptions(configuration);
+        var factory = new PostgreSqlProviderConnectorFactory(info, options, postgreSqlConnection);
         services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
-        services.Add(new ServiceDescriptor(postgresConnection, factory.Create, contextLifetime));
+        services.Add(new ServiceDescriptor(postgreSqlConnection, factory.Create, contextLifetime));
 
         if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
         {

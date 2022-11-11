@@ -5,6 +5,7 @@
 using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Integration.Router;
 using Steeltoe.Messaging;
 
 namespace Steeltoe.Integration.Endpoint;

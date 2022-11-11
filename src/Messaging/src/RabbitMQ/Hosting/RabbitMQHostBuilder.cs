@@ -9,7 +9,7 @@ using Steeltoe.Configuration.SpringBoot;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 
-namespace Steeltoe.Messaging.RabbitMQ.Host;
+namespace Steeltoe.Messaging.RabbitMQ.Hosting;
 
 public class RabbitMQHostBuilder : IHostBuilder
 {

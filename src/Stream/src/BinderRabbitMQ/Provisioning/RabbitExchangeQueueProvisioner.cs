@@ -15,7 +15,7 @@ using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Provisioning;
 using static Steeltoe.Messaging.RabbitMQ.Configuration.Binding;
 
-namespace Steeltoe.Stream.Binder.Rabbit.Provisioning;
+namespace Steeltoe.Stream.Binder.RabbitMQ.Provisioning;
 
 public class RabbitExchangeQueueProvisioner : IProvisioningProvider
 {

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.Discovery;
 using Steeltoe.Common.LoadBalancer;
 using Steeltoe.Discovery;
 

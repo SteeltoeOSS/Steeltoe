@@ -6,13 +6,13 @@ using Xunit;
 
 namespace Steeltoe.Connector.Test;
 
-public class ConnectorIOptionsTest
+public class ConnectorOptionsTest
 {
     [Fact]
     public void Value_Returns_Expected()
     {
         var myOpt = new MyOption();
-        var opt = new ConnectorIOptions<MyOption>(myOpt);
+        var opt = new ConnectorOptions<MyOption>(myOpt);
 
         Assert.NotNull(opt.Value);
         Assert.True(opt.Value == myOpt);

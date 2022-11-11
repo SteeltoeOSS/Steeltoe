@@ -7,13 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Stream.Attributes;
-using Steeltoe.Stream.Binder.Rabbit;
-using Steeltoe.Stream.Binder.Rabbit.Provisioning;
+using Steeltoe.Stream.Binder.RabbitMQ;
 using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
+using Steeltoe.Stream.Binder.RabbitMQ.Provisioning;
 
 [assembly: Binder("rabbit", typeof(Startup))]
 
-namespace Steeltoe.Stream.Binder.Rabbit;
+namespace Steeltoe.Stream.Binder.RabbitMQ;
 
 public class Startup
 {

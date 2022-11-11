@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Test;
 using Xunit;

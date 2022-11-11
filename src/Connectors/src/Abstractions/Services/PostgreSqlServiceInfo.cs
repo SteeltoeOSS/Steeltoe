@@ -4,12 +4,12 @@
 
 namespace Steeltoe.Connector.Services;
 
-public class PostgresServiceInfo : UriServiceInfo
+public class PostgreSqlServiceInfo : UriServiceInfo
 {
-    public const string PostgresScheme = "postgres";
-    public const string PostgresJdbcScheme = "postgresql";
+    public const string PostgreSqlScheme = "postgres";
+    public const string PostgreSqlJdbcScheme = "postgresql";
 
-    public PostgresServiceInfo(string id, string url)
+    public PostgreSqlServiceInfo(string id, string url)
         : base(id, url)
     {
     }

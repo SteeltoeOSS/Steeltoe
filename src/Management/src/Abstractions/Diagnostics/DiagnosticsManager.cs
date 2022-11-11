@@ -5,8 +5,9 @@
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
-namespace Steeltoe.Common.Diagnostics;
+namespace Steeltoe.Management.Diagnostics;
 
 public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
 {

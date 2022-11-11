@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Lifecycle;
 
-namespace Steeltoe.Messaging.RabbitMQ.Host;
+namespace Steeltoe.Messaging.RabbitMQ.Hosting;
 
 public sealed class RabbitMQHost : IHost
 {
@@ -21,12 +21,12 @@ public sealed class RabbitMQHost : IHost
 
     public static IHostBuilder CreateDefaultBuilder()
     {
-        return new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder());
+        return new RabbitMQHostBuilder(Host.CreateDefaultBuilder());
     }
 
     public static IHostBuilder CreateDefaultBuilder(string[] args)
     {
-        return new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args));
+        return new RabbitMQHostBuilder(Host.CreateDefaultBuilder(args));
     }
 
     public void Dispose()

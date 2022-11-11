@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connector.MongoDb;
 using Steeltoe.Connector.MySql;
@@ -48,10 +49,10 @@ public class ConnectionStringManagerTest
     }
 
     [Fact]
-    public void PostgresConnectionInfo()
+    public void PostgreSqlConnectionInfo()
     {
         var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        Connection connInfo = cm.Get<PostgresConnectionInfo>();
+        Connection connInfo = cm.Get<PostgreSqlConnectionInfo>();
 
         Assert.NotNull(connInfo);
         Assert.Equal("Host=localhost;Port=5432;Timeout=15;Command Timeout=30;", connInfo.ConnectionString);
@@ -59,12 +60,12 @@ public class ConnectionStringManagerTest
     }
 
     [Fact]
-    public void PostgresConnectionInfoByName()
+    public void PostgreSqlConnectionInfoByName()
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVcapEdb);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.TwoServerVcapEdb);
         var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
-        Connection connInfo = cm.Get<PostgresConnectionInfo>("myPostgres");
+        Connection connInfo = cm.Get<PostgreSqlConnectionInfo>("myPostgres");
 
         Assert.NotNull(connInfo);
         Assert.Equal("Postgres-myPostgres", connInfo.Name);
@@ -186,7 +187,7 @@ public class ConnectionStringManagerTest
         var mongoInfo = new MongoDbServiceInfo("id", "mongodb://host");
         var mysqlInfo = new MySqlServiceInfo("id", "mysql://host");
         var oracleInfo = new OracleServiceInfo("id", "oracle://host");
-        var postgresInfo = new PostgresServiceInfo("id", "postgres://host");
+        var postgreSqlInfo = new PostgreSqlServiceInfo("id", "postgres://host");
         var rabbitMqInfo = new RabbitMQServiceInfo("id", "rabbitmq://host");
         var redisInfo = new RedisServiceInfo("id", "redis://host");
         var sqlInfo = new SqlServerServiceInfo("id", "sqlserver://host");
@@ -196,7 +197,7 @@ public class ConnectionStringManagerTest
         Assert.StartsWith("MongoDb", manager.GetFromServiceInfo(mongoInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("MySql", manager.GetFromServiceInfo(mysqlInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("Oracle", manager.GetFromServiceInfo(oracleInfo).Name, StringComparison.Ordinal);
-        Assert.StartsWith("Postgres", manager.GetFromServiceInfo(postgresInfo).Name, StringComparison.Ordinal);
+        Assert.StartsWith("Postgres", manager.GetFromServiceInfo(postgreSqlInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("RabbitMQ", manager.GetFromServiceInfo(rabbitMqInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("Redis", manager.GetFromServiceInfo(redisInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("SqlServer", manager.GetFromServiceInfo(sqlInfo).Name, StringComparison.Ordinal);

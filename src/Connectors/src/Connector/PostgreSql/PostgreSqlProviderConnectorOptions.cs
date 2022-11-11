@@ -8,9 +8,9 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Connector.PostgreSql;
 
-public class PostgresProviderConnectorOptions : AbstractServiceConnectorOptions
+public class PostgreSqlProviderConnectorOptions : AbstractServiceConnectorOptions
 {
-    private const string PostgresClientSectionPrefix = "postgres:client";
+    private const string PostgreSqlClientSectionPrefix = "postgres:client";
     public const string DefaultHost = "localhost";
     public const int DefaultPort = 5432;
     private readonly bool _cloudFoundryConfigFound;
@@ -45,15 +45,15 @@ public class PostgresProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public bool? TrustServerCertificate { get; set; } = null;
 
-    public PostgresProviderConnectorOptions()
+    public PostgreSqlProviderConnectorOptions()
     {
     }
 
-    public PostgresProviderConnectorOptions(IConfiguration configuration)
+    public PostgreSqlProviderConnectorOptions(IConfiguration configuration)
     {
         ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = configuration.GetSection(PostgresClientSectionPrefix);
+        IConfigurationSection section = configuration.GetSection(PostgreSqlClientSectionPrefix);
         section.Bind(this);
 
         _cloudFoundryConfigFound = configuration.HasCloudFoundryServiceConfigurations();

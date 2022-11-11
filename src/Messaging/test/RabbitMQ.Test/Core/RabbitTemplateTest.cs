@@ -6,6 +6,7 @@ using Moq;
 using RabbitMQ.Client.Exceptions;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
+using Steeltoe.Common.RetryPolly;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Configuration;

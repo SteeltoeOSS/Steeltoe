@@ -4,7 +4,7 @@
 
 using System.Reflection;
 
-namespace Steeltoe.Common.Diagnostics;
+namespace Steeltoe.Management.Diagnostics;
 
 public static class DiagnosticHelpers
 {

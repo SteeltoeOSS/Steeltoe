@@ -15,7 +15,7 @@ public class ServiceCollectionExtensionsTest
     [Fact]
     public void AddSpringBootAdminClient_ThrowsOnNull()
     {
-        var ex = Assert.Throws<ArgumentNullException>(() => Endpoint.SpringBootAdminClient.ServiceCollectionExtensions.AddSpringBootAdminClient(null));
+        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddSpringBootAdminClient(null));
         Assert.Contains("services", ex.Message, StringComparison.Ordinal);
     }
 

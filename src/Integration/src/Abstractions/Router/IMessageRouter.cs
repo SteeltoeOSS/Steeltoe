@@ -4,7 +4,7 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Integration;
+namespace Steeltoe.Integration.Router;
 
 /// <summary>
 /// Routers implementing this interface have a default output channel.
