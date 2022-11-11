@@ -49,7 +49,7 @@ public static class ConfigurationSettingsHelper
         settings.RetryMaxInterval = GetRetryMaxInterval(clientConfigsection, settings.RetryMaxInterval);
         settings.RetryMultiplier = GetRetryMultiplier(clientConfigsection, settings.RetryMultiplier);
         settings.RetryAttempts = GetRetryMaxAttempts(clientConfigsection, settings.RetryAttempts);
-        settings.Token = GetToken(clientConfigsection);
+        settings.Token = GetToken(clientConfigsection, settings.Token);
         settings.Timeout = GetTimeout(clientConfigsection, settings.Timeout);
         settings.AccessTokenUri = GetAccessTokenUri(configPrefix, config);
         settings.ClientId = GetClientId(configPrefix, config);
@@ -122,9 +122,9 @@ public static class ConfigurationSettingsHelper
         return clientConfigsection.GetValue("enabled", def);
     }
 
-    private static string GetToken(IConfigurationSection clientConfigsection)
+    private static string GetToken(IConfigurationSection clientConfigsection, string def)
     {
-        return clientConfigsection.GetValue<string>("token");
+        return clientConfigsection.GetValue<string>("token", def);
     }
 
     private static int GetTimeout(IConfigurationSection clientConfigsection, int def)
