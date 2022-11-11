@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Exceptions;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Logging.DynamicSerilog.Test;

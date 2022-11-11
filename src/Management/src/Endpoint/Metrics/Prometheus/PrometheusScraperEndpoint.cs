@@ -5,8 +5,9 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 
-namespace Steeltoe.Management.Endpoint.Metrics;
+namespace Steeltoe.Management.Endpoint.Metrics.Prometheus;
 
 public class PrometheusScraperEndpoint : AbstractEndpoint<string>, IPrometheusScraperEndpoint
 {

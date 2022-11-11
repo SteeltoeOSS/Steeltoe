@@ -14,7 +14,7 @@ public class OAuthConfigurer
         var ssoOptions = new OAuthServiceOptions();
         UpdateOptions(configuration, ssoOptions);
         UpdateOptions(si, ssoOptions);
-        return new ConnectorIOptions<OAuthServiceOptions>(ssoOptions);
+        return new ConnectorOptions<OAuthServiceOptions>(ssoOptions);
     }
 
     internal void UpdateOptions(SsoServiceInfo si, OAuthServiceOptions serviceOptions)

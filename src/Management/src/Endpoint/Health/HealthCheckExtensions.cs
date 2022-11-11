@@ -4,37 +4,36 @@
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Steeltoe.Common.Util;
-using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
-using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
-using MicrosoftHealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
+using SteeltoeHealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
+using SteeltoeHealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
 public static class HealthCheckExtensions
 {
-    public static HealthStatus ToHealthStatus(this MicrosoftHealthStatus status)
+    public static SteeltoeHealthStatus ToHealthStatus(this HealthStatus status)
     {
         return status switch
         {
-            MicrosoftHealthStatus.Healthy => HealthStatus.Up,
-            MicrosoftHealthStatus.Degraded => HealthStatus.Warning,
-            MicrosoftHealthStatus.Unhealthy => HealthStatus.Down,
-            _ => HealthStatus.Unknown
+            HealthStatus.Healthy => SteeltoeHealthStatus.Up,
+            HealthStatus.Degraded => SteeltoeHealthStatus.Warning,
+            HealthStatus.Unhealthy => SteeltoeHealthStatus.Down,
+            _ => SteeltoeHealthStatus.Unknown
         };
     }
 
-    public static async Task<HealthCheckResult> HealthCheckAsync(this HealthCheckRegistration registration, IServiceProvider provider)
+    public static async Task<SteeltoeHealthCheckResult> HealthCheckAsync(this HealthCheckRegistration registration, IServiceProvider provider)
     {
         var context = new HealthCheckContext
         {
             Registration = registration
         };
 
-        var healthCheckResult = new HealthCheckResult();
+        var healthCheckResult = new SteeltoeHealthCheckResult();
 
         try
         {
-            Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult res = await registration.Factory(provider).CheckHealthAsync(context);
+            HealthCheckResult res = await registration.Factory(provider).CheckHealthAsync(context);
 
             var status = res.Status.ToHealthStatus();
             healthCheckResult.Status = status; // Only used for aggregate doesn't get reported

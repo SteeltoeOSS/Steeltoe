@@ -4,8 +4,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
-using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;

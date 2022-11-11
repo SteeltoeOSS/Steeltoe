@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka;
 using Xunit;
 

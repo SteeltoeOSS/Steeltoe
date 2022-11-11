@@ -5,6 +5,7 @@
 using Consul;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;

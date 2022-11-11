@@ -4,7 +4,7 @@
 
 using Steeltoe.Management.OpenTelemetry.Metrics;
 
-namespace Steeltoe.Management.OpenTelemetry.Exporters;
+namespace Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
 
 public readonly struct SteeltoeCollectionResponse : ICollectionResponse
 {

@@ -3,9 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Attributes;
-using Steeltoe.Discovery.Client;
 
-namespace Steeltoe.Discovery;
+namespace Steeltoe.Discovery.Client;
 
 /// <summary>
 /// Identify assemblies containing ServiceInfoCreators.

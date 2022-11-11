@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Connector.Test.Services;
 
-public class PostgresServiceInfoFactoryTest
+public class PostgreSqlServiceInfoFactoryTest
 {
     [Fact]
     public void Accept_AcceptsValidServiceBinding()
@@ -41,7 +41,7 @@ public class PostgresServiceInfoFactoryTest
             }
         };
 
-        var factory = new PostgresServiceInfoFactory();
+        var factory = new PostgreSqlServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
 
@@ -69,7 +69,7 @@ public class PostgresServiceInfoFactoryTest
             }
         };
 
-        var factory = new PostgresServiceInfoFactory();
+        var factory = new PostgreSqlServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
 
@@ -99,7 +99,7 @@ public class PostgresServiceInfoFactoryTest
             }
         };
 
-        var factory = new PostgresServiceInfoFactory();
+        var factory = new PostgreSqlServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
 
@@ -133,7 +133,7 @@ public class PostgresServiceInfoFactoryTest
             }
         };
 
-        var factory = new PostgresServiceInfoFactory();
+        var factory = new PostgreSqlServiceInfoFactory();
         Assert.False(factory.Accepts(s));
     }
 
@@ -168,8 +168,8 @@ public class PostgresServiceInfoFactoryTest
             }
         };
 
-        var factory = new PostgresServiceInfoFactory();
-        var info = factory.Create(s) as PostgresServiceInfo;
+        var factory = new PostgreSqlServiceInfoFactory();
+        var info = factory.Create(s) as PostgreSqlServiceInfo;
         Assert.NotNull(info);
         Assert.Equal("postgresService", info.Id);
         Assert.Equal("7E1LxXnlH2hhlPVt", info.Password);
@@ -203,8 +203,8 @@ public class PostgresServiceInfoFactoryTest
             }
         };
 
-        var factory = new PostgresServiceInfoFactory();
-        var info = factory.Create(s) as PostgresServiceInfo;
+        var factory = new PostgreSqlServiceInfoFactory();
+        var info = factory.Create(s) as PostgreSqlServiceInfo;
         Assert.NotNull(info);
         Assert.Equal("postgresService", info.Id);
         Assert.Equal("7E1LxXnlH2hhlPVt", info.Password);

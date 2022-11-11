@@ -193,14 +193,14 @@ public class RelationalDbHealthContributorTest
     {
         Type implementationType = PostgreSqlTypeLocator.NpgsqlConnection;
 
-        var options = new PostgresProviderConnectorOptions
+        var options = new PostgreSqlProviderConnectorOptions
         {
             Timeout = 1
         };
 
-        var sInfo = new PostgresServiceInfo("MyId", "postgres://localhost:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+        var sInfo = new PostgreSqlServiceInfo("MyId", "postgres://localhost:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
         var factory = new LoggerFactory();
-        var connFactory = new PostgresProviderConnectorFactory(sInfo, options, implementationType);
+        var connFactory = new PostgreSqlProviderConnectorFactory(sInfo, options, implementationType);
         var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
@@ -213,10 +213,10 @@ public class RelationalDbHealthContributorTest
     public void PostgreSql_Is_Connected_Returns_Up_Status()
     {
         Type implementationType = PostgreSqlTypeLocator.NpgsqlConnection;
-        var options = new PostgresProviderConnectorOptions();
-        var sInfo = new PostgresServiceInfo("MyId", "postgres://steeltoe:steeltoe@localhost:5432/postgres");
+        var options = new PostgreSqlProviderConnectorOptions();
+        var sInfo = new PostgreSqlServiceInfo("MyId", "postgres://steeltoe:steeltoe@localhost:5432/postgres");
         var factory = new LoggerFactory();
-        var connFactory = new PostgresProviderConnectorFactory(sInfo, options, implementationType);
+        var connFactory = new PostgreSqlProviderConnectorFactory(sInfo, options, implementationType);
         var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();

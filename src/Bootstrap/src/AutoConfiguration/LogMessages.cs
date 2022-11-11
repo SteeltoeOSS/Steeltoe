@@ -22,7 +22,7 @@ internal static class LogMessages
     public const string WireMySqlConnection = "Configured MySQL connector";
     public const string WireOracleConnection = "Configured Oracle connector";
     public const string WirePlaceholderResolver = "Configured placeholder configuration provider";
-    public const string WirePostgresConnection = "Configured PostgreSQL connector";
+    public const string WirePostgreSqlConnection = "Configured PostgreSQL connector";
     public const string WireRabbitMqConnection = "Configured RabbitMQ connector";
     public const string WireRandomValueProvider = "Configured Random Value configuration provider";
     public const string WireRedisConnectionMultiplexer = "Configured StackExchange RabbitMQ connector";

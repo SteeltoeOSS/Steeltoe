@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Availability;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Common.Test.Availability;

@@ -6,11 +6,10 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using Steeltoe.Common;
-using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Wavefront.SDK.CSharp.Common;
 using Wavefront.SDK.CSharp.DirectIngestion;
 
-namespace Steeltoe.Management.OpenTelemetry.Exporters;
+namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 
 /// <summary>
 /// Exporter to send spans and traces to Wavefront from OpenTelemetry.

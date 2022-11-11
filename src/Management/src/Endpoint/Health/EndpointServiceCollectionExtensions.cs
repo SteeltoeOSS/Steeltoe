@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Extensions;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Hypermedia;
 
@@ -93,7 +94,7 @@ public static class EndpointServiceCollectionExtensions
         services.TryAddSingleton<ApplicationAvailability>();
     }
 
-    public static void AddHealthContributors(IServiceCollection services, params Type[] contributors)
+    public static void AddHealthContributors(this IServiceCollection services, params Type[] contributors)
     {
         var descriptors = new List<ServiceDescriptor>();
 

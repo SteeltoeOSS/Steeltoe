@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
+using Steeltoe.Common.RetryPolly;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;

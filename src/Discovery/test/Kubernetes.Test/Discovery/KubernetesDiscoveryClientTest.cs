@@ -5,8 +5,8 @@
 using System.Net;
 using k8s;
 using RichardSzalay.MockHttp;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Kubernetes.Discovery;
 using Xunit;
 

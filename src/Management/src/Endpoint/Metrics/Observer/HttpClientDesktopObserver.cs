@@ -10,8 +10,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
-using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;

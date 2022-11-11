@@ -5,6 +5,15 @@
 using System.Net;
 using System.Text.Json;
 using RichardSzalay.MockHttp;
+using Steeltoe.Security.DataProtection.CredHub.Credentials;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Certificate;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Json;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Password;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Permissions;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Rsa;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Ssh;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.User;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Value;
 using Xunit;
 
 namespace Steeltoe.Security.DataProtection.CredHub.Test;

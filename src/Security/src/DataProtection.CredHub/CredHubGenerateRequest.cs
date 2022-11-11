@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Security.DataProtection.CredHub.Credentials;
+
 namespace Steeltoe.Security.DataProtection.CredHub;
 
 public abstract class CredHubGenerateRequest : CredHubBaseObject

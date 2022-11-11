@@ -12,7 +12,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.EventSources;
 using Steeltoe.Common;
 
-namespace Steeltoe.CircuitBreaker.Hystrix;
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents;
 
 public static class HystrixServiceCollectionExtensions
 {

@@ -6,7 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Security.Authentication.Mtls;
+namespace Steeltoe.Security.Authentication.CloudFoundry;
 
 public class CloudFoundryInstanceCertificate
 {

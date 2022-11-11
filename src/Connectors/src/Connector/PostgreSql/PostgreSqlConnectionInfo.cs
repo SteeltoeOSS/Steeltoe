@@ -7,20 +7,20 @@ using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.PostgreSql;
 
-public class PostgresConnectionInfo : IConnectionInfo
+public class PostgreSqlConnectionInfo : IConnectionInfo
 {
     public Connection Get(IConfiguration configuration, string serviceName)
     {
-        PostgresServiceInfo info = string.IsNullOrEmpty(serviceName)
-            ? configuration.GetSingletonServiceInfo<PostgresServiceInfo>()
-            : configuration.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+        PostgreSqlServiceInfo info = string.IsNullOrEmpty(serviceName)
+            ? configuration.GetSingletonServiceInfo<PostgreSqlServiceInfo>()
+            : configuration.GetRequiredServiceInfo<PostgreSqlServiceInfo>(serviceName);
 
         return GetConnection(info, configuration);
     }
 
     public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
     {
-        return GetConnection((PostgresServiceInfo)serviceInfo, configuration);
+        return GetConnection((PostgreSqlServiceInfo)serviceInfo, configuration);
     }
 
     public bool IsSameType(string serviceType)
@@ -30,13 +30,13 @@ public class PostgresConnectionInfo : IConnectionInfo
 
     public bool IsSameType(IServiceInfo serviceInfo)
     {
-        return serviceInfo is PostgresServiceInfo;
+        return serviceInfo is PostgreSqlServiceInfo;
     }
 
-    private Connection GetConnection(PostgresServiceInfo info, IConfiguration configuration)
+    private Connection GetConnection(PostgreSqlServiceInfo info, IConfiguration configuration)
     {
-        var options = new PostgresProviderConnectorOptions(configuration);
-        var configurer = new PostgresProviderConfigurer();
+        var options = new PostgreSqlProviderConnectorOptions(configuration);
+        var configurer = new PostgreSqlProviderConfigurer();
         var connection = new Connection(configurer.Configure(info, options), "Postgres", info);
         connection.Properties.Add("ClientCertificate", options.ClientCertificate);
         connection.Properties.Add("ClientKey", options.ClientKey);

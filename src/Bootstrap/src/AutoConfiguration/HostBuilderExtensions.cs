@@ -83,7 +83,7 @@ public static class HostBuilderExtensions
             hostBuilder.WireIfAnyLoaded(WireMySqlConnection, MySqlTypeLocator.Assemblies);
             hostBuilder.WireIfAnyLoaded(WireMongoClient, MongoDbTypeLocator.Assemblies);
             hostBuilder.WireIfAnyLoaded(WireOracleConnection, OracleTypeLocator.Assemblies);
-            hostBuilder.WireIfAnyLoaded(WirePostgresConnection, PostgreSqlTypeLocator.Assemblies);
+            hostBuilder.WireIfAnyLoaded(WirePostgreSqlConnection, PostgreSqlTypeLocator.Assemblies);
             hostBuilder.WireIfAnyLoaded(WireRabbitMqConnection, RabbitMQTypeLocator.Assemblies);
             hostBuilder.WireIfAnyLoaded(WireRedisConnectionMultiplexer, RedisTypeLocator.StackExchangeAssemblies);
 
@@ -197,9 +197,9 @@ public static class HostBuilderExtensions
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WirePostgresConnection(this IHostBuilder hostBuilder)
+    private static void WirePostgreSqlConnection(this IHostBuilder hostBuilder)
     {
-        hostBuilder.ConfigureServices((host, svc) => svc.AddPostgresConnection(host.Configuration)).Log(LogMessages.WirePostgresConnection);
+        hostBuilder.ConfigureServices((host, svc) => svc.AddPostgreSqlConnection(host.Configuration)).Log(LogMessages.WirePostgreSqlConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
