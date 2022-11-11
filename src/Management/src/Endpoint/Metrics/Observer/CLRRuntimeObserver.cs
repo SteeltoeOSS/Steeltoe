@@ -34,24 +34,18 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
         { "kind", "completionPort" }
     };
 
-    private readonly ObservableGauge<double> _memoryUsedMeasure;
-    private readonly ObservableGauge<long> _collectionCountMeasure;
-    private readonly ObservableGauge<long> _activeThreadsMeasure;
-    private readonly ObservableGauge<long> _availThreadsMeasure;
-    private readonly ObservableGauge<double> _processUpTimeMeasure;
-
     private readonly ClrRuntimeSource.HeapMetrics _previous = default;
 
     public ClrRuntimeObserver(IViewRegistry viewRegistry)
     {
         Meter meter = OpenTelemetryMetrics.Meter;
-        _memoryUsedMeasure = meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");
-        _collectionCountMeasure = meter.CreateObservableGauge("clr.gc.collections", GetCollectionCount, "Garbage collection count", "count");
+        _ = meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");
+        _ = meter.CreateObservableGauge("clr.gc.collections", GetCollectionCount, "Garbage collection count", "count");
 
-        _activeThreadsMeasure = meter.CreateObservableGauge("clr.threadpool.active", GetActiveThreadPoolWorkers, "Active thread count", "count");
-        _availThreadsMeasure = meter.CreateObservableGauge("clr.threadpool.avail", GetAvailableThreadPoolWorkers, "Available thread count", "count");
+        _ = meter.CreateObservableGauge("clr.threadpool.active", GetActiveThreadPoolWorkers, "Active thread count", "count");
+        _ = meter.CreateObservableGauge("clr.threadpool.avail", GetAvailableThreadPoolWorkers, "Available thread count", "count");
 
-        _processUpTimeMeasure = meter.CreateObservableGauge("clr.process.uptime", GetUpTime, "Process uptime in seconds", "count");
+        _ = meter.CreateObservableGauge("clr.process.uptime", GetUpTime, "Process uptime in seconds", "count");
         RegisterViews(viewRegistry);
     }
 

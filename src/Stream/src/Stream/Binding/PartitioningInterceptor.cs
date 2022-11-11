@@ -13,8 +13,6 @@ namespace Steeltoe.Stream.Binding;
 
 internal sealed class PartitioningInterceptor : AbstractChannelInterceptor
 {
-    private readonly IExpressionParser _expressionParser;
-    private readonly IEvaluationContext _evaluationContext;
     internal readonly IBindingOptions BindingOptions;
 
     internal readonly PartitionHandler PartitionHandler;
@@ -30,8 +28,6 @@ internal sealed class PartitioningInterceptor : AbstractChannelInterceptor
         IPartitionKeyExtractorStrategy partitionKeyExtractorStrategy, IPartitionSelectorStrategy partitionSelectorStrategy)
     {
         BindingOptions = bindingOptions;
-        _expressionParser = expressionParser;
-        _evaluationContext = evaluationContext;
 
         PartitionHandler = new PartitionHandler(expressionParser, evaluationContext, BindingOptions.Producer, partitionKeyExtractorStrategy,
             partitionSelectorStrategy);

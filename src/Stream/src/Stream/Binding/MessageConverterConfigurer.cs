@@ -20,17 +20,12 @@ public class MessageConverterConfigurer : IMessageChannelAndSourceConfigurer
     private readonly IEnumerable<IPartitionKeyExtractorStrategy> _extractors;
     private readonly IEnumerable<IPartitionSelectorStrategy> _selectors;
 
-    // private readonly IExpressionParser _expressionParser;
-    // private readonly IEvaluationContext _evaluationContext;
-    private readonly IApplicationContext _applicationContext;
-
     private BindingServiceOptions Options => _optionsMonitor.CurrentValue;
 
     public MessageConverterConfigurer(IApplicationContext applicationContext, IOptionsMonitor<BindingServiceOptions> optionsMonitor,
         IMessageConverterFactory messageConverterFactory, IEnumerable<IPartitionKeyExtractorStrategy> extractors,
         IEnumerable<IPartitionSelectorStrategy> selectors)
     {
-        _applicationContext = applicationContext;
         _optionsMonitor = optionsMonitor;
         _messageConverterFactory = messageConverterFactory;
         _extractors = extractors;

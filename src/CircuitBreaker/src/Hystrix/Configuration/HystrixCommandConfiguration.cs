@@ -6,8 +6,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Configuration;
 
 public class HystrixCommandConfiguration
 {
-    private readonly IHystrixCommandKey _commandKey;
-
     public IHystrixThreadPoolKey ThreadPoolKey { get; }
 
     public IHystrixCommandGroupKey GroupKey { get; }
@@ -21,7 +19,6 @@ public class HystrixCommandConfiguration
     public HystrixCommandConfiguration(IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey, IHystrixCommandGroupKey groupKey,
         HystrixCommandExecutionConfig executionConfig, HystrixCommandCircuitBreakerConfig circuitBreakerConfig, HystrixCommandMetricsConfig metricsConfig)
     {
-        _commandKey = commandKey;
         ThreadPoolKey = threadPoolKey;
         GroupKey = groupKey;
         ExecutionConfig = executionConfig;

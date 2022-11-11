@@ -8,12 +8,10 @@ namespace Steeltoe.Discovery.Client;
 
 internal sealed class DiscoveryClientService : IHostedService
 {
-    private readonly IDiscoveryLifecycle _applicationLifetime;
     private readonly IDiscoveryClient _discoveryClient;
 
     public DiscoveryClientService(IDiscoveryClient client, IDiscoveryLifecycle applicationLifetime = null)
     {
-        _applicationLifetime = applicationLifetime;
         _discoveryClient = client;
     }
 

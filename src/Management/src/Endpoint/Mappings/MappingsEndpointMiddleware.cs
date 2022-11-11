@@ -21,7 +21,6 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
 {
     private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
     private readonly IEnumerable<IApiDescriptionProvider> _apiDescriptionProviders;
-    private readonly IMappingsOptions _options;
     private readonly IRouteMappings _routeMappings;
 
     public MappingsEndpointMiddleware(RequestDelegate next, IMappingsOptions options, IManagementOptions managementOptions, MappingsEndpoint endpoint,
@@ -29,7 +28,6 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
         IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null, ILogger<MappingsEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
-        _options = options;
         _routeMappings = routeMappings;
         _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
         _apiDescriptionProviders = apiDescriptionProviders;
