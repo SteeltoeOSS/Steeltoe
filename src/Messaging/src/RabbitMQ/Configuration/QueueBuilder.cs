@@ -72,14 +72,14 @@ public class QueueBuilder : AbstractBuilder
         return this;
     }
 
-    public QueueBuilder Ttl(int ttl)
+    public QueueBuilder Ttl(int value)
     {
-        return WithArgument("x-message-ttl", ttl);
+        return WithArgument("x-message-ttl", value);
     }
 
-    public QueueBuilder Expires(int expires)
+    public QueueBuilder Expires(int value)
     {
-        return WithArgument("x-expires", expires);
+        return WithArgument("x-expires", value);
     }
 
     public QueueBuilder MaxLength(int count)
@@ -92,9 +92,9 @@ public class QueueBuilder : AbstractBuilder
         return WithArgument("x-max-length-bytes", bytes);
     }
 
-    public QueueBuilder Overflow(OverFlow overflow)
+    public QueueBuilder Overflow(OverFlow value)
     {
-        return WithArgument("x-overflow", overflow.Value);
+        return WithArgument("x-overflow", value.Value);
     }
 
     public QueueBuilder DeadLetterExchange(string exchange)
@@ -107,9 +107,9 @@ public class QueueBuilder : AbstractBuilder
         return WithArgument("x-dead-letter-routing-key", key);
     }
 
-    public QueueBuilder MaxPriority(int maxPriority)
+    public QueueBuilder MaxPriority(int value)
     {
-        return WithArgument("x-max-priority", maxPriority);
+        return WithArgument("x-max-priority", value);
     }
 
     public QueueBuilder Lazy()
