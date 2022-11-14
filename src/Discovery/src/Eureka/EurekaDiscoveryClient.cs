@@ -8,7 +8,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
-using T = System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -81,7 +80,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
         return _thisInstance;
     }
 
-    public override T.Task ShutdownAsync()
+    public override Task ShutdownAsync()
     {
         appInfoManager.InstanceStatus = InstanceStatus.Down;
         return base.ShutdownAsync();
