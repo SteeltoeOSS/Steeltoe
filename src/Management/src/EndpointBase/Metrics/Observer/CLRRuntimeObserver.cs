@@ -33,6 +33,7 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
     private ObservableGauge<long> _activeThreadsMeasure;
     private ObservableGauge<long> _availThreadsMeasure;
     private ObservableGauge<double> _processUptimeMeasure;
+    private ObservableGauge<int> _cpuCountMeasure;
 
     private CLRRuntimeSource.HeapMetrics _previous = default(CLRRuntimeSource.HeapMetrics);
 
@@ -46,6 +47,8 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
         _availThreadsMeasure = meter.CreateObservableGauge("clr.threadpool.avail", GetAvailableThreadPoolWorkers, "Available thread count", "count");
 
         _processUptimeMeasure = meter.CreateObservableGauge("clr.process.uptime", GetUptime, "Process uptime in seconds", "count");
+
+        _cpuCountMeasure = meter.CreateObservableGauge("clr.cpu.count", () => Environment.ProcessorCount, "Process uptime in seconds", "count");
         RegisterViews(viewRegistry);
     }
 

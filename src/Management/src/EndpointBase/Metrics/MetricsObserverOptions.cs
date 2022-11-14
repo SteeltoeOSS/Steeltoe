@@ -66,5 +66,8 @@ public class MetricsObserverOptions : IMetricsObserverOptions
     public bool HystrixEvents { get; set; } = false;
 
     /// <inheritdoc/>
+    public List<string> IncludedMetrics { get; set; } = new List<string>();
+
+    /// <inheritdoc/>
     public List<string> ExcludedMetrics { get; set; } = new List<string>();
 }

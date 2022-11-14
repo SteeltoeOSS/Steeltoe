@@ -91,4 +91,31 @@ public class EventCounterListenerTest : BaseTest
             }
         }
     }
+
+    [Fact]
+    public void EventCounterListenerGetsMetricsWithInclusionsTest()
+    {
+        var options = new MetricsEndpointOptions();
+        var inclusions = new List<string> { "cpu-usage" };
+        using var listener = new EventCounterListener(new MetricsObserverOptions { IncludedMetrics = inclusions });
+        var exporter = new SteeltoeExporter(_scraperOptions);
+        using var otelMetrics = GetTestMetrics(null, exporter, null);
+        Task.Delay(2000).Wait();
+
+        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
+
+        foreach (var metric in _metrics)
+        {
+            var summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
+            if (inclusions.Contains(metric.Replace("System.Runtime.", string.Empty)))
+            {
+                Assert.NotNull(summary);
+                Assert.True(summary.Count > 0, $"Expected metrics for {metric}");
+            }
+            else
+            {
+                Assert.True(summary == null || summary.Count == 0, $"Expected no metrics for {metric}");
+            }
+        }
+    }
 }
