@@ -80,7 +80,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddDbMigrationsActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/dbmigrations");
+        var requestUri = new Uri("/actuator/dbmigrations", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -107,7 +108,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddEnvActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/env");
+        var requestUri = new Uri("/actuator/env", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -174,7 +176,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddHealthActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+        var requestUri = new Uri("/actuator/health", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -188,8 +191,8 @@ public class ManagementWebHostBuilderExtensionsTest
         HttpClient client = host.GetTestClient();
 
         // request liveness & readiness in order to validate the ApplicationAvailability has been set as expected
-        HttpResponseMessage livenessResult = await client.GetAsync("actuator/health/liveness");
-        HttpResponseMessage readinessResult = await client.GetAsync("actuator/health/readiness");
+        HttpResponseMessage livenessResult = await client.GetAsync(new Uri("actuator/health/liveness", UriKind.Relative));
+        HttpResponseMessage readinessResult = await client.GetAsync(new Uri("actuator/health/readiness", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, livenessResult.StatusCode);
         Assert.Contains("\"LivenessState\":\"CORRECT\"", await livenessResult.Content.ReadAsStringAsync(), StringComparison.Ordinal);
         Assert.Equal(HttpStatusCode.OK, readinessResult.StatusCode);
@@ -230,7 +233,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
             using IWebHost host = hostBuilder.AddHeapDumpActuator().Start();
 
-            HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/heapdump");
+            var requestUri = new Uri("/actuator/heapdump", UriKind.Relative);
+            HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
@@ -258,7 +262,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddHypermediaActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+        var requestUri = new Uri("/actuator", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -305,7 +310,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddInfoActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+        var requestUri = new Uri("/actuator/info", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -332,7 +338,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddLoggersActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
+        var requestUri = new Uri("/actuator/loggers", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -344,7 +351,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddLoggersActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
+        var requestUri = new Uri("/actuator/loggers", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -382,7 +390,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddMappingsActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/mappings");
+        var requestUri = new Uri("/actuator/mappings", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -409,7 +418,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddMetricsActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/metrics");
+        var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -436,7 +446,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddRefreshActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/refresh");
+        var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -468,7 +479,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
             using IWebHost host = hostBuilder.AddThreadDumpActuator().Start();
 
-            HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/threaddump");
+            var requestUri = new Uri("/actuator/threaddump", UriKind.Relative);
+            HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
@@ -496,7 +508,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddTraceActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/httptrace");
+        var requestUri = new Uri("/actuator/httptrace", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -524,11 +537,11 @@ public class ManagementWebHostBuilderExtensionsTest
         using IWebHost host = hostBuilder.AddAllActuators().Start();
         HttpClient client = host.GetTestServer().CreateClient();
 
-        HttpResponseMessage response = await client.GetAsync("/actuator");
+        HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/info");
+        response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/health");
+        response = await client.GetAsync(new Uri("/actuator/health", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -540,11 +553,11 @@ public class ManagementWebHostBuilderExtensionsTest
         using IWebHost host = hostBuilder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).Start();
         HttpClient client = host.GetTestServer().CreateClient();
 
-        HttpResponseMessage response = await client.GetAsync("/actuator");
+        HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/info");
+        response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/health");
+        response = await client.GetAsync(new Uri("/actuator/health", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -571,7 +584,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddCloudFoundryActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
+        var requestUri = new Uri("/cloudfoundryapplication", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -585,11 +599,11 @@ public class ManagementWebHostBuilderExtensionsTest
         HttpClient client = host.GetTestServer().CreateClient();
 
         Assert.Single(host.Services.GetServices<IStartupFilter>());
-        HttpResponseMessage response = await client.GetAsync("/actuator");
+        HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/info");
+        response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/health");
+        response = await client.GetAsync(new Uri("/actuator/health", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -607,11 +621,11 @@ public class ManagementWebHostBuilderExtensionsTest
 
         // these requests hit the "RequireAuthorization" policy and will only pass if _testServerWithSecureRouting is used
         Assert.Single(host.Services.GetServices<IStartupFilter>());
-        HttpResponseMessage response = await client.GetAsync("/actuator");
+        HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/info");
+        response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/health");
+        response = await client.GetAsync(new Uri("/actuator/health", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -687,7 +701,8 @@ public class ManagementWebHostBuilderExtensionsTest
             counter.Add(1);
 
             await Task.Delay(3000); // wait for metrics to be collected
-            HttpResponseMessage response = await client.GetAsync("/actuator/metrics");
+            var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
+            HttpResponseMessage response = await client.GetAsync(requestUri);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Assert warning is printed to Console
@@ -726,7 +741,8 @@ public class ManagementWebHostBuilderExtensionsTest
             counter.Add(1);
 
             await Task.Delay(3000); // wait for metrics to be collected
-            HttpResponseMessage response = await client.GetAsync("/actuator/metrics");
+            var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
+            HttpResponseMessage response = await client.GetAsync(requestUri);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Assert warning is printed to Console
@@ -768,7 +784,8 @@ public class ManagementWebHostBuilderExtensionsTest
             counter.Add(1);
 
             await Task.Delay(5000); // wait for metrics to be collected
-            HttpResponseMessage response = await client.GetAsync("/actuator/metrics");
+            var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
+            HttpResponseMessage response = await client.GetAsync(requestUri);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Assert warning is not printed to Console

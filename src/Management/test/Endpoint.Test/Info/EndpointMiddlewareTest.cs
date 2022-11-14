@@ -117,7 +117,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        string response = await client.GetStringAsync("http://localhost/actuator/info");
+        string response = await client.GetStringAsync(new Uri("http://localhost/actuator/info"));
 
         Assert.Contains("1499884839000", response, StringComparison.Ordinal);
         Assert.DoesNotContain("2017-07-12T18:40:39Z", response, StringComparison.Ordinal);
