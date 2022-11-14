@@ -64,7 +64,7 @@ public class SecurityBase
         }
 
         string checkPermissionsUri = $"{_options.CloudFoundryApi}/v2/apps/{_options.ApplicationId}/permissions";
-        var request = new HttpRequestMessage(HttpMethod.Get, checkPermissionsUri);
+        var request = new HttpRequestMessage(HttpMethod.Get, new Uri(checkPermissionsUri, UriKind.RelativeOrAbsolute));
         var auth = new AuthenticationHeaderValue("bearer", token);
         request.Headers.Authorization = auth;
 
