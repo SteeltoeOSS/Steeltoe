@@ -49,17 +49,17 @@ public class HystrixMetricsStreamControllerTest : HystrixTestBase
     }
 
     [Fact]
-    public void Endpoint_ReturnsData()
+    public async Task Endpoint_ReturnsData()
     {
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>();
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
 
         client.BaseAddress = new Uri("http://localhost/");
-        Stream result = client.GetStreamAsync("hystrix/hystrix.stream").GetAwaiter().GetResult();
+        Stream result = await client.GetStreamAsync("hystrix/hystrix.stream");
 
         HttpClient client2 = server.CreateClient();
-        HttpResponseMessage cmdResult = client2.GetAsync("test/test.command").GetAwaiter().GetResult();
+        HttpResponseMessage cmdResult = await client2.GetAsync("test/test.command");
         Assert.Equal(HttpStatusCode.OK, cmdResult.StatusCode);
 
         var reader = new StreamReader(result);

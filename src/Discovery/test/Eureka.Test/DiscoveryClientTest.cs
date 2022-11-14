@@ -136,7 +136,7 @@ public class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void FetchFullRegistryAsync_ReturnsNull_IfFetchCounterMismatch()
+    public async Task FetchFullRegistryAsync_ReturnsNull_IfFetchCounterMismatch()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
@@ -158,7 +158,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         var client = new DiscoveryClient(configuration, httpClient);
         Task<Applications> result = client.FetchFullRegistryAsync();
         client.RegistryFetchCounter = 100;
-        Applications apps = result.GetAwaiter().GetResult();
+        Applications apps = await result;
         Assert.Null(apps);
     }
 
@@ -212,7 +212,7 @@ public class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void FetchRegistryDeltaAsync_ReturnsNull_IfFetchCounterMismatch()
+    public async Task FetchRegistryDeltaAsync_ReturnsNull_IfFetchCounterMismatch()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
@@ -234,7 +234,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         var client = new DiscoveryClient(configuration, httpClient);
         Task<Applications> result = client.FetchRegistryDeltaAsync();
         client.RegistryFetchCounter = 100;
-        Applications apps = result.GetAwaiter().GetResult();
+        Applications apps = await result;
         Assert.Null(apps);
     }
 
