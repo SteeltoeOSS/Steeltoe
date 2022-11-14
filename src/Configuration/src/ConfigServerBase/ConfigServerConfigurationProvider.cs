@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Logging;
@@ -105,7 +103,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source)
     {
         _ = source.Configuration as IConfigurationRoot;
-        Initialize(source);
+        Initialize(source, logFactory: source.LogFactory);
     }
 
     /// <summary>
@@ -116,7 +114,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source, HttpClient httpClient)
     {
         _ = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-        Initialize(source, httpClient);
+        Initialize(source, httpClient, source.LogFactory);
     }
 
     internal void Initialize(ConfigServerConfigurationSource source, HttpClient httpClient = null, ILoggerFactory logFactory = null)
@@ -128,7 +126,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     internal void Initialize(ConfigServerClientSettings settings, IConfiguration configuration = null, HttpClient httpClient = null, ILoggerFactory logFactory = null)
     {
-        _loggerFactory = logFactory ?? new NullLoggerFactory();
+        _loggerFactory = logFactory ?? BootstrapLoggerFactory.Instance;
         _logger = _loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
         if (configuration != null)
         {
@@ -307,7 +305,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                 if (env != null)
                 {
                     _logger.LogInformation(
-                        "Located environment: {name}, {profiles}, {label}, {version}, {state}", env.Name, env.Profiles, env.Label, env.Version, env.State);
+                        "Located environment name: {name}, profiles: {profiles}, labels: {label}, version: {version}, state: {state}", env.Name, env.Profiles, env.Label, env.Version, env.State);
                     if (updateDictionary)
                     {
                         var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -436,6 +434,12 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient discoveryClientFromDI, ILoggerFactory loggerFactory)
     {
+        if (loggerFactory is not null)
+        {
+            _loggerFactory = loggerFactory;
+            _logger = _loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
+        }
+
         if (_configServerDiscoveryService is not null)
         {
             await _configServerDiscoveryService.ProvideRuntimeReplacementsAsync(discoveryClientFromDI, loggerFactory);
@@ -573,10 +577,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             {
                 using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
-                // Log status
-                var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
-                _logger.LogInformation(WebUtility.UrlEncode(message));
-
+                _logger.LogInformation("Config Server returned status: {statusCode} invoking path: {requestUri}", response.StatusCode, WebUtility.UrlEncode(requestUri));
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     if (response.StatusCode == HttpStatusCode.NotFound)
@@ -588,7 +589,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                     if (response.StatusCode >= HttpStatusCode.BadRequest)
                     {
                         // HttpClientErrorException
-                        throw new HttpRequestException(message);
+                        throw new HttpRequestException($"Config Server returned status: {response.StatusCode} invoking path: {WebUtility.UrlEncode(requestUri)}");
                     }
                     else
                     {
@@ -645,6 +646,8 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         try
         {
             using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+
+            _logger.LogInformation("Config Server returned status: {statusCode} invoking path: {requestUri}", response.StatusCode, WebUtility.UrlEncode(requestUri));
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 if (response.StatusCode == HttpStatusCode.NotFound)
@@ -652,15 +655,10 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                     return null;
                 }
 
-                // Log status
-                var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
-
-                _logger.LogInformation(WebUtility.UrlEncode(message));
-
                 // Throw if status >= 400
                 if (response.StatusCode >= HttpStatusCode.BadRequest)
                 {
-                    throw new HttpRequestException(message);
+                    throw new HttpRequestException($"Config Server returned status: {response.StatusCode} invoking path: {WebUtility.UrlEncode(requestUri)}");
                 }
                 else
                 {
@@ -995,7 +993,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             return configuration;
         }
 
-        return new ConfigurationRoot(new List<IConfigurationProvider>() { new PlaceholderResolverProvider(new List<IConfigurationProvider>(root.Providers)) });
+        return new ConfigurationRoot(new List<IConfigurationProvider> { new PlaceholderResolverProvider(new List<IConfigurationProvider>(root.Providers), _loggerFactory) });
     }
 
     private bool IsContinueExceptionType(Exception e)
