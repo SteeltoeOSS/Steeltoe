@@ -293,7 +293,6 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.NotNull(retry);
         Assert.Equal(3, GetFieldValue<int>(retry, "_maxAttempts"));
         Assert.Equal(1000, GetFieldValue<int>(retry, "_backOffInitialInterval"));
-        Assert.Equal(10000, GetFieldValue<int>(retry, "_backOffMaxInterval"));
         Assert.Equal(2.0, GetFieldValue<double>(retry, "_backOffMultiplier"));
         consumerBinding.UnbindAsync();
         Assert.False(endpoint.IsRunning);
