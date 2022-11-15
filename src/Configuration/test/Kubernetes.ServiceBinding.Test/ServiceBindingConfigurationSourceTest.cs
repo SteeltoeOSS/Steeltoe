@@ -30,7 +30,7 @@ public class ServiceBindingConfigurationSourceTest
         try
         {
             var source = new ServiceBindingConfigurationSource();
-            Assert.Contains("resources\\k8s", source.ServiceBindingRoot);
+            Assert.Contains("resources\\k8s", source.ServiceBindingRoot, StringComparison.OrdinalIgnoreCase);
             Assert.NotNull(source.FileProvider);
             Assert.NotNull(source.FileProvider.GetDirectoryContents("/"));
         }

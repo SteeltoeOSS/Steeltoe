@@ -17,7 +17,7 @@ internal static class ConfigurationDictionaryExtensions
         List<string> results = new List<string>();
         foreach (var pair in configData)
         {
-            if (pair.Key.StartsWith(keyPrefix) && pair.Key.EndsWith(keySuffix) && pair.Value == keyValue)
+            if (pair.Key.StartsWith(keyPrefix, StringComparison.OrdinalIgnoreCase) && pair.Key.EndsWith(keySuffix, StringComparison.OrdinalIgnoreCase) && pair.Value == keyValue)
             {
                 results.Add(ConfigurationPath.GetParentPath(pair.Key));
             }
@@ -31,7 +31,7 @@ internal static class ConfigurationDictionaryExtensions
         List<string> results = new List<string>();
         foreach (var pair in configData)
         {
-            if (pair.Key.StartsWith(keyPrefix))
+            if (pair.Key.StartsWith(keyPrefix, StringComparison.OrdinalIgnoreCase))
             {
                 results.Add(ConfigurationPath.GetParentPath(pair.Key));
             }

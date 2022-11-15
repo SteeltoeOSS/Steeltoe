@@ -2,11 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
@@ -1287,14 +1283,13 @@ public class PostProcessorsTest
     }
 
 
-    private Dictionary<string, string> GetConfigData(Dictionary<string, string> dictionary, string bindingName, string bindingType, params Tuple<string, string>[] secrets)
+    private void GetConfigData(Dictionary<string, string> dictionary, string bindingName, string bindingType, params Tuple<string, string>[] secrets)
     {
         foreach (var kv in secrets)
         {
             dictionary.Add(MakeSecretKey(bindingName, kv.Item1), kv.Item2);
         }
         dictionary.Add(MakeTypeKey(bindingName), bindingType);
-        return dictionary;
     }
 
     private Dictionary<string, string> GetConfigData(string bindingName, string bindingType, params Tuple<string, string>[] secrets)
@@ -1340,7 +1335,7 @@ public class PostProcessorsTest
     {
         var source = new TestPostProcessorConfigurationSource();
         source.ParentConfiguration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>() { { $"steeltoe:kubernetes:bindings:{bindingTypeKey}:enable", bindingTypeKeyValue.ToString() } })
+            .AddInMemoryCollection(new Dictionary<string, string>() { { $"steeltoe:kubernetes:bindings:{bindingTypeKey}:enable", bindingTypeKeyValue.ToString(CultureInfo.InvariantCulture) } })
             .Build();
         source.RegisterPostProcessor(postProcessor);
 

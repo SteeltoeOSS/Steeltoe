@@ -182,7 +182,7 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
 
     public override void Load()
     {
-            Load(reload: false);
+        Load(reload: false);
     }
 
     private void Load(bool reload)
