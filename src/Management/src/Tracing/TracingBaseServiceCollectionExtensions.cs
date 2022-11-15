@@ -101,7 +101,6 @@ public static class TracingBaseServiceCollectionExtensions
 
                 if (traceOpts.PropagationType.Equals("B3", StringComparison.OrdinalIgnoreCase))
                 {
-                    // TODO: Investigate alternatives and remove suppression.
 #pragma warning disable CS0618 // Type or member is obsolete
                     var propagators = new List<TextMapPropagator>
                     {

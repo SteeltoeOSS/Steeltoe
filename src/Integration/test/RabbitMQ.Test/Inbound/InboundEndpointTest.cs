@@ -265,30 +265,6 @@ public class InboundEndpointTest
         }
     }
 
-    // public class TestMessageTransformer : ITransformer
-    // {
-    //    public TestMessageTransformer(RC.IModel channel, ulong deliveryTag)
-    //    {
-    //        Channel = channel;
-    //        DeliveryTag = deliveryTag;
-    //    }
-
-    // public IModel Channel { get; }
-
-    // public ulong DeliveryTag { get; }
-
-    // public IMessage Transform(IMessage message)
-    //    {
-    //        var headers = message.Headers;
-    //        Assert.Equal(Channel, headers.Get<RC.IModel>(RabbitMessageHeaders.CHANNEL));
-    //        Assert.Equal(DeliveryTag, headers.DeliveryTag());
-    //        return IntegrationMessageBuilder.FromMessage(message)
-    //            .SetHeader(MessageHeaders.TYPE_ID, "foo")
-    //            .SetHeader(MessageHeaders.CONTENT_TYPE_ID, "bar")
-    //            .SetHeader(MessageHeaders.KEY_TYPE_ID, "baz")
-    //            .Build();
-    //    }
-    // }
     public class Foo
     {
         public string Bar { get; }

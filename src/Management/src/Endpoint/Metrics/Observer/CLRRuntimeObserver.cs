@@ -52,44 +52,6 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
         _availThreadsMeasure = meter.CreateObservableGauge("clr.threadpool.avail", GetAvailableThreadPoolWorkers, "Available thread count", "count");
 
         _processUpTimeMeasure = meter.CreateObservableGauge("clr.process.uptime", GetUpTime, "Process uptime in seconds", "count");
-        RegisterViews(viewRegistry);
-    }
-
-    protected internal void RegisterViews(IViewRegistry viewRegistry)
-    {
-        // Currently Api does not support changing aggregations via views
-
-        // IView view = View.Create(
-        //        ViewName.Create("clr.memory.used"),
-        //        "Current CLR memory usage",
-        //        _memoryUsedMeasure,
-        //        Mean.Create(),
-        //        new List<ITagKey>() { memoryAreaKey });
-        // ViewManager.RegisterView(view);
-
-        // view = View.Create(
-        //        ViewName.Create("clr.gc.collections"),
-        //        "Garbage collection count",
-        //        collectionCountMeasure,
-        //        Sum.Create(),
-        //        new List<ITagKey>() { generationKey });
-        // ViewManager.RegisterView(view);
-
-        // view = View.Create(
-        //        ViewName.Create("clr.threadpool.active"),
-        //        "Active thread count",
-        //        activeThreadsMeasure,
-        //        Mean.Create(),
-        //        new List<ITagKey>() { threadKindKey });
-        // ViewManager.RegisterView(view);
-
-        // view = View.Create(
-        //        ViewName.Create("clr.threadpool.avail"),
-        //        "Available thread count",
-        //        availThreadsMeasure,
-        //        Mean.Create(),
-        //        new List<ITagKey>() { threadKindKey });
-        // ViewManager.RegisterView(view);
     }
 
     private IEnumerable<Measurement<long>> GetCollectionCount()

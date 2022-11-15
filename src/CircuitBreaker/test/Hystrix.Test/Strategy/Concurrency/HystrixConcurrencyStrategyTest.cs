@@ -89,12 +89,6 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
             _output = output;
         }
 
-        public SimpleCommand(ITestOutputHelper output)
-            : base(HystrixCommandGroupKeyDefault.AsKey("SimpleCommand"))
-        {
-            _output = output;
-        }
-
         protected override string Run()
         {
             if (HystrixRequestContext.IsCurrentThreadInitialized)

@@ -59,8 +59,6 @@ public class SimpleMessageConverter : AbstractMessageConverter
                     var formatter = new BinaryFormatter();
                     using var stream = new MemoryStream(bytesMessage.Payload);
 
-                    // TODO: [BREAKING] Don't use binary serialization, it's insecure! https://aka.ms/binaryformatter
-                    // Tracked at: https://github.com/SteeltoeOSS/Steeltoe/issues/487.
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
                     content = formatter.Deserialize(stream);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
@@ -141,8 +139,6 @@ public class SimpleMessageConverter : AbstractMessageConverter
             var formatter = new BinaryFormatter();
             using var stream = new MemoryStream(512);
 
-            // TODO: [BREAKING] Don't use binary serialization, it's insecure! https://aka.ms/binaryformatter
-            // Tracked at: https://github.com/SteeltoeOSS/Steeltoe/issues/487.
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
             formatter.Serialize(stream, payload);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete

@@ -14,15 +14,6 @@ namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
 public class AspNetCoreHostingObserverTest : BaseTest
 {
-    // [Fact] TODO: Do we need these views
-    // public void Constructor_RegistersExpectedViews()
-    // {
-    //    var options = new MetricsObserverOptions();
-    //    var viewRegistry = new ViewRegistry();
-    //    var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
-    //    Assert.Contains(viewRegistry.Views, v => v.Key == "http.server.requests.seconds");
-    //    Assert.Contains(viewRegistry.Views, v => v.Key == "http.server.requests.count");
-    // }
     [Fact]
     public void ShouldIgnore_ReturnsExpected()
     {
@@ -142,11 +133,6 @@ public class AspNetCoreHostingObserverTest : BaseTest
         observer.HandleStopEvent(act, context);
         observer.HandleStopEvent(act, context);
 
-        // var requestTime = processor.GetMetricByName<double>("http.server.requests.seconds");
-        // Assert.NotNull(requestTime);
-        // Assert.Equal(2, requestTime.Count);
-        // Assert.True(requestTime.Sum / 2 > 1);
-        // Assert.True(requestTime.Max > 1);
         act.Stop();
     }
 

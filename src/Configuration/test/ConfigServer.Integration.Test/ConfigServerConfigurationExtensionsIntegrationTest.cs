@@ -285,52 +285,6 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         }
     }
 
-    // NOTE: This test assumes a running Spring Cloud Config Server is started
-    //      and a Spring Cloud Eureka Server is also running. The Config Server must be
-    //      configured to register itself with Eureka upon start up.
-    //
-    //      The easiest way to get that to happen is create a spring boot application:
-    //  @SpringBootApplication
-    //  @EnableDiscoveryClient
-    //  @EnableConfigServer
-    //  public class ConfigServerApplication
-    //  {
-    //    public static void main(String[] args)
-    //    {
-    //        SpringApplication.run(ConfigServerApplication.class, args);
-    //    }
-    //  }
-    //
-    //  Then configure the above Config Server as follows (application.yml)
-    //
-    //  info:
-    //      component: Config Server
-    //  spring:
-    //      application:
-    //          name: configserver
-    //      autoconfigure.exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-    //      jmx:
-    //          default_domain: cloud.config.server
-    //      cloud:
-    //          config:
-    //              server:
-    //                  git:
-    //                      uri: https://github.com/spring-cloud-samples/config-repo
-    //                  repos:
-    //                      - patterns: multi-repo-demo-*
-    //                        uri: https://github.com/spring-cloud-samples/config-repo
-    //
-    //  server:
-    //      port: 8888
-    //  eureka:
-    //      instance:
-    //          hostname: localhost
-    //          port: 8888
-    //      client:
-    //          registerWithEureka: true
-    //      fetchRegistry: true
-    //      serviceUrl:
-    //          defaultZone: http://localhost:8761/eureka/
     [Fact(Skip = "Config Server image needs to be enhanced to support discovery-first")]
     [Trait("Category", "Integration")]
     public void SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()

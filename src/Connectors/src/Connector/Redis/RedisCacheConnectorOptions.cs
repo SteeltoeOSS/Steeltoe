@@ -78,10 +78,6 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         _cloudFoundryConfigFound = configuration.HasCloudFoundryServiceConfigurations();
     }
 
-    // TODO: Add back in when https://github.com/aspnet/Caching updates to new StackExchange
-    // public bool HighPrioritySocketThreads { get; set; }
-    // public int ResponseTimeout { get; set; }
-    // public int? DefaultDatabase { get; set; }
     public override string ToString()
     {
         if (!string.IsNullOrEmpty(ConnectionString) && !_cloudFoundryConfigFound)
@@ -206,31 +202,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         return configuration;
     }
 
-    // internal void AddEndPoints(EndPointCollection result, string endpoints)
-    // {
-    //    if (string.IsNullOrEmpty(endpoints))
-    //    {
-    //        return;
-    //    }
-    //    endpoints = endpoints.Trim();
-    //    if (!string.IsNullOrEmpty(endpoints))
-    //    {
-    //        string[] points = endpoints.Split(comma);
-    //        if (points.Length > 0)
-    //        {
-    //            foreach (string point in points)
-    //            {
-    //                EndPoint p = TryParseEndPoint(point);
-    //                if (p != null)
-    //                {
-    //                    result.Add(p);
-    //                }
-    //            }
-    //        }
-    //    }
-    // }
-
-    // Note: The code below lifted from StackExchange.Redis.Format {}
+    // Note: The code below lifted from StackExchange.Redis.Format
     internal static EndPoint TryParseEndPoint(string endpoint)
     {
         if (string.IsNullOrWhiteSpace(endpoint))

@@ -35,22 +35,6 @@ public static class ClassUtils
             return true;
         }
 
-        // if (lhsType.IsPrimitive)
-        // {
-        //    Type resolvedPrimitive = primitiveWrapperTypeMap.get(rhsType);
-        //    if (lhsType == resolvedPrimitive)
-        //    {
-        //        return true;
-        //    }
-        // }
-        // else
-        // {
-        //    Type resolvedWrapper = primitiveTypeToWrapperMap.get(rhsType);
-        //    if (resolvedWrapper != null && lhsType.isAssignableFrom(resolvedWrapper))
-        //    {
-        //        return true;
-        //    }
-        // }
         return false;
     }
 

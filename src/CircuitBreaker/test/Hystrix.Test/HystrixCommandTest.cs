@@ -375,11 +375,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         _output.WriteLine("Command Thread: " + commandThread.Value);
         _output.WriteLine("Subscribe Thread: " + subscribeThread.Value);
 
-        // Threads are thread-pool threads and will not have hystrix- names
-        // Assert.True(commandThread.Value.Name.StartsWith("hystrix-"));
-        // Assert.True(subscribeThread.Value.Name.StartsWith("hystrix-"));
-
-        // Steeltoe Added this check
         Assert.NotEqual(commandThread.Value.ManagedThreadId, subscribeThread.Value.ManagedThreadId);
     }
 
@@ -472,7 +467,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         _output.WriteLine("COMMAND KEY (from cmd): " + attempt1.CommandKey.Name);
         await attempt1.ExecuteAsync();
 
-        // Time.Wait(100);
         Assert.True(WaitForHealthCountToUpdate(key.Name, 250, _output), "Health count update took to long");
 
         Assert.True(attempt1.IsFailedExecution, "Unexpected execution success (1)");
@@ -484,7 +478,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         TestHystrixCommand<int> attempt2 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.Thread, FallbackResultTest.Success, circuitBreaker);
         await attempt2.ExecuteAsync();
 
-        // Time.Wait(100);
         Assert.True(WaitForHealthCountToUpdate(key.Name, 250, _output), "Health count update took to long");
 
         Assert.True(attempt2.IsFailedExecution, "Unexpected execution success (2)");
@@ -496,14 +489,12 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         TestHystrixCommand<int> attempt3 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.Thread, FallbackResultTest.Success, circuitBreaker);
         await attempt3.ExecuteAsync();
 
-        // Time.Wait(150);
         Assert.True(WaitForHealthCountToUpdate(key.Name, 250, _output), "Health count update took to long");
 
         Assert.True(attempt3.IsFailedExecution, "Unexpected execution success (3)");
         Assert.True(attempt3.IsResponseFromFallback, "Response not from fallback as was expected (3)");
         Assert.False(attempt3.IsResponseShortCircuited, "CircuitBreaker unexpectedly short circuited (3)");
 
-        // Time.Wait(150);
         Assert.True(WaitForHealthCountToUpdate(key.Name, 250, _output), "Health count update took to long");
 
         // it should now be 'open' and prevent further executions
@@ -514,7 +505,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         TestHystrixCommand<int> attempt4 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.Thread, FallbackResultTest.Success, circuitBreaker);
         await attempt4.ExecuteAsync();
 
-        // Time.Wait(100);
         Assert.True(WaitForHealthCountToUpdate(key.Name, 250, _output), "Health count update took to long");
 
         Assert.True(attempt4.IsResponseFromFallback, "Response not from fallback as was expected (4)");
@@ -558,7 +548,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (Exception e)
         {
-            // e.printStackTrace();
             if (e is HystrixRuntimeException de)
             {
                 Assert.NotNull(de.FallbackException);
@@ -676,7 +665,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (HystrixRuntimeException e)
         {
-            // e.printStackTrace();
             Assert.NotNull(e.FallbackException);
             Assert.True(e.FallbackException is InvalidOperationException);
             Assert.NotNull(e.ImplementingType);
@@ -958,7 +946,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (Exception e)
         {
-            // e.printStackTrace()
             if (e is HystrixRuntimeException exception && e.InnerException is RejectedExecutionException)
             {
                 HystrixRuntimeException de = exception;
@@ -1024,7 +1011,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (Exception e)
         {
-            // e.printStackTrace()
             _output.WriteLine("command.getExecutionTimeInMilliseconds(): " + command.ExecutionTimeInMilliseconds);
 
             // will be -1 because it never attempted execution
@@ -1426,7 +1412,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             {
                 startLatch.SignalEx();
 
-                // e.printStackTrace();
                 failureCount.IncrementAndGet();
             }
         });
@@ -1456,7 +1441,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             {
                 startLatch.SignalEx();
 
-                // e.printStackTrace();
                 failureCount.IncrementAndGet();
             }
         });
@@ -1497,7 +1481,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         Assert.Equal(1, isolatedSemaphore.CurrentCount);
 
         // verifies that some executions failed
-        // Assert.Equal(sharedSemaphore.numberOfPermits.get().longValue(), failureCount.get());
         IHystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
         Assert.Contains("SEMAPHORE_REJECTED", requestLog.GetExecutedCommandsAsString(), StringComparison.Ordinal);
         Assert.Equal(0, circuitBreaker.Metrics.CurrentConcurrentExecutionCount);
@@ -1874,7 +1857,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (Exception)
         {
-            // e.printStackTrace();
             Assert.True(r3.IsResponseTimedOut);
 
             // what we want
@@ -1994,7 +1976,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (Exception)
         {
-            // e.printStackTrace();
             Assert.True(r3.IsResponseTimedOut);
 
             // what we want
@@ -2059,7 +2040,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (HystrixRuntimeException)
         {
-            // e.printStackTrace();
             Assert.True(r2.IsResponseRejected);
 
             // what we want
@@ -2076,8 +2056,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (HystrixRuntimeException)
         {
-            // } catch (HystrixRuntimeException e) {
-            //                e.printStackTrace();
             Assert.True(r3.IsResponseRejected);
 
             // what we want
@@ -2098,7 +2076,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (HystrixRuntimeException)
         {
-            // e.printStackTrace();
             Assert.True(r4.IsResponseRejected);
             Assert.False(r4.IsResponseFromFallback);
 
@@ -2155,7 +2132,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         catch (HystrixBadRequestException)
         {
             // success
-            // e.printStackTrace();
         }
 
         AssertCommandExecutionEvents(command1, HystrixEventType.BadRequest);
@@ -2177,7 +2153,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (Exception e)
         {
-            // e.printStackTrace();
             if (e is HystrixBadRequestException)
             {
                 // success
@@ -2222,7 +2197,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (Exception e)
         {
-            // e.printStackTrace();
             if (e is HystrixBadRequestException)
             {
                 // success
@@ -2253,7 +2227,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         catch (HystrixBadRequestException)
         {
             // success
-            // e.printStackTrace();
         }
 
         AssertCommandExecutionEvents(command1, HystrixEventType.BadRequest);
@@ -2310,14 +2283,12 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (Exception)
         {
-            // e.printStackTrace();
             Assert.True(false, "we should not get anything thrown, it should be emitted via the Observer#onError method");
         }
 
         latch.Wait(1000);
         Assert.NotNull(t.Value);
 
-        // t.get().printStackTrace();
         Assert.True(t.Value is HystrixRuntimeException);
         Assert.Equal("simulated checked exception message", t.Value.InnerException.Message);
         Assert.Equal("simulated checked exception message", command.FailedExecutionException.Message);
@@ -2449,10 +2420,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         TestHystrixCommand<int> cmd = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Success, 50);
         cmd.IsFallbackUserDefined = true;
 
-        // await cmd.ExecuteAsync();
         cmd.ExecuteAsync();
 
-        // t.Start();
         Time.Wait(200);
 
         // timeout should occur in 50ms, and underlying thread should run for 500ms
@@ -2476,7 +2445,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (Exception)
         {
-            // e.printStackTrace();
             Assert.True(false, "We should have received a response from the fallback.");
         }
 
@@ -2587,11 +2555,9 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         catch (HystrixBadRequestException)
         {
             // success
-            // e.printStackTrace()
         }
         catch (Exception e)
         {
-            // e.printStackTrace()
             Assert.False(true, $"We expect a {nameof(HystrixBadRequestException)} but got a {e.GetType().Name}");
         }
 
@@ -2764,7 +2730,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         s.Dispose();
         Assert.True(command2.Token.IsCancellationRequested);
 
-        // Assert.Equal(0, pool.CurrentQueueSize);
         // make sure we wait for the command to finish so the state is clean for next test
         _ = poolFiller.Result;
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -2799,7 +2764,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (Exception)
         {
-            // ex.printStackTrace();
             exceptionEncountered.Value = true;
         }
 
@@ -2830,7 +2794,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (Exception)
         {
-            // ex.printStackTrace();
             exceptionEncountered.Value = true;
         }
 
@@ -2885,7 +2848,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (Exception ex)
         {
-            // ex.printStackTrace();
             _output.WriteLine(ex.ToString());
         }
     }
@@ -2933,7 +2895,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (Exception ex)
         {
-            // ex.printStackTrace();
             _output.WriteLine(ex.ToString());
         }
     }
@@ -2977,7 +2938,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
         catch (Exception ex)
         {
-            // ex.printStackTrace();
             _output.WriteLine(ex.ToString());
         }
     }
@@ -3240,7 +3200,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Time.Wait(10);
             originalSubscription.Dispose();
 
-            // fromCache1Subscription.Dispose();
             fromCache2Subscription.Dispose();
             Assert.True(originalLatch.Wait(600));
             Assert.True(fromCache1Latch.Wait(600));
@@ -3581,8 +3540,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Assert.True(hook.FallbackEventsMatch(0, 0, 0));
             string result = hook.ExecutionSequence.ToString();
 
-            // Steeltoe - remove deprecated!
-            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionEmit - !onRunSuccess - !onComplete - onEmit - onExecutionSuccess - onThreadComplete - onSuccess - ", result);
             Assert.Equal("onStart - onThreadStart - onExecutionStart - onExecutionEmit - onEmit - onExecutionSuccess - onThreadComplete - onSuccess - ",
                 result);
         });
@@ -3600,8 +3557,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Assert.Equal(typeof(HystrixBadRequestException), hook.GetCommandException().GetType());
             Assert.Equal(typeof(HystrixBadRequestException), hook.GetExecutionException().GetType());
 
-            // Steeltoe - remove deprecated!
-            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionError - !onRunError - onThreadComplete - onError - ", hook.executionSequence.toString());
             Assert.Equal("onStart - onThreadStart - onExecutionStart - onExecutionError - onThreadComplete - onError - ", hook.ExecutionSequence.ToString());
         });
     }
@@ -3619,8 +3574,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Assert.Equal(typeof(Exception), hook.GetExecutionException().GetType());
             Assert.Null(hook.GetFallbackException());
 
-            // Steeltoe - remove deprecated!
-            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionError - !onRunError - onThreadComplete - onError - ", hook.executionSequence.ToString());
             Assert.Equal("onStart - onThreadStart - onExecutionStart - onExecutionError - onThreadComplete - onError - ", hook.ExecutionSequence.ToString());
         });
     }
@@ -3641,8 +3594,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Assert.True(hook.FallbackEventsMatch(1, 0, 1));
             Assert.Equal(typeof(Exception), hook.GetExecutionException().GetType());
 
-            // Steeltoe - remove deprecated!
-            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionError - !onRunError - onThreadComplete - onFallbackStart - onFallbackEmit - !onFallbackSuccess - !onComplete - onEmit - onFallbackSuccess - onSuccess - ", hook.executionSequence.toString());
             Assert.Equal(
                 "onStart - onThreadStart - onExecutionStart - onExecutionError - onThreadComplete - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ",
                 hook.ExecutionSequence.ToString());
@@ -3667,8 +3618,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Assert.Equal(typeof(Exception), hook.GetExecutionException().GetType());
             Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
 
-            // Steeltoe - remove deprecated!
-            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionError - !onRunError - onThreadComplete - onFallbackStart - onFallbackError - onError - ", hook.executionSequence.toString());
             Assert.Equal("onStart - onThreadStart - onExecutionStart - onExecutionError - onThreadComplete - onFallbackStart - onFallbackError - onError - ",
                 hook.ExecutionSequence.ToString());
         });
@@ -3688,8 +3637,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
                 Assert.Null(hook.GetFallbackException());
                 _output.WriteLine("RequestLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
-                // Steeltoe - remove deprecated!
-                // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onThreadComplete - onError - ", hook.executionSequence.toString());
                 Assert.Equal("onStart - onThreadStart - onExecutionStart - onThreadComplete - onError - ", hook.ExecutionSequence.ToString());
             });
     }
@@ -3710,8 +3657,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Assert.True(hook.FallbackEventsMatch(1, 0, 1));
             _output.WriteLine("RequestLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
-            // Steeltoe - remove deprecated!
-            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackEmit - !onFallbackSuccess - !onComplete - onEmit - onFallbackSuccess - onSuccess - ", hook.executionSequence.toString());
             Assert.Equal(
                 "onStart - onThreadStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ",
                 hook.ExecutionSequence.ToString());
@@ -3735,8 +3680,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Assert.Equal(typeof(TimeoutException), hook.GetCommandException().GetType());
             Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
 
-            // Steeltoe - remove deprecated!
-            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackError - onError - ", hook.executionSequence.toString());
             Assert.Equal("onStart - onThreadStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackError - onError - ",
                 hook.ExecutionSequence.ToString());
         });
@@ -3755,8 +3698,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
                 Assert.Equal(typeof(TimeoutException), hook.GetCommandException().GetType());
                 Assert.Null(hook.GetFallbackException());
 
-                // Steeltoe - remove deprecated!
-                // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onThreadComplete - onError - ", hook.executionSequence.toString());
                 Assert.Equal("onStart - onThreadStart - onExecutionStart - onThreadComplete - onError - ", hook.ExecutionSequence.ToString());
             });
     }
@@ -3777,8 +3718,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
             Assert.True(hook.FallbackEventsMatch(1, 0, 1));
 
-            // Steeltoe - remove deprecated!
-            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackEmit - !onFallbackSuccess - !onComplete - onEmit - onFallbackSuccess - onSuccess - ", hook.executionSequence.toString());
             Assert.Equal(
                 "onStart - onThreadStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ",
                 hook.ExecutionSequence.ToString());
@@ -3802,8 +3741,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Assert.Equal(typeof(TimeoutException), hook.GetCommandException().GetType());
             Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
 
-            // Steeltoe - remove deprecated!
-            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackError - onError - ", hook.executionSequence.toString());
             Assert.Equal("onStart - onThreadStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackError - onError - ",
                 hook.ExecutionSequence.ToString());
         });

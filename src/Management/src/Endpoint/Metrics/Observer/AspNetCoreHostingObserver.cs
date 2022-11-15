@@ -40,26 +40,6 @@ public class AspNetCoreHostingObserver : MetricsObserver
         _viewRegistry = viewRegistry;
         _responseTime = meter.CreateHistogram<double>("http.server.requests.seconds", "s", "measures the duration of the inbound request in seconds");
         _serverCount = meter.CreateHistogram<double>("http.server.requests.count", "total", "number of requests");
-
-        /*
-        //var view = View.Create(
-        //        ViewName.Create("http.server.request.time"),
-        //        "Total request time",
-        //        responseTimeMeasure,
-        //        Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })),
-        //        new List<ITagKey>() { statusTagKey, exceptionTagKey, methodTagKey, uriTagKey });
-
-        //ViewManager.RegisterView(view);
-
-        //view = View.Create(
-        //        ViewName.Create("http.server.request.count"),
-        //        "Total request counts",
-        //        serverCountMeasure,
-        //        Sum.Create(),
-        //        new List<ITagKey>() { statusTagKey, exceptionTagKey, methodTagKey, uriTagKey });
-
-        //ViewManager.RegisterView(view);
-        */
     }
 
     public override void ProcessEvent(string eventName, object value)

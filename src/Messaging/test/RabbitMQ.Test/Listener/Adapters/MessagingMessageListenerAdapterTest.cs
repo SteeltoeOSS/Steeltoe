@@ -133,12 +133,9 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
             throw new Exception($"Should not have thrown an {ex}");
         }
 
-        // TODO: The Java simpleconverter will convert the exception using java serialization...
         RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ReplyTo = "foo/bar";
         listener.OnMessage(message, mockChannel.Object);
-
-        // TODO: verify(channel).basicPublish(eq("foo"), eq("bar"), eq(false), any(BasicProperties.class), any(byte[].class));
     }
 
     [Fact]

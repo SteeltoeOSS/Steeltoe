@@ -135,7 +135,6 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual bool AlwaysRequeueWithTxManagerRollback { get; set; }
 
-    // Remove public string ErrorHandlerLoggerName { get; set; }
     public virtual IBatchingStrategy BatchingStrategy { get; set; }
 
     public virtual bool IsRunning { get; private set; }
@@ -308,8 +307,6 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
                 Monitor.PulseAll(LifecycleMonitor);
             }
 
-            CheckMissingQueuesFatalFromProperty();
-            CheckPossibleAuthenticationFailureFatalFromProperty();
             DoInitialize();
 
             if (!ExposeListenerChannel && TransactionManager != null)
@@ -945,9 +942,6 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     protected virtual bool CauseChainHasImmediateAcknowledgeRabbitException(Exception exception)
     {
-        // if (ex instanceof Error) {
-        //    return false;
-        // }
         Exception cause = exception.InnerException;
 
         while (cause != null)
@@ -1085,59 +1079,6 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     private List<string> QueuesToNames()
     {
         return Queues.Select(q => q.ActualName).ToList();
-    }
-
-    private void CheckMissingQueuesFatalFromProperty()
-    {
-        // TODO: Decide to support these global settings?
-        // if (!MissingQueuesFatalSet)
-        //            {
-        //                try
-        //                {
-        //                    ApplicationContext context = getApplicationContext();
-        //                    if (context != null)
-        //                    {
-        //                        Properties properties = context.getBean("spring.amqp.global.properties", Properties.class);
-        // String missingQueuesFatalProperty = properties.getProperty("mlc.missing.queues.fatal");
-
-        // if (!StringUtils.hasText(missingQueuesFatalProperty)) {
-        // missingQueuesFatalProperty = properties.getProperty("smlc.missing.queues.fatal");
-        // }
-
-        // if (StringUtils.hasText(missingQueuesFatalProperty)) {
-        // setMissingQueuesFatal(Boolean.parseBoolean(missingQueuesFatalProperty));
-        // }
-        // }
-        // }
-        // catch (BeansException be) {
-        // logger.debug("No global properties bean");
-        // }
-        // }
-    }
-
-    private void CheckPossibleAuthenticationFailureFatalFromProperty()
-    {
-        // TODO: Decide to support these global settings?
-        // if (!isPossibleAuthenticationFailureFatalSet())
-        //            {
-        //                try
-        //                {
-        //                    ApplicationContext context = getApplicationContext();
-        //                    if (context != null)
-        //                    {
-        //                        Properties properties = context.getBean("spring.amqp.global.properties", Properties.class);
-        // String possibleAuthenticationFailureFatalProperty =
-        //                            properties.getProperty("mlc.possible.authentication.failure.fatal");
-        // if (StringUtils.hasText(possibleAuthenticationFailureFatalProperty)) {
-        // setPossibleAuthenticationFailureFatal(
-        //                                Boolean.parseBoolean(possibleAuthenticationFailureFatalProperty));
-        //    }
-        // }
-        // }
-        // catch (BeansException be) {
-        // logger.debug("No global properties bean");
-        // }
-        // }
     }
 
     private sealed class DefaultExclusiveConsumerLogger : IConditionalExceptionLogger

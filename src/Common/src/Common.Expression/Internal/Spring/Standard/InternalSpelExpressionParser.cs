@@ -890,7 +890,6 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             // method reference
             Push(new MethodReference(nullSafeNavigation, methodOrPropertyName.StringValue, methodOrPropertyName.StartPos, methodOrPropertyName.EndPos, args));
 
-            // TODO what is the end position for a method reference? the name or the last arg?
             return true;
         }
 
@@ -942,7 +941,6 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 // regular constructor invocation
                 EatConstructorArgs(nodes);
 
-                // TODO correct end position?
                 Push(new ConstructorReference(newToken.StartPos, newToken.EndPos, nodes.ToArray()));
             }
 

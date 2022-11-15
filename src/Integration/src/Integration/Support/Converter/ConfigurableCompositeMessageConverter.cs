@@ -50,9 +50,6 @@ public class ConfigurableCompositeMessageConverter : CompositeMessageConverter
         converters.Add(new NewtonJsonMessageConverter());
         converters.Add(new ByteArrayMessageConverter());
         converters.Add(new ObjectStringMessageConverter());
-
-        // TODO do we port it together with MessageConverterUtils ?
-        // converters.add(new JavaSerializationMessageConverter());
         converters.Add(new GenericMessageConverter());
 
         return converters;

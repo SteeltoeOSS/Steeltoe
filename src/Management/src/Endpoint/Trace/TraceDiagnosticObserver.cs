@@ -119,7 +119,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
         if (_options.AddAuthType)
         {
-            details.Add("authType", GetAuthType(request)); // TODO
+            details.Add("authType", GetAuthType(request));
         }
 
         if (_options.AddRemoteAddress)

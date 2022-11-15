@@ -123,11 +123,6 @@ public class StreamListenerAttributeProcessor
 
             handler.IntegrationServices.ChannelResolver = _binderAwareChannelResolver;
 
-            // handler.afterPropertiesSet();
-            // this.applicationContext.getBeanFactory().registerSingleton(
-            //        handler.getClass().getSimpleName() + handler.hashCode(), handler);
-            // this.applicationContext
-            //    .getBean(mappedBindingEntry.getKey(), typeof(ISubscribableChannel))
             if (BindingHelpers.GetBindable<IMessageChannel>(_context, mappedBindingEntry.Key) is not ISubscribableChannel channel)
             {
                 throw new InvalidOperationException($"Unable to locate ISubscribableChannel with ServiceName: {mappedBindingEntry.Key}");

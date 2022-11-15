@@ -6,12 +6,10 @@
     <Rule Id="S1075" Action="None" />
     <Rule Id="S110" Action="Warning" />
     <Rule Id="S1104" Action="None" />
-    <Rule Id="S1135" Action="None" />
     <Rule Id="S1144" Action="Warning" />
     <Rule Id="S1151" Action="Warning" />
     <Rule Id="S1186" Action="None" />
     <Rule Id="S1244" Action="Warning" />
-    <Rule Id="S125" Action="None" />
     <Rule Id="S1449" Action="Warning" />
     <Rule Id="S1479" Action="Warning" />
     <Rule Id="S1659" Action="Warning" />

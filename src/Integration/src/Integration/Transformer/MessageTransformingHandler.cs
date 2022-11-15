@@ -40,13 +40,7 @@ public class MessageTransformingHandler : AbstractReplyProducingMessageHandler, 
 
     public override void Initialize()
     {
-        // Nothing to do
-    }
-
-    public override void AddNotPropagatedHeaders(params string[] headers)
-    {
-        base.AddNotPropagatedHeaders(headers);
-        PopulateNotPropagatedHeadersIfAny();
+        // Intentionally left empty.
     }
 
     public Task StartAsync()
@@ -84,16 +78,5 @@ public class MessageTransformingHandler : AbstractReplyProducingMessageHandler, 
 
             throw new MessageTransformationException(requestMessage, $"Failed to transform Message in {this}", e);
         }
-    }
-
-    private void PopulateNotPropagatedHeadersIfAny()
-    {
-        // var notPropagatedHeaders = NotPropagatedHeaders;
-        //
-        // if (Transformer is AbstractMessageProcessingTransformer && notPropagatedHeaders.Count != 0)
-        // {
-        //    ((AbstractMessageProcessingTransformer)this.Transformer)
-        //            .setNotPropagatedHeaders(notPropagatedHeaders.toArray(new String[0]));
-        // }
     }
 }

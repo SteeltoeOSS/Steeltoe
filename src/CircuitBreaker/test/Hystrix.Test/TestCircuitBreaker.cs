@@ -13,7 +13,6 @@ public class TestCircuitBreaker : ICircuitBreaker
     {
         get
         {
-            // output.WriteLine("metrics : " + metrics.CommandKey.Name + " : " + metrics.HealthCounts);
             if (_forceShortCircuit)
             {
                 return true;

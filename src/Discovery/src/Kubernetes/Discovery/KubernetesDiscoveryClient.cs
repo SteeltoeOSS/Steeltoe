@@ -85,7 +85,6 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
             return instances.First();
         }
 
-        // todo: identify which instance is actually correct!
         _logger?.LogWarning("The local service instance was requested, but what we returned might not be correct!");
         return instances[0];
     }

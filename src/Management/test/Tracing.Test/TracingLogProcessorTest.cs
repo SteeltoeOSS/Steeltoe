@@ -58,7 +58,6 @@ public class TracingLogProcessorTest
         Assert.Contains(childSpan.Context.TraceId.ToHexString(), result, StringComparison.Ordinal);
         Assert.Contains(childSpan.Context.SpanId.ToHexString(), result, StringComparison.Ordinal);
 
-        // Assert.Contains(span.Context.SpanId.ToHexString(), result);  TODO: ParentID not supported
         Assert.Contains("foobar", result, StringComparison.Ordinal);
     }
 

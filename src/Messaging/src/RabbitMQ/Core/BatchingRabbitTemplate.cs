@@ -70,10 +70,6 @@ public class BatchingRabbitTemplate : RabbitTemplate
             }
             else
             {
-                // if (_scheduledTask != null)
-                // {
-                //    _cancellationTokenSource.Cancel(false);
-                // }
                 MessageBatch? batch = _batchingStrategy.AddToBatch(exchange, routingKey, message);
 
                 if (batch != null)

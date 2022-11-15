@@ -33,9 +33,7 @@ public class RabbitBindingsOptionsTest
         Assert.NotNull(options.Default.Consumer);
         Assert.NotNull(options.Default.Producer);
 
-        // TODO: Verify all default property values
         Assert.Equal(1, options.Default.Consumer.Prefetch);
-
         Assert.Equal(100, options.Default.Producer.BatchSize);
     }
 

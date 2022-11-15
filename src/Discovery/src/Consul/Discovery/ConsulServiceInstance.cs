@@ -39,7 +39,6 @@ public class ConsulServiceInstance : IServiceInstance
     /// </param>
     public ConsulServiceInstance(ServiceEntry serviceEntry)
     {
-        // TODO: 3.0  ID = healthService.ID;
         Host = ConsulServerUtils.FindHost(serviceEntry);
         IDictionary<string, string> metadata = ConsulServerUtils.GetMetadata(serviceEntry);
         IsSecure = metadata.TryGetValue("secure", out string secureString) && bool.Parse(secureString);

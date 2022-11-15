@@ -251,10 +251,6 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         IConfiguration exchange2 = await GetExchangeAsync(exchangeName);
         Assert.Equal("direct", exchange2.GetValue<string>("type"));
 
-        // TODO: No way to declare internal exchange in .NET, is possible in Java
-        // https://github.com/rabbitmq/rabbitmq-dotnet-client/issues/432
-
-        // Assert.True(exchange2.GetValue<bool>("internal"));
         rabbitAdmin.DeleteExchange(exchangeName);
     }
 

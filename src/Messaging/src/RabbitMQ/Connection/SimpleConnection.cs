@@ -62,8 +62,6 @@ public class SimpleConnection : IConnection, RC.NetworkConnection
     {
         try
         {
-            // _explicitlyClosed = true;
-
             // let the physical close time out if necessary
             Connection.Close(_closeTimeout);
         }

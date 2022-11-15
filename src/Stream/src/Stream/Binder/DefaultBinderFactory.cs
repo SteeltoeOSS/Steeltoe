@@ -14,7 +14,7 @@ public class DefaultBinderFactory : IBinderFactory, IDisposable
 {
     private readonly object _lock = new();
     private readonly IBinderConfigurations _binderConfigurations;
-    private readonly List<IBinderFactoryListener> _listeners; // TODO: implement listener callback
+    private readonly List<IBinderFactoryListener> _listeners;
     private readonly IApplicationContext _context;
     private readonly IOptionsMonitor<BindingServiceOptions> _optionsMonitor;
     private Dictionary<string, IBinder> _binderInstanceCache;
