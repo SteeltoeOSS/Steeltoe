@@ -17,10 +17,10 @@ public class ServiceFactoryResolver : IServiceResolver
         _applicationContext = applicationContext;
     }
 
-    public static Type GetServiceNameAndType(IEvaluationContext context, string serviceName, out string name)
+    public static (Type Type, string Name) GetServiceNameAndType(IEvaluationContext context, string serviceName)
     {
         Type result = null;
-        name = serviceName;
+        string name = serviceName;
 
         if (serviceName.StartsWith("T(", StringComparison.Ordinal) && context.TypeLocator != null)
         {
@@ -34,14 +34,14 @@ public class ServiceFactoryResolver : IServiceResolver
             }
         }
 
-        return result;
+        return (result, name);
     }
 
     public object Resolve(IEvaluationContext context, string serviceName)
     {
         try
         {
-            Type serviceType = GetServiceNameAndType(context, serviceName, out string lookupName);
+            (Type serviceType, string lookupName) = GetServiceNameAndType(context, serviceName);
             object result = serviceType != null ? _applicationContext.GetService(lookupName, serviceType) : _applicationContext.GetService(serviceName);
 
             if (result == null)

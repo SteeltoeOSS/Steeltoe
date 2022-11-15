@@ -6,6 +6,8 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 
+#pragma warning disable S3874 // "out" and "ref" parameters should not be used
+
 namespace Steeltoe.Common.Net;
 
 /// <summary>
