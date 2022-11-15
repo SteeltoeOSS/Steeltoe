@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Messaging;
 using Xunit;
 
-namespace Steeltoe.Stream.Binding;
+namespace Steeltoe.Stream.Test.Binding;
 
 public class BindableProxyGeneratorTest
 {

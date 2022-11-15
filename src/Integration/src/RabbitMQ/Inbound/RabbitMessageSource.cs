@@ -7,7 +7,7 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Acks;
 using Steeltoe.Integration.Endpoint;
-using Steeltoe.Integration.Rabbit.Support;
+using Steeltoe.Integration.RabbitMQ.Support;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
@@ -18,7 +18,7 @@ using Steeltoe.Messaging.RabbitMQ.Support;
 using RabbitConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Integration.Rabbit.Inbound;
+namespace Steeltoe.Integration.RabbitMQ.Inbound;
 
 public class RabbitMessageSource : AbstractMessageSource<object>
 {

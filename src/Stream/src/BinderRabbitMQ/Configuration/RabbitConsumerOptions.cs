@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.RabbitMQ.Configuration;
+using RabbitConfiguration = Steeltoe.Messaging.RabbitMQ.Configuration;
 using RabbitCore = Steeltoe.Messaging.RabbitMQ.Core;
 
 namespace Steeltoe.Stream.Binder.RabbitMQ.Configuration;
@@ -43,7 +43,7 @@ public class RabbitConsumerOptions : RabbitCommonOptions
 
     public int? FrameMaxHeadroom { get; set; }
 
-    public ContainerType? ContainerType { get; set; } = Steeltoe.Messaging.RabbitMQ.Configuration.ContainerType.Direct;
+    public RabbitConfiguration.ContainerType? ContainerType { get; set; } = RabbitConfiguration.ContainerType.Direct;
 
     public string AnonymousGroupPrefix { get; set; }
 

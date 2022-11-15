@@ -4,10 +4,10 @@
 
 using System.Text.Json;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using Steeltoe.Discovery.Eureka.Test;
+using Steeltoe.Discovery.Eureka.Transport;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Transport.Test;
+namespace Steeltoe.Discovery.Eureka.Test.Transport;
 
 public class JsonInstanceInfoRootTest : AbstractBaseTest
 {

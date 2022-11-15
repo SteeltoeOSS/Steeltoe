@@ -2,10 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Connector.MySql;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.MySql.Test;
+namespace Steeltoe.Connector.Test.MySql;
 
 public class MySqlProviderConfigurerTest
 {
@@ -72,11 +73,11 @@ public class MySqlProviderConfigurerTest
 
         var configurer = new MySqlProviderConfigurer();
         string opts = configurer.Configure(null, options);
-        Assert.Contains("Server=localhost;", opts);
-        Assert.Contains("Port=1234;", opts);
-        Assert.Contains("Username=username;", opts);
-        Assert.Contains("Password=password;", opts);
-        Assert.Contains("Database=database;", opts);
+        Assert.Contains("Server=localhost;", opts, StringComparison.Ordinal);
+        Assert.Contains("Port=1234;", opts, StringComparison.Ordinal);
+        Assert.Contains("Username=username;", opts, StringComparison.Ordinal);
+        Assert.Contains("Password=password;", opts, StringComparison.Ordinal);
+        Assert.Contains("Database=database;", opts, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -96,10 +97,10 @@ public class MySqlProviderConfigurerTest
 
         string configuration = configurer.Configure(si, options);
 
-        Assert.Contains("Server=192.168.0.90;", configuration);
-        Assert.Contains("Port=3306;", configuration);
-        Assert.Contains("Username=Dd6O1BPXUHdrmzbP;", configuration);
-        Assert.Contains("Password=7E1LxXnlH2hhlPVt;", configuration);
-        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;", configuration);
+        Assert.Contains("Server=192.168.0.90;", configuration, StringComparison.Ordinal);
+        Assert.Contains("Port=3306;", configuration, StringComparison.Ordinal);
+        Assert.Contains("Username=Dd6O1BPXUHdrmzbP;", configuration, StringComparison.Ordinal);
+        Assert.Contains("Password=7E1LxXnlH2hhlPVt;", configuration, StringComparison.Ordinal);
+        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;", configuration, StringComparison.Ordinal);
     }
 }

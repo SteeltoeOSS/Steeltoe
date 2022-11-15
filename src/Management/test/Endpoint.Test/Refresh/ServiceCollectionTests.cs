@@ -4,9 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Management.Endpoint.Refresh;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Refresh.Test;
+namespace Steeltoe.Management.Endpoint.Test.Refresh;
 
 public class ServiceCollectionTests
 {
@@ -18,9 +19,9 @@ public class ServiceCollectionTests
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddRefreshActuatorServices(configuration));
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddRefreshActuatorServices(configuration));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
     }
 }

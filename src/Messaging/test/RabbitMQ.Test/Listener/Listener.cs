@@ -5,7 +5,7 @@
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Attributes;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
 public class Listener
 {

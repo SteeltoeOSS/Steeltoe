@@ -5,12 +5,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
-using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Info;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Info.Test;
+namespace Steeltoe.Management.Endpoint.Test.Info;
 
 public class EndpointServiceCollectionTest : BaseTest
 {

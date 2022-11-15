@@ -4,7 +4,7 @@
 
 using Xunit;
 
-namespace Steeltoe.Stream.Binding;
+namespace Steeltoe.Stream.Test.Binding;
 
 public class InvalidBindingConfigurationTest : AbstractTest
 {

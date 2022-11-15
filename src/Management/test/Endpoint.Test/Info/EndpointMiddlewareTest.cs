@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
-using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Info;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Info.Test;
+namespace Steeltoe.Management.Endpoint.Test.Info;
 
 public class EndpointMiddlewareTest : BaseTest
 {
@@ -119,10 +119,10 @@ public class EndpointMiddlewareTest : BaseTest
         HttpClient client = server.CreateClient();
         string response = await client.GetStringAsync("http://localhost/actuator/info");
 
-        Assert.Contains("1499884839000", response);
-        Assert.DoesNotContain("2017-07-12T18:40:39Z", response);
-        Assert.Contains("1496926022000", response);
-        Assert.DoesNotContain("2017-06-08T12:47:02Z", response);
+        Assert.Contains("1499884839000", response, StringComparison.Ordinal);
+        Assert.DoesNotContain("2017-07-12T18:40:39Z", response, StringComparison.Ordinal);
+        Assert.Contains("1496926022000", response, StringComparison.Ordinal);
+        Assert.DoesNotContain("2017-06-08T12:47:02Z", response, StringComparison.Ordinal);
     }
 
     [Fact]

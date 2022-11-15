@@ -3,12 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
+using Steeltoe.Management.Endpoint.ThreadDump;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump.Test;
+namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 
 public class ThreadDumpEndpointTest : BaseTest
 {

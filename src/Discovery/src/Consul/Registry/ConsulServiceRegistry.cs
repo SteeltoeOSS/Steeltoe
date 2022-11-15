@@ -183,7 +183,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
 
         foreach (HealthCheck check in checks)
         {
-            if (check.ServiceID.Equals(registration.InstanceId) && check.Name.Equals("Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
+            if (check.ServiceID == registration.InstanceId && check.Name.Equals("Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
             {
                 return OutOfService;
             }

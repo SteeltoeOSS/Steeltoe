@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.SPR10210.Comp;
-using Steeltoe.Common.Expression.Internal.Spring.SPR10210.Infra;
+using Steeltoe.Common.Expression.Test.Spring.SPR10210.Comp;
+using Steeltoe.Common.Expression.Test.Spring.SPR10210.Infra;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.SPR10210;
+namespace Steeltoe.Common.Expression.Test.Spring.SPR10210;
 
 public abstract class A : B<IC>
 {

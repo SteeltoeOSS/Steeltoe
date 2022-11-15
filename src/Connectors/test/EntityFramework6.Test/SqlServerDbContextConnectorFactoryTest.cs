@@ -3,9 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Connector.Services;
+using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connector.SqlServer.EntityFramework6;
 using Xunit;
 
-namespace Steeltoe.Connector.SqlServer.EntityFramework6.Test;
+namespace Steeltoe.Connector.EntityFramework6.Test;
 
 public class SqlServerDbContextConnectorFactoryTest
 {
@@ -17,7 +19,7 @@ public class SqlServerDbContextConnectorFactoryTest
         const Type dbContextType = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new SqlServerDbContextConnectorFactory(si, options, dbContextType));
-        Assert.Contains(nameof(dbContextType), ex.Message);
+        Assert.Contains(nameof(dbContextType), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -28,7 +30,7 @@ public class SqlServerDbContextConnectorFactoryTest
         Type dbContextType = typeof(BadSqlServerDbContext);
 
         var ex = Assert.Throws<ConnectorException>(() => new SqlServerDbContextConnectorFactory(si, options, dbContextType).Create(null));
-        Assert.Contains("BadSqlServerDbContext", ex.Message);
+        Assert.Contains("BadSqlServerDbContext", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

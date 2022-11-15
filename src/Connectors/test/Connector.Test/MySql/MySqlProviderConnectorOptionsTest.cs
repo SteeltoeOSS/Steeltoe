@@ -3,10 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.MySql;
 using Xunit;
 
-namespace Steeltoe.Connector.MySql.Test;
+namespace Steeltoe.Connector.Test.MySql;
 
 public class MySqlProviderConnectorOptionsTest
 {
@@ -16,7 +18,7 @@ public class MySqlProviderConnectorOptionsTest
         const IConfiguration configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new MySqlProviderConnectorOptions(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

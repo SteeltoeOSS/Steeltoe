@@ -6,12 +6,12 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Management.Endpoint.HeapDump.Test;
+namespace Steeltoe.Management.Endpoint.Test.HeapDump;
 
 public class HeapDumpEndpointTest : BaseTest
 {

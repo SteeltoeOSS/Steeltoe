@@ -7,7 +7,7 @@ using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 
-namespace Steeltoe.Integration.Rabbit.Support;
+namespace Steeltoe.Integration.RabbitMQ.Support;
 
 public class RabbitMessageHeaderErrorMessageStrategy : IErrorMessageStrategy
 {

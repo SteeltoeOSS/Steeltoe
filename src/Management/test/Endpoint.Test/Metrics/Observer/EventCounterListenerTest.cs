@@ -3,13 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using OpenTelemetry.Metrics;
-using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
+namespace Steeltoe.Management.Endpoint.Test.Metrics.Observer;
 
 public class EventCounterListenerTest : BaseTest
 {
@@ -89,7 +90,7 @@ public class EventCounterListenerTest : BaseTest
         {
             List<KeyValuePair<string, List<MetricSample>>> summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
 
-            if (!exclusions.Contains(metric.Replace("System.Runtime.", string.Empty)))
+            if (!exclusions.Contains(metric.Replace("System.Runtime.", string.Empty, StringComparison.Ordinal)))
             {
                 Assert.NotNull(summary);
                 Assert.True(summary.Count > 0, $"Expected metrics for {metric}");

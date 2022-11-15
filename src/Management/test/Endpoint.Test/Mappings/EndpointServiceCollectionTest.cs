@@ -4,11 +4,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Common.TestResources;
+using Steeltoe.Management.Endpoint.Mappings;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Mappings.Test;
+namespace Steeltoe.Management.Endpoint.Test.Mappings;
 
 public class EndpointServiceCollectionTest : BaseTest
 {
@@ -19,7 +19,7 @@ public class EndpointServiceCollectionTest : BaseTest
         IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddMappingsActuator());
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
         Assert.Throws<InvalidOperationException>(() => services2.AddMappingsActuator());
     }
 

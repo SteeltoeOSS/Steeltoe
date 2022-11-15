@@ -10,8 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.TestResources;
 using Xunit;
 using Xunit.Sdk;
 
@@ -30,7 +30,7 @@ public sealed class ConfigServerConfigurationProviderTest
         const ConfigServerClientSettings settings = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance));
-        Assert.Contains(nameof(settings), ex.Message);
+        Assert.Contains(nameof(settings), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public sealed class ConfigServerConfigurationProviderTest
         const HttpClient httpClient = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient, NullLoggerFactory.Instance));
-        Assert.Contains(nameof(httpClient), ex.Message);
+        Assert.Contains(nameof(httpClient), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -243,7 +243,7 @@ public sealed class ConfigServerConfigurationProviderTest
         Assert.NotNull(env.PropertySources[0].Source);
         Assert.Equal(2, env.PropertySources[0].Source.Count);
         Assert.Equal("value1", env.PropertySources[0].Source["key1"].ToString());
-        Assert.Equal(10L, long.Parse(env.PropertySources[0].Source["key2"].ToString()));
+        Assert.Equal(10L, long.Parse(env.PropertySources[0].Source["key2"].ToString(), CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -556,7 +556,7 @@ public sealed class ConfigServerConfigurationProviderTest
         Assert.NotNull(env.PropertySources[0].Source);
         Assert.Equal(2, env.PropertySources[0].Source.Count);
         Assert.Equal("value1", env.PropertySources[0].Source["key1"].ToString());
-        Assert.Equal(10L, long.Parse(env.PropertySources[0].Source["key2"].ToString()));
+        Assert.Equal(10L, long.Parse(env.PropertySources[0].Source["key2"].ToString(), CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -1238,7 +1238,7 @@ public sealed class ConfigServerConfigurationProviderTest
         var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
         var exception = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
-        Assert.StartsWith("Could not locate Config Server via discovery", exception.Message);
+        Assert.StartsWith("Could not locate Config Server via discovery", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]

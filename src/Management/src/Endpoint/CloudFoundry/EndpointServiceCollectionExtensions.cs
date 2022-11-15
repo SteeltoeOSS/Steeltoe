@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Extensions;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 

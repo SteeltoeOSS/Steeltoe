@@ -4,7 +4,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub;
+namespace Steeltoe.Security.DataProtection.CredHub.Credentials.Certificate;
 
 /// <summary>
 /// Return object from bulk certificate regeneration request.

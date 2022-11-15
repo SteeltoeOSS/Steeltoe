@@ -7,9 +7,10 @@ using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Polly.Fallback;
 using Polly.Retry;
+using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
 
-namespace Steeltoe.Common.Retry;
+namespace Steeltoe.Common.RetryPolly;
 
 public class PollyRetryTemplate : RetryTemplate
 {

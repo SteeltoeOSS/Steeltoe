@@ -4,9 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Management.Endpoint.ThreadDump;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump.Test;
+namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 
 public class ServiceCollectionTests
 {
@@ -18,9 +19,9 @@ public class ServiceCollectionTests
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddThreadDumpActuatorServices(configuration, MediaTypeVersion.V2));
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddThreadDumpActuatorServices(configuration, MediaTypeVersion.V2));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
     }
 }

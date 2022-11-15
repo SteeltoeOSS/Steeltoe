@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Globalization;
 using System.IO.Compression;
 using System.Text;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +14,7 @@ using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Batch;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support;
@@ -20,7 +22,7 @@ using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
 [Trait("Category", "Integration")]
 public sealed class BatchingRabbitTemplateTest : IDisposable
@@ -276,7 +278,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
 
             Assert.True(latch.Wait(TimeSpan.FromSeconds(60)));
             watch.Stop();
-            _testOutputHelper.WriteLine(watch.ElapsedMilliseconds.ToString());
+            _testOutputHelper.WriteLine(watch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
             Assert.Equal(count, received.Count);
         }
         finally

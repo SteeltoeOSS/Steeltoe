@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
 using Xunit;
@@ -86,7 +86,7 @@ public class DiscoveryClientTest : AbstractBaseTest
     public void Constructor_Throws_IfInstanceConfigNull()
     {
         var ex = Assert.Throws<ArgumentNullException>(() => new DiscoveryClient(null));
-        Assert.Contains("clientConfig", ex.Message);
+        Assert.Contains("clientConfig", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -454,7 +454,7 @@ public class DiscoveryClientTest : AbstractBaseTest
 
         var client = new DiscoveryClient(configuration);
         var ex = Assert.Throws<ArgumentNullException>(() => client.GetNextServerFromEureka(null, false));
-        Assert.Contains("virtualHostname", ex.Message);
+        Assert.Contains("virtualHostname", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -468,7 +468,7 @@ public class DiscoveryClientTest : AbstractBaseTest
 
         var client = new DiscoveryClient(configuration);
         var ex = Assert.Throws<ArgumentNullException>(() => client.GetInstancesByVipAddress(null, false));
-        Assert.Contains("vipAddress", ex.Message);
+        Assert.Contains("vipAddress", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -532,8 +532,8 @@ public class DiscoveryClientTest : AbstractBaseTest
         IList<InstanceInfo> result = client.GetInstancesByVipAddress("vapp1", false);
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.True(result[0].InstanceId.Equals("id1") || result[0].InstanceId.Equals("id2"));
-        Assert.True(result[1].InstanceId.Equals("id1") || result[1].InstanceId.Equals("id2"));
+        Assert.True(result[0].InstanceId == "id1" || result[0].InstanceId == "id2");
+        Assert.True(result[1].InstanceId == "id1" || result[1].InstanceId == "id2");
 
         result = client.GetInstancesByVipAddress("boohoo", false);
         Assert.NotNull(result);
@@ -605,7 +605,7 @@ public class DiscoveryClientTest : AbstractBaseTest
 
         InstanceInfo result = client.GetNextServerFromEureka("vapp1", false);
         Assert.NotNull(result);
-        Assert.True(result.InstanceId.Equals("id1") || result.InstanceId.Equals("id2"));
+        Assert.True(result.InstanceId == "id1" || result.InstanceId == "id2");
 
         result = client.GetNextServerFromEureka("boohoo", false);
         Assert.Null(result);
@@ -626,7 +626,7 @@ public class DiscoveryClientTest : AbstractBaseTest
 
         var client = new DiscoveryClient(configuration);
         var ex = Assert.Throws<ArgumentNullException>(() => client.GetInstanceById(null));
-        Assert.Contains("id", ex.Message);
+        Assert.Contains("id", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -705,9 +705,9 @@ public class DiscoveryClientTest : AbstractBaseTest
         IList<InstanceInfo> result = client.GetInstanceById("id1");
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.True(result[0].InstanceId.Equals("id1") && result[0].InstanceId.Equals("id1"));
-        Assert.True(result[0].AppName.Equals("app1") || result[0].AppName.Equals("app2"));
-        Assert.True(result[1].AppName.Equals("app1") || result[1].AppName.Equals("app2"));
+        Assert.True(result[0].InstanceId == "id1" && result[0].InstanceId == "id1");
+        Assert.True(result[0].AppName == "app1" || result[0].AppName == "app2");
+        Assert.True(result[1].AppName == "app1" || result[1].AppName == "app2");
 
         result = client.GetInstanceById("boohoo");
         Assert.NotNull(result);
@@ -725,7 +725,7 @@ public class DiscoveryClientTest : AbstractBaseTest
 
         var client = new DiscoveryClient(configuration);
         var ex = Assert.Throws<ArgumentNullException>(() => client.GetApplication(null));
-        Assert.Contains("appName", ex.Message);
+        Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -805,7 +805,7 @@ public class DiscoveryClientTest : AbstractBaseTest
 
         var client = new DiscoveryClient(configuration);
         var ex = Assert.Throws<ArgumentException>(() => client.GetInstancesByVipAddressAndAppName(null, null, false));
-        Assert.Contains("appName", ex.Message);
+        Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

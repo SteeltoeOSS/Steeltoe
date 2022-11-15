@@ -84,7 +84,7 @@ public class DbMigrationsEndpoint : AbstractEndpoint<Dictionary<string, DbMigrat
                     descriptor.PendingMigrations = _endpointHelper.GetPendingMigrations(dbContext).ToList();
                     descriptor.AppliedMigrations = _endpointHelper.GetAppliedMigrations(dbContext).ToList();
                 }
-                catch (DbException e) when (e.Message.Contains("exist"))
+                catch (DbException e) when (e.Message.Contains("exist", StringComparison.Ordinal))
                 {
                     // todo: maybe improve detection logic when database is new. hard to do generically across all providers
                     _logger?.LogWarning(e, "Encountered exception loading migrations: {exception}", e.Message);

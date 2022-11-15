@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Azure.Cosmos;
+using Steeltoe.Connector.CosmosDb;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.CosmosDb.Test;
+namespace Steeltoe.Connector.Test.CosmosDb;
 
 public class CosmosDbConnectorFactoryTest
 {
@@ -17,7 +18,7 @@ public class CosmosDbConnectorFactoryTest
         const CosmosDbServiceInfo si = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorFactory(si, options, typeof(CosmosClient)));
-        Assert.Contains(nameof(options), ex.Message);
+        Assert.Contains(nameof(options), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

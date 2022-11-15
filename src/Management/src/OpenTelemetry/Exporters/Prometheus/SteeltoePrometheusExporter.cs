@@ -4,9 +4,8 @@
 
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
-using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 
-namespace Steeltoe.Management.OpenTelemetry.Exporters;
+namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 
 public class SteeltoePrometheusExporter : MetricsExporter
 {

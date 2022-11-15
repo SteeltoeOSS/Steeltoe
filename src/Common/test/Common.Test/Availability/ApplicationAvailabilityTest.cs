@@ -3,9 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Availability;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
-namespace Steeltoe.Common.Availability.Test;
+namespace Steeltoe.Common.Test.Availability;
 
 public class ApplicationAvailabilityTest
 {

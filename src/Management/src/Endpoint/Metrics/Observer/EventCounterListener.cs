@@ -8,7 +8,7 @@ using System.Diagnostics.Tracing;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
@@ -17,6 +17,13 @@ public class EventCounterListener : EventListener
     private const string EventSourceName = "System.Runtime";
     private const string EventName = "EventCounters";
     private readonly ILogger<EventCounterListener> _logger;
+    private readonly bool _isInitialized;
+
+    private readonly Dictionary<string, string> _refreshInterval = new()
+    {
+        { "EventCounterIntervalSec", "1" }
+    };
+
     private readonly IMetricsObserverOptions _options;
 
     private readonly ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new();
@@ -25,12 +32,17 @@ public class EventCounterListener : EventListener
     private readonly ConcurrentDictionary<string, double> _lastDoubleValue = new();
     private readonly ConcurrentDictionary<string, long> _lastLongValue = new();
 
+    private readonly ConcurrentBag<EventSource> _eventSources = new();
+
     public EventCounterListener(IMetricsObserverOptions options, ILogger<EventCounterListener> logger = null)
     {
         ArgumentGuard.NotNull(options);
 
         _options = options;
         _logger = logger;
+        _isInitialized = true;
+
+        ProcessPreInitEventSources();
     }
 
     /// <summary>
@@ -42,6 +54,11 @@ public class EventCounterListener : EventListener
     protected override void OnEventWritten(EventWrittenEventArgs eventData)
     {
         ArgumentGuard.NotNull(eventData);
+
+        if (!_isInitialized)
+        {
+            return;
+        }
 
         try
         {
@@ -65,19 +82,34 @@ public class EventCounterListener : EventListener
 
         if (EventSourceName.Equals(eventSource.Name, StringComparison.OrdinalIgnoreCase))
         {
-            var refreshInterval = new Dictionary<string, string>
+            if (!_isInitialized)
             {
-                { "EventCounterIntervalSec", "1" }
-            }; // TODO: Make it configurable
+                _eventSources.Add(eventSource);
+            }
+            else
+            {
+                SafeEnableEvents(eventSource);
+            }
+        }
+    }
 
-            try
-            {
-                EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All, refreshInterval);
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex.Message, ex);
-            }
+    private void ProcessPreInitEventSources()
+    {
+        foreach (EventSource eventSource in _eventSources)
+        {
+            SafeEnableEvents(eventSource);
+        }
+    }
+
+    private void SafeEnableEvents(EventSource eventSource)
+    {
+        try
+        {
+            EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All, _refreshInterval);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Failed to enable events: {ex.Message}", ex);
         }
     }
 

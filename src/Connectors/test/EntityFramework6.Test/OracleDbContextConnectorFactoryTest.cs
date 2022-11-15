@@ -2,10 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Connector.Oracle;
+using Steeltoe.Connector.Oracle.EntityFramework6;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Oracle.EntityFramework6.Test;
+namespace Steeltoe.Connector.EntityFramework6.Test;
 
 public class OracleDbContextConnectorFactoryTest
 {
@@ -17,7 +19,7 @@ public class OracleDbContextConnectorFactoryTest
         const Type dbContextType = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new OracleDbContextConnectorFactory(si, options, dbContextType));
-        Assert.Contains(nameof(dbContextType), ex.Message);
+        Assert.Contains(nameof(dbContextType), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -28,7 +30,7 @@ public class OracleDbContextConnectorFactoryTest
         Type dbContextType = typeof(BadOracleDbContext);
 
         var ex = Assert.Throws<ConnectorException>(() => new OracleDbContextConnectorFactory(si, options, dbContextType).Create(null));
-        Assert.Contains("BadOracleDbContext", ex.Message);
+        Assert.Contains("BadOracleDbContext", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

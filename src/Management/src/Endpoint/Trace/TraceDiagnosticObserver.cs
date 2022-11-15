@@ -4,12 +4,13 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
-using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -41,7 +42,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
     public override void ProcessEvent(string eventName, object value)
     {
-        if (!StopEvent.Equals(eventName))
+        if (eventName != StopEvent)
         {
             return;
         }
@@ -154,7 +155,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     protected internal string GetTimeTaken(TimeSpan duration)
     {
         long timeInMilliseconds = (long)duration.TotalMilliseconds;
-        return timeInMilliseconds.ToString();
+        return timeInMilliseconds.ToString(CultureInfo.InvariantCulture);
     }
 
     protected internal string GetAuthType(HttpRequest request)
@@ -208,7 +209,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     protected internal Dictionary<string, object> GetHeaders(int status, IHeaderDictionary headers)
     {
         Dictionary<string, object> result = GetHeaders(headers);
-        result.Add("status", status.ToString());
+        result.Add("status", status.ToString(CultureInfo.InvariantCulture));
         return result;
     }
 
@@ -219,7 +220,9 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         foreach (KeyValuePair<string, StringValues> h in headers)
         {
             // Add filtering
+#pragma warning disable S4040 // Strings should be normalized to uppercase
             result.Add(h.Key.ToLowerInvariant(), GetHeaderValue(h.Value));
+#pragma warning restore S4040 // Strings should be normalized to uppercase
         }
 
         return result;

@@ -3,9 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Mvc;
-using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test.Controllers;
 
 [Route("test/test.command")]
 public class TestController : Controller

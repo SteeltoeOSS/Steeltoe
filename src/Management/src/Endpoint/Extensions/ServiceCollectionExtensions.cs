@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Internal;
 
-namespace Steeltoe.Management.Endpoint;
+namespace Steeltoe.Management.Endpoint.Extensions;
 
 public static class ServiceCollectionExtensions
 {

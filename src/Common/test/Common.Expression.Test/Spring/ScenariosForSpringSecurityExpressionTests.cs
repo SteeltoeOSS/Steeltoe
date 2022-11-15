@@ -3,12 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Util;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
 {
@@ -142,7 +143,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
 
             foreach (string myRole in myRoles)
             {
-                if (roles.Any(role => myRole.Equals(role)))
+                if (roles.Any(role => myRole == role))
                 {
                     return true;
                 }
@@ -208,7 +209,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
     {
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
-            return name.Equals("Principal");
+            return name == "Principal";
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
@@ -242,7 +243,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
-            return name.Equals("P");
+            return name == "P";
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
@@ -269,7 +270,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
     {
         public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
         {
-            if (name.Equals("HasRole"))
+            if (name == "HasRole")
             {
                 return new HasRoleExecutor(context.TypeConverter);
             }

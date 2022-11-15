@@ -22,7 +22,7 @@ using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Redis;
 using Steeltoe.Connector.SqlServer;
 using Steeltoe.Discovery.Client;
-using Steeltoe.Extensions.Logging.DynamicSerilog;
+using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Kubernetes;
 using Steeltoe.Management.Tracing;
@@ -83,7 +83,7 @@ public static class WebApplicationBuilderExtensions
             webApplicationBuilder.WireIfAnyLoaded(WireMySqlConnection, MySqlTypeLocator.Assemblies);
             webApplicationBuilder.WireIfAnyLoaded(WireMongoClient, MongoDbTypeLocator.Assemblies);
             webApplicationBuilder.WireIfAnyLoaded(WireOracleConnection, OracleTypeLocator.Assemblies);
-            webApplicationBuilder.WireIfAnyLoaded(WirePostgresConnection, PostgreSqlTypeLocator.Assemblies);
+            webApplicationBuilder.WireIfAnyLoaded(WirePostgreSqlConnection, PostgreSqlTypeLocator.Assemblies);
             webApplicationBuilder.WireIfAnyLoaded(WireRabbitMqConnection, RabbitMQTypeLocator.Assemblies);
             webApplicationBuilder.WireIfAnyLoaded(WireRedisConnectionMultiplexer, RedisTypeLocator.StackExchangeAssemblies);
 
@@ -210,10 +210,10 @@ public static class WebApplicationBuilderExtensions
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WirePostgresConnection(this WebApplicationBuilder webApplicationBuilder)
+    private static void WirePostgreSqlConnection(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddPostgresConnection(webApplicationBuilder.Configuration);
-        Log(LogMessages.WirePostgresConnection);
+        webApplicationBuilder.Services.AddPostgreSqlConnection(webApplicationBuilder.Configuration);
+        Log(LogMessages.WirePostgreSqlConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]

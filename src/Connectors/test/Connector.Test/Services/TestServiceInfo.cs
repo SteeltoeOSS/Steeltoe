@@ -3,8 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common;
+using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Connector.Services.Test;
+namespace Steeltoe.Connector.Test.Services;
 
 internal sealed class TestServiceInfo : ServiceInfo
 {

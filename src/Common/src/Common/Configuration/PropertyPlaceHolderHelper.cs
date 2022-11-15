@@ -64,8 +64,8 @@ public static class PropertyPlaceholderHelper
         var visitedPlaceholders = new HashSet<string>();
 
         // iterate all configuration entries where the value isn't null and contains both the prefix and suffix that identify placeholders
-        foreach (KeyValuePair<string, string> entry in configuration.AsEnumerable()
-            .Where(e => e.Value != null && e.Value.Contains(Prefix) && e.Value.Contains(Suffix)))
+        foreach (KeyValuePair<string, string> entry in configuration.AsEnumerable().Where(e =>
+            e.Value != null && e.Value.Contains(Prefix, StringComparison.Ordinal) && e.Value.Contains(Suffix, StringComparison.Ordinal)))
         {
             logger?.LogTrace("Found a property placeholder '{placeholder}' to resolve for key '{key}", entry.Value, entry.Key);
             resolvedValues.Add(entry.Key, ParseStringValue(entry.Value, configuration, visitedPlaceholders, logger, useEmptyStringIfNotFound));
@@ -115,7 +115,7 @@ public static class PropertyPlaceholderHelper
                 placeholder = ParseStringValue(placeholder, configuration, visitedPlaceHolders);
 
                 // Handle array references foo:bar[1]:baz format -> foo:bar:1:baz
-                string lookup = placeholder.Replace('[', ':').Replace("]", string.Empty);
+                string lookup = placeholder.Replace('[', ':').Replace("]", string.Empty, StringComparison.Ordinal);
 
                 // Now obtain the value for the fully resolved key...
                 string propVal = configuration[lookup];
@@ -140,7 +140,7 @@ public static class PropertyPlaceholderHelper
                 if (propVal == null)
                 {
                     // Replace Spring delimiters ('.') with MS-friendly delimiters (':') so Spring placeholders can also be resolved
-                    lookup = placeholder.Replace(".", ":");
+                    lookup = placeholder.Replace('.', ':');
                     propVal = configuration[lookup];
                 }
 

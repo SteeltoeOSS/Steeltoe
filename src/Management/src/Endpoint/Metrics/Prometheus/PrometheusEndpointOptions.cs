@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Management.Endpoint.Metrics;
+namespace Steeltoe.Management.Endpoint.Metrics.Prometheus;
 
 public class PrometheusEndpointOptions : AbstractEndpointOptions, IPrometheusEndpointOptions
 {

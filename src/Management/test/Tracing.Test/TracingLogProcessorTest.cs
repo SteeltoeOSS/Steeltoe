@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
@@ -40,25 +41,25 @@ public class TracingLogProcessorTest
 
         string result = processor.Process("InputLogMessage");
 
-        Assert.Contains("InputLogMessage", result);
-        Assert.Contains("[", result);
-        Assert.Contains("]", result);
-        Assert.Contains(span.Context.TraceId.ToHexString(), result);
-        Assert.Contains(span.Context.SpanId.ToHexString(), result);
-        Assert.Contains("foobar", result);
+        Assert.Contains("InputLogMessage", result, StringComparison.Ordinal);
+        Assert.Contains("[", result, StringComparison.Ordinal);
+        Assert.Contains("]", result, StringComparison.Ordinal);
+        Assert.Contains(span.Context.TraceId.ToHexString(), result, StringComparison.Ordinal);
+        Assert.Contains(span.Context.SpanId.ToHexString(), result, StringComparison.Ordinal);
+        Assert.Contains("foobar", result, StringComparison.Ordinal);
 
         TelemetrySpan childSpan = tracer.StartActiveSpan("spanName2", SpanKind.Internal, span);
 
         result = processor.Process("InputLogMessage2");
 
-        Assert.Contains("InputLogMessage2", result);
-        Assert.Contains("[", result);
-        Assert.Contains("]", result);
-        Assert.Contains(childSpan.Context.TraceId.ToHexString(), result);
-        Assert.Contains(childSpan.Context.SpanId.ToHexString(), result);
+        Assert.Contains("InputLogMessage2", result, StringComparison.Ordinal);
+        Assert.Contains("[", result, StringComparison.Ordinal);
+        Assert.Contains("]", result, StringComparison.Ordinal);
+        Assert.Contains(childSpan.Context.TraceId.ToHexString(), result, StringComparison.Ordinal);
+        Assert.Contains(childSpan.Context.SpanId.ToHexString(), result, StringComparison.Ordinal);
 
         // Assert.Contains(span.Context.SpanId.ToHexString(), result);  TODO: ParentID not supported
-        Assert.Contains("foobar", result);
+        Assert.Contains("foobar", result, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -80,17 +81,17 @@ public class TracingLogProcessorTest
 
         string result = processor.Process("InputLogMessage");
 
-        Assert.Contains("InputLogMessage", result);
-        Assert.Contains("[", result);
-        Assert.Contains("]", result);
+        Assert.Contains("InputLogMessage", result, StringComparison.Ordinal);
+        Assert.Contains("[", result, StringComparison.Ordinal);
+        Assert.Contains("]", result, StringComparison.Ordinal);
 
         string full = span.Context.TraceId.ToHexString();
         string shorty = full.Substring(full.Length - 16, 16);
 
-        Assert.Contains(shorty, result);
-        Assert.DoesNotContain(full, result);
+        Assert.Contains(shorty, result, StringComparison.Ordinal);
+        Assert.DoesNotContain(full, result, StringComparison.Ordinal);
 
-        Assert.Contains(span.Context.SpanId.ToHexString(), result);
-        Assert.Contains("foobar", result);
+        Assert.Contains(span.Context.SpanId.ToHexString(), result, StringComparison.Ordinal);
+        Assert.Contains("foobar", result, StringComparison.Ordinal);
     }
 }

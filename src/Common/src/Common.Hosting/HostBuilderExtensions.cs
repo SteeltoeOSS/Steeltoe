@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Common.Hosting;
 
@@ -18,48 +17,14 @@ public static class HostBuilderExtensions
     /// <param name="webHostBuilder">
     /// Your <see cref="IWebHostBuilder" />.
     /// </param>
-    /// <param name="runLocalHttpPort">
-    /// Set the Http port number with code so you don't need to set environment variables locally.
-    /// </param>
-    /// <param name="runLocalHttpsPort">
-    /// Set the Https port number with code so you don't need to set environment variables locally.
-    /// </param>
     /// <returns>
-    /// Your <see cref="IWebHostBuilder" />, now listening on port(s) found in the environment or passed in.
+    /// Your <see cref="IWebHostBuilder" />, now listening on port(s) found in the environment.
     /// </returns>
-    /// <remarks>
-    /// runLocalPort parameter will not be used if an environment variable PORT is found.
-    /// </remarks>
-    public static IWebHostBuilder UseCloudHosting(this IWebHostBuilder webHostBuilder, int? runLocalHttpPort = null, int? runLocalHttpsPort = null)
+    public static IWebHostBuilder UseCloudHosting(this IWebHostBuilder webHostBuilder)
     {
         ArgumentGuard.NotNull(webHostBuilder);
 
-        return webHostBuilder.BindToPorts(runLocalHttpPort, runLocalHttpsPort);
-    }
-
-    /// <summary>
-    /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// Your <see cref="IHostBuilder" />.
-    /// </param>
-    /// <param name="runLocalHttpPort">
-    /// Set the Http port number with code so you don't need to set environment variables locally.
-    /// </param>
-    /// <param name="runLocalHttpsPort">
-    /// Set the Https port number with code so you don't need to set environment variables locally.
-    /// </param>
-    /// <returns>
-    /// Your <see cref="IHostBuilder" />, now listening on port(s) found in the environment or passed in.
-    /// </returns>
-    /// <remarks>
-    /// runLocalPort parameter will not be used if an environment variable PORT is found<br /><br /> THIS EXTENSION IS NOT COMPATIBLE WITH IIS EXPRESS.
-    /// </remarks>
-    public static IHostBuilder UseCloudHosting(this IHostBuilder hostBuilder, int? runLocalHttpPort = null, int? runLocalHttpsPort = null)
-    {
-        ArgumentGuard.NotNull(hostBuilder);
-
-        return hostBuilder.ConfigureWebHost(configure => configure.BindToPorts(runLocalHttpPort, runLocalHttpsPort));
+        return webHostBuilder.BindToPorts();
     }
 
     /// <summary>
@@ -68,28 +33,21 @@ public static class HostBuilderExtensions
     /// <param name="webApplicationBuilder">
     /// Your <see cref="WebApplicationBuilder" />.
     /// </param>
-    /// <param name="runLocalHttpPort">
-    /// Set the Http port number with code so you don't need to set environment variables locally.
-    /// </param>
-    /// <param name="runLocalHttpsPort">
-    /// Set the Https port number with code so you don't need to set environment variables locally.
-    /// </param>
     /// <returns>
-    /// Your <see cref="WebApplicationBuilder" />, now listening on port(s) found in the environment or passed in.
+    /// Your <see cref="WebApplicationBuilder" />, now listening on port(s) found in the environment.
     /// </returns>
     /// <remarks>
     /// runLocalPort parameter will not be used if an environment variable PORT is found<br /><br /> THIS EXTENSION IS NOT COMPATIBLE WITH IIS EXPRESS.
     /// </remarks>
-    public static WebApplicationBuilder UseCloudHosting(this WebApplicationBuilder webApplicationBuilder, int? runLocalHttpPort = null,
-        int? runLocalHttpsPort = null)
+    public static WebApplicationBuilder UseCloudHosting(this WebApplicationBuilder webApplicationBuilder)
     {
         ArgumentGuard.NotNull(webApplicationBuilder);
 
-        webApplicationBuilder.WebHost.BindToPorts(runLocalHttpPort, runLocalHttpsPort);
+        webApplicationBuilder.WebHost.BindToPorts();
         return webApplicationBuilder;
     }
 
-    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, int? runLocalHttpPort, int? runLocalHttpsPort)
+    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder)
     {
         var urls = new List<string>();
 
@@ -104,28 +62,26 @@ public static class HostBuilderExtensions
         {
             AddFromKubernetesEnv(urls);
         }
-        else
+
+        if (!urls.Any())
         {
-            AddRunLocalPorts(urls, runLocalHttpPort, runLocalHttpsPort);
+            urls.Add(DefaultUrl);
         }
 
-        if (urls.Any())
-        {
-            // setting ASPNETCORE_URLS should only be needed to override launchSettings.json
-            if (string.IsNullOrWhiteSpace(portStr) && !Platform.IsKubernetes)
-            {
-                Environment.SetEnvironmentVariable("ASPNETCORE_URLS", string.Join(";", urls));
-            }
+        return webHostBuilder.BindToPorts(urls);
+    }
 
-            webHostBuilder.UseUrls(urls.ToArray());
-        }
-        else
+    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, List<string> urls)
+    {
+        string currentSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+        var currentUrls = new HashSet<string>(urls);
+
+        if (!string.IsNullOrEmpty(currentSetting))
         {
-            Environment.SetEnvironmentVariable("ASPNETCORE_URLS", DefaultUrl);
-            webHostBuilder.UseUrls(DefaultUrl);
+            currentUrls.UnionWith(currentSetting?.Split(';'));
         }
 
-        return webHostBuilder;
+        return webHostBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Join(";", currentUrls));
     }
 
     private static void AddPortAndAspNetCoreUrls(List<string> urls, string portStr, string aspnetUrls)
@@ -134,7 +90,7 @@ public static class HostBuilderExtensions
         {
             urls.Add($"http://*:{port}");
         }
-        else if (portStr.Contains(";"))
+        else if (portStr.Contains(';'))
         {
             if (!string.IsNullOrEmpty(aspnetUrls))
             {
@@ -151,21 +107,8 @@ public static class HostBuilderExtensions
 
     private static void AddFromKubernetesEnv(List<string> urls)
     {
-        string appName = Environment.GetEnvironmentVariable("HOSTNAME").Split("-")[0].ToUpperInvariant();
+        string appName = Environment.GetEnvironmentVariable("HOSTNAME").Split('-')[0].ToUpperInvariant();
         string foundPort = Environment.GetEnvironmentVariable($"{appName}_SERVICE_PORT_HTTP");
         urls.Add($"http://*:{foundPort ?? "80"}");
-    }
-
-    private static void AddRunLocalPorts(List<string> urls, int? runLocalHttpPort = null, int? runLocalHttpsPort = null)
-    {
-        if (runLocalHttpPort != null)
-        {
-            urls.Add($"http://*:{runLocalHttpPort}");
-        }
-
-        if (runLocalHttpsPort != null)
-        {
-            urls.Add($"https://*:{runLocalHttpsPort}");
-        }
     }
 }

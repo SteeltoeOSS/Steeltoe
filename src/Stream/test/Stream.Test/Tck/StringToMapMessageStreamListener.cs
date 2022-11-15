@@ -8,7 +8,7 @@ using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 using Xunit;
 
-namespace Steeltoe.Stream.Tck;
+namespace Steeltoe.Stream.Test.Tck;
 
 public class StringToMapMessageStreamListener
 {

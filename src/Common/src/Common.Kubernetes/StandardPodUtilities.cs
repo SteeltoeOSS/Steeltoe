@@ -6,10 +6,8 @@ using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
-using Steeltoe.Common;
-using Steeltoe.Common.Kubernetes;
 
-namespace Steeltoe.Configuration.Kubernetes;
+namespace Steeltoe.Common.Kubernetes;
 
 public class StandardPodUtilities : IPodUtilities
 {
@@ -35,7 +33,7 @@ public class StandardPodUtilities : IPodUtilities
         {
             string hostname = Environment.GetEnvironmentVariable("HOSTNAME");
             HttpOperationResponse<V1PodList> rsp = await _kubernetes.ListNamespacedPodWithHttpMessagesAsync(_applicationOptions.NameSpace);
-            pod = rsp.Body.Items?.FirstOrDefault(p => p.Metadata.Name.Equals(hostname));
+            pod = rsp.Body.Items?.FirstOrDefault(p => p.Metadata.Name == hostname);
         }
         catch (Exception e)
         {

@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
-namespace Steeltoe.Connector.Services.Test;
+namespace Steeltoe.Connector.Test.Services;
 
 public class ServiceInfoTest
 {
@@ -15,7 +16,7 @@ public class ServiceInfoTest
         const string id = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceInfo(id));
-        Assert.Contains(nameof(id), ex.Message);
+        Assert.Contains(nameof(id), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

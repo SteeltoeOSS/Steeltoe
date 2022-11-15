@@ -2,9 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Services.Test;
+namespace Steeltoe.Connector.Test.Services;
 
 public class UriInfoTest
 {
@@ -43,7 +44,7 @@ public class UriInfoTest
     {
         const string uri = "mysql://joe@localhost:1527/big_db";
         var ex = Assert.Throws<ArgumentException>(() => new UriInfo(uri));
-        Assert.Contains("joe", ex.Message);
+        Assert.Contains("joe", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

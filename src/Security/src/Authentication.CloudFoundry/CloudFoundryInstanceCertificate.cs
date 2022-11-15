@@ -6,7 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Security.Authentication.Mtls;
+namespace Steeltoe.Security.Authentication.CloudFoundry;
 
 public class CloudFoundryInstanceCertificate
 {
@@ -37,11 +37,11 @@ public class CloudFoundryInstanceCertificate
             return false;
         }
 
-        Match cfInstanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty), CloudFoundryInstanceCertSubjectRegex);
+        Match cfInstanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty, StringComparison.Ordinal), CloudFoundryInstanceCertSubjectRegex);
 
         if (!cfInstanceMatch.Success)
         {
-            cfInstanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty), ValidInstanceCertSubjectRegex);
+            cfInstanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty, StringComparison.Ordinal), ValidInstanceCertSubjectRegex);
         }
 
         if (cfInstanceMatch.Success)

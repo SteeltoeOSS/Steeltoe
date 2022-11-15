@@ -6,7 +6,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
 using Steeltoe.CircuitBreaker.Hystrix.Configuration;
-using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
+using Steeltoe.CircuitBreaker.Hystrix.Test.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.Common.Util;
 using Xunit;

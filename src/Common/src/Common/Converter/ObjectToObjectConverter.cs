@@ -61,9 +61,8 @@ public class ObjectToObjectConverter : AbstractGenericConditionalConverter
             throw new ConversionFailedException(sourceType, targetType, source, ex);
         }
 
-        throw new InvalidOperationException(string.Format(
-            "No To{1}() method exists on {0}, " + "and no static ValueOf/Of/From({0}) method or {1}({0}) constructor exists on {1}.", sourceClass.Name,
-            targetClass.Name));
+        throw new InvalidOperationException($"No To{targetClass.Name}() method exists on {sourceClass.Name}, " +
+            $"and no static ValueOf/Of/From({sourceClass.Name}) method or {targetClass.Name}({sourceClass.Name}) constructor exists on {targetClass.Name}.");
     }
 
     internal static bool HasConversionMethodOrConstructor(Type targetType, Type sourceType)

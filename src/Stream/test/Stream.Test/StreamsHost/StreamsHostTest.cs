@@ -5,11 +5,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Xunit;
 
-namespace Steeltoe.Stream.StreamHost;
+namespace Steeltoe.Stream.Test.StreamsHost;
 
 public class StreamsHostTest
 {
@@ -18,8 +19,8 @@ public class StreamsHostTest
     {
         FakeHostedService service;
 
-        using (IHost host = StreamHost.CreateDefaultBuilder<SampleSink>().ConfigureServices(svc => svc.AddSingleton<IHostedService, FakeHostedService>())
-            .Start())
+        using (IHost host = StreamHost.StreamHost.CreateDefaultBuilder<SampleSink>()
+            .ConfigureServices(svc => svc.AddSingleton<IHostedService, FakeHostedService>()).Start())
         {
             Assert.NotNull(host);
             service = (FakeHostedService)host.Services.GetRequiredService<IHostedService>();
@@ -39,7 +40,7 @@ public class StreamsHostTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration());
-        using IHost host = StreamHost.CreateDefaultBuilder<SampleSink>().ConfigureAppConfiguration(c => c.AddCloudFoundry()).Start();
+        using IHost host = StreamHost.StreamHost.CreateDefaultBuilder<SampleSink>().ConfigureAppConfiguration(c => c.AddCloudFoundry()).Start();
         var rabbitOptionsMonitor = host.Services.GetService<IOptionsMonitor<RabbitOptions>>();
         Assert.NotNull(rabbitOptionsMonitor);
         RabbitOptions rabbitOptions = rabbitOptionsMonitor.CurrentValue;

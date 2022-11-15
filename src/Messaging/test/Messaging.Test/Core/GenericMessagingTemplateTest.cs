@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Moq;
+using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Support;
-using Steeltoe.Messaging.Test;
 using Xunit;
 
-namespace Steeltoe.Messaging.Core.Test;
+namespace Steeltoe.Messaging.Test.Core;
 
 public class GenericMessagingTemplateTest
 {
@@ -331,7 +331,7 @@ public class GenericMessagingTemplateTest
                 const string expected = "Reply message received but the receiving thread has exited due to a timeout";
                 string actual = ex.Message;
 
-                if (!expected.Equals(actual))
+                if (actual != expected)
                 {
                     Failure = new InvalidOperationException($"Unexpected error: '{actual}'");
                 }

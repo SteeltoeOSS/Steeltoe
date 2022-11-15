@@ -9,10 +9,11 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
+using Steeltoe.Messaging.RabbitMQ.Hosting;
 using Xunit;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Host;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Host;
 
 public class RabbitMQHostTest
 {

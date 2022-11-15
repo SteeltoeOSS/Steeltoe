@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Steeltoe.Common;
 
 namespace Steeltoe.Discovery.Consul.Util;
@@ -12,26 +13,28 @@ public static class DateTimeConversions
     {
         ArgumentGuard.NotNullOrWhiteSpace(time);
 
-        time = time.ToLower();
+#pragma warning disable S4040 // Strings should be normalized to uppercase
+        time = time.ToLowerInvariant();
+#pragma warning restore S4040 // Strings should be normalized to uppercase
 
-        if (time.EndsWith("ms"))
+        if (time.EndsWith("ms", StringComparison.Ordinal))
         {
-            return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 2)), "ms");
+            return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 2), CultureInfo.InvariantCulture), "ms");
         }
 
-        if (time.EndsWith("s"))
+        if (time.EndsWith('s'))
         {
-            return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 1)), "s");
+            return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 1), CultureInfo.InvariantCulture), "s");
         }
 
-        if (time.EndsWith("m"))
+        if (time.EndsWith('m'))
         {
-            return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 1)), "m");
+            return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 1), CultureInfo.InvariantCulture), "m");
         }
 
-        if (time.EndsWith("h"))
+        if (time.EndsWith('h'))
         {
-            return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 1)), "h");
+            return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 1), CultureInfo.InvariantCulture), "h");
         }
 
         throw new InvalidOperationException($"Incorrect format:{time}");

@@ -20,8 +20,10 @@ using OpenTelemetry.Trace;
 using Oracle.ManagedDataAccess.Client;
 using RabbitMQ.Client;
 using StackExchange.Redis;
+using Steeltoe.Common;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Kubernetes;
@@ -30,12 +32,11 @@ using Steeltoe.Configuration.RandomValue;
 using Steeltoe.Connector;
 using Steeltoe.Discovery;
 using Steeltoe.Discovery.Eureka;
-using Steeltoe.Extensions.Logging;
-using Steeltoe.Extensions.Logging.DynamicSerilog;
+using Steeltoe.Logging;
+using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.OpenTelemetry.Exporters;
-using Steeltoe.Management.OpenTelemetry.Trace;
+using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Xunit;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
@@ -215,10 +216,10 @@ public class HostBuilderExtensionsTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response = await testClient.GetAsync("/actuator/health/liveness");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("\"LivenessState\":\"CORRECT\"", await response.Content.ReadAsStringAsync());
+        Assert.Contains("\"LivenessState\":\"CORRECT\"", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
         response = await testClient.GetAsync("/actuator/health/readiness");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync());
+        Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -302,8 +303,8 @@ public class HostBuilderExtensionsTest
 
         Assert.NotNull(instrumentations);
         Assert.Equal(2, instrumentations.Count);
-        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
-        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
+        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http", StringComparison.Ordinal));
+        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore", StringComparison.Ordinal));
     }
 
     [Fact]

@@ -5,7 +5,7 @@
 using Steeltoe.Connector.MySql;
 using Xunit;
 
-namespace Steeltoe.Connector.EntityFramework6.MySql.Test;
+namespace Steeltoe.Connector.EntityFramework6.Test;
 
 public class MySqlTypeLocatorTest
 {

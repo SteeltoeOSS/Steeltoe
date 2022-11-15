@@ -34,7 +34,7 @@ public class CloudFoundryTokenValidator
     /// </returns>
     public virtual string ValidateIssuer(string issuer, SecurityToken securityToken, TokenValidationParameters validationParameters)
     {
-        if (issuer.Contains("uaa"))
+        if (issuer.Contains("uaa", StringComparison.Ordinal))
         {
             return issuer;
         }
@@ -61,14 +61,14 @@ public class CloudFoundryTokenValidator
     {
         foreach (string audience in audiences)
         {
-            if (audience.Equals(_options.ClientId))
+            if (audience == _options.ClientId)
             {
                 return true;
             }
 
             if (_options.AdditionalAudiences != null)
             {
-                bool found = _options.AdditionalAudiences.Any(x => x.Equals(audience));
+                bool found = _options.AdditionalAudiences.Any(x => x == audience);
 
                 if (found)
                 {
@@ -96,14 +96,14 @@ public class CloudFoundryTokenValidator
             return true; // no check
         }
 
-        if (!validJwt.Claims.Any(x => x.Type.Equals("scope") || x.Type.Equals("authorities")))
+        if (!validJwt.Claims.Any(x => x.Type == "scope" || x.Type == "authorities"))
         {
             return false; // no scopes at all
         }
 
         foreach (Claim claim in validJwt.Claims)
         {
-            if (claim.Type.Equals("scope") || (claim.Type.Equals("authorities") && _options.RequiredScopes.Any(x => x.Equals(claim.Value))))
+            if (claim.Type == "scope" || (claim.Type == "authorities" && _options.RequiredScopes.Any(x => x == claim.Value)))
             {
                 return true;
             }

@@ -12,6 +12,9 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
+using Steeltoe.Security.DataProtection.CredHub.Credentials;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Certificate;
+using Steeltoe.Security.DataProtection.CredHub.Credentials.Permissions;
 
 namespace Steeltoe.Security.DataProtection.CredHub;
 
@@ -74,7 +77,7 @@ public class CredHubClient : ICredHubClient
 
         if (string.IsNullOrEmpty(uaaOverrideUrl))
         {
-            HttpResponseMessage info = await _httpClient.GetAsync($"{_baseCredHubUrl.Replace("/api", "/info")}");
+            HttpResponseMessage info = await _httpClient.GetAsync($"{_baseCredHubUrl.Replace("/api", "/info", StringComparison.Ordinal)}");
 
             var infoResponse = await HandleErrorParseResponseAsync<CredHubServerInfo>(info, "GET /info from CredHub Server");
 

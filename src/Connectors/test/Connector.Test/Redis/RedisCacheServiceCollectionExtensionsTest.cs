@@ -8,10 +8,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.Redis;
 using Xunit;
 
-namespace Steeltoe.Connector.Redis.Test;
+namespace Steeltoe.Connector.Test.Redis;
 
 public class RedisCacheServiceCollectionExtensionsTest
 {
@@ -28,13 +30,13 @@ public class RedisCacheServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(configurationRoot));
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(configurationRoot, "foobar"));
-        Assert.Contains(nameof(services), ex2.Message);
+        Assert.Contains(nameof(services), ex2.Message, StringComparison.Ordinal);
 
         var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(configurationRoot, configurationRoot, "foobar"));
-        Assert.Contains(nameof(services), ex3.Message);
+        Assert.Contains(nameof(services), ex3.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -45,13 +47,13 @@ public class RedisCacheServiceCollectionExtensionsTest
         IConfigurationRoot connectionConfig = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
 
         var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(configuration, connectionConfig, "foobar"));
-        Assert.Contains("applicationConfiguration", ex3.Message);
+        Assert.Contains("applicationConfiguration", ex3.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -62,7 +64,7 @@ public class RedisCacheServiceCollectionExtensionsTest
         const string serviceName = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex.Message);
+        Assert.Contains(nameof(serviceName), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -135,10 +137,10 @@ public class RedisCacheServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddDistributedRedisCache(configurationRoot, "foobar"));
-        Assert.Contains("foobar", ex.Message);
+        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ConnectorException>(() => services.AddDistributedRedisCache(configurationRoot, configurationRoot, "foobar"));
-        Assert.Contains("foobar", ex2.Message);
+        Assert.Contains("foobar", ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -154,10 +156,10 @@ public class RedisCacheServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddDistributedRedisCache(configurationRoot));
-        Assert.Contains("Multiple", ex.Message);
+        Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ConnectorException>(() => services.AddDistributedRedisCache(configurationRoot, configurationRoot, null));
-        Assert.Contains("Multiple", ex2.Message);
+        Assert.Contains("Multiple", ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -167,13 +169,13 @@ public class RedisCacheServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(configurationRoot));
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(configurationRoot, "foobar"));
-        Assert.Contains(nameof(services), ex2.Message);
+        Assert.Contains(nameof(services), ex2.Message, StringComparison.Ordinal);
 
         var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(configurationRoot, configurationRoot, "foobar"));
-        Assert.Contains(nameof(services), ex3.Message);
+        Assert.Contains(nameof(services), ex3.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -184,13 +186,13 @@ public class RedisCacheServiceCollectionExtensionsTest
         IConfigurationRoot connectionConfig = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
 
         var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(configuration, connectionConfig, "foobar"));
-        Assert.Contains("applicationConfiguration", ex3.Message);
+        Assert.Contains("applicationConfiguration", ex3.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -201,7 +203,7 @@ public class RedisCacheServiceCollectionExtensionsTest
         const string serviceName = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex.Message);
+        Assert.Contains(nameof(serviceName), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -231,10 +233,10 @@ public class RedisCacheServiceCollectionExtensionsTest
 
         Assert.NotNull(service);
         Assert.IsType<ConnectionMultiplexer>(service);
-        Assert.Contains("password=pass,word", (service as ConnectionMultiplexer).Configuration);
+        Assert.Contains("password=pass,word", (service as ConnectionMultiplexer).Configuration, StringComparison.Ordinal);
         Assert.NotNull(service2);
         Assert.IsType<ConnectionMultiplexer>(service2);
-        Assert.Contains("password=pass,word", (service as ConnectionMultiplexer).Configuration);
+        Assert.Contains("password=pass,word", (service as ConnectionMultiplexer).Configuration, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -274,9 +276,9 @@ public class RedisCacheServiceCollectionExtensionsTest
 
         Assert.NotNull(service);
         Assert.IsType<ConnectionMultiplexer>(service);
-        Assert.Contains("192.168.0.103", service.Configuration);
-        Assert.Contains(":60287", service.Configuration);
-        Assert.Contains("password=133de7c8-9f3a-4df1-8a10-676ba7ddaa10", service.Configuration);
+        Assert.Contains("192.168.0.103", service.Configuration, StringComparison.Ordinal);
+        Assert.Contains(":60287", service.Configuration, StringComparison.Ordinal);
+        Assert.Contains("password=133de7c8-9f3a-4df1-8a10-676ba7ddaa10", service.Configuration, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -301,9 +303,9 @@ public class RedisCacheServiceCollectionExtensionsTest
 
         Assert.NotNull(service);
         Assert.IsType<ConnectionMultiplexer>(service);
-        Assert.Contains("cbe9d9a0-6502-438d-87ec-f26f1974e378.redis.cache.windows.net", service.Configuration);
-        Assert.Contains(":6379", service.Configuration);
-        Assert.Contains("password=V+4dv03jSUZkEcjGhVMR0hjEPfILCCcth1JE8vPRki4=", service.Configuration);
+        Assert.Contains("cbe9d9a0-6502-438d-87ec-f26f1974e378.redis.cache.windows.net", service.Configuration, StringComparison.Ordinal);
+        Assert.Contains(":6379", service.Configuration, StringComparison.Ordinal);
+        Assert.Contains("password=V+4dv03jSUZkEcjGhVMR0hjEPfILCCcth1JE8vPRki4=", service.Configuration, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -329,9 +331,9 @@ public class RedisCacheServiceCollectionExtensionsTest
 
         Assert.NotNull(service);
         Assert.IsType<ConnectionMultiplexer>(service);
-        Assert.Contains("redis-1076.redis-enterprise.system.cloudyazure.io", service.Configuration);
-        Assert.Contains(":1076", service.Configuration);
-        Assert.Contains("password=rQrMqqg-.LJzO498EcAIfp-auu4czBiGM40wjveTdHw-EJu0", service.Configuration);
+        Assert.Contains("redis-1076.redis-enterprise.system.cloudyazure.io", service.Configuration, StringComparison.Ordinal);
+        Assert.Contains(":1076", service.Configuration, StringComparison.Ordinal);
+        Assert.Contains("password=rQrMqqg-.LJzO498EcAIfp-auu4czBiGM40wjveTdHw-EJu0", service.Configuration, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -356,10 +358,10 @@ public class RedisCacheServiceCollectionExtensionsTest
 
         Assert.NotNull(service);
         Assert.IsType<ConnectionMultiplexer>(service);
-        Assert.Contains("9b67c347-03b8-4956-aa2a-858ac30aced5.redis.cache.windows.net", service.Configuration);
-        Assert.Contains(":6380", service.Configuration);
-        Assert.Contains("password=mAG0+CdozukoUTOIEAo6wTKHdMoqg4+Jfno8docw3Zg=", service.Configuration);
-        Assert.Contains("ssl=True", service.Configuration);
+        Assert.Contains("9b67c347-03b8-4956-aa2a-858ac30aced5.redis.cache.windows.net", service.Configuration, StringComparison.Ordinal);
+        Assert.Contains(":6380", service.Configuration, StringComparison.Ordinal);
+        Assert.Contains("password=mAG0+CdozukoUTOIEAo6wTKHdMoqg4+Jfno8docw3Zg=", service.Configuration, StringComparison.Ordinal);
+        Assert.Contains("ssl=True", service.Configuration, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -369,9 +371,9 @@ public class RedisCacheServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddRedisConnectionMultiplexer(configurationRoot, "foobar"));
-        Assert.Contains("foobar", ex.Message);
+        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ConnectorException>(() => services.AddRedisConnectionMultiplexer(configurationRoot, configurationRoot, "foobar"));
-        Assert.Contains("foobar", ex2.Message);
+        Assert.Contains("foobar", ex2.Message, StringComparison.Ordinal);
     }
 }

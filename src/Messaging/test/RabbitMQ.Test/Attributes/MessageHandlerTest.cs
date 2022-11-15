@@ -13,7 +13,7 @@ using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using Xunit;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Attributes;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 public class MessageHandlerTest
 {

@@ -11,13 +11,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
-using Steeltoe.Extensions.Logging;
-using Steeltoe.Extensions.Logging.DynamicSerilog;
+using Steeltoe.Common.TestResources;
+using Steeltoe.Logging.DynamicLogger;
+using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Health.Test;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
@@ -26,10 +26,11 @@ using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Info;
-using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -121,9 +122,9 @@ public class ManagementWebApplicationBuilderExtensionsTest
         HttpResponseMessage livenessResult = await client.GetAsync("actuator/health/liveness");
         HttpResponseMessage readinessResult = await client.GetAsync("actuator/health/readiness");
         Assert.Equal(HttpStatusCode.OK, livenessResult.StatusCode);
-        Assert.Contains("\"LivenessState\":\"CORRECT\"", await livenessResult.Content.ReadAsStringAsync());
+        Assert.Contains("\"LivenessState\":\"CORRECT\"", await livenessResult.Content.ReadAsStringAsync(), StringComparison.Ordinal);
         Assert.Equal(HttpStatusCode.OK, readinessResult.StatusCode);
-        Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await readinessResult.Content.ReadAsStringAsync());
+        Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await readinessResult.Content.ReadAsStringAsync(), StringComparison.Ordinal);
 
         // confirm that the Readiness state will be changed to refusing traffic when ApplicationStopping fires
         var availability = host.Services.GetService<ApplicationAvailability>();

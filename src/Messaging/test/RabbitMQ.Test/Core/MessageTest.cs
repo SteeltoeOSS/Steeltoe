@@ -6,7 +6,7 @@ using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
 public class MessageTest
 {
@@ -24,7 +24,7 @@ public class MessageTest
         RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MessageHeaders.ContentTypeJson;
         accessor.ContentEncoding = "UTF-16";
-        Assert.Contains("ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP", message.ToString());
+        Assert.Contains("ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP", message.ToString(), StringComparison.Ordinal);
     }
 
     [Fact]

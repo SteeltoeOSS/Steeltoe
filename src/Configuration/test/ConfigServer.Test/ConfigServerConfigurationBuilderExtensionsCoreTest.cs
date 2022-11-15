@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
@@ -25,7 +25,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
 
         var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(environment));
-        Assert.Contains(nameof(configurationBuilder), ex.Message);
+        Assert.Contains(nameof(configurationBuilder), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         const IHostEnvironment env = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(env));
-        Assert.Contains("environment", ex.Message);
+        Assert.Contains("environment", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

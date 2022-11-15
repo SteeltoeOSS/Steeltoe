@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
+namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
 public class PlaceOfBirth
 {
@@ -37,7 +37,7 @@ public class PlaceOfBirth
             return false;
         }
 
-        return City.Equals(other.City);
+        return City == other.City;
     }
 
     public override int GetHashCode()

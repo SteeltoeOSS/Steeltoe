@@ -5,7 +5,7 @@
 using System.Text.Json.Serialization;
 using Steeltoe.Security.DataProtection.CredHub.Credentials.Utilities;
 
-namespace Steeltoe.Security.DataProtection.CredHub;
+namespace Steeltoe.Security.DataProtection.CredHub.Credentials;
 
 [JsonConverter(typeof(SetRequestJsonConverter))]
 public class CredentialSetRequest : CredHubBaseObject

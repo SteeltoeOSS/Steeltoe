@@ -19,7 +19,7 @@ internal static class GenericsUtils
 
         Type currentType = evaluatedClass;
 
-        while (!typeof(object).Equals(currentType) && bindableType == null)
+        while (currentType != typeof(object) && bindableType == null)
         {
             Type[] interfaces = currentType.GetInterfaces();
             Type resolvableType = null;
@@ -102,7 +102,7 @@ internal static class GenericsUtils
                     {
                         Type resolvableType = type.GetGenericTypeDefinition();
 
-                        if (resolvableType.Equals(typeof(IPollableSource<>)))
+                        if (resolvableType == typeof(IPollableSource<>))
                         {
                             return type.GetGenericArguments()[0];
                         }

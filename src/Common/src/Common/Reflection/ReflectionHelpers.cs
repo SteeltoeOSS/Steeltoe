@@ -436,7 +436,7 @@ public static class ReflectionHelpers
                     Assembly assemblyRef = loadContext.LoadFromAssemblyPath(assembly);
 
                     // haven't been able to get actual type comparison to work (assembly of the attribute not found?), falling back on matching the type name
-                    if (CustomAttributeData.GetCustomAttributes(assemblyRef).Any(attr => attr.AttributeType.FullName.Equals(typeof(T).FullName)))
+                    if (CustomAttributeData.GetCustomAttributes(assemblyRef).Any(attr => attr.AttributeType.FullName == typeof(T).FullName))
                     {
                         FindAssembly(filename);
                     }
@@ -471,7 +471,7 @@ public static class ReflectionHelpers
         {
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            if (baseDirectory.EndsWith("\\"))
+            if (baseDirectory.EndsWith("\\", StringComparison.Ordinal))
             {
                 baseDirectory = baseDirectory.Substring(0, baseDirectory.Length - 1);
             }

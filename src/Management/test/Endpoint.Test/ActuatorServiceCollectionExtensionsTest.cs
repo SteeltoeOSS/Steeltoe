@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Xunit;
@@ -28,8 +29,8 @@ public class ActuatorServiceCollectionExtensionsTest
         Assert.NotNull(options);
         CorsPolicy policy = options.Value.GetPolicy("SteeltoeManagement");
         Assert.True(policy.IsOriginAllowed("*"));
-        Assert.Contains(policy.Methods, m => m.Equals("GET"));
-        Assert.Contains(policy.Methods, m => m.Equals("POST"));
+        Assert.Contains(policy.Methods, m => m == "GET");
+        Assert.Contains(policy.Methods, m => m == "POST");
     }
 
     [Fact]
@@ -49,8 +50,8 @@ public class ActuatorServiceCollectionExtensionsTest
         Assert.True(policy.IsOriginAllowed("http://google.com"));
         Assert.False(policy.IsOriginAllowed("http://bing.com"));
         Assert.False(policy.IsOriginAllowed("*"));
-        Assert.Contains(policy.Methods, m => m.Equals("GET"));
-        Assert.Contains(policy.Methods, m => m.Equals("POST"));
+        Assert.Contains(policy.Methods, m => m == "GET");
+        Assert.Contains(policy.Methods, m => m == "POST");
     }
 
     [Fact]

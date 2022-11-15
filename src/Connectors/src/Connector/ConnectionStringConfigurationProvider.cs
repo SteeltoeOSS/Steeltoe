@@ -50,7 +50,7 @@ internal sealed class ConnectionStringConfigurationProvider : ConfigurationProvi
             {
                 // look for a service info with that id
                 ServiceInfoCreator = ServiceInfoCreatorFactory.GetServiceInfoCreator(Configuration.Value);
-                IServiceInfo serviceInfo = ServiceInfoCreator.ServiceInfos.FirstOrDefault(si => si.Id.Equals(searchKey));
+                IServiceInfo serviceInfo = ServiceInfoCreator.ServiceInfos.FirstOrDefault(si => si.Id == searchKey);
 
                 if (serviceInfo != null)
                 {

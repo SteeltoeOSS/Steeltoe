@@ -4,10 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Refresh;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Refresh.Test;
+namespace Steeltoe.Management.Endpoint.Test.Refresh;
 
 public class EndpointServiceCollectionTest : BaseTest
 {
@@ -18,7 +18,7 @@ public class EndpointServiceCollectionTest : BaseTest
         IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddRefreshActuator());
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
         Assert.Throws<InvalidOperationException>(() => services2.AddRefreshActuator());
     }
 

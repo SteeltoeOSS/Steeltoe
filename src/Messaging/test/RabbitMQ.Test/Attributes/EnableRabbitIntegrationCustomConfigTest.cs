@@ -13,6 +13,7 @@ using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Handler.Attributes.Support;
+using Steeltoe.Messaging.RabbitMQ.Attributes;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
@@ -21,14 +22,13 @@ using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using Xunit;
-using static Steeltoe.Messaging.RabbitMQ.Attributes.EnableRabbitIntegrationCustomConfigTest;
 using RC = RabbitMQ.Client;
 using SimpleMessageConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter.SimpleMessageConverter;
 
-namespace Steeltoe.Messaging.RabbitMQ.Attributes;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 [Trait("Category", "Integration")]
-public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStartupFixture>
+public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<EnableRabbitIntegrationCustomConfigTest.CustomStartupFixture>
 {
     private readonly ServiceProvider _provider;
     private readonly CustomStartupFixture _fixture;

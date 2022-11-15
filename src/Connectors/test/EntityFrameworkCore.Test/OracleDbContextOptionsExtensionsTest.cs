@@ -4,10 +4,10 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector.EntityFrameworkCore.Test;
+using Steeltoe.Connector.EntityFrameworkCore.Oracle;
 using Xunit;
 
-namespace Steeltoe.Connector.Oracle.EntityFrameworkCore.Test;
+namespace Steeltoe.Connector.EntityFrameworkCore.Test;
 
 public class OracleDbContextOptionsExtensionsTest
 {
@@ -19,16 +19,16 @@ public class OracleDbContextOptionsExtensionsTest
         const IConfigurationRoot configurationRoot = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseOracle(configurationRoot));
-        Assert.Contains(nameof(optionsBuilder), ex.Message);
+        Assert.Contains(nameof(optionsBuilder), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseOracle(configurationRoot, "foobar"));
-        Assert.Contains(nameof(optionsBuilder), ex2.Message);
+        Assert.Contains(nameof(optionsBuilder), ex2.Message, StringComparison.Ordinal);
 
         var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle(configurationRoot));
-        Assert.Contains(nameof(optionsBuilder), ex3.Message);
+        Assert.Contains(nameof(optionsBuilder), ex3.Message, StringComparison.Ordinal);
 
         var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle(configurationRoot, "foobar"));
-        Assert.Contains(nameof(optionsBuilder), ex4.Message);
+        Assert.Contains(nameof(optionsBuilder), ex4.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -39,16 +39,16 @@ public class OracleDbContextOptionsExtensionsTest
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseOracle(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseOracle(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
 
         var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle(configuration));
-        Assert.Contains(nameof(configuration), ex3.Message);
+        Assert.Contains(nameof(configuration), ex3.Message, StringComparison.Ordinal);
 
         var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex4.Message);
+        Assert.Contains(nameof(configuration), ex4.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -60,9 +60,9 @@ public class OracleDbContextOptionsExtensionsTest
         const string serviceName = null;
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseOracle(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex2.Message);
+        Assert.Contains(nameof(serviceName), ex2.Message, StringComparison.Ordinal);
 
         var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseOracle(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex4.Message);
+        Assert.Contains(nameof(serviceName), ex4.Message, StringComparison.Ordinal);
     }
 }

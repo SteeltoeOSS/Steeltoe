@@ -8,11 +8,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.SpringBoot;
+using Steeltoe.Stream.Extensions;
 using Steeltoe.Stream.StreamHost;
+using Steeltoe.Stream.Test.StreamsHost;
 using Xunit;
 
-namespace Steeltoe.Stream.Extensions;
+namespace Steeltoe.Stream.Test.Extensions;
 
 public class HostBuilderExtensionsTest
 {

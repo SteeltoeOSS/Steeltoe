@@ -10,13 +10,13 @@ using RabbitMQ.Client;
 using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
-using Steeltoe.Common.Retry;
+using Steeltoe.Common.RetryPolly;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration;
 using Steeltoe.Integration.Acks;
-using Steeltoe.Integration.Rabbit.Inbound;
-using Steeltoe.Integration.Rabbit.Outbound;
-using Steeltoe.Integration.Rabbit.Support;
+using Steeltoe.Integration.RabbitMQ.Inbound;
+using Steeltoe.Integration.RabbitMQ.Outbound;
+using Steeltoe.Integration.RabbitMQ.Support;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
@@ -33,15 +33,15 @@ using Steeltoe.Messaging.RabbitMQ.Retry;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
-using Steeltoe.Stream.Binder.Rabbit.Provisioning;
 using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
+using Steeltoe.Stream.Binder.RabbitMQ.Provisioning;
 using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Provisioning;
 using IntegrationChannel = Steeltoe.Integration.Channel;
 using MessagingSupport = Steeltoe.Messaging.Support;
 using SteeltoeConnectionFactory = Steeltoe.Messaging.RabbitMQ.Connection.IConnectionFactory;
 
-namespace Steeltoe.Stream.Binder.Rabbit;
+namespace Steeltoe.Stream.Binder.RabbitMQ;
 
 public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 {
@@ -203,7 +203,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
                     ? extendedProperties.ConfirmAckChannel
                     : IntegrationContextUtils.NullChannelBeanName;
 
-                if (!ackChannelBeanName.Equals(IntegrationContextUtils.NullChannelBeanName) &&
+                if (ackChannelBeanName != IntegrationContextUtils.NullChannelBeanName &&
                     !ApplicationContext.ContainsService<IMessageChannel>(ackChannelBeanName))
                 {
                     var ackChannel = new IntegrationChannel.DirectChannel(ApplicationContext);

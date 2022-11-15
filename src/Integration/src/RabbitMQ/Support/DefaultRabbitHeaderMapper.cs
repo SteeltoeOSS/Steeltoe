@@ -7,7 +7,7 @@ using Steeltoe.Integration.Mapping;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ;
 
-namespace Steeltoe.Integration.Rabbit.Support;
+namespace Steeltoe.Integration.RabbitMQ.Support;
 
 public class DefaultRabbitHeaderMapper : AbstractHeaderMapper<IMessageHeaders>, IRabbitHeaderMapper
 {
@@ -96,7 +96,7 @@ public class DefaultRabbitHeaderMapper : AbstractHeaderMapper<IMessageHeaders>, 
 
     protected override void PopulateUserDefinedHeader(string headerName, object headerValue, IMessageHeaders target)
     {
-        if (!target.ContainsKey(headerName) && !RabbitMessageHeaders.ContentType.Equals(headerName) && !headerName.StartsWith("json"))
+        if (!target.ContainsKey(headerName) && headerName != RabbitMessageHeaders.ContentType && !headerName.StartsWith("json", StringComparison.Ordinal))
         {
             target.Add(headerName, headerValue);
         }

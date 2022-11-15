@@ -2,10 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Connector.MySql;
+using Steeltoe.Connector.MySql.EntityFramework6;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.MySql.EntityFramework6.Test;
+namespace Steeltoe.Connector.EntityFramework6.Test;
 
 public class MySqlDbContextConnectorFactoryTest
 {
@@ -17,7 +19,7 @@ public class MySqlDbContextConnectorFactoryTest
         const Type dbContextType = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new MySqlDbContextConnectorFactory(si, options, dbContextType));
-        Assert.Contains(nameof(dbContextType), ex.Message);
+        Assert.Contains(nameof(dbContextType), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -28,7 +30,7 @@ public class MySqlDbContextConnectorFactoryTest
         Type dbContextType = typeof(BadMySqlDbContext);
 
         var ex = Assert.Throws<ConnectorException>(() => new MySqlDbContextConnectorFactory(si, options, dbContextType).Create(null));
-        Assert.Contains("BadMySqlDbContext", ex.Message);
+        Assert.Contains("BadMySqlDbContext", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

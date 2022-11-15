@@ -14,11 +14,12 @@ using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
+using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Configuration;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Test.Binder;
 
 public class PollableConsumerTest : AbstractTest
 {
@@ -583,7 +584,7 @@ public class PollableConsumerTest : AbstractTest
     {
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
-            return MessageBuilder.WithPayload(Encoding.UTF8.GetString((byte[])message.Payload).ToUpper()).CopyHeaders(message.Headers).Build();
+            return MessageBuilder.WithPayload(Encoding.UTF8.GetString((byte[])message.Payload).ToUpperInvariant()).CopyHeaders(message.Headers).Build();
         }
     }
 
@@ -591,7 +592,7 @@ public class PollableConsumerTest : AbstractTest
     {
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
-            return MessageBuilder.WithPayload(((string)message.Payload).ToUpper()).CopyHeaders(message.Headers).Build();
+            return MessageBuilder.WithPayload(((string)message.Payload).ToUpperInvariant()).CopyHeaders(message.Headers).Build();
         }
     }
 

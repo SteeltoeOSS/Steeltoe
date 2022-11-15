@@ -5,6 +5,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;

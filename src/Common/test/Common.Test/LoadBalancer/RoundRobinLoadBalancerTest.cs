@@ -5,9 +5,11 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.LoadBalancer;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
-namespace Steeltoe.Common.LoadBalancer.Test;
+namespace Steeltoe.Common.Test.LoadBalancer;
 
 public class RoundRobinLoadBalancerTest
 {

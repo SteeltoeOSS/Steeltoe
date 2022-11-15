@@ -7,11 +7,11 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
-using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.OpenTelemetry;
-using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
+using Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Test;

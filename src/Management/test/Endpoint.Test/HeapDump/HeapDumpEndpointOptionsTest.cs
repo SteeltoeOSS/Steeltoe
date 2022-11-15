@@ -4,10 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.HeapDump;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.HeapDump.Test;
+namespace Steeltoe.Management.Endpoint.Test.HeapDump;
 
 public class HeapDumpEndpointOptionsTest : BaseTest
 {

@@ -4,12 +4,13 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
-using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -40,7 +41,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
 
     public override void ProcessEvent(string eventName, object value)
     {
-        if (!StopEvent.Equals(eventName))
+        if (eventName != StopEvent)
         {
             return;
         }
@@ -98,7 +99,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
     protected internal string GetTimeTaken(TimeSpan duration)
     {
         long timeInMilliseconds = (long)duration.TotalMilliseconds;
-        return timeInMilliseconds.ToString();
+        return timeInMilliseconds.ToString(CultureInfo.InvariantCulture);
     }
 
     protected internal string GetRequestUri(HttpRequest request)
@@ -128,7 +129,9 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
         foreach (KeyValuePair<string, StringValues> h in headers)
         {
             // Add filtering
+#pragma warning disable S4040 // Strings should be normalized to uppercase
             result.Add(h.Key.ToLowerInvariant(), h.Value.ToArray());
+#pragma warning restore S4040 // Strings should be normalized to uppercase
         }
 
         return result;

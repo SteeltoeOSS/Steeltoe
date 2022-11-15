@@ -7,10 +7,11 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Converter.Test;
+namespace Steeltoe.Messaging.Test.Converter;
 
 public class NewtonJsonMessageConverterTest
 {
@@ -196,12 +197,12 @@ public class NewtonJsonMessageConverterTest
 
         string actual = Encoding.UTF8.GetString((byte[])message.Payload);
 
-        Assert.Contains("\"string\":\"Foo\"", actual);
-        Assert.Contains("\"number\":42", actual);
-        Assert.Contains("\"fraction\":42.0", actual);
-        Assert.Contains("\"array\":[\"Foo\",\"Bar\"]", actual);
-        Assert.Contains("\"bool\":true", actual);
-        Assert.Contains("\"bytes\":\"AQI=\"", actual);
+        Assert.Contains("\"string\":\"Foo\"", actual, StringComparison.Ordinal);
+        Assert.Contains("\"number\":42", actual, StringComparison.Ordinal);
+        Assert.Contains("\"fraction\":42.0", actual, StringComparison.Ordinal);
+        Assert.Contains("\"array\":[\"Foo\",\"Bar\"]", actual, StringComparison.Ordinal);
+        Assert.Contains("\"bool\":true", actual, StringComparison.Ordinal);
+        Assert.Contains("\"bytes\":\"AQI=\"", actual, StringComparison.Ordinal);
         Assert.Equal(new MimeType("application", "json", Encoding.UTF8), message.Headers[MessageHeaders.ContentType]);
     }
 

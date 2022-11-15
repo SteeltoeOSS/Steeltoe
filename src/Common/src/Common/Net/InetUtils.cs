@@ -131,7 +131,7 @@ public class InetUtils
             string hostAddress = address.ToString();
             var matcher = new Regex(regex);
 
-            if (matcher.IsMatch(hostAddress) || hostAddress.StartsWith(regex))
+            if (matcher.IsMatch(hostAddress) || hostAddress.StartsWith(regex, StringComparison.Ordinal))
             {
                 return true;
             }
@@ -205,7 +205,7 @@ public class InetUtils
             {
                 foreach (IPAddress address in results)
                 {
-                    if (address.AddressFamily.Equals(AddressFamily.InterNetwork))
+                    if (address.AddressFamily == AddressFamily.InterNetwork)
                     {
                         result = address;
                         break;
@@ -267,6 +267,8 @@ public class InetUtils
     internal bool IsSiteLocalAddress(IPAddress address)
     {
         string text = address.ToString();
-        return text.StartsWith("10.") || text.StartsWith("172.16.") || text.StartsWith("192.168.");
+
+        return text.StartsWith("10.", StringComparison.Ordinal) || text.StartsWith("172.16.", StringComparison.Ordinal) ||
+            text.StartsWith("192.168.", StringComparison.Ordinal);
     }
 }

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog;
+namespace Steeltoe.Logging.DynamicSerilog;
 
 public static class SerilogLoggingBuilderExtensions
 {

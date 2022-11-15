@@ -12,6 +12,7 @@ using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Attributes;
 using Steeltoe.Integration.Configuration;
 using Steeltoe.Integration.Extensions;
+using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes;
@@ -20,7 +21,7 @@ using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Integration.Handler;
+namespace Steeltoe.Integration.Test.Handler;
 
 public class MethodInvokingMessageProcessorTest
 {
@@ -336,7 +337,7 @@ public class MethodInvokingMessageProcessorTest
         Assert.Equal("bar42", result);
         message = MessageBuilder.WithPayload("foo").SetHeader("prop", "bar").Build();
         var ex = Assert.Throws<MessageHandlingException>(() => processor.ProcessMessage(message));
-        Assert.Contains("num", ex.InnerException.Message);
+        Assert.Contains("num", ex.InnerException.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -397,7 +398,7 @@ public class MethodInvokingMessageProcessorTest
         private string Service(string payload)
 #pragma warning restore IDE0051 // Remove unused private members
         {
-            return payload.ToUpper();
+            return payload.ToUpperInvariant();
         }
     }
 
@@ -621,7 +622,7 @@ public class MethodInvokingMessageProcessorTest
     {
         public object ResolveArgument(ParameterInfo parameter, IMessage message)
         {
-            string[] names = ((string)message.Payload).Split(" ");
+            string[] names = ((string)message.Payload).Split(' ');
             return new Person(names[0], names[1]);
         }
 

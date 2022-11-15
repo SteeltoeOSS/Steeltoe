@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.Util;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.Util;
 
 internal sealed class MockedTime : ITime
 {

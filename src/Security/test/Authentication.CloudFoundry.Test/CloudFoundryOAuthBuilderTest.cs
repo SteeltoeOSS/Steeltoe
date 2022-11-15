@@ -43,6 +43,6 @@ public class CloudFoundryOAuthBuilderTest
 
         Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
         Assert.StartsWith(expectedAuthorizationUrl, location, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains($"client_id={expectedClientId}", location);
+        Assert.Contains($"client_id={expectedClientId}", location, StringComparison.Ordinal);
     }
 }

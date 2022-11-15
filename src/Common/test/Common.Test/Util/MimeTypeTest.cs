@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
+using Steeltoe.Common.Util;
 using Xunit;
 
-namespace Steeltoe.Common.Util.Test;
+namespace Steeltoe.Common.Test.Util;
 
 public class MimeTypeTest
 {
@@ -311,12 +312,11 @@ public class MimeTypeTest
         };
 
         var result = new List<MimeType>(expected);
-        var rnd = new Random();
 
         // shuffle & sort 10 times
         for (int i = 0; i < 10; i++)
         {
-            Shuffle(result, rnd);
+            Shuffle(result);
             result.Sort();
 
             for (int j = 0; j < result.Count; j++)
@@ -376,11 +376,11 @@ public class MimeTypeTest
         };
     }
 
-    private void Shuffle<T>(IList<T> list, Random rnd)
+    private void Shuffle<T>(IList<T> list)
     {
         for (int i = 0; i < list.Count - 1; i++)
         {
-            Swap(list, i, rnd.Next(i, list.Count));
+            Swap(list, i, Random.Shared.Next(i, list.Count));
         }
     }
 

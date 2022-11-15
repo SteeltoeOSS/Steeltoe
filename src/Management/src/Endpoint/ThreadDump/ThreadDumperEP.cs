@@ -4,6 +4,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
+using System.Globalization;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Symbols;
 using Microsoft.Diagnostics.Tracing;
@@ -113,14 +114,14 @@ public class ThreadDumperEp : IThreadDumper
                 {
                     StackSourceCallStackIndex stackIndex = sample.StackIndex;
 
-                    while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith("Thread ("))
+                    while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith("Thread (", StringComparison.Ordinal))
                     {
                         stackIndex = stackSource.GetCallerIndex(stackIndex);
                     }
 
                     const string template = "Thread (";
                     string threadFrame = stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false);
-                    int threadId = int.Parse(threadFrame.Substring(template.Length, threadFrame.Length - (template.Length + 1)));
+                    int threadId = int.Parse(threadFrame.Substring(template.Length, threadFrame.Length - (template.Length + 1)), CultureInfo.InvariantCulture);
 
                     if (samplesForThread.TryGetValue(threadId, out List<StackSourceSample> samples))
                     {
@@ -202,7 +203,7 @@ public class ThreadDumperEp : IThreadDumper
 
         StackSourceCallStackIndex stackIndex = stackSourceSample.StackIndex;
 
-        while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith("Thread ("))
+        while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith("Thread (", StringComparison.Ordinal))
         {
             StackSourceFrameIndex frameIndex = stackSource.GetFrameIndex(stackIndex);
             string frameName = stackSource.GetFrameName(frameIndex, false);
@@ -394,7 +395,7 @@ public class ThreadDumperEp : IThreadDumper
         {
             string simpleName = Path.GetFileNameWithoutExtension(moduleFile.FilePath);
 
-            if (simpleName.EndsWith(".il"))
+            if (simpleName.EndsWith(".il", StringComparison.Ordinal))
             {
                 simpleName = Path.GetFileNameWithoutExtension(simpleName);
             }

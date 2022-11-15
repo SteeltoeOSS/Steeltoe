@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 

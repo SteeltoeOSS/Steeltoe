@@ -3,10 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Connector.MongoDb;
 using Xunit;
 
-namespace Steeltoe.Connector.MongoDb.Test;
+namespace Steeltoe.Connector.Test.MongoDb;
 
 public class MongoDbConnectorOptionsTest
 {
@@ -16,7 +18,7 @@ public class MongoDbConnectorOptionsTest
         const IConfiguration configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new MongoDbConnectorOptions(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

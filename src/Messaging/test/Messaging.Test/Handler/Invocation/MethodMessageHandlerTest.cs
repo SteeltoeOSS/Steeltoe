@@ -5,11 +5,13 @@
 using System.Reflection;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
+using Steeltoe.Messaging.Handler;
 using Steeltoe.Messaging.Handler.Attributes.Support;
+using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Handler.Invocation.Test;
+namespace Steeltoe.Messaging.Test.Handler.Invocation;
 
 public class MethodMessageHandlerTest
 {
@@ -186,7 +188,7 @@ public class MethodMessageHandlerTest
         {
             string methodName = method.Name;
 
-            if (methodName.StartsWith("Handler"))
+            if (methodName.StartsWith("Handler", StringComparison.Ordinal))
             {
                 return $"/{methodName}";
             }
@@ -215,7 +217,7 @@ public class MethodMessageHandlerTest
         {
             string destination = GetLookupDestination(GetDestination(message));
             Assert.NotNull(destination);
-            return mapping.Equals(destination) || _pathMatcher.Match(mapping, destination) ? mapping : null;
+            return mapping == destination || _pathMatcher.Match(mapping, destination) ? mapping : null;
         }
 
         protected override IComparer<string> GetMappingComparer(IMessage message)

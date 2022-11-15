@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 
-namespace Steeltoe.Management.Endpoint.Security.Test;
+namespace Steeltoe.Management.Endpoint.Test.Security;
 
 public class Startup
 {

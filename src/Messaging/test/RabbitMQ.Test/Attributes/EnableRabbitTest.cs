@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.RabbitMQ.Attributes;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
@@ -17,10 +18,11 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Test.Configuration;
 using Xunit;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Attributes;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 [Trait("Category", "Integration")]
 public class EnableRabbitTest
@@ -53,7 +55,7 @@ public class EnableRabbitTest
     public async Task NoRabbitAdminConfiguration()
     {
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServicesAsync(typeof(FullBean)));
-        Assert.Contains("rabbitAdmin", exception.Message);
+        Assert.Contains("rabbitAdmin", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -107,14 +109,14 @@ public class EnableRabbitTest
     public async Task UnknownFactory()
     {
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServicesAsync(typeof(CustomBean)));
-        Assert.Contains("customFactory", exception.Message);
+        Assert.Contains("customFactory", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
     public async Task InvalidPriorityConfiguration()
     {
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServicesAsync(typeof(InvalidPriorityBean)));
-        Assert.Contains("NotANumber", exception.Message);
+        Assert.Contains("NotANumber", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]

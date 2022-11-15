@@ -7,8 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
-using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.Endpoint.Metrics.Prometheus;
 using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
+using Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
+using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;

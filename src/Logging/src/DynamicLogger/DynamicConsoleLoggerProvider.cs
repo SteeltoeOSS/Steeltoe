@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using Filter = System.Func<string, Microsoft.Extensions.Logging.LogLevel, bool>;
 
-namespace Steeltoe.Extensions.Logging;
+namespace Steeltoe.Logging.DynamicLogger;
 
 [ProviderAlias("Dynamic")]
 public class DynamicConsoleLoggerProvider : DynamicLoggerProviderBase

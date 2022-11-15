@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.Converter;
 
-namespace Steeltoe.Common.Expression.Internal.Spring;
+namespace Steeltoe.Common.Expression.Test.Spring;
 
 public class TestGenericConversionService : IConversionService
 {

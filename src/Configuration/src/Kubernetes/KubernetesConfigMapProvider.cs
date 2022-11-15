@@ -72,7 +72,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
 
     private static string NormalizeKey(string key)
     {
-        return key.Replace("__", ":");
+        return key.Replace("__", ":", StringComparison.Ordinal);
     }
 
     private void EnableReloading()

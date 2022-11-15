@@ -5,8 +5,7 @@
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
-using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
-using Steeltoe.CircuitBreaker.Hystrix.Test;
+using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.Common.Util;
 using Xunit;
@@ -14,7 +13,7 @@ using Xunit.Abstractions;
 
 #pragma warning disable S3966 // Objects should not be disposed more than once
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.Metric.Sample;
 
 public class HystrixUtilizationStreamTest : CommandStreamTest
 {

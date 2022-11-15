@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Xunit;
 
@@ -19,7 +19,7 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
     {
         const IServiceCollection services = null;
         var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureConfigServerClientOptions());
-        Assert.Contains(nameof(services), ex.Message);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -9,7 +9,7 @@ using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Handler;
-using Steeltoe.Integration.Rabbit.Support;
+using Steeltoe.Integration.RabbitMQ.Support;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
@@ -19,7 +19,7 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Support;
 
-namespace Steeltoe.Integration.Rabbit.Outbound;
+namespace Steeltoe.Integration.RabbitMQ.Outbound;
 
 public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMessageHandler, ILifecycle
 {

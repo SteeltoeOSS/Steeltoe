@@ -60,7 +60,7 @@ public class CosmosDbServiceInfoFactory : ServiceInfoFactory
     {
         string connString = GetStringFromCredentials(binding.Credentials, "cosmosdb_connection_string");
 
-        if (!string.IsNullOrEmpty(connString) && connString.StartsWith("mongodb"))
+        if (!string.IsNullOrEmpty(connString) && connString.StartsWith("mongodb", StringComparison.Ordinal))
         {
             return false;
         }

@@ -6,16 +6,19 @@ using Moq;
 using RabbitMQ.Client.Exceptions;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
+using Steeltoe.Common.RetryPolly;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Test.Connection;
 using Xunit;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
 public class RabbitTemplateTest
 {
@@ -144,7 +147,7 @@ public class RabbitTemplateTest
         }
         catch (RabbitAuthenticationException e)
         {
-            Assert.Contains("foo", e.InnerException.Message);
+            Assert.Contains("foo", e.InnerException.Message, StringComparison.Ordinal);
         }
 
         Assert.Equal(3, count.Value);

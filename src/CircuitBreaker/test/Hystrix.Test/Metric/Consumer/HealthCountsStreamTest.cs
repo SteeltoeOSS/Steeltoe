@@ -5,15 +5,14 @@
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
-using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
-using Steeltoe.CircuitBreaker.Hystrix.Test;
+using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.Common.Util;
 using Xunit;
 using Xunit.Abstractions;
 
 #pragma warning disable S3966 // Objects should not be disposed more than once
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Test.Metric.Consumer;
 
 public class HealthCountsStreamTest : CommandStreamTest
 {

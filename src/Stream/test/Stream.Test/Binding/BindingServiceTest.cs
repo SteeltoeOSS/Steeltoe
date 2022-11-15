@@ -11,11 +11,12 @@ using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Binder;
+using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Configuration;
 using Steeltoe.Stream.Util;
 using Xunit;
 
-namespace Steeltoe.Stream.Binding;
+namespace Steeltoe.Stream.Test.Binding;
 
 public class BindingServiceTest : AbstractTest
 {

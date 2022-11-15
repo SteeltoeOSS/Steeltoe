@@ -4,9 +4,9 @@
 
 using System.Reflection;
 using Steeltoe.Common;
-using static Steeltoe.Messaging.Handler.Attributes.Test.MessagingPredicates;
+using static Steeltoe.Messaging.Test.Handler.Attributes.MessagingPredicates;
 
-namespace Steeltoe.Messaging.Handler.Invocation.Test;
+namespace Steeltoe.Messaging.Test.Handler.Invocation;
 
 internal sealed class ResolvableMethod
 {
@@ -64,7 +64,7 @@ internal sealed class ResolvableMethod
 
         public Builder<T> Named(string methodName)
         {
-            AddFilter($"methodName={methodName}", method => method.Name.Equals(methodName));
+            AddFilter($"methodName={methodName}", method => method.Name == methodName);
             return this;
         }
 

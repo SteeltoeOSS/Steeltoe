@@ -10,11 +10,10 @@ using Steeltoe.CircuitBreaker.Hystrix.Configuration;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
-using Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
 using Steeltoe.Common;
 using Steeltoe.Connector.Hystrix;
 
-namespace Steeltoe.CircuitBreaker.Hystrix;
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
 
 public static class HystrixServiceCollectionExtensions
 {

@@ -7,11 +7,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Xunit;
 
-namespace Steeltoe.Integration.Dispatcher.Test;
+namespace Steeltoe.Integration.Test.Dispatcher;
 
 public class BroadcastingDispatcherTest
 {

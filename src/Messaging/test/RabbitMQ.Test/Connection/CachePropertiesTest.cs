@@ -3,10 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using RabbitMQ.Client;
+using Steeltoe.Messaging.RabbitMQ.Connection;
 using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
+using IConnection = Steeltoe.Messaging.RabbitMQ.Connection.IConnection;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection;
+namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
 [Trait("Category", "Integration")]
 public class CachePropertiesTest
@@ -34,7 +36,7 @@ public class CachePropertiesTest
         ch4.Close();
         ch5.Close();
         IDictionary<string, object> props = channelCf.GetCacheProperties();
-        Assert.StartsWith("testChannelCache", (string)props["connectionName"]);
+        Assert.StartsWith("testChannelCache", (string)props["connectionName"], StringComparison.Ordinal);
         Assert.Equal(4, props["channelCacheSize"]);
         Assert.Equal(2, props["idleChannelsNotTx"]);
         Assert.Equal(3, props["idleChannelsTx"]);
@@ -103,8 +105,8 @@ public class CachePropertiesTest
         Assert.Equal(2, props["idleConnectionsHighWater"]);
         int c1Port = c1.LocalPort;
         int c2Port = c2.LocalPort;
-        Assert.StartsWith("testConnectionCache:1", (string)props[$"connectionName:{c1Port}"]);
-        Assert.StartsWith("testConnectionCache:2", (string)props[$"connectionName:{c2Port}"]);
+        Assert.StartsWith("testConnectionCache:1", (string)props[$"connectionName:{c1Port}"], StringComparison.Ordinal);
+        Assert.StartsWith("testConnectionCache:2", (string)props[$"connectionName:{c2Port}"], StringComparison.Ordinal);
         Assert.Equal(2, props[$"idleChannelsNotTx:{c1Port}"]);
         Assert.Equal(0, props[$"idleChannelsTx:{c1Port}"]);
         Assert.Equal(2, props[$"idleChannelsNotTxHighWater:{c1Port}"]);

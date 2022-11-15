@@ -4,13 +4,13 @@
 
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
-using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
@@ -143,7 +143,7 @@ public class HttpClientDesktopObserver : MetricsObserver
     protected internal IEnumerable<KeyValuePair<string, object>> GetLabels(HttpWebRequest request, HttpStatusCode statusCode)
     {
         string uri = request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
-        string status = ((int)statusCode).ToString();
+        string status = ((int)statusCode).ToString(CultureInfo.InvariantCulture);
         string clientName = request.RequestUri.GetComponents(UriComponents.HostAndPort, UriFormat.UriEscaped);
 
         return new Dictionary<string, object>

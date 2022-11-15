@@ -40,7 +40,7 @@ public class MethodInvoker
 
                 while (superClass != null)
                 {
-                    if (paramType.Equals(superClass))
+                    if (paramType == superClass)
                     {
                         result += 2;
                         superClass = null;
@@ -179,7 +179,7 @@ public class MethodInvoker
 
         foreach (MethodInfo candidate in candidates)
         {
-            if (candidate.Name.Equals(targetMethod) && candidate.GetParameters().Length == argCount)
+            if (candidate.Name == targetMethod && candidate.GetParameters().Length == argCount)
             {
                 Type[] paramTypes = GetParameterTypes(candidate);
                 int typeDiffWeight = GetTypeDifferenceWeight(paramTypes, arguments);

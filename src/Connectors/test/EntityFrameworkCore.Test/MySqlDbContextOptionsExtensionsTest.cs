@@ -6,14 +6,15 @@ using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.EntityFrameworkCore;
-using Steeltoe.Connector.EntityFrameworkCore.Test;
+using Steeltoe.Connector.EntityFrameworkCore.MySql;
+using Steeltoe.Connector.MySql;
 using Xunit;
 using OfficialMySqlConnection = MySql.Data.MySqlClient.MySqlConnection;
 using PomeloMySqlConnection = MySqlConnector.MySqlConnection;
 
-namespace Steeltoe.Connector.MySql.EntityFrameworkCore.Test;
+namespace Steeltoe.Connector.EntityFrameworkCore.Test;
 
 public class MySqlDbContextOptionsExtensionsTest
 {
@@ -31,16 +32,16 @@ public class MySqlDbContextOptionsExtensionsTest
         const IConfigurationRoot configurationRoot = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(configurationRoot));
-        Assert.Contains(nameof(optionsBuilder), ex.Message);
+        Assert.Contains(nameof(optionsBuilder), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(configurationRoot, "foobar"));
-        Assert.Contains(nameof(optionsBuilder), ex2.Message);
+        Assert.Contains(nameof(optionsBuilder), ex2.Message, StringComparison.Ordinal);
 
         var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(configurationRoot));
-        Assert.Contains(nameof(optionsBuilder), ex3.Message);
+        Assert.Contains(nameof(optionsBuilder), ex3.Message, StringComparison.Ordinal);
 
         var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(configurationRoot, "foobar"));
-        Assert.Contains(nameof(optionsBuilder), ex4.Message);
+        Assert.Contains(nameof(optionsBuilder), ex4.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -51,16 +52,16 @@ public class MySqlDbContextOptionsExtensionsTest
         const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(configuration));
-        Assert.Contains(nameof(configuration), ex.Message);
+        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex2.Message);
+        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
 
         var ex3 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(configuration));
-        Assert.Contains(nameof(configuration), ex3.Message);
+        Assert.Contains(nameof(configuration), ex3.Message, StringComparison.Ordinal);
 
         var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(configuration, "foobar"));
-        Assert.Contains(nameof(configuration), ex4.Message);
+        Assert.Contains(nameof(configuration), ex4.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -72,10 +73,10 @@ public class MySqlDbContextOptionsExtensionsTest
         const string serviceName = null;
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => optionsBuilder.UseMySql(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex2.Message);
+        Assert.Contains(nameof(serviceName), ex2.Message, StringComparison.Ordinal);
 
         var ex4 = Assert.Throws<ArgumentNullException>(() => goodBuilder.UseMySql(configurationRoot, serviceName));
-        Assert.Contains(nameof(serviceName), ex4.Message);
+        Assert.Contains(nameof(serviceName), ex4.Message, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -112,7 +113,7 @@ public class MySqlDbContextOptionsExtensionsTest
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(configurationRoot, "foobar"));
 
         var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
-        Assert.Contains("foobar", ex.Message);
+        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -130,7 +131,7 @@ public class MySqlDbContextOptionsExtensionsTest
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(configurationRoot));
 
         var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
-        Assert.Contains("Multiple", ex.Message);
+        Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
     }
 
     [Theory]

@@ -6,7 +6,7 @@ using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 
-namespace Steeltoe.Stream.Tck;
+namespace Steeltoe.Stream.Test.Tck;
 
 public class InternalPipeLine
 {
@@ -14,7 +14,7 @@ public class InternalPipeLine
     [SendTo("internalchannel")]
     public string HandleA(Person value)
     {
-        return $"{{\"name\":\"{value.Name.ToUpper()}\"}}";
+        return $"{{\"name\":\"{value.Name.ToUpperInvariant()}\"}}";
     }
 
     [StreamListener("internalchannel")]

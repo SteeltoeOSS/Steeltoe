@@ -22,7 +22,6 @@ public static class MimeTypeUtils
 
     private static readonly ConcurrentDictionary<string, MimeType> CachedMimeTypes = new();
     private static readonly char[] BoundaryChars = "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-    private static readonly object Lock = new();
     public static readonly IComparer<MimeType> SpecificityComparator = new MimeType.SpecificityComparator<MimeType>();
     public static readonly MimeType All = new("*", "*");
     public static readonly MimeType ApplicationJson = new("application", "json");
@@ -34,8 +33,6 @@ public static class MimeTypeUtils
     public static readonly MimeType TextHtml = new("text", "html");
     public static readonly MimeType TextPlain = new("text", "plain");
     public static readonly MimeType TextXml = new("text", "xml");
-
-    private static volatile Random _random;
 
     public static MimeType ParseMimeType(string mimeType)
     {
@@ -111,7 +108,7 @@ public static class MimeTypeUtils
 
         string built = builder.ToString();
 
-        if (built.EndsWith(", "))
+        if (built.EndsWith(", ", StringComparison.Ordinal))
         {
             built = built.Substring(0, built.Length - 2);
         }
@@ -131,13 +128,12 @@ public static class MimeTypeUtils
 
     public static char[] GenerateMultipartBoundary()
     {
-        Random randomToUse = InitRandom();
-        int size = randomToUse.Next(11) + 30;
+        int size = Random.Shared.Next(11) + 30;
         char[] boundary = new char[size];
 
         for (int i = 0; i < boundary.Length; i++)
         {
-            boundary[i] = BoundaryChars[randomToUse.Next(BoundaryChars.Length)];
+            boundary[i] = BoundaryChars[Random.Shared.Next(BoundaryChars.Length)];
         }
 
         return boundary;
@@ -155,9 +151,12 @@ public static class MimeTypeUtils
         int index = mimeType.IndexOf(';');
         string fullType = (index >= 0 ? mimeType.Substring(0, index) : mimeType).Trim();
 
-        ArgumentGuard.NotNullOrEmpty(fullType, nameof(mimeType));
+        if (string.IsNullOrEmpty(fullType))
+        {
+            throw new ArgumentException("mimeType must contain a value before the ';' separator.", nameof(mimeType));
+        }
 
-        if (MimeType.WildcardType.Equals(fullType))
+        if (fullType == MimeType.WildcardType)
         {
             fullType = "*/*";
         }
@@ -177,7 +176,7 @@ public static class MimeTypeUtils
         string type = fullType.Substring(0, subIndex);
         string subtype = fullType.Substring(subIndex + 1, fullType.Length - type.Length - 1);
 
-        if (MimeType.WildcardType.Equals(type) && !MimeType.WildcardType.Equals(subtype))
+        if (type == MimeType.WildcardType && subtype != MimeType.WildcardType)
         {
             throw new ArgumentException($"{mimeType} wildcard type is legal only in '*/*' (all mime types)", nameof(mimeType));
         }
@@ -236,26 +235,5 @@ public static class MimeTypeUtils
         {
             throw new ArgumentException($"The specified value '{mimeType}' is invalid.", ex);
         }
-    }
-
-    private static Random InitRandom()
-    {
-        Random randomToUse = _random;
-
-        if (randomToUse == null)
-        {
-            lock (Lock)
-            {
-                randomToUse = _random;
-
-                if (randomToUse == null)
-                {
-                    randomToUse = new Random();
-                    _random = randomToUse;
-                }
-            }
-        }
-
-        return randomToUse;
     }
 }

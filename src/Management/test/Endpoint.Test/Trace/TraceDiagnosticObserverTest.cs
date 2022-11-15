@@ -3,14 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Globalization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Trace.Test;
+namespace Steeltoe.Management.Endpoint.Test.Trace;
 
 public class TraceDiagnosticObserverTest : BaseTest
 {
@@ -20,7 +21,7 @@ public class TraceDiagnosticObserverTest : BaseTest
         const ITraceOptions options = null;
 
         var ex2 = Assert.Throws<ArgumentNullException>(() => new TraceDiagnosticObserver(options));
-        Assert.Contains(nameof(options), ex2.Message);
+        Assert.Contains(nameof(options), ex2.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -140,7 +141,7 @@ public class TraceDiagnosticObserverTest : BaseTest
         var obs = new TraceDiagnosticObserver(option);
         TimeSpan time = TimeSpan.FromTicks(10_000_000);
         string result = obs.GetTimeTaken(time);
-        string expected = time.TotalMilliseconds.ToString();
+        string expected = time.TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
         Assert.Equal(expected, result);
     }
 
@@ -220,7 +221,7 @@ public class TraceDiagnosticObserverTest : BaseTest
         Assert.True(headers.ContainsKey("response"));
         string timeTaken = result.Info["timeTaken"] as string;
         Assert.NotNull(timeTaken);
-        string expected = duration.TotalMilliseconds.ToString();
+        string expected = duration.TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
         Assert.Equal(expected, timeTaken);
     }
 
@@ -287,7 +288,7 @@ public class TraceDiagnosticObserverTest : BaseTest
         Assert.NotNull(headers);
         Assert.True(headers.ContainsKey("request"));
         Assert.True(headers.ContainsKey("response"));
-        short timeTaken = short.Parse(result.Info["timeTaken"] as string);
+        short timeTaken = short.Parse(result.Info["timeTaken"] as string, CultureInfo.InvariantCulture);
         Assert.InRange(timeTaken, 1000, 1300);
 
         obs.Dispose();

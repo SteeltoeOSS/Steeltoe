@@ -9,7 +9,7 @@ using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 
-namespace Steeltoe.Stream.Binder.Rabbit;
+namespace Steeltoe.Stream.Binder.RabbitMQ;
 
 public class RabbitExpressionEvaluatingInterceptor : IChannelInterceptor
 {

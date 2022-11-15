@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Converter.Test;
+namespace Steeltoe.Messaging.Test.Converter;
 
 public class MessageConverterTest
 {
@@ -137,7 +138,7 @@ public class MessageConverterTest
 
         protected override bool Supports(Type type)
         {
-            return typeof(string).Equals(type);
+            return type == typeof(string);
         }
 
         protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)

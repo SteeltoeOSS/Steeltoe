@@ -7,11 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
-using Steeltoe.Management.Endpoint.Test;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Health.Test;
+namespace Steeltoe.Management.Endpoint.Test.Health;
 
 public class EndpointServiceCollectionTest : BaseTest
 {
@@ -26,7 +26,7 @@ public class EndpointServiceCollectionTest : BaseTest
         Assert.Equal("services", ex.ParamName);
         Assert.Throws<InvalidOperationException>(() => services.AddHealthActuator());
         var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuator(configurationRoot, aggregator));
-        Assert.Contains(nameof(aggregator), ex3.Message);
+        Assert.Contains(nameof(aggregator), ex3.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddHealthContributors_AddsServices()
     {
         var services = new ServiceCollection();
-        EndpointServiceCollectionExtensions.AddHealthContributors(services, typeof(TestContributor));
+        services.AddHealthContributors(typeof(TestContributor));
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
         Assert.NotNull(contributors);

@@ -7,11 +7,12 @@ using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Binder;
+using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Messaging;
-using Steeltoe.Stream.Partitioning;
+using Steeltoe.Stream.Test.Partitioning;
 using Xunit;
 
-namespace Steeltoe.Stream.Binding;
+namespace Steeltoe.Stream.Test.Binding;
 
 public class CustomPartitionedProducerTest : AbstractTest
 {

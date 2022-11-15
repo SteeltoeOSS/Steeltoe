@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.LoadBalancer;
 
-namespace Steeltoe.Common.Http.LoadBalancer.Test;
+namespace Steeltoe.Common.Http.Test.LoadBalancer;
 
 /// <summary>
 /// A bad fake load balancer that only resolves requests for "replaceme" as "someresolvedhost".
@@ -15,7 +15,7 @@ internal sealed class FakeLoadBalancer : ILoadBalancer
 
     public Task<Uri> ResolveServiceInstanceAsync(Uri request)
     {
-        return Task.FromResult(new Uri(request.AbsoluteUri.Replace("replaceme", "someresolvedhost")));
+        return Task.FromResult(new Uri(request.AbsoluteUri.Replace("replaceme", "someresolvedhost", StringComparison.Ordinal)));
     }
 
     public Task UpdateStatsAsync(Uri originalUri, Uri resolvedUri, TimeSpan responseTime, Exception exception)

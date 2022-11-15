@@ -19,6 +19,7 @@ using Steeltoe.Management.Endpoint.Internal;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Metrics.Prometheus;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
@@ -49,7 +50,7 @@ public static class ActuatorRouteBuilderExtensions
             not null when endpointType.IsAssignableFrom(typeof(TraceEndpoint)) => (typeof(TraceEndpointMiddleware), typeof(ITraceOptions)),
             not null when endpointType.IsAssignableFrom(typeof(HttpTraceEndpoint)) => (typeof(HttpTraceEndpointMiddleware), typeof(ITraceOptions)),
             not null when endpointType.IsAssignableFrom(typeof(CloudFoundryEndpoint)) => (typeof(CloudFoundryEndpointMiddleware), typeof(ICloudFoundryOptions)),
-            _ => throw new InvalidOperationException($"Could not find middleware for Type: {endpointType.Name} ")
+            _ => throw new InvalidOperationException($"Could not find middleware for Type: {endpointType?.Name} ")
         };
     }
 

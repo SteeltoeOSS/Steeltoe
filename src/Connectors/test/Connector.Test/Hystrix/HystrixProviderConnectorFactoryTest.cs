@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using RabbitMQ.Client;
+using Steeltoe.Connector.Hystrix;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Hystrix.Test;
+namespace Steeltoe.Connector.Test.Hystrix;
 
 public class HystrixProviderConnectorFactoryTest
 {
@@ -17,7 +18,7 @@ public class HystrixProviderConnectorFactoryTest
         const HystrixRabbitMQServiceInfo si = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new HystrixProviderConnectorFactory(si, options, typeof(ConnectionFactory)));
-        Assert.Contains(nameof(options), ex.Message);
+        Assert.Contains(nameof(options), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

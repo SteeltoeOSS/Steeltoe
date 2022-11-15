@@ -5,8 +5,8 @@
 using System.Net;
 using k8s;
 using RichardSzalay.MockHttp;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Kubernetes.Discovery;
 using Xunit;
 
@@ -86,10 +86,10 @@ public class KubernetesDiscoveryClientTest
         Assert.NotNull(instances);
         Assert.Equal(2, instances.Count);
 
-        Assert.Equal(1, instances.Count(s => s.Host.Equals("ip1") && !s.IsSecure));
-        Assert.Equal(1, instances.Count(s => s.Host.Equals("ip2") && !s.IsSecure));
-        Assert.Equal(1, instances.Count(s => s.InstanceId.Equals("uid1")));
-        Assert.Equal(1, instances.Count(s => s.InstanceId.Equals("uid2")));
+        Assert.Equal(1, instances.Count(s => s.Host == "ip1" && !s.IsSecure));
+        Assert.Equal(1, instances.Count(s => s.Host == "ip2" && !s.IsSecure));
+        Assert.Equal(1, instances.Count(s => s.InstanceId == "uid1"));
+        Assert.Equal(1, instances.Count(s => s.InstanceId == "uid2"));
     }
 
     [Fact]
@@ -124,8 +124,8 @@ public class KubernetesDiscoveryClientTest
 
         Assert.NotNull(instances);
         Assert.Single(instances);
-        Assert.Single(instances.Where(i => i.Host.Equals("ip1") && !i.IsSecure));
-        Assert.Single(instances.Where(i => i.InstanceId.Equals("uid1")));
+        Assert.Single(instances.Where(i => i.Host == "ip1" && !i.IsSecure));
+        Assert.Single(instances.Where(i => i.InstanceId == "uid1"));
     }
 
     [Fact]
@@ -160,8 +160,8 @@ public class KubernetesDiscoveryClientTest
 
         Assert.NotNull(instances);
         Assert.Single(instances);
-        Assert.Single(instances.Where(i => i.Host.Equals("ip1") && !i.IsSecure));
-        Assert.Single(instances.Where(i => i.InstanceId.Equals("uid1")));
+        Assert.Single(instances.Where(i => i.Host == "ip1" && !i.IsSecure));
+        Assert.Single(instances.Where(i => i.InstanceId == "uid1"));
         Assert.Single(instances.Where(i => i.Port == 80));
     }
 
@@ -196,8 +196,8 @@ public class KubernetesDiscoveryClientTest
 
         Assert.NotNull(instances);
         Assert.Equal(2, instances.Count);
-        Assert.Single(instances.Where(i => i.Host.Equals("ip1")).Select(s => s));
-        Assert.Single(instances.Where(i => i.Host.Equals("ip2")).Select(s => s));
+        Assert.Single(instances.Where(i => i.Host == "ip1").Select(s => s));
+        Assert.Single(instances.Where(i => i.Host == "ip2").Select(s => s));
     }
 
     [Fact]

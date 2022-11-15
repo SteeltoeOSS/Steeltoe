@@ -105,7 +105,7 @@ public class StreamListenerMethodValidator
             throw new InvalidOperationException(StreamListenerErrorMessages.InvalidOutputValues);
         }
 
-        if (!typeof(void).Equals(returnType) && !string.IsNullOrEmpty(condition))
+        if (returnType != typeof(void) && !string.IsNullOrEmpty(condition))
         {
             throw new InvalidOperationException(StreamListenerErrorMessages.ConditionOnMethodReturningValue);
         }
@@ -150,7 +150,7 @@ public class StreamListenerMethodValidator
             }
         }
 
-        if (!returnType.Equals(typeof(void)) && string.IsNullOrEmpty(methodAnnotatedOutboundName))
+        if (typeof(void) != returnType && string.IsNullOrEmpty(methodAnnotatedOutboundName))
         {
             if (outputAnnotationCount == 0)
             {

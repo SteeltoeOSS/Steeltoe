@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
-using Steeltoe.Messaging.Handler.Invocation.Test;
+using Steeltoe.Messaging.Handler.Attributes;
+using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.Support;
+using Steeltoe.Messaging.Test.Handler.Invocation;
 using Xunit;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
+namespace Steeltoe.Messaging.Test.Handler.Attributes.Support;
 
 public class HeadersMethodArgumentResolverTest
 {

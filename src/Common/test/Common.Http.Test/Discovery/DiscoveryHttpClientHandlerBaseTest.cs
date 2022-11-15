@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery;
 using Xunit;
 
-namespace Steeltoe.Common.Http.Test;
+namespace Steeltoe.Common.Http.Test.Discovery;
 
 public class DiscoveryHttpClientHandlerBaseTest
 {
@@ -16,7 +16,7 @@ public class DiscoveryHttpClientHandlerBaseTest
         const IDiscoveryClient client = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new DiscoveryHttpClientHandlerBase(client));
-        Assert.Contains(nameof(client), ex.Message);
+        Assert.Contains(nameof(client), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

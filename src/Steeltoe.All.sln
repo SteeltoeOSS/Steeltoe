@@ -122,9 +122,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Consul.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Eureka.Test", "Discovery\test\Eureka.Test\Steeltoe.Discovery.Eureka.Test.csproj", "{23B95817-4183-4B42-BF27-EA575184DB2D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger", "Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj", "{43DC1B99-588C-4984-AEAC-43AA5B47D84C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Logging.DynamicLogger", "Logging\src\DynamicLogger\Steeltoe.Logging.DynamicLogger.csproj", "{43DC1B99-588C-4984-AEAC-43AA5B47D84C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger.Test", "Logging\test\DynamicLogger.Test\Steeltoe.Extensions.Logging.DynamicLogger.Test.csproj", "{04BC571A-0055-4B9B-805E-D2B0823C9D8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Logging.DynamicLogger.Test", "Logging\test\DynamicLogger.Test\Steeltoe.Logging.DynamicLogger.Test.csproj", "{04BC571A-0055-4B9B-805E-D2B0823C9D8D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Task", "Management\src\Task\Steeltoe.Management.Task.csproj", "{990DCEE9-D88F-4B9F-8298-678B524AC4D6}"
 EndProject
@@ -166,7 +166,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.Abst
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Abstractions", "Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj", "{5CC834D7-C501-4FEC-9244-E829584192FB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.Abstractions", "Logging\src\Abstractions\Steeltoe.Extensions.Logging.Abstractions.csproj", "{86FBBCC7-97F5-4795-A61E-FA7E0CE0514D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Logging.Abstractions", "Logging\src\Abstractions\Steeltoe.Logging.Abstractions.csproj", "{86FBBCC7-97F5-4795-A61E-FA7E0CE0514D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Abstractions", "CircuitBreaker\src\Abstractions\Steeltoe.CircuitBreaker.Abstractions.csproj", "{7CDEDE64-B3FC-46C0-B264-8CBE973CD705}"
 EndProject
@@ -224,9 +224,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "External.Connector.Test", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Test", "Connectors\test\Connector.Test\Steeltoe.Connector.Test.csproj", "{C3232459-EE86-430B-B310-EB32C991A11A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicSerilog", "Logging\src\DynamicSerilog\Steeltoe.Extensions.Logging.DynamicSerilog.csproj", "{E0B1415D-8D97-4BA5-9315-82E7D33E3933}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Logging.DynamicSerilog", "Logging\src\DynamicSerilog\Steeltoe.Logging.DynamicSerilog.csproj", "{E0B1415D-8D97-4BA5-9315-82E7D33E3933}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicSerilog.Test", "Logging\test\DynamicSerilog.Test\Steeltoe.Extensions.Logging.DynamicSerilog.Test.csproj", "{6C116C3E-177A-44C0-A149-8DDB62812DC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Logging.DynamicSerilog.Test", "Logging\test\DynamicSerilog.Test\Steeltoe.Logging.DynamicSerilog.Test.csproj", "{6C116C3E-177A-44C0-A149-8DDB62812DC3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Kubernetes", "Discovery\src\Kubernetes\Steeltoe.Discovery.Kubernetes.csproj", "{7B76A7BD-0B0A-46C6-94A3-3B4010A401A3}"
 EndProject

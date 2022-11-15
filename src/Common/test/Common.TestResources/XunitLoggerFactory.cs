@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Common;
+namespace Steeltoe.Common.TestResources;
 
 public sealed class XunitLoggerFactory : ILoggerFactory
 {

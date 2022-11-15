@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Common.Configuration;
@@ -109,7 +110,8 @@ public static class ConfigurationValuesHelper
     {
         string val = GetString(key, configuration, resolve, null);
 
-        if (!string.IsNullOrEmpty(val) && double.TryParse(val, out double result))
+        if (!string.IsNullOrEmpty(val) &&
+            double.TryParse(val, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out double result))
         {
             return result;
         }

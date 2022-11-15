@@ -24,7 +24,9 @@ public class SetRequestJsonConverter : JsonConverter<CredentialSetRequest>
         {
             if (prop.GetValue(value.Value) != null || options.DefaultIgnoreCondition != JsonIgnoreCondition.WhenWritingNull)
             {
-                writer.WriteString(prop.Name.ToLower(), prop.GetValue(value.Value)?.ToString());
+#pragma warning disable S4040 // Strings should be normalized to uppercase
+                writer.WriteString(prop.Name.ToLowerInvariant(), prop.GetValue(value.Value)?.ToString());
+#pragma warning restore S4040 // Strings should be normalized to uppercase
             }
         }
 

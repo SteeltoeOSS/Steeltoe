@@ -4,10 +4,11 @@
 
 using System.Globalization;
 using Steeltoe.Common.Converter;
+using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.Converter.Test;
+namespace Steeltoe.Messaging.Test.Converter;
 
 public class GenericMessageConverterTest
 {

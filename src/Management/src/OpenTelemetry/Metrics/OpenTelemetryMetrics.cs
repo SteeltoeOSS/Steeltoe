@@ -5,7 +5,7 @@
 using System.Diagnostics.Metrics;
 using System.Reflection;
 
-namespace Steeltoe.Management.OpenTelemetry;
+namespace Steeltoe.Management.OpenTelemetry.Metrics;
 
 public static class OpenTelemetryMetrics
 {

@@ -217,7 +217,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
         }
         catch (ReplyFailureException)
         {
-            if (typeof(void).Equals(HandlerAdapter.GetReturnTypeFor(message.Payload)))
+            if (HandlerAdapter.GetReturnTypeFor(message.Payload) == typeof(void))
             {
                 throw exceptionToThrow;
             }
@@ -265,7 +265,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
     {
         Type parameterType = methodParameter.ParameterType;
 
-        if (parameterType.Equals(typeof(RC.IModel)))
+        if (parameterType == typeof(RC.IModel))
         {
             return false;
         }
@@ -274,13 +274,13 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
         {
             Type typeDef = parameterType.GetGenericTypeDefinition();
 
-            if (typeDef.Equals(typeof(IMessage<>)))
+            if (typeDef == typeof(IMessage<>))
             {
                 return true;
             }
         }
 
-        return !parameterType.Equals(typeof(IMessage)); // could be Message without a generic type
+        return parameterType != typeof(IMessage); // could be Message without a generic type
     }
 
     private Type ExtractGenericParameterTypFromMethodParameter(ParameterInfo methodParameter)
@@ -291,16 +291,16 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
         {
             Type typeDef = parameterType.GetGenericTypeDefinition();
 
-            if (typeDef.Equals(typeof(IMessage<>)))
+            if (typeDef == typeof(IMessage<>))
             {
                 parameterType = parameterType.GetGenericArguments()[0];
             }
-            else if (IsBatch && typeDef.Equals(typeof(List<>)))
+            else if (IsBatch && typeDef == typeof(List<>))
             {
                 Type paramType = parameterType.GetGenericArguments()[0];
-                bool messageHasGeneric = paramType.IsGenericType && paramType.GetGenericTypeDefinition().Equals(typeof(IMessage<>));
-                IsMessageList = paramType.Equals(typeof(IMessage)) || messageHasGeneric;
-                IsMessageByteArrayList = paramType.Equals(typeof(IMessage<byte[]>));
+                bool messageHasGeneric = paramType.IsGenericType && paramType.GetGenericTypeDefinition() == typeof(IMessage<>);
+                IsMessageList = paramType == typeof(IMessage) || messageHasGeneric;
+                IsMessageByteArrayList = paramType == typeof(IMessage<byte[]>);
 
                 if (messageHasGeneric)
                 {

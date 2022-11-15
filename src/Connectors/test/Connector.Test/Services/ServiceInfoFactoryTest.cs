@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Configuration;
+using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Services.Test;
+namespace Steeltoe.Connector.Test.Services;
 
 public class ServiceInfoFactoryTest
 {
@@ -15,7 +16,7 @@ public class ServiceInfoFactoryTest
         const string scheme = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceInfoFactory(new Tags("foo"), scheme));
-        Assert.Contains(nameof(scheme), ex.Message);
+        Assert.Contains(nameof(scheme), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -25,7 +26,7 @@ public class ServiceInfoFactoryTest
         const Tags tags = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceInfoFactory(tags, scheme));
-        Assert.Contains(nameof(tags), ex.Message);
+        Assert.Contains(nameof(tags), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -357,8 +358,8 @@ public class ServiceInfoFactoryTest
         List<string> list = sif.GetListFromCredentials(credentials, "uris");
         Assert.NotNull(list);
         Assert.Equal(2, list.Count);
-        Assert.True(list[0].Equals("https://foo:11") || list[0].Equals("https://bar:11"));
-        Assert.True(list[1].Equals("https://foo:11") || list[1].Equals("https://bar:11"));
+        Assert.True(list[0] == "https://foo:11" || list[0] == "https://bar:11");
+        Assert.True(list[1] == "https://foo:11" || list[1] == "https://bar:11");
     }
 
     [Fact]
@@ -389,8 +390,8 @@ public class ServiceInfoFactoryTest
 
         var sif = new TestServiceInfoFactory(tags, scheme);
         var ex = Assert.Throws<ConnectorException>(() => sif.GetListFromCredentials(credentials, "foo"));
-        Assert.Contains("key=foo", ex.Message);
-        Assert.Contains("value=bar/", ex.Message);
+        Assert.Contains("key=foo", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("value=bar/", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

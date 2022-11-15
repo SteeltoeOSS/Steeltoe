@@ -24,7 +24,7 @@ using Steeltoe.Stream.Converter;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Stream.Binder;
+namespace Steeltoe.Stream.Binder.Test;
 
 public abstract class AbstractBinderTests<TTestBinder, TBinder>
     where TTestBinder : AbstractTestBinder<TBinder>
@@ -416,7 +416,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
     {
         // The 'channelName.contains("input")' is strictly for convenience to avoid
         // modifications in multiple tests
-        return CreateBindableChannel(channelName, bindingProperties, channelName.Contains("input"));
+        return CreateBindableChannel(channelName, bindingProperties, channelName.Contains("input", StringComparison.Ordinal));
     }
 
     protected DirectChannel CreateBindableChannel(string channelName, BindingOptions bindingProperties, bool inputChannel)

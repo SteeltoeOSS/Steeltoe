@@ -6,9 +6,10 @@ using System.Reflection;
 using System.Text;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
+using Steeltoe.Stream.Configuration;
 using Xunit;
 
-namespace Steeltoe.Stream.Configuration;
+namespace Steeltoe.Stream.Test.Configuration;
 
 public class ArgumentResolversTest
 {
