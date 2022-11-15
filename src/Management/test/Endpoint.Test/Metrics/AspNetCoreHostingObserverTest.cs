@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Steeltoe.Management.Endpoint.Metrics;
@@ -35,25 +34,6 @@ public class AspNetCoreHostingObserverTest : BaseTest
         Assert.True(observer.ShouldIgnoreRequest("/html/foo.html"));
         Assert.False(observer.ShouldIgnoreRequest("/api/test"));
         Assert.False(observer.ShouldIgnoreRequest("/v2/apps"));
-    }
-
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public void ProcessEvent_IgnoresNulls()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        var options = new MetricsObserverOptions();
-        var viewRegistry = new ViewRegistry();
-        var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
-
-        observer.ProcessEvent("foobar", null);
-        observer.ProcessEvent(AspNetCoreHostingObserver.StopEvent, null);
-
-        var act = new Activity("Test");
-        act.Start();
-        observer.ProcessEvent(AspNetCoreHostingObserver.StopEvent, null);
-        act.Stop();
     }
 
     [Fact]
@@ -102,38 +82,6 @@ public class AspNetCoreHostingObserverTest : BaseTest
         Assert.Contains(KeyValuePair.Create("uri", (object)"/foobar"), tagContext);
         Assert.Contains(KeyValuePair.Create("status", (object)"404"), tagContext);
         Assert.Contains(KeyValuePair.Create("method", (object)"GET"), tagContext);
-    }
-
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-    [Trait("Category", "FlakyOnHostedAgents")]
-#pragma warning disable S2699 // Tests should include assertions
-    public void HandleStopEvent_RecordsStats()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        var options = new MetricsObserverOptions();
-        var viewRegistry = new ViewRegistry();
-        var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
-
-        HttpContext context = GetHttpRequestMessage();
-
-        var exceptionHandlerFeature = new ExceptionHandlerFeature
-        {
-            Error = new Exception()
-        };
-
-        context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
-        context.Response.StatusCode = 500;
-
-        var act = new Activity("Test");
-        act.Start();
-        Thread.Sleep(1000);
-        act.SetEndTime(DateTime.UtcNow);
-
-        observer.HandleStopEvent(act, context);
-        observer.HandleStopEvent(act, context);
-
-        act.Stop();
     }
 
     private HttpContext GetHttpRequestMessage()

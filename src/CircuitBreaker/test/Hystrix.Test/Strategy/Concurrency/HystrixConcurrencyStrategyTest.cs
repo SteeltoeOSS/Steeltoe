@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reactive.Linq;
-using System.Reactive.Observable.Aliases;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.Common.Util;
@@ -19,26 +18,6 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
     public HystrixConcurrencyStrategyTest(ITestOutputHelper output)
     {
         _output = output;
-    }
-
-    // If the RequestContext does not get transferred across threads correctly this blows up.
-    // No specific assertions are necessary.
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public void TestRequestContextPropagatesAcrossObserveOnPool()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        new SimpleCommand(_output).Execute();
-
-        new SimpleCommand(_output).Observe().Map(s =>
-        {
-            _output.WriteLine("Map => Commands: " + HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
-            return s;
-        }).ForEachAsync(s =>
-        {
-            _output.WriteLine("Result [" + s + "] => Commands: " + HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
-        });
     }
 
     [Fact]

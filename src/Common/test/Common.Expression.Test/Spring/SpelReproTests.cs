@@ -598,62 +598,6 @@ public class SpelReproTests : AbstractExpressionTests
         Assert.Equal(compiler, actual);
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public void VarargsAndPrimitives_SPR8174()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        var emptyEvalContext = new StandardEvaluationContext();
-
-        var args = new List<Type>
-        {
-            typeof(long)
-        };
-
-        var ru = new ReflectionUtil<int>();
-        IMethodExecutor me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "MethodToCall", args);
-        me.Execute(emptyEvalContext, ru, 1);
-
-        args[0] = typeof(int);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, 45);
-
-        args[0] = typeof(float);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, 45f);
-
-        args[0] = typeof(double);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, 23d);
-
-        args[0] = typeof(short);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, (short)23);
-
-        args[0] = typeof(long);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, 23L);
-
-        args[0] = typeof(char);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, (char)65);
-
-        args[0] = typeof(byte);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, (byte)23);
-
-        args[0] = typeof(bool);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, true);
-
-        // trickier:
-        args[0] = typeof(object);
-        args.Add(typeof(float));
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Bar", args);
-        me.Execute(emptyEvalContext, ru, 12, 23f);
-    }
-
     [Fact]
     public void ReservedWords_SPR8228()
     {
@@ -1110,18 +1054,6 @@ public class SpelReproTests : AbstractExpressionTests
         DoTestSpr10146("&&foo", "EL1070E: Problem parsing left operand");
         DoTestSpr10146("||foo", "EL1070E: Problem parsing left operand");
         DoTestSpr10146("|foo", "EL1069E: Missing expected character ''|''");
-    }
-
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public void SPR10210()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        var context = new StandardEvaluationContext();
-        context.SetVariable("bridgeExample", new SPR10210.D());
-        IExpression parseExpression = Parser.ParseExpression("#bridgeExample.BridgeMethod()");
-        parseExpression.GetValue(context);
     }
 
     [Fact]
