@@ -69,7 +69,7 @@ public class EurekaInstanceOptions : EurekaInstanceConfiguration, IDiscoveryRegi
 
     public override string HostName
     {
-        get => GetHostName(false);
+        get => ResolveHostName(false);
         set
         {
             if (value != base.HostName)
@@ -86,10 +86,10 @@ public class EurekaInstanceOptions : EurekaInstanceConfiguration, IDiscoveryRegi
         IsInstanceEnabledOnInit = true;
         VirtualHostName = null;
         SecureVirtualHostName = null;
-        InstanceId = $"{GetHostName(false)}:{AppName}:{NonSecurePort}";
+        InstanceId = $"{ResolveHostName(false)}:{AppName}:{NonSecurePort}";
     }
 
-    public override string GetHostName(bool refresh)
+    public override string ResolveHostName(bool refresh)
     {
         if (_hostName != null)
         {

@@ -21,7 +21,7 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
     public string Description => "Steeltoe provided Kubernetes native service discovery client";
 
-    public IList<string> Services => GetServices(null);
+    public IList<string> Services => GetLabeledServices(null);
 
     public IKubernetes KubernetesClient { get; set; }
 
@@ -34,7 +34,7 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
         _logger = logger;
     }
 
-    public IList<string> GetServices(IDictionary<string, string> labels)
+    public IList<string> GetLabeledServices(IDictionary<string, string> labels)
     {
         if (!_discoveryOptions.CurrentValue.Enabled)
         {

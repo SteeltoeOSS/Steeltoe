@@ -39,7 +39,7 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     public string Description { get; } = "HashiCorp Consul Client";
 
     /// <inheritdoc />
-    public IList<string> Services => GetServicesAsync().GetAwaiter().GetResult();
+    public IList<string> Services => GetServiceNamesAsync().GetAwaiter().GetResult();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulDiscoveryClient" /> class.
@@ -157,7 +157,7 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
         {
             queryOptions ??= QueryOptions.Default;
             var instances = new List<IServiceInstance>();
-            IList<string> result = await GetServicesAsync();
+            IList<string> result = await GetServiceNamesAsync();
 
             foreach (string serviceId in result)
             {
@@ -177,10 +177,10 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     /// <returns>
     /// the list of services.
     /// </returns>
-    public IList<string> GetServices(QueryOptions queryOptions = null)
+    public IList<string> GetServiceNames(QueryOptions queryOptions = null)
     {
         queryOptions ??= QueryOptions.Default;
-        return GetServicesAsync(queryOptions).GetAwaiter().GetResult();
+        return GetServiceNamesAsync(queryOptions).GetAwaiter().GetResult();
     }
 
     internal async Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, QueryOptions queryOptions)
@@ -190,7 +190,7 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
         return instances;
     }
 
-    internal async Task<IList<string>> GetServicesAsync(QueryOptions queryOptions = null)
+    internal async Task<IList<string>> GetServiceNamesAsync(QueryOptions queryOptions = null)
     {
         queryOptions ??= QueryOptions.Default;
         QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(queryOptions);
