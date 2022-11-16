@@ -129,7 +129,7 @@ public class ConsulDiscoveryClientTest
         catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(result);
 
         var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
-        IList<string> services = await dc.GetServicesAsync();
+        IList<string> services = await dc.GetServiceNamesAsync();
         Assert.Equal(2, services.Count);
         Assert.Contains("foo", services);
         Assert.Contains("bar", services);
@@ -168,7 +168,7 @@ public class ConsulDiscoveryClientTest
         catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(result);
 
         var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
-        IList<string> services = dc.GetServices();
+        IList<string> services = dc.GetServiceNames();
         Assert.Equal(2, services.Count);
         Assert.Contains("foo", services);
         Assert.Contains("bar", services);

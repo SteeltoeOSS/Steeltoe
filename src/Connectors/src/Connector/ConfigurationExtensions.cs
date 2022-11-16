@@ -25,7 +25,7 @@ public static class ConfigurationExtensions
     public static IEnumerable<TServiceInfo> GetServiceInfos<TServiceInfo>(this IConfiguration configuration)
         where TServiceInfo : class
     {
-        return ServiceInfoCreatorFactory.GetServiceInfoCreator(configuration).GetServiceInfos<TServiceInfo>();
+        return ServiceInfoCreatorFactory.GetServiceInfoCreator(configuration).GetServiceInfosOfType<TServiceInfo>();
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public static class ConfigurationExtensions
     /// </returns>
     public static IEnumerable<IServiceInfo> GetServiceInfos(this IConfiguration configuration, Type infoType)
     {
-        return ServiceInfoCreatorFactory.GetServiceInfoCreator(configuration).GetServiceInfos(infoType);
+        return ServiceInfoCreatorFactory.GetServiceInfoCreator(configuration).GetServiceInfosOfType(infoType);
     }
 
     /// <summary>
