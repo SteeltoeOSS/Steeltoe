@@ -65,9 +65,9 @@ public class IntegrationMessageBuilder<T> : IntegrationMessageBuilder, IMessageB
         return this;
     }
 
-    public new IMessageBuilder<T> ReadOnlyHeaders(IList<string> readOnlyHeaders)
+    public new IMessageBuilder<T> ReadOnlyHeaders(IList<string> values)
     {
-        base.ReadOnlyHeaders(readOnlyHeaders);
+        base.ReadOnlyHeaders(values);
         return this;
     }
 
@@ -248,10 +248,10 @@ public class IntegrationMessageBuilder : AbstractMessageBuilder
         return this;
     }
 
-    public IMessageBuilder ReadOnlyHeaders(IList<string> readOnlyHeaders)
+    public IMessageBuilder ReadOnlyHeaders(IList<string> values)
     {
-        this.readOnlyHeaders = readOnlyHeaders;
-        HeaderAccessor.SetReadOnlyHeaders(readOnlyHeaders);
+        readOnlyHeaders = values;
+        HeaderAccessor.SetReadOnlyHeaders(values);
         return this;
     }
 

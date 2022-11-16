@@ -2588,9 +2588,9 @@ public class RabbitTemplate
             }
         }
 
-        public void Reply(IMessage reply)
+        public void Reply(IMessage message)
         {
-            _future.TrySetResult(reply);
+            _future.TrySetResult(message);
         }
 
         public void Returned(RabbitMessageReturnedException e)
