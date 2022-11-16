@@ -46,5 +46,5 @@ public interface IConsulDiscoveryClient : IDiscoveryClient, IDisposable
     /// <returns>
     /// list of found services.
     /// </returns>
-    IList<string> GetServices(QueryOptions queryOptions = null);
+    IList<string> GetServiceNames(QueryOptions queryOptions = null);
 }

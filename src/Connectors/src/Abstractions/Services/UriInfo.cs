@@ -18,23 +18,23 @@ public class UriInfo
         ':'
     };
 
-    public string Scheme { get; protected internal set; }
+    public string Scheme { get; }
 
-    public string Host { get; protected internal set; }
+    public string Host { get; private set; }
 
-    public string[] Hosts { get; protected internal set; }
+    public string[] Hosts { get; private set; }
 
-    public int Port { get; protected internal set; }
+    public int Port { get; }
 
-    public string UserName { get; protected internal set; }
+    public string UserName { get; }
 
-    public string Password { get; protected internal set; }
+    public string Password { get; }
 
-    public string Path { get; protected internal set; }
+    public string Path { get; }
 
-    public string Query { get; protected internal set; }
+    public string Query { get; }
 
-    public string UriString { get; protected internal set; }
+    public string UriString { get; }
 
     public Uri Uri => MakeUri(UriString);
 
@@ -96,7 +96,7 @@ public class UriInfo
         return UriString;
     }
 
-    protected internal Uri MakeUri(string scheme, string host, int port, string username, string password, string path, string query)
+    private Uri MakeUri(string scheme, string host, int port, string username, string password, string path, string query)
     {
         string cleanedPath = path == null || path.StartsWith('/') ? path : $"/{path}";
         cleanedPath = query != null ? $"{cleanedPath}?{query}" : cleanedPath;
@@ -129,7 +129,7 @@ public class UriInfo
         }
     }
 
-    protected internal Uri MakeUri(string uriString)
+    private Uri MakeUri(string uriString)
     {
         try
         {
@@ -167,7 +167,7 @@ public class UriInfo
         }
     }
 
-    protected internal void ConvertJdbcToUri(ref string uriString)
+    private void ConvertJdbcToUri(ref string uriString)
     {
         uriString = uriString.Replace("jdbc:", string.Empty, StringComparison.Ordinal).Replace(';', '&');
 
@@ -199,7 +199,7 @@ public class UriInfo
         }
     }
 
-    protected internal string GetPath(string pathAndQuery)
+    private string GetPath(string pathAndQuery)
     {
         if (string.IsNullOrEmpty(pathAndQuery))
         {
@@ -216,7 +216,7 @@ public class UriInfo
         return split[0].Substring(1);
     }
 
-    protected internal string GetQuery(string pathAndQuery)
+    private string GetQuery(string pathAndQuery)
     {
         if (string.IsNullOrEmpty(pathAndQuery))
         {
@@ -233,7 +233,7 @@ public class UriInfo
         return split[1];
     }
 
-    protected internal string[] GetUserInfo(string userPass)
+    private string[] GetUserInfo(string userPass)
     {
         if (string.IsNullOrEmpty(userPass))
         {

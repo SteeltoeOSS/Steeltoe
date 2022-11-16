@@ -14,7 +14,7 @@ public class EurekaInstanceConfigTest : AbstractBaseTest
     {
         var configuration = new EurekaInstanceConfiguration();
 
-        string thisHostName = configuration.GetHostName(false);
+        string thisHostName = configuration.ResolveHostName(false);
         string thisHostAddress = configuration.GetHostAddress(false);
 
         Assert.False(configuration.IsInstanceEnabledOnInit);
