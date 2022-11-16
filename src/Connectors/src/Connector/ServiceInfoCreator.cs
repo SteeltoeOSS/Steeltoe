@@ -67,7 +67,7 @@ public class ServiceInfoCreator
     /// <returns>
     /// List of matching Service Infos.
     /// </returns>
-    public IEnumerable<TServiceInfo> GetServiceInfos<TServiceInfo>()
+    public IEnumerable<TServiceInfo> GetServiceInfosOfType<TServiceInfo>()
         where TServiceInfo : class
     {
         return ServiceInfos.Where(si => si is TServiceInfo).Cast<TServiceInfo>();
@@ -82,7 +82,7 @@ public class ServiceInfoCreator
     /// <returns>
     /// List of matching Service Infos.
     /// </returns>
-    public IEnumerable<IServiceInfo> GetServiceInfos(Type type)
+    public IEnumerable<IServiceInfo> GetServiceInfosOfType(Type type)
     {
         return ServiceInfos.Where(info => info.GetType() == type);
     }
@@ -102,7 +102,7 @@ public class ServiceInfoCreator
     public TServiceInfo GetServiceInfo<TServiceInfo>(string name)
         where TServiceInfo : class
     {
-        IEnumerable<TServiceInfo> typed = GetServiceInfos<TServiceInfo>();
+        IEnumerable<TServiceInfo> typed = GetServiceInfosOfType<TServiceInfo>();
 
         foreach (TServiceInfo si in typed)
         {

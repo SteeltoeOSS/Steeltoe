@@ -259,7 +259,7 @@ public class KubernetesDiscoveryClientTest
 
         var discoveryClient = new KubernetesDiscoveryClient(new DefaultIsServicePortSecureResolver(options.CurrentValue), client, options);
 
-        IList<string>? services = discoveryClient.GetServices(new Dictionary<string, string>
+        IList<string>? services = discoveryClient.GetLabeledServices(new Dictionary<string, string>
         {
             { "label", "value" }
         });

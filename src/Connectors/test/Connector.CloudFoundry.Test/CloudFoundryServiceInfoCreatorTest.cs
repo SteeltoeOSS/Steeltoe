@@ -174,19 +174,19 @@ public class CloudFoundryServiceInfoCreatorTest
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
         var creator = CloudFoundryServiceInfoCreator.Instance(configurationRoot);
-        IEnumerable<RedisServiceInfo> result = creator.GetServiceInfos<RedisServiceInfo>();
+        IEnumerable<RedisServiceInfo> result = creator.GetServiceInfosOfType<RedisServiceInfo>();
         Assert.NotNull(result);
         Assert.Empty(result);
 
-        IEnumerable<IServiceInfo> result2 = creator.GetServiceInfos(typeof(MySqlServiceInfo));
+        IEnumerable<IServiceInfo> result2 = creator.GetServiceInfosOfType(typeof(MySqlServiceInfo));
         Assert.NotNull(result2);
         Assert.Empty(result2);
 
-        IEnumerable<RedisServiceInfo> result3 = creator.GetServiceInfos<RedisServiceInfo>();
+        IEnumerable<RedisServiceInfo> result3 = creator.GetServiceInfosOfType<RedisServiceInfo>();
         Assert.NotNull(result3);
         Assert.Empty(result3);
 
-        IEnumerable<IServiceInfo> result4 = creator.GetServiceInfos(typeof(RedisServiceInfo));
+        IEnumerable<IServiceInfo> result4 = creator.GetServiceInfosOfType(typeof(RedisServiceInfo));
         Assert.NotNull(result4);
         Assert.Empty(result4);
 
@@ -258,17 +258,17 @@ public class CloudFoundryServiceInfoCreatorTest
         IConfigurationRoot configurationRoot = builder.Build();
         var creator = CloudFoundryServiceInfoCreator.Instance(configurationRoot);
 
-        IEnumerable<MySqlServiceInfo> result = creator.GetServiceInfos<MySqlServiceInfo>();
+        IEnumerable<MySqlServiceInfo> result = creator.GetServiceInfosOfType<MySqlServiceInfo>();
         Assert.Equal(2, result.Count(si => si != null));
 
-        IEnumerable<IServiceInfo> result2 = creator.GetServiceInfos(typeof(MySqlServiceInfo));
+        IEnumerable<IServiceInfo> result2 = creator.GetServiceInfosOfType(typeof(MySqlServiceInfo));
         Assert.Equal(2, result2.Count(si => si is MySqlServiceInfo));
 
-        IEnumerable<RedisServiceInfo> result3 = creator.GetServiceInfos<RedisServiceInfo>();
+        IEnumerable<RedisServiceInfo> result3 = creator.GetServiceInfosOfType<RedisServiceInfo>();
         Assert.NotNull(result3);
         Assert.Empty(result3);
 
-        IEnumerable<IServiceInfo> result4 = creator.GetServiceInfos(typeof(RedisServiceInfo));
+        IEnumerable<IServiceInfo> result4 = creator.GetServiceInfosOfType(typeof(RedisServiceInfo));
         Assert.NotNull(result4);
         Assert.Empty(result4);
 
@@ -410,17 +410,17 @@ public class CloudFoundryServiceInfoCreatorTest
         Assert.NotNull(creator.ServiceInfos);
         Assert.Equal(4, creator.ServiceInfos.Count);
 
-        IEnumerable<RedisServiceInfo> result1 = creator.GetServiceInfos<RedisServiceInfo>();
+        IEnumerable<RedisServiceInfo> result1 = creator.GetServiceInfosOfType<RedisServiceInfo>();
         Assert.NotNull(result1);
         Assert.Single(result1);
 
         RedisServiceInfo redis1 = result1.First();
         Assert.Equal("10.66.32.54", redis1.Host);
 
-        IEnumerable<MongoDbServiceInfo> result2 = creator.GetServiceInfos<MongoDbServiceInfo>();
+        IEnumerable<MongoDbServiceInfo> result2 = creator.GetServiceInfosOfType<MongoDbServiceInfo>();
         Assert.Equal(2, result2.Count());
 
-        IEnumerable<EurekaServiceInfo> result3 = creator.GetServiceInfos<EurekaServiceInfo>();
+        IEnumerable<EurekaServiceInfo> result3 = creator.GetServiceInfosOfType<EurekaServiceInfo>();
         Assert.Single(result3);
         Assert.Equal("eureka-a015d976-af2e-430c-81f6-4f99272ccd24.apps.preprdpcf01.foo.com", result3.First().Host);
     }

@@ -222,16 +222,10 @@ public class WindowsNetworkFileShare : IDisposable
         NdsContainer = 0x0b
     }
 
-    private struct ErrorClass
+    private record struct ErrorClass(int Num, string Message)
     {
-        public readonly int Num;
-        public readonly string Message;
-
-        public ErrorClass(int num, string message)
-        {
-            Num = num;
-            Message = message;
-        }
+        public readonly int Num = Num;
+        public readonly string Message = Message;
     }
 
     /// <summary>
