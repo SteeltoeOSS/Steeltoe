@@ -26,7 +26,7 @@ public abstract class AbstractExpressionEvaluator
     {
         get
         {
-            _evaluationContext ??= GetEvaluationContext();
+            _evaluationContext ??= CreateEvaluationContext();
             return _evaluationContext;
         }
         set => _evaluationContext = value;
@@ -45,7 +45,7 @@ public abstract class AbstractExpressionEvaluator
     {
         get
         {
-            _messageBuilderFactory ??= GetMessageBuilderFactory();
+            _messageBuilderFactory ??= CreateMessageBuilderFactory();
             return _messageBuilderFactory;
         }
         set => _messageBuilderFactory = value;
@@ -60,12 +60,12 @@ public abstract class AbstractExpressionEvaluator
         ApplicationContext = context;
     }
 
-    protected virtual IMessageBuilderFactory GetMessageBuilderFactory()
+    protected virtual IMessageBuilderFactory CreateMessageBuilderFactory()
     {
         return IntegrationServices.MessageBuilderFactory;
     }
 
-    protected virtual IEvaluationContext GetEvaluationContext(bool contextRequired = true)
+    protected virtual IEvaluationContext CreateEvaluationContext(bool contextRequired = true)
     {
         if (_evaluationContext == null)
         {

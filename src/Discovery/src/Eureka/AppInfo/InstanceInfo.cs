@@ -189,10 +189,10 @@ public class InstanceInfo
 
         if (string.IsNullOrEmpty(info.InstanceId))
         {
-            info.InstanceId = instanceConfig.GetHostName(false);
+            info.InstanceId = instanceConfig.ResolveHostName(false);
         }
 
-        string defaultAddress = instanceConfig.GetHostName(false);
+        string defaultAddress = instanceConfig.ResolveHostName(false);
 
         if (instanceConfig.PreferIPAddress || string.IsNullOrEmpty(defaultAddress))
         {

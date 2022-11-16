@@ -96,7 +96,7 @@ public class EurekaInstanceConfiguration : IEurekaInstanceConfig
     public EurekaInstanceConfiguration()
     {
 #pragma warning disable S1699 // Constructors should only call non-overridable methods
-        HostName = GetHostName(true);
+        HostName = ResolveHostName(true);
         thisHostAddress = GetHostAddress(true);
 #pragma warning restore S1699 // Constructors should only call non-overridable methods
 
@@ -134,7 +134,7 @@ public class EurekaInstanceConfiguration : IEurekaInstanceConfig
         }
     }
 
-    public virtual string GetHostName(bool refresh)
+    public virtual string ResolveHostName(bool refresh)
     {
         if (refresh || string.IsNullOrEmpty(HostName))
         {
@@ -159,7 +159,7 @@ public class EurekaInstanceConfiguration : IEurekaInstanceConfig
             }
             else
             {
-                string hostName = GetHostName(refresh);
+                string hostName = ResolveHostName(refresh);
 
                 if (!string.IsNullOrEmpty(hostName))
                 {
