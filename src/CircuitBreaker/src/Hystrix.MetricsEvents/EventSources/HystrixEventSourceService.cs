@@ -5,8 +5,10 @@
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
+using Steeltoe.Common.Logging;
 using static Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.HystrixDashboardStream;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.EventSources;
@@ -70,7 +72,8 @@ public class HystrixEventSourceService : IHostedService
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                ILogger logger = BootstrapLoggerFactory.Instance.CreateLogger<HystrixEventSourceService>();
+                logger.LogError(ex, "Failed to process metrics.");
             }
         }
     }

@@ -4,7 +4,9 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Attributes;
+using Steeltoe.Common.Logging;
 
 namespace Steeltoe.Common.Reflection;
 
@@ -478,8 +480,10 @@ public static class ReflectionHelpers
 
             toReturn.Add(baseDirectory);
 
-            Console.WriteLine(
-                "File path path information for the assembly containing {0} is missing. Some Steeltoe functionality may not work with PublishSingleFile=true",
+            ILogger logger = BootstrapLoggerFactory.Instance.CreateLogger(typeof(ReflectionHelpers).FullName!);
+
+            logger.LogWarning(
+                "File path information for the assembly containing '{Name}' is missing. Some Steeltoe functionality may not work with PublishSingleFile=true",
                 attributeType.Name);
         }
         else

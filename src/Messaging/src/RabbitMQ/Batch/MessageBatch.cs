@@ -4,18 +4,4 @@
 
 namespace Steeltoe.Messaging.RabbitMQ.Batch;
 
-public struct MessageBatch
-{
-    public string Exchange { get; }
-
-    public string RoutingKey { get; }
-
-    public IMessage Message { get; }
-
-    public MessageBatch(string exchange, string routingKey, IMessage message)
-    {
-        Exchange = exchange;
-        RoutingKey = routingKey;
-        Message = message;
-    }
-}
+public record struct MessageBatch(string Exchange, string RoutingKey, IMessage Message);

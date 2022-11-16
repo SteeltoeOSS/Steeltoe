@@ -7,7 +7,7 @@ namespace Steeltoe.Common.Utils.Diagnostics;
 /// <summary>
 /// An simple representation of a command result.
 /// </summary>
-public struct CommandResult
+public record struct CommandResult
 {
     /// <summary>
     /// Gets or sets the command exit code.

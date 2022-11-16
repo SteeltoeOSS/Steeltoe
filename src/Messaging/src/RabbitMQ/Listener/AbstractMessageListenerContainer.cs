@@ -279,7 +279,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         MessageListener = messageListener;
     }
 
-    public virtual IConnectionFactory GetConnectionFactory()
+    public virtual IConnectionFactory ResolveConnectionFactory()
     {
         IConnectionFactory connectionFactory = ConnectionFactory;
 

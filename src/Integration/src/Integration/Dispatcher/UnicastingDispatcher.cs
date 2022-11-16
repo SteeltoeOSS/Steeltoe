@@ -173,11 +173,13 @@ public class UnicastingDispatcher : AbstractDispatcher
         }
     }
 
-    internal struct MessageHandlerEnumerator
+    private record struct MessageHandlerEnumerator
     {
         private readonly int _startIndex;
         private readonly List<IMessageHandler> _handlers;
         private int _index;
+
+        public IMessageHandler Current => _handlers[_index];
 
         public MessageHandlerEnumerator(int startIndex, List<IMessageHandler> handlers)
         {
@@ -185,17 +187,10 @@ public class UnicastingDispatcher : AbstractDispatcher
             _handlers = handlers;
         }
 
-        public IMessageHandler Current => _handlers[_index];
-
         public bool MoveNext()
         {
             _index = (_index + 1) % _handlers.Count;
             return _index != _startIndex;
-        }
-
-        public void Reset()
-        {
-            _index = _startIndex;
         }
     }
 }
