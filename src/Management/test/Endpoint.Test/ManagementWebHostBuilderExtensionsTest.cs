@@ -779,7 +779,7 @@ public class ManagementWebHostBuilderExtensionsTest
         HttpResponseMessage response = await client.GetAsync("/actuator/metrics");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        // Assert warning is nog logged
+        // Assert warning is not logged
         logger.GetMessages().Should().NotContain("WARNING: Make sure one of the extension methods that calls ConfigureSteeltoeMetrics " +
             "is used to correctly configure metrics using OpenTelemetry for Steeltoe.");
 
