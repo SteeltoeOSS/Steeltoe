@@ -57,7 +57,7 @@ public static class TracingBaseServiceCollectionExtensions
         services.TryAddSingleton<ITracingOptions>(serviceProvider =>
             new TracingOptions(serviceProvider.GetRequiredService<IApplicationInstanceInfo>(), serviceProvider.GetRequiredService<IConfiguration>()));
 
-        services.TryAddSingleton<IDynamicMessageProcessor, TracingLogProcessor>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IDynamicMessageProcessor, TracingLogProcessor>());
 
         bool exportToZipkin = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.Zipkin");
         bool exportToJaeger = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.Jaeger");
