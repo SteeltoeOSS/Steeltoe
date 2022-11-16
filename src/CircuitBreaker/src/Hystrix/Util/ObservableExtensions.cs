@@ -8,11 +8,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util;
 
 public static class ObservableExtensions
 {
-    public static IObservable<TSource> OnSubscribe<TSource>(this IObservable<TSource> source, Action onSubscribe)
+    public static IObservable<TSource> OnSubscribe<TSource>(this IObservable<TSource> source, Action handler)
     {
         return Observable.Create<TSource>(o =>
         {
-            onSubscribe();
+            handler();
             IDisposable d = source.Subscribe(o);
             return d;
         });

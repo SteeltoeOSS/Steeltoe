@@ -128,12 +128,12 @@ public class ExchangeBuilder : AbstractBuilder
         return this;
     }
 
-    public ExchangeBuilder Admins(params object[] admins)
+    public ExchangeBuilder Admins(params object[] declaringAdmins)
     {
-        ArgumentGuard.NotNull(admins);
-        ArgumentGuard.ElementsNotNull(admins);
+        ArgumentGuard.NotNull(declaringAdmins);
+        ArgumentGuard.ElementsNotNull(declaringAdmins);
 
-        _declaringAdmins = new List<object>(admins);
+        _declaringAdmins = new List<object>(declaringAdmins);
         return this;
     }
 
