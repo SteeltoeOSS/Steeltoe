@@ -774,7 +774,7 @@ public class ContentTypeTckTest : AbstractTest
     [Fact]
     public async Task TestWithTypelessInputParameterAndServiceActivator()
     {
-        _container.AddServiceActivators<TypelessPayloadConfigurationSa>();
+        _container.AddServiceActivators<TypelessPayloadConfigurationServiceActivator>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
         var streamProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
@@ -794,7 +794,7 @@ public class ContentTypeTckTest : AbstractTest
     [Fact]
     public async Task TestWithTypelessMessageInputParameterAndServiceActivator()
     {
-        _container.AddServiceActivators<TypelessMessageConfigurationSa>();
+        _container.AddServiceActivators<TypelessMessageConfigurationServiceActivator>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
         var streamProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
