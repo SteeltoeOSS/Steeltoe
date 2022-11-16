@@ -138,11 +138,15 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
         }
     }
 
-    internal struct SendTask : IMessageHandlingRunnable
+    private record struct SendTask : IMessageHandlingRunnable
     {
         private readonly TaskSchedulerSubscribableChannel _channel;
         private readonly List<ITaskSchedulerChannelInterceptor> _interceptors;
         private int _interceptorIndex;
+
+        public IMessage Message { get; }
+
+        public IMessageHandler MessageHandler { get; }
 
         public SendTask(TaskSchedulerSubscribableChannel channel, List<ITaskSchedulerChannelInterceptor> interceptors, IMessage message,
             IMessageHandler messageHandler)
@@ -153,10 +157,6 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
             _interceptors = interceptors;
             _interceptorIndex = -1;
         }
-
-        public IMessage Message { get; }
-
-        public IMessageHandler MessageHandler { get; }
 
         public bool Run()
         {

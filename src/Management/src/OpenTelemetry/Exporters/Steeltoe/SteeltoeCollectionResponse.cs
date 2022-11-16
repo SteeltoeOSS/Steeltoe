@@ -6,19 +6,5 @@ using Steeltoe.Management.OpenTelemetry.Metrics;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
 
-public readonly struct SteeltoeCollectionResponse : ICollectionResponse
-{
-    public SteeltoeCollectionResponse(MetricsCollection<List<MetricSample>> metricSamples, MetricsCollection<List<MetricTag>> availableTags,
-        DateTime generatedAtUtc)
-    {
-        MetricSamples = metricSamples;
-        AvailableTags = availableTags;
-        GeneratedAtUtc = generatedAtUtc;
-    }
-
-    public MetricsCollection<List<MetricSample>> MetricSamples { get; }
-
-    public MetricsCollection<List<MetricTag>> AvailableTags { get; }
-
-    public DateTime GeneratedAtUtc { get; }
-}
+public record struct SteeltoeCollectionResponse(MetricsCollection<List<MetricSample>> MetricSamples, MetricsCollection<List<MetricTag>> AvailableTags,
+    DateTime GeneratedAtUtc) : ICollectionResponse;
