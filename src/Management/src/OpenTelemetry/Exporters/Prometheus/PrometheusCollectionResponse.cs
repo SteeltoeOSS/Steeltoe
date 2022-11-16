@@ -4,15 +4,4 @@
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 
-public readonly struct PrometheusCollectionResponse : ICollectionResponse
-{
-    public PrometheusCollectionResponse(ArraySegment<byte> view, DateTime generatedAtUtc)
-    {
-        View = view;
-        GeneratedAtUtc = generatedAtUtc;
-    }
-
-    public ArraySegment<byte> View { get; }
-
-    public DateTime GeneratedAtUtc { get; }
-}
+public record struct PrometheusCollectionResponse(ArraySegment<byte> View, DateTime GeneratedAtUtc) : ICollectionResponse;

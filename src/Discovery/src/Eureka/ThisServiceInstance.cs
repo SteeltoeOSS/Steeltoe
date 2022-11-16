@@ -29,20 +29,20 @@ public class ThisServiceInstance : IServiceInstance
         {
             string scheme = IsSecure ? "https" : "http";
             int uriPort = IsSecure ? SecurePort : Port;
-            var uri = new Uri($"{scheme}://{GetHost()}:{uriPort}");
+            var uri = new Uri($"{scheme}://{GetHostName()}:{uriPort}");
             return uri;
         }
     }
 
-    public string Host => GetHost();
+    public string Host => GetHostName();
 
     public ThisServiceInstance(IOptionsMonitor<EurekaInstanceOptions> instConfig)
     {
         _instConfig = instConfig;
     }
 
-    public string GetHost()
+    public string GetHostName()
     {
-        return InstConfig.GetHostName(false);
+        return InstConfig.ResolveHostName(false);
     }
 }

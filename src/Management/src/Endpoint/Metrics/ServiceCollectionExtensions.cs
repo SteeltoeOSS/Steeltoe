@@ -5,8 +5,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
+using Steeltoe.Common.Logging;
 using Steeltoe.Management.Endpoint.Metrics.Prometheus;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
@@ -126,8 +128,10 @@ public static class ServiceCollectionExtensions
         {
             if (!services.Any(sd => sd.ImplementationInstance?.ToString() == "{ ConfiguredSteeltoeMetrics = True }"))
             {
-                Console.WriteLine(
-                    "Warning!! Make sure one of the extension methods that calls ConfigureSteeltoeMetrics is used to correctly configure metrics using OpenTelemetry for Steeltoe.");
+                ILogger logger = BootstrapLoggerFactory.Instance.CreateLogger(typeof(ServiceCollectionExtensions).FullName!);
+
+                logger.LogWarning(
+                    $"Make sure one of the extension methods that calls {nameof(ConfigureSteeltoeMetrics)} is used to correctly configure metrics using OpenTelemetry for Steeltoe.");
             }
 
             return services; // Already Configured, get out of here

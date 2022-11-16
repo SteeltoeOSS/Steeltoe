@@ -124,8 +124,8 @@ public static class EurekaPostConfigurer
             else
             {
                 options.InstanceId = options.SecurePortEnabled
-                    ? $"{options.GetHostName(false)}:{options.AppName}:{options.SecurePort}"
-                    : $"{options.GetHostName(false)}:{options.AppName}:{options.NonSecurePort}";
+                    ? $"{options.ResolveHostName(false)}:{options.AppName}:{options.SecurePort}"
+                    : $"{options.ResolveHostName(false)}:{options.AppName}:{options.NonSecurePort}";
             }
         }
     }
