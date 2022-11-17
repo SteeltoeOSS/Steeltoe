@@ -67,7 +67,7 @@ public sealed class ConfigServerClientSettings
     /// <summary>
     /// Default timeout in milliseconds.
     /// </summary>
-    public const int DefaultTimeoutMilliseconds = 6 * 1000;
+    public const int DefaultTimeoutMilliseconds = 60 * 1000;
 
     /// <summary>
     /// Default Vault Token time-to-live setting.
