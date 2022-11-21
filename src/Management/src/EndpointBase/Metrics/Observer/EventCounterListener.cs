@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Globalization;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
@@ -121,23 +122,20 @@ public class EventCounterListener : EventListener
         long? longValue = null;
         var counterName = string.Empty;
         var labelSet = new List<KeyValuePair<string, object>>();
-        var excludedMetric = false;
+
         string counterDisplayUnit = null, counterDisplayName = null;
         foreach (var payload in eventPayload)
         {
-            if (excludedMetric)
-            {
-                break;
-            }
-
             var key = payload.Key;
             switch (key)
             {
                 case var kn when key.Equals("Name", StringComparison.OrdinalIgnoreCase):
                     counterName = payload.Value.ToString();
-                    if (_options.ExcludedMetrics.Contains(counterName))
+                    if ((_options.IncludedMetrics.Any()
+                        && !_options.IncludedMetrics.Contains(counterName))
+                        || _options.ExcludedMetrics.Contains(counterName))
                     {
-                        excludedMetric = true;
+                        return;
                     }
 
                     break;
