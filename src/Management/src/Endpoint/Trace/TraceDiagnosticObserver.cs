@@ -59,7 +59,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
             return;
         }
 
-        GetProperty(value, out HttpContext context);
+        HttpContext context = GetHttpContextPropertyValue(value);
 
         if (context != null)
         {
@@ -250,8 +250,8 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         return result;
     }
 
-    protected internal void GetProperty(object obj, out HttpContext context)
+    protected internal HttpContext GetHttpContextPropertyValue(object obj)
     {
-        context = DiagnosticHelpers.GetProperty<HttpContext>(obj, "HttpContext");
+        return DiagnosticHelpers.GetProperty<HttpContext>(obj, "HttpContext");
     }
 }
