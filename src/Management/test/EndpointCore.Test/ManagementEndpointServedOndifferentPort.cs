@@ -99,6 +99,7 @@ public class ManagementEndpointServedOnDifferentPort
         response = httpClient.GetAsync("http://localhost:8080").Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
+
 #endif
     [Fact]
     public void AddAllActuators_GenericHost_MakeSureTheManagementPortIsSet()
