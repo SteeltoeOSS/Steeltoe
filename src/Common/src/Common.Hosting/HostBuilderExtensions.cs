@@ -104,16 +104,28 @@ public static class HostBuilderExtensions
             {
                 Environment.SetEnvironmentVariable("ASPNETCORE_URLS", string.Join(";", urls));
             }
-
-            webHostBuilder.UseUrls(urls.ToArray());
         }
         else
         {
             Environment.SetEnvironmentVariable("ASPNETCORE_URLS", DEFAULT_URL);
-            webHostBuilder.UseUrls(new string[] { DEFAULT_URL });
+            urls.Add(DEFAULT_URL);
         }
 
+        webHostBuilder.BindToPorts(urls);
         return webHostBuilder;
+    }
+
+    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, List<string> urls)
+    {
+        string currentSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+        var currentUrls = new HashSet<string>(urls);
+
+        if (!string.IsNullOrEmpty(currentSetting))
+        {
+            currentUrls.UnionWith(currentSetting?.Split(';'));
+        }
+
+        return webHostBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Join(";", currentUrls));
     }
 
     private static void AddPortAndAspNetCoreUrls(List<string> urls, string portStr, string aspnetUrls)
