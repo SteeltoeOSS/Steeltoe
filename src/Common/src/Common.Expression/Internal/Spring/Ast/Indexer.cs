@@ -284,7 +284,7 @@ public class Indexer : SpelNode
     private T ConvertValue<T>(ITypeConverter converter, object value)
     {
         Type targetType = typeof(T);
-        var result = converter.ConvertValue(value, value == null ? typeof(object) : value.GetType(), targetType);
+        object result = converter.ConvertValue(value, value == null ? typeof(object) : value.GetType(), targetType);
 
         if (result is not T)
         {
