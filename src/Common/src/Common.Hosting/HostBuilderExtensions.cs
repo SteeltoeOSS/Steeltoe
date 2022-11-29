@@ -84,6 +84,19 @@ public static class HostBuilderExtensions
         return webHostBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Join(";", currentUrls));
     }
 
+    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, List<string> urls)
+    {
+        string currentSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+        var currentUrls = new HashSet<string>(urls);
+
+        if (!string.IsNullOrEmpty(currentSetting))
+        {
+            currentUrls.UnionWith(currentSetting?.Split(';'));
+        }
+
+        return webHostBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Join(";", currentUrls));
+    }
+
     private static void AddPortAndAspNetCoreUrls(List<string> urls, string portStr, string aspnetUrls)
     {
         if (int.TryParse(portStr, out int port))
