@@ -150,13 +150,10 @@ public abstract class CommandStreamTest : HystrixTestBase
             return commands;
         }
 
-        // public Stopwatch sw = new Stopwatch();
         protected override int Run()
         {
-            // sw.Start();
             Time.WaitUntil(() => Token.IsCancellationRequested, _executionLatency);
 
-            // sw.Stop();
             Token.ThrowIfCancellationRequested();
 
             return _executionResult2 switch

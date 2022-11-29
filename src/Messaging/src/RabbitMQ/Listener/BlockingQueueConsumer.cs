@@ -201,8 +201,6 @@ public class BlockingQueueConsumer
         {
             ResourceHolder = ConnectionFactoryUtils.GetTransactionalResourceHolder(ConnectionFactory, Transactional);
             Channel = ResourceHolder.GetChannel();
-
-            // ClosingRecoveryListener.AddRecoveryListenerIfNecessary(Channel);
         }
         catch (RabbitAuthenticationException e)
         {
@@ -656,11 +654,6 @@ public class BlockingQueueConsumer
             ConsumerTag = consumerTag;
             Logger?.LogDebug("ConsumeOK: {consumer} {consumerTag}", Consumer, consumerTag);
             Consumer.Consumers.TryAdd(QueueName, this);
-
-            // if (BlockingQueueConsumer.this.applicationEventPublisher != null) {
-            //    BlockingQueueConsumer.this.applicationEventPublisher
-            //            .publishEvent(new ConsumeOkEvent(this, this.queueName, consumerTag));
-            // }
         }
 
         public override void HandleModelShutdown(object model, RC.ShutdownEventArgs reason)
@@ -722,7 +715,7 @@ public class BlockingQueueConsumer
                         }
                         catch (Exception)
                         {
-                            // Noop
+                            // Intentionally left empty.
                         }
                     }
                 }

@@ -33,34 +33,6 @@ public class RabbitAdminTest : AbstractTest
         Assert.Throws<ArgumentNullException>(() => new RabbitAdmin(connectionFactory));
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public void TestNoFailOnStartupWithMissingBroker()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        ServiceCollection serviceCollection = CreateContainer();
-        serviceCollection.AddLogging();
-        serviceCollection.AddRabbitQueue(new Queue("foo"));
-
-        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
-        {
-            f.Host = "foo";
-            f.Port = 434343;
-        });
-
-        ServiceProvider provider = serviceCollection.BuildServiceProvider();
-        var applicationContext = provider.GetService<IApplicationContext>();
-        var connectionFactory = applicationContext.GetService<IConnectionFactory>();
-
-        _ = new RabbitAdmin(applicationContext, connectionFactory)
-        {
-            AutoStartup = true
-        };
-
-        connectionFactory.Destroy();
-    }
-
     [Fact]
     public void TestFailOnFirstUseWithMissingBroker()
     {

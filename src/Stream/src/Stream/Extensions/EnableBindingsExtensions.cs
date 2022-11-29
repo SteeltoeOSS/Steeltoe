@@ -100,7 +100,6 @@ public static class EnableBindingsExtensions
 
     internal static void AddBindings(this IServiceCollection services, Type[] bindingTypes)
     {
-        // TODO: Verify all binding types unique
         foreach (Type bindingType in bindingTypes)
         {
             // Validate binding interface

@@ -75,7 +75,7 @@ public class OpInc : Operator
         }
         catch (SpelEvaluationException see)
         {
-            // If unable to set the value the operand is not writable (e.g. 1++ )
+            // If unable to set the value the operand is not writable (e.g. unary increment)
             if (Equals(see.MessageCode, SpelMessage.SetValueNotSupported))
             {
                 throw new SpelEvaluationException(operand.StartPosition, SpelMessage.OperandNotIncrementable);

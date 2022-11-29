@@ -82,10 +82,6 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
                 containerCollection.AddContainer(container);
             }
 
-            // if (this.contextRefreshed)
-            // {
-            //    container.lazyLoad();
-            // }
             if (startImmediately && container.IsAutoStartup)
             {
                 container.StartAsync();

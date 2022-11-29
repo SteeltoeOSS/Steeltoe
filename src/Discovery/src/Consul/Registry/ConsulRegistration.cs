@@ -268,7 +268,6 @@ public class ConsulRegistration : IConsulRegistration
             check.HTTP = uri.ToString();
         }
 
-        // check.setHeader(properties.getHealthCheckHeaders());
         if (!string.IsNullOrEmpty(options.HealthCheckInterval))
         {
             check.Interval = DateTimeConversions.ToTimeSpan(options.HealthCheckInterval);

@@ -16,13 +16,10 @@ public class Sanitizer
         "+"
     };
 
-    private readonly string[] _keysToSanitize;
     private readonly List<Regex> _matchers = new();
 
     public Sanitizer(string[] keysToSanitize)
     {
-        _keysToSanitize = keysToSanitize;
-
         foreach (string key in keysToSanitize)
         {
             string regexPattern = IsRegex(key) ? key : $".*{key}$";

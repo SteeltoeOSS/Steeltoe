@@ -72,7 +72,6 @@ public class RequestCollapserFactory
             return GetCollapserForGlobalScope(commandCollapser);
         }
 
-        // logger.warn("Invalid Scope: {}  Defaulting to REQUEST scope.", getScope());
         return GetCollapserForUserRequest(commandCollapser);
     }
 

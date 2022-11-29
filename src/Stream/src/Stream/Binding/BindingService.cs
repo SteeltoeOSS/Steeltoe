@@ -102,7 +102,6 @@ public class BindingService : IBindingService
 
     public IBinding DoBindConsumerWithRetry<T>(T inputChan, string name, IBinder binder, IConsumerOptions consumerOptions, string bindingTarget)
     {
-        // TODO: Java code never stops retrying the bind
         do
         {
             try
@@ -130,7 +129,6 @@ public class BindingService : IBindingService
 
     public IBinding DoBindProducerWithRetry<T>(T outputChan, string bindingTarget, IBinder binder, IProducerOptions producerOptions)
     {
-        // TODO: Java code never stops retrying the bind
         do
         {
             try

@@ -364,14 +364,6 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         Assert.Throws<InvalidOperationException>(() => queue.SetAdminsThatShouldDeclare(null, admin1));
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public void TestNoOpWhenNothingToDeclare()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-    }
-
     public sealed class RabbitAdminDeclarationTestStartupFixture : IDisposable
     {
         private readonly IServiceCollection _services;
@@ -416,11 +408,6 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
 
             services.AddSingleton(configuration);
             services.AddRabbitHostingServices();
-
-            // services.AddRabbitDefaultMessageConverter();
-            // services.AddRabbitListenerEndpointRegistry();
-            // services.AddRabbitListenerEndpointRegistrar();
-            // services.AddRabbitListenerAttributeProcessor();
 
             // ConnectionFactory cf1
             services.AddSingleton(_ =>

@@ -51,8 +51,6 @@ public class WebApplicationBuilderExtensionsTest
 
         var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
-        // WebApplication.CreateBuilder() automatically includes a few builders
-        Assert.Equal(9, configurationRoot.Providers.Count());
         Assert.Single(configurationRoot.Providers.OfType<CloudFoundryConfigurationProvider>());
         Assert.Single(configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>());
     }
@@ -63,7 +61,6 @@ public class WebApplicationBuilderExtensionsTest
         WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundry);
         var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
-        Assert.Equal(8, configurationRoot.Providers.Count());
         Assert.Single(configurationRoot.Providers.OfType<CloudFoundryConfigurationProvider>());
     }
 
@@ -74,7 +71,6 @@ public class WebApplicationBuilderExtensionsTest
         WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetes);
         var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
-        Assert.Equal(11, configurationRoot.Providers.Count());
         Assert.Equal(2, configurationRoot.Providers.OfType<KubernetesConfigMapProvider>().Count());
         Assert.Equal(2, configurationRoot.Providers.OfType<KubernetesSecretProvider>().Count());
     }
@@ -85,7 +81,6 @@ public class WebApplicationBuilderExtensionsTest
         WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValue);
         var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
-        Assert.Equal(8, configurationRoot.Providers.Count());
         Assert.Single(configurationRoot.Providers.OfType<RandomValueProvider>());
     }
 
@@ -104,7 +99,6 @@ public class WebApplicationBuilderExtensionsTest
         var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
         IServiceProvider services = host.Services;
 
-        Assert.Equal(8, configurationRoot.Providers.Count());
         Assert.Single(configurationRoot.Providers.OfType<ConnectionStringConfigurationProvider>());
         Assert.NotNull(services.GetService<MySqlConnection>());
         Assert.NotNull(services.GetService<MongoClient>());
@@ -244,11 +238,10 @@ public class WebApplicationBuilderExtensionsTest
         WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeSecurityAuthenticationCloudFoundry);
         var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 
-        Assert.Equal(8, configurationRoot.Providers.Count());
         Assert.Single(configurationRoot.Providers.OfType<PemCertificateProvider>());
-        Assert.NotNull(host.Services.GetRequiredService<IOptions<CertificateOptions>>());
-        Assert.NotNull(host.Services.GetRequiredService<ICertificateRotationService>());
-        Assert.NotNull(host.Services.GetRequiredService<IAuthorizationHandler>());
+        Assert.NotNull(host.Services.GetService<IOptions<CertificateOptions>>());
+        Assert.NotNull(host.Services.GetService<ICertificateRotationService>());
+        Assert.NotNull(host.Services.GetService<IAuthorizationHandler>());
     }
 
     private WebApplication GetWebApplicationWithSteeltoe(params string[] steeltoeInclusions)

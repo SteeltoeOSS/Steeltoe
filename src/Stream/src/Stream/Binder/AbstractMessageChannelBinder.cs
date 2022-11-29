@@ -103,7 +103,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
 
     protected virtual void PostProcessOutputChannel(IMessageChannel outputChannel, IProducerOptions producerOptions)
     {
-        // default no-op
+        // Intentionally left empty.
     }
 
     protected virtual IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties,
@@ -127,11 +127,6 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         {
             IConsumerDestination destination = InnerProvisioningProvider.ProvisionConsumerDestination(name, group, consumerOptions);
 
-            // TODO: the function support for the inbound channel is only for Sink
-            // if (ShouldWireFunctionToChannel(false))
-            // {
-            //    inputChannel = PostProcessInboundChannelForFunction(inputChannel, options);
-            // }
             if (consumerOptions.HeaderMode == HeaderMode.EmbeddedHeaders)
             {
                 EnhanceMessageChannel(inputTarget);
@@ -462,89 +457,6 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         ((AbstractMessageChannel)inputChannel).AddInterceptor(0, CurrentEmbeddedHeadersChannelInterceptor);
     }
 
-    // private void doPublishEvent(ApplicationEvent event)
-    // {
-    //    if (this.applicationEventPublisher != null)
-    //    {
-    //        this.applicationEventPublisher.publishEvent(event);
-    //    }
-    // }
-
-    // private bool ShouldWireFunctionToChannel(bool producer)
-    // {
-    //    if (!producer && this.producerBindingExist)
-    //    {
-    //        return false;
-    //    }
-    //    else
-    //    {
-    //        return this.streamFunctionProperties != null
-    //                && StringUtils.hasText(this.streamFunctionProperties.getDefinition())
-    //                && (!this.getApplicationContext()
-    //                        .containsBean("integrationFlowCreator")
-    //                        || this.getApplicationContext()
-    //                                .getBean("integrationFlowCreator").equals(null));
-    //    }
-    // }
-
-    // private SubscribableChannel postProcessOutboundChannelForFunction( MessageChannel outputChannel, ProducerProperties producerProperties)
-    //        {
-    //            if (this.integrationFlowFunctionSupport != null)
-    //            {
-    //                Publisher <?> publisher = MessageChannelReactiveUtils
-    //                        .toPublisher(outputChannel);
-    //                // If the app has an explicit Supplier bean defined, make that as the
-    //                // publisher
-    //                if (this.integrationFlowFunctionSupport.containsFunction(Supplier.class)) {
-    // IntegrationFlowBuilder integrationFlowBuilder = IntegrationFlows
-    //                        .from(outputChannel).bridge();
-    //        publisher = integrationFlowBuilder.toReactivePublisher();
-    // }
-    // if (this.integrationFlowFunctionSupport.containsFunction(Function.class,
-
-    // this.streamFunctionProperties.getDefinition())) {
-    //        DirectChannel actualOutputChannel = new DirectChannel();
-    //        if (outputChannel instanceof AbstractMessageChannel) {
-    //            moveChannelInterceptors((AbstractMessageChannel)outputChannel,
-    //                    actualOutputChannel);
-    //        }
-    //        this.integrationFlowFunctionSupport.andThenFunction(publisher,
-    //                actualOutputChannel, this.streamFunctionProperties);
-    //        return actualOutputChannel;
-    //    }
-    //    }
-    // return (SubscribableChannel) outputChannel;
-    // }
-
-    // private SubscribableChannel postProcessInboundChannelForFunction(MessageChannel inputChannel, ConsumerProperties consumerProperties)
-    // {
-    //    if (this.integrationFlowFunctionSupport != null
-    //            && (this.integrationFlowFunctionSupport.containsFunction(Consumer.class)
-    // || this.integrationFlowFunctionSupport
-    //                                .containsFunction(Function.class))) {
-    // DirectChannel actualInputChannel = new DirectChannel();
-    // if (inputChannel instanceof AbstractMessageChannel) {
-    // moveChannelInterceptors((AbstractMessageChannel) inputChannel,
-    //                        actualInputChannel);
-    // }
-
-    // this.integrationFlowFunctionSupport.andThenFunction(
-    //                    MessageChannelReactiveUtils.toPublisher(actualInputChannel),
-    //                    inputChannel, this.streamFunctionProperties);
-    // return actualInputChannel;
-    // }
-    // return (SubscribableChannel) inputChannel;
-    // }
-
-    // private void moveChannelInterceptors(AbstractMessageChannel existingMessageChannel,  AbstractMessageChannel actualMessageChannel)
-    // {
-    //    for (ChannelInterceptor channelInterceptor : existingMessageChannel
-    //            .getChannelInterceptors())
-    //    {
-    //        actualMessageChannel.addInterceptor(channelInterceptor);
-    //        existingMessageChannel.removeInterceptor(channelInterceptor);
-    //    }
-    // }
     public class ErrorInfrastructure
     {
         public ISubscribableChannel ErrorChannel { get; }
@@ -778,7 +690,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
                 catch (Exception e)
                 {
                     /*
-                     * debug() rather then error() since we don't know for sure that it
+                     * debug() rather than error() since we don't know for sure that it
                      * really is a message with embedded headers, it just meets the
                      * criteria in EmbeddedHeaderUtils.mayHaveEmbeddedHeaders().
                      */

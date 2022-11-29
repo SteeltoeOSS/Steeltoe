@@ -8,7 +8,7 @@ public class ServiceExpressionContextAccessor : IPropertyAccessor
 {
     public bool CanRead(IEvaluationContext context, object target, string name)
     {
-        Type serviceType = ServiceFactoryResolver.GetServiceNameAndType(context, name, out string lookupName);
+        (Type serviceType, string lookupName) = ServiceFactoryResolver.GetServiceNameAndType(context, name);
 
         if (serviceType != null)
         {
@@ -38,7 +38,7 @@ public class ServiceExpressionContextAccessor : IPropertyAccessor
             throw new InvalidOperationException($"{nameof(target)} must be of type {nameof(IServiceExpressionContext)}.");
         }
 
-        Type serviceType = ServiceFactoryResolver.GetServiceNameAndType(context, name, out string lookupName);
+        (Type serviceType, string lookupName) = ServiceFactoryResolver.GetServiceNameAndType(context, name);
 
         if (serviceType != null)
         {

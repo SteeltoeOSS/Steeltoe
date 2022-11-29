@@ -315,9 +315,6 @@ public class DiscoveryClient : IEurekaClient
             localRegionApps.ReturnUpInstancesOnly = ClientConfiguration.ShouldFilterOnlyUpInstances;
             LastGoodRegistryFetchTimestamp = DateTime.UtcNow.Ticks;
 
-            // Notify about cache refresh before updating the instance remote status
-            // onCacheRefreshed();
-
             //// Update remote status based on refreshed data held in the cache
             UpdateInstanceRemoteStatus();
 
@@ -571,7 +568,6 @@ public class DiscoveryClient : IEurekaClient
             ReturnUpInstancesOnly = ClientConfiguration.ShouldFilterOnlyUpInstances
         };
 
-        // TODO: add Enabled to IEurekaClientConfig
         var eurekaClientConfig = ClientConfiguration as EurekaClientConfiguration;
 
         if (!eurekaClientConfig.Enabled || (!ClientConfiguration.ShouldRegisterWithEureka && !ClientConfiguration.ShouldFetchRegistry))

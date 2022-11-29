@@ -4,9 +4,6 @@
 
 namespace Steeltoe.Stream.Binder;
 
-/// <summary>
-/// TODO: See if this can be made internal.
-/// </summary>
 public interface IBinderTypeRegistry
 {
     IBinderType Get(string name);

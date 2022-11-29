@@ -41,8 +41,6 @@ public static class StreamServicesExtensions
         services.TryAddSingleton<ConfigurableCompositeMessageConverter>();
         services.AddSingleton<ISmartMessageConverter>(p => p.GetRequiredService<ConfigurableCompositeMessageConverter>());
 
-        // SpelExpressionConverterConfiguration ?
-
         // messageHandlerFactoryMethod
         services.TryAddSingleton<IMessageHandlerMethodFactory, StreamMessageHandlerMethodFactory>();
 
@@ -73,8 +71,6 @@ public static class StreamServicesExtensions
         services.TryAddSingleton<DynamicDestinationsBindable>();
         services.AddSingleton<IBindable>(p => p.GetRequiredService<DynamicDestinationsBindable>());
 
-        // spelPropertyAccessorRegistrar
-
         // messageChannelStreamListenerResultAdapter
         services.TryAddSingleton<MessageChannelStreamListenerResultAdapter>();
         services.AddSingleton<IStreamListenerResultAdapter>(p => p.GetRequiredService<MessageChannelStreamListenerResultAdapter>());
@@ -86,14 +82,6 @@ public static class StreamServicesExtensions
         // inputBindingLifecycle
         services.TryAddSingleton<InputBindingLifecycle>();
         services.AddSingleton<ILifecycle>(p => p.GetRequiredService<InputBindingLifecycle>());
-
-        // contextStartAfterRefreshListener
-
-        // binderAwareRouterBeanPostProcessor
-
-        // appListener (TODO: This addNotPropagatedHeaders to AbstractReplyProducingMessageHandler(s) on context refresh
-
-        // defaultPoller in ChannelBindingAutoConfiguration ? (PollerMetadata) // DefaultPollerProperties
 
         // streamListenerAnnotationBeanPostProcessor
         services.TryAddSingleton<StreamListenerAttributeProcessor>();

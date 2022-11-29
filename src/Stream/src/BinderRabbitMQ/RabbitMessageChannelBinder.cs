@@ -106,11 +106,6 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         ServiceName = "rabbitBinder";
     }
 
-    public void Initialize()
-    {
-        // TODO: Add this to IBinder interface -> OnInit() code
-    }
-
     public RabbitConsumerOptions GetConsumerOptions(string channelName)
     {
         return BindingsOptions.GetRabbitConsumerOptions(channelName);
@@ -288,15 +283,6 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             listenerContainer.FailedDeclarationRetryInterval = properties.FailedDeclarationRetryInterval.Value;
         }
 
-        // if (getApplicationEventPublisher() != null)
-        // {
-        //    listenerContainer
-        //            .setApplicationEventPublisher(getApplicationEventPublisher());
-        // }
-        // else if (getApplicationContext() != null)
-        // {
-        //    listenerContainer.setApplicationEventPublisher(getApplicationContext());
-        // }
         ListenerContainerCustomizer?.Configure(listenerContainer, destination.Name, group);
 
         if (!string.IsNullOrEmpty(properties.ConsumerTagPrefix))
@@ -312,9 +298,6 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             ServiceName = $"inbound.{destinationName}"
         };
 
-        // DefaultAmqpHeaderMapper mapper = DefaultAmqpHeaderMapper.inboundMapper();
-        // mapper.setRequestHeaderNames(properties.getExtension().getHeaderPatterns());
-        // adapter.setHeaderMapper(mapper);
         ErrorInfrastructure errorInfrastructure = RegisterErrorInfrastructure(destination, group, consumerOptions, logger);
 
         if (consumerOptions.MaxAttempts > 1)

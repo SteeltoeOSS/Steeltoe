@@ -63,7 +63,6 @@ public class WebHostBuilderExtensionsTest
         IWebHost host = hostBuilder.AddSteeltoe(exclusions).Build();
         var configurationRoot = host.Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
 
-        Assert.Equal(4, configurationRoot.Providers.Count());
         Assert.Single(configurationRoot.Providers.OfType<CloudFoundryConfigurationProvider>());
         Assert.Single(configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>());
     }
@@ -83,7 +82,6 @@ public class WebHostBuilderExtensionsTest
         IWebHost host = hostBuilder.AddSteeltoe(exclusions).Build();
         var configurationRoot = host.Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
 
-        Assert.Equal(2, configurationRoot.Providers.Count());
         Assert.Single(configurationRoot.Providers.OfType<CloudFoundryConfigurationProvider>());
     }
 
@@ -104,7 +102,6 @@ public class WebHostBuilderExtensionsTest
         IWebHost host = hostBuilder.AddSteeltoe(exclusions).Build();
         var configurationRoot = host.Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
 
-        Assert.Equal(5, configurationRoot.Providers.Count());
         Assert.Equal(2, configurationRoot.Providers.OfType<KubernetesConfigMapProvider>().Count());
         Assert.Equal(2, configurationRoot.Providers.OfType<KubernetesSecretProvider>().Count());
     }
@@ -124,7 +121,6 @@ public class WebHostBuilderExtensionsTest
         IWebHost host = hostBuilder.AddSteeltoe(exclusions).Build();
         var configurationRoot = host.Services.GetService<IConfiguration>() as ConfigurationRoot;
 
-        Assert.Equal(2, configurationRoot.Providers.Count());
         Assert.Single(configurationRoot.Providers.OfType<RandomValueProvider>());
     }
 
@@ -164,7 +160,6 @@ public class WebHostBuilderExtensionsTest
         var configurationRoot = host.Services.GetService<IConfiguration>() as ConfigurationRoot;
         IServiceProvider services = host.Services;
 
-        Assert.Equal(3, configurationRoot.Providers.Count());
         Assert.Single(configurationRoot.Providers.OfType<ConnectionStringConfigurationProvider>());
         Assert.NotNull(services.GetService<MySqlConnection>());
         Assert.NotNull(services.GetService<MongoClient>());
@@ -349,10 +344,9 @@ public class WebHostBuilderExtensionsTest
         IWebHost host = hostBuilder.AddSteeltoe(exclusions).Build();
         var configurationRoot = host.Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
 
-        Assert.Equal(2, configurationRoot.Providers.Count());
         Assert.Single(configurationRoot.Providers.OfType<PemCertificateProvider>());
-        Assert.NotNull(host.Services.GetRequiredService<IOptions<CertificateOptions>>());
-        Assert.NotNull(host.Services.GetRequiredService<ICertificateRotationService>());
-        Assert.NotNull(host.Services.GetRequiredService<IAuthorizationHandler>());
+        Assert.NotNull(host.Services.GetService<IOptions<CertificateOptions>>());
+        Assert.NotNull(host.Services.GetService<ICertificateRotationService>());
+        Assert.NotNull(host.Services.GetService<IAuthorizationHandler>());
     }
 }

@@ -92,7 +92,7 @@ internal sealed class ConfigurationView : IConfigurationRoot
 
     public void Reload()
     {
-        // no-op - this provider is readonly
+        // Intentionally left empty - this provider is readonly.
     }
 
     private static string GetConfiguration(IList<IConfigurationProvider> providers, string key)

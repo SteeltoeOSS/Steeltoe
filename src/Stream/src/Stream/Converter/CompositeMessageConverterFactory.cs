@@ -71,7 +71,6 @@ public class CompositeMessageConverterFactory : IMessageConverterFactory
 
         AllRegistered.Add(applicationJsonConverter);
 
-        // TODO: TupleJsonConverter????
         AllRegistered.Add(new ObjectSupportingByteArrayMessageConverter());
         AllRegistered.Add(new ObjectStringMessageConverter());
     }

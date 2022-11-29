@@ -158,7 +158,6 @@ public static class TransactionSynchronizationManager
         sortedOrdered.Sort(OrderComparer.Instance);
         unordered.InsertRange(0, sortedOrdered.Select(o => o as ITransactionSynchronization));
 
-        // AnnotationAwareOrderComparator.sort(sortedSynchs);
         return unordered;
     }
 

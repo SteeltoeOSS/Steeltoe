@@ -221,23 +221,6 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public async Task CloudFoundrySecurityMiddleware_ReturnsError()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        var managementOptions = new CloudFoundryManagementOptions();
-
-        var options = new CloudFoundryEndpointOptions();
-        managementOptions.EndpointOptions.Add(options);
-        options.ApplicationId = "foo";
-        options.CloudFoundryApi = "http://localhost:9999/foo";
-        var middle = new CloudFoundrySecurityMiddleware(null, options, managementOptions);
-        HttpContext context = CreateRequest("Get", "/cloudfoundryapplication");
-        await middle.InvokeAsync(context);
-    }
-
     [Fact]
     public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalse()
     {
