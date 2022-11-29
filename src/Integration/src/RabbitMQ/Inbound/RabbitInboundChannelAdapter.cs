@@ -27,7 +27,6 @@ namespace Steeltoe.Integration.RabbitMQ.Inbound;
 public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
 {
     private static readonly AsyncLocal<IAttributeAccessor> AttributesHolder = new();
-    private readonly ILogger _logger;
 
     private AbstractMessageListenerContainer MessageListenerContainer { get; }
 
@@ -54,7 +53,6 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
                 nameof(listenerContainer));
         }
 
-        _logger = logger;
         listenerContainer.IsAutoStartup = true;
         MessageListenerContainer = listenerContainer;
         ErrorMessageStrategy = new RabbitMessageHeaderErrorMessageStrategy();

@@ -11,13 +11,10 @@ namespace Steeltoe.Management.Endpoint.Info;
 
 public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>>
 {
-    private readonly RequestDelegate _next;
-
     public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, IManagementOptions managementOptions,
         ILogger<InfoEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
-        _next = next;
     }
 
     public Task InvokeAsync(HttpContext context)

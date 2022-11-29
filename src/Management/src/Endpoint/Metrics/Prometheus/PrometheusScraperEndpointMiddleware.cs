@@ -11,13 +11,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Prometheus;
 
 public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
 {
-    private readonly RequestDelegate _next;
-
     public PrometheusScraperEndpointMiddleware(RequestDelegate next, PrometheusScraperEndpoint endpoint, IManagementOptions managementOptions,
         ILogger<PrometheusScraperEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
-        _next = next;
     }
 
     public Task InvokeAsync(HttpContext context)

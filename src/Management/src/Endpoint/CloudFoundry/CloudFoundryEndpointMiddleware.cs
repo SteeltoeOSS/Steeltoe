@@ -17,15 +17,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 /// </summary>
 public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 {
-    private readonly ICloudFoundryOptions _options;
-    private readonly RequestDelegate _next;
-
     public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IManagementOptions managementOptions,
         ILogger<CloudFoundryEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
-        _next = next;
-        _options = endpoint.Options as ICloudFoundryOptions;
     }
 
     public Task InvokeAsync(HttpContext context)

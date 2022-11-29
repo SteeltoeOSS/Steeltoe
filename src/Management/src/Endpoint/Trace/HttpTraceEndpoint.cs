@@ -9,7 +9,6 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 public class HttpTraceEndpoint : AbstractEndpoint<HttpTraceResult>, IHttpTraceEndpoint
 {
-    private readonly ILogger<HttpTraceEndpoint> _logger;
     private readonly IHttpTraceRepository _traceRepo;
 
     public new ITraceOptions Options => options as ITraceOptions;
@@ -20,7 +19,6 @@ public class HttpTraceEndpoint : AbstractEndpoint<HttpTraceResult>, IHttpTraceEn
         ArgumentGuard.NotNull(traceRepository);
 
         _traceRepo = traceRepository;
-        _logger = logger;
     }
 
     public override HttpTraceResult Invoke()

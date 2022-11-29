@@ -650,7 +650,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
         try
         {
-            boundHere = HandleChannelAwareTransaction(channel, out channelToUse, out resourceHolder);
+            (boundHere, channelToUse, resourceHolder) = HandleChannelAwareTransaction(channel);
 
             // Actually invoke the message listener...
             try
@@ -676,7 +676,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
         try
         {
-            boundHere = HandleChannelAwareTransaction(channel, out channelToUse, out resourceHolder);
+            (boundHere, channelToUse, resourceHolder) = HandleChannelAwareTransaction(channel);
 
             // Actually invoke the message listener...
             try
@@ -720,10 +720,10 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
     }
 
-    protected virtual bool HandleChannelAwareTransaction(R.IModel channel, out R.IModel channelToUse, out RabbitResourceHolder resourceHolder)
+    protected virtual (bool BoundHere, R.IModel ChannelToUse, RabbitResourceHolder ResourceHolder) HandleChannelAwareTransaction(R.IModel channel)
     {
-        resourceHolder = null;
-        channelToUse = channel;
+        RabbitResourceHolder resourceHolder = null;
+        R.IModel channelToUse = channel;
         bool boundHere = false;
 
         if (!ExposeListenerChannel)
@@ -759,7 +759,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             }
         }
 
-        return boundHere;
+        return (boundHere, channelToUse, resourceHolder);
     }
 
     protected virtual ListenerExecutionFailedException WrapToListenerExecutionFailedExceptionIfNeeded(Exception exception, List<IMessage> data)

@@ -236,10 +236,11 @@ public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecuta
     {
         Setup();
 
-        if (PutInCacheIfAbsent(tcs.Task, out Task<TResult> fromCache))
+        (bool isCached, Task<TResult> cachedValue) = PutInCacheIfAbsent(tcs.Task);
+
+        if (isCached)
         {
-            Task<TResult> task = fromCache;
-            return task;
+            return cachedValue;
         }
 
         ApplyHystrixSemantics();

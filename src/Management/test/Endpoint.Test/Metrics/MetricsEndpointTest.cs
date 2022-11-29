@@ -142,7 +142,7 @@ public class MetricsEndpointTest : BaseTest
         Counter<double> counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test7");
         counter.Add(100);
 
-        ep.GetMetricsCollection(out MetricsCollection<List<MetricSample>> measurements, out _);
+        (MetricsCollection<List<MetricSample>> measurements, _) = ep.GetMetrics();
         Assert.NotNull(measurements);
         Assert.Single(measurements.Values);
         MetricSample sample = measurements.Values.FirstOrDefault()[0];
@@ -181,7 +181,7 @@ public class MetricsEndpointTest : BaseTest
         counter.Add(1, v1Tags.AsReadonlySpan());
         counter.Add(1, v2Tags.AsReadonlySpan());
 
-        ep.GetMetricsCollection(out _, out MetricsCollection<List<MetricTag>> tagDictionary);
+        (_, MetricsCollection<List<MetricTag>> tagDictionary) = ep.GetMetrics();
 
         Assert.NotNull(tagDictionary);
         Assert.Single(tagDictionary.Values);
@@ -209,7 +209,7 @@ public class MetricsEndpointTest : BaseTest
 
         counter2.Add(1);
 
-        ep.GetMetricsCollection(out _, out tagDictionary);
+        (_, tagDictionary) = ep.GetMetrics();
 
         Assert.NotNull(tagDictionary);
         Assert.Single(tagDictionary.Values);
@@ -287,7 +287,7 @@ public class MetricsEndpointTest : BaseTest
             testMeasure.Record(i, context4.AsReadonlySpan());
         }
 
-        ep.GetMetricsCollection(out MetricsCollection<List<MetricSample>> measurements, out _);
+        (MetricsCollection<List<MetricSample>> measurements, _) = ep.GetMetrics();
         Assert.NotNull(measurements);
         Assert.Single(measurements);
 
