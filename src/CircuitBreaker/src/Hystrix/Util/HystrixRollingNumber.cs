@@ -454,8 +454,6 @@ public class HystrixRollingNumber
 
         public Bucket Last => PeekLast;
 
-        // the size can also be worked out each time as:
-        // return (tail + data.length() - head) % data.length();
         public int Size => _state.Value.Size;
 
         public Bucket PeekLast => _state.Value.Tail;
@@ -464,7 +462,7 @@ public class HystrixRollingNumber
 
         public BucketCircularArray(int size)
         {
-            var buckets = new AtomicReferenceArray<Bucket>(size + 1); // + 1 as extra room for the add/remove;
+            var buckets = new AtomicReferenceArray<Bucket>(size + 1); // + 1 as extra room for the add/remove
             _state = new AtomicReference<ListState>(new ListState(this, buckets, 0, 0));
             _dataLength = buckets.Length;
             _numBuckets = size;

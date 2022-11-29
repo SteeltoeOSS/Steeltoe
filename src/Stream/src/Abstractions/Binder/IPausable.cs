@@ -6,9 +6,6 @@ using Steeltoe.Common.Lifecycle;
 
 namespace Steeltoe.Stream.Binder;
 
-/// <summary>
-/// TODO: IPausable is a integration type.
-/// </summary>
 public interface IPausable : ILifecycle
 {
     Task PauseAsync();

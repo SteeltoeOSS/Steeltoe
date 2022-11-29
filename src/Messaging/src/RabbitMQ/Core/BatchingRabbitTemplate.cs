@@ -17,7 +17,6 @@ public class BatchingRabbitTemplate : RabbitTemplate
     private readonly object _batchLock = new();
     private CancellationTokenSource _cancellationTokenSource;
     private Task _scheduledTask;
-    private int _count;
 
     public BatchingRabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter,
         IBatchingStrategy batchingStrategy, ILogger logger = null)
@@ -61,8 +60,6 @@ public class BatchingRabbitTemplate : RabbitTemplate
     {
         lock (_batchLock)
         {
-            _count++;
-
             if (correlationData != null)
             {
                 Logger?.LogDebug("Cannot use batching with correlation data");
@@ -70,10 +67,6 @@ public class BatchingRabbitTemplate : RabbitTemplate
             }
             else
             {
-                // if (_scheduledTask != null)
-                // {
-                //    _cancellationTokenSource.Cancel(false);
-                // }
                 MessageBatch? batch = _batchingStrategy.AddToBatch(exchange, routingKey, message);
 
                 if (batch != null)

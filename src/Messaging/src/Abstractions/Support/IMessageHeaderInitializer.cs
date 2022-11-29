@@ -4,9 +4,6 @@
 
 namespace Steeltoe.Messaging.Support;
 
-/// <summary>
-/// TODO:  Try to make this internal.
-/// </summary>
 public interface IMessageHeaderInitializer
 {
     void InitHeaders(IMessageHeaderAccessor headerAccessor);

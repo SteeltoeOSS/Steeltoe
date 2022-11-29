@@ -131,16 +131,16 @@ public class UriInfo
 
     private Uri MakeUri(string uriString)
     {
+        if (uriString.StartsWith("jdbc", StringComparison.Ordinal) || uriString.Contains(';'))
+        {
+            uriString = ConvertJdbcToUri(uriString);
+        }
+
         try
         {
-            if (uriString.StartsWith("jdbc", StringComparison.Ordinal) || uriString.Contains(';'))
-            {
-                ConvertJdbcToUri(ref uriString);
-            }
-
             return new Uri(uriString);
         }
-        catch (Exception)
+        catch (UriFormatException)
         {
             // URI parsing will fail if multiple (comma separated) hosts were provided...
             if (uriString.Contains(','))
@@ -167,7 +167,7 @@ public class UriInfo
         }
     }
 
-    private void ConvertJdbcToUri(ref string uriString)
+    private string ConvertJdbcToUri(string uriString)
     {
         uriString = uriString.Replace("jdbc:", string.Empty, StringComparison.Ordinal).Replace(';', '&');
 
@@ -197,6 +197,8 @@ public class UriInfo
                 uriString = uriString.Substring(0, firstAmp) + _questionMark[0] + uriString.Substring(firstAmp + 1, uriString.Length - firstAmp - 1);
             }
         }
+
+        return uriString;
     }
 
     private string GetPath(string pathAndQuery)

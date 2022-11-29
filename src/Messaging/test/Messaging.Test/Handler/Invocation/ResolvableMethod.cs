@@ -151,18 +151,6 @@ internal sealed class ResolvableMethod
             return this;
         }
 
-        // public Builder<T> returning(Class<?> returnType, ResolvableType generic, ResolvableType... generics)
-        // {
-        //    return returning(toResolvableType(returnType, generic, generics));
-        // }
-
-        // public Builder<T> returning(ResolvableType returnType)
-        // {
-        //    String expected = returnType.toString();
-        //    String message = "returnType=" + expected;
-        //    addFilter(message, m->expected.equals(ResolvableType.forMethodReturnType(m).toString()));
-        //    return this;
-        // }
         public ResolvableMethod Build()
         {
             List<MethodInfo> methods = _objectClass.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static)
@@ -180,21 +168,6 @@ internal sealed class ResolvableMethod
 
             return new ResolvableMethod(methods[0]);
         }
-
-        // private String formatMethods(Set<Method> methods)
-        // {
-        //    return "\nMatched:\n" + methods.stream()
-        //            .map(Method::toGenericString).collect(joining(",\n\t", "[\n\t", "\n]"));
-        // }
-
-        // public ResolvableMethod mockCall(Consumer<T> invoker)
-        // {
-        //    MethodInvocationInterceptor interceptor = new MethodInvocationInterceptor();
-        //    T proxy = initProxy(this.objectClass, interceptor);
-        //    invoker.accept(proxy);
-        //    Method method = interceptor.getInvokedMethod();
-        //    return new ResolvableMethod(method);
-        // }
 
         // Build & resolve shortcuts...
         public MethodInfo ResolveMethod()
@@ -217,30 +190,6 @@ internal sealed class ResolvableMethod
             return Returning(returnType).Build().ReturnType;
         }
 
-        // public MethodParameter ResolveReturnType(Type returnType, ResolvableType generic,
-        //        ResolvableType... generics)
-        // {
-
-        // return returning(returnType, generic, generics).build().returnType();
-        // }
-
-        // public MethodParameter resolveReturnType(ResolvableType returnType)
-        // {
-        //    return returning(returnType).build().returnType();
-        // }
-
-        // public String toString()
-        //        {
-        //            return "ResolvableMethod.Builder[\n" +
-        //                    "\tobjectClass = " + this.objectClass.getName() + ",\n" +
-        //                    "\tfilters = " + formatFilters() + "\n]";
-        //        }
-
-        // private String formatFilters()
-        //        {
-        //            return this.filters.stream().map(Object::toString)
-        //                    .collect(joining(",\n\t\t", "[\n\t\t", "\n\t]"));
-        //        }
         private void AddFilter(string message, Func<MethodInfo, bool> func)
         {
             _filters.Add(new LabeledPredicate<MethodInfo>(message, func));
@@ -328,16 +277,6 @@ internal sealed class ResolvableMethod
             return Arg();
         }
 
-        // public ParameterInfo Arg(Type type, ResolvableType generic, ResolvableType... generics)
-        // {
-        //    return arg(toResolvableType(type, generic, generics));
-        // }
-
-        // public MethodParameter Arg(ResolvableType type)
-        // {
-        //    this.filters.add(p->type.toString().equals(ResolvableType.forMethodParameter(p).toString()));
-        //    return arg();
-        // }
         public ParameterInfo Arg()
         {
             List<ParameterInfo> matches = ApplyFilters();
@@ -363,7 +302,6 @@ internal sealed class ResolvableMethod
             {
                 ParameterInfo param = _resolvable.Method.GetParameters()[i];
 
-                // param.initParameterNameDiscovery(nameDiscoverer);
                 bool allFiltersMatch = true;
 
                 foreach (IPredicate<ParameterInfo> p in _filters)

@@ -309,7 +309,6 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
         object replyObject = converter.FromMessage(amqpReplyMessage, null);
         IMessageBuilder builder = PrepareMessageBuilder(replyObject);
 
-        // var headers = getHeaderMapper().toHeadersFromReply(amqpReplyMessage.getMessageProperties());
         builder.CopyHeadersIfAbsent(amqpReplyMessage.Headers);
         return builder;
     }
@@ -320,7 +319,6 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
         object returnedObject = converter.FromMessage(message, null);
         IMessageBuilder builder = PrepareMessageBuilder(returnedObject);
 
-        // TODO: Map < String, ?> headers = getHeaderMapper().toHeadersFromReply(message.getMessageProperties());
         if (ErrorMessageStrategy == null)
         {
             builder.CopyHeadersIfAbsent(message.Headers).SetHeader(RabbitMessageHeaders.ReturnReplyCode, replyCode)

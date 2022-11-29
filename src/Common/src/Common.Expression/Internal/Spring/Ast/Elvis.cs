@@ -95,11 +95,11 @@ public class Elvis : SpelNode
         gen.Emit(OpCodes.Ldc_I4_0);
         gen.Emit(OpCodes.Stloc, ifResult);
 
-        // Fall thru to check if results;
+        // Fall thru to check if results
         // Mark Check if Results
         gen.MarkLabel(loadCheckIfResults);
 
-        // Load if results;
+        // Load if results
         gen.Emit(OpCodes.Ldloc, ifResult);
         Label callChild2 = gen.DefineLabel();
 

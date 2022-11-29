@@ -13,12 +13,6 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 using Xunit;
 
-// TODO: Fix violations and remove the next suppression, by either:
-// - Removing the try with empty catch block
-// - Add the next comment in the empty catch block: // Intentionally left empty.
-// While you're at it, catch specific exceptions (use `when` condition to narrow down) instead of System.Exception.
-#pragma warning disable S108 // Nested blocks of code should not be left empty
-
 namespace Steeltoe.Integration.Test.Channel;
 
 public class MixedDispatcherConfigurationScenarioTest
@@ -73,6 +67,7 @@ public class MixedDispatcherConfigurationScenarioTest
         }
         catch (Exception)
         {
+            // Intentionally left empty.
         }
 
         try
@@ -81,6 +76,7 @@ public class MixedDispatcherConfigurationScenarioTest
         }
         catch (Exception)
         {
+            // Intentionally left empty.
         }
 
         _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(2));
@@ -201,6 +197,7 @@ public class MixedDispatcherConfigurationScenarioTest
         }
         catch (Exception)
         {
+            // Intentionally left empty.
         }
 
         _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
@@ -213,6 +210,7 @@ public class MixedDispatcherConfigurationScenarioTest
         }
         catch (Exception)
         {
+            // Intentionally left empty.
         }
 
         _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
@@ -225,6 +223,7 @@ public class MixedDispatcherConfigurationScenarioTest
         }
         catch (Exception)
         {
+            // Intentionally left empty.
         }
 
         _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
@@ -366,7 +365,7 @@ public class MixedDispatcherConfigurationScenarioTest
         }
         catch (Exception)
         {
-            /* ignore */
+            // Intentionally left empty.
         }
 
         _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
@@ -378,7 +377,7 @@ public class MixedDispatcherConfigurationScenarioTest
         }
         catch (Exception)
         {
-            /* ignore */
+            // Intentionally left empty.
         }
 
         _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(2));

@@ -16,7 +16,6 @@ public class HystrixDashboardStream
     // The data emission interval is looked up on startup only
     private static readonly HystrixDashboardStream Instance = new(DefaultDashboardIntervalInMilliseconds);
 
-    private readonly int _delayInMs;
     private readonly IObservable<DashboardData> _singleSource;
     private readonly AtomicBoolean _isSourceCurrentlySubscribed = new(false);
 
@@ -24,8 +23,6 @@ public class HystrixDashboardStream
 
     private HystrixDashboardStream(int delayInMs)
     {
-        _delayInMs = delayInMs;
-
         _singleSource = Observable.Interval(TimeSpan.FromMilliseconds(delayInMs)).Map(_ =>
                 new DashboardData(HystrixCommandMetrics.GetInstances(), HystrixThreadPoolMetrics.GetInstances(), HystrixCollapserMetrics.GetInstances()))
             .OnSubscribe(() =>

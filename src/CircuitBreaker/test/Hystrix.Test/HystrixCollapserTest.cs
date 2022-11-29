@@ -238,24 +238,6 @@ public class HystrixCollapserTest : HystrixTestBase
         Assert.Equal(num - 1, numErrors.Value);
     }
 
-    // public static IObservable<TSource> OnSubscribe<TSource>(IObservable<TSource> source)
-    // {
-    //    return Observable.Create<TSource>(o =>
-    //    {
-    //        var d = source.Subscribe(o);
-    //        TestSubscriber<TSource> sub = o as TestSubscriber<TSource>;
-    //        if (sub != null)
-    //        {
-    //            return Disposable.Create(() =>
-    //            {
-    //                d.Dispose();
-    //                sub.Dispose();
-    //            });
-    //        }
-    //        return d;
-    //    });
-
-    // }
     [Fact]
     public void TestUnsubscribeFromSomeDuplicateArgsDoesNotRemoveFromBatch()
     {
@@ -322,7 +304,6 @@ public class HystrixCollapserTest : HystrixTestBase
         // kill the first
         cts1.Cancel();
 
-        // response1.cancel(true);
         timer.IncrementTime(10); // let time pass that equals the default delay/period
 
         // the first is cancelled so should return null
@@ -441,7 +422,6 @@ public class HystrixCollapserTest : HystrixTestBase
         catch (Exception)
         {
             // what we expect
-            // output.WriteLine(e.ToString());
         }
 
         try
@@ -452,7 +432,6 @@ public class HystrixCollapserTest : HystrixTestBase
         catch (Exception)
         {
             // what we expect
-            // output.WriteLine(e.ToString());
         }
 
         Assert.Equal(0, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
@@ -475,7 +454,6 @@ public class HystrixCollapserTest : HystrixTestBase
         catch (Exception)
         {
             // what we expect
-            // output.WriteLine(e.ToString());
         }
 
         try
@@ -486,7 +464,6 @@ public class HystrixCollapserTest : HystrixTestBase
         catch (Exception)
         {
             // what we expect
-            // output.WriteLine(e.ToString());
         }
 
         // the batch failed so no executions
@@ -1358,7 +1335,6 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestRequestThenCacheHitAndOriginalUnsubscribed()
     {
-        // TODO:
         var timer = new TestCollapserTimer(_output);
         HystrixCollapser<List<string>, string, string> collapser1 = new SuccessfulCacheableCollapsedCommand(_output, timer, "foo", true);
         IObservable<string> response1 = collapser1.Observe();

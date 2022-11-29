@@ -92,7 +92,7 @@ public class HystrixRollingPercentile
             }
             catch (Exception)
             {
-                // logger.error("Failed to add value: " + v, e);
+                // Intentionally left empty.
             }
         }
     }
@@ -205,7 +205,6 @@ public class HystrixRollingPercentile
                             Reset();
 
                             // recursively call getCurrentBucket which will create a new bucket and return it
-                            // return GetCurrentBucket();
                             var newBucket = new Bucket(currentTime, BucketDataLength);
                             Buckets.AddLast(newBucket);
                             return newBucket;
@@ -282,10 +281,6 @@ public class HystrixRollingPercentile
             {
                 /* We just wrap around the beginning and over-write if we go past 'dataLength' as that will effectively cause us to "sample" the most recent data */
                 List[Index.GetAndIncrement() % DataLength] = l;
-
-                // TODO Alternative to AtomicInteger? The getAndIncrement may be a source of contention on high throughput circuits on large multi-core systems.
-                // LongAdder isn't suited to this as it is not consistent. Perhaps a different data structure that doesn't need indexed adds?
-                // A threadlocal data storage that only aggregates when fetched would be ideal. Similar to LongAdder except for accumulating lists of data.
             }
         }
     }
@@ -394,8 +389,6 @@ public class HystrixRollingPercentile
             int iLow = (int)Math.Floor(rank);
             int iHigh = (int)Math.Ceiling(rank);
 
-            // assert 0 <= iLow && iLow <= rank && rank <= iHigh && iHigh <= length;
-            // assert(iHigh - iLow) <= 1;
             if (iHigh >= _length)
             {
                 // Another edge case
@@ -418,8 +411,6 @@ public class HystrixRollingPercentile
         private readonly int _dataLength; // we don't resize, we always stay the same, so remember this
         private readonly int _numBuckets;
 
-        // the size can also be worked out each time as:
-        // return (tail + data.length() - head) % data.length();
         public int Size => _state.Value.Size;
 
         public Bucket PeekLast => _state.Value.Tail;
@@ -428,7 +419,7 @@ public class HystrixRollingPercentile
 
         public BucketCircularArray(int size)
         {
-            var buckets = new AtomicReferenceArray<Bucket>(size + 1); // + 1 as extra room for the add/remove;
+            var buckets = new AtomicReferenceArray<Bucket>(size + 1); // + 1 as extra room for the add/remove
             _state = new AtomicReference<ListState>(new ListState(this, buckets, 0, 0));
             _dataLength = buckets.Length;
             _numBuckets = size;

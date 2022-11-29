@@ -88,8 +88,6 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var context = new StandardEvaluationContext(new Spr5899Class());
 
-        // Expression expr = new SpelExpressionParser().ParseRaw("T(java.util.Map$Entry)");
-        // Assert.Equal(typeof(), expr.GetValue(context)).isEqualTo(typeof(Map.Entry));
         IExpression expr = new SpelExpressionParser().ParseRaw($"T({typeof(SpelReproTests).FullName}$Outer$Inner).Run()");
         Assert.Equal(12, expr.GetValue(context));
 
@@ -460,10 +458,6 @@ public class SpelReproTests : AbstractExpressionTests
         var context = new StandardEvaluationContext(map);
         var parser = new SpelExpressionParser();
 
-        // var el1 = "#root['value'].get('givenName')";
-        // var exp = parser.ParseExpression(el1);
-        // var evaluated = exp.GetValue(context);
-        // Assert.Equal("Arthur", evaluated);
         const string el2 = "#root['value']['givenName']";
         IExpression exp = parser.ParseExpression(el2);
         object evaluated = exp.GetValue(context);
@@ -602,97 +596,6 @@ public class SpelReproTests : AbstractExpressionTests
 
         int compiler = target.GetX(integerValue);
         Assert.Equal(compiler, actual);
-    }
-
-    // [Fact]
-    // public void VarargsAgainstProxy_SPR16122()
-    // {
-    //    var parser = new SpelExpressionParser();
-    //    var expr = parser.ParseExpression("Process('a', 'b')");
-
-    // VarargsReceiver receiver = new VarargsReceiver();
-    //    VarargsInterface proxy = (VarargsInterface)Proxy.newProxyInstance(
-    //            getClass().getClassLoader(), new Class<?>[] { typeof(VarargsInterface) },
-    //        (proxy1, method, args) => method.invoke(receiver, args));
-
-    // Assert.Equal(expr.GetValue(new StandardEvaluationContext(receiver))).isEqualTo("OK");
-    //    Assert.Equal(expr.GetValue(new StandardEvaluationContext(proxy))).isEqualTo("OK");
-    // }
-
-    // [Fact]
-    // public void TestCompiledExpressionForProxy_SPR16191()
-    // {
-    //    SpelExpressionParser expressionParser =
-    //            new SpelExpressionParser(new SpelParserConfiguration(SpelCompilerMode.IMMEDIATE, null));
-    //    Expression expression = expressionParser.ParseExpression("#target.process(#root)");
-
-    // VarargsReceiver receiver = new VarargsReceiver();
-    //    VarargsInterface proxy = (VarargsInterface)Proxy.newProxyInstance(
-    //            getClass().getClassLoader(), new Class<?>[] { typeof(VarargsInterface) },
-    //        (proxy1, method, args)->method.invoke(receiver, args));
-
-    // StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
-    //    evaluationContext.SetVariable("target", proxy);
-
-    // String result = expression.GetValue(evaluationContext, "foo", typeof(String));
-    //    result = expression.GetValue(evaluationContext, "foo", typeof(String));
-    //    Assert.Equal(result).isEqualTo("OK");
-    // }
-
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public void VarargsAndPrimitives_SPR8174()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        var emptyEvalContext = new StandardEvaluationContext();
-
-        var args = new List<Type>
-        {
-            typeof(long)
-        };
-
-        var ru = new ReflectionUtil<int>();
-        IMethodExecutor me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "MethodToCall", args);
-        me.Execute(emptyEvalContext, ru, 1);
-
-        args[0] = typeof(int);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, 45);
-
-        args[0] = typeof(float);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, 45f);
-
-        args[0] = typeof(double);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, 23d);
-
-        args[0] = typeof(short);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, (short)23);
-
-        args[0] = typeof(long);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, 23L);
-
-        args[0] = typeof(char);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, (char)65);
-
-        args[0] = typeof(byte);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, (byte)23);
-
-        args[0] = typeof(bool);
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Foo", args);
-        me.Execute(emptyEvalContext, ru, true);
-
-        // trickier:
-        args[0] = typeof(object);
-        args.Add(typeof(float));
-        me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "Bar", args);
-        me.Execute(emptyEvalContext, ru, 12, 23f);
     }
 
     [Fact]
@@ -1153,29 +1056,6 @@ public class SpelReproTests : AbstractExpressionTests
         DoTestSpr10146("|foo", "EL1069E: Missing expected character ''|''");
     }
 
-    // TODO: support values in interfaces
-    // [Fact]
-    // public void SPR10125()
-    // {
-    //    var context = new StandardEvaluationContext();
-    //    var fromInterface = parser.ParseExpression("T(" + typeof(StaticFinalImpl1).FullName.Replace('+', '$') + ").VALUE").GetValue<string>(context);
-    //    Assert.Equal("interfaceValue", fromInterface);
-    //    var fromClass = parser.ParseExpression("T(" + typeof(StaticFinalImpl2).FullName.Replace('+', '$') + ").VALUE").GetValue<string>(context);
-    //    Assert.Equal("interfaceValue", fromClass);
-    // }
-
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public void SPR10210()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        var context = new StandardEvaluationContext();
-        context.SetVariable("bridgeExample", new SPR10210.D());
-        IExpression parseExpression = Parser.ParseExpression("#bridgeExample.BridgeMethod()");
-        parseExpression.GetValue(context);
-    }
-
     [Fact]
     public void SPR10328()
     {
@@ -1288,7 +1168,6 @@ public class SpelReproTests : AbstractExpressionTests
             "two"
         };
 
-        // coll = Collections.unmodifiableCollection(coll);
         var parser = new SpelExpressionParser();
         IExpression expr = parser.ParseExpression("new System.Collections.ArrayList(#root)");
         object value = expr.GetValue(coll);
@@ -1376,26 +1255,6 @@ public class SpelReproTests : AbstractExpressionTests
         Assert.Empty((IList)value);
     }
 
-    // TODO: Would be nice to support generic methods.
-    // [Fact]
-    // public void SPR12803()
-    // {
-    //    var sec = new StandardEvaluationContext();
-    //    sec.SetVariable("iterable", new ArrayList());
-    //    var parser = new SpelExpressionParser();
-    //    var expression = parser.ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests.FooLists).NewArrayList(#iterable)");
-    //    Assert.True(expression.GetValue(sec) is ArrayList);
-    // }
-
-    // TODO: Would be nice to support generic methods.
-    // [Fact]
-
-    // public void SPR11494()
-    // {
-    //    var exp = new SpelExpressionParser().ParseExpression("T(System.Linq.Enumerable).ToList(new String[] {'a', 'b'})");
-    //    var list = (ArrayList)exp.GetValue();
-    //    Assert.Equal(2, list.Count);
-    // }
     [Fact]
     public void SPR12808()
     {

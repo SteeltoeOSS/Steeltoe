@@ -58,7 +58,7 @@ public class SteeltoePrometheusExporter : MetricsExporter
                     // 1. we have many metrics to be exported - in this case we probably want
                     //    to put some upper limit and allow the user to configure it.
                     // 2. we got an IndexOutOfRangeException which was triggered by some other
-                    //    code instead of the buffer[cursor++] - in this case we should give up
+                    //    code - in this case we should give up
                     //    at certain point rather than allocating like crazy.
                     if (bufferSize > 100 * 1024 * 1024)
                     {

@@ -122,7 +122,7 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
     private int SkipToCorrectEndSuffix(string suffix, string expressionString, int afterPrefixIndex)
     {
         // Chew on the expression text - relying on the rules:
-        // brackets must be in pairs: () [] {}
+        // brackets must be in pairs
         // string literals are "..." or '...' and these may contain unmatched brackets
         int pos = afterPrefixIndex;
         int maxLength = expressionString.Length;

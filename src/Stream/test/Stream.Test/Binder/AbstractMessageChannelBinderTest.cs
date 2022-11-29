@@ -39,7 +39,6 @@ public class AbstractMessageChannelBinderTest : AbstractTest
 
         consumerProperties.PostProcess("testbinding");
 
-        // IBinding<IMessageChannel> consumerBinding = await binder.BindConsumer("foo", "fooGroup",  new DirectChannel(serviceProvider),  consumerProperties);
         IBinding consumerBinding =
             binder.BindConsumer("foo", "fooGroup", new DirectChannel(_serviceProvider.GetService<IApplicationContext>()), consumerProperties);
 
@@ -87,7 +86,6 @@ public class AbstractMessageChannelBinderTest : AbstractTest
 
         producerProps.PostProcess("testbinding");
 
-        // IBinding<IMessageChannel> producerBinding = await binder.BindProducer("bar", new DirectChannel(serviceProvider), producerProps);
         IBinding producerBinding = binder.BindProducer("bar", new DirectChannel(_serviceProvider.GetService<IApplicationContext>()), producerProps);
         Assert.True(registry.ContainsService<IMessageChannel>("bar.errors"));
         Assert.True(registry.ContainsService<IMessageHandler>("bar.errors.bridge"));

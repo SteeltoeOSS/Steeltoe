@@ -173,7 +173,6 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                             }
                             catch (Exception mapException)
                             {
-                                // logger.debug("Exception mapping responses to requests.", e);
                                 foreach (CollapsedRequest<TRequestResponse, TRequestArgument> request in args)
                                 {
                                     try
@@ -184,8 +183,7 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                                     {
                                         // if we have partial responses set in mapResponseToRequests
                                         // then we may get InvalidOperationException as we loop over them
-                                        // so we'll log but continue to the rest
-                                        // logger.error("Partial success of 'mapResponseToRequests' resulted in InvalidOperationException while setting Exception. Continuing ... ", e2);
+                                        // so we'll continue to the rest
                                     }
                                 }
                             }
@@ -203,13 +201,12 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                                 }
                                 catch (InvalidOperationException)
                                 {
-                                    // logger.debug("Partial success of 'mapResponseToRequests' resulted in InvalidOperationException while setting 'No response set' Exception. Continuing ... ", e2);
+                                    // Intentionally left empty.
                                 }
                             }
                         }
                         catch (Exception e)
                         {
-                            // logger.error("Exception while creating and queueing command with batch.", e);
                             // if a failure occurs we want to pass that exception to all of the Futures that we've returned
                             foreach (CollapsedRequest<TRequestResponse, TRequestArgument> request in shardRequests
                                 .OfType<CollapsedRequest<TRequestResponse, TRequestArgument>>())
@@ -220,7 +217,7 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                                 }
                                 catch (InvalidOperationException)
                                 {
-                                    // logger.debug("Failed trying to setException on CollapsedRequest", e2);
+                                    // Intentionally left empty.
                                 }
                             }
                         }
@@ -229,7 +226,6 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
             }
             catch (Exception e)
             {
-                // logger.error("Exception while sharding requests.", e);
                 // same error handling as we do around the shards, but this is a wider net in case the shardRequest method fails
                 foreach (ICollapsedRequest<TRequestResponse, TRequestArgument> request in args)
                 {
@@ -239,7 +235,7 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                     }
                     catch (InvalidOperationException)
                     {
-                        // logger.debug("Failed trying to setException on CollapsedRequest", e2);
+                        // Intentionally left empty.
                     }
                 }
             }
@@ -263,7 +259,6 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                 // if we win the 'start' and once we have the lock we can now shut it down otherwise another thread will finish executing this batch
                 if (_argumentMap.Count > 0)
                 {
-                    // logger.warn("Requests still exist in queue but will not be executed due to RequestCollapser shutdown: " + argumentMap.size(), new InvalidOperationException());
                     /*
                      * In the event that there is a concurrency bug or thread scheduling prevents the timer from ticking we need to handle this so the Future.get() calls do not block.
                      *
@@ -279,11 +274,10 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                         }
                         catch (Exception)
                         {
-                            // logger.debug("Failed to setException on CollapsedRequestFutureImpl instances.", e);
+                            // Intentionally left empty.
                         }
 
                         // https://github.com/Netflix/Hystrix/issues/78 Include more info when collapsed requests remain in queue
-                        // logger.warn("Request still in queue but not be executed due to RequestCollapser shutdown. Argument => " + request.getArgument() + "   Request Object => " + request, new InvalidOperationException());
                     }
                 }
             }

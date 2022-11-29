@@ -4,9 +4,6 @@
 
 namespace Steeltoe.Stream.Configuration;
 
-/// <summary>
-/// TODO: Look at making internal.
-/// </summary>
 public interface IListenerContainerCustomizer
 {
     void Configure(object container, string destinationName, string group);

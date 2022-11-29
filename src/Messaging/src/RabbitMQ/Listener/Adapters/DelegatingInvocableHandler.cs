@@ -163,7 +163,6 @@ public class DelegatingInvocableHandler
 
         for (int i = 0; i < parameterAnnotations.Length; i++)
         {
-            // MethodParameter methodParameter = new MethodParameter(method, i);
             if ((parameterAnnotations[i].Length == 0 || !parameterAnnotations[i].Any(attr => attr is HeaderAttribute)) &&
                 parameters[i].ParameterType.IsAssignableFrom(payloadType))
             {

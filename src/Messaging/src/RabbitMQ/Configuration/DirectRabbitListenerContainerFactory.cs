@@ -101,22 +101,6 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
         }
 
         MissingQueuesFatal = containerOptions.MissingQueuesFatal;
-        RabbitOptions.ListenerRetryOptions retry = containerOptions.Retry;
-
-        if (retry.Enabled)
-        {
-            // RetryInterceptorBuilder <?, ?> builder = (retryConfig.isStateless())
-            //         ? RetryInterceptorBuilder.stateless()
-            //         : RetryInterceptorBuilder.stateful();
-            // RetryTemplate retryTemplate = new RetryTemplateFactory(
-            //        this.retryTemplateCustomizers).createRetryTemplate(retryConfig,
-            //                RabbitRetryTemplateCustomizer.Target.LISTENER);
-            // builder.retryOperations(retryTemplate);
-            // MessageRecoverer recoverer = (this.messageRecoverer != null)
-            //        ? this.messageRecoverer : new RejectAndDoNotRequeueRecoverer();
-            // builder.recoverer(recoverer);
-            // factory.setAdviceChain(builder.build());
-        }
 
         if (containerOptions.ConsumersPerQueue.HasValue)
         {

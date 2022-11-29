@@ -30,7 +30,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
 
     public override IMetricsResponse Invoke(MetricsRequest request)
     {
-        GetMetricsCollection(out MetricsCollection<List<MetricSample>> measurements, out MetricsCollection<List<MetricTag>> availTags);
+        (MetricsCollection<List<MetricSample>> measurements, MetricsCollection<List<MetricTag>> availTags) = GetMetrics();
 
         var metricNames = new HashSet<string>(measurements.Keys);
 
@@ -115,22 +115,17 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         return new MetricsResponse(request.MetricName, metricSamples, availTags);
     }
 
-    protected internal void GetMetricsCollection(out MetricsCollection<List<MetricSample>> metricSamples, out MetricsCollection<List<MetricTag>> availTags)
+    protected internal (MetricsCollection<List<MetricSample>> Samples, MetricsCollection<List<MetricTag>> Tags) GetMetrics()
     {
         ICollectionResponse response = _exporter.CollectionManager.EnterCollectAsync().Result;
 
         if (response is SteeltoeCollectionResponse collectionResponse)
         {
-            metricSamples = collectionResponse.MetricSamples;
-            availTags = collectionResponse.AvailableTags;
-            return;
+            return (collectionResponse.MetricSamples, collectionResponse.AvailableTags);
         }
 
         _logger?.LogWarning("Please ensure OpenTelemetry is configured via Steeltoe extension methods.");
 
-        metricSamples = new MetricsCollection<List<MetricSample>>();
-        availTags = new MetricsCollection<List<MetricTag>>();
-
-        // TODO: update the response header with actual update time
+        return (new MetricsCollection<List<MetricSample>>(), new MetricsCollection<List<MetricTag>>());
     }
 }

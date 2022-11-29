@@ -57,28 +57,6 @@ public static class Time
         }
 
         Thread.Sleep(maxWaitMilliseconds);
-
-        // long ticksToWait = maxWaitMilliseconds * TimeSpan.TicksPerMillisecond;
-
-        // if (ticksToWait <= 0)
-        // {
-        //    return;
-        // }
-
-        // long start = DateTime.Now.Ticks;
-
-        // while (true)
-        // {
-        //    long elapsed = DateTime.Now.Ticks - start;
-        //    long ticksLeft = ticksToWait - elapsed;
-
-        // if (elapsed >= ticksToWait)
-        //    {
-        //        return;
-        //    }
-
-        // DoWait(ticksLeft);
-        // }
     }
 
     private static void DoWait(long ticksLeft)

@@ -535,7 +535,6 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
         }
         else
         {
-            // _hasReturned = true;
             IListener listenerToInvoke = listener;
 
             try
@@ -634,7 +633,6 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
         // eliminate duplicates
         IEnumerable<IListener> listenersForAcks = involvedListeners.Select(kvp => kvp.Value).Distinct();
 
-        // Set<Listener> listenersForAcks = new HashSet<IListener>(involvedListeners.values());
         foreach (IListener involvedListener in listenersForAcks)
         {
             // find all unack'd confirms for this listener and handle them
@@ -642,12 +640,8 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
             {
                 IEnumerable<KeyValuePair<ulong, PendingConfirm>> confirms = confirmsMap.Where(kvp => kvp.Key < seq + 1);
 
-                // Iterator<Entry<Long, PendingConfirm>> iterator = confirms.entrySet().iterator();
-                // while (iterator.hasNext())
-                // {
                 foreach (KeyValuePair<ulong, PendingConfirm> entry in confirms)
                 {
-                    // Entry<Long, PendingConfirm> entry = iterator.next();
                     PendingConfirm value = entry.Value;
                     CorrelationData correlationData = value.CorrelationInfo;
 
@@ -661,7 +655,6 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
                         }
                     }
 
-                    // iterator.remove();
                     DoHandleConfirm(ack, involvedListener, value);
                 }
             }
@@ -683,15 +676,6 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
             {
                 if (listener.IsConfirmListener)
                 {
-                    // TODO: Not sure this latch is needed ..
-                    // I think its is to ensure the callback for return and confirm are not done at same time?
-                    // Returns should happen first and then confirms
-
-                    // if (this.hasReturned && !this.returnLatch.await(RETURN_CALLBACK_TIMEOUT, TimeUnit.SECONDS))
-                    // {
-                    //    this.logger
-                    //            .error("Return callback failed to execute in " + RETURN_CALLBACK_TIMEOUT + " seconds");
-                    // }
                     _logger?.LogDebug("Sending confirm {confirm}", pendingConfirm);
                     listener.HandleConfirm(pendingConfirm, ack);
                 }

@@ -700,7 +700,6 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         ch2.Close();
         con.Close(); // should be ignored
 
-        // com.rabbitmq.client.Connection conDelegate = targetDelegate(con);
         var asProxy = con as CachingConnectionFactory.ChannelCachingConnectionProxy;
         RC.IConnection conDelegate = asProxy.TargetConnection.Connection;
 
@@ -713,7 +712,6 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         IConnection con1 = ccf.CreateConnection();
 
-        // assertThat(targetDelegate(con1)).isNotSameAs(conDelegate);
         var asProxy1 = con1 as CachingConnectionFactory.ChannelCachingConnectionProxy;
         RC.IConnection conDelegate1 = asProxy1.TargetConnection.Connection;
         Assert.NotSame(conDelegate, conDelegate1);
@@ -951,7 +949,6 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockChannels[1].Verify(c => c.Close(), Times.Never);
         mockConnections[1].Verify(c => c.Close(30_000), Times.Never);
 
-        // verify(mockChannels.get(1), never()).close();
         VerifyConnectionIs(mockConnections[1].Object, ccf.IdleConnections.First.Value);
 
         // Now a closed cached connection
@@ -1138,7 +1135,6 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockChannels[1].Verify(c => c.Close(), Times.Never);
         mockConnections[1].Verify(c => c.Close(30_000), Times.Never);
 
-        // verify(mockChannels.get(1), never()).close();
         Assert.Equal(2, ccf.IdleConnections.Count);
         using LinkedList<CachingConnectionFactory.ChannelCachingConnectionProxy>.Enumerator idleEnumerator = ccf.IdleConnections.GetEnumerator();
         Assert.True(idleEnumerator.MoveNext());

@@ -11,13 +11,10 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
 {
-    private readonly RequestDelegate _next;
-
     public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, IManagementOptions managementOptions,
         ILogger<TraceEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
-        _next = next;
     }
 
     public Task InvokeAsync(HttpContext context)

@@ -10,7 +10,7 @@ public class ServiceFactoryAccessor : IPropertyAccessor
 {
     public bool CanRead(IEvaluationContext context, object target, string name)
     {
-        Type serviceType = ServiceFactoryResolver.GetServiceNameAndType(context, name, out string lookupName);
+        (Type serviceType, string lookupName) = ServiceFactoryResolver.GetServiceNameAndType(context, name);
 
         if (serviceType != null)
         {
@@ -40,7 +40,7 @@ public class ServiceFactoryAccessor : IPropertyAccessor
             throw new InvalidOperationException($"{nameof(target)} must be of type {nameof(IApplicationContext)}.");
         }
 
-        Type serviceType = ServiceFactoryResolver.GetServiceNameAndType(context, name, out string lookupName);
+        (Type serviceType, string lookupName) = ServiceFactoryResolver.GetServiceNameAndType(context, name);
 
         if (serviceType != null)
         {

@@ -12,7 +12,6 @@ namespace Steeltoe.Management.Endpoint.Env;
 
 public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
 {
-    private readonly ILogger<EnvEndpoint> _logger;
     private readonly IConfiguration _configuration;
     private readonly Sanitizer _sanitizer;
 
@@ -28,7 +27,6 @@ public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
 
         _configuration = configuration;
         _env = env;
-        _logger = logger;
         _sanitizer = new Sanitizer(options.KeysToSanitize);
     }
 

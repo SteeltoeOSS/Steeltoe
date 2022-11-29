@@ -47,10 +47,6 @@ public class HandlerMethodReturnValueHandlerComposite : IAsyncHandlerMethodRetur
             throw new InvalidOperationException($"No handler for return value type: {returnType.ParameterType}");
         }
 
-        // if (logger.isTraceEnabled())
-        // {
-        //    logger.trace("Processing return value with " + handler);
-        // }
         handler.HandleReturnValue(returnValue, returnType, message);
     }
 

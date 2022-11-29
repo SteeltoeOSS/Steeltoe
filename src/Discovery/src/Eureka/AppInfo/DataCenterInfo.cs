@@ -32,7 +32,6 @@ public class DataCenterInfo : IDataCenterInfo
 
     internal JsonInstanceInfo.JsonDataCenterInfo ToJson()
     {
-        // TODO: Other data centers @class settings?
         return new JsonInstanceInfo.JsonDataCenterInfo("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", Name.ToString());
     }
 }
