@@ -7,12 +7,6 @@ using System.Text.RegularExpressions;
 using Steeltoe.Common.Util;
 using Xunit;
 
-// TODO: Fix violations and remove the next suppression, by either:
-// - Removing the try with empty catch block
-// - Add the next comment in the empty catch block: // Intentionally left empty.
-// While you're at it, catch specific exceptions (use `when` condition to narrow down) instead of System.Exception.
-#pragma warning disable S108 // Nested blocks of code should not be left empty
-
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixRequestLogTest : HystrixTestBase
@@ -76,6 +70,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         }
         catch (Exception)
         {
+            // Intentionally left empty.
         }
 
         // 1 failure from cache
@@ -85,6 +80,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         }
         catch (Exception)
         {
+            // Intentionally left empty.
         }
 
         string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
@@ -109,6 +105,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         }
         catch (Exception)
         {
+            // Intentionally left empty.
         }
 
         try
@@ -117,9 +114,9 @@ public class HystrixRequestLogTest : HystrixTestBase
         }
         catch (Exception)
         {
+            // Intentionally left empty.
         }
 
-        // System.out.println(Thread.currentThread().getName() + " : " + System.currentTimeMillis() + " -> done with awaiting all observables");
         string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
         // strip the actual count so we can compare reliably
@@ -159,6 +156,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         }
         catch (Exception)
         {
+            // Intentionally left empty.
         }
 
         // 1 failure from cache
@@ -168,6 +166,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         }
         catch (Exception)
         {
+            // Intentionally left empty.
         }
 
         string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
@@ -262,7 +261,6 @@ public class HystrixRequestLogTest : HystrixTestBase
 
         protected override string Run()
         {
-            // output.WriteLine(Task.CurrentId + " : " + DateTime.Now.ToString());
             if (_fail)
             {
                 throw new Exception("forced failure");
@@ -272,9 +270,6 @@ public class HystrixRequestLogTest : HystrixTestBase
             {
                 Time.WaitUntil(() => Token.IsCancellationRequested, 10000);
                 Token.ThrowIfCancellationRequested();
-
-                // output.WriteLine("Woke up from sleep!");
-                // token.ThrowIfCancellationRequested();
             }
 
             return _value;

@@ -213,29 +213,6 @@ public class BindingServiceTest : AbstractTest
         Assert.Throws<InvalidOperationException>(() => service.BindProducer(outputChannel, "output"));
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public void TestUnrecognizedBinderAllowedIfNotUsed()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        List<string> searchDirectories = GetSearchDirectories("MockBinder");
-        const string mockBinder = "Steeltoe.Stream.MockBinder.Startup" + "," + "Steeltoe.Stream.MockBinder";
-        string mockAssembly = $"{searchDirectories[0]}{Path.DirectorySeparatorChar}Steeltoe.Stream.MockBinder.dll";
-
-        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring.cloud.stream.bindings.input.destination=fooInput",
-            "spring.cloud.stream.bindings.output.destination=fooOutput", "spring.cloud.stream.defaultBinder=mock1",
-            $"spring.cloud.stream.binders.mock1.configureclass={mockBinder}", $"spring.cloud.stream.binders.mock1.configureassembly={mockAssembly}",
-            "spring.cloud.stream.binders.kafka1.configureclass=kafka").BuildServiceProvider();
-
-        IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-        IMessageChannel outputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-
-        var service = provider.GetService<BindingService>();
-        _ = service.BindConsumer(inputChannel, "input");
-        _ = service.BindProducer(outputChannel, "output");
-    }
-
     [Fact]
     public void TestResolveBindableType()
     {

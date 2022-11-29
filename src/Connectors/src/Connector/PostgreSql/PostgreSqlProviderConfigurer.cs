@@ -47,17 +47,14 @@ public class PostgreSqlProviderConfigurer
                     }
                     else if (kvp.Key == "sslcert")
                     {
-                        // TODO: Map this client cert into the npgsql client cert callback
                         configuration.ClientCertificate = kvp.Value;
                     }
                     else if (kvp.Key == "sslkey")
                     {
-                        // TODO: Map this client cert into the npgsql client cert callback
                         configuration.ClientKey = kvp.Value;
                     }
                     else if (kvp.Key == "sslrootcert")
                     {
-                        // TODO: Map this client cert into the npgsql remote cert validation callback
                         configuration.SslRootCertificate = kvp.Value;
                     }
                     else

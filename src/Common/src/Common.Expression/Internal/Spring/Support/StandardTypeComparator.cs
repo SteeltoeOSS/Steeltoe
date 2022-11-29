@@ -15,10 +15,6 @@ public class StandardTypeComparator : ITypeComparator
             return true;
         }
 
-        // if (firstObject is Number && secondObject is Number)
-        // {
-        //    return true;
-        // }
         if (firstObject is IComparable)
         {
             return true;
@@ -68,27 +64,6 @@ public class StandardTypeComparator : ITypeComparator
             return leftNum.CompareTo(rightNum);
         }
 
-        // else if (leftNumber is Integer || rightNumber is Integer)
-        //    {
-        //        return Integer.compare(leftNumber.intValue(), rightNumber.intValue());
-        //    }
-
-        // else if (leftNumber is Short || rightNumber is Short)
-        //    {
-        //        return Short.compare(leftNumber.shortValue(), rightNumber.shortValue());
-        //    }
-
-        // else if (leftNumber is Byte || rightNumber is Byte)
-        //    {
-        //        return Byte.compare(leftNumber.byteValue(), rightNumber.byteValue());
-        //    }
-
-        // else
-        //    {
-        //        // Unknown Number subtypes -> best guess is double multiplication
-        //        return Double.compare(leftNumber.doubleValue(), rightNumber.doubleValue());
-        //    }
-        // }
         try
         {
             if (firstObject is IComparable comparable)

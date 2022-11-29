@@ -218,7 +218,6 @@ public static class DiscoveryServiceCollectionExtensions
 
         if (builder.Extensions.Count > 1)
         {
-            // TODO: don't BuildServiceProvider() here
             var configuration = serviceCollection.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
             IEnumerable<IDiscoveryClientExtension> configured =

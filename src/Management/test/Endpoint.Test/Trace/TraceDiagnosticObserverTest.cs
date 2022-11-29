@@ -173,10 +173,10 @@ public class TraceDiagnosticObserverTest : BaseTest
 
         var obs = new TraceDiagnosticObserver(option);
 
-        obs.GetProperty(new
+        HttpContext context = obs.GetHttpContextPropertyValue(new
         {
             foo = "bar"
-        }, out HttpContext context);
+        });
 
         Assert.Null(context);
     }
@@ -189,10 +189,10 @@ public class TraceDiagnosticObserverTest : BaseTest
         var obs = new TraceDiagnosticObserver(option);
         HttpContext expectedContext = CreateRequest();
 
-        obs.GetProperty(new
+        HttpContext context = obs.GetHttpContextPropertyValue(new
         {
             HttpContext = expectedContext
-        }, out HttpContext context);
+        });
 
         Assert.True(ReferenceEquals(expectedContext, context));
     }

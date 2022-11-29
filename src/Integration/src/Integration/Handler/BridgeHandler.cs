@@ -20,7 +20,7 @@ public class BridgeHandler : AbstractReplyProducingMessageHandler
 
     public override void Initialize()
     {
-        // Nothing to do
+        // Intentionally left empty.
     }
 
     protected override object HandleRequestMessage(IMessage requestMessage)

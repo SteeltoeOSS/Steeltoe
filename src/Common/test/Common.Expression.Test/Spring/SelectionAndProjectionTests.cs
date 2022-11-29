@@ -309,7 +309,6 @@ public class SelectionAndProjectionTests
 
         public MapTestBean()
         {
-            // colors.put("black", "schwarz");
             Colors.Add("red", "rot");
             Colors.Add("brown", "braun");
             Colors.Add("blue", "blau");

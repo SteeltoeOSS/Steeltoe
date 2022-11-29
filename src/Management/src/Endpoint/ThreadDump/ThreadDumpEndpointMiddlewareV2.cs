@@ -10,13 +10,10 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 
 public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResult>
 {
-    private readonly RequestDelegate _next;
-
     public ThreadDumpEndpointMiddlewareV2(RequestDelegate next, ThreadDumpEndpointV2 endpoint, IManagementOptions managementOptions,
         ILogger<ThreadDumpEndpointMiddlewareV2> logger = null)
         : base(endpoint, managementOptions, logger)
     {
-        _next = next;
     }
 
     public Task InvokeAsync(HttpContext context)

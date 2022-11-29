@@ -33,7 +33,6 @@ internal sealed class TestSemaphoreCommandWithSlowFallback : TestHystrixCommand<
     {
         hystrixCommandOptions.FallbackIsolationSemaphoreMaxConcurrentRequests = fallbackSemaphoreExecutionCount;
 
-        // hystrixCommandOptions.ExecutionIsolationThreadInterruptOnTimeout = false;
         return hystrixCommandOptions;
     }
 }

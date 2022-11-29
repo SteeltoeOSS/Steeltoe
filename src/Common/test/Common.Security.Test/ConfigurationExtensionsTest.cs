@@ -101,13 +101,6 @@ public class ConfigurationExtensionsTest
     [Fact]
     public async Task AddCertificateFile_NotifiesOnChange()
     {
-        // TODO: investigate why test fails when using Sandbox
-        // see: https://github.com/SteeltoeOSS/Steeltoe/issues/736
-        /*
-        using var sandbox = new Sandbox();
-        var filename = sandbox.CreateFile("fakeCertificate.p12", "cert1");
-        */
-
         const string filename = "fakeCertificate.p12";
         await File.WriteAllTextAsync(filename, "cert1");
 

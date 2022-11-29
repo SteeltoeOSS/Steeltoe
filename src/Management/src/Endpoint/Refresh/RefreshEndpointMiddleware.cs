@@ -11,13 +11,10 @@ namespace Steeltoe.Management.Endpoint.Refresh;
 
 public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
 {
-    private readonly RequestDelegate _next;
-
     public RefreshEndpointMiddleware(RequestDelegate next, RefreshEndpoint endpoint, IManagementOptions managementOptions,
         ILogger<RefreshEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
-        _next = next;
     }
 
     public Task InvokeAsync(HttpContext context)

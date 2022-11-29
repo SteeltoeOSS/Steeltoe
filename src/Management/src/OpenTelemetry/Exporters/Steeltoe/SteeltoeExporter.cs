@@ -22,8 +22,6 @@ public class SteeltoeExporter : MetricsExporter
 
     public override Func<int, bool> Collect { get; set; }
 
-    // private List<Metric> _metricsView;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="SteeltoeExporter" /> class.
     /// </summary>

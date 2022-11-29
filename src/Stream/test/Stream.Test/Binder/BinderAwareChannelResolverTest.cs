@@ -89,8 +89,6 @@ public class BinderAwareChannelResolverTest : AbstractTest
         var registry = _serviceProvider.GetService<IApplicationContext>();
         var bean = registry.GetService<IMessageChannel>("other");
         Assert.Same(bean, other);
-
-        // this.context.close();
     }
 
     private sealed class LatchedMessageHandler : IMessageHandler

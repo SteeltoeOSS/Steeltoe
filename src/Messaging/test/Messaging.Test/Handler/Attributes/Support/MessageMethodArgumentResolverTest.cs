@@ -88,27 +88,6 @@ public class MessageMethodArgumentResolverTest
         Assert.Contains("String", ex.Message, StringComparison.Ordinal);
     }
 
-    // [Fact]
-    // public void ResolveWithPayloadTypeUpperBound()
-    // {
-    //    IMessage<int> message = MessageBuilder<int>.WithPayload(123).Build();
-    //    ParameterInfo parameter = this.method.GetParameters()[3];
-
-    // Assert.True(this.resolver.SupportsParameter(parameter));
-    //    Assert.Same(message, this.resolver.ResolveArgument(parameter, message));
-    // }
-
-    // [Fact]
-    // public void ResolveWithPayloadTypeOutOfBound()
-    // {
-    //    IMessage<CultureInfo> message = MessageBuilder<CultureInfo>.WithPayload(CultureInfo.CurrentCulture).Build();
-    //    ParameterInfo parameter = this.method.GetParameters()[3];
-
-    // Assert.True(this.resolver.SupportsParameter(parameter));
-    //    var ex = Assert.Throws<MessageConversionException>(() => this.resolver.ResolveArgument(parameter, message));
-    //    Assert.Contains("Number", ex.Message);
-    //    Assert.Contains("CultureInfo", ex.Message);
-    // }
     [Fact]
     public void ResolveMessageSubclassMatch()
     {
@@ -128,18 +107,6 @@ public class MessageMethodArgumentResolverTest
         Assert.Same(message, _resolver.ResolveArgument(parameter, message));
     }
 
-    // [Fact]
-    // public void ResolveWithWrongMessageType()
-    // {
-    //    var ex1 = new InvalidOperationException();
-    //    IMessage<Exception> message = GenericMessage.Create<Exception>(ex1);
-    //    ParameterInfo parameter = this.method.GetParameters()[0];
-
-    // Assert.True(this.resolver.SupportsParameter(parameter));
-    //    var ex = Assert.Throws<MethodArgumentTypeMismatchException>(() => this.resolver.ResolveArgument(parameter, message));
-    //    Assert.Contains("ErrorMessage", ex.Message);
-    //    Assert.Contains("GenericMessage", ex.Message);
-    // }
     [Fact]
     public void ResolveWithPayloadTypeAsWildcardAndNoConverter()
     {

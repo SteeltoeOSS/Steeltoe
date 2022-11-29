@@ -387,13 +387,6 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
                 if (actualTypeArguments.Length > 0)
                 {
                     returnType = actualTypeArguments[0];
-
-                    // if (returnType instanceof WildcardType)
-                    //  {
-                    //  // Set the return type to null so the converter will use the actual returned
-                    //  // object's class for type info
-                    //  returnType = null;
-                    // }
                 }
             }
 

@@ -343,25 +343,23 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
     }
 
-    protected bool PutInCacheIfAbsent(Task<TResult> hystrixTask, out Task<TResult> fromCache)
+    protected (bool IsCached, Task<TResult> CachedValue) PutInCacheIfAbsent(Task<TResult> hystrixTask)
     {
-        fromCache = null;
-
         if (IsRequestCachingEnabled && CacheKey != null)
         {
             // wrap it for caching
-            fromCache = RequestCache.PutIfAbsent(CacheKey, hystrixTask);
+            Task<TResult> fromCache = RequestCache.PutIfAbsent(CacheKey, hystrixTask);
 
             if (fromCache != null)
             {
                 // another thread beat us so we'll use the cached value instead
                 InnerIsResponseFromCache = true;
                 HandleRequestCacheHitAndEmitValues(fromCache, this);
-                return true;
+                return (true, fromCache);
             }
         }
 
-        return false;
+        return (false, default);
     }
 
     protected void ApplyHystrixSemantics()

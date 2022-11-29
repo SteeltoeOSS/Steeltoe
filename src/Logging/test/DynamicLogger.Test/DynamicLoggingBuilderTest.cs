@@ -177,26 +177,6 @@ public class DynamicLoggingBuilderTest
         Assert.IsType<DynamicConsoleLoggerProvider>(logProviders.SingleOrDefault());
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public void AddDynamicConsole_AddsLoggerProvider_DisposeTwiceSucceeds()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
-
-        ServiceProvider services = new ServiceCollection().AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>().AddLogging(builder =>
-        {
-            builder.AddConfiguration(configuration.GetSection("Logging"));
-            builder.AddDynamicConsole();
-        }).BuildServiceProvider();
-
-        var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
-
-        services.Dispose();
-        dynamicLoggerProvider.Dispose();
-    }
-
     [Fact]
     public void DynamicLevelSetting_ParameterlessAddDynamic_AddsConsoleOptions()
     {

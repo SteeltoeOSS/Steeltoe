@@ -17,7 +17,6 @@ namespace Steeltoe.Discovery.Consul.Discovery;
 public class ConsulDiscoveryClient : IConsulDiscoveryClient
 {
     private readonly IConsulClient _client;
-    private readonly ILogger<ConsulDiscoveryClient> _logger;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
     private readonly ConsulDiscoveryOptions _options;
     private readonly IServiceInstance _thisServiceInstance;
@@ -65,7 +64,6 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
 
         _client = client;
         _options = options;
-        _logger = logger;
         _registrar = registrar;
 
         if (_registrar != null)
@@ -98,7 +96,6 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
 
         _client = client;
         _optionsMonitor = optionsMonitor;
-        _logger = logger;
         _registrar = registrar;
 
         if (_registrar != null)

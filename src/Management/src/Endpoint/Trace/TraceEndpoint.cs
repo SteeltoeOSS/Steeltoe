@@ -9,7 +9,6 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 public class TraceEndpoint : AbstractEndpoint<List<TraceResult>>, ITraceEndpoint
 {
-    private readonly ILogger<TraceEndpoint> _logger;
     private readonly ITraceRepository _traceRepo;
 
     public new ITraceOptions Options => options as ITraceOptions;
@@ -20,7 +19,6 @@ public class TraceEndpoint : AbstractEndpoint<List<TraceResult>>, ITraceEndpoint
         ArgumentGuard.NotNull(traceRepository);
 
         _traceRepo = traceRepository;
-        _logger = logger;
     }
 
     public override List<TraceResult> Invoke()

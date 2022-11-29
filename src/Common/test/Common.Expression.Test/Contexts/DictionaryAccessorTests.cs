@@ -25,31 +25,19 @@ public class DictionaryAccessorTests
         IExpression ex = sep.ParseExpression("foo");
         Assert.Equal("bar", ex.GetValue(sec, testMap));
 
-        // assertThat(SpelCompiler.compile(ex)).isTrue();
-        // assertThat(ex.getValue(sec, testMap)).isEqualTo("bar");
-
         // compound expression
         ex = sep.ParseExpression("foo.ToUpperInvariant()");
         Assert.Equal("BAR", ex.GetValue(sec, testMap));
-
-        // assertThat(SpelCompiler.compile(ex)).isTrue();
-        // assertThat(ex.getValue(sec, testMap)).isEqualTo("BAR");
 
         // nested map
         Dictionary<string, Dictionary<string, object>> nestedMap = GetNestedTestDictionary();
         ex = sep.ParseExpression("aaa.foo.ToUpperInvariant()");
         Assert.Equal("BAR", ex.GetValue(sec, nestedMap));
 
-        // assertThat(SpelCompiler.compile(ex)).isTrue();
-        // assertThat(ex.getValue(sec, nestedMap)).isEqualTo("BAR");
-
         // avoiding inserting checkcast because first part of expression returns a Map
         ex = sep.ParseExpression("Map.foo");
         var mapGetter = new MapGetter();
         Assert.Equal("bar", ex.GetValue(sec, mapGetter));
-
-        // assertThat(SpelCompiler.compile(ex)).isTrue();
-        // assertThat(ex.getValue(sec, mapGetter)).isEqualTo("bar");
     }
 
     private Dictionary<string, object> GetSimpleTestDictionary()
