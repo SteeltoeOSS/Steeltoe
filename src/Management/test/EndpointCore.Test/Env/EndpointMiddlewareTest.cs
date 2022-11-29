@@ -64,6 +64,7 @@ public class EndpointMiddlewareTest : BaseTest
         // Some developers set ASPNETCORE_ENVIRONMENT in their environment, which will break this test if we don't un-set it
         var originalEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
+        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
             .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))

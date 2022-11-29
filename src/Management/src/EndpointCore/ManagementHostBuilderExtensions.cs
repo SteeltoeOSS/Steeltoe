@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Hosting;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
@@ -36,6 +37,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     public static IHostBuilder AddDbMigrationsActuator(this IHostBuilder hostBuilder)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddDbMigrationsActuator(context.Configuration);
@@ -48,6 +50,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     public static IHostBuilder AddEnvActuator(this IHostBuilder hostBuilder)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddEnvActuator(context.Configuration);
@@ -60,6 +63,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     public static IHostBuilder AddHealthActuator(this IHostBuilder hostBuilder)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddHealthActuator(context.Configuration);
@@ -73,6 +77,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="contributors">Types that contribute to the overall health of the app</param>
     public static IHostBuilder AddHealthActuator(this IHostBuilder hostBuilder, Type[] contributors)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddHealthActuator(context.Configuration, contributors);
@@ -87,6 +92,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="contributors">Types that contribute to the overall health of the app</param>
     public static IHostBuilder AddHealthActuator(this IHostBuilder hostBuilder, IHealthAggregator aggregator, Type[] contributors)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddHealthActuator(context.Configuration, aggregator, contributors);
@@ -99,6 +105,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     public static IHostBuilder AddHeapDumpActuator(this IHostBuilder hostBuilder)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddHeapDumpActuator(context.Configuration);
@@ -111,6 +118,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     public static IHostBuilder AddHypermediaActuator(this IHostBuilder hostBuilder)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddHypermediaActuator(context.Configuration);
@@ -123,6 +131,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     public static IHostBuilder AddInfoActuator(this IHostBuilder hostBuilder)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddInfoActuator(context.Configuration);
@@ -136,6 +145,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="contributors">Contributors to application information</param>
     public static IHostBuilder AddInfoActuator(this IHostBuilder hostBuilder, IInfoContributor[] contributors)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddInfoActuator(context.Configuration, contributors);
@@ -148,6 +158,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     public static IHostBuilder AddLoggersActuator(this IHostBuilder hostBuilder)
         => hostBuilder
+            .AddManagementPort()
             .AddDynamicLogging()
             .ConfigureServices((context, collection) =>
             {
@@ -161,6 +172,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     public static IHostBuilder AddMappingsActuator(this IHostBuilder hostBuilder)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddMappingsActuator(context.Configuration);
@@ -173,6 +185,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     public static IHostBuilder AddMetricsActuator(this IHostBuilder hostBuilder)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddMetricsActuator(context.Configuration);
@@ -185,6 +198,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     public static IHostBuilder AddRefreshActuator(this IHostBuilder hostBuilder)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddRefreshActuator(context.Configuration);
@@ -198,6 +212,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
     public static IHostBuilder AddThreadDumpActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddThreadDumpActuator(context.Configuration, mediaTypeVersion);
@@ -211,6 +226,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
     public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddTraceActuator(context.Configuration, mediaTypeVersion);
@@ -223,6 +239,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     public static IHostBuilder AddCloudFoundryActuator(this IHostBuilder hostBuilder)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddCloudFoundryActuator(context.Configuration);
@@ -240,6 +257,7 @@ public static class ManagementHostBuilderExtensions
     public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         => hostBuilder
             .AddDynamicLogging()
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddAllActuators(context.Configuration, mediaTypeVersion, buildCorsPolicy);
@@ -253,6 +271,7 @@ public static class ManagementHostBuilderExtensions
     /// <returns>The updated HostBuilder</returns>
     public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
         => hostBuilder
+            .AddManagementPort()
             .ConfigureServices((context, collection) =>
             {
                 collection.AddWavefrontMetrics();
@@ -289,4 +308,14 @@ public static class ManagementHostBuilderExtensions
             }
         }
     }
+
+    private static IHostBuilder AddManagementPort(this IHostBuilder hostBuilder)
+       => hostBuilder.ConfigureWebHost(webhostBuilder =>
+            {
+                webhostBuilder.GetManagementUrl(out var httpPort, out var httpsPort);
+                if (httpPort.HasValue || httpsPort.HasValue)
+                {
+                    webhostBuilder.UseCloudHosting(httpPort, httpsPort);
+                }
+            });
 }

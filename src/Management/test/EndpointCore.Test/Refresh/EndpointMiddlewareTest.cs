@@ -75,7 +75,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             var json = await result.Content.ReadAsStringAsync();
             var expected = "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\",\"environment\",\"applicationName\"]";
-            Assert.Equal(expected, json);
+            Assert.Equal(expected, json, true);
         }
 
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", anc_env);

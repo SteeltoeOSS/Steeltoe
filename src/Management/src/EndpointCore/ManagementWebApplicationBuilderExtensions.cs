@@ -5,6 +5,7 @@
 #if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Hosting;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
@@ -44,7 +45,7 @@ namespace Steeltoe.Management.Endpoint
         public static WebApplicationBuilder AddEnvActuator(this WebApplicationBuilder applicationBuilder)
         {
             applicationBuilder.Services.AddEnvActuator(applicationBuilder.Configuration);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -55,7 +56,7 @@ namespace Steeltoe.Management.Endpoint
         public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder)
         {
             applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -67,7 +68,7 @@ namespace Steeltoe.Management.Endpoint
         public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, Type[] contributors)
         {
             applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration, contributors);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -80,7 +81,7 @@ namespace Steeltoe.Management.Endpoint
         public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, IHealthAggregator aggregator, Type[] contributors)
         {
             applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration, aggregator, contributors);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -91,7 +92,7 @@ namespace Steeltoe.Management.Endpoint
         public static WebApplicationBuilder AddHeapDumpActuator(this WebApplicationBuilder applicationBuilder)
         {
             applicationBuilder.Services.AddHeapDumpActuator(applicationBuilder.Configuration);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -102,7 +103,7 @@ namespace Steeltoe.Management.Endpoint
         public static WebApplicationBuilder AddHypermediaActuator(this WebApplicationBuilder applicationBuilder)
         {
             applicationBuilder.Services.AddHypermediaActuator(applicationBuilder.Configuration);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -113,7 +114,7 @@ namespace Steeltoe.Management.Endpoint
         public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder)
         {
             applicationBuilder.Services.AddInfoActuator(applicationBuilder.Configuration);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -125,7 +126,7 @@ namespace Steeltoe.Management.Endpoint
         public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder, IInfoContributor[] contributors)
         {
             applicationBuilder.Services.AddInfoActuator(applicationBuilder.Configuration, contributors);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -137,7 +138,7 @@ namespace Steeltoe.Management.Endpoint
         {
             applicationBuilder.Logging.AddDynamicConsole();
             applicationBuilder.Services.AddLoggersActuator(applicationBuilder.Configuration);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -148,7 +149,7 @@ namespace Steeltoe.Management.Endpoint
         public static WebApplicationBuilder AddMappingsActuator(this WebApplicationBuilder applicationBuilder)
         {
             applicationBuilder.Services.AddMappingsActuator(applicationBuilder.Configuration);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -159,7 +160,7 @@ namespace Steeltoe.Management.Endpoint
         public static WebApplicationBuilder AddMetricsActuator(this WebApplicationBuilder applicationBuilder)
         {
             applicationBuilder.Services.AddMetricsActuator(applicationBuilder.Configuration);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -170,7 +171,7 @@ namespace Steeltoe.Management.Endpoint
         public static WebApplicationBuilder AddRefreshActuator(this WebApplicationBuilder applicationBuilder)
         {
             applicationBuilder.Services.AddRefreshActuator(applicationBuilder.Configuration);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -182,7 +183,7 @@ namespace Steeltoe.Management.Endpoint
         public static WebApplicationBuilder AddThreadDumpActuator(this WebApplicationBuilder applicationBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         {
             applicationBuilder.Services.AddThreadDumpActuator(applicationBuilder.Configuration, mediaTypeVersion);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -194,7 +195,7 @@ namespace Steeltoe.Management.Endpoint
         public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder applicationBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         {
             applicationBuilder.Services.AddTraceActuator(applicationBuilder.Configuration, mediaTypeVersion);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -205,7 +206,7 @@ namespace Steeltoe.Management.Endpoint
         public static WebApplicationBuilder AddCloudFoundryActuator(this WebApplicationBuilder applicationBuilder)
         {
             applicationBuilder.Services.AddCloudFoundryActuator(applicationBuilder.Configuration);
-            applicationBuilder.Services.ActivateActuatorEndpoints();
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -219,7 +220,7 @@ namespace Steeltoe.Management.Endpoint
         {
             applicationBuilder.Logging.AddDynamicConsole();
             applicationBuilder.Services.AddAllActuators(applicationBuilder.Configuration, mediaTypeVersion);
-            applicationBuilder.Services.ActivateActuatorEndpoints(configureEndpoints);
+            applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
 
@@ -231,6 +232,18 @@ namespace Steeltoe.Management.Endpoint
         {
             applicationBuilder.Services.AddWavefrontMetrics();
             return applicationBuilder;
+        }
+
+        private static void AddCommonServices(this WebApplicationBuilder applicationBuilder)
+        {
+            applicationBuilder.WebHost.GetManagementUrl(out var httpPort, out var httpsPort);
+
+            if (httpPort.HasValue || httpsPort.HasValue)
+            {
+                applicationBuilder.UseCloudHosting(httpPort, httpsPort);
+            }
+
+            applicationBuilder.Services.ActivateActuatorEndpoints();
         }
     }
 }
