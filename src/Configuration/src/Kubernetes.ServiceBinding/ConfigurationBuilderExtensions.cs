@@ -104,6 +104,10 @@ public static class ConfigurationBuilderExtensions
         source.RegisterPostProcessor(new SqlServerPostProcessor());
         source.RegisterPostProcessor(new VaultPostProcessor());
         source.RegisterPostProcessor(new WavefrontPostProcessor());
+
+        // Legacy Connector Post Processors
+        source.RegisterPostProcessor(new RabbitMQLegacyConnectorPostProcessor());
+        source.RegisterPostProcessor(new MySqlLegacyConnectorPostProcessor());
         builder.Add(source);
         return builder;
     }

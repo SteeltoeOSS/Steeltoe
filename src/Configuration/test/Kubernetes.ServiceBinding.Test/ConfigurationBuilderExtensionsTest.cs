@@ -21,6 +21,6 @@ public class ConfigurationBuilderExtensionsTest
         Assert.Single(builder.Sources);
         Assert.IsType<ServiceBindingConfigurationSource > (builder.Sources[0]);
         ServiceBindingConfigurationSource source = (ServiceBindingConfigurationSource) builder.Sources[0];
-        Assert.Equal(21, source.RegisteredProcessors.Count);
+        Assert.Equal(23, source.RegisteredProcessors.Count);
     }
 }

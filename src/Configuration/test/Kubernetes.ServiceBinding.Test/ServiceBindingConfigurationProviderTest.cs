@@ -96,7 +96,7 @@ public class ServiceBindingConfigurationProviderTest
         }
     }
 
-    [Fact(Skip = "TODO: fix this failing test")]
+    [Fact]
     public void NoBindings()
     {
         var builder = new ConfigurationBuilder();
