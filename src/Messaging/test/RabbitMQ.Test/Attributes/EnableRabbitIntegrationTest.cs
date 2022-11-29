@@ -84,20 +84,6 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         Assert.NotNull(messageListener.RecoveryCallback);
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public void Tx()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        // TODO:
-        //    assertThat(AopUtils.isJdkDynamicProxy(this.txService)).isTrue();
-        //    Baz baz = new Baz();
-        //    baz.field = "baz";
-        //    rabbitTemplate.setReplyTimeout(600000);
-        //    assertThat(rabbitTemplate.convertSendAndReceive("auto.exch.tx", "auto.rk.tx", baz)).isEqualTo("BAZ: baz: auto.rk.tx");
-    }
-
     [Fact]
     public async Task AutoStart()
     {
@@ -270,8 +256,6 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         Assert.IsType<MultiListenerService>(multiBean.Bean);
         Assert.NotNull(multiBean.Method);
         Assert.Equal("Baz", multiBean.Method.Name);
-
-        // assertThat(AopUtils.isJdkDynamicProxy(this.txClassLevel)).isTrue();
     }
 
     [Fact]
@@ -632,30 +616,6 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         Assert.Equal(AcknowledgeMode.Manual, container2.AcknowledgeMode);
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public void TestConsumerBatchEnabled()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        // TODO: Direct container does not support this aggregation of messages into a batch
-        // var template = provider.GetRabbitTemplate();
-        // template.ConvertAndSend("erit.batch.1", "foo");
-        // template.ConvertAndSend("erit.batch.1", "bar");
-        // template.ConvertAndSend("erit.batch.2", "foo");
-        // template.ConvertAndSend("erit.batch.2", "bar");
-        // template.ConvertAndSend("erit.batch.3", "foo");
-        // template.ConvertAndSend("erit.batch.3", "bar");
-
-        // var myService = provider.GetService<MyService>();
-        // Assert.True(myService.Batch1Latch.Wait(TimeSpan.FromSeconds(10)));
-        // Assert.True(myService.Batch2Latch.Wait(TimeSpan.FromSeconds(10)));
-        // Assert.True(myService.Batch3Latch.Wait(TimeSpan.FromSeconds(10)));
-        // Assert.Equal(2, myService.AmqpMessagesReceived.Count);
-        // Assert.Equal(2, myService.MessagingMessagesReceived.Count);
-        // Assert.Equal(2, myService.Batch3Strings.Count);
-    }
-
     public class TestHeadersExchangeMpp1 : IMessagePostProcessor
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
@@ -848,9 +808,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
             {
                 var context = p.GetRequiredService<IApplicationContext>();
 
-                var defFactory =
-                    context.GetService<IRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory
-                        .DefaultServiceName); // as DirectRabbitListenerContainerFactory;
+                var defFactory = context.GetService<IRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory.DefaultServiceName);
 
                 var container = defFactory.CreateListenerContainer() as DirectMessageListenerContainer;
                 container.ServiceName = "factoryCreatedContainerNoListener";
@@ -920,8 +878,6 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
                 f.ServiceName = "consumerBatchContainerFactory";
                 f.ConsumerTagStrategy = context.GetService<IConsumerTagStrategy>("consumerTagStrategy");
                 f.BatchListener = true;
-
-                // f.BatchingStrategy = new SimpleBatchingStrategy(2, 2048, 2000);
             });
 
             services.AddRabbitAdmin();
@@ -1194,7 +1150,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         }
 
         [RabbitListener("test.sendTo.runtimespelsource")]
-        [SendTo("!{Source.Headers['internal_consumerQueue'] + '.reply'}")] // TODO: Fix the hardcoded "internal_consumerQueue" when this works
+        [SendTo("!{Source.Headers['internal_consumerQueue'] + '.reply'}")]
         public string CapitalizeAndSendToSpelRuntimeSource(string foo)
         {
             return "sourceEval";

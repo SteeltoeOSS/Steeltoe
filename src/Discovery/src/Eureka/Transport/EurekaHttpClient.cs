@@ -577,7 +577,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             if (failingServiceUrls.Count == 0)
             {
-                // no-op
+                // Intentionally left empty.
             }
             else if (failingServiceUrls.Count >= threshold)
             {

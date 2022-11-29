@@ -185,7 +185,6 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
 
         public CorrelationData GetWrapper(IMessage message)
         {
-            // var constructor = typeof(CorrelationDataWrapper).GetConstructor(typeof(string), typeof(object), typeof(Message));
             return Activator.CreateInstance(typeof(CorrelationDataWrapper), null, message, message) as CorrelationData;
         }
     }

@@ -36,7 +36,6 @@ internal sealed class LatchedSemaphoreCommand : TestHystrixCommand<bool>
         }
         catch (Exception)
         {
-            // e.printStackTrace();
             return false;
         }
 

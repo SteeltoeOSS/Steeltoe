@@ -204,20 +204,6 @@ public class MethodInvokingMessageProcessorTest
         Assert.Equal("testing-123", result);
     }
 
-    // [Fact]
-    // public void TestVoidMethodsIncludedByDefault()
-    // {
-    //    var testService = new TestService();
-    //    var method = typeof(TestService).GetMethod(nameof(TestService.TestVoidReturningMethods));
-    //    var context = GetDefaultContext();
-    //    var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
-    //    var request = MessageBuilder.WithPayload("Something").Build();
-    //    var result = processor.ProcessMessage(request);
-    //    Assert.Null(result);
-    //    var request2 = MessageBuilder.WithPayload(12).Build();
-    //    var result2 = processor.ProcessMessage(request2);
-    //    Assert.Equal(12, result2);
-    // }
     [Fact]
     public void MessageOnlyWithAnnotatedMethod()
     {
@@ -480,10 +466,6 @@ public class MethodInvokingMessageProcessorTest
             return prop + num + dotted;
         }
 
-        // public Properties propertiesMethod(Properties properties)
-        // {
-        //    return properties;
-        // }
         public IDictionary MapMethod(IDictionary map)
         {
             return map;

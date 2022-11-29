@@ -184,11 +184,11 @@ public class BlockingQueueConsumerTest
                 }
                 catch (ShutdownSignalException)
                 {
-                    // Noop
+                    // Intentionally left empty.
                 }
                 catch (Exception)
                 {
-                    // noop
+                    // Intentionally left empty.
                 }
             }
         });

@@ -131,8 +131,6 @@ public class SpelDocumentationTests : AbstractExpressionTests
         // Inventions Array
         StandardEvaluationContext teslaContext = TestScenarioCreator.GetTestEvaluationContext();
 
-        // teslaContext.SetRootObject(tesla);
-        // Evaluates to "Induction motor"
         string invention = parser.ParseExpression("Inventions[3]").GetValue<string>(teslaContext);
         Assert.Equal("Induction motor", invention);
 

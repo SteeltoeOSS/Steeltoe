@@ -41,7 +41,6 @@ public class HystrixRequestLog : IHystrixRequestLog
         if (!_allExecutedCommands.TryAdd(command))
         {
             // see RequestLog: Reduce Chance of Memory Leak https://github.com/Netflix/Hystrix/issues/53
-            // logger.warn("RequestLog ignoring command after reaching limit of " + MAX_STORAGE + ". See https://github.com/Netflix/Hystrix/issues/53 for more information.");
         }
     }
 

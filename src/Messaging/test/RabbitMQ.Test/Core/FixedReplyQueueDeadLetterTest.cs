@@ -168,9 +168,6 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyQueueDeadLe
             services.AddRabbitHostingServices();
             services.AddRabbitDefaultMessageConverter();
 
-            // services.AddRabbitListenerEndpointRegistry();
-            // services.AddRabbitListenerEndpointRegistrar();
-            // services.AddRabbitListenerAttributeProcessor();
             services.AddRabbitConnectionFactory();
 
             IQueue requestQueue = QueueBuilder.NonDurable("dlx.test.requestQ").AutoDelete().Build();

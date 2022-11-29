@@ -211,10 +211,6 @@ public class ConsulDiscoveryOptions
         }
     }
 
-    // public int CatalogServicesWatchDelay { get; set; } = 1000;
-
-    // public int CatalogServicesWatchTimeout { get; set; } = 2;
-
     /// <summary>
     /// Set properties from addresses found in configuration.
     /// </summary>

@@ -251,7 +251,6 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         CorrelationData.Confirm confirm = correlation.Future.Result;
         Assert.True(confirm.Ack);
 
-        // Assert.NotNull(correlation.ReturnedMessage); Deprecated in Spring
         producerBinding.UnbindAsync();
     }
 
@@ -1395,7 +1394,6 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.Equal("foo", ((byte[])deadLetter.Payload).GetString());
         Assert.Contains(RepublishMessageRecoverer.XExceptionStacktrace, deadLetter.Headers);
 
-        // Assert.Equal(maxStackTraceSize, ((string)deadLetter.Headers[RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE]).Length); TODO: Wrapped exception doesn't contain propagated stack trace
         template.ConvertAndSend(string.Empty, $"{TestPrefix}foo.dlqpubtest2.foo", "bar");
 
         deadLetter = template.Receive($"{TestPrefix}foo.dlqpubtest2.foo.dlq");
@@ -1449,10 +1447,6 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.IsType<byte[]>(obj);
         Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", ((byte[])obj).GetString());
 
-        // TODO: Inject and check log output ...
-        //    ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
-        // verify(logger).trace(captor.capture());
-        // assertThat(captor.getValue().toString()).contains(("Compressed 14 to "));
         var input = new QueueChannel
         {
             ComponentName = "batchingConsumer"
@@ -1765,7 +1759,6 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         rabbitProducerOptions.RoutingKeyExpression = "#root.get_Payload().field";
 
         // requires delayed message exchange plugin; tested locally
-        // producerProperties.Extension.DelayedExchange = true;
         rabbitProducerOptions.DelayExpression = "1000";
         producerProperties.PartitionKeyExpression = "0";
 
