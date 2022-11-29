@@ -12,14 +12,12 @@ namespace Steeltoe.Discovery.Eureka;
 public class EurekaApplicationsHealthContributor : IHealthContributor
 {
     private readonly EurekaDiscoveryClient _discoveryClient;
-    private readonly ILogger<EurekaApplicationsHealthContributor> _logger;
 
     public string Id { get; } = "eurekaApplications";
 
     public EurekaApplicationsHealthContributor(EurekaDiscoveryClient discoveryClient, ILogger<EurekaApplicationsHealthContributor> logger = null)
     {
         _discoveryClient = discoveryClient;
-        _logger = logger;
     }
 
     // Testing

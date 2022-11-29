@@ -13,7 +13,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 public class SimpleConnection : IConnection, RC.NetworkConnection
 {
     private readonly int _closeTimeout;
-    private readonly ILogger _logger;
 
     public int LocalPort => Connection.LocalPort;
 
@@ -31,7 +30,6 @@ public class SimpleConnection : IConnection, RC.NetworkConnection
     {
         Connection = connection;
         _closeTimeout = closeTimeout;
-        _logger = logger;
     }
 
     public RC.IModel CreateChannel(bool transactional = false)

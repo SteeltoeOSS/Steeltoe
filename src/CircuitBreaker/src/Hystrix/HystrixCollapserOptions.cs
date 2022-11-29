@@ -26,7 +26,6 @@ public class HystrixCollapserOptions : HystrixBaseOptions, IHystrixCollapserOpti
     internal const int DefaultMetricsRollingPercentileBucketSize = 100; // default to 100 values max per bucket
 
     protected const string HystrixCollapserPrefix = "hystrix:collapser";
-    private readonly IHystrixCollapserOptions _defaults;
 
     public IHystrixCollapserKey CollapserKey { get; set; }
 
@@ -61,7 +60,6 @@ public class HystrixCollapserOptions : HystrixBaseOptions, IHystrixCollapserOpti
     {
         CollapserKey = key;
         Scope = scope;
-        _defaults = defaults;
 
         MaxRequestsInBatch = GetInteger(HystrixCollapserPrefix, key.Name, "maxRequestsInBatch", DefaultMaxRequestsInBatch, defaults?.MaxRequestsInBatch);
 

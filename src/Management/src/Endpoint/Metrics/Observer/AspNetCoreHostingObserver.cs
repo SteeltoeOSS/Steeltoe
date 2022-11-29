@@ -27,7 +27,6 @@ public class AspNetCoreHostingObserver : MetricsObserver
 
     private readonly Histogram<double> _responseTime;
     private readonly Histogram<double> _serverCount;
-    private readonly IViewRegistry _viewRegistry;
 
     public AspNetCoreHostingObserver(IMetricsObserverOptions options, IViewRegistry viewRegistry, ILogger<AspNetCoreHostingObserver> logger)
         : base(DefaultObserverName, DiagnosticName, options, logger)
@@ -37,7 +36,6 @@ public class AspNetCoreHostingObserver : MetricsObserver
         SetPathMatcher(new Regex(options.IngressIgnorePattern));
         Meter meter = OpenTelemetryMetrics.Meter;
 
-        _viewRegistry = viewRegistry;
         _responseTime = meter.CreateHistogram<double>("http.server.requests.seconds", "s", "measures the duration of the inbound request in seconds");
         _serverCount = meter.CreateHistogram<double>("http.server.requests.count", "total", "number of requests");
 

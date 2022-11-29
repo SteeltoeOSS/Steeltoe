@@ -10,13 +10,10 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 
 public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 {
-    private readonly RequestDelegate _next;
-
     public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IManagementOptions managementOptions,
         ILogger<HeapDumpEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
-        _next = next;
     }
 
     public Task InvokeAsync(HttpContext context)

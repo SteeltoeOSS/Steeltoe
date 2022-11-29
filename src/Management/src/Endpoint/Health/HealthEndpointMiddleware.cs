@@ -13,12 +13,9 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointResponse, ISecurityContext>
 {
-    private readonly RequestDelegate _next;
-
     public HealthEndpointMiddleware(RequestDelegate next, IManagementOptions managementOptions, ILogger<InfoEndpointMiddleware> logger = null)
         : base(managementOptions, logger)
     {
-        _next = next;
     }
 
     public Task InvokeAsync(HttpContext context, HealthEndpointCore endpoint)

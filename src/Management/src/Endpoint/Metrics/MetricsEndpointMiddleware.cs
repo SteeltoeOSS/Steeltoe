@@ -13,13 +13,10 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>
 {
-    private readonly RequestDelegate _next;
-
     public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IManagementOptions managementOptions,
         ILogger<MetricsEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
-        _next = next;
     }
 
     public Task InvokeAsync(HttpContext context)

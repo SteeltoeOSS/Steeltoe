@@ -8,11 +8,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
 
 public class HystrixMetricStreamService : IHostedService
 {
-    private readonly RabbitMetricsStreamPublisher _streamPublisher;
-
     public HystrixMetricStreamService(RabbitMetricsStreamPublisher streamPublisher)
     {
-        _streamPublisher = streamPublisher;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
