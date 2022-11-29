@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 namespace Steeltoe.Common.TestResources;
 
@@ -86,7 +87,7 @@ public static class TestHelpers
     {
         IServiceCollection serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
-        serviceCollection.AddLogging(builder => builder.AddConsole());
+        serviceCollection.AddLogging(builder => builder.AddSimpleConsole(options => options.ColorBehavior = LoggerColorBehavior.Disabled));
         serviceCollection.AddLogging(builder => builder.AddDebug());
         return serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
     }
