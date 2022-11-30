@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Hosting;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
@@ -29,14 +30,14 @@ namespace Steeltoe.Management.Endpoint;
 public static class ManagementHostBuilderExtensions
 {
     /// <summary>
-    /// Adds the Database Migrations actuator to the application.
+    /// Adds the Database Migrations actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     public static IHostBuilder AddDbMigrationsActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddDbMigrationsActuator(context.Configuration);
             ActivateActuatorEndpoints(collection);
@@ -44,14 +45,14 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Environment actuator to the application.
+    /// Adds the Environment actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     public static IHostBuilder AddEnvActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddEnvActuator(context.Configuration);
             ActivateActuatorEndpoints(collection);
@@ -59,14 +60,14 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Health actuator to the application.
+    /// Adds the Health actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     public static IHostBuilder AddHealthActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddHealthActuator(context.Configuration);
             ActivateActuatorEndpoints(collection);
@@ -74,17 +75,17 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Health actuator to the application.
+    /// Adds the Health actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     /// <param name="contributors">
-    /// Types that contribute to the overall health of the app.
+    /// Types that contribute to the overall health of the app
     /// </param>
     public static IHostBuilder AddHealthActuator(this IHostBuilder hostBuilder, Type[] contributors)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddHealthActuator(context.Configuration, contributors);
             ActivateActuatorEndpoints(collection);
@@ -92,20 +93,20 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Health actuator to the application.
+    /// Adds the Health actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     /// <param name="aggregator">
-    /// Custom health aggregator.
+    /// Custom health aggregator
     /// </param>
     /// <param name="contributors">
-    /// Types that contribute to the overall health of the app.
+    /// Types that contribute to the overall health of the app
     /// </param>
     public static IHostBuilder AddHealthActuator(this IHostBuilder hostBuilder, IHealthAggregator aggregator, Type[] contributors)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddHealthActuator(context.Configuration, aggregator, contributors);
             ActivateActuatorEndpoints(collection);
@@ -113,14 +114,14 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the HeapDump actuator to the application.
+    /// Adds the HeapDump actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     public static IHostBuilder AddHeapDumpActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddHeapDumpActuator(context.Configuration);
             ActivateActuatorEndpoints(collection);
@@ -128,14 +129,14 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Hypermedia actuator to the application.
+    /// Adds the Hypermedia actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     public static IHostBuilder AddHypermediaActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddHypermediaActuator(context.Configuration);
             ActivateActuatorEndpoints(collection);
@@ -143,14 +144,14 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Info actuator to the application.
+    /// Adds the Info actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     public static IHostBuilder AddInfoActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddInfoActuator(context.Configuration);
             ActivateActuatorEndpoints(collection);
@@ -158,17 +159,17 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Info actuator to the application.
+    /// Adds the Info actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     /// <param name="contributors">
-    /// Contributors to application information.
+    /// Contributors to application information
     /// </param>
     public static IHostBuilder AddInfoActuator(this IHostBuilder hostBuilder, IInfoContributor[] contributors)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddInfoActuator(context.Configuration, contributors);
             ActivateActuatorEndpoints(collection);
@@ -176,14 +177,14 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Loggers actuator to the application.
+    /// Adds the Loggers actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     public static IHostBuilder AddLoggersActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.AddDynamicLogging().ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().AddDynamicLogging().ConfigureServices((context, collection) =>
         {
             collection.AddLoggersActuator(context.Configuration);
             ActivateActuatorEndpoints(collection);
@@ -191,14 +192,14 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Mappings actuator to the application.
+    /// Adds the Mappings actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     public static IHostBuilder AddMappingsActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddMappingsActuator(context.Configuration);
             ActivateActuatorEndpoints(collection);
@@ -206,14 +207,14 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Metrics actuator to the application.
+    /// Adds the Metrics actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     public static IHostBuilder AddMetricsActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddMetricsActuator(context.Configuration);
             ActivateActuatorEndpoints(collection);
@@ -221,14 +222,14 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Refresh actuator to the application.
+    /// Adds the Refresh actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     public static IHostBuilder AddRefreshActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddRefreshActuator(context.Configuration);
             ActivateActuatorEndpoints(collection);
@@ -236,17 +237,17 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the ThreadDump actuator to the application.
+    /// Adds the ThreadDump actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     /// <param name="mediaTypeVersion">
-    /// Specify the media type version to use in the response.
+    /// Specify the media type version to use in the response
     /// </param>
     public static IHostBuilder AddThreadDumpActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddThreadDumpActuator(context.Configuration, mediaTypeVersion);
             ActivateActuatorEndpoints(collection);
@@ -254,17 +255,17 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Trace actuator to the application.
+    /// Adds the Trace actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     /// <param name="mediaTypeVersion">
-    /// Specify the media type version to use in the response.
+    /// Specify the media type version to use in the response
     /// </param>
     public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddTraceActuator(context.Configuration, mediaTypeVersion);
             ActivateActuatorEndpoints(collection);
@@ -272,14 +273,14 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Cloud Foundry actuator to the application.
+    /// Adds the Cloud Foundry actuator to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     public static IHostBuilder AddCloudFoundryActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddCloudFoundryActuator(context.Configuration);
             ActivateActuatorEndpoints(collection);
@@ -287,27 +288,27 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds all standard actuators to the application.
+    /// Adds all standard actuators to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// Your HostBuilder
     /// </param>
     /// <param name="configureEndpoints">
-    /// Customize endpoint behavior. Useful for tailoring auth requirements.
+    /// Customize endpoint behavior. Useful for tailoring auth requirements
     /// </param>
     /// <param name="mediaTypeVersion">
-    /// Specify the media type version to use in the response.
+    /// Specify the media type version to use in the response
     /// </param>
     /// <param name="buildCorsPolicy">
     /// Customize the CORS policy.
     /// </param>
     /// <remarks>
-    /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
+    /// Does not add platform specific features (like for Cloud Foundry or Kubernetes)
     /// </remarks>
     public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null,
         MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
     {
-        return hostBuilder.AddDynamicLogging().ConfigureServices((context, collection) =>
+        return hostBuilder.AddDynamicLogging().AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddAllActuators(context.Configuration, mediaTypeVersion, buildCorsPolicy);
             ActivateActuatorEndpoints(collection, configureEndpoints);
@@ -315,30 +316,30 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Add wavefront metrics to the application.
+    /// Add wavefront metrics to the application
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your Hostbuilder.
+    /// Your Hostbuilder
     /// </param>
     /// <returns>
-    /// The updated HostBuilder.
+    /// The updated HostBuilder
     /// </returns>
     public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((_, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddWavefrontMetrics();
         });
     }
 
     /// <summary>
-    /// Registers an <see cref="IStartupFilter" /> that will map all configured actuators, initialize health.
+    /// Registers an <see cref="IStartupFilter" /> that will map all configured actuators, initialize health
     /// </summary>
     /// <param name="collection">
-    /// <see cref="IServiceCollection" /> that has actuators to activate.
+    /// <see cref="IServiceCollection" /> that has actuators to activate
     /// </param>
     /// <param name="configureEndpoints">
-    /// IEndpointConventionBuilder customizations (such as auth policy customization).
+    /// IEndpointConventionBuilder customizations (such as auth policy customization)
     /// </param>
     public static void ActivateActuatorEndpoints(this IServiceCollection collection, Action<IEndpointConventionBuilder> configureEndpoints = null)
     {
@@ -356,7 +357,7 @@ public static class ManagementHostBuilderExtensions
             }
 
             // add a registration that includes this endpoint configuration
-            collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(_ => new AllActuatorsStartupFilter(configureEndpoints));
+            collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(provider => new AllActuatorsStartupFilter(configureEndpoints));
         }
         else
         {
@@ -366,5 +367,18 @@ public static class ManagementHostBuilderExtensions
                 collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>();
             }
         }
+    }
+
+    private static IHostBuilder AddManagementPort(this IHostBuilder hostBuilder)
+    {
+        return hostBuilder.ConfigureWebHost(webhostBuilder =>
+        {
+            webhostBuilder.GetManagementUrl(out int? httpPort, out int? httpsPort);
+
+            if (httpPort.HasValue || httpsPort.HasValue)
+            {
+                webhostBuilder.UseCloudHosting(httpPort, httpsPort);
+            }
+        });
     }
 }

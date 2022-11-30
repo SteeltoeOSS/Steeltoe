@@ -4,6 +4,7 @@
     "projects": [
       "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
       "Common\\src\\Common.Http\\Steeltoe.Common.Http.csproj",
+      "Common\\src\\Common.Hosting\\Steeltoe.Common.Hosting.csproj",
       "Common\\src\\Common.Kubernetes\\Steeltoe.Common.Kubernetes.csproj",
       "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
       "Common\\src\\Common\\Steeltoe.Common.csproj",
