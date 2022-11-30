@@ -27,10 +27,10 @@ namespace Steeltoe.Management.Endpoint
     public static class ManagementWebApplicationBuilderExtensions
     {
         /// <summary>
-        /// Adds the Database Migrations actuator to the application
+        /// Adds the Database Migrations actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         public static WebApplicationBuilder AddDbMigrationsActuator(this WebApplicationBuilder applicationBuilder)
         {
@@ -40,10 +40,10 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the Environment actuator to the application
+        /// Adds the Environment actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         public static WebApplicationBuilder AddEnvActuator(this WebApplicationBuilder applicationBuilder)
         {
@@ -53,10 +53,10 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the Health actuator to the application
+        /// Adds the Health actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder)
         {
@@ -66,13 +66,13 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the Health actuator to the application
+        /// Adds the Health actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         /// <param name="contributors">
-        /// Types that contribute to the overall health of the app
+        /// Types that contribute to the overall health of the app.
         /// </param>
         public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, Type[] contributors)
         {
@@ -82,16 +82,16 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the Health actuator to the application
+        /// Adds the Health actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         /// <param name="aggregator">
-        /// Custom health aggregator
+        /// Custom health aggregator.
         /// </param>
         /// <param name="contributors">
-        /// Types that contribute to the overall health of the app
+        /// Types that contribute to the overall health of the app.
         /// </param>
         public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, IHealthAggregator aggregator, Type[] contributors)
         {
@@ -101,10 +101,10 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the HeapDump actuator to the application
+        /// Adds the HeapDump actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         public static WebApplicationBuilder AddHeapDumpActuator(this WebApplicationBuilder applicationBuilder)
         {
@@ -114,10 +114,10 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the Hypermedia actuator to the application
+        /// Adds the Hypermedia actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         public static WebApplicationBuilder AddHypermediaActuator(this WebApplicationBuilder applicationBuilder)
         {
@@ -127,10 +127,10 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the Info actuator to the application
+        /// Adds the Info actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder)
         {
@@ -140,13 +140,13 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the Info actuator to the application
+        /// Adds the Info actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         /// <param name="contributors">
-        /// Contributors to application information
+        /// Contributors to application information.
         /// </param>
         public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder, IInfoContributor[] contributors)
         {
@@ -156,10 +156,10 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the Loggers actuator to the application
+        /// Adds the Loggers actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         public static WebApplicationBuilder AddLoggersActuator(this WebApplicationBuilder applicationBuilder)
         {
@@ -170,10 +170,10 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the Mappings actuator to the application
+        /// Adds the Mappings actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         public static WebApplicationBuilder AddMappingsActuator(this WebApplicationBuilder applicationBuilder)
         {
@@ -183,10 +183,10 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the Metrics actuator to the application
+        /// Adds the Metrics actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         public static WebApplicationBuilder AddMetricsActuator(this WebApplicationBuilder applicationBuilder)
         {
@@ -196,10 +196,10 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the Refresh actuator to the application
+        /// Adds the Refresh actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         public static WebApplicationBuilder AddRefreshActuator(this WebApplicationBuilder applicationBuilder)
         {
@@ -209,13 +209,13 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the ThreadDump actuator to the application
+        /// Adds the ThreadDump actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         /// <param name="mediaTypeVersion">
-        /// Specify the media type version to use in the response
+        /// Specify the media type version to use in the response.
         /// </param>
         public static WebApplicationBuilder AddThreadDumpActuator(this WebApplicationBuilder applicationBuilder,
             MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
@@ -226,13 +226,13 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the Trace actuator to the application
+        /// Adds the Trace actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         /// <param name="mediaTypeVersion">
-        /// Specify the media type version to use in the response
+        /// Specify the media type version to use in the response.
         /// </param>
         public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder applicationBuilder,
             MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
@@ -243,10 +243,10 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds the Cloud Foundry actuator to the application
+        /// Adds the Cloud Foundry actuator to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         public static WebApplicationBuilder AddCloudFoundryActuator(this WebApplicationBuilder applicationBuilder)
         {
@@ -256,16 +256,16 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Adds all Steeltoe Actuators to the application
+        /// Adds all Steeltoe Actuators to the application.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         /// <param name="configureEndpoints">
-        /// <see cref="IEndpointConventionBuilder" />
+        /// <see cref="IEndpointConventionBuilder" />.
         /// </param>
         /// <param name="mediaTypeVersion">
-        /// Specify the media type version to use in the response
+        /// Specify the media type version to use in the response.
         /// </param>
         public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder,
             Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
@@ -277,10 +277,10 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Add Wavefront Metrics Exporter
+        /// Add Wavefront Metrics Exporter.
         /// </summary>
         /// <param name="applicationBuilder">
-        /// Your <see cref="WebApplicationBuilder" />
+        /// Your <see cref="WebApplicationBuilder" />.
         /// </param>
         public static WebApplicationBuilder AddWavefrontMetrics(this WebApplicationBuilder applicationBuilder)
         {

@@ -30,10 +30,10 @@ namespace Steeltoe.Management.Endpoint;
 public static class ManagementHostBuilderExtensions
 {
     /// <summary>
-    /// Adds the Database Migrations actuator to the application
+    /// Adds the Database Migrations actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     public static IHostBuilder AddDbMigrationsActuator(this IHostBuilder hostBuilder)
     {
@@ -45,10 +45,10 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Environment actuator to the application
+    /// Adds the Environment actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     public static IHostBuilder AddEnvActuator(this IHostBuilder hostBuilder)
     {
@@ -60,10 +60,10 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Health actuator to the application
+    /// Adds the Health actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     public static IHostBuilder AddHealthActuator(this IHostBuilder hostBuilder)
     {
@@ -75,13 +75,13 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Health actuator to the application
+    /// Adds the Health actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     /// <param name="contributors">
-    /// Types that contribute to the overall health of the app
+    /// Types that contribute to the overall health of the app.
     /// </param>
     public static IHostBuilder AddHealthActuator(this IHostBuilder hostBuilder, Type[] contributors)
     {
@@ -93,16 +93,16 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Health actuator to the application
+    /// Adds the Health actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     /// <param name="aggregator">
-    /// Custom health aggregator
+    /// Custom health aggregator.
     /// </param>
     /// <param name="contributors">
-    /// Types that contribute to the overall health of the app
+    /// Types that contribute to the overall health of the app.
     /// </param>
     public static IHostBuilder AddHealthActuator(this IHostBuilder hostBuilder, IHealthAggregator aggregator, Type[] contributors)
     {
@@ -114,10 +114,10 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the HeapDump actuator to the application
+    /// Adds the HeapDump actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     public static IHostBuilder AddHeapDumpActuator(this IHostBuilder hostBuilder)
     {
@@ -129,10 +129,10 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Hypermedia actuator to the application
+    /// Adds the Hypermedia actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     public static IHostBuilder AddHypermediaActuator(this IHostBuilder hostBuilder)
     {
@@ -144,10 +144,10 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Info actuator to the application
+    /// Adds the Info actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     public static IHostBuilder AddInfoActuator(this IHostBuilder hostBuilder)
     {
@@ -159,13 +159,13 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Info actuator to the application
+    /// Adds the Info actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     /// <param name="contributors">
-    /// Contributors to application information
+    /// Contributors to application information.
     /// </param>
     public static IHostBuilder AddInfoActuator(this IHostBuilder hostBuilder, IInfoContributor[] contributors)
     {
@@ -177,10 +177,10 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Loggers actuator to the application
+    /// Adds the Loggers actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     public static IHostBuilder AddLoggersActuator(this IHostBuilder hostBuilder)
     {
@@ -192,10 +192,10 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Mappings actuator to the application
+    /// Adds the Mappings actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     public static IHostBuilder AddMappingsActuator(this IHostBuilder hostBuilder)
     {
@@ -207,10 +207,10 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Metrics actuator to the application
+    /// Adds the Metrics actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     public static IHostBuilder AddMetricsActuator(this IHostBuilder hostBuilder)
     {
@@ -222,10 +222,10 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Refresh actuator to the application
+    /// Adds the Refresh actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     public static IHostBuilder AddRefreshActuator(this IHostBuilder hostBuilder)
     {
@@ -237,13 +237,13 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the ThreadDump actuator to the application
+    /// Adds the ThreadDump actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     /// <param name="mediaTypeVersion">
-    /// Specify the media type version to use in the response
+    /// Specify the media type version to use in the response.
     /// </param>
     public static IHostBuilder AddThreadDumpActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
@@ -255,13 +255,13 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Trace actuator to the application
+    /// Adds the Trace actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     /// <param name="mediaTypeVersion">
-    /// Specify the media type version to use in the response
+    /// Specify the media type version to use in the response.
     /// </param>
     public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
@@ -273,10 +273,10 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Cloud Foundry actuator to the application
+    /// Adds the Cloud Foundry actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     public static IHostBuilder AddCloudFoundryActuator(this IHostBuilder hostBuilder)
     {
@@ -288,22 +288,22 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds all standard actuators to the application
+    /// Adds all standard actuators to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your HostBuilder
+    /// Your HostBuilder.
     /// </param>
     /// <param name="configureEndpoints">
-    /// Customize endpoint behavior. Useful for tailoring auth requirements
+    /// Customize endpoint behavior. Useful for tailoring auth requirements.
     /// </param>
     /// <param name="mediaTypeVersion">
-    /// Specify the media type version to use in the response
+    /// Specify the media type version to use in the response.
     /// </param>
     /// <param name="buildCorsPolicy">
     /// Customize the CORS policy.
     /// </param>
     /// <remarks>
-    /// Does not add platform specific features (like for Cloud Foundry or Kubernetes)
+    /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
     /// </remarks>
     public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null,
         MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
@@ -316,13 +316,13 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Add wavefront metrics to the application
+    /// Add wavefront metrics to the application.
     /// </summary>
     /// <param name="hostBuilder">
-    /// Your Hostbuilder
+    /// Your Hostbuilder.
     /// </param>
     /// <returns>
-    /// The updated HostBuilder
+    /// The updated HostBuilder.
     /// </returns>
     public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
     {
@@ -333,13 +333,13 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Registers an <see cref="IStartupFilter" /> that will map all configured actuators, initialize health
+    /// Registers an <see cref="IStartupFilter" /> that will map all configured actuators, initialize health.
     /// </summary>
     /// <param name="collection">
-    /// <see cref="IServiceCollection" /> that has actuators to activate
+    /// <see cref="IServiceCollection" /> that has actuators to activate.
     /// </param>
     /// <param name="configureEndpoints">
-    /// IEndpointConventionBuilder customizations (such as auth policy customization)
+    /// IEndpointConventionBuilder customizations (such as auth policy customization).
     /// </param>
     public static void ActivateActuatorEndpoints(this IServiceCollection collection, Action<IEndpointConventionBuilder> configureEndpoints = null)
     {
