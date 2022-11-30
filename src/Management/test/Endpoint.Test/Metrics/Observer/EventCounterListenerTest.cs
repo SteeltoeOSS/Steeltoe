@@ -56,13 +56,13 @@ public class EventCounterListenerTest : BaseTest
 
         foreach (string metric in _metrics)
         {
-            List<KeyValuePair<string, List<MetricSample>>> summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
+            var summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
             Assert.NotNull(summary);
             Assert.True(summary.Count > 0);
         }
     }
 
-    [Fact(Skip = "See https://github.com/SteeltoeOSS/Steeltoe/issues/985")]
+    [Fact]
     public void EventCounterListenerGetsMetricsWithExclusionsTest()
     {
         var exclusions = new List<string>
@@ -88,9 +88,35 @@ public class EventCounterListenerTest : BaseTest
 
         foreach (string metric in _metrics)
         {
-            List<KeyValuePair<string, List<MetricSample>>> summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
+            var summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
 
             if (!exclusions.Contains(metric.Replace("System.Runtime.", string.Empty, StringComparison.Ordinal)))
+            {
+                Assert.NotNull(summary);
+                Assert.True(summary.Count > 0, $"Expected metrics for {metric}");
+            }
+            else
+            {
+                Assert.True(summary == null || summary.Count == 0, $"Expected no metrics for {metric}");
+            }
+        }
+    }
+    
+    [Fact]
+    public void EventCounterListenerGetsMetricsWithInclusionsTest()
+    {
+        var inclusions = new List<string> { "cpu-usage" };
+        using var listener = new EventCounterListener(new MetricsObserverOptions { IncludedMetrics = inclusions });
+        var exporter = new SteeltoeExporter(_scraperOptions);
+        using var otelMetrics = GetTestMetrics(null, exporter, null);
+        Task.Delay(2000).Wait();
+
+        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollectAsync().Result;
+
+        foreach (var metric in _metrics)
+        {
+            var summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
+            if (inclusions.Contains(metric.Replace("System.Runtime.", string.Empty)))
             {
                 Assert.NotNull(summary);
                 Assert.True(summary.Count > 0, $"Expected metrics for {metric}");
