@@ -8,23 +8,31 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class HttpRequestInfo
 {
-    public string Method { get; set; }
+    public string Method { get; }
 
-    public HostString Host { get; set; }
+    public HostString Host { get; }
 
-    public PathString Path { get; set; }
+    public PathString Path { get; }
 
-    public QueryString QueryString { get; set; }
+    public QueryString QueryString { get; }
 
-    public Stream Body { get; set; } = new MemoryStream();
+    public Stream Body { get; } = new MemoryStream();
 
-    public HttpRequestInfo(HttpRequest request)
+    private HttpRequestInfo(HttpRequest request)
     {
         Method = request.Method;
         Host = request.Host;
         Path = request.Path;
         QueryString = request.QueryString;
-        request.Body.CopyToAsync(Body).GetAwaiter().GetResult();
-        Body.Seek(0, SeekOrigin.Begin);
+    }
+
+    public static async Task<HttpRequestInfo> CreateAsync(HttpRequest request)
+    {
+        var info = new HttpRequestInfo(request);
+
+        await request.Body.CopyToAsync(info.Body);
+        info.Body.Seek(0, SeekOrigin.Begin);
+
+        return info;
     }
 }

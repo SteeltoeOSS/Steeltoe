@@ -87,7 +87,7 @@ public class EndpointMiddlewareTest : BaseTest
         HttpClient client = server.CreateClient();
 
         // send the request
-        HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication"));
         string json = await result.Content.ReadAsStringAsync();
 
         Assert.Equal(
@@ -103,7 +103,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        string response = await client.GetStringAsync("http://localhost/cloudfoundryapplication/info");
+        string response = await client.GetStringAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
 
         Assert.Contains("2017-07-12T18:40:39Z", response, StringComparison.Ordinal);
         Assert.Contains("2017-06-08T12:47:02Z", response, StringComparison.Ordinal);
@@ -122,7 +122,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        string response = await client.GetStringAsync("http://localhost/cloudfoundryapplication/info");
+        string response = await client.GetStringAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
 
         Assert.Contains("1499884839000", response, StringComparison.Ordinal);
         Assert.DoesNotContain("2017-07-12T18:40:39Z", response, StringComparison.Ordinal);
