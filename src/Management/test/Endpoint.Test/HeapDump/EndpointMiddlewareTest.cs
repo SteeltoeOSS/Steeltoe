@@ -71,7 +71,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/heapdump");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/heapdump"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
         Assert.True(result.Content.Headers.Contains("Content-Type"));

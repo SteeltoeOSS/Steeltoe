@@ -114,7 +114,7 @@ public class TokenExchanger
     {
         var requestContent = new FormUrlEncodedContent(parameters);
 
-        var requestMessage = new HttpRequestMessage(HttpMethod.Post, targetUrl);
+        var requestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(targetUrl, UriKind.RelativeOrAbsolute));
         requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         requestMessage.Content = requestContent;
         return requestMessage;

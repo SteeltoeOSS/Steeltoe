@@ -75,7 +75,7 @@ public class EndpointMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/env");
+            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/env"));
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             string json = await result.Content.ReadAsStringAsync();
 

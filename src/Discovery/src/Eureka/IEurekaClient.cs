@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery.Eureka.AppInfo;
-using T = System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -11,5 +10,5 @@ public interface IEurekaClient : ILookupService
 {
     IList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure);
 
-    T.Task ShutdownAsync();
+    Task ShutdownAsync();
 }

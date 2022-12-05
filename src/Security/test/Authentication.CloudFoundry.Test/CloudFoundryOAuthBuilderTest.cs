@@ -15,7 +15,7 @@ public class CloudFoundryOAuthBuilderTest
         const string expectedAuthorizationUrl = $"http://{CloudFoundryDefaults.OAuthServiceUrl}/oauth/authorize";
         using var webApplicationFactory = new TestApplicationFactory<TestServerStartup>();
         HttpClient client = webApplicationFactory.CreateDefaultClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
         string location = result.Headers.Location.ToString();
 
         Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
@@ -38,7 +38,7 @@ public class CloudFoundryOAuthBuilderTest
 
         using var webApplicationFactory = new TestApplicationFactory<TestServerStartup>(configuration);
         HttpClient client = webApplicationFactory.CreateDefaultClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
         string location = result.Headers.Location.ToString();
 
         Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);

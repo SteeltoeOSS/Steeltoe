@@ -45,7 +45,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
+            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
             Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
         }
 
@@ -72,7 +72,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         using (var server = new TestServer(builder2))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
+            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
             Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
         }
 
@@ -100,7 +100,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         using (var server = new TestServer(builder3))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/barfoo");
+            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/barfoo"));
             Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
         }
 
@@ -127,7 +127,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         using (var server = new TestServer(builder4))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
+            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
             Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
         }
     }
@@ -157,7 +157,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
+            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
 
@@ -185,7 +185,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         using (var server = new TestServer(builder3))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
+            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
             Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
         }
     }
@@ -217,7 +217,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
     }
 
@@ -249,7 +249,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/info");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/info"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
     }
 
@@ -283,7 +283,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/info");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/info"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
     }
 

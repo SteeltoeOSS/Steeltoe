@@ -70,8 +70,10 @@
     <Rule Id="S3956" Action="Warning" />
     <Rule Id="S3962" Action="Warning" />
     <Rule Id="S3993" Action="Warning" />
+    <Rule Id="S3997" Action="Warning" />
     <Rule Id="S3998" Action="None" />
     <Rule Id="S4004" Action="Warning" />
+    <Rule Id="S4005" Action="Warning" />
     <Rule Id="S4022" Action="Warning" />
     <Rule Id="S4023" Action="Warning" />
     <Rule Id="S4039" Action="Warning" />

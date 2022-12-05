@@ -33,8 +33,8 @@ public class HystrixConfigStreamControllerTest : HystrixTestBase
 
         client.BaseAddress = new Uri("http://localhost/");
 
-        HttpResponseMessage result = await client.SendAsync(
-            new HttpRequestMessage(HttpMethod.Get, "hystrix/config.stream"), HttpCompletionOption.ResponseHeadersRead);
+        var requestUri = new Uri("hystrix/config.stream", UriKind.Relative);
+        HttpResponseMessage result = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, requestUri), HttpCompletionOption.ResponseHeadersRead);
 
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
@@ -50,17 +50,17 @@ public class HystrixConfigStreamControllerTest : HystrixTestBase
     }
 
     [Fact]
-    public void Endpoint_ReturnsData()
+    public async Task Endpoint_ReturnsData()
     {
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>();
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
 
         client.BaseAddress = new Uri("http://localhost/");
-        Stream result = client.GetStreamAsync("hystrix/config.stream").GetAwaiter().GetResult();
+        Stream result = await client.GetStreamAsync(new Uri("hystrix/config.stream", UriKind.Relative));
 
         HttpClient client2 = server.CreateClient();
-        HttpResponseMessage cmdResult = client2.GetAsync("test/test.command").GetAwaiter().GetResult();
+        HttpResponseMessage cmdResult = await client2.GetAsync(new Uri("test/test.command", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, cmdResult.StatusCode);
 
         var reader = new StreamReader(result);

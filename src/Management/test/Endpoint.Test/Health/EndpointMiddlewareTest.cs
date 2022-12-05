@@ -63,7 +63,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
         Assert.NotNull(json);
@@ -87,7 +87,7 @@ public class EndpointMiddlewareTest : BaseTest
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
 
-        HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
         Assert.NotNull(json);
@@ -113,7 +113,7 @@ public class EndpointMiddlewareTest : BaseTest
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
 
-        HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
         Assert.NotNull(json);
@@ -138,7 +138,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
         Assert.NotNull(json);
@@ -164,7 +164,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
         Assert.NotNull(json);
@@ -190,7 +190,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
         Assert.NotNull(json);
@@ -219,7 +219,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
         Assert.NotNull(json);
@@ -234,7 +234,7 @@ public class EndpointMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             string json = await result.Content.ReadAsStringAsync();
             Assert.NotNull(json);
@@ -250,7 +250,7 @@ public class EndpointMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage downResult = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+            HttpResponseMessage downResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
             Assert.Equal(HttpStatusCode.ServiceUnavailable, downResult.StatusCode);
             string downJson = await downResult.Content.ReadAsStringAsync();
             Assert.NotNull(downJson);
@@ -266,7 +266,7 @@ public class EndpointMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage outResult = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+            HttpResponseMessage outResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
             Assert.Equal(HttpStatusCode.ServiceUnavailable, outResult.StatusCode);
             string outJson = await outResult.Content.ReadAsStringAsync();
             Assert.NotNull(outJson);
@@ -282,7 +282,7 @@ public class EndpointMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage unknownResult = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+            HttpResponseMessage unknownResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
             Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
             string unknownJson = await unknownResult.Content.ReadAsStringAsync();
             Assert.NotNull(unknownJson);
@@ -298,7 +298,7 @@ public class EndpointMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage unknownResult = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+            HttpResponseMessage unknownResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
             Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
             string unknownJson = await unknownResult.Content.ReadAsStringAsync();
             Assert.NotNull(unknownJson);
@@ -315,7 +315,7 @@ public class EndpointMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage downResult = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+            HttpResponseMessage downResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
             Assert.Equal(HttpStatusCode.OK, downResult.StatusCode);
             string downJson = await downResult.Content.ReadAsStringAsync();
             Assert.NotNull(downJson);
@@ -334,7 +334,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage unknownResult = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+        HttpResponseMessage unknownResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
         string unknownJson = await unknownResult.Content.ReadAsStringAsync();
         Assert.NotNull(unknownJson);

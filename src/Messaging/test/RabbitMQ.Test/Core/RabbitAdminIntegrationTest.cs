@@ -378,7 +378,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         byte[] authToken = Encoding.ASCII.GetBytes("guest:guest");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
 
-        HttpResponseMessage result = await client.GetAsync($"http://localhost:15672/api/exchanges/%2F/{exchangeName}");
+        HttpResponseMessage result = await client.GetAsync(new Uri($"http://localhost:15672/api/exchanges/%2F/{exchangeName}"));
 
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddJsonStream(await result.Content.ReadAsStreamAsync()).Build();
