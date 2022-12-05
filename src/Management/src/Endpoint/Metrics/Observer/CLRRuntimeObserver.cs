@@ -19,7 +19,6 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
     internal const string HeapEvent = "Steeltoe.ClrMetrics.Heap";
     internal const string ThreadsEvent = "Steeltoe.ClrMetrics.Threads";
 
-
     private readonly Dictionary<string, object> _heapTags = new()
     {
         { "area", "heap" }

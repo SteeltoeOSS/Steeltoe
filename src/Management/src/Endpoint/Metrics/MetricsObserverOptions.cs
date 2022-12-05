@@ -35,7 +35,7 @@ public class MetricsObserverOptions : IMetricsObserverOptions
     public bool HttpClientDesktop { get; set; }
 
     public bool HystrixEvents { get; set; }
-    
+
     /// <inheritdoc />
     public List<string> IncludedMetrics { get; set; } = new();
 
