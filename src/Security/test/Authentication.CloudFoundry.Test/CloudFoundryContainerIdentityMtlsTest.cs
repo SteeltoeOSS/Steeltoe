@@ -26,8 +26,8 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     {
         using IHost host = await GetHostBuilder().StartAsync();
 
-        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch)
-            .GetAsync($"https://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
+        var requestUri = new Uri($"https://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
+        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch).GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -37,8 +37,8 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     {
         using IHost host = await GetHostBuilder().StartAsync();
 
-        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch)
-            .GetAsync($"https://localhost/{CloudFoundryDefaults.SameOrganizationAuthorizationPolicy}");
+        var requestUri = new Uri($"https://localhost/{CloudFoundryDefaults.SameOrganizationAuthorizationPolicy}");
+        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch).GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -48,8 +48,8 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     {
         using IHost host = await GetHostBuilder().StartAsync();
 
-        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.SpaceMatch)
-            .GetAsync($"https://localhost/{CloudFoundryDefaults.SameOrganizationAuthorizationPolicy}");
+        var requestUri = new Uri($"https://localhost/{CloudFoundryDefaults.SameOrganizationAuthorizationPolicy}");
+        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.SpaceMatch).GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -59,8 +59,8 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     {
         using IHost host = await GetHostBuilder().StartAsync();
 
-        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgMatch)
-            .GetAsync($"https://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
+        var requestUri = new Uri($"https://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
+        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgMatch).GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -70,7 +70,8 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     {
         using IHost host = await GetHostBuilder().StartAsync();
 
-        HttpResponseMessage response = await host.GetTestClient().GetAsync($"http://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
+        var requestUri = new Uri($"http://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
+        HttpResponseMessage response = await host.GetTestClient().GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }

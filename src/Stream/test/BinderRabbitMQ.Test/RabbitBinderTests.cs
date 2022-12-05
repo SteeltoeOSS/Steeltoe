@@ -437,13 +437,11 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.False(container.IsRunning);
 
         var client = new HttpClient();
-        const string scheme = "http://";
-        const string vhost = "%2F";
         byte[] byteArray = "guest:guest".GetBytes();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 
-        HttpResponseMessage response =
-            await client.GetAsync($"{scheme}guest:guest@localhost:15672/api/exchanges/{vhost}/{exchange.ExchangeName}/bindings/source");
+        var requestUri = new Uri($"http://guest:guest@localhost:15672/api/exchanges/%2F/{exchange.ExchangeName}/bindings/source");
+        HttpResponseMessage response = await client.GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         string jsonResult = await response.Content.ReadAsStringAsync();

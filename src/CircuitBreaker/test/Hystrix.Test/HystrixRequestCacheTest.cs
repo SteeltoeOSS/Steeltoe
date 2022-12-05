@@ -10,7 +10,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 public class HystrixRequestCacheTest : HystrixTestBase
 {
     [Fact]
-    public void TestCache()
+    public async Task TestCache()
     {
         try
         {
@@ -19,18 +19,18 @@ public class HystrixRequestCacheTest : HystrixTestBase
             Task<string> t3 = Task.FromResult("b1");
 
             var cache1 = HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1"));
-            cache1.PutIfAbsent("valueA", t1);
-            cache1.PutIfAbsent("valueA", t2);
-            cache1.PutIfAbsent("valueB", t3);
+            _ = cache1.PutIfAbsent("valueA", t1);
+            _ = cache1.PutIfAbsent("valueA", t2);
+            _ = cache1.PutIfAbsent("valueB", t3);
 
             var cache2 = HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command2"));
             Task<string> t4 = Task.FromResult("a3");
-            cache2.PutIfAbsent("valueA", t4);
+            _ = cache2.PutIfAbsent("valueA", t4);
 
-            Assert.Equal("a1", cache1.Get<Task<string>>("valueA").GetAwaiter().GetResult());
-            Assert.Equal("b1", cache1.Get<Task<string>>("valueB").GetAwaiter().GetResult());
+            Assert.Equal("a1", await cache1.Get<Task<string>>("valueA"));
+            Assert.Equal("b1", await cache1.Get<Task<string>>("valueB"));
 
-            Assert.Equal("a3", cache2.Get<Task<string>>("valueA").GetAwaiter().GetResult());
+            Assert.Equal("a3", await cache2.Get<Task<string>>("valueA"));
             Assert.Null(cache2.Get<Task<string>>("valueB"));
         }
         catch (Exception e)
@@ -67,14 +67,14 @@ public class HystrixRequestCacheTest : HystrixTestBase
     }
 
     [Fact]
-    public void TestClearCache()
+    public async Task TestClearCache()
     {
         try
         {
             var cache1 = HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1"));
             Task<string> t1 = Task.FromResult("a1");
-            cache1.PutIfAbsent("valueA", t1);
-            Assert.Equal("a1", cache1.Get<Task<string>>("valueA").GetAwaiter().GetResult());
+            _ = cache1.PutIfAbsent("valueA", t1);
+            Assert.Equal("a1", await cache1.Get<Task<string>>("valueA"));
             cache1.Clear("valueA");
             Assert.Null(cache1.Get<Task<string>>("valueA"));
         }
