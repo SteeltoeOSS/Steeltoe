@@ -971,7 +971,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Assert.True(provider.TryGet("spring:cloud:config:token", out value));
             Assert.Equal("vaulttoken", value);
             Assert.True(provider.TryGet("spring:cloud:config:timeout", out value));
-            Assert.Equal("6000", value);
+            Assert.Equal("60000", value);
             Assert.True(provider.TryGet("spring:cloud:config:tokenRenewRate", out value));
             Assert.Equal("1", value);
             Assert.True(provider.TryGet("spring:cloud:config:tokenTtl", out value));
