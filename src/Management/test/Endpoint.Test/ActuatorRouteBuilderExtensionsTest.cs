@@ -126,7 +126,7 @@ public class ActuatorRouteBuilderExtensionsTest
         Assert.NotNull(path);
 
         using TestServer server = host.GetTestServer();
-        HttpResponseMessage response = await server.CreateClient().GetAsync(path);
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri(path, UriKind.RelativeOrAbsolute));
 
         Assert.True(expectedSuccess == response.IsSuccessStatusCode,
             $"Expected {(expectedSuccess ? "success" : "failure")}, but got {response.StatusCode} for {path} and type {type}");

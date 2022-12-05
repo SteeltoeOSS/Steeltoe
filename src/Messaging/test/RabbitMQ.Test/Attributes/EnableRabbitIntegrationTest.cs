@@ -496,7 +496,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         byte[] authToken = Encoding.ASCII.GetBytes("guest:guest");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
 
-        HttpResponseMessage result = await client.GetAsync("http://localhost:15672/api/queues/%2F/" + "amqp656");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost:15672/api/queues/%2F/" + "amqp656"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string content = await result.Content.ReadAsStringAsync();
         Assert.Contains("test-empty", content, StringComparison.Ordinal);

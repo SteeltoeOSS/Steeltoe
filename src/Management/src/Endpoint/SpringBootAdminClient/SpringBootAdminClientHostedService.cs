@@ -81,6 +81,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
             return;
         }
 
-        await _httpClient.DeleteAsync($"{_options.Url}/instances/{RegistrationResult.Id}");
+        var requestUri = new Uri($"{_options.Url}/instances/{RegistrationResult.Id}");
+        await _httpClient.DeleteAsync(requestUri);
     }
 }

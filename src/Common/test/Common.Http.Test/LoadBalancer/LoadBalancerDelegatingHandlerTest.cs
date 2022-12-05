@@ -20,7 +20,7 @@ public class LoadBalancerDelegatingHandlerTest
     [Fact]
     public async Task ResolvesUri_TracksStats_WithProvidedLoadBalancer()
     {
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://replaceme/api");
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replaceme/api"));
         var loadBalancer = new FakeLoadBalancer();
 
         var handler = new LoadBalancerDelegatingHandler(loadBalancer)
@@ -39,7 +39,7 @@ public class LoadBalancerDelegatingHandlerTest
     [Fact]
     public async Task DoesNotTrackStats_WhenResolutionFails_WithProvidedLoadBalancer()
     {
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://replaceme/api");
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replaceme/api"));
         var loadBalancer = new BrokenLoadBalancer();
 
         var handler = new LoadBalancerDelegatingHandler(loadBalancer)
@@ -57,7 +57,7 @@ public class LoadBalancerDelegatingHandlerTest
     [Fact]
     public async Task TracksStats_WhenRequestsGoWrong_WithProvidedLoadBalancer()
     {
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://replaceme/api");
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replaceme/api"));
         var loadBalancer = new FakeLoadBalancer();
 
         var handler = new LoadBalancerDelegatingHandler(loadBalancer)

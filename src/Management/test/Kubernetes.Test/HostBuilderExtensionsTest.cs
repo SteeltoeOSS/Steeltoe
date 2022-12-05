@@ -156,27 +156,27 @@ public class HostBuilderExtensionsTest
 
     private async Task AssertActuatorResponsesAsync(HttpClient testClient, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
-        HttpResponseMessage response = await testClient.GetAsync("/actuator");
+        HttpResponseMessage response = await testClient.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await testClient.GetAsync("/actuator/info");
+        response = await testClient.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await testClient.GetAsync("/actuator/health");
+        response = await testClient.GetAsync(new Uri("/actuator/health", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await testClient.GetAsync("/actuator/health/liveness");
+        response = await testClient.GetAsync(new Uri("/actuator/health/liveness", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("\"LivenessState\":\"CORRECT\"", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
-        response = await testClient.GetAsync("/actuator/health/readiness");
+        response = await testClient.GetAsync(new Uri("/actuator/health/readiness", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
 
         if (mediaTypeVersion == MediaTypeVersion.V1)
         {
-            response = await testClient.GetAsync("/actuator/trace");
+            response = await testClient.GetAsync(new Uri("/actuator/trace", UriKind.Relative));
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
         else
         {
-            response = await testClient.GetAsync("/actuator/httptrace");
+            response = await testClient.GetAsync(new Uri("/actuator/httptrace", UriKind.Relative));
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }

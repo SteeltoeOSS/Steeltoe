@@ -32,7 +32,7 @@ public class TestConfigServerStartup
                 return;
             }
 
-            LastRequest = new HttpRequestInfo(context.Request);
+            LastRequest = await HttpRequestInfo.CreateAsync(context.Request);
             context.Response.StatusCode = ReturnStatus;
             context.Response.Headers.Add("content-type", "application/json");
             await context.Response.WriteAsync(Response);
