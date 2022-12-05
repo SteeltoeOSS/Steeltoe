@@ -1081,11 +1081,11 @@ public sealed class ConfigServerConfigurationProviderTest
 
         var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
-        string requestUri = provider.GetConfigServerUri(settings.RawUris[0], null);
+        var requestUri = new Uri(provider.GetConfigServerUri(settings.RawUris[0], null));
         HttpRequestMessage request = provider.GetRequestMessage(requestUri, "user", "password");
 
         Assert.Equal(HttpMethod.Get, request.Method);
-        Assert.Equal(requestUri, request.RequestUri.ToString());
+        Assert.Equal(requestUri, request.RequestUri);
         Assert.NotNull(request.Headers.Authorization);
         Assert.Equal("Basic", request.Headers.Authorization.Scheme);
         Assert.Equal(provider.GetEncoded("user", "password"), request.Headers.Authorization.Parameter);
@@ -1103,11 +1103,11 @@ public sealed class ConfigServerConfigurationProviderTest
 
         var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
-        string requestUri = provider.GetConfigServerUri(settings.RawUris[0], null);
+        var requestUri = new Uri(provider.GetConfigServerUri(settings.RawUris[0], null));
         HttpRequestMessage request = provider.GetRequestMessage(requestUri, null, null);
 
         Assert.Equal(HttpMethod.Get, request.Method);
-        Assert.Equal(requestUri, request.RequestUri.ToString());
+        Assert.Equal(requestUri, request.RequestUri);
         Assert.True(request.Headers.Contains(ConfigServerConfigurationProvider.TokenHeader));
         IEnumerable<string> headerValues = request.Headers.GetValues(ConfigServerConfigurationProvider.TokenHeader);
         Assert.Contains("MyVaultToken", headerValues);

@@ -8,9 +8,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using Steeltoe.Discovery.Eureka.Task;
+using Steeltoe.Discovery.Eureka.Tasks;
 using Steeltoe.Discovery.Eureka.Transport;
-using T = System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -201,7 +200,7 @@ public class DiscoveryClient : IEurekaClient
         return results[index];
     }
 
-    public virtual async T.Task ShutdownAsync()
+    public virtual async Task ShutdownAsync()
     {
         int shutdownValue = Interlocked.Exchange(ref shutdown, 1);
 
@@ -560,7 +559,7 @@ public class DiscoveryClient : IEurekaClient
         InitializeAsync().GetAwaiter().GetResult();
     }
 
-    protected async T.Task InitializeAsync()
+    protected async Task InitializeAsync()
     {
         Interlocked.Exchange(ref logger, startupLogger);
 

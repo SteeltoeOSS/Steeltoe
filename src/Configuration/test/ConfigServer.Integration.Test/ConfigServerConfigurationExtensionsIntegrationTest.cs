@@ -101,7 +101,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         // Act and Assert (TestServer expects Spring Cloud Config Server to be running)
         using var server = new TestServer(builder);
         using HttpClient client = server.CreateClient();
-        string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+        string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"));
 
         Assert.Equal("spam" + "from foo development" + "Spring Cloud Samples" + "https://github.com/spring-cloud-samples", result);
     }
@@ -184,7 +184,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             // Act and Assert (TestServer expects Spring Cloud Config Server to be running @ localhost:8888)
             using var server = new TestServer(builder);
             using HttpClient client = server.CreateClient();
-            string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+            string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"));
 
             Assert.Equal("spam" + "from foo development" + "Spring Cloud Samples" + "https://github.com/spring-cloud-samples", result);
         }
@@ -274,7 +274,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
             // Act and Assert (TestServer expects Spring Cloud Config Server to be running)
             using var server = new TestServer(builder);
             using HttpClient client = server.CreateClient();
-            string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+            string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"));
 
             Assert.Equal("spam" + "barcelona" + "Spring Cloud Samples" + "https://github.com/spring-cloud-samples", result);
         }
@@ -371,7 +371,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         // Act and Assert (TestServer expects Spring Cloud Config Server to be running)
         using var server = new TestServer(builder);
         using HttpClient client = server.CreateClient();
-        string result = await client.GetStringAsync("http://localhost/Home/Health");
+        string result = await client.GetStringAsync(new Uri("http://localhost/Home/Health"));
 
         // after switching to newer config server image, the health response has changed to
         // https://github.com/spring-cloud-samples/config-repo/Config resource 'file [/tmp/config-repo-4389533880216684481/application.yml' via location '' (document #0)"
