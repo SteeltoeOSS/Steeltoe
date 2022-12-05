@@ -42,7 +42,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
         Dictionary<string, string> tokenRequestParameters = GetTokenInfoRequestParameters(tokens);
 
         var requestContent = new FormUrlEncodedContent(tokenRequestParameters);
-        var request = new HttpRequestMessage(HttpMethod.Post, Options.TokenInfoUrl);
+        var request = new HttpRequestMessage(HttpMethod.Post, new Uri(Options.TokenInfoUrl));
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         request.Headers.Authorization = new AuthenticationHeaderValue("Basic", GetEncoded(Options.ClientId, Options.ClientSecret));
         request.Content = requestContent;

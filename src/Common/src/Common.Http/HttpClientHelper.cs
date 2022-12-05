@@ -111,7 +111,7 @@ public static class HttpClientHelper
     /// <param name="getAccessToken">
     /// A means of including a bearer token.
     /// </param>
-    public static HttpRequestMessage GetRequestMessage(HttpMethod method, string requestUri, Func<string> getAccessToken)
+    public static HttpRequestMessage GetRequestMessage(HttpMethod method, Uri requestUri, Func<string> getAccessToken)
     {
         HttpRequestMessage request = GetRequestMessage(method, requestUri, null, null);
 
@@ -144,7 +144,7 @@ public static class HttpClientHelper
     /// <param name="password">
     /// Optional Basic Auth Password.
     /// </param>
-    public static HttpRequestMessage GetRequestMessage(HttpMethod method, string requestUri, string userName, string password)
+    public static HttpRequestMessage GetRequestMessage(HttpMethod method, Uri requestUri, string userName, string password)
     {
         ArgumentGuard.NotNull(method);
         ArgumentGuard.NotNull(requestUri);

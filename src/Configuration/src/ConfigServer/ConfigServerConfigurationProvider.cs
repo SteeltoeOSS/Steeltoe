@@ -426,7 +426,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
     /// <returns>
     /// The HttpRequestMessage built from the path.
     /// </returns>
-    protected internal HttpRequestMessage GetRequestMessage(string requestUri, string username, string password)
+    protected internal HttpRequestMessage GetRequestMessage(Uri requestUri, string username, string password)
     {
         HttpRequestMessage request = string.IsNullOrEmpty(Settings.AccessTokenUri)
             ? HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, username, password)
@@ -517,10 +517,10 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
             string password = Settings.GetPassword(trimUri);
 
             // Make Config Server URI from settings
-            string path = GetConfigServerUri(serverUri, label);
+            var uri = new Uri(GetConfigServerUri(serverUri, label), UriKind.RelativeOrAbsolute);
 
             // Get the request message
-            HttpRequestMessage request = GetRequestMessage(path, username, password);
+            HttpRequestMessage request = GetRequestMessage(uri, username, password);
 
             // Invoke Config Server
             try
@@ -765,7 +765,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         {
             HttpClient ??= GetConfiguredHttpClient(Settings);
 
-            string uri = GetVaultRenewUri();
+            Uri uri = GetVaultRenewUri();
             HttpRequestMessage message = GetVaultRenewMessage(uri);
 
             Logger.LogInformation("Renewing Vault token {token} for {ttl} milliseconds at Uri {uri}", obscuredToken, Settings.TokenTtl, uri);
@@ -783,7 +783,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         }
     }
 
-    private string GetVaultRenewUri()
+    private Uri GetVaultRenewUri()
     {
         string rawUri = Settings.RawUris[0];
 
@@ -792,10 +792,10 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
             rawUri += '/';
         }
 
-        return rawUri + VaultRenewPath;
+        return new Uri(rawUri + VaultRenewPath, UriKind.RelativeOrAbsolute);
     }
 
-    private HttpRequestMessage GetVaultRenewMessage(string requestUri)
+    private HttpRequestMessage GetVaultRenewMessage(Uri requestUri)
     {
         HttpRequestMessage request = HttpClientHelper.GetRequestMessage(HttpMethod.Post, requestUri, () => FetchAccessTokenAsync().GetAwaiter().GetResult());
 

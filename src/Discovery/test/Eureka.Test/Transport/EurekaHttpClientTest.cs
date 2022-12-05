@@ -45,7 +45,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task Register_Throws_IfInstanceInfoNull()
+    public async Task Register_Throws_IfInstanceInfoNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -54,7 +54,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task RegisterAsync_ThrowsHttpRequestException_ServerTimeout()
+    public async Task RegisterAsync_ThrowsHttpRequestException_ServerTimeout()
     {
         var configuration = new EurekaClientConfiguration
         {
@@ -67,7 +67,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task RegisterAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
+    public async Task RegisterAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
@@ -94,7 +94,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task RegisterAsync_SendsValidPOSTData()
+    public async Task RegisterAsync_SendsValidPOSTData()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
@@ -138,7 +138,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task SendHeartbeat_Throws_IfAppNameNull()
+    public async Task SendHeartbeat_Throws_IfAppNameNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -147,7 +147,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task SendHeartbeat_Throws_IfIdNull()
+    public async Task SendHeartbeat_Throws_IfIdNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -156,7 +156,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task SendHeartbeat_Throws_IfInstanceInfoNull()
+    public async Task SendHeartbeat_Throws_IfInstanceInfoNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -165,7 +165,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task SendHeartBeatAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
+    public async Task SendHeartBeatAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
@@ -203,7 +203,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task GetApplicationsAsync_InvokesServer_ReturnsExpectedApplications()
+    public async Task GetApplicationsAsync_InvokesServer_ReturnsExpectedApplications()
     {
         const string json = @"
                 { 
@@ -283,7 +283,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task GetVipAsync_Throws_IfVipAddressNull()
+    public async Task GetVipAsync_Throws_IfVipAddressNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -292,7 +292,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task GetSecureVipAsync_Throws_IfVipAddressNull()
+    public async Task GetSecureVipAsync_Throws_IfVipAddressNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -301,7 +301,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task GetApplicationAsync_Throws_IfAppNameNull()
+    public async Task GetApplicationAsync_Throws_IfAppNameNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -310,7 +310,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task GetApplicationAsync_InvokesServer_ReturnsExpectedApplications()
+    public async Task GetApplicationAsync_InvokesServer_ReturnsExpectedApplications()
     {
         const string json = @"
                 {
@@ -383,7 +383,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task GetApplicationAsync__FirstServerFails_InvokesSecondServer_ReturnsExpectedApplications()
+    public async Task GetApplicationAsync__FirstServerFails_InvokesSecondServer_ReturnsExpectedApplications()
     {
         const string json = @"
                 {
@@ -457,7 +457,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task GetInstanceAsync_Throws_IfAppNameNull()
+    public async Task GetInstanceAsync_Throws_IfAppNameNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -466,7 +466,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task GetInstanceAsync_Throws_IfAppNameNotNullAndIDNull()
+    public async Task GetInstanceAsync_Throws_IfAppNameNotNullAndIDNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -475,7 +475,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task GetInstanceAsync_Throws_IfIDNull()
+    public async Task GetInstanceAsync_Throws_IfIDNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -484,7 +484,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task GetInstanceAsync_InvokesServer_ReturnsExpectedInstances()
+    public async Task GetInstanceAsync_InvokesServer_ReturnsExpectedInstances()
     {
         const string json = @"
                 { 
@@ -550,7 +550,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task GetInstanceAsync_FirstServerFails_InvokesSecondServer_ReturnsExpectedInstances()
+    public async Task GetInstanceAsync_FirstServerFails_InvokesSecondServer_ReturnsExpectedInstances()
     {
         const string json = @"
                 { 
@@ -617,7 +617,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task CancelAsync_Throws_IfAppNameNull()
+    public async Task CancelAsync_Throws_IfAppNameNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -626,7 +626,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task CancelAsync_Throws_IfAppNameNotNullAndIDNull()
+    public async Task CancelAsync_Throws_IfAppNameNotNullAndIDNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -635,7 +635,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task CancelAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
+    public async Task CancelAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
@@ -664,7 +664,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task StatusUpdateAsync_Throws_IfAppNameNull()
+    public async Task StatusUpdateAsync_Throws_IfAppNameNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -673,7 +673,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task StatusUpdateAsync_Throws_IfIdNull()
+    public async Task StatusUpdateAsync_Throws_IfIdNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -682,7 +682,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task StatusUpdateAsync_Throws_IfInstanceInfoNull()
+    public async Task StatusUpdateAsync_Throws_IfInstanceInfoNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -691,7 +691,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task StatusUpdateAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
+    public async Task StatusUpdateAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
@@ -728,7 +728,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task DeleteStatusOverrideAsync_Throws_IfAppNameNull()
+    public async Task DeleteStatusOverrideAsync_Throws_IfAppNameNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -737,7 +737,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task DeleteStatusOverrideAsync_Throws_IfIdNull()
+    public async Task DeleteStatusOverrideAsync_Throws_IfIdNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -746,7 +746,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task DeleteStatusOverrideAsync_Throws_IfInstanceInfoNull()
+    public async Task DeleteStatusOverrideAsync_Throws_IfInstanceInfoNull()
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
@@ -755,7 +755,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task DeleteStatusOverrideAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
+    public async Task DeleteStatusOverrideAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;

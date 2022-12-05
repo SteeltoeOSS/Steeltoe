@@ -11,15 +11,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 public abstract class CommonHystrixCommandTests<TCommand> : HystrixTestBase
     where TCommand : HystrixCommand<int>
 {
-    protected abstract void AssertHooksOnSuccess(Func<TCommand> ctor, Action<TCommand> assertion);
+    protected abstract Task AssertHooksOnSuccessAsync(Func<TCommand> ctor, Action<TCommand> assertion);
 
-    protected abstract void AssertHooksOnFailure(Func<TCommand> ctor, Action<TCommand> assertion);
+    protected abstract Task AssertHooksOnFailureAsync(Func<TCommand> ctor, Action<TCommand> assertion);
 
-    protected abstract void AssertHooksOnFailure(Func<TCommand> ctor, Action<TCommand> assertion, bool failFast);
+    protected abstract Task AssertHooksOnFailureAsync(Func<TCommand> ctor, Action<TCommand> assertion, bool failFast);
 
-    protected void AssertHooksOnFailFast(Func<TCommand> ctor, Action<TCommand> assertion)
+    protected Task AssertHooksOnFailFastAsync(Func<TCommand> ctor, Action<TCommand> assertion)
     {
-        AssertHooksOnFailure(ctor, assertion, true);
+        return AssertHooksOnFailureAsync(ctor, assertion, true);
     }
 
     protected void AssertBlockingObserve(TCommand command, Action<TCommand> assertion, bool isSuccess)
