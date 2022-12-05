@@ -15,7 +15,7 @@ public interface ITracingOptions
     /// Gets a regex pattern for requests coming into this application that should not be traced.
     /// </summary>
     /// <remarks>
-    /// Default value: "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif".
+    /// Default value: "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|.*\\.gif".
     /// </remarks>
     string IngressIgnorePattern { get; }
 

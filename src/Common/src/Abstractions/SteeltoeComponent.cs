@@ -7,7 +7,6 @@ namespace Steeltoe.Common;
 public enum SteeltoeComponent
 {
     Discovery,
-    CircuitBreaker,
     Configuration,
     Connectors,
     Kubernetes,

@@ -22,7 +22,6 @@ public class MetricsObserverOptionsTest : BaseTest
         Assert.True(opts.ThreadPoolEvents);
         Assert.False(opts.HttpClientCore);
         Assert.False(opts.HttpClientDesktop);
-        Assert.False(opts.HystrixEvents);
     }
 
     [Fact]
@@ -45,7 +44,6 @@ public class MetricsObserverOptionsTest : BaseTest
             ["management:metrics:observer:threadPoolEvents"] = "false",
             ["management:metrics:observer:httpClientCore"] = "true",
             ["management:metrics:observer:httpClientDesktop"] = "true",
-            ["management:metrics:observer:hystrixEvents"] = "true"
         };
 
         var configurationBuilder = new ConfigurationBuilder();
@@ -61,6 +59,5 @@ public class MetricsObserverOptionsTest : BaseTest
         Assert.False(opts.ThreadPoolEvents);
         Assert.True(opts.HttpClientCore);
         Assert.True(opts.HttpClientDesktop);
-        Assert.True(opts.HystrixEvents);
     }
 }

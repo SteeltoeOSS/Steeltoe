@@ -25,11 +25,6 @@ public class RabbitMQServiceInfoFactory : ServiceInfoFactory
     {
         bool result = base.Accepts(binding);
 
-        if (result)
-        {
-            result = !HystrixRabbitMQServiceInfoFactory.HystrixRabbitServiceTags.ContainsOne(binding.Tags);
-        }
-
         return result;
     }
 
