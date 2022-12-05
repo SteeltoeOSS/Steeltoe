@@ -233,8 +233,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder applicationBuilder,
-        MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder applicationBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
         applicationBuilder.Services.AddTraceActuator(applicationBuilder.Configuration, mediaTypeVersion);
         applicationBuilder.AddCommonServices();
