@@ -117,7 +117,6 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
         retry = endpoint.RetryTemplate;
         Assert.Equal(23, GetFieldValue<int>(retry, "_maxAttempts"));
         Assert.Equal(2000, GetFieldValue<int>(retry, "_backOffInitialInterval"));
-        Assert.Equal(20000, GetFieldValue<int>(retry, "_backOffMaxInterval"));
         Assert.Equal(5.0, GetFieldValue<double>(retry, "_backOffMultiplier"));
 
         return container;
@@ -186,7 +185,6 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
 
         public CorrelationData GetWrapper(IMessage message)
         {
-            // var constructor = typeof(CorrelationDataWrapper).GetConstructor(typeof(string), typeof(object), typeof(Message));
             return Activator.CreateInstance(typeof(CorrelationDataWrapper), null, message, message) as CorrelationData;
         }
     }

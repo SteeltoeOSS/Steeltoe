@@ -14,13 +14,10 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 
 public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>
 {
-    private readonly RequestDelegate _next;
-
     public ActuatorHypermediaEndpointMiddleware(RequestDelegate next, ActuatorEndpoint endpoint, ActuatorManagementOptions managementOptions,
         ILogger<ActuatorHypermediaEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
-        _next = next;
     }
 
     public Task InvokeAsync(HttpContext context)

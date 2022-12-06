@@ -577,7 +577,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
             if (failingServiceUrls.Count == 0)
             {
-                // no-op
+                // Intentionally left empty.
             }
             else if (failingServiceUrls.Count >= threshold)
             {
@@ -667,7 +667,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     protected internal HttpRequestMessage GetRequestMessage(HttpMethod method, Uri requestUri)
     {
-        string rawUri = requestUri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
+        var rawUri = new Uri(requestUri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped));
         string rawUserInfo = requestUri.GetComponents(UriComponents.UserInfo, UriFormat.Unescaped);
         var request = new HttpRequestMessage(method, rawUri);
 

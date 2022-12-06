@@ -558,9 +558,6 @@ public class HystrixRollingNumberTest
             Assert.Equal(2, counter.GetValues(type).Length);
 
             counter.GetValueOfLatestBucket(type);
-
-            // System.out.println("Head: " + counter._buckets.state.get().head);
-            // System.out.println("Tail: " + counter._buckets.state.get().tail);
         }
     }
 

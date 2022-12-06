@@ -95,26 +95,21 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
         var parser = new SpelExpressionParser();
         var ctx = new StandardEvaluationContext();
 
-        ctx.SetRootObject(new Supervisor("Ben")); // so non-qualified references 'hasRole()' 'hasIPAddress()' are invoked against it);
+        ctx.SetRootObject(new Supervisor("Ben"));
 
+#pragma warning disable S125 // Sections of code should not be commented out
         // NEEDS TO OVERRIDE THE REFLECTION ONE - SHOW REORDERING MECHANISM
-        // Might be better with a as a variable although it would work as a property too...
+        // Might be better as a variable although it would work as a property too...
         // Variable references using a '#'
         // SpelExpression expr = parser.parseExpression("(hasRole('SUPERVISOR') or (#a <  1.042)) and hasIPAddress('10.10.0.0/16')");
+#pragma warning restore S125 // Sections of code should not be commented out
         ctx.AddMethodResolver(new MyMethodResolver());
 
         IExpression expr = parser.ParseRaw("(HasRole(3) or (#a <  1.042)) and HasIPAddress('10.10.0.0/16')");
 
-        bool value;
-
         ctx.SetVariable("a", 1.0d); // referenced as #a in the expression
-        value = expr.GetValue<bool>(ctx);
+        bool value = expr.GetValue<bool>(ctx);
         Assert.True(value);
-
-        // ctx.setRootObject(new Manager("Luke"));
-        // ctx.setVariable("a",1.043d);
-        // value = (bool)expr.GetValue(ctx,typeof(bool));
-        // assertFalse(value);
     }
 
     public class Person

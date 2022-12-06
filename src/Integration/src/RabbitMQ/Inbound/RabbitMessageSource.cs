@@ -32,7 +32,6 @@ public class RabbitMessageSource : AbstractMessageSource<object>
 
     public IMessageHeadersConverter MessageHeaderConverter { get; set; } = new DefaultMessageHeadersConverter();
 
-    // public RabbitHeaderMapper HeaderMapper { get; set; }  = DefaultAmqpHeaderMapper.inboundMapper();
     public ISmartMessageConverter MessageConverter { get; set; } = new RabbitConverter.SimpleMessageConverter();
 
     public bool RawMessageHeader { get; set; }
@@ -78,7 +77,6 @@ public class RabbitMessageSource : AbstractMessageSource<object>
             RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
             accessor.ConsumerQueue = QueueName;
 
-            // Map<String, Object> headers = this.headerMapper.toHeadersFromRequest(messageProperties);
             IMessage<byte[]> message = Message.Create(resp.Body, accessor.MessageHeaders);
 
             object payload;
@@ -160,7 +158,6 @@ public class RabbitMessageSource : AbstractMessageSource<object>
 
         public void Acknowledge(Status status)
         {
-            // logger.trace("acknowledge(" + status + ") for " + this);
             try
             {
                 ulong deliveryTag = AckInfo.Response.DeliveryTag;

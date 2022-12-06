@@ -143,12 +143,8 @@ public class ConstructorInvocationTests : AbstractExpressionTests
         // widening of int 3 to double 3 is OK
         Evaluate($"new {typeof(WidenDouble).FullName}(3).D", 3.0d, typeof(double));
 
-        // Evaluate("new Double(3)", 3.0d, typeof(double));
-
         // widening of int 3 to long 3 is OK
         Evaluate($"new {typeof(WidenLong).FullName}(3).L", 3L, typeof(long));
-
-        // Evaluate("new Long(3)", 3L, typeof(long));
     }
 
     [Fact]

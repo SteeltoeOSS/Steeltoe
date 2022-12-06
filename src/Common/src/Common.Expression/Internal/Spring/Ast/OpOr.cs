@@ -35,9 +35,22 @@ public class OpOr : Operator
             CodeFlow.IsBooleanCompatible(right.ExitDescriptor);
     }
 
+    /// <summary>
+    /// Pseudo:
+    /// <code>
+    /// <![CDATA[
+    /// if (leftOperandValue) { result=true; } else { result=rightOperandValue; }
+    /// ]]>
+    /// </code>
+    /// </summary>
+    /// <param name="gen">
+    /// IL generator.
+    /// </param>
+    /// <param name="cf">
+    /// Code flow.
+    /// </param>
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
-        // pseudo: if (leftOperandValue) { result=true; } else { result=rightOperandValue; }
         Label elseTarget = gen.DefineLabel();
         Label endIfTarget = gen.DefineLabel();
         LocalBuilder result = gen.DeclareLocal(typeof(bool));

@@ -42,7 +42,6 @@ public class ContainerShutDownTest : AbstractTest
             container.MessageListener = listener;
             var connection = cf.CreateConnection() as ChannelCachingConnectionProxy;
 
-            // var channels = TestUtils.getPropertyValue(connection, "target.delegate._channelManager._channelMap");
             FieldInfo field =
                 typeof(global::RabbitMQ.Client.Framing.Impl.Connection).GetField("m_sessionManager", BindingFlags.Instance | BindingFlags.NonPublic);
 

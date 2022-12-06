@@ -1533,10 +1533,6 @@ public class RabbitTemplate
                     container.MessageListener = this;
                     container.ServiceName = $"{ServiceName}#{Interlocked.Increment(ref _containerInstance)}";
 
-                    // if (this.taskExecutor != null)
-                    // {
-                    //    container.setTaskExecutor(this.taskExecutor);
-                    // }
                     if (AfterReceivePostProcessors != null)
                     {
                         container.SetAfterReceivePostProcessors(AfterReceivePostProcessors.ToArray());
@@ -1733,9 +1729,6 @@ public class RabbitTemplate
         if (DefaultSendDestination != null)
         {
             return DefaultSendDestination.RoutingKey;
-
-            // var dest = ParseDestination(DefaultSendDestination);
-            // return dest.Item2;
         }
 
         return DefaultRoutingKey;

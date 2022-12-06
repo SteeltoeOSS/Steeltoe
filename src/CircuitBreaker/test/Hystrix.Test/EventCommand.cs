@@ -15,7 +15,6 @@ internal sealed class EventCommand : HystrixCommand<string>
 
     protected override string Run()
     {
-        // _output?.WriteLine(Thread.CurrentThread.ManagedThreadId + " : In run()");
         throw new Exception("run_exception");
     }
 
@@ -23,16 +22,14 @@ internal sealed class EventCommand : HystrixCommand<string>
     {
         try
         {
-            // _output?.WriteLine(Thread.CurrentThread.ManagedThreadId + " : In fallback => " + ExecutionEvents)
             Time.WaitUntil(() => Token.IsCancellationRequested, 30000);
             Token.ThrowIfCancellationRequested();
         }
         catch (Exception)
         {
-            // output.WriteLine(Thread.CurrentThread.ManagedThreadId + " : Interruption occurred")
+            // Intentionally left empty.
         }
 
-        // output.WriteLine(Thread.CurrentThread.ManagedThreadId + " : CMD Success Result")
         return "fallback";
     }
 

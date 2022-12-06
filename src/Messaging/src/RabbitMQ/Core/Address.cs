@@ -36,7 +36,6 @@ public class Address
         }
         else if (address.LastIndexOf('/') <= 0)
         {
-            // RoutingKey = address.ReplaceFirst("/", string.Empty);
             var regex = new Regex("/");
             RoutingKey = regex.Replace(address, string.Empty, 1);
             ExchangeName = string.Empty;

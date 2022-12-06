@@ -17,7 +17,6 @@ namespace Steeltoe.Discovery.Consul.Discovery;
 public class ConsulHealthContributor : IHealthContributor
 {
     private readonly IConsulClient _client;
-    private readonly ILogger<ConsulHealthContributor> _logger;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
     private readonly ConsulDiscoveryOptions _options;
 
@@ -55,7 +54,6 @@ public class ConsulHealthContributor : IHealthContributor
 
         _client = client;
         _options = options;
-        _logger = logger;
     }
 
     /// <summary>
@@ -77,7 +75,6 @@ public class ConsulHealthContributor : IHealthContributor
 
         _client = client;
         _optionsMonitor = optionsMonitor;
-        _logger = logger;
     }
 
     /// <summary>

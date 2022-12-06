@@ -99,9 +99,11 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
     public Task<TRequestResponse> ToTaskAsync()
     {
         RequestCollapser<TBatchReturn, TRequestResponse, TRequestArgument> requestCollapser = _collapserFactory.GetRequestCollapser(this);
-        CollapsedRequest<TRequestResponse, TRequestArgument> request = null;
+        CollapsedRequest<TRequestResponse, TRequestArgument> request;
 
-        if (AddCacheEntryIfAbsent(CacheKey, out HystrixCachedTask<TRequestResponse> entry))
+        (bool isCached, HystrixCachedTask<TRequestResponse> entry) = AddCacheEntryIfAbsent(CacheKey);
+
+        if (isCached)
         {
             _metrics.MarkResponseFromCache();
             Task<TRequestResponse> origTask = entry.CachedTask;
@@ -179,22 +181,21 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
         };
     }
 
-    protected bool AddCacheEntryIfAbsent(string cacheKey, out HystrixCachedTask<TRequestResponse> entry)
+    protected (bool IsCached, HystrixCachedTask<TRequestResponse> CachedValue) AddCacheEntryIfAbsent(string cacheKey)
     {
         var newEntry = new HystrixCachedTask<TRequestResponse>();
 
         if (Properties.RequestCacheEnabled && cacheKey != null)
         {
-            entry = _requestCache.PutIfAbsent(cacheKey, newEntry);
+            HystrixCachedTask<TRequestResponse> entry = _requestCache.PutIfAbsent(cacheKey, newEntry);
 
             if (entry != null)
             {
-                return true;
+                return (true, entry);
             }
         }
 
-        entry = newEntry;
-        return false;
+        return (false, newEntry);
     }
 
     internal static void Reset()

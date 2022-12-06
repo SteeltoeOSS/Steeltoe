@@ -2223,23 +2223,11 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         protected virtual void ReturnToCache()
         {
-            // if (_factory._active && _publisherConfirms && this is IPublisherCallbackChannel)
-            // {
-            //    _theConnection._channelsAwaitingAcks[_target] = this;
-            //    ((IPublisherCallbackChannel)_target)
-            //            .SetAfterAckCallback(c => DoReturnToCache()); // _theConnection._channelsAwaitingAcks.Remove(c)));
-            // }
-            // else
-            // {
             DoReturnToCache();
-
-            // }
         }
 
         protected void DoReturnToCache()
         {
-            // if (proxy != null)
-            // {
             lock (ChannelList)
             {
                 // Allow for multiple close calls...
@@ -2268,9 +2256,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     }
                 }
             }
-
-            // }
-            // }
         }
 
         protected virtual void LogicalClose()
@@ -2345,10 +2330,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 else
                 {
                     target.Close();
-
-                    // if (this.target instanceof AutorecoveringChannel) {
-                    //    ClosingRecoveryListener.removeChannel((AutorecoveringChannel)this.target);
-                    // }
                 }
             }
             catch (AlreadyClosedException e)
@@ -2368,10 +2349,8 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         protected void AsyncClose()
         {
-            // ExecutorService executorService = getChannelsExecutor();
             RC.IModel channel = target;
 
-            // _factory._inFlightAsyncCloses.Add(channel);
             try
             {
                 Task.Run(() =>
@@ -2405,7 +2384,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                         }
                         finally
                         {
-                            // _factory._inFlightAsyncCloses.release(channel);
                             ReleasePermitIfNecessary();
                         }
                     }
@@ -2414,8 +2392,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             catch (Exception e)
             {
                 Logger?.LogError(e, "Exception while running AsyncClose processing");
-
-                // _factory._inFlightAsyncCloses.release(channel);
             }
         }
 

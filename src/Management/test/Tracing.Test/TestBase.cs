@@ -73,7 +73,6 @@ public class TestBase
         var props = GetPrivateField(comp, "propagators") as List<TextMapPropagator>;
         Assert.Equal(2, props.Count);
 
-        // TODO: Investigate alternatives and remove suppression.
 #pragma warning disable CS0618 // Type or member is obsolete
         Assert.Contains(props, p => p is B3Propagator);
 #pragma warning restore CS0618 // Type or member is obsolete

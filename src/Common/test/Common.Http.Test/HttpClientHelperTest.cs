@@ -48,7 +48,7 @@ public class HttpClientHelperTest
     [Fact]
     public void GetRequestMessage_CreatesCorrectMessage()
     {
-        HttpRequestMessage message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, "https://localhost/foobar", null, null);
+        HttpRequestMessage message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, new Uri("https://localhost/foobar"), null, null);
         Assert.NotNull(message);
         Assert.Equal(HttpMethod.Put, message.Method);
         Assert.Equal("https://localhost/foobar", message.RequestUri.ToString());
@@ -58,7 +58,7 @@ public class HttpClientHelperTest
     [Fact]
     public void GetRequestMessage_CreatesCorrectMessage_WithBasicAuth()
     {
-        HttpRequestMessage message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, "https://localhost/foobar", "foo", "bar");
+        HttpRequestMessage message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, new Uri("https://localhost/foobar"), "foo", "bar");
         Assert.NotNull(message);
         Assert.Equal(HttpMethod.Put, message.Method);
         Assert.Equal("https://localhost/foobar", message.RequestUri.ToString());

@@ -45,14 +45,4 @@ public class KubernetesInfoContributorTest
         Assert.False(info.ContainsKey("nodeName"));
         Assert.False(info.ContainsKey("hostIp"));
     }
-
-    // interact with a real cluster
-    // [Fact]
-    // public async Task Test1()
-    // {
-    //    var appSettings = new Dictionary<string, string> { { "spring:cloud:kubernetes", "kubedev" } };
-    //    var configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-    //    var utils = new StandardPodUtilities(new KubernetesApplicationOptions(configuration));
-    //    await utils.GetCurrentPodAsync();
-    // }
 }

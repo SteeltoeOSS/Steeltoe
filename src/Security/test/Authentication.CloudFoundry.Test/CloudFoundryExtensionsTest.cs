@@ -85,7 +85,7 @@ public class CloudFoundryExtensionsTest
         IWebHostBuilder builder = GetHostBuilder<TestServerStartup>();
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
         Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
         string location = result.Headers.Location.ToString();
         Assert.StartsWith("http://default_oauthserviceurl/oauth/authorize", location, StringComparison.Ordinal);
@@ -102,7 +102,7 @@ public class CloudFoundryExtensionsTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync("http://localhost/");
+            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
             Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
             string location = result.Headers.Location.ToString();
             Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location, StringComparison.Ordinal);
@@ -118,7 +118,7 @@ public class CloudFoundryExtensionsTest
         IWebHostBuilder builder = GetHostBuilder<TestServerJwtStartup>();
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
         Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
     }
 
@@ -135,7 +135,7 @@ public class CloudFoundryExtensionsTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
         Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
         string location = result.Headers.Location.ToString();
         Assert.StartsWith("https://default_oauthserviceurl/oauth/authorize", location, StringComparison.Ordinal);
@@ -157,7 +157,7 @@ public class CloudFoundryExtensionsTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync("http://localhost/");
+            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
             Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
             string location = result.Headers.Location.ToString();
             Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location, StringComparison.Ordinal);

@@ -21,7 +21,7 @@ public interface IInvocableHandlerMethod
     bool IsVoid { get; }
 
     /// <summary>
-    /// Gets a value for message logging (TODO: Look to remove).
+    /// Gets a value for message logging.
     /// </summary>
     string ShortLogMessage { get; }
 

@@ -9,7 +9,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 
 public class HeapDumpEndpoint : AbstractEndpoint<string>, IHeapDumpEndpoint
 {
-    private readonly ILogger<HeapDumpEndpoint> _logger;
     private readonly IHeapDumper _heapDumper;
 
     public new IHeapDumpOptions Options => options as IHeapDumpOptions;
@@ -20,7 +19,6 @@ public class HeapDumpEndpoint : AbstractEndpoint<string>, IHeapDumpEndpoint
         ArgumentGuard.NotNull(heapDumper);
 
         _heapDumper = heapDumper;
-        _logger = logger;
     }
 
     public override string Invoke()

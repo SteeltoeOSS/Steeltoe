@@ -112,13 +112,13 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyQueueDeadLe
         byte[] authToken = Encoding.ASCII.GetBytes("guest:guest");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
 
-        HttpResponseMessage result = await client.GetAsync($"http://localhost:15672/api/queues/%3F/{queueName}");
+        HttpResponseMessage result = await client.GetAsync(new Uri($"http://localhost:15672/api/queues/%3F/{queueName}"));
         int n = 0;
 
         while (n++ < 100 && result.StatusCode == HttpStatusCode.NotFound)
         {
             await Task.Delay(100);
-            result = await client.GetAsync($"http://localhost:15672/api/queues/%2F/{queueName}");
+            result = await client.GetAsync(new Uri($"http://localhost:15672/api/queues/%2F/{queueName}"));
         }
 
         Assert.True(n < 100);
@@ -133,7 +133,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyQueueDeadLe
         byte[] authToken = Encoding.ASCII.GetBytes("guest:guest");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
 
-        HttpResponseMessage result = await client.GetAsync($"http://localhost:15672/api/exchanges/%2F/{exchangeName}");
+        HttpResponseMessage result = await client.GetAsync(new Uri($"http://localhost:15672/api/exchanges/%2F/{exchangeName}"));
 
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddJsonStream(await result.Content.ReadAsStreamAsync()).Build();
@@ -168,9 +168,6 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyQueueDeadLe
             services.AddRabbitHostingServices();
             services.AddRabbitDefaultMessageConverter();
 
-            // services.AddRabbitListenerEndpointRegistry();
-            // services.AddRabbitListenerEndpointRegistrar();
-            // services.AddRabbitListenerAttributeProcessor();
             services.AddRabbitConnectionFactory();
 
             IQueue requestQueue = QueueBuilder.NonDurable("dlx.test.requestQ").AutoDelete().Build();

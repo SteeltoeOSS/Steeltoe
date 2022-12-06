@@ -33,34 +33,6 @@ public class RabbitAdminTest : AbstractTest
         Assert.Throws<ArgumentNullException>(() => new RabbitAdmin(connectionFactory));
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public void TestNoFailOnStartupWithMissingBroker()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        ServiceCollection serviceCollection = CreateContainer();
-        serviceCollection.AddLogging();
-        serviceCollection.AddRabbitQueue(new Queue("foo"));
-
-        serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
-        {
-            f.Host = "foo";
-            f.Port = 434343;
-        });
-
-        ServiceProvider provider = serviceCollection.BuildServiceProvider();
-        var applicationContext = provider.GetService<IApplicationContext>();
-        var connectionFactory = applicationContext.GetService<IConnectionFactory>();
-
-        _ = new RabbitAdmin(applicationContext, connectionFactory)
-        {
-            AutoStartup = true
-        };
-
-        connectionFactory.Destroy();
-    }
-
     [Fact]
     public void TestFailOnFirstUseWithMissingBroker()
     {
@@ -414,13 +386,13 @@ public class RabbitAdminTest : AbstractTest
         byte[] authToken = Encoding.ASCII.GetBytes("guest:guest");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
 
-        HttpResponseMessage result = await client.GetAsync($"http://localhost:15672/api/queues/%3F/{queue.QueueName}");
+        HttpResponseMessage result = await client.GetAsync(new Uri($"http://localhost:15672/api/queues/%3F/{queue.QueueName}"));
         int n = 0;
 
         while (n++ < 100 && result.StatusCode == HttpStatusCode.NotFound)
         {
             await Task.Delay(100);
-            result = await client.GetAsync($"http://localhost:15672/api/queues/%2F/{queue.QueueName}");
+            result = await client.GetAsync(new Uri($"http://localhost:15672/api/queues/%2F/{queue.QueueName}"));
         }
 
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
@@ -435,13 +407,13 @@ public class RabbitAdminTest : AbstractTest
 
         admin.DeclareQueue(queue);
 
-        result = await client.GetAsync($"http://localhost:15672/api/queues/%3F/{queue.QueueName}");
+        result = await client.GetAsync(new Uri($"http://localhost:15672/api/queues/%3F/{queue.QueueName}"));
         n = 0;
 
         while (n++ < 100 && result.StatusCode == HttpStatusCode.NotFound)
         {
             await Task.Delay(100);
-            result = await client.GetAsync($"http://localhost:15672/api/queues/%2F/{queue.QueueName}");
+            result = await client.GetAsync(new Uri($"http://localhost:15672/api/queues/%2F/{queue.QueueName}"));
         }
 
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);

@@ -98,11 +98,6 @@ public class SetValueTests : AbstractExpressionTests
         SetValueExpectError("ArrayContainer.Integers[1]", "wibble");
         SetValueExpectError("ArrayContainer.Floats[1]", "dribble");
         SetValueExpectError("ArrayContainer.Booleans[1]", "nein");
-
-        // TODO -- this fails with NPE due to ArrayToObject converter - discuss with Andy
-        // SetValueExpectError("arrayContainer.doubles[1]", new ArrayList<string>());
-        // SetValueExpectError("arrayContainer.shorts[1]", new ArrayList<string>());
-        // SetValueExpectError("arrayContainer.longs[1]", new ArrayList<string>());
         SetValueExpectError("ArrayContainer.Bytes[1]", "NaB");
         SetValueExpectError("ArrayContainer.Chars[1]", "NaC");
     }
@@ -122,7 +117,6 @@ public class SetValueTests : AbstractExpressionTests
     [Fact]
     public void TestSetGenericListElementValueTypeCoersion()
     {
-        // TODO currently failing since SetValue does a GetValue and "Wien" string != PlaceOfBirth - check with andy
         SetValue("PlacesLivedList[0]", "Wien");
     }
 

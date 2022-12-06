@@ -183,13 +183,7 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
     {
         Type handlerType = null;
 
-        if (handler is string)
-        {
-            // ApplicationContext context = getApplicationContext();
-            // Assert.state(context != null, "ApplicationContext is required for resolving handler bean names");
-            // handlerType = context.getType((String)handler);
-        }
-        else
+        if (handler is not string)
         {
             handlerType = handler.GetType();
         }
@@ -342,8 +336,7 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
 
             if (returnValue != null && MethodReturnValueHandlers.IsAsyncReturnValue(returnValue, returnType))
             {
-                // TODO: Async; var task = returnValue as Task;
-                throw new NotImplementedException("Async still todo");
+                throw new NotImplementedException("Async is not implemented.");
             }
 
             MethodReturnValueHandlers.HandleReturnValue(returnValue, returnType, message);

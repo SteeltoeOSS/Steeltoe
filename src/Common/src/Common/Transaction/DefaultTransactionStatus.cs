@@ -8,8 +8,6 @@ namespace Steeltoe.Common.Transaction;
 
 public class DefaultTransactionStatus : AbstractTransactionStatus
 {
-    private readonly ILogger _logger;
-
     public object Transaction { get; }
 
     public bool HasTransaction => Transaction != null;
@@ -38,7 +36,6 @@ public class DefaultTransactionStatus : AbstractTransactionStatus
         NewTransaction = newTransaction;
         IsNewSynchronization = newSynchronization;
         IsReadOnly = readOnly;
-        _logger = logger;
         SuspendedResources = suspendedResources;
     }
 

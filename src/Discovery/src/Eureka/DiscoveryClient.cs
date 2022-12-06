@@ -8,9 +8,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using Steeltoe.Discovery.Eureka.Task;
+using Steeltoe.Discovery.Eureka.Tasks;
 using Steeltoe.Discovery.Eureka.Transport;
-using T = System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -201,7 +200,7 @@ public class DiscoveryClient : IEurekaClient
         return results[index];
     }
 
-    public virtual async T.Task ShutdownAsync()
+    public virtual async Task ShutdownAsync()
     {
         int shutdownValue = Interlocked.Exchange(ref shutdown, 1);
 
@@ -315,9 +314,6 @@ public class DiscoveryClient : IEurekaClient
             localRegionApps = fetched;
             localRegionApps.ReturnUpInstancesOnly = ClientConfiguration.ShouldFilterOnlyUpInstances;
             LastGoodRegistryFetchTimestamp = DateTime.UtcNow.Ticks;
-
-            // Notify about cache refresh before updating the instance remote status
-            // onCacheRefreshed();
 
             //// Update remote status based on refreshed data held in the cache
             UpdateInstanceRemoteStatus();
@@ -563,7 +559,7 @@ public class DiscoveryClient : IEurekaClient
         InitializeAsync().GetAwaiter().GetResult();
     }
 
-    protected async T.Task InitializeAsync()
+    protected async Task InitializeAsync()
     {
         Interlocked.Exchange(ref logger, startupLogger);
 
@@ -572,7 +568,6 @@ public class DiscoveryClient : IEurekaClient
             ReturnUpInstancesOnly = ClientConfiguration.ShouldFilterOnlyUpInstances
         };
 
-        // TODO: add Enabled to IEurekaClientConfig
         var eurekaClientConfig = ClientConfiguration as EurekaClientConfiguration;
 
         if (!eurekaClientConfig.Enabled || (!ClientConfiguration.ShouldRegisterWithEureka && !ClientConfiguration.ShouldFetchRegistry))

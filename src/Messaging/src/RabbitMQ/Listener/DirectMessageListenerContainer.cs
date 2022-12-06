@@ -288,7 +288,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
             }
             catch (Exception e)
             {
-                // Thread.currentThread().interrupt();
                 Logger?.LogWarning(e, "Interrupted waiting for consumers. Continuing with shutdown.");
             }
             finally
@@ -356,7 +355,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
     private void ActualShutDown(List<SimpleConsumer> consumers)
     {
-        // Assert.state(getTaskExecutor() != null, "Cannot shut down if not initialized");
         Logger?.LogDebug("Shutting down");
         consumers.ForEach(CancelConsumer);
         Consumers.Clear();
@@ -407,14 +405,9 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         }
         catch (Exception e)
         {
-            // publishConsumerFailedEvent(e.getMessage(), false, e);
             Logger?.LogError(e, "Exception while CreateConnection");
             AddConsumerToRestart(new SimpleConsumer(this, null, null, queue, LoggerFactory?.CreateLogger<SimpleConsumer>()));
             throw;
-
-            // throw e instanceof AmqpConnectException
-            // ? (AmqpConnectException)e
-            // : new AmqpConnectException(e);
         }
         finally
         {
@@ -442,11 +435,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
                 list.Add(consumer);
                 Logger?.LogInformation("{consumer} started", consumer);
-
-                // if (getApplicationEventPublisher() != null)
-                // {
-                //    getApplicationEventPublisher().publishEvent(new AsyncConsumerStartedEvent(this, consumer));
-                // }
             }
         }
     }
@@ -573,7 +561,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
         if (idleEventInterval > 0 && now - LastReceive > idleEventInterval && now - _lastAlertAt > idleEventInterval)
         {
-            // PublishIdleContainerEvent(now - LastReceive);
             _lastAlertAt = now;
         }
     }
@@ -687,10 +674,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         {
             Logger?.LogError(e, "Cannot connect to server");
 
-            // if (e.getCause() instanceof AmqpApplicationContextClosedException) {
-            //    this.logger.error("Application context is closed, terminating");
-            //    this.taskScheduler.schedule(this::stop, new Date());
-            // }
             ConsumersToRestart.AddRange(restartableConsumers);
             Logger?.LogTrace(e, "After restart exception, consumers to restart now: {consumersToRestart}", ConsumersToRestart.Count);
             return false;
@@ -731,8 +714,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                             Shutdown();
                             Logger?.LogError(e, "Failed to start container - fatal error or backOffs exhausted");
                             Task.Run(StopAsync);
-
-                            // this.taskScheduler.schedule(this::stop, new Date());
                             break;
                         }
 
@@ -746,8 +727,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                         catch (Exception e1)
                         {
                             Logger?.LogError(e1, "Exception while in backoff, {nextBackOff}", nextBackOff);
-
-                            // Thread.currentThread().interrupt();
                         }
 
                         // initialization failed; try again having rested for backOff-interval
@@ -976,16 +955,9 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                 {
                     ExecuteListenerInTransaction(message, deliveryTag);
                 }
-
-                // catch (WrappedTransactionException e)
-                // {
-                //    if (e.InnerException instanceof Error) {
-                //        throw (Error)e.getCause();
-                //    }
-                // }
                 catch (Exception)
                 {
-                    // empty
+                    // Intentionally left empty.
                 }
                 finally
                 {
@@ -1098,10 +1070,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                     throw;
                 }
 
-                // catch (Throwable e2)
-                // {
-                //    throw new WrappedTransactionException(e2);
-                // }
                 return null;
             });
         }
