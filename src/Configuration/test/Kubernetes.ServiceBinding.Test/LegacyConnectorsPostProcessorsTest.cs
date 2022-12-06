@@ -53,4 +53,33 @@ public class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
         Assert.Equal("test-jdbc-url", configData[$"mysql:client:jdbcUrl"]);
     }
 
+    [Fact]
+    public void PostgreSqlTest_BindingTypeEnabled()
+    {
+        var postProcessor = new PostgreSqlLegacyConnectorPostProcessor();
+        Dictionary<string, string> configData = GetConfigData(TestBindingName,
+            PostgreSqlPostProcessor.BindingTypeKey,
+            Tuple.Create("database", "test-database"),
+            Tuple.Create("host", "test-host"),
+            Tuple.Create("password", "test-password"),
+            Tuple.Create("port", "test-port"),
+            Tuple.Create("jdbc-url", "test-jdbc-url"),
+            Tuple.Create("username", "test-username"),
+            Tuple.Create("sslmode", "verify-full"),
+            Tuple.Create("sslrootcert", "root.cert"),
+            Tuple.Create("options", "--cluster=routing-id&opt=val1"));
+
+        // BindingType enabled
+        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingTypeKey, true), configData);
+        Assert.Equal("test-database", configData[$"postgres:client:database"]);
+        Assert.Equal("test-host", configData[$"postgres:client:host"]);
+        Assert.Equal("test-password", configData[$"postgres:client:password"]);
+        Assert.Equal("test-port", configData[$"postgres:client:port"]);
+        Assert.Equal("test-username", configData[$"postgres:client:username"]);
+        Assert.Equal("test-jdbc-url", configData[$"postgres:client:jdbcUrl"]);
+        Assert.Equal("verify-full", configData[$"postgres:client:sslmode"]);
+        Assert.Equal("root.cert", configData[$"postgres:client:sslrootcert"]);
+        Assert.Equal("--cluster=routing-id&opt=val1", configData[$"postgres:client:options"]);
+    }
+
 }

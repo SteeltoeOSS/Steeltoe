@@ -47,7 +47,7 @@ internal sealed class MySqlLegacyConnectorPostProcessor : IConfigurationPostProc
             .ForEach((bindingNameKey) =>
             {
                 // Spring -> spring.datasource....
-                // Steeltoe -> steeltoe:mysql:binding-name....
+                // Steeltoe -> mysql:client:...
                 var mapper = new ServiceBindingMapper(configData, bindingNameKey, "mysql", "client");
                 mapper.MapFromTo("username", "username");
                 mapper.MapFromTo("password", "password");
@@ -60,5 +60,41 @@ internal sealed class MySqlLegacyConnectorPostProcessor : IConfigurationPostProc
 
                 // Note: Spring also adds spring.r2dbc.... properties as well
             });
+    }
+}
+internal sealed class PostgreSqlLegacyConnectorPostProcessor : IConfigurationPostProcessor
+{
+    internal const string BindingTypeKey = "postgresql";
+
+    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
+    {
+        if (!provider.IsBindingTypeEnabled(BindingTypeKey))
+        {
+            return;
+        }
+
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
+                    .ForEach((bindingNameKey) =>
+                    {
+                        // Spring -> spring.datasource....
+                        // Steeltoe -> postgres:client:...
+                        var mapper = new ServiceBindingMapper(configData, bindingNameKey, "postgres", "client");
+                        mapper.MapFromTo("username", "username");
+                        mapper.MapFromTo("password", "password");
+                        mapper.MapFromTo("host", "host");
+                        mapper.MapFromTo("port", "port");
+                        mapper.MapFromTo("database", "database");
+
+                        // Note, look at the Spring PostgreSqlBindingsPropertiesProcessor for format
+                        // of the below key values
+                        mapper.MapFromTo("sslmode", "sslmode");
+                        mapper.MapFromTo("sslrootcert", "sslrootcert");
+                        mapper.MapFromTo("options", "options");
+
+                        // Spring indicates this takes precedence over above
+                        mapper.MapFromTo("jdbc-url", "jdbcUrl");
+
+                        // Note: Spring also adds spring.r2dbc.... properties as well
+                    });
     }
 }
