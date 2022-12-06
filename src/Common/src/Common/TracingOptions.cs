@@ -10,8 +10,7 @@ public class TracingOptions : ITracingOptions
 {
     internal const string ConfigurationPrefix = "management:tracing";
 
-    internal const string DefaultIngressIgnorePattern =
-        "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|.*\\.gif";
+    internal const string DefaultIngressIgnorePattern = "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|.*\\.gif";
 
     internal const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions|/eureka/*";
     internal const int DefaultMaxPayloadSizeInBytes = 4096;

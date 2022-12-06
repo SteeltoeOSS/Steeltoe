@@ -43,7 +43,7 @@ public class MetricsObserverOptionsTest : BaseTest
             ["management:metrics:observer:eventCounterEvents"] = "true",
             ["management:metrics:observer:threadPoolEvents"] = "false",
             ["management:metrics:observer:httpClientCore"] = "true",
-            ["management:metrics:observer:httpClientDesktop"] = "true",
+            ["management:metrics:observer:httpClientDesktop"] = "true"
         };
 
         var configurationBuilder = new ConfigurationBuilder();
