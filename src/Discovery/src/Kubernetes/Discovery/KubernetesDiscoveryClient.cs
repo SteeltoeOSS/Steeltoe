@@ -45,10 +45,11 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
         if (_discoveryOptions.CurrentValue.AllNamespaces)
         {
-            return KubernetesClient.ListServiceForAllNamespaces(labelSelector: labelSelectorValue).Items.Select(service => service.Metadata.Name).ToList();
+            return KubernetesClient.CoreV1.ListServiceForAllNamespaces(labelSelector: labelSelectorValue).Items.Select(service => service.Metadata.Name)
+                .ToList();
         }
 
-        return KubernetesClient.ListNamespacedService(_discoveryOptions.CurrentValue.Namespace, labelSelector: labelSelectorValue).Items
+        return KubernetesClient.CoreV1.ListNamespacedService(_discoveryOptions.CurrentValue.Namespace, labelSelector: labelSelectorValue).Items
             .Select(service => service.Metadata.Name).ToList();
     }
 
@@ -57,20 +58,16 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
         ArgumentGuard.NotNull(serviceId);
 
         IList<V1Endpoints> endpoints = _discoveryOptions.CurrentValue.AllNamespaces
-            ? KubernetesClient.ListEndpointsForAllNamespaces(fieldSelector: $"metadata.name={serviceId}").Items
-            : KubernetesClient.ListNamespacedEndpoints(
+            ? KubernetesClient.CoreV1.ListEndpointsForAllNamespaces(fieldSelector: $"metadata.name={serviceId}").Items
+            : KubernetesClient.CoreV1.ListNamespacedEndpoints(
                 _discoveryOptions.CurrentValue.Namespace ?? DefaultNamespace, fieldSelector: $"metadata.name={serviceId}").Items;
 
         IEnumerable<EndpointSubsetNs> subsetsNs = endpoints.Select(GetSubsetsFromEndpoints);
-
         var serviceInstances = new List<IServiceInstance>();
 
-        if (subsetsNs.Any())
+        foreach (EndpointSubsetNs es in subsetsNs)
         {
-            foreach (EndpointSubsetNs es in subsetsNs)
-            {
-                serviceInstances.AddRange(GetNamespacedServiceInstances(es, serviceId));
-            }
+            serviceInstances.AddRange(GetNamespacedServiceInstances(es, serviceId));
         }
 
         return serviceInstances;
@@ -102,7 +99,7 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
         if (subsets.Any())
         {
-            V1Service service = KubernetesClient.ListNamespacedService(k8SNamespace, fieldSelector: $"metadata.name={serviceId}").Items.FirstOrDefault();
+            V1Service service = KubernetesClient.CoreV1.ListNamespacedService(k8SNamespace, fieldSelector: $"metadata.name={serviceId}").Items.FirstOrDefault();
             IDictionary<string, string> serviceMetadata = GetServiceMetadata(service);
             Metadata metadataProps = _discoveryOptions.CurrentValue.Metadata;
 
@@ -187,8 +184,8 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
         else
         {
             endpointPort = ports.FirstOrDefault(port =>
-                string.IsNullOrEmpty(_discoveryOptions.CurrentValue.PrimaryPortName) ||
-                _discoveryOptions.CurrentValue.PrimaryPortName.ToUpperInvariant() == port.Name.ToUpperInvariant());
+                string.IsNullOrEmpty(_discoveryOptions.CurrentValue.PrimaryPortName) || string.Equals(_discoveryOptions.CurrentValue.PrimaryPortName, port.Name,
+                    StringComparison.OrdinalIgnoreCase));
         }
 
         return endpointPort;
