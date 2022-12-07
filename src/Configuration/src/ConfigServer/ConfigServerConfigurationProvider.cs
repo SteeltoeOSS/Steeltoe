@@ -124,7 +124,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         ArgumentGuard.NotNull(source);
 
         ConfigServerClientSettings newSettings = source.DefaultSettings;
-        IConfiguration configuration = WrapWithPlaceholderResolver(source.Configuration);
+        IConfiguration configuration = WrapWithPlaceholderResolver(source.Configuration, loggerFactory);
         loggerFactory ??= BootstrapLoggerFactory.Instance;
         Initialize(newSettings, configuration, null, loggerFactory);
     }
@@ -851,7 +851,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         return client;
     }
 
-    private IConfiguration WrapWithPlaceholderResolver(IConfiguration configuration)
+    private IConfiguration WrapWithPlaceholderResolver(IConfiguration configuration, ILoggerFactory loggerFactory)
     {
         var root = (IConfigurationRoot)configuration;
 
@@ -862,7 +862,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
 
         return new ConfigurationRoot(new List<IConfigurationProvider>
         {
-            new PlaceholderResolverProvider(root.Providers.ToList(), _loggerFactory)
+            new PlaceholderResolverProvider(root.Providers.ToList(), loggerFactory)
         });
     }
 
