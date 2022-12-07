@@ -12,17 +12,18 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Kubernetes.Test.Discovery;
 
-public class KubernetesDiscoveryClientTest
+public sealed class KubernetesDiscoveryClientTest
 {
     [Fact]
     public void Constructor_Initializes_Correctly()
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
+        using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
 
         using var client = new k8s.Kubernetes(new KubernetesClientConfiguration
         {
             Host = "http://localhost"
-        }, mockHttpMessageHandler.ToHttpClient());
+        }, delegatingHandler);
 
         const string expectedDesc = "Steeltoe provided Kubernetes native service discovery client";
         var k8SDiscoveryOptions = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions());
@@ -68,10 +69,12 @@ public class KubernetesDiscoveryClientTest
             new StringContent(
                 "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test2\",\"uid\":\"uids2\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
+        using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
+
         using var client = new k8s.Kubernetes(new KubernetesClientConfiguration
         {
             Host = "http://localhost"
-        }, mockHttpMessageHandler.ToHttpClient());
+        }, delegatingHandler);
 
         var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions
         {
@@ -107,10 +110,12 @@ public class KubernetesDiscoveryClientTest
             new StringContent(
                 "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
+        using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
+
         using var client = new k8s.Kubernetes(new KubernetesClientConfiguration
         {
             Host = "http://localhost"
-        }, mockHttpMessageHandler.ToHttpClient());
+        }, delegatingHandler);
 
         var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions
         {
@@ -143,10 +148,12 @@ public class KubernetesDiscoveryClientTest
             new StringContent(
                 "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
+        using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
+
         using var client = new k8s.Kubernetes(new KubernetesClientConfiguration
         {
             Host = "http://localhost"
-        }, mockHttpMessageHandler.ToHttpClient());
+        }, delegatingHandler);
 
         var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions
         {
@@ -180,10 +187,12 @@ public class KubernetesDiscoveryClientTest
             new StringContent(
                 "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
+        using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
+
         using var client = new k8s.Kubernetes(new KubernetesClientConfiguration
         {
             Host = "http://localhost"
-        }, mockHttpMessageHandler.ToHttpClient());
+        }, delegatingHandler);
 
         var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions
         {
@@ -213,10 +222,12 @@ public class KubernetesDiscoveryClientTest
                 "\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"label3\":\"value3\"},\"name\":" +
                 "\"endpoint3\",\"namespace\":\"test\",\"uid\":\"uids2\"}}],\"kind\":\"List\",\"metadata\"" + ":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
+        using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
+
         using var client = new k8s.Kubernetes(new KubernetesClientConfiguration
         {
             Host = "http://localhost"
-        }, mockHttpMessageHandler.ToHttpClient());
+        }, delegatingHandler);
 
         var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions
         {
@@ -247,10 +258,12 @@ public class KubernetesDiscoveryClientTest
                 "\"value2\"},\"name\":\"endpoint2\",\"namespace\":\"test\",\"uid\":\"uids2\"}}]," + "\"kind\":\"List\",\"metadata\"" +
                 ":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
+        using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
+
         using var client = new k8s.Kubernetes(new KubernetesClientConfiguration
         {
             Host = "http://localhost"
-        }, mockHttpMessageHandler.ToHttpClient());
+        }, delegatingHandler);
 
         var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions
         {
@@ -282,10 +295,12 @@ public class KubernetesDiscoveryClientTest
                 "\"value2\"},\"name\":\"endpoint2\",\"namespace\":\"test\",\"uid\":\"uids2\"}}]," + "\"kind\":\"List\",\"metadata\"" +
                 ":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
+        using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
+
         using var client = new k8s.Kubernetes(new KubernetesClientConfiguration
         {
             Host = "http://localhost"
-        }, mockHttpMessageHandler.ToHttpClient());
+        }, delegatingHandler);
 
         var discoveryOptions = new KubernetesDiscoveryOptions
         {

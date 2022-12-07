@@ -50,7 +50,7 @@
     <JwtTokensVersion>6.20.*</JwtTokensVersion>
     <SymReaderVersion>1.4.*</SymReaderVersion>
     <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
-    <KubernetesClientVersion>6.0.*</KubernetesClientVersion>
+    <KubernetesClientVersion>9.0.*</KubernetesClientVersion>
     <BouncyCastleVersion>1.9.*</BouncyCastleVersion>
     <ConsulVersion>1.6.10.*</ConsulVersion>
     <HdrHistogramVersion>2.5.*</HdrHistogramVersion>

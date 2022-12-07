@@ -31,11 +31,11 @@ internal sealed class MockKubeApiServer : IDisposable
         {
             if (await shouldNext(httpContext))
             {
-                if (httpContext.Request.Path == "/api/v1/namespaces/default/configmaps")
+                if (httpContext.Request.Path.ToString().StartsWith("/api/v1/namespaces/default/configmaps", StringComparison.Ordinal))
                 {
                     await httpContext.Response.WriteAsync(ConfigMapResponse);
                 }
-                else if (httpContext.Request.Path == "/api/v1/namespaces/default/secrets")
+                else if (httpContext.Request.Path.ToString().StartsWith("/api/v1/namespaces/default/secrets", StringComparison.Ordinal))
                 {
                     await httpContext.Response.WriteAsync(SecretResponse);
                 }
