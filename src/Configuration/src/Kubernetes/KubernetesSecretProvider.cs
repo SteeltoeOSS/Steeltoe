@@ -5,9 +5,9 @@
 using System.Net;
 using System.Text;
 using k8s;
+using k8s.Autorest;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
 using Steeltoe.Common.Kubernetes;
 
 namespace Steeltoe.Configuration.Kubernetes;
@@ -26,8 +26,8 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
     {
         try
         {
-            HttpOperationResponse<V1Secret> secretResponse =
-                KubernetesClient.ReadNamespacedSecretWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
+            HttpOperationResponse<V1Secret> secretResponse = KubernetesClient.CoreV1
+                .ReadNamespacedSecretWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
 
             ProcessData(secretResponse.Body);
             EnableReloading();
@@ -89,28 +89,25 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
 
     private void EnableEventReloading()
     {
-        _secretWatcher = KubernetesClient.WatchNamespacedSecretAsync(Settings.Name, Settings.Namespace, onEvent: (eventType, item) =>
-                {
-                    Logger.LogInformation("Received {eventType} event for Secret {secretName} with {entries} values", eventType, Settings.Name,
-                        item?.Data?.Count);
+        Task<HttpOperationResponse<V1SecretList>> resp = KubernetesClient.CoreV1.ListNamespacedSecretWithHttpMessagesAsync(Settings.Namespace, watch: true);
 
-                    switch (eventType)
-                    {
-                        case WatchEventType.Added:
-                        case WatchEventType.Modified:
-                        case WatchEventType.Deleted:
-                            ProcessData(item);
-                            break;
-                        default:
-                            Logger.LogDebug("Event type {eventType} is not support, no action has been taken", eventType);
-                            break;
-                    }
-                },
-                onError: exception => Logger.LogCritical(exception, "Secret watcher on {namespace}.{name} encountered an error!", Settings.Namespace,
-                    Settings.Name),
-                onClosed: () => Logger.LogInformation("Secret watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name))
-            .GetAwaiter()
-            .GetResult();
+        _secretWatcher = resp.Watch<V1Secret, V1SecretList>((eventType, item) =>
+            {
+                Logger.LogInformation("Received {eventType} event for Secret {secretName} with {entries} values", eventType, Settings.Name, item?.Data?.Count);
+
+                switch (eventType)
+                {
+                    case WatchEventType.Added:
+                    case WatchEventType.Modified:
+                    case WatchEventType.Deleted:
+                        ProcessData(item);
+                        break;
+                    default:
+                        Logger.LogDebug("Event type {eventType} is not support, no action has been taken", eventType);
+                        break;
+                }
+            }, exception => Logger.LogCritical(exception, "Secret watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name),
+            () => Logger.LogInformation("Secret watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name));
     }
 
     private void ProcessData(V1Secret item)
