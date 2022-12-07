@@ -60,9 +60,6 @@ internal static class PrometheusSerializerAdditions
 
                 buffer[cursor++] = unchecked((byte)' ');
 
-                // TODO: MetricType is same for all MetricPoints
-                // within a given Metric, so this check can avoided
-                // for each MetricPoint
                 if (((int)metric.MetricType & 0b_0000_1111) == 0x0a /* I8 */)
                 {
                     cursor = PrometheusSerializer.WriteLong(buffer, cursor,

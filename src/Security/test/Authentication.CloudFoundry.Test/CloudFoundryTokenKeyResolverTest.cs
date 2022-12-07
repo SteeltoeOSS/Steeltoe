@@ -135,7 +135,7 @@ public class CloudFoundryTokenKeyResolverTest
 
         var resolver = new CloudFoundryTokenKeyResolver("https://foo.bar", handler, false);
         HttpClient client = resolver.GetHttpClient();
-        client.GetAsync("http://localhost/");
+        client.GetAsync(new Uri("http://localhost/"));
         Assert.NotNull(handler.LastRequest);
     }
 

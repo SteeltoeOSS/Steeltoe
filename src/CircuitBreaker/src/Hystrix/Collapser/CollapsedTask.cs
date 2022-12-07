@@ -35,7 +35,7 @@ internal sealed class CollapsedTask<TBatchReturn, TResponse, TRequestArgument> :
         }
         catch (Exception)
         {
-            // logger.error("Error occurred trying to execute callable inside CollapsedTask from Timer.", e);
+            // Intentionally left empty.
         }
     }
 }

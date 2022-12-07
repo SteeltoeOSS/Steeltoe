@@ -75,7 +75,7 @@ public class EndpointMiddlewareTest : BaseTest
         HttpClient client = server.CreateClient();
 
         // send the request
-        HttpResponseMessage result = await client.GetAsync("http://localhost/actuator");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator"));
         string json = await result.Content.ReadAsStringAsync();
 
         Assert.Equal(
@@ -96,7 +96,7 @@ public class EndpointMiddlewareTest : BaseTest
         HttpClient client = server.CreateClient();
 
         // send the request
-        HttpResponseMessage result = await client.GetAsync("http://localhost/");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
         string json = await result.Content.ReadAsStringAsync();
 
         Assert.Equal(

@@ -42,7 +42,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         // this should still allow requests as everything has been successful
 
-        // Time.Wait(125);
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
@@ -59,7 +58,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         Assert.False(await cmd8.ExecuteAsync());
 
         // make sure window has passed
-        // Time.Wait(125);
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -99,7 +97,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         _ = await cmd8.ExecuteAsync();
 
         // Let window pass, this should trip the circuit as the error percentage is above the threshold
-        // Time.Wait(125);
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -139,7 +136,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         await cmd8.ExecuteAsync();
 
         // Allow window to pass, this should remain closed as the failure threshold is below the percentage limit
-        // Time.Wait(125);
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -172,7 +168,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         await cmd4.ExecuteAsync();
 
         // Allow window to pass, everything has been a timeout so we should not allow any requests
-        // Time.Wait(125);
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
@@ -218,7 +213,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         await Task.WhenAll(taskList);
 
         // Allow window to pass, this should trip the circuit as the error percentage is above the threshold
-        // Time.Wait(200);
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -248,7 +242,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         await cmd4.ExecuteAsync();
 
         // Allow window to pass, everything has failed in the test window so we should return false now
-        // Time.Wait(200);
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
@@ -290,7 +283,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         _ = await cmd4.ExecuteAsync();
 
         // Allow window to pass, everything has failed in the test window so we should return false now
-        // Time.Wait(200);
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine("ReqLog : " + Time.CurrentTimeMillis + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -310,7 +302,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         _ = await cmd5.Observe();
 
         // Allow window to pass, all requests should be open again
-        // Time.Wait(200);
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine("CircuitBreaker state 2 : " + Time.CurrentTimeMillis + cmd1.Metrics.HealthCounts);
@@ -346,12 +337,10 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         // everything has failed in the test window so we should return false now
         // Allow window to pass,
-        // Time.Wait(200);
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine(Time.CurrentTimeMillis + " !!!! 1 4 failures, circuit will open on recalc");
 
-        // Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
         Assert.True(cb.IsOpen, $"{Time.CurrentTimeMillis} Circuit is closed when it should be open!");
 
         // wait for sleepWindow to pass
@@ -451,7 +440,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         await cmd4.ExecuteAsync();
 
         // Allow window to pass, even though it has all failed we won't trip the circuit because the volume is low
-        // Time.Wait(200);
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
@@ -486,7 +474,6 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         {
             get
             {
-                // output.WriteLine("metrics : " + metrics.CommandKey.Name + " : " + metrics.HealthCounts);
                 if (_forceShortCircuit)
                 {
                     return true;

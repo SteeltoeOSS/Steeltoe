@@ -109,7 +109,6 @@ public static class EmbeddedHeaderUtils
 
                 byte[] intBytes = new byte[4];
 
-                // TODO: Handle the case where payload contains less bytes than expected (applies to the entire method).
 #pragma warning disable S2674 // The length returned from a stream read should be checked
                 byteBuffer.Read(intBytes, 0, 4);
 #pragma warning restore S2674 // The length returned from a stream read should be checked
@@ -125,7 +124,6 @@ public static class EmbeddedHeaderUtils
             long remaining = byteBuffer.Length - byteBuffer.Position;
             byte[] newPayload = new byte[remaining];
 
-            // TODO: Handle the case where payload contains less bytes than expected (applies to the entire method).
 #pragma warning disable S2674 // The length returned from a stream read should be checked
             byteBuffer.Read(newPayload, 0, (int)remaining);
 #pragma warning restore S2674 // The length returned from a stream read should be checked

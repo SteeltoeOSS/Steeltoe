@@ -44,7 +44,6 @@ public class ConsulDiscoveryOptionsTest
 
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
-            // TODO: this is null on MacOS
             Assert.NotNull(opts.IPAddress);
         }
     }

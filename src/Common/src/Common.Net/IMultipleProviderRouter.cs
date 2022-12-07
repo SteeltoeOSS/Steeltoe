@@ -5,6 +5,8 @@
 using System.Text;
 using static Steeltoe.Common.Net.WindowsNetworkFileShare;
 
+#pragma warning disable S3874 // "out" and "ref" parameters should not be used
+
 namespace Steeltoe.Common.Net;
 
 /// <summary>

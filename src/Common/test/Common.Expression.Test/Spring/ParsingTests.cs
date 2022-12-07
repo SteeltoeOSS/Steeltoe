@@ -255,41 +255,6 @@ public class ParsingTests
         ParseCheck("true and 5>3", "(true and (5 > 3))");
     }
 
-    // collection processors
-    // [Fact]
-    // public void TestCollectionProcessorsCount01()
-    // {
-    //    ParseCheck("new String[] {'abc','def','xyz'}.count()");
-    // }
-    // [Fact]
-    // public void TestCollectionProcessorsCount02() {
-    // ParseCheck("new int[] {1,2,3}.count()");
-    // }
-    // [Fact]
-    // public void TestCollectionProcessorsMax01() {
-    // ParseCheck("new int[] {1,2,3}.max()");
-    // }
-    // [Fact]
-    // public void TestCollectionProcessorsMin01() {
-    // ParseCheck("new int[] {1,2,3}.min()");
-    // }
-    // [Fact]
-    // public void TestCollectionProcessorsAverage01() {
-    // ParseCheck("new int[] {1,2,3}.average()");
-    // }
-    // [Fact]
-    // public void TestCollectionProcessorsSort01() {
-    // ParseCheck("new int[] {3,2,1}.sort()");
-    // }
-    // [Fact]
-    // public void TestCollectionProcessorsNonNull01() {
-    // ParseCheck("{'a','b',null,'d',null}.nonNull()");
-    // }
-    // [Fact]
-    // public void TestCollectionProcessorsDistinct01() {
-    // ParseCheck("{'a','b','a','d','e'}.distinct()");
-    // }
-
     // references
     [Fact]
     public void TestReferences01()
@@ -376,25 +341,6 @@ public class ParsingTests
         ParseCheck("new String('hello')");
     }
 
-    // [Fact]
-    // public void TestConstructors02()
-    // {
-    //    ParseCheck("new String[3]");
-    // }
-
-    // array construction
-    // [Fact]
-    // public void TestArrayConstruction01()
-    // {
-    //    ParseCheck("new int[] {1, 2, 3, 4, 5}", "new int[] {1,2,3,4,5}");
-    // }
-
-    // [Fact]
-    // public void TestArrayConstruction02()
-    // {
-    //    ParseCheck("new String[] {'abc','xyz'}", "new String[] {'abc','xyz'}");
-    // }
-
     // variables and functions
     [Fact]
     public void TestVariables01()
@@ -413,31 +359,6 @@ public class ParsingTests
     {
         ParseCheck("#fn('hello')");
     }
-
-    // projections and selections
-    // [Fact]
-    // public void TestProjections01()
-    // {
-    //    ParseCheck("{1,2,3,4,5,6,7,8,9,10}.!{#isEven()}");
-    // }
-
-    // [Fact]
-    // public void TestSelections01() {
-    // ParseCheck("{1,2,3,4,5,6,7,8,9,10}.?{#isEven(#this) == 'y'}",
-    // "{1,2,3,4,5,6,7,8,9,10}.?{(#isEven(#this) == 'y')}");
-    // }
-
-    // [Fact]
-    // public void TestSelectionsFirst01() {
-    // ParseCheck("{1,2,3,4,5,6,7,8,9,10}.^{#isEven(#this) == 'y'}",
-    // "{1,2,3,4,5,6,7,8,9,10}.^{(#isEven(#this) == 'y')}");
-    // }
-
-    // [Fact]
-    // public void TestSelectionsLast01() {
-    // ParseCheck("{1,2,3,4,5,6,7,8,9,10}.${#isEven(#this) == 'y'}",
-    // "{1,2,3,4,5,6,7,8,9,10}.${(#isEven(#this) == 'y')}");
-    // }
 
     // assignment
     [Fact]

@@ -1,5 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="Steeltoe Release" Description="Code quality rules for Steeltoe release builds" ToolsVersion="17.0">
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.CodeStyle" RuleNamespace="Microsoft.CodeAnalysis.CSharp.CodeStyle">
+    <Rule Id="IDE0161" Action="Warning" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
+    <Rule Id="IDE0161" Action="Warning" />
+  </Rules>
   <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
     <Rule Id="S100" Action="Warning" />
     <Rule Id="S106" Action="Warning" />
@@ -7,12 +13,10 @@
     <Rule Id="S1075" Action="None" />
     <Rule Id="S110" Action="Warning" />
     <Rule Id="S1104" Action="None" />
-    <Rule Id="S1135" Action="None" />
     <Rule Id="S1144" Action="Warning" />
     <Rule Id="S1151" Action="Warning" />
     <Rule Id="S1186" Action="None" />
     <Rule Id="S1244" Action="Warning" />
-    <Rule Id="S125" Action="None" />
     <Rule Id="S1449" Action="Warning" />
     <Rule Id="S1479" Action="Warning" />
     <Rule Id="S1659" Action="Warning" />
@@ -51,8 +55,10 @@
     <Rule Id="S3956" Action="Warning" />
     <Rule Id="S3962" Action="Warning" />
     <Rule Id="S3993" Action="Warning" />
+    <Rule Id="S3997" Action="Warning" />
     <Rule Id="S3998" Action="None" />
     <Rule Id="S4004" Action="Warning" />
+    <Rule Id="S4005" Action="Warning" />
     <Rule Id="S4022" Action="Warning" />
     <Rule Id="S4023" Action="Warning" />
     <Rule Id="S4039" Action="Warning" />

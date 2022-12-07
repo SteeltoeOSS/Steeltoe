@@ -25,7 +25,7 @@ public class LoggingHandler : AbstractMessageHandler
 
     public override void Initialize()
     {
-        // Nothing to do
+        // Intentionally left empty.
     }
 
     protected override void HandleMessageInternal(IMessage message)

@@ -13,7 +13,6 @@ public class RequestCollapser<TBatchReturn, TRequestResponse, TRequestArgument>
     private readonly AtomicReference<TimerReference> _timerListenerReference = new();
     private readonly AtomicBoolean _timerListenerRegistered = new();
     private readonly ICollapserTimer _timer;
-    private readonly HystrixConcurrencyStrategy _concurrencyStrategy;
 
     public AtomicReference<RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>> Batch { get; } = new();
 
@@ -24,7 +23,6 @@ public class RequestCollapser<TBatchReturn, TRequestResponse, TRequestArgument>
     {
         // the command with implementation of abstract methods we need
         _commandCollapser = commandCollapser;
-        _concurrencyStrategy = concurrencyStrategy;
         Properties = properties;
         _timer = timer;
         Batch.Value = new RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>(properties, commandCollapser, properties.MaxRequestsInBatch);

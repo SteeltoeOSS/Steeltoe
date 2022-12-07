@@ -212,8 +212,6 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<EnableRabbi
                 _admin.DeleteQueue(q);
             }
 
-            // admin.DeleteQueue("sendTo.replies");
-            // admin.DeleteQueue("sendTo.replies.spel");
             _adminCf.Dispose();
 
             Provider.Dispose();

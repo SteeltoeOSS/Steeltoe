@@ -507,12 +507,10 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
                         arguments["x-delayed-type"] = exchange.Type;
 
-                        // TODO: exchange.IsInternal .. appears .NET client doesn't expose
                         channel.ExchangeDeclare(exchange.ExchangeName, DelayedMessageExchange, exchange.IsDurable, exchange.IsAutoDelete, arguments);
                     }
                     else
                     {
-                        // TODO: exchange.IsInternal .. appears .NET client doesn't expose
                         channel.ExchangeDeclare(exchange.ExchangeName, exchange.Type, exchange.IsDurable, exchange.IsAutoDelete, exchange.Arguments);
                     }
                 }
@@ -642,10 +640,6 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
     {
         var ev = new DeclarationExceptionEvent(this, element, exception);
         LastDeclarationExceptionEvent = ev;
-
-        // if (this.applicationEventPublisher != null) {
-        //          this.applicationEventPublisher.publishEvent(event);
-        //      }
     }
 
     private bool IsDeclaringDefaultExchange(IExchange exchange)

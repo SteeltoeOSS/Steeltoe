@@ -217,7 +217,6 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
                 throw new MessageConversionException(message, "No converter could convert Message");
             }
 
-            // TODO: Rationalize S.M.S.MessageBuilder and S.I.S.MessageBuilder
             message = MessageBuilder.WithPayload(payload).CopyHeaders(message.Headers).Build();
         }
 

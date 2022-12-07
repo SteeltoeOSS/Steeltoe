@@ -133,18 +133,6 @@ public class ChannelInterceptorTest
         Assert.False(interceptor2.WasAfterCompletionInvoked);
     }
 
-    // internal sealed class AfterCompletionWithSendExceptionChannel : AbstractMessageChannel
-    // {
-    //    protected override bool SendInternal(IMessage message, long timeout)
-    //    {
-    //        throw new Exception("Simulated exception");
-    //    }
-
-    // protected override Task<bool> SendInternalAsync(IMessage message, CancellationToken cancellation = default)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    // }
     internal sealed class AfterCompletionWithSendExceptionChannel : AbstractMessageChannel
     {
         public AfterCompletionWithSendExceptionChannel()
@@ -166,18 +154,6 @@ public class ChannelInterceptorTest
         }
     }
 
-    // internal sealed class PostSendInterceptorMessageWasNotSentChannel : AbstractMessageChannel
-    // {
-    //    protected override bool SendInternal(IMessage message, long timeout)
-    //    {
-    //        return false;
-    //    }
-
-    // protected override Task<bool> SendInternalAsync(IMessage message, CancellationToken cancellation = default)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    // }
     internal sealed class PostSendInterceptorMessageWasNotSentChannel : AbstractMessageChannel
     {
         public PostSendInterceptorMessageWasNotSentChannel()

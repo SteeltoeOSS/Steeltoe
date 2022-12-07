@@ -14,7 +14,6 @@ public class EurekaServerHealthContributor : IHealthContributor
 {
     private readonly EurekaDiscoveryClient _discoveryClient;
     private readonly EurekaApplicationInfoManager _appInfoManager;
-    private readonly ILogger<EurekaServerHealthContributor> _logger;
 
     public string Id => "eurekaServer";
 
@@ -23,7 +22,6 @@ public class EurekaServerHealthContributor : IHealthContributor
     {
         _discoveryClient = discoveryClient;
         _appInfoManager = appInfoManager;
-        _logger = logger;
     }
 
     // Testing

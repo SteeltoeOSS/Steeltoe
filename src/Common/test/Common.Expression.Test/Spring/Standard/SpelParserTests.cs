@@ -82,7 +82,6 @@ public class SpelParserTests
         Assert.NotNull(expr);
         Assert.NotNull(expr.Ast);
 
-        // printAst(expr.getAST(),0);
         Assert.Equal(6, expr.GetValue());
     }
 

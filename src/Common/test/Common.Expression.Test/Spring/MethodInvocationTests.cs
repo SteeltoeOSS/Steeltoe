@@ -199,14 +199,10 @@ public class MethodInvocationTests : AbstractExpressionTests
     public void TestVarargsInvocation01()
     {
         // Calling 'public int aVarargsMethod(String... strings)'
-        // Evaluate("aVarargsMethod('a','b','c')", 3, typeof(int));
-        // Evaluate("aVarargsMethod('a')", 1, typeof(int));
         Evaluate("AVarargsMethod()", 0, typeof(int));
         Evaluate("AVarargsMethod(1,2,3)", 3, typeof(int)); // all need converting to strings
         Evaluate("AVarargsMethod(1)", 1, typeof(int)); // needs string conversion
         Evaluate("AVarargsMethod(1,'a',3.0d)", 3, typeof(int)); // first and last need conversion
-
-        // Evaluate("aVarargsMethod(new String[]{'a','b','c'})", 3, typeof(int));
     }
 
     [Fact]
@@ -219,8 +215,6 @@ public class MethodInvocationTests : AbstractExpressionTests
         Evaluate("AVarargsMethod2(8,2,3)", 10, typeof(int));
         Evaluate("AVarargsMethod2(9)", 9, typeof(int));
         Evaluate("AVarargsMethod2(2,'a',3.0d)", 4, typeof(int));
-
-        // Evaluate("aVarargsMethod2(8,new String[]{'a','b','c'})", 11, typeof(int));
     }
 
     [Fact]

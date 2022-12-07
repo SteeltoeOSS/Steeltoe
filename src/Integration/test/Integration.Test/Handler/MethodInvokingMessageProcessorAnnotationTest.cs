@@ -244,17 +244,6 @@ public class MethodInvokingMessageProcessorAnnotationTest
         Assert.Throws<MessageHandlingException>(() => processor.ProcessMessage(message));
     }
 
-    // [Fact]
-    // public void FromMessageToHeadersWithExpressions()
-    // {
-    //    var method = typeof(TestService).GetMethod(nameof(TestService.HeadersWithExpressions));
-    //    var context = GetDefaultContext();
-    //    var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
-    //    var employee = new Employee("John", "Doe");
-    //    var message = MessageBuilder.WithPayload("payload").SetHeader("emp", employee).Build();
-    //    var result = processor.ProcessMessage(message);
-    //    Assert.Equal("DOE, John", result);
-    // }
     [Fact]
     public void FromMessageToHyphenatedHeaderName()
     {
@@ -334,21 +323,6 @@ public class MethodInvokingMessageProcessorAnnotationTest
             return (prop ?? "null") + num;
         }
 
-        // public Properties propertiesPayload(Properties properties)
-        // {
-        //    return properties;
-        // }
-
-        // public Properties propertiesHeaders(@Headers Properties properties)
-        // {
-        //    return properties;
-        // }
-
-        // public Object propertiesHeadersAndPayload(Properties headers, Object payload)
-        // {
-        //    headers.put("payload", payload);
-        //    return headers;
-        // }
         public IDictionary MapPayload(IDictionary map)
         {
             return map;
@@ -361,7 +335,6 @@ public class MethodInvokingMessageProcessorAnnotationTest
 
         public object MapHeadersAndPayload(IDictionary headers, object payload)
         {
-            // var map = new Dictionary<string, object>(headers);
             var map = new Dictionary<object, object>();
 
             foreach (KeyValuePair<string, object> kvp in headers)

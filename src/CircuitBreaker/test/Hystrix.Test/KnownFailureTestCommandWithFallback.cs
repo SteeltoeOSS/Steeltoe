@@ -19,7 +19,6 @@ internal sealed class KnownFailureTestCommandWithFallback : TestHystrixCommand<b
 
     protected override bool Run()
     {
-        // output.WriteLine("*** simulated failed execution ***");
         throw new Exception("we failed with a simulated issue");
     }
 

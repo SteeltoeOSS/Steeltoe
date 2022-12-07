@@ -105,7 +105,6 @@ public class ExpressionStateTests : AbstractExpressionTests
         ((StandardEvaluationContext)state.EvaluationContext).SetRootObject(null);
         Assert.IsType<Inventor>(state.RootContextObject.Value);
 
-        // assertEquals(null, state.RootContextObject.Value);
         state = new ExpressionState(new StandardEvaluationContext());
         Assert.Equal(TypedValue.Null, state.RootContextObject);
 
@@ -162,7 +161,6 @@ public class ExpressionStateTests : AbstractExpressionTests
     {
         IEvaluationContext ctx = GetContext();
 
-        // TypedValue root = ctx.getRootObject();
         // supplied should override root on context
         var state = new ExpressionState(ctx, new TypedValue("i am a string"));
         ITypedValue stateRoot = state.RootContextObject;

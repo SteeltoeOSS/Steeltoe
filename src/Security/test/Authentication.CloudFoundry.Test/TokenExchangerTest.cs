@@ -120,7 +120,6 @@ public class TokenExchangerTest
             AuthorizationUrl = "http://localhost/tokenUrl"
         };
 
-        // TODO: replace with mock that does stuff
         var exchanger = new TokenExchanger(options, GetMockHttpClient());
 
         ClaimsIdentity identity = await exchanger.ExchangeAuthCodeForClaimsIdentityAsync("badCode");

@@ -132,7 +132,7 @@ public class RabbitTransactionManager : AbstractPlatformTransactionManager, IRes
 
         public void Flush()
         {
-            // no-op
+            // Intentionally left empty.
         }
     }
 }

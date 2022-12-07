@@ -84,10 +84,6 @@ public class PropertyAccessTests : AbstractExpressionTests
 
         // Cannot set it to a string value
         Assert.Throws<SpelEvaluationException>(() => expression.SetValue(ctx, "not allowed"));
-
-        // message will be: EL1063E:(pos 20): A problem occurred whilst attempting to set the property
-        // 'flibbles': 'Cannot set flibbles to an object of type 'class java.lang.String''
-        // System.out.println(e.getMessage());
     }
 
     [Fact]

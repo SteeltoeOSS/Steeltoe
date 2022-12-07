@@ -38,16 +38,6 @@ public class HeaderMethodArgumentResolver : AbstractNamedValueMethodArgumentReso
         message.Headers.TryGetValue(name, out object headerValue);
         object nativeHeaderValue = GetNativeHeaderValue(message, name);
 
-        if (headerValue != null && nativeHeaderValue != null)
-        {
-            // if (logger.isDebugEnabled())
-            // {
-            //    logger.debug("A value was found for '" + name + "', in both the top level header map " +
-            //            "and also in the nested map for native headers. Using the value from top level map. " +
-            //            "Use 'nativeHeader.myHeader' to resolve the native header.");
-            // }
-        }
-
         return headerValue ?? nativeHeaderValue;
     }
 

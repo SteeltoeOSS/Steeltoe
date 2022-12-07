@@ -9,7 +9,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 
 public class ThreadDumpEndpoint : AbstractEndpoint<List<ThreadInfo>>, IThreadDumpEndpoint
 {
-    private readonly ILogger<ThreadDumpEndpoint> _logger;
     private readonly IThreadDumper _threadDumper;
 
     public new IThreadDumpOptions Options => options as IThreadDumpOptions;
@@ -20,7 +19,6 @@ public class ThreadDumpEndpoint : AbstractEndpoint<List<ThreadInfo>>, IThreadDum
         ArgumentGuard.NotNull(threadDumper);
 
         _threadDumper = threadDumper;
-        _logger = logger;
     }
 
     public override List<ThreadInfo> Invoke()

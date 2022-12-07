@@ -30,11 +30,9 @@ public class MethodMessageHandlerTest
 
         _messageHandler = new TestMethodMessageHandler
         {
-            // this.messageHandler.setApplicationContext(new StaticApplicationContext());
             DestinationPrefixes = destinationPrefixes
         };
 
-        // this.messageHandler.afterPropertiesSet();
         _testController = new TestController();
         _messageHandler.RegisterHandler(_testController);
     }

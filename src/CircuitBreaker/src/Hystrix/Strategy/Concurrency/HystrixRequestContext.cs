@@ -74,7 +74,7 @@ public class HystrixRequestContext : IDisposable
                 }
                 catch (Exception)
                 {
-                    // HystrixRequestVariableDefault.logger.error("Error in shutdown, will continue with shutdown of other variables", t);
+                    // Intentionally left empty.
                 }
             }
 
