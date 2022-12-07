@@ -7,6 +7,7 @@ using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Configuration;
 using RichardSzalay.MockHttp;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Common.Kubernetes.Test;
@@ -25,12 +26,13 @@ public class StandardPodUtilitiesTest
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
         mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(HttpStatusCode.NotFound);
+        using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
         var appOptions = new KubernetesApplicationOptions(new ConfigurationBuilder().Build());
 
         using var client = new k8s.Kubernetes(new KubernetesClientConfiguration
         {
             Host = "http://localhost"
-        }, mockHttpMessageHandler.ToHttpClient());
+        }, delegatingHandler);
 
         var utils = new StandardPodUtilities(appOptions, null, client);
 
@@ -50,13 +52,14 @@ public class StandardPodUtilitiesTest
 
         var mockHttpMessageHandler = new MockHttpMessageHandler();
         mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(HttpStatusCode.OK, new StringContent(podListRsp));
+        using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
 
         var appOptions = new KubernetesApplicationOptions(new ConfigurationBuilder().Build());
 
         using var client = new k8s.Kubernetes(new KubernetesClientConfiguration
         {
             Host = "http://localhost"
-        }, mockHttpMessageHandler.ToHttpClient());
+        }, delegatingHandler);
 
         var utils = new StandardPodUtilities(appOptions, null, client);
 
