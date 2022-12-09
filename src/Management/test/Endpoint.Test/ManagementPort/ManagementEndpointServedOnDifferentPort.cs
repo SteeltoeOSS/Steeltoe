@@ -36,9 +36,10 @@ public class ManagementEndpointServedOnDifferentPort
         app.Start();
 
         HttpClient httpClient = app.GetTestServer().CreateClient();
-        HttpResponseMessage response = httpClient.GetAsync("http://localhost:9090/actuator").Result;
+
+        HttpResponseMessage response = httpClient.GetAsync(new Uri("http://localhost:9090/actuator")).Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = httpClient.GetAsync("http://localhost:8080").Result;
+        response = httpClient.GetAsync(new Uri("http://localhost:8080")).Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -61,9 +62,9 @@ public class ManagementEndpointServedOnDifferentPort
         app.Start();
 
         HttpClient httpClient = app.GetTestServer().CreateClient();
-        HttpResponseMessage response = httpClient.GetAsync("https://localhost:9090/actuator").Result;
+        HttpResponseMessage response = httpClient.GetAsync(new Uri("https://localhost:9090/actuator")).Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = httpClient.GetAsync("http://localhost:5100").Result;
+        response = httpClient.GetAsync(new Uri("http://localhost:5100")).Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -89,9 +90,9 @@ public class ManagementEndpointServedOnDifferentPort
         app.Start();
 
         HttpClient httpClient = app.GetTestServer().CreateClient();
-        HttpResponseMessage response = httpClient.GetAsync("https://localhost:9090/actuator").Result;
+        HttpResponseMessage response = httpClient.GetAsync(new Uri("https://localhost:9090/actuator")).Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = httpClient.GetAsync("http://localhost:8080").Result;
+        response = httpClient.GetAsync(new Uri("http://localhost:8080")).Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -119,7 +120,7 @@ public class ManagementEndpointServedOnDifferentPort
         host.Start();
 
         HttpClient httpClient = host.GetTestServer().CreateClient();
-        HttpResponseMessage response = httpClient.GetAsync("http://localhost:9090/actuator").Result;
+        HttpResponseMessage response = httpClient.GetAsync(new Uri("http://localhost:9090/actuator")).Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -144,10 +145,10 @@ public class ManagementEndpointServedOnDifferentPort
 
         host.Start();
         HttpClient httpClient = host.GetTestServer().CreateClient();
-        HttpResponseMessage response = await httpClient.GetAsync("https://localhost:9090/actuator");
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("https://localhost:9090/actuator"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        response = await httpClient.GetAsync("http://localhost:8080/actuator");
+        response = await httpClient.GetAsync(new Uri("http://localhost:8080/actuator"));
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 }
