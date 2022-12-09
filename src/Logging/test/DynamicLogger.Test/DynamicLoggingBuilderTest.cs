@@ -253,4 +253,41 @@ public sealed class DynamicLoggingBuilderTest
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
         }
     }
+
+    [Fact]
+    public async Task AddDynamicConsole_IncludesScopes()
+    {
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            ["Logging:LogLevel:Default"] = "Information",
+            ["Logging:Console:IncludeScopes"] = "true"
+        }).Build();
+
+        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddDynamicConsole();
+        }).BuildServiceProvider();
+
+        using var console = new ConsoleOutputBorrower();
+        var logger = services.GetRequiredService<ILogger<DynamicLoggingBuilderTest>>();
+
+        using (logger.BeginScope("Outer Scope"))
+        {
+            using (logger.BeginScope("InnerScopeKey={ScopeValue}", "InnerScopeValue"))
+            {
+                logger.LogError("Something bad.");
+            }
+        }
+
+        // ConsoleLogger writes messages to a queue, it take a bit of time for the background thread to write them to Console.Out.
+        await Task.Delay(250);
+
+        string log = console.ToString();
+
+        log.Should().Be($@"fail: {typeof(DynamicLoggingBuilderTest).FullName}[0]
+      => Outer Scope => InnerScopeKey=InnerScopeValue
+      Something bad.
+");
+    }
 }

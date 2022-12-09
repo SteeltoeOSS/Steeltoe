@@ -26,7 +26,7 @@ public static class DynamicLoggingBuilder
 
         if (!IsDynamicLoggerProviderAlreadyRegistered(builder))
         {
-            EnsureLoggerProviderConfigurationsAreAvailable(builder);
+            EnsureConsoleLoggingIsRegistered(builder);
             UpdateConsoleLoggerProviderRegistration(builder.Services);
 
             builder.AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace);
@@ -44,11 +44,11 @@ public static class DynamicLoggingBuilder
         return builder.Services.Any(sd => sd.ServiceType == typeof(IDynamicLoggerProvider));
     }
 
-    private static void EnsureLoggerProviderConfigurationsAreAvailable(ILoggingBuilder builder)
+    private static void EnsureConsoleLoggingIsRegistered(ILoggingBuilder builder)
     {
-        if (builder.Services.All(descriptor => descriptor.ServiceType != typeof(ILoggerProviderConfigurationFactory)))
+        if (builder.Services.All(descriptor => descriptor.ImplementationType != typeof(ConsoleLoggerProvider)))
         {
-            builder.AddConfiguration();
+            builder.AddConsole();
         }
     }
 
