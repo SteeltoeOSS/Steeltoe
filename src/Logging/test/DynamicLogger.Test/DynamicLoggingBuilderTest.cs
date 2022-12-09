@@ -17,7 +17,7 @@ public sealed class DynamicLoggingBuilderTest
 {
     private static readonly Dictionary<string, string> Appsettings = new()
     {
-        ["Logging:IncludeScopes"] = "false",
+        ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:Console:LogLevel:Default"] = "Information",
         ["Logging:Console:LogLevel:A.B.C.D"] = "Critical",
         ["Logging:Console:FormatterOptions:ColorBehavior"] = "Disabled",
@@ -30,7 +30,7 @@ public sealed class DynamicLoggingBuilderTest
     {
         var appsettings = new Dictionary<string, string>
         {
-            ["Logging:IncludeScopes"] = "false",
+            ["Logging:Console:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Information",
             ["Logging:foo:LogLevel:A.B.C.D.TestClass"] = "None"
         };

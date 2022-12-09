@@ -13,7 +13,7 @@ public class DynamicLoggerProviderTest
 {
     private readonly Dictionary<string, string> _defaultAppSettings = new()
     {
-        ["Logging:IncludeScopes"] = "false",
+        ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Information",
         ["Logging:LogLevel:System"] = "Information",
         ["Logging:LogLevel:Microsoft"] = "Information",
