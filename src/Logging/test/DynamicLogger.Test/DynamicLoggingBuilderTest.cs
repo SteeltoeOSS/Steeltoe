@@ -281,7 +281,7 @@ public sealed class DynamicLoggingBuilderTest
             }
         }
 
-        // ConsoleLogger writes messages to a queue, it take a bit of time for the background thread to write them to Console.Out.
+        // ConsoleLogger writes messages to a queue, it takes a bit of time for the background thread to write them to Console.Out.
         await Task.Delay(250);
 
         string log = console.ToString();
