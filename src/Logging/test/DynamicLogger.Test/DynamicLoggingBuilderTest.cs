@@ -260,7 +260,8 @@ public sealed class DynamicLoggingBuilderTest
         IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
             ["Logging:LogLevel:Default"] = "Information",
-            ["Logging:Console:IncludeScopes"] = "true"
+            ["Logging:Console:IncludeScopes"] = "true",
+            ["Logging:Console:FormatterOptions:ColorBehavior"] = "Disabled"
         }).Build();
 
         ServiceProvider services = new ServiceCollection().AddLogging(builder =>
