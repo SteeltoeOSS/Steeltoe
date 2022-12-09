@@ -33,7 +33,7 @@ public static class DynamicLoggingBuilder
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicConsoleLoggerProvider>());
             builder.Services.AddSingleton(p => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
 
-            DisableConsoleColorsOnCloudFoundry(builder);
+            DisableConsoleColorsOnCloudPlatform(builder);
         }
 
         return builder;
@@ -66,7 +66,7 @@ public static class DynamicLoggingBuilder
         services.AddSingleton<ConsoleLoggerProvider>();
     }
 
-    private static void DisableConsoleColorsOnCloudFoundry(ILoggingBuilder builder)
+    private static void DisableConsoleColorsOnCloudPlatform(ILoggingBuilder builder)
     {
         builder.Services.TryAddEnumerable(ServiceDescriptor
             .Singleton<IConfigureOptions<SimpleConsoleFormatterOptions>, SimpleConsoleLoggerFormatterConfigureOptions>());
@@ -83,7 +83,7 @@ public static class DynamicLoggingBuilder
         {
             base.Configure(options);
 
-            if (Platform.IsCloudFoundry)
+            if (Platform.IsCloudHosted)
             {
                 options.ColorBehavior = LoggerColorBehavior.Disabled;
             }
