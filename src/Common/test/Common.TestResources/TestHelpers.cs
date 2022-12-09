@@ -7,9 +7,6 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 
 namespace Steeltoe.Common.TestResources;
 
@@ -81,15 +78,6 @@ public static class TestHelpers
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(collection);
         return builder.Build();
-    }
-
-    public static ILoggerFactory GetLoggerFactory()
-    {
-        IServiceCollection serviceCollection = new ServiceCollection();
-        serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
-        serviceCollection.AddLogging(builder => builder.AddSimpleConsole(options => options.ColorBehavior = LoggerColorBehavior.Disabled));
-        serviceCollection.AddLogging(builder => builder.AddDebug());
-        return serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
     }
 
     public static WebApplicationBuilder GetTestWebApplicationBuilder()
