@@ -334,6 +334,7 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
         return null;
     }
 
+    /// <inheritdoc />
     public void SetScopeProvider(IExternalScopeProvider scopeProvider)
     {
         if (DelegateProvider is ISupportExternalScope supportExternalScope)
