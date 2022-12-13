@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -44,15 +43,17 @@ public class ManagementPortMiddleware
 
     private Task ReturnErrorAsync(HttpContext context, string managementPort)
     {
-        var errorResponse = new ErrorResponse()
+        var errorResponse = new ErrorResponse
         {
             Error = "Not Found",
             Message = "Path not found at port",
             Path = context.Request.Path,
-            Status =  StatusCodes.Status404NotFound,
+            Status = StatusCodes.Status404NotFound
         };
 
-        _logger?.LogError("ManagementMiddleWare Error: Access denied on {port} since Management Port is set to {managementPort}", context.Request.Host.Port, managementPort);
+        _logger?.LogError("ManagementMiddleWare Error: Access denied on {port} since Management Port is set to {managementPort}", context.Request.Host.Port,
+            managementPort);
+
         context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
 
         context.Response.StatusCode = StatusCodes.Status404NotFound;
