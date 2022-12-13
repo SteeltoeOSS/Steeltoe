@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Logging.DynamicLogger;
@@ -330,7 +331,7 @@ public static class ManagementWebHostBuilderExtensions
 
         if (string.IsNullOrEmpty(portSetting))
         {
-            IConfiguration config = GetConfiguration(); // try reading directly from appsettings.json
+            IConfiguration config = GetConfigurationFallback(); // try reading directly from appsettings.json
             portSetting = config?[ManagementPortKey];
             sslSetting = config?[ManagementSSLKey];
         }
@@ -365,13 +366,18 @@ public static class ManagementWebHostBuilderExtensions
         return webhostBuilder;
     }
 
-    private static IConfiguration GetConfiguration()
+    private static IConfiguration GetConfigurationFallback()
     {
         IConfiguration config = null;
 
         try
         {
-            config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{environment}.json", optional: true)
+
+                .Build();
         }
         catch (Exception)
         {
