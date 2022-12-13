@@ -4,6 +4,7 @@
 
 using System.Collections.Immutable;
 using System.Net;
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Hosting;
+using Steeltoe.Management.Endpoint.ManagementPort;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -150,5 +152,8 @@ public class ManagementEndpointServedOnDifferentPort
 
         response = await httpClient.GetAsync(new Uri("http://localhost:8080/actuator"));
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        var jsonResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+        Assert.Equal("Not Found", jsonResponse?.Error);
+        Assert.Equal("Path not found at port", jsonResponse?.Message);
     }
 }
