@@ -38,7 +38,7 @@ internal static class ConfigurationSettingsHelper
         settings.RetryMaxInterval = configurationSection.GetValue("retry:maxInterval", settings.RetryMaxInterval);
         settings.RetryMultiplier = configurationSection.GetValue("retry:multiplier", settings.RetryMultiplier);
         settings.RetryAttempts = configurationSection.GetValue("retry:maxAttempts", settings.RetryAttempts);
-        settings.Token = configurationSection.GetValue<string>("token");
+        settings.Token = configurationSection.GetValue("token", settings.Token);
         settings.Timeout = configurationSection.GetValue("timeout", settings.Timeout);
         settings.AccessTokenUri = GetAccessTokenUri(sectionPrefix, configuration);
         settings.ClientId = GetClientId(sectionPrefix, configuration);
