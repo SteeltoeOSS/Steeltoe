@@ -124,7 +124,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         ArgumentGuard.NotNull(source);
 
         ConfigServerClientSettings newSettings = source.DefaultSettings;
-        IConfiguration configuration = WrapWithPlaceholderResolver(source.Configuration);
+        IConfiguration configuration = WrapWithPlaceholderResolver(source.Configuration, loggerFactory);
         loggerFactory ??= BootstrapLoggerFactory.Instance;
         Initialize(newSettings, configuration, null, loggerFactory);
     }
@@ -262,8 +262,8 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
                 // Update configuration Data dictionary with any results
                 if (env != null)
                 {
-                    Logger.LogInformation("Located environment: {name}, {profiles}, {label}, {version}, {state}", env.Name, env.Profiles, env.Label,
-                        env.Version, env.State);
+                    Logger.LogInformation("Located environment name: {name}, profiles: {profiles}, labels: {label}, version: {version}, state: {state}",
+                        env.Name, env.Profiles, env.Label, env.Version, env.State);
 
                     if (updateDictionary)
                     {
@@ -527,9 +527,8 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
             {
                 using HttpResponseMessage response = await HttpClient.SendAsync(request);
 
-                // Log status
-                string message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
-                Logger.LogInformation(WebUtility.UrlEncode(message));
+                Logger.LogInformation("Config Server returned status: {statusCode} invoking path: {requestUri}", response.StatusCode,
+                    WebUtility.UrlEncode(requestUri));
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -542,7 +541,8 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
                     if (response.StatusCode >= HttpStatusCode.BadRequest)
                     {
                         // HttpClientErrorException
-                        throw new HttpRequestException(message);
+                        throw new HttpRequestException(
+                            $"Config Server returned status: {response.StatusCode} invoking path: {WebUtility.UrlEncode(requestUri)}");
                     }
 
                     return null;
@@ -851,7 +851,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         return client;
     }
 
-    private IConfiguration WrapWithPlaceholderResolver(IConfiguration configuration)
+    private IConfiguration WrapWithPlaceholderResolver(IConfiguration configuration, ILoggerFactory loggerFactory)
     {
         var root = (IConfigurationRoot)configuration;
 
@@ -862,7 +862,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
 
         return new ConfigurationRoot(new List<IConfigurationProvider>
         {
-            new PlaceholderResolverProvider(root.Providers.ToList(), NullLoggerFactory.Instance)
+            new PlaceholderResolverProvider(root.Providers.ToList(), loggerFactory)
         });
     }
 
