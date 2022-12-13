@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using k8s;
+using k8s.Autorest;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
 
 namespace Steeltoe.Common.Kubernetes;
 
@@ -32,7 +32,7 @@ public class StandardPodUtilities : IPodUtilities
         try
         {
             string hostname = Environment.GetEnvironmentVariable("HOSTNAME");
-            HttpOperationResponse<V1PodList> rsp = await _kubernetes.ListNamespacedPodWithHttpMessagesAsync(_applicationOptions.NameSpace);
+            HttpOperationResponse<V1PodList> rsp = await _kubernetes.CoreV1.ListNamespacedPodWithHttpMessagesAsync(_applicationOptions.NameSpace);
             pod = rsp.Body.Items?.FirstOrDefault(p => p.Metadata.Name == hostname);
         }
         catch (Exception e)
