@@ -21,7 +21,7 @@ public class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string> AppSettings = new()
     {
-        ["Logging:IncludeScopes"] = "false",
+        ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
         ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
@@ -49,7 +49,7 @@ public class EndpointMiddlewareTest : BaseTest
         string json = await reader.ReadLineAsync();
 
         const string expected =
-            "[\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\"]";
+            "[\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\"]";
 
         Assert.Equal(expected, json);
     }
@@ -76,7 +76,7 @@ public class EndpointMiddlewareTest : BaseTest
             string json = await result.Content.ReadAsStringAsync();
 
             const string expected =
-                "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\",\"environment\",\"applicationName\"]";
+                "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\",\"environment\",\"applicationName\"]";
 
             Assert.Equal(expected, json);
         }

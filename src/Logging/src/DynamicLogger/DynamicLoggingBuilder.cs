@@ -24,34 +24,69 @@ public static class DynamicLoggingBuilder
     {
         ArgumentGuard.NotNull(builder);
 
-        // only run if an IDynamicLoggerProvider hasn't already been added
-        if (!builder.Services.Any(sd => sd.ServiceType == typeof(IDynamicLoggerProvider)))
+        if (!IsDynamicLoggerProviderAlreadyRegistered(builder))
         {
-            // remove the original ConsoleLoggerProvider to prevent duplicate logging
-            ServiceDescriptor serviceDescriptor = builder.Services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
-
-            if (serviceDescriptor != null)
-            {
-                builder.Services.Remove(serviceDescriptor);
-            }
-
-            // make sure logger provider configurations are available
-            if (!builder.Services.Any(descriptor => descriptor.ServiceType == typeof(ILoggerProviderConfiguration<ConsoleLoggerProvider>)))
-            {
-                builder.AddConfiguration();
-            }
+            EnsureConsoleLoggingIsRegistered(builder);
+            UpdateConsoleLoggerProviderRegistration(builder.Services);
 
             builder.AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace);
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicConsoleLoggerProvider>());
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ConsoleLoggerOptions>, ConsoleLoggerOptionsSetup>());
-
-            builder.Services.TryAddEnumerable(ServiceDescriptor
-                .Singleton<IOptionsChangeTokenSource<ConsoleLoggerOptions>,
-                    LoggerProviderOptionsChangeTokenSource<ConsoleLoggerOptions, ConsoleLoggerProvider>>());
-
             builder.Services.AddSingleton(p => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
+
+            DisableConsoleColorsOnCloudPlatform(builder);
         }
 
         return builder;
+    }
+
+    private static bool IsDynamicLoggerProviderAlreadyRegistered(ILoggingBuilder builder)
+    {
+        return builder.Services.Any(sd => sd.ServiceType == typeof(IDynamicLoggerProvider));
+    }
+
+    private static void EnsureConsoleLoggingIsRegistered(ILoggingBuilder builder)
+    {
+        if (builder.Services.All(descriptor => descriptor.ImplementationType != typeof(ConsoleLoggerProvider)))
+        {
+            builder.AddConsole();
+        }
+    }
+
+    private static void UpdateConsoleLoggerProviderRegistration(IServiceCollection services)
+    {
+        // Remove the original ConsoleLoggerProvider registration as ILoggerProvider to prevent duplicate logging.
+        ServiceDescriptor descriptor = services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
+
+        if (descriptor != null)
+        {
+            services.Remove(descriptor);
+        }
+
+        // Yet we need an instance from the container to construct DynamicConsoleLoggerProvider, so register without interface.
+        services.AddSingleton<ConsoleLoggerProvider>();
+    }
+
+    private static void DisableConsoleColorsOnCloudPlatform(ILoggingBuilder builder)
+    {
+        builder.Services.TryAddEnumerable(ServiceDescriptor
+            .Singleton<IConfigureOptions<SimpleConsoleFormatterOptions>, SimpleConsoleLoggerFormatterConfigureOptions>());
+    }
+
+    private sealed class SimpleConsoleLoggerFormatterConfigureOptions : ConfigureFromConfigurationOptions<SimpleConsoleFormatterOptions>
+    {
+        public SimpleConsoleLoggerFormatterConfigureOptions(ILoggerProviderConfiguration<ConsoleLoggerProvider> providerConfiguration)
+            : base(providerConfiguration.Configuration.GetSection("FormatterOptions"))
+        {
+        }
+
+        public override void Configure(SimpleConsoleFormatterOptions options)
+        {
+            base.Configure(options);
+
+            if (Platform.IsCloudHosted)
+            {
+                options.ColorBehavior = LoggerColorBehavior.Disabled;
+            }
+        }
     }
 }

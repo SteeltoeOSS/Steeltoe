@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Logging;
 
-public interface IDynamicLoggerProvider : ILoggerProvider
+public interface IDynamicLoggerProvider : ILoggerProvider, ISupportExternalScope
 {
     /// <summary>
     /// Get a list of all known namespaces and loggers.
