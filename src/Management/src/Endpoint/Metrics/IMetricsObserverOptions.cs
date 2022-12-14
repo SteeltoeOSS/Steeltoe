@@ -30,6 +30,7 @@ public interface IMetricsObserverOptions
 
     /// <summary>
     /// Gets a list of metrics that should not be captured.
+    /// Entries in <see cref="IncludedMetrics"/> take precedence in case of conflict.
     /// </summary>
     /// <remarks>
     /// Currently only applies to System.Runtime metrics captured by <see cref="EventCounterListener" />.
