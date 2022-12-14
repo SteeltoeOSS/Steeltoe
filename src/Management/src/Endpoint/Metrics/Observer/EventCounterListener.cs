@@ -132,7 +132,6 @@ public class EventCounterListener : EventListener
                 case var _ when key.Equals("Name", StringComparison.OrdinalIgnoreCase):
                     counterName = payload.Value.ToString();
 
-                    // Inclusion list is intended to be evaluated before exclusion list
                     if ((_options.IncludedMetrics.Any() && !_options.IncludedMetrics.Contains(counterName)) || _options.ExcludedMetrics.Contains(counterName))
                     {
                         return;
