@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.ManagementPort;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -34,6 +35,8 @@ public class AllActuatorsStartupFilter : IStartupFilter
             {
                 app.UseCloudFoundrySecurity();
             }
+
+            app.UseMiddleware<ManagementPortMiddleware>();
 
             next(app);
 
