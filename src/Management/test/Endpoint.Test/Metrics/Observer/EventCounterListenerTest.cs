@@ -65,8 +65,8 @@ public class EventCounterListenerTest : BaseTest
     [Fact]
     public void EventCounterListenerGetsMetricsWithExclusionsTest()
     {
-        
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
+
         var exclusions = new List<string>
         {
             "alloc-rate",
@@ -107,8 +107,8 @@ public class EventCounterListenerTest : BaseTest
     [Fact]
     public void EventCounterListenerGetsMetricsWithInclusionsTest()
     {
-        
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
+
         var inclusions = new List<string>
         {
             "cpu-usage"
