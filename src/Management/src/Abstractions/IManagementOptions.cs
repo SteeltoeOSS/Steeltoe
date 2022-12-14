@@ -10,6 +10,8 @@ public interface IManagementOptions
 
     string Path { get; }
 
+    string Port { get; }
+
     List<IEndpointOptions> EndpointOptions { get; }
 
     public bool UseStatusCodeFromResponse { get; set; }
