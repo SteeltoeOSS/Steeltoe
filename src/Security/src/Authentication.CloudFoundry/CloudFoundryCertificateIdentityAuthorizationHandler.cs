@@ -40,7 +40,7 @@ public class CloudFoundryCertificateIdentityAuthorizationHandler : IAuthorizatio
     }
 
     private void HandleCertRequirement<T>(AuthorizationHandlerContext context, string claimType, string claimValue)
-        where T : IAuthorizationRequirement
+        where T : class, IAuthorizationRequirement
     {
         T requirement = context.PendingRequirements.OfType<T>().FirstOrDefault();
 

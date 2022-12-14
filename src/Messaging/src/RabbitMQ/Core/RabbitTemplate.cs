@@ -2257,11 +2257,11 @@ public class RabbitTemplate
             throw new InvalidOperationException($"'receiveAndReplyCallback' can't handle received object of type '{message.GetType()}'.");
         }
 
-        TReply reply = receiveAndReplyCallback(messageAsTReceive);
+        object reply = receiveAndReplyCallback(messageAsTReceive);
 
-        if (reply != null)
+        if (reply is TReply)
         {
-            DoSendReply(replyToAddressCallback, channel, receiveMessage, reply);
+            DoSendReply(replyToAddressCallback, channel, receiveMessage, (TReply)reply);
         }
         else if (IsChannelLocallyTransacted(channel))
         {

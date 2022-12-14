@@ -4,7 +4,6 @@
 
 using System.Reflection;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Stream.Attributes;
@@ -203,7 +202,7 @@ public class StreamListenerMethodValidator
 
         if (sendTo != null)
         {
-            if (ObjectUtils.IsNullOrEmpty(sendTo.Destinations))
+            if (sendTo.Destinations == null || !sendTo.Destinations.Any())
             {
                 throw new InvalidOperationException(StreamListenerErrorMessages.AtLeastOneOutput);
             }
