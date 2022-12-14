@@ -5,7 +5,6 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
@@ -487,8 +486,7 @@ public class MethodReference : SpelNode
 
         public bool IsSuitable(object value, Type targetType, IList<Type> argumentTypes)
         {
-            return (_staticClass == null || _staticClass.Equals(value)) && ObjectUtils.NullSafeEquals(_targetType, targetType) &&
-                Equal(_argumentTypes, argumentTypes);
+            return (_staticClass == null || _staticClass.Equals(value)) && _targetType == targetType && AreEqual(_argumentTypes, argumentTypes);
         }
 
         public IMethodExecutor Get()
@@ -496,37 +494,14 @@ public class MethodReference : SpelNode
             return _methodExecutor;
         }
 
-        private static bool Equal(IList<Type> list1, IList<Type> list2)
+        private static bool AreEqual(IList<Type> list1, IList<Type> list2)
         {
-            if (list1 == list2)
+            if (ReferenceEquals(list1, list2))
             {
                 return true;
             }
 
-            if (list1 == null)
-            {
-                return list2 == null;
-            }
-
-            if (list2 == null)
-            {
-                return list1 == null;
-            }
-
-            if (list1.Count != list2.Count)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < list1.Count; i++)
-            {
-                if (list1[i] != list2[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return list1 is not null && list1.SequenceEqual(list2);
         }
     }
 }

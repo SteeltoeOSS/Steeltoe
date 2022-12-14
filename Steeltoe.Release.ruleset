@@ -33,6 +33,7 @@
     <Rule Id="S2387" Action="Warning" />
     <Rule Id="S2437" Action="Warning" />
     <Rule Id="S2674" Action="Warning" />
+    <Rule Id="S2955" Action="Warning" />
     <Rule Id="S3011" Action="None" />
     <Rule Id="S3052" Action="Warning" />
     <Rule Id="S3253" Action="Warning" />

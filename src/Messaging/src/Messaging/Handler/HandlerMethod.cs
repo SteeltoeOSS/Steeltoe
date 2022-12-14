@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using Steeltoe.Common;
-using Steeltoe.Common.Util;
 
 namespace Steeltoe.Messaging.Handler;
 
@@ -100,7 +99,7 @@ public class HandlerMethod
 
     protected static object FindProvidedArgument(ParameterInfo parameter, params object[] providedArgs)
     {
-        if (!ObjectUtils.IsNullOrEmpty(providedArgs))
+        if (providedArgs != null && providedArgs.Any())
         {
             foreach (object providedArg in providedArgs)
             {

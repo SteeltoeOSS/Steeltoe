@@ -5,6 +5,7 @@
 namespace Steeltoe.Messaging.Core;
 
 public abstract class AbstractMessagingTemplate<TDestination> : AbstractMessageReceivingTemplate<TDestination>, IMessageRequestReplyOperations<TDestination>
+    where TDestination : class
 {
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(object request, CancellationToken cancellationToken = default)
     {

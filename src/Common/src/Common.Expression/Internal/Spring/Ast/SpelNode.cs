@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Steeltoe.Common.Expression.Internal.Spring.Common;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
@@ -30,7 +29,7 @@ public abstract class SpelNode : ISpelNode
         StartPosition = startPos;
         EndPosition = endPos;
 
-        if (!ObjectUtils.IsNullOrEmpty(operands))
+        if (operands != null && operands.Any())
         {
             children = operands;
 

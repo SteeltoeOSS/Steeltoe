@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 namespace Steeltoe.Common.Util;
 
 public class SubclassClassifier<TSource, TTarget> : IClassifier<TSource, TTarget>
+    where TSource : class
 {
     protected ConcurrentDictionary<Type, TTarget> TypeMap { get; set; }
 
