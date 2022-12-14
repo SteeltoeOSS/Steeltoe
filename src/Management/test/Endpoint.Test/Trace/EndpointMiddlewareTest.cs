@@ -20,7 +20,7 @@ public class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string> AppSettings = new()
     {
-        ["Logging:IncludeScopes"] = "false",
+        ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
         ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
