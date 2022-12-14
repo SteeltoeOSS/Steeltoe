@@ -46,31 +46,32 @@ public class MessageProcessingLogger : ILogger
 
     public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
+        ArgumentGuard.NotNull(formatter);
+
         if (!IsEnabled(logLevel))
         {
             return;
         }
 
-        ArgumentGuard.NotNull(formatter);
+        Func<TState, Exception, string> compositeFormatter = (innerState, innerException) =>
+            ApplyMessageProcessors(innerState, innerException, formatter, MessageProcessors);
 
+        Delegate.Log(logLevel, eventId, state, exception, compositeFormatter);
+    }
+
+    private static string ApplyMessageProcessors<TState>(TState state, Exception exception, Func<TState, Exception, string> formatter,
+        IEnumerable<IDynamicMessageProcessor> processors)
+    {
         string message = formatter(state, exception);
 
-        if (MessageProcessors != null)
+        if (processors != null)
         {
-            foreach (IDynamicMessageProcessor processor in MessageProcessors)
+            foreach (IDynamicMessageProcessor processor in processors)
             {
                 message = processor.Process(message);
             }
         }
 
-        if (!string.IsNullOrEmpty(message) || exception != null)
-        {
-            WriteMessage(logLevel, Name, eventId.Id, message, exception);
-        }
-    }
-
-    public virtual void WriteMessage(LogLevel logLevel, string logName, int eventId, string message, Exception exception)
-    {
-        Delegate.Log(logLevel, eventId, exception, message);
+        return message;
     }
 }

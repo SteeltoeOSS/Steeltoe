@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using A.B.C.D;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,14 +13,14 @@ using Xunit;
 
 namespace Steeltoe.Logging.DynamicLogger.Test;
 
-public class DynamicLoggingBuilderTest
+public sealed class DynamicLoggingBuilderTest
 {
     private static readonly Dictionary<string, string> Appsettings = new()
     {
-        ["Logging:IncludeScopes"] = "false",
+        ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:Console:LogLevel:Default"] = "Information",
         ["Logging:Console:LogLevel:A.B.C.D"] = "Critical",
-        ["Logging:Console:DisableColors"] = "True",
+        ["Logging:Console:FormatterOptions:ColorBehavior"] = "Disabled",
         ["Logging:LogLevel:Steeltoe.Logging.DynamicLogger.Test"] = "Information",
         ["Logging:LogLevel:Default"] = "Warning"
     };
@@ -29,7 +30,7 @@ public class DynamicLoggingBuilderTest
     {
         var appsettings = new Dictionary<string, string>
         {
-            ["Logging:IncludeScopes"] = "false",
+            ["Logging:Console:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Information",
             ["Logging:foo:LogLevel:A.B.C.D.TestClass"] = "None"
         };
@@ -70,7 +71,7 @@ public class DynamicLoggingBuilderTest
         Assert.False(logger.IsEnabled(LogLevel.Trace), "Trace level should NOT be enabled yet");
 
         // change the log level and confirm it worked
-        var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicConsoleLoggerProvider;
+        var provider = (DynamicConsoleLoggerProvider)services.GetRequiredService(typeof(ILoggerProvider));
         provider.SetLogLevel("A.B.C.D", LogLevel.Trace);
         Assert.True(logger.IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
     }
@@ -130,7 +131,7 @@ public class DynamicLoggingBuilderTest
         Assert.False(logger.IsEnabled(LogLevel.Trace), "Trace level should not be enabled yet");
 
         // change the log level and confirm it worked
-        var provider = services.GetRequiredService(typeof(ILoggerProvider)) as DynamicConsoleLoggerProvider;
+        var provider = (DynamicConsoleLoggerProvider)services.GetRequiredService(typeof(ILoggerProvider));
         provider.SetLogLevel("Steeltoe.Logging.DynamicLogger.Test", LogLevel.Trace);
         Assert.True(logger.IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
     }
@@ -169,12 +170,31 @@ public class DynamicLoggingBuilderTest
         }).BuildServiceProvider();
 
         var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
-        IEnumerable<ILoggerProvider> logProviders = services.GetServices<ILoggerProvider>();
+        ILoggerProvider[] logProviders = services.GetServices<ILoggerProvider>().ToArray();
 
         Assert.NotNull(dynamicLoggerProvider);
         Assert.NotEmpty(logProviders);
         Assert.Single(logProviders);
         Assert.IsType<DynamicConsoleLoggerProvider>(logProviders.SingleOrDefault());
+    }
+
+    [Fact]
+    public void AddDynamicConsole_AddsLoggerProvider_DisposeTwiceSucceeds()
+    {
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+
+        ServiceProvider services = new ServiceCollection().AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>().AddLogging(builder =>
+        {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddDynamicConsole();
+        }).BuildServiceProvider();
+
+        var dynamicLoggerProvider = services.GetRequiredService<IDynamicLoggerProvider>();
+
+        services.Dispose();
+
+        Action action = () => dynamicLoggerProvider.Dispose();
+        action.Should().NotThrow();
     }
 
     [Fact]
@@ -188,10 +208,9 @@ public class DynamicLoggingBuilderTest
             builder.AddDynamicConsole();
         }).BuildServiceProvider();
 
-        var options = services.GetService<IOptionsMonitor<ConsoleLoggerOptions>>();
+        var formatterOptions = services.GetRequiredService<IOptions<SimpleConsoleFormatterOptions>>();
 
-        Assert.NotNull(options);
-        Assert.NotNull(options.CurrentValue);
+        formatterOptions.Value.ColorBehavior.Should().Be(LoggerColorBehavior.Disabled);
     }
 
     [Fact]
@@ -205,16 +224,45 @@ public class DynamicLoggingBuilderTest
             builder.AddDynamicConsole();
         }).BuildServiceProvider();
 
-        var options = services.GetService(typeof(IOptions<ConsoleLoggerOptions>)) as IOptions<ConsoleLoggerOptions>;
+        var formatterOptions = services.GetRequiredService<IOptionsSnapshot<SimpleConsoleFormatterOptions>>();
 
-        Assert.NotNull(options);
+        formatterOptions.Value.ColorBehavior.Should().NotBe(LoggerColorBehavior.Disabled);
     }
 
     [Fact]
     public void AddDynamicConsole_DisablesColorOnPivotalPlatform()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "not empty");
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
+        try
+        {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "not empty");
+
+            IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
+
+            ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+            {
+                builder.AddConfiguration(configuration.GetSection("Logging"));
+                builder.AddDynamicConsole();
+            }).BuildServiceProvider();
+
+            var formatterOptions = services.GetRequiredService<IOptionsMonitor<SimpleConsoleFormatterOptions>>();
+
+            formatterOptions.CurrentValue.ColorBehavior.Should().Be(LoggerColorBehavior.Disabled);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
+        }
+    }
+
+    [Fact]
+    public async Task AddDynamicConsole_ObsoleteIncludesScopes()
+    {
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            ["Logging:LogLevel:Default"] = "Information",
+            ["Logging:Console:IncludeScopes"] = "true",
+            ["Logging:Console:DisableColors"] = "true"
+        }).Build();
 
         ServiceProvider services = new ServiceCollection().AddLogging(builder =>
         {
@@ -222,9 +270,64 @@ public class DynamicLoggingBuilderTest
             builder.AddDynamicConsole();
         }).BuildServiceProvider();
 
-        var options = services.GetService(typeof(IOptions<ConsoleLoggerOptions>)) as IOptions<ConsoleLoggerOptions>;
+        using var console = new ConsoleOutputBorrower();
+        var logger = services.GetRequiredService<ILogger<DynamicLoggingBuilderTest>>();
 
-        Assert.NotNull(options);
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
+        using (logger.BeginScope("Outer Scope"))
+        {
+            using (logger.BeginScope("InnerScopeKey={ScopeValue}", "InnerScopeValue"))
+            {
+                logger.LogError("Something bad.");
+            }
+        }
+
+        // ConsoleLogger writes messages to a queue, it takes a bit of time for the background thread to write them to Console.Out.
+        await Task.Delay(250);
+
+        string log = console.ToString();
+
+        log.Should().Be($@"fail: {typeof(DynamicLoggingBuilderTest).FullName}[0]
+      => Outer Scope => InnerScopeKey=InnerScopeValue
+      Something bad.
+");
+    }
+
+    [Fact]
+    public async Task AddDynamicConsole_IncludesScopes()
+    {
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            ["Logging:LogLevel:Default"] = "Information",
+            ["Logging:Console:FormatterName"] = "Simple",
+            ["Logging:Console:FormatterOptions:IncludeScopes"] = "true",
+            ["Logging:Console:FormatterOptions:ColorBehavior"] = "Disabled"
+        }).Build();
+
+        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddDynamicConsole();
+        }).BuildServiceProvider();
+
+        using var console = new ConsoleOutputBorrower();
+        var logger = services.GetRequiredService<ILogger<DynamicLoggingBuilderTest>>();
+
+        using (logger.BeginScope("Outer Scope"))
+        {
+            using (logger.BeginScope("InnerScopeKey={ScopeValue}", "InnerScopeValue"))
+            {
+                logger.LogError("Something bad.");
+            }
+        }
+
+        // ConsoleLogger writes messages to a queue, it takes a bit of time for the background thread to write them to Console.Out.
+        await Task.Delay(250);
+
+        string log = console.ToString();
+
+        log.Should().Be($@"fail: {typeof(DynamicLoggingBuilderTest).FullName}[0]
+      => Outer Scope => InnerScopeKey=InnerScopeValue
+      Something bad.
+");
     }
 }
