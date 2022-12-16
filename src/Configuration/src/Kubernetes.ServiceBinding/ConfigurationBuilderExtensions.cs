@@ -108,6 +108,7 @@ public static class ConfigurationBuilderExtensions
         // Legacy Connector Post Processors
         source.RegisterPostProcessor(new RabbitMQLegacyConnectorPostProcessor());
         source.RegisterPostProcessor(new MySqlLegacyConnectorPostProcessor());
+        source.RegisterPostProcessor(new PostgreSqlLegacyConnectorPostProcessor());
         builder.Add(source);
         return builder;
     }

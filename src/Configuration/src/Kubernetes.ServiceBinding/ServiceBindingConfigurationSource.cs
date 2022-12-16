@@ -45,7 +45,7 @@ internal class ServiceBindingConfigurationSource : PostProcessorConfigurationSou
 
     public int ReloadDelay { get; set; } = 250;
 
-    public bool Optional { get; set; }
+    public bool Optional { get; set; } = true;
 
     public Predicate<string> IgnoreKeyPredicate { get; set; } = (p) => false;
 
