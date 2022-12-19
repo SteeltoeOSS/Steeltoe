@@ -125,13 +125,12 @@ public class Message<TPayload> : AbstractMessage, IMessage<TPayload>
             return false;
         }
 
-        return ObjectUtils.NullSafeEquals(InnerPayload, other.InnerPayload) && InnerHeaders.Equals(other.InnerHeaders);
+        return ObjectEquality.ObjectOrCollectionEquals(InnerPayload, other.InnerPayload) && InnerHeaders.Equals(other.InnerHeaders);
     }
 
     public override int GetHashCode()
     {
-        // Using nullSafeHashCode for proper array hashCode handling
-        return ObjectUtils.NullSafeHashCode(InnerPayload) * 23 + InnerHeaders.GetHashCode();
+        return HashCode.Combine(ObjectEquality.GetObjectOrCollectionHashCode(InnerPayload), InnerHeaders.GetHashCode());
     }
 
     public override string ToString()
