@@ -52,7 +52,7 @@ public class EventCounterListenerTest : BaseTest
         using MeterProvider metrics = GetTestMetrics(null, exporter, null);
         await Task.Delay(2000);
 
-        var collectionResponse =  (SteeltoeCollectionResponse) await exporter.CollectionManager.EnterCollectAsync();
+        var collectionResponse = (SteeltoeCollectionResponse)await exporter.CollectionManager.EnterCollectAsync();
 
         foreach (string metric in _metrics)
         {
@@ -85,8 +85,8 @@ public class EventCounterListenerTest : BaseTest
         var exporter = new SteeltoeExporter(_scraperOptions);
         using MeterProvider metrics = GetTestMetrics(null, exporter, null);
         await Task.Delay(2000);
-        
-        var collectionResponse =  (SteeltoeCollectionResponse) await exporter.CollectionManager.EnterCollectAsync();
+
+        var collectionResponse = (SteeltoeCollectionResponse)await exporter.CollectionManager.EnterCollectAsync();
 
         foreach (string metric in _metrics)
         {
@@ -123,7 +123,7 @@ public class EventCounterListenerTest : BaseTest
         using MeterProvider otelMetrics = GetTestMetrics(null, exporter, null);
         await Task.Delay(2000);
 
-        var collectionResponse =  (SteeltoeCollectionResponse) await exporter.CollectionManager.EnterCollectAsync();
+        var collectionResponse = (SteeltoeCollectionResponse)await exporter.CollectionManager.EnterCollectAsync();
 
         foreach (string metric in _metrics)
         {
