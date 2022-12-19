@@ -1452,7 +1452,10 @@ public class SpelReproTests : AbstractExpressionTests
         IExpression ex = Parser.ParseExpression("#str?.Split('\0')");
         object result = ex.GetValue(context);
 
-        Assert.True(ObjectUtils.NullSafeEquals(result, new[]
+        string[] resultArray = result as string[];
+        Assert.NotNull(resultArray);
+
+        Assert.True(resultArray.SequenceEqual(new[]
         {
             "a",
             "b"

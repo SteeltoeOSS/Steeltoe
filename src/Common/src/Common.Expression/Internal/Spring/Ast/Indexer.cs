@@ -284,14 +284,14 @@ public class Indexer : SpelNode
     private T ConvertValue<T>(ITypeConverter converter, object value)
     {
         Type targetType = typeof(T);
-        var result = (T)converter.ConvertValue(value, value == null ? typeof(object) : value.GetType(), targetType);
+        object result = converter.ConvertValue(value, value == null ? typeof(object) : value.GetType(), targetType);
 
-        if (result == null)
+        if (result is not T)
         {
-            throw new InvalidOperationException($"Null conversion result for index [{value}]");
+            throw new InvalidOperationException($"Failed conversion result for index [{value}]");
         }
 
-        return result;
+        return (T)result;
     }
 
     private object AccessArrayElement(object ctx, int idx)

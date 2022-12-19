@@ -8,6 +8,7 @@ using Steeltoe.Common;
 namespace Steeltoe.Messaging.Core;
 
 public class CachingDestinationResolverProxy<TDestination> : IDestinationResolver<TDestination>
+    where TDestination : class
 {
     private readonly ConcurrentDictionary<string, TDestination> _resolvedDestinationCache = new();
 
