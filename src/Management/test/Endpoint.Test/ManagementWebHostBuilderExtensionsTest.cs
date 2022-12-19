@@ -758,6 +758,7 @@ public class ManagementWebHostBuilderExtensionsTest
 
         // Assert Steeltoe configuration is respected
         Assert.Contains("Export clr.process.uptime", output, StringComparison.Ordinal);
+        Assert.Contains("Export clr.cpu.count", output, StringComparison.Ordinal);
     }
 
     [Fact]
