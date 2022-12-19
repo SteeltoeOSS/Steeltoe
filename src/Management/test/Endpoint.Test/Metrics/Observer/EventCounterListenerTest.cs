@@ -43,16 +43,16 @@ public class EventCounterListenerTest : BaseTest
     };
 
     [Fact]
-    public void EventCounterListenerGetsMetricsTest()
+    public async Task EventCounterListenerGetsMetricsTest()
     {
         using var listener = new EventCounterListener(new MetricsObserverOptions());
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
         var exporter = new SteeltoeExporter(_scraperOptions);
         using MeterProvider metrics = GetTestMetrics(null, exporter, null);
-        Task.Delay(2000).Wait();
+        await Task.Delay(2000);
 
-        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollectAsync().Result;
+        var collectionResponse =  (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollectAsync().Result;
 
         foreach (string metric in _metrics)
         {
@@ -63,7 +63,7 @@ public class EventCounterListenerTest : BaseTest
     }
 
     [Fact]
-    public void EventCounterListenerGetsMetricsWithExclusionsTest()
+    public async Task EventCounterListenerGetsMetricsWithExclusionsTest()
     {
         
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
@@ -84,7 +84,7 @@ public class EventCounterListenerTest : BaseTest
 
         var exporter = new SteeltoeExporter(_scraperOptions);
         using MeterProvider metrics = GetTestMetrics(null, exporter, null);
-        Task.Delay(2000).Wait();
+        await Task.Delay(2000);
 
         var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollectAsync().Result;
 
@@ -105,7 +105,7 @@ public class EventCounterListenerTest : BaseTest
     }
 
     [Fact]
-    public void EventCounterListenerGetsMetricsWithInclusionsTest()
+    public async Task EventCounterListenerGetsMetricsWithInclusionsTest()
     {
         
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
@@ -121,7 +121,7 @@ public class EventCounterListenerTest : BaseTest
 
         var exporter = new SteeltoeExporter(_scraperOptions);
         using MeterProvider otelMetrics = GetTestMetrics(null, exporter, null);
-        Task.Delay(2000).Wait();
+        await Task.Delay(2000);
 
         var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollectAsync().Result;
 
