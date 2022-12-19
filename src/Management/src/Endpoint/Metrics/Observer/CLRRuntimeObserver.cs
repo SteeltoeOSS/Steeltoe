@@ -39,13 +39,14 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
     public ClrRuntimeObserver(IViewRegistry viewRegistry)
     {
         Meter meter = OpenTelemetryMetrics.Meter;
-        _ = meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");
-        _ = meter.CreateObservableGauge("clr.gc.collections", GetCollectionCount, "Garbage collection count", "count");
+        meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");
+        meter.CreateObservableGauge("clr.gc.collections", GetCollectionCount, "Garbage collection count", "count");
 
-        _ = meter.CreateObservableGauge("clr.threadpool.active", GetActiveThreadPoolWorkers, "Active thread count", "count");
-        _ = meter.CreateObservableGauge("clr.threadpool.avail", GetAvailableThreadPoolWorkers, "Available thread count", "count");
+        meter.CreateObservableGauge("clr.threadpool.active", GetActiveThreadPoolWorkers, "Active thread count", "count");
+        meter.CreateObservableGauge("clr.threadpool.avail", GetAvailableThreadPoolWorkers, "Available thread count", "count");
 
-        _ = meter.CreateObservableGauge("clr.process.uptime", GetUpTime, "Process uptime in seconds", "count");
+        meter.CreateObservableGauge("clr.process.uptime", GetUpTime, "Process uptime in seconds", "count");
+        meter.CreateObservableGauge("clr.cpu.count", () => Environment.ProcessorCount, "Total processor count", "count");
     }
 
     private IEnumerable<Measurement<long>> GetCollectionCount()

@@ -120,17 +120,11 @@ public class EventCounterListener : EventListener
         long? longValue = null;
         string counterName = string.Empty;
         var labelSet = new List<KeyValuePair<string, object>>();
-        bool excludedMetric = false;
         string counterDisplayUnit = null;
         string counterDisplayName = null;
 
         foreach (KeyValuePair<string, object> payload in eventPayload)
         {
-            if (excludedMetric)
-            {
-                break;
-            }
-
             string key = payload.Key;
 
             switch (key)
@@ -138,9 +132,9 @@ public class EventCounterListener : EventListener
                 case var _ when key.Equals("Name", StringComparison.OrdinalIgnoreCase):
                     counterName = payload.Value.ToString();
 
-                    if (_options.ExcludedMetrics.Contains(counterName))
+                    if ((_options.IncludedMetrics.Any() && !_options.IncludedMetrics.Contains(counterName)) || _options.ExcludedMetrics.Contains(counterName))
                     {
-                        excludedMetric = true;
+                        return;
                     }
 
                     break;

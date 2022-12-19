@@ -35,6 +35,9 @@ public class MetricsObserverOptions : IMetricsObserverOptions
     public bool HttpClientDesktop { get; set; }
 
     /// <inheritdoc />
+    public List<string> IncludedMetrics { get; set; } = new();
+
+    /// <inheritdoc />
     public List<string> ExcludedMetrics { get; set; } = new();
 
     public MetricsObserverOptions()
