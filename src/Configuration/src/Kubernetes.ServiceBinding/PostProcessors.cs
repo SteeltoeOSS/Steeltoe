@@ -43,15 +43,7 @@ internal sealed class ArtemisPostProcessor : IConfigurationPostProcessor
                 mapper.MapFromTo("embedded.topics", "embeddedTopics");
 
                 // Note: Spring adds spring.rabbitmq.pool configuration settings also
-                // 
-                // mapper.MapFromTo("pool.block-if-full","spring.rabbitmq.pool.block-if-full");
-                // mapper.MapFromTo("pool.block-if-full-timeout","spring.rabbitmq.pool.block-if-full-timeout");
-                // mapper.MapFromTo("pool.enabled","spring.rabbitmq.pool.enabled");
-                // mapper.MapFromTo("pool.idle-timeout","spring.rabbitmq.pool.idle-timeout");
-                // mapper.MapFromTo("pool.max-connections","spring.rabbitmq.pool.max-connections");
-                // mapper.MapFromTo("pool.max-sessions-per-connection","spring.rabbitmq.pool.max-sessions-per-connection");
-                // mapper.MapFromTo("pool.time-between-expiration-check","spring.rabbitmq.pool.time-between-expiration-check");
-                // mapper.MapFromTo("pool.use-anonymous-producers","spring.rabbitmq.pool.use-anonymous-producers");
+
             });
     }
 }

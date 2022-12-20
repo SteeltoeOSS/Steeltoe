@@ -11,30 +11,27 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Xunit;
 
-namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test
+namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
+
+public class ServiceBindingsTest
 {
-    public class ServiceBindingsTest
+    [Fact]
+    public void NullPath()
     {
-        [Fact]
-        public void NullPath()
-        {
-            var b = new ServiceBindingConfigurationProvider.ServiceBindings(null);
-            Assert.Empty(b.Bindings);
-        }
-
-        [Fact]
-        public void PopulatesContent()
-        {
-            var path = new PhysicalFileProvider(GetK8SResourcesDirectory());
-            var b = new ServiceBindingConfigurationProvider.ServiceBindings(path);
-            Assert.Equal(3, b.Bindings.Count);
-        }
-
-        private static string GetK8SResourcesDirectory()
-        {
-            return Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\resources\\k8s\\");
-        }
+        var b = new ServiceBindingConfigurationProvider.ServiceBindings(null);
+        Assert.Empty(b.Bindings);
     }
 
+    [Fact]
+    public void PopulatesContent()
+    {
+        var path = new PhysicalFileProvider(GetK8SResourcesDirectory());
+        var b = new ServiceBindingConfigurationProvider.ServiceBindings(path);
+        Assert.Equal(3, b.Bindings.Count);
+    }
 
+    private static string GetK8SResourcesDirectory()
+    {
+        return Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\resources\\k8s\\");
+    }
 }
