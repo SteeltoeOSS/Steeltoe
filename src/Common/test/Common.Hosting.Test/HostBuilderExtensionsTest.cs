@@ -123,7 +123,7 @@ public class HostBuilderExtensionsTest
     [Fact]
     public void UseCloudHosting_UsesCommandLine_ServerUrls()
     {
-        var config = new ConfigurationBuilder().AddCommandLine(new[]
+        IConfigurationRoot config = new ConfigurationBuilder().AddCommandLine(new[]
         {
             "--server.urls",
             "http://*:8081"
@@ -141,7 +141,7 @@ public class HostBuilderExtensionsTest
     [Fact]
     public void UseCloudHosting_UsesCommandLine_Urls()
     {
-        var config = new ConfigurationBuilder().AddCommandLine(new[]
+        IConfigurationRoot config = new ConfigurationBuilder().AddCommandLine(new[]
         {
             "--urls",
             "http://*:8081"
@@ -155,6 +155,7 @@ public class HostBuilderExtensionsTest
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
         Assert.Contains("http://*:8081", addresses.Addresses);
     }
+
     [Fact]
     public void UseCloudHosting_WebApplication_Default8080()
     {
