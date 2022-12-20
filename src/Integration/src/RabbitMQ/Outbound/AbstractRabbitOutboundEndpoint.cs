@@ -147,7 +147,7 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
 
                 DoStart();
 
-                if (ConfirmTimeout != null && GetConfirmNackChannel() != null && GetRabbitTemplate() != null)
+                if (ConfirmTimeout != null && GetResolvedConfirmNackChannel() != null && GetRabbitTemplate() != null)
                 {
                     TokenSource = new CancellationTokenSource();
                     ConfirmChecker = Task.Run(() => CheckUnconfirmed(TokenSource.Token));
@@ -207,7 +207,7 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
     {
     }
 
-    protected virtual IMessageChannel GetConfirmAckChannel()
+    protected virtual IMessageChannel GetResolvedConfirmAckChannel()
     {
         if (ConfirmAckChannel == null && ConfirmAckChannelName != null)
         {
@@ -217,7 +217,7 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
         return ConfirmAckChannel;
     }
 
-    protected virtual IMessageChannel GetConfirmNackChannel()
+    protected virtual IMessageChannel GetResolvedConfirmNackChannel()
     {
         if (ConfirmNackChannel == null && ConfirmNackChannelName != null)
         {
@@ -309,7 +309,6 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
         object replyObject = converter.FromMessage(amqpReplyMessage, null);
         IMessageBuilder builder = PrepareMessageBuilder(replyObject);
 
-        // var headers = getHeaderMapper().toHeadersFromReply(amqpReplyMessage.getMessageProperties());
         builder.CopyHeadersIfAbsent(amqpReplyMessage.Headers);
         return builder;
     }
@@ -320,7 +319,6 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
         object returnedObject = converter.FromMessage(message, null);
         IMessageBuilder builder = PrepareMessageBuilder(returnedObject);
 
-        // TODO: Map < String, ?> headers = getHeaderMapper().toHeadersFromReply(message.getMessageProperties());
         if (ErrorMessageStrategy == null)
         {
             builder.CopyHeadersIfAbsent(message.Headers).SetHeader(RabbitMessageHeaders.ReturnReplyCode, replyCode)
@@ -353,13 +351,13 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
         IMessage confirmMessage;
         confirmMessage = BuildConfirmMessage(ack, cause, wrapper, userCorrelationData);
 
-        if (ack && GetConfirmAckChannel() != null)
+        if (ack && GetResolvedConfirmAckChannel() != null)
         {
-            SendOutput(confirmMessage, GetConfirmAckChannel(), true);
+            SendOutput(confirmMessage, GetResolvedConfirmAckChannel(), true);
         }
-        else if (!ack && GetConfirmNackChannel() != null)
+        else if (!ack && GetResolvedConfirmNackChannel() != null)
         {
-            SendOutput(confirmMessage, GetConfirmNackChannel(), true);
+            SendOutput(confirmMessage, GetResolvedConfirmNackChannel(), true);
         }
         else
         {

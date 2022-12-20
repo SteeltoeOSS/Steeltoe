@@ -14,7 +14,6 @@ public class HealthRegistrationsAggregator : DefaultHealthAggregator, IHealthReg
     public HealthCheckResult Aggregate(IList<IHealthContributor> contributors, ICollection<HealthCheckRegistration> healthCheckRegistrations,
         IServiceProvider serviceProvider)
     {
-        // TODO: consider re-writing to run this call to base aggregator in parallel with below checks
         // get results from DefaultHealthAggregator first
         HealthCheckResult aggregatorResult = Aggregate(contributors);
 

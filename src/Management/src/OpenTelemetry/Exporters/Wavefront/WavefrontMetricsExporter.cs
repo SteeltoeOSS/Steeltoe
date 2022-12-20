@@ -93,7 +93,6 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
                     {
                         long timestamp = metricPoint.EndTime.ToUnixTimeMilliseconds();
 
-                        // TODO: Setup custom aggregations to compute distributions
                         IDictionary<string, string> tags = GetTags(metricPoint.Tags);
 
 #pragma warning disable S4040 // Strings should be normalized to uppercase

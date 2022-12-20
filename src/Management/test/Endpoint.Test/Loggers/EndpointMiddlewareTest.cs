@@ -22,7 +22,7 @@ public class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string> AppSettings = new()
     {
-        ["Logging:IncludeScopes"] = "false",
+        ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
         ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
@@ -79,7 +79,7 @@ public class EndpointMiddlewareTest : BaseTest
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"BadData\"}");
-        HttpResponseMessage changeResult = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Default", content);
+        HttpResponseMessage changeResult = await client.PostAsync(new Uri("http://localhost/cloudfoundryapplication/loggers/Default"), content);
         Assert.Equal(HttpStatusCode.BadRequest, changeResult.StatusCode);
     }
 
@@ -96,7 +96,7 @@ public class EndpointMiddlewareTest : BaseTest
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
-        HttpResponseMessage changeResult = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Default", content);
+        HttpResponseMessage changeResult = await client.PostAsync(new Uri("http://localhost/cloudfoundryapplication/loggers/Default"), content);
         Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
 
         var parsedObject = await client.GetFromJsonAsync<JsonElement>("http://localhost/cloudfoundryapplication/loggers");
@@ -123,7 +123,7 @@ public class EndpointMiddlewareTest : BaseTest
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
-        HttpResponseMessage changeResult = await client.PostAsync("http://localhost/loggers/Default", content);
+        HttpResponseMessage changeResult = await client.PostAsync(new Uri("http://localhost/loggers/Default"), content);
         Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
 
         var parsedObject = await client.GetFromJsonAsync<JsonElement>("http://localhost/loggers");
@@ -143,7 +143,7 @@ public class EndpointMiddlewareTest : BaseTest
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
         HttpContent content = new StringContent("{\"configuredLevel\":\"TRACE\"}");
-        HttpResponseMessage changeResult = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Steeltoe", content);
+        HttpResponseMessage changeResult = await client.PostAsync(new Uri("http://localhost/cloudfoundryapplication/loggers/Steeltoe"), content);
         Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
 
         var json = await client.GetFromJsonAsync<JsonElement>("http://localhost/cloudfoundryapplication/loggers");

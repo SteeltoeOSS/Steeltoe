@@ -76,7 +76,7 @@ public class ClientCertificateAuthenticationTests
     {
         TestServer server = CreateServer(new MutualTlsAuthenticationOptions(), Certificates.SelfSignedValidWithClientEku);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("http://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("http://example.com/"));
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -89,7 +89,7 @@ public class ClientCertificateAuthenticationTests
             Events = _successfulValidationEvents
         }, Certificates.SelfSignedValidWithClientEku);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -102,7 +102,7 @@ public class ClientCertificateAuthenticationTests
             Events = _successfulValidationEvents
         }, Certificates.SelfSignedValidWithNoEku);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -114,7 +114,7 @@ public class ClientCertificateAuthenticationTests
             AllowedCertificateTypes = CertificateTypes.Chained
         }, Certificates.SelfSignedValidWithClientEku);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -127,7 +127,7 @@ public class ClientCertificateAuthenticationTests
             Events = _successfulValidationEvents
         }, Certificates.SelfSignedValidWithNoEku);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -140,7 +140,7 @@ public class ClientCertificateAuthenticationTests
             Events = _successfulValidationEvents
         }, Certificates.SelfSignedValidWithServerEku);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -154,7 +154,7 @@ public class ClientCertificateAuthenticationTests
             Events = _successfulValidationEvents
         }, Certificates.SelfSignedValidWithServerEku);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -168,7 +168,7 @@ public class ClientCertificateAuthenticationTests
             Events = _successfulValidationEvents
         }, Certificates.SelfSignedValidWithServerEku);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -183,7 +183,7 @@ public class ClientCertificateAuthenticationTests
             Events = _successfulValidationEvents
         }, Certificates.SelfSignedExpired);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -197,7 +197,7 @@ public class ClientCertificateAuthenticationTests
             Events = _successfulValidationEvents
         }, Certificates.SelfSignedExpired);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -213,7 +213,7 @@ public class ClientCertificateAuthenticationTests
             Events = _successfulValidationEvents
         }, Certificates.SelfSignedNotYetValid);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -227,7 +227,7 @@ public class ClientCertificateAuthenticationTests
             Events = _successfulValidationEvents
         }, Certificates.SelfSignedNotYetValid);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -240,7 +240,7 @@ public class ClientCertificateAuthenticationTests
             Events = _failedValidationEvents
         }, Certificates.SelfSignedValidWithServerEku);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -254,7 +254,7 @@ public class ClientCertificateAuthenticationTests
             Events = _unprocessedValidationEvents
         }, Certificates.SelfSignedValidWithServerEku);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -266,7 +266,7 @@ public class ClientCertificateAuthenticationTests
             Events = _successfulValidationEvents
         });
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -278,7 +278,7 @@ public class ClientCertificateAuthenticationTests
             Events = _successfulValidationEvents
         }, Certificates.SignedClient);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -296,7 +296,7 @@ public class ClientCertificateAuthenticationTests
             }
         }, Certificates.SignedClient);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -311,7 +311,7 @@ public class ClientCertificateAuthenticationTests
 
         HttpClient client = server.CreateClient();
         client.DefaultRequestHeaders.Add("X-Client-Cert", Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
-        HttpResponseMessage response = await client.GetAsync("https://example.com/");
+        HttpResponseMessage response = await client.GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -325,7 +325,7 @@ public class ClientCertificateAuthenticationTests
 
         HttpClient client = server.CreateClient();
         client.DefaultRequestHeaders.Add("X-Client-Cert", $"OOPS{Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData)}");
-        HttpResponseMessage response = await client.GetAsync("https://example.com/");
+        HttpResponseMessage response = await client.GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -340,7 +340,7 @@ public class ClientCertificateAuthenticationTests
 
         HttpClient client = server.CreateClient();
         client.DefaultRequestHeaders.Add("X-ARR-ClientCert", Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
-        HttpResponseMessage response = await client.GetAsync("https://example.com/");
+        HttpResponseMessage response = await client.GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -354,7 +354,7 @@ public class ClientCertificateAuthenticationTests
 
         HttpClient client = server.CreateClient();
         client.DefaultRequestHeaders.Add("random-Weird-header", Convert.ToBase64String(Certificates.SelfSignedValidWithNoEku.RawData));
-        HttpResponseMessage response = await client.GetAsync("https://example.com/");
+        HttpResponseMessage response = await client.GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -366,7 +366,7 @@ public class ClientCertificateAuthenticationTests
             AllowedCertificateTypes = CertificateTypes.SelfSigned
         }, Certificates.SelfSignedValidWithNoEku);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         XElement responseAsXml = null;
@@ -494,7 +494,7 @@ public class ClientCertificateAuthenticationTests
             }
         }, Certificates.SelfSignedValidWithNoEku);
 
-        HttpResponseMessage response = await server.CreateClient().GetAsync("https://example.com/");
+        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         XElement responseAsXml = null;

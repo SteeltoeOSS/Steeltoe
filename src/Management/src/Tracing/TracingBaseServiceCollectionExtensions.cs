@@ -57,7 +57,7 @@ public static class TracingBaseServiceCollectionExtensions
         services.TryAddSingleton<ITracingOptions>(serviceProvider =>
             new TracingOptions(serviceProvider.GetRequiredService<IApplicationInstanceInfo>(), serviceProvider.GetRequiredService<IConfiguration>()));
 
-        services.TryAddSingleton<IDynamicMessageProcessor, TracingLogProcessor>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IDynamicMessageProcessor, TracingLogProcessor>());
 
         bool exportToZipkin = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.Zipkin");
         bool exportToJaeger = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.Jaeger");
@@ -101,7 +101,6 @@ public static class TracingBaseServiceCollectionExtensions
 
                 if (traceOpts.PropagationType.Equals("B3", StringComparison.OrdinalIgnoreCase))
                 {
-                    // TODO: Investigate alternatives and remove suppression.
 #pragma warning disable CS0618 // Type or member is obsolete
                     var propagators = new List<TextMapPropagator>
                     {

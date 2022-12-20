@@ -11,6 +11,6 @@ public static class CloudFoundryConnector
     /// </summary>
     public static void EnsureAssemblyIsLoaded()
     {
-        // no-op
+        // Intentionally left empty.
     }
 }

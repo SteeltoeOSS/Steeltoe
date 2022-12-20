@@ -10,6 +10,9 @@ public sealed class ClientCertificatesFixture : IDisposable
 {
     public LocalCertificateWriter CertificateWriter { get; } = new();
 
+    public Guid ServerOrgId { get; } = new("a8fef16f-94c0-49e3-aa0b-ced7c3da6229");
+    public Guid ServerSpaceId { get; } = new("122b942a-d7b9-4839-b26e-836654b9785f");
+
     public ClientCertificatesFixture()
     {
         CertificateWriter.CertificateFilenamePrefix = "OrgAndSpaceMatch";
@@ -24,12 +27,5 @@ public sealed class ClientCertificatesFixture : IDisposable
 
     public void Dispose()
     {
-        // TODO: Delete certificates?
     }
-
-    // Suppress S4581 to workaround bug at https://github.com/SonarSource/sonar-dotnet/issues/5703.
-#pragma warning disable S4581 // "new Guid()" should not be used
-    public Guid ServerOrgId { get; } = new("a8fef16f-94c0-49e3-aa0b-ced7c3da6229");
-    public Guid ServerSpaceId { get; } = new("122b942a-d7b9-4839-b26e-836654b9785f");
-#pragma warning restore S4581 // "new Guid()" should not be used
 }

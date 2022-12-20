@@ -77,14 +77,6 @@ public class MimeTypeTest
         Assert.Equal("\"application/soap+xml;action=\\\"https://x.y.z\\\"\"", mimeType.GetParameter("type"));
     }
 
-    // [Fact]
-    //      public void WithConversionService()
-    //      {
-    //          ConversionService conversionService = new DefaultConversionService();
-    //          assertTrue(conversionService.canConvert(String.class, MimeType.class));
-    //          MimeType mimeType = MimeType.valueOf("application/xml");
-    //          assertEquals(mimeType, conversionService.convert("application/xml", MimeType.class));
-    //   }
     [Fact]
     public void Includes()
     {

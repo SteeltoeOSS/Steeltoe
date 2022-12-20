@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using A.B.C.D;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Logging.DynamicSerilog.Test;
 
-public class SerilogDynamicLoggingBuilderTest
+public sealed class SerilogDynamicLoggingBuilderTest
 {
     private static readonly Dictionary<string, string> Appsettings = new()
     {
@@ -66,7 +67,7 @@ public class SerilogDynamicLoggingBuilderTest
         Assert.False(logger.IsEnabled(LogLevel.Trace), "Trace level should NOT be enabled yet");
 
         // change the log level and confirm it worked
-        var provider = services.GetRequiredService(typeof(ILoggerProvider)) as SerilogDynamicProvider;
+        var provider = (SerilogDynamicProvider)services.GetRequiredService(typeof(ILoggerProvider));
         provider.SetLogLevel("A.B.C.D", LogLevel.Trace);
 
         IEnumerable<LogLevel> levels = provider.GetLoggerConfigurations().Where(c => c.Name.StartsWith("A.B.C.D", StringComparison.Ordinal))
@@ -101,7 +102,7 @@ public class SerilogDynamicLoggingBuilderTest
         }).BuildServiceProvider();
 
         var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
-        IEnumerable<ILoggerProvider> logProviders = services.GetServices<ILoggerProvider>();
+        ILoggerProvider[] logProviders = services.GetServices<ILoggerProvider>().ToArray();
 
         Assert.NotNull(dynamicLoggerProvider);
         Assert.NotEmpty(logProviders);
@@ -109,11 +110,8 @@ public class SerilogDynamicLoggingBuilderTest
         Assert.IsType<SerilogDynamicProvider>(logProviders.SingleOrDefault());
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
-#pragma warning disable S2699 // Tests should include assertions
     public void AddDynamicConsole_AddsLoggerProvider_DisposeTwiceSucceeds()
-#pragma warning restore S2699 // Tests should include assertions
     {
         IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
@@ -122,10 +120,12 @@ public class SerilogDynamicLoggingBuilderTest
             builder.AddDynamicSerilog();
         }).BuildServiceProvider();
 
-        var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
+        var dynamicLoggerProvider = services.GetRequiredService<IDynamicLoggerProvider>();
 
         services.Dispose();
-        dynamicLoggerProvider.Dispose();
+
+        Action action = () => dynamicLoggerProvider.Dispose();
+        action.Should().NotThrow();
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class SerilogDynamicLoggingBuilderTest
             .BuildServiceProvider();
 
         var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
-        IEnumerable<ILoggerProvider> logProviders = services.GetServices<ILoggerProvider>();
+        ILoggerProvider[] logProviders = services.GetServices<ILoggerProvider>().ToArray();
 
         Assert.NotNull(dynamicLoggerProvider);
         Assert.NotEmpty(logProviders);

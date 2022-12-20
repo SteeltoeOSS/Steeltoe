@@ -188,13 +188,11 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     [Fact]
     public void TestReceiveBlocking()
     {
-        // TODO: this.template.setUserIdExpressionString("@cf.username");
         Template.ConvertAndSend(Route, "block");
         IMessage received = Template.Receive(Route, 10000);
         Assert.NotNull(received);
         Assert.Equal("block", EncodingUtils.Utf8.GetString((byte[])received.Payload));
 
-        // TODO: assertThat(received.getMessageProperties().getReceivedUserId()).isEqualTo("guest");
         Template.ReceiveTimeout = 0;
         Assert.Null(Template.Receive(Route));
     }
@@ -274,12 +272,10 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         try
         {
             Template.ConvertAndSend(string.Empty, "no.such.route", "message");
-
-            // throw new Exception("Expected RabbitException");
         }
         catch (RabbitException)
         {
-            // e.printStackTrace();
+            // Intentionally left empty.
         }
 
         // Now send the real message, and all should be well...
@@ -953,8 +949,6 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
                 var formatter = new BinaryFormatter();
                 using var requestStream = new MemoryStream(512);
 
-                // TODO: [BREAKING] Don't use binary serialization, it's insecure! https://aka.ms/binaryformatter
-                // Tracked at: https://github.com/SteeltoeOSS/Steeltoe/issues/487.
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
                 formatter.Serialize(requestStream, request);
                 byte[] bytes = requestStream.ToArray();

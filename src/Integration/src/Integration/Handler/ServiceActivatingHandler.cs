@@ -30,7 +30,7 @@ public class ServiceActivatingHandler : AbstractReplyProducingMessageHandler, IL
 
     public override void Initialize()
     {
-        // Nothing to do
+        // Intentionally left empty.
     }
 
     public virtual Task StartAsync()

@@ -10,7 +10,6 @@ namespace Steeltoe.Management.Endpoint.Refresh;
 
 public class RefreshEndpoint : AbstractEndpoint<IList<string>>, IRefreshEndpoint
 {
-    private readonly ILogger<RefreshEndpoint> _logger;
     private readonly IConfiguration _configuration;
 
     public new IRefreshOptions Options => options as IRefreshOptions;
@@ -21,7 +20,6 @@ public class RefreshEndpoint : AbstractEndpoint<IList<string>>, IRefreshEndpoint
         ArgumentGuard.NotNull(configuration);
 
         _configuration = configuration;
-        _logger = logger;
     }
 
     public override IList<string> Invoke()

@@ -8,7 +8,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
-using T = System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -19,7 +18,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
 
     public override IEurekaClientConfiguration ClientConfiguration => _configOptions.CurrentValue;
 
-    public IList<string> Services => GetServices();
+    public IList<string> Services => GetRegisteredServices();
 
     public string Description => "Spring Cloud Eureka Client";
 
@@ -35,7 +34,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
         Initialize();
     }
 
-    public IList<string> GetServices()
+    public IList<string> GetRegisteredServices()
     {
         Applications applications = Applications;
 
@@ -81,7 +80,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
         return _thisInstance;
     }
 
-    public override T.Task ShutdownAsync()
+    public override Task ShutdownAsync()
     {
         appInfoManager.InstanceStatus = InstanceStatus.Down;
         return base.ShutdownAsync();

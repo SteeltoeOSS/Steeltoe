@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Steeltoe.Stream.Binding;
 
-public struct Bindable
+public record struct Bindable
 {
     public bool IsInput { get; set; }
 

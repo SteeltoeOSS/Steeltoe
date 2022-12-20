@@ -610,7 +610,6 @@ public class EvaluationTests : AbstractExpressionTests
     {
         var context = new StandardEvaluationContext();
 
-        // Register a custom MethodResolver...
         var customResolvers = new List<IMethodResolver>
         {
             new CustomMethodResolver()
@@ -618,10 +617,6 @@ public class EvaluationTests : AbstractExpressionTests
 
         context.MethodResolvers = customResolvers;
 
-        // or simply...
-        // context.setMethodResolvers(new ArrayList<MethodResolver>());
-
-        // Register a custom MethodFilter...
         var filter = new CustomMethodFilter();
         var ex = Assert.Throws<InvalidOperationException>(() => context.RegisterMethodFilter(typeof(string), filter));
 
@@ -994,8 +989,10 @@ public class EvaluationTests : AbstractExpressionTests
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
         IExpression e;
 
+#pragma warning disable S125 // Sections of code should not be commented out
         // index1 is 2 at the start - the 'intArray[#root.index1++]' should not be evaluated twice!
         // intArray[2] is 3
+#pragma warning restore S125 // Sections of code should not be commented out
         e = parser.ParseExpression("IntArray[#root.Index1++]++");
         e.GetValue<int>(ctx);
         Assert.Equal(3, helper.Index1);

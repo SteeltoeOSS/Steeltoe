@@ -4,6 +4,7 @@
 
 using System.Diagnostics.Metrics;
 using System.Net;
+using FluentAssertions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,6 +15,8 @@ using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
+using Steeltoe.Common.Logging;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Diagnostics;
@@ -80,7 +83,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddDbMigrationsActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/dbmigrations");
+        var requestUri = new Uri("/actuator/dbmigrations", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -107,7 +111,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddEnvActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/env");
+        var requestUri = new Uri("/actuator/env", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -174,7 +179,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddHealthActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+        var requestUri = new Uri("/actuator/health", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -188,8 +194,8 @@ public class ManagementWebHostBuilderExtensionsTest
         HttpClient client = host.GetTestClient();
 
         // request liveness & readiness in order to validate the ApplicationAvailability has been set as expected
-        HttpResponseMessage livenessResult = await client.GetAsync("actuator/health/liveness");
-        HttpResponseMessage readinessResult = await client.GetAsync("actuator/health/readiness");
+        HttpResponseMessage livenessResult = await client.GetAsync(new Uri("actuator/health/liveness", UriKind.Relative));
+        HttpResponseMessage readinessResult = await client.GetAsync(new Uri("actuator/health/readiness", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, livenessResult.StatusCode);
         Assert.Contains("\"LivenessState\":\"CORRECT\"", await livenessResult.Content.ReadAsStringAsync(), StringComparison.Ordinal);
         Assert.Equal(HttpStatusCode.OK, readinessResult.StatusCode);
@@ -230,7 +236,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
             using IWebHost host = hostBuilder.AddHeapDumpActuator().Start();
 
-            HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/heapdump");
+            var requestUri = new Uri("/actuator/heapdump", UriKind.Relative);
+            HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
@@ -258,7 +265,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddHypermediaActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+        var requestUri = new Uri("/actuator", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -305,7 +313,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddInfoActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+        var requestUri = new Uri("/actuator/info", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -332,7 +341,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddLoggersActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
+        var requestUri = new Uri("/actuator/loggers", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -344,7 +354,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddLoggersActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
+        var requestUri = new Uri("/actuator/loggers", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -382,7 +393,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddMappingsActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/mappings");
+        var requestUri = new Uri("/actuator/mappings", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -409,7 +421,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddMetricsActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/metrics");
+        var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -436,7 +449,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddRefreshActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/refresh");
+        var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -468,7 +482,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
             using IWebHost host = hostBuilder.AddThreadDumpActuator().Start();
 
-            HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/threaddump");
+            var requestUri = new Uri("/actuator/threaddump", UriKind.Relative);
+            HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
@@ -496,7 +511,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddTraceActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/actuator/httptrace");
+        var requestUri = new Uri("/actuator/httptrace", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -524,11 +540,11 @@ public class ManagementWebHostBuilderExtensionsTest
         using IWebHost host = hostBuilder.AddAllActuators().Start();
         HttpClient client = host.GetTestServer().CreateClient();
 
-        HttpResponseMessage response = await client.GetAsync("/actuator");
+        HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/info");
+        response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/health");
+        response = await client.GetAsync(new Uri("/actuator/health", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -540,11 +556,11 @@ public class ManagementWebHostBuilderExtensionsTest
         using IWebHost host = hostBuilder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).Start();
         HttpClient client = host.GetTestServer().CreateClient();
 
-        HttpResponseMessage response = await client.GetAsync("/actuator");
+        HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/info");
+        response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/health");
+        response = await client.GetAsync(new Uri("/actuator/health", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -571,7 +587,8 @@ public class ManagementWebHostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddCloudFoundryActuator().Start();
 
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
+        var requestUri = new Uri("/cloudfoundryapplication", UriKind.Relative);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -585,11 +602,11 @@ public class ManagementWebHostBuilderExtensionsTest
         HttpClient client = host.GetTestServer().CreateClient();
 
         Assert.Single(host.Services.GetServices<IStartupFilter>());
-        HttpResponseMessage response = await client.GetAsync("/actuator");
+        HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/info");
+        response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/health");
+        response = await client.GetAsync(new Uri("/actuator/health", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -607,11 +624,11 @@ public class ManagementWebHostBuilderExtensionsTest
 
         // these requests hit the "RequireAuthorization" policy and will only pass if _testServerWithSecureRouting is used
         Assert.Single(host.Services.GetServices<IStartupFilter>());
-        HttpResponseMessage response = await client.GetAsync("/actuator");
+        HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/info");
+        response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await client.GetAsync("/actuator/health");
+        response = await client.GetAsync(new Uri("/actuator/health", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -673,31 +690,33 @@ public class ManagementWebHostBuilderExtensionsTest
 
         new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        using (var unConsole = new ConsoleOutputBorrower())
-        {
-            using IWebHost host = hostBuilder.ConfigureServices(services => services.AddOpenTelemetryMetrics(builder =>
-                    builder.AddMeter("TestMeter")
-                        .AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
-                .AddAllActuators().Start();
+        var logger = new CapturingLoggerProvider();
+        BootstrapLoggerFactory.Instance.AddProvider(logger);
 
-            HttpClient client = host.GetTestServer().CreateClient();
+        using var unConsole = new ConsoleOutputBorrower();
 
-            var meter = new Meter("TestMeter");
-            Counter<int> counter = meter.CreateCounter<int>("TestCounter");
-            counter.Add(1);
+        using IWebHost host = hostBuilder.ConfigureServices(services => services.AddOpenTelemetryMetrics(builder =>
+                builder.AddMeter("TestMeter").AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
+            .AddAllActuators().Start();
 
-            await Task.Delay(3000); // wait for metrics to be collected
-            HttpResponseMessage response = await client.GetAsync("/actuator/metrics");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        HttpClient client = host.GetTestServer().CreateClient();
 
-            // Assert warning is printed to Console
-            string output = unConsole.ToString();
-            Assert.Contains("Warning", output, StringComparison.Ordinal);
-            Assert.Contains("OpenTelemetry for Steeltoe", output, StringComparison.Ordinal);
+        var meter = new Meter("TestMeter");
+        Counter<int> counter = meter.CreateCounter<int>("TestCounter");
+        counter.Add(1);
 
-            // Assert Otel configuration is respected
-            Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
-        }
+        await Task.Delay(3000); // wait for metrics to be collected
+        var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
+        HttpResponseMessage response = await client.GetAsync(requestUri);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        // Assert warning is logged
+        logger.GetMessages().Should().Contain("WARNING: Make sure one of the extension methods that calls ConfigureSteeltoeMetrics " +
+            "is used to correctly configure metrics using OpenTelemetry for Steeltoe.");
+
+        // Assert Otel configuration is respected
+        string output = unConsole.ToString();
+        Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -712,34 +731,34 @@ public class ManagementWebHostBuilderExtensionsTest
 
         new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        using (var unConsole = new ConsoleOutputBorrower())
-        {
-            using IWebHost host = hostBuilder.ConfigureServices(services => services.AddOpenTelemetryMetrics(builder =>
-                    builder.ConfigureSteeltoeMetrics().AddMeter("TestMeter")
-                        .AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000))).AddAllActuators()
-                .Start();
+        var logger = new CapturingLoggerProvider();
+        BootstrapLoggerFactory.Instance.AddProvider(logger);
 
-            HttpClient client = host.GetTestServer().CreateClient();
+        using var unConsole = new ConsoleOutputBorrower();
 
-            var meter = new Meter("TestMeter");
-            Counter<int> counter = meter.CreateCounter<int>("TestCounter");
-            counter.Add(1);
+        using IWebHost host = hostBuilder.ConfigureServices(services => services.AddOpenTelemetryMetrics(builder =>
+            builder.ConfigureSteeltoeMetrics().AddMeter("TestMeter")
+                .AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000))).AddAllActuators().Start();
 
-            await Task.Delay(3000); // wait for metrics to be collected
-            HttpResponseMessage response = await client.GetAsync("/actuator/metrics");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        HttpClient client = host.GetTestServer().CreateClient();
 
-            // Assert warning is printed to Console
-            string output = unConsole.ToString();
-            Assert.Contains("Warning", output, StringComparison.Ordinal);
-            Assert.Contains("OpenTelemetry for Steeltoe", output, StringComparison.Ordinal);
+        var meter = new Meter("TestMeter");
+        Counter<int> counter = meter.CreateCounter<int>("TestCounter");
+        counter.Add(1);
 
-            // Assert Otel configuration is respected
-            Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
+        await Task.Delay(3000); // wait for metrics to be collected
+        var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
+        HttpResponseMessage response = await client.GetAsync(requestUri);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Assert Steeltoe configuration is respected
-            Assert.Contains("Export clr.process.uptime", output, StringComparison.Ordinal);
-        }
+        string output = unConsole.ToString();
+
+        // Assert Otel configuration is respected
+        Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
+
+        // Assert Steeltoe configuration is respected
+        Assert.Contains("Export clr.process.uptime", output, StringComparison.Ordinal);
+        Assert.Contains("Export clr.cpu.count", output, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -754,30 +773,32 @@ public class ManagementWebHostBuilderExtensionsTest
 
         new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        using (var unConsole = new ConsoleOutputBorrower())
-        {
-            using IWebHost host = hostBuilder.AddAllActuators().ConfigureServices(services => services.AddOpenTelemetryMetrics(builder =>
-                    builder.AddMeter("TestMeter")
-                        .AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
-                .Start();
+        var logger = new CapturingLoggerProvider();
+        BootstrapLoggerFactory.Instance.AddProvider(logger);
 
-            HttpClient client = host.GetTestServer().CreateClient();
+        using var unConsole = new ConsoleOutputBorrower();
 
-            var meter = new Meter("TestMeter");
-            Counter<int> counter = meter.CreateCounter<int>("TestCounter");
-            counter.Add(1);
+        using IWebHost host = hostBuilder.AddAllActuators().ConfigureServices(services => services.AddOpenTelemetryMetrics(builder =>
+                builder.AddMeter("TestMeter").AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
+            .Start();
 
-            await Task.Delay(5000); // wait for metrics to be collected
-            HttpResponseMessage response = await client.GetAsync("/actuator/metrics");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        HttpClient client = host.GetTestServer().CreateClient();
 
-            // Assert warning is not printed to Console
-            string output = unConsole.ToString();
-            Assert.DoesNotContain("Warning", output, StringComparison.Ordinal);
-            Assert.DoesNotContain("OpenTelemetry for Steeltoe", output, StringComparison.Ordinal);
+        var meter = new Meter("TestMeter");
+        Counter<int> counter = meter.CreateCounter<int>("TestCounter");
+        counter.Add(1);
 
-            // Assert Otel configuration is respected
-            Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
-        }
+        await Task.Delay(5000); // wait for metrics to be collected
+        var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
+        HttpResponseMessage response = await client.GetAsync(requestUri);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        // Assert warning is not logged
+        logger.GetMessages().Should().NotContain("WARNING: Make sure one of the extension methods that calls ConfigureSteeltoeMetrics " +
+            "is used to correctly configure metrics using OpenTelemetry for Steeltoe.");
+
+        // Assert Otel configuration is respected
+        string output = unConsole.ToString();
+        Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
     }
 }

@@ -42,8 +42,6 @@ public class MapTests : AbstractExpressionTests
         Evaluate("{'key':'abc'=='xyz'}", "{key=False}", typeof(Dictionary<object, object>));
         Evaluate("{key:'abc'=='xyz'}", "{key=False}", typeof(Dictionary<object, object>));
         Evaluate("{key:'abc'=='xyz',key2:true}[key]", "False", typeof(bool));
-
-        // TODO: No Get() method Evaluate("{key:'abc'=='xyz',key2:true}.get('key2')", "True", typeof(bool));
         Evaluate("{key:'abc'=='xyz',key2:true}['key2']", "True", typeof(bool));
     }
 
@@ -79,9 +77,6 @@ public class MapTests : AbstractExpressionTests
         Evaluate("{a:1,b:2,c:3,d:4,e:5,f:6}.![Value>3]", "[False,False,False,True,True,True]", typeof(List<object>));
         Evaluate("{a:1,b:2,c:3,d:4,e:5,f:6}.?[Value>3]", "{d=4,e=5,f=6}", typeof(Dictionary<object, object>));
         Evaluate("{a:1,b:2,c:3,d:4,e:5,f:6,g:7,h:8,i:9,j:10}.?[Value%2==0]", "{b=2,d=4,f=6,h=8,j=10}", typeof(Dictionary<object, object>));
-
-        // TODO this looks like a serious issue (but not a new one): the context object against which arguments are Evaluated seems wrong:
-        // Evaluate("{a:1,b:2,c:3,d:4,e:5,f:6,g:7,h:8,i:9,j:10}.?[isEven(value) == 'y']", "[2, 4, 6, 8, 10]", typeof(ArrayList));
     }
 
     [Fact]

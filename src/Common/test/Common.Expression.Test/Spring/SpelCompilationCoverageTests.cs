@@ -2276,9 +2276,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         var p = new PayloadX();
 
-        // This is what you had to do before the changes in order for it to compile:
-        // expression = parse("(T(java.lang.Double).parseDouble(payload.valueI.toString()))/60D");
-
         // right is a double
         CheckCalc(p, "payload.valueSB/60D", 2d);
         CheckCalc(p, "payload.valueBB/60D", 2d);
@@ -2552,9 +2549,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void OpPlus_MixedNumberTypes()
     {
         var p = new PayloadX();
-
-        // This is what you had to do before the changes in order for it to compile:
-        // expression = parse("(T(java.lang.Double).parseDouble(payload.valueI.toString()))/60D");
 
         // right is a double
         CheckCalc(p, "payload.valueSB+60D", 180d);
@@ -2878,9 +2872,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         var p = new PayloadX();
 
-        // This is what you had to do before the changes in order for it to compile:
-        // expression = parse("(T(java.lang.Double).parseDouble(payload.valueI.toString()))/60D");
-
         // right is a double
         CheckCalc(p, "payload.valueSB-60D", 60d);
         CheckCalc(p, "payload.valueBB-60D", 60d);
@@ -3061,9 +3052,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         var p = new PayloadX();
 
-        // This is what you had to do before the changes in order for it to compile:
-        // expression = parse("(T(java.lang.Double).parseDouble(payload.valueI.toString()))/60D");
-
         // right is a double
         CheckCalc(p, "payload.valueSB*60D", 7200d);
         CheckCalc(p, "payload.valueBB*60D", 7200d);
@@ -3243,9 +3231,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void OpModulus_MixedNumberTypes()
     {
         var p = new PayloadX();
-
-        // This is what you had to do before the changes in order for it to compile:
-        // expression = parse("(T(java.lang.Double).parseDouble(payload.valueI.toString()))/60D");
 
         // right is a double
         CheckCalc(p, "payload.valueSB%58D", 4d);
@@ -3880,11 +3865,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void ConstructorReference()
     {
-        // There is no String('') in .NET
-        // _expression = parser.ParseExpression("new String('123')");
-        // Assert.Equal("123", _expression.GetValue());
-        // AssertCanCompile(_expression);
-        // Assert.Equal("123", _expression.GetValue());
         string testClass8 = $"{typeof(SpelCompilationCoverageTests).FullName}$TestClass8";
 
         // multi arg ctor that includes primitives
@@ -4717,7 +4697,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.Equal(111, _expression.GetValue(map1));
 
-        // Object TODO: Fix
         var tc = new TestClass6();
         _expression = Parser.ParseExpression("['Orange']");
         Assert.Equal("value1", _expression.GetValue(tc));

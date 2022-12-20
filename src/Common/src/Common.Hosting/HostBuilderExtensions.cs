@@ -47,7 +47,37 @@ public static class HostBuilderExtensions
         return webApplicationBuilder;
     }
 
-    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder)
+    internal static WebApplicationBuilder UseCloudHosting(this WebApplicationBuilder webApplicationBuilder, int? managementtHttpPort, int? managementHttpsPort)
+    {
+        ArgumentGuard.NotNull(webApplicationBuilder);
+        webApplicationBuilder.WebHost.BindToPorts(managementtHttpPort, managementHttpsPort);
+        return webApplicationBuilder;
+    }
+
+    internal static IWebHostBuilder UseCloudHosting(this IWebHostBuilder webhostBuilder, int? managementHttpPort, int? managementHttpsPort)
+    {
+        ArgumentGuard.NotNull(webhostBuilder);
+        return webhostBuilder.BindToPorts(managementHttpPort, managementHttpsPort);
+    }
+
+    private static List<string> GetUrlsFromPorts(int? httpPort, int? httpsPort)
+    {
+        var urls = new List<string>();
+
+        if (httpPort.HasValue)
+        {
+            urls.Add($"http://*:{httpPort}");
+        }
+
+        if (httpsPort.HasValue)
+        {
+            urls.Add($"https://*:{httpsPort}");
+        }
+
+        return urls;
+    }
+
+    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, int? managementHttpPort = null, int? managementHttpsPort = null)
     {
         var urls = new List<string>();
 
@@ -68,6 +98,7 @@ public static class HostBuilderExtensions
             urls.Add(DefaultUrl);
         }
 
+        urls.AddRange(GetUrlsFromPorts(managementHttpPort, managementHttpsPort));
         return webHostBuilder.BindToPorts(urls);
     }
 

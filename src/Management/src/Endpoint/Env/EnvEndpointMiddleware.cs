@@ -11,12 +11,9 @@ namespace Steeltoe.Management.Endpoint.Env;
 
 public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
 {
-    private readonly RequestDelegate _next;
-
     public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, IManagementOptions managementOptions, ILogger<EnvEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
-        _next = next;
     }
 
     public Task InvokeAsync(HttpContext context)

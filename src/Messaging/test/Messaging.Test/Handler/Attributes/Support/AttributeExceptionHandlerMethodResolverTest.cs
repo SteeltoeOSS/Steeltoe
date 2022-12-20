@@ -125,13 +125,13 @@ public class AttributeExceptionHandlerMethodResolverTest
         [MessageExceptionHandler(typeof(BindException), typeof(ArgumentException))]
         public string Handle1(Exception ex)
         {
-            return ex.GetType().Name; // ClassUtils.getShortName(ex.getClass());
+            return ex.GetType().Name;
         }
 
         [MessageExceptionHandler]
         public string Handle2(ArgumentException ex)
         {
-            return ex.GetType().Name; // ClassUtils.getShortName(ex.getClass());
+            return ex.GetType().Name;
         }
     }
 

@@ -82,19 +82,6 @@ public class EnableRabbitTest
         TestDefaultContainerFactoryConfiguration(context);
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public Task RabbitHandlerMethodFactoryConfiguration()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        // TODO:
-        // var services = await RabbitHandlerMethodFactoryConfig.CreateAndStartServicesAsync();
-        // var context = services.GetRequiredService<IApplicationContext>();
-        // TestDefaultContainerFactoryConfiguration(context);
-        return Task.CompletedTask;
-    }
-
     [Fact]
     public async Task RabbitListeners()
     {

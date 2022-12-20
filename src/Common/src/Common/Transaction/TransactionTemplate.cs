@@ -60,12 +60,6 @@ public class TransactionTemplate : DefaultTransactionDefinition
             throw;
         }
 
-        // catch (Throwable ex)
-        //    {
-        //        // Transactional code threw unexpected exception -> rollback
-        //        rollbackOnException(status, ex);
-        //        throw new UndeclaredThrowableException(ex, "TransactionCallback threw undeclared checked exception");
-        //    }
         TransactionManager.Commit(status);
         return result;
     }

@@ -15,8 +15,6 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
 {
     private const int DefaultLongStringLimit = 1024;
     private readonly ILogger _logger;
-    private readonly int _longStringLimit;
-    private readonly bool _convertLongLongStrings;
 
     public DefaultMessageHeadersConverter(ILogger logger = null)
         : this(DefaultLongStringLimit, false)
@@ -31,8 +29,6 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
 
     public DefaultMessageHeadersConverter(int longStringLimit, bool convertLongLongStrings)
     {
-        _longStringLimit = longStringLimit;
-        _convertLongLongStrings = convertLongLongStrings;
     }
 
     public virtual void FromMessageHeaders(IMessageHeaders source, RC.IBasicProperties target, Encoding charset)

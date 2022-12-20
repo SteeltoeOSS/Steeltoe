@@ -31,31 +31,18 @@ public static class ClrRuntimeSource
         return new ThreadMetrics(availWorkerThreads, availCompPortThreads, maxWorkerThreads, maxCompPortThreads);
     }
 
-    public struct HeapMetrics
+    public record struct HeapMetrics(long TotalMemory, IList<long> CollectionCounts)
     {
-        public HeapMetrics(long total, IList<long> collections)
-        {
-            TotalMemory = total;
-            CollectionCounts = collections;
-        }
-
-        public long TotalMemory;
-        public IList<long> CollectionCounts;
+        public readonly long TotalMemory = TotalMemory;
+        public readonly IList<long> CollectionCounts = CollectionCounts;
     }
 
-    public struct ThreadMetrics
+    public record struct ThreadMetrics(long AvailableThreadPoolWorkers, long AvailableThreadCompletionPort, long MaxThreadPoolWorkers,
+        long MaxThreadCompletionPort)
     {
-        public ThreadMetrics(long availWorkers, long availComp, long maxWorkers, long maxComp)
-        {
-            AvailableThreadPoolWorkers = availWorkers;
-            AvailableThreadCompletionPort = availComp;
-            MaxThreadPoolWorkers = maxWorkers;
-            MaxThreadCompletionPort = maxComp;
-        }
-
-        public long AvailableThreadPoolWorkers;
-        public long AvailableThreadCompletionPort;
-        public long MaxThreadPoolWorkers;
-        public long MaxThreadCompletionPort;
+        public long AvailableThreadPoolWorkers = AvailableThreadPoolWorkers;
+        public long AvailableThreadCompletionPort = AvailableThreadCompletionPort;
+        public long MaxThreadPoolWorkers = MaxThreadPoolWorkers;
+        public long MaxThreadCompletionPort = MaxThreadCompletionPort;
     }
 }

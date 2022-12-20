@@ -257,7 +257,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
         if (value != null)
         {
             // Modify header if necessary
-            if (!ObjectUtils.NullSafeEquals(value, GetHeader(name)))
+            if (!ObjectEquality.ObjectOrCollectionEquals(value, GetHeader(name)))
             {
                 IsModified = true;
                 headers.RawHeaders[name] = value;

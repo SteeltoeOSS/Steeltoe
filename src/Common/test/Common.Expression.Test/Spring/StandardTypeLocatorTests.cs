@@ -25,8 +25,6 @@ public class StandardTypeLocatorTests
 
         Assert.Equal(typeof(bool), locator.FindType("Boolean"));
 
-        // currently does not know about java.util by default
-        // assertEquals(java.util.List.class,locator.findType("List"));
         var ex = Assert.Throws<SpelEvaluationException>(() => locator.FindType("StringBuilder"));
         Assert.Equal(SpelMessage.TypeNotFound, ex.MessageCode);
         locator.RegisterImport("System.Text");

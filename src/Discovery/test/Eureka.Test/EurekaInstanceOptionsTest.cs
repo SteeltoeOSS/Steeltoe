@@ -49,7 +49,6 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
 
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
-            // TODO: this is null on MacOS
             Assert.NotNull(opts.IPAddress);
         }
     }
@@ -146,7 +145,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
         Assert.Equal("healthCheckUrlPath", ro.HealthCheckUrlPath);
         Assert.Equal("healthCheckUrl", ro.HealthCheckUrl);
         Assert.Equal("secureHealthCheckUrl", ro.SecureHealthCheckUrl);
-        Assert.Equal("myHostName", ro.GetHostName(false));
+        Assert.Equal("myHostName", ro.ResolveHostName(false));
         Assert.Equal("myHostName", ro.HostName);
         Assert.Equal("foobar", ro.RegistrationMethod);
         IDictionary<string, string> map = ro.MetadataMap;

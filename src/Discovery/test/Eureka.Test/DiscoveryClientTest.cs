@@ -104,7 +104,7 @@ public class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task FetchFullRegistryAsync_InvokesServer_ReturnsValidResponse()
+    public async Task FetchFullRegistryAsync_InvokesServer_ReturnsValidResponse()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = FooAddedJson;
@@ -136,7 +136,7 @@ public class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void FetchFullRegistryAsync_ReturnsNull_IfFetchCounterMismatch()
+    public async Task FetchFullRegistryAsync_ReturnsNull_IfFetchCounterMismatch()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
@@ -158,12 +158,12 @@ public class DiscoveryClientTest : AbstractBaseTest
         var client = new DiscoveryClient(configuration, httpClient);
         Task<Applications> result = client.FetchFullRegistryAsync();
         client.RegistryFetchCounter = 100;
-        Applications apps = result.GetAwaiter().GetResult();
+        Applications apps = await result;
         Assert.Null(apps);
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task FetchRegistryDeltaAsync_InvokesServer_ReturnsValidResponse()
+    public async Task FetchRegistryDeltaAsync_InvokesServer_ReturnsValidResponse()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = FooModifiedJson;
@@ -212,7 +212,7 @@ public class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void FetchRegistryDeltaAsync_ReturnsNull_IfFetchCounterMismatch()
+    public async Task FetchRegistryDeltaAsync_ReturnsNull_IfFetchCounterMismatch()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
@@ -234,12 +234,12 @@ public class DiscoveryClientTest : AbstractBaseTest
         var client = new DiscoveryClient(configuration, httpClient);
         Task<Applications> result = client.FetchRegistryDeltaAsync();
         client.RegistryFetchCounter = 100;
-        Applications apps = result.GetAwaiter().GetResult();
+        Applications apps = await result;
         Assert.Null(apps);
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task RegisterAsync_ReturnsFalse_WhenNotOKStatusReturned()
+    public async Task RegisterAsync_ReturnsFalse_WhenNotOKStatusReturned()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
@@ -281,7 +281,7 @@ public class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task RegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
+    public async Task RegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
@@ -323,7 +323,7 @@ public class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task RenewAsync_Registers_When404StatusReturned()
+    public async Task RenewAsync_Registers_When404StatusReturned()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
@@ -367,7 +367,7 @@ public class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task RenewAsync_ReturnsTrue_WhenOKStatusReturned()
+    public async Task RenewAsync_ReturnsTrue_WhenOKStatusReturned()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
@@ -403,7 +403,7 @@ public class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task UnRegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
+    public async Task UnRegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
@@ -888,7 +888,7 @@ public class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task ApplicationEventsFireOnChangeDuringFetch()
+    public async Task ApplicationEventsFireOnChangeDuringFetch()
     {
         int eventCount = 0;
         TestConfigServerStartup.Response = FooAddedJson;
