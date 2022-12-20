@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 
@@ -10,6 +11,7 @@ namespace Steeltoe.Common.Hosting;
 public static class HostBuilderExtensions
 {
     public const string DefaultUrl = "http://*:8080";
+    private const string DeprecatedServerUrlsKey = "server.urls";
 
     /// <summary>
     /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
@@ -83,6 +85,12 @@ public static class HostBuilderExtensions
 
         string portStr = Environment.GetEnvironmentVariable("PORT") ?? Environment.GetEnvironmentVariable("SERVER_PORT");
         string aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
+        var serverUrlSetting = webHostBuilder.GetSetting(DeprecatedServerUrlsKey); // check for deprecated setting
+
+        if (!string.IsNullOrEmpty(serverUrlSetting))
+        {
+            urls.Add(serverUrlSetting);
+        }
 
         if (!string.IsNullOrWhiteSpace(portStr))
         {
