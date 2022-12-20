@@ -11,7 +11,7 @@ public class MetricsEndpointOptions : AbstractEndpointOptions, IMetricsEndpointO
     internal const string ManagementInfoPrefix = "management:endpoints:metrics";
 
     internal const string DefaultIngressIgnorePattern =
-        "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
+        "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|.*\\.gif";
 
     internal const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions";
 

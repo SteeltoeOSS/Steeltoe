@@ -12,7 +12,7 @@ public class MetricsObserverOptions : IMetricsObserverOptions
     internal const string ManagementMetricsPrefix = "management:metrics:observer";
 
     internal const string DefaultIngressIgnorePattern =
-        "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
+        "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|.*\\.gif";
 
     internal const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions";
 
@@ -33,8 +33,6 @@ public class MetricsObserverOptions : IMetricsObserverOptions
     public bool HttpClientCore { get; set; }
 
     public bool HttpClientDesktop { get; set; }
-
-    public bool HystrixEvents { get; set; }
 
     /// <inheritdoc />
     public List<string> IncludedMetrics { get; set; } = new();

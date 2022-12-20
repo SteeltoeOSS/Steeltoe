@@ -136,10 +136,5 @@ public static class EndpointServiceCollectionExtensions
         {
             services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
         }
-
-        if (observerOptions.HystrixEvents)
-        {
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, HystrixEventsListener>());
-        }
     }
 }
