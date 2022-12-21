@@ -84,17 +84,19 @@ public static class HostBuilderExtensions
 
         string portStr = Environment.GetEnvironmentVariable("PORT") ?? Environment.GetEnvironmentVariable("SERVER_PORT");
         string aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
-        var serverUrlSetting = webHostBuilder.GetSetting(DeprecatedServerUrlsKey); // check for deprecated setting
-        var urlSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+        string serverUrlSetting = webHostBuilder.GetSetting(DeprecatedServerUrlsKey); // check for deprecated setting
+        string urlSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
 
         if (!string.IsNullOrEmpty(serverUrlSetting))
         {
             urls.Add(serverUrlSetting);
         }
+
         if (!string.IsNullOrEmpty(urlSetting))
         {
             urls.Add(urlSetting);
         }
+
         if (!string.IsNullOrWhiteSpace(portStr))
         {
             AddPortAndAspNetCoreUrls(urls, portStr, aspnetUrls);

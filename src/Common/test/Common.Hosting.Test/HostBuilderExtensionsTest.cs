@@ -133,9 +133,9 @@ public class HostBuilderExtensionsTest
 
         hostBuilder.UseCloudHosting();
         IWebHost server = hostBuilder.Build();
-        
+
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
-        
+
         Assert.Single(addresses.Addresses);
         Assert.Contains("http://*:8081", addresses.Addresses);
     }
