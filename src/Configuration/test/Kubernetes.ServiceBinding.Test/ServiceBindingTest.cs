@@ -2,14 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
+
 public class ServiceBindingTest
 {
     [Fact]
@@ -21,7 +17,7 @@ public class ServiceBindingTest
     [Fact]
     public void PopulatesFromFileSystem_Kubernetes()
     {
-        var rootDir = GetK8SResourcesDirectory("test-name-1");
+        string rootDir = GetK8SResourcesDirectory("test-name-1");
         var binding = new ServiceBindingConfigurationProvider.ServiceBinding(rootDir);
         Assert.Equal("test-name-1", binding.Name);
         Assert.Equal("test-type-1", binding.Type);
@@ -36,7 +32,7 @@ public class ServiceBindingTest
     public void PopulatesFromFileSystem_WithHiddenFilesAndLinks_Kubernetes()
     {
         // Hidden & links
-        var rootDir = GetK8SResourcesDirectory("test-k8s");
+        string rootDir = GetK8SResourcesDirectory("test-k8s");
         var binding = new ServiceBindingConfigurationProvider.ServiceBinding(rootDir);
         Assert.Equal("test-k8s", binding.Name);
         Assert.Equal("test-type-1", binding.Type);
@@ -46,6 +42,7 @@ public class ServiceBindingTest
         Assert.Single(binding.Secrets);
         Assert.Equal("test-secret-value", binding.Secrets["test-secret-key"]);
     }
+
     private static string GetK8SResourcesDirectory(string name)
     {
         return Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\resources\\k8s\\{name}");

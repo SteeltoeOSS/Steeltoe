@@ -5,19 +5,16 @@
 using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
+
 public class PostProcessorsTest : BasePostProcessorsTest
 {
     [Fact]
     public void ArtemisTest_BindingTypeDisabled()
     {
         var postProcessor = new ArtemisPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            ArtemisPostProcessor.BindingTypeKey,
-            Tuple.Create("mode", "EMBEDDED"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("user", "test-user"),
-            Tuple.Create("password", "test-password"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, ArtemisPostProcessor.BindingTypeKey, Tuple.Create("mode", "EMBEDDED"),
+            Tuple.Create("host", "test-host"), Tuple.Create("port", "test-port"), Tuple.Create("user", "test-user"), Tuple.Create("password", "test-password"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, ArtemisPostProcessor.BindingTypeKey, false), configData);
@@ -28,13 +25,9 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void ArtemisTest_BindingTypeEnabled()
     {
         var postProcessor = new ArtemisPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            ArtemisPostProcessor.BindingTypeKey,
-            Tuple.Create("mode", "EMBEDDED"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("user", "test-user"),
-            Tuple.Create("password", "test-password"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, ArtemisPostProcessor.BindingTypeKey, Tuple.Create("mode", "EMBEDDED"),
+            Tuple.Create("host", "test-host"), Tuple.Create("port", "test-port"), Tuple.Create("user", "test-user"), Tuple.Create("password", "test-password"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, ArtemisPostProcessor.BindingTypeKey, true), configData);
@@ -45,20 +38,15 @@ public class PostProcessorsTest : BasePostProcessorsTest
         Assert.Equal("test-password", configData[$"steeltoe:{ArtemisPostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
     }
 
-
     [Fact]
     public void CassandraTest_BindingTypeDisabled()
     {
         var postProcessor = new CassandraPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            CassandraPostProcessor.BindingTypeKey,
-            Tuple.Create("cluster-name", "test-cluster-name"),
-            Tuple.Create("compression", "test-compression"),
-            Tuple.Create("contact-points", "test-contact-points"),
-            Tuple.Create("keyspace-name", "test-keyspace-name"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("ssl", "test-ssl"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, CassandraPostProcessor.BindingTypeKey,
+            Tuple.Create("cluster-name", "test-cluster-name"), Tuple.Create("compression", "test-compression"),
+            Tuple.Create("contact-points", "test-contact-points"), Tuple.Create("keyspace-name", "test-keyspace-name"),
+            Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"), Tuple.Create("ssl", "test-ssl"),
             Tuple.Create("username", "test-username"));
 
         // BindingType not enabled
@@ -70,15 +58,11 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void CassandraTest_BindingTypeEnabled()
     {
         var postProcessor = new CassandraPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            CassandraPostProcessor.BindingTypeKey,
-            Tuple.Create("cluster-name", "test-cluster-name"),
-            Tuple.Create("compression", "test-compression"),
-            Tuple.Create("contact-points", "test-contact-points"),
-            Tuple.Create("keyspace-name", "test-keyspace-name"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("ssl", "test-ssl"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, CassandraPostProcessor.BindingTypeKey,
+            Tuple.Create("cluster-name", "test-cluster-name"), Tuple.Create("compression", "test-compression"),
+            Tuple.Create("contact-points", "test-contact-points"), Tuple.Create("keyspace-name", "test-keyspace-name"),
+            Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"), Tuple.Create("ssl", "test-ssl"),
             Tuple.Create("username", "test-username"));
 
         // BindingType enabled
@@ -97,28 +81,23 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void ConfigServerTest_BindingTypeDisabled()
     {
         var postProcessor = new ConfigServerPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            ConfigServerPostProcessor.BindingTypeKey,
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("client-id", "test-client-id"),
-            Tuple.Create("client-secret", "test-client-secret"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, ConfigServerPostProcessor.BindingTypeKey, Tuple.Create("uri", "test-uri"),
+            Tuple.Create("client-id", "test-client-id"), Tuple.Create("client-secret", "test-client-secret"),
             Tuple.Create("access-token-uri", "test-access-token-uri"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, ConfigServerPostProcessor.BindingTypeKey, false), configData);
         Assert.False(configData.TryGetValue($"steeltoe:{ConfigServerPostProcessor.BindingTypeKey}:{TestBindingName}:uri", out _));
-
     }
 
     [Fact]
     public void ConfigServerTest_BindingTypeEnabled()
     {
         var postProcessor = new ConfigServerPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            ConfigServerPostProcessor.BindingTypeKey,
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("client-id", "test-client-id"),
-            Tuple.Create("client-secret", "test-client-secret"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, ConfigServerPostProcessor.BindingTypeKey, Tuple.Create("uri", "test-uri"),
+            Tuple.Create("client-id", "test-client-id"), Tuple.Create("client-secret", "test-client-secret"),
             Tuple.Create("access-token-uri", "test-access-token-uri"));
 
         // BindingType not enabled
@@ -127,21 +106,17 @@ public class PostProcessorsTest : BasePostProcessorsTest
         Assert.Equal("test-client-id", configData[$"steeltoe:{ConfigServerPostProcessor.BindingTypeKey}:{TestBindingName}:oauth2:clientId"]);
         Assert.Equal("test-client-secret", configData[$"steeltoe:{ConfigServerPostProcessor.BindingTypeKey}:{TestBindingName}:oauth2:clientSecret"]);
         Assert.Equal("test-access-token-uri", configData[$"steeltoe:{ConfigServerPostProcessor.BindingTypeKey}:{TestBindingName}:oauth2:accessTokenUri"]);
-
     }
 
     [Fact]
     public void CouchbaseTest_BindingTypeDisabled()
     {
         var postProcessor = new CouchbasePostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            CouchbasePostProcessor.BindingTypeKey,
-            Tuple.Create("bootstrap-hosts", "test-bootstrap-hosts"),
-            Tuple.Create("bucket.name", "test-bucket-name"),
-            Tuple.Create("bucket.password", "test-bucket-password"),
-            Tuple.Create("env.bootstrap.http-direct-port", "test-env-bootstrap-http-direct-port"),
-            Tuple.Create("env.bootstrap.http-ssl-port", "test-env-bootstrap-http-ssl-port"),
-            Tuple.Create("password", "test-password"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, CouchbasePostProcessor.BindingTypeKey,
+            Tuple.Create("bootstrap-hosts", "test-bootstrap-hosts"), Tuple.Create("bucket.name", "test-bucket-name"),
+            Tuple.Create("bucket.password", "test-bucket-password"), Tuple.Create("env.bootstrap.http-direct-port", "test-env-bootstrap-http-direct-port"),
+            Tuple.Create("env.bootstrap.http-ssl-port", "test-env-bootstrap-http-ssl-port"), Tuple.Create("password", "test-password"),
             Tuple.Create("username", "test-username"));
 
         // BindingType not enabled
@@ -153,14 +128,11 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void CouchbaseTest_BindingTypeEnabled()
     {
         var postProcessor = new CouchbasePostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            CouchbasePostProcessor.BindingTypeKey,
-            Tuple.Create("bootstrap-hosts", "test-bootstrap-hosts"),
-            Tuple.Create("bucket.name", "test-bucket-name"),
-            Tuple.Create("bucket.password", "test-bucket-password"),
-            Tuple.Create("env.bootstrap.http-direct-port", "test-env-bootstrap-http-direct-port"),
-            Tuple.Create("env.bootstrap.http-ssl-port", "test-env-bootstrap-http-ssl-port"),
-            Tuple.Create("password", "test-password"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, CouchbasePostProcessor.BindingTypeKey,
+            Tuple.Create("bootstrap-hosts", "test-bootstrap-hosts"), Tuple.Create("bucket.name", "test-bucket-name"),
+            Tuple.Create("bucket.password", "test-bucket-password"), Tuple.Create("env.bootstrap.http-direct-port", "test-env-bootstrap-http-direct-port"),
+            Tuple.Create("env.bootstrap.http-ssl-port", "test-env-bootstrap-http-ssl-port"), Tuple.Create("password", "test-password"),
             Tuple.Create("username", "test-username"));
 
         // BindingType enabled
@@ -168,25 +140,25 @@ public class PostProcessorsTest : BasePostProcessorsTest
         Assert.Equal("test-bootstrap-hosts", configData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:bootstrapHosts"]);
         Assert.Equal("test-bucket-name", configData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:bucketName"]);
         Assert.Equal("test-bucket-password", configData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:bucketPassword"]);
-        Assert.Equal("test-env-bootstrap-http-direct-port", configData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:envBootstrapHttpDirectPort"]);
-        Assert.Equal("test-env-bootstrap-http-ssl-port", configData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:envBootstrapHttpSslPort"]);
+
+        Assert.Equal("test-env-bootstrap-http-direct-port",
+            configData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:envBootstrapHttpDirectPort"]);
+
+        Assert.Equal("test-env-bootstrap-http-ssl-port",
+            configData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:envBootstrapHttpSslPort"]);
+
         Assert.Equal("test-password", configData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
         Assert.Equal("test-username", configData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:username"]);
     }
-
 
     [Fact]
     public void DB2Test_BindingTypeDisabled()
     {
         var postProcessor = new DB2PostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            DB2PostProcessor.BindingTypeKey,
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, DB2PostProcessor.BindingTypeKey, Tuple.Create("database", "test-database"),
+            Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"),
+            Tuple.Create("jdbc-url", "test-jdbc-url"), Tuple.Create("username", "test-username"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, DB2PostProcessor.BindingTypeKey, false), configData);
@@ -197,14 +169,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void DB2Test_BindingTypeEnabled()
     {
         var postProcessor = new DB2PostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            DB2PostProcessor.BindingTypeKey,
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, DB2PostProcessor.BindingTypeKey, Tuple.Create("database", "test-database"),
+            Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"),
+            Tuple.Create("jdbc-url", "test-jdbc-url"), Tuple.Create("username", "test-username"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, DB2PostProcessor.BindingTypeKey, true), configData);
@@ -220,14 +188,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void ElasticSearchTest_BindingTypeDisabled()
     {
         var postProcessor = new ElasticSearchPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            ElasticSearchPostProcessor.BindingTypeKey,
-            Tuple.Create("endpoints", "test-endpoints"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("use-ssl", "test-use-ssl"),
-            Tuple.Create("username", "test-username"),
-            Tuple.Create("proxy.host", "test-proxy-host"),
-            Tuple.Create("proxy.port", "test-proxy-port"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, ElasticSearchPostProcessor.BindingTypeKey,
+            Tuple.Create("endpoints", "test-endpoints"), Tuple.Create("password", "test-password"), Tuple.Create("use-ssl", "test-use-ssl"),
+            Tuple.Create("username", "test-username"), Tuple.Create("proxy.host", "test-proxy-host"), Tuple.Create("proxy.port", "test-proxy-port"),
             Tuple.Create("uris", "test-uris"));
 
         // BindingType not enabled
@@ -239,14 +203,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void ElasticSearchTest_BindingTypeEnabled()
     {
         var postProcessor = new ElasticSearchPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            ElasticSearchPostProcessor.BindingTypeKey,
-            Tuple.Create("endpoints", "test-endpoints"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("use-ssl", "test-use-ssl"),
-            Tuple.Create("username", "test-username"),
-            Tuple.Create("proxy.host", "test-proxy-host"),
-            Tuple.Create("proxy.port", "test-proxy-port"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, ElasticSearchPostProcessor.BindingTypeKey,
+            Tuple.Create("endpoints", "test-endpoints"), Tuple.Create("password", "test-password"), Tuple.Create("use-ssl", "test-use-ssl"),
+            Tuple.Create("username", "test-username"), Tuple.Create("proxy.host", "test-proxy-host"), Tuple.Create("proxy.port", "test-proxy-port"),
             Tuple.Create("uris", "test-uris"));
 
         // BindingType enabled
@@ -260,16 +220,13 @@ public class PostProcessorsTest : BasePostProcessorsTest
         Assert.Equal("test-uris", configData[$"steeltoe:{ElasticSearchPostProcessor.BindingTypeKey}:{TestBindingName}:uris"]);
     }
 
-
     [Fact]
     public void EurekaTest_BindingTypeDisabled()
     {
         var postProcessor = new EurekaPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            EurekaPostProcessor.BindingTypeKey,
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("client-id", "test-client-id"),
-            Tuple.Create("client-secret", "test-client-secret"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, EurekaPostProcessor.BindingTypeKey, Tuple.Create("uri", "test-uri"),
+            Tuple.Create("client-id", "test-client-id"), Tuple.Create("client-secret", "test-client-secret"),
             Tuple.Create("access-token-uri", "test-access-token-uri"));
 
         // BindingType not enabled
@@ -281,11 +238,9 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void EurekaTest_BindingTypeEnabled()
     {
         var postProcessor = new EurekaPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            EurekaPostProcessor.BindingTypeKey,
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("client-id", "test-client-id"),
-            Tuple.Create("client-secret", "test-client-secret"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, EurekaPostProcessor.BindingTypeKey, Tuple.Create("uri", "test-uri"),
+            Tuple.Create("client-id", "test-client-id"), Tuple.Create("client-secret", "test-client-secret"),
             Tuple.Create("access-token-uri", "test-access-token-uri"));
 
         // BindingType enabled
@@ -301,10 +256,9 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void KafkaTest_BindingTypeDisabled()
     {
         var postProcessor = new KafkaPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            KafkaPostProcessor.BindingTypeKey,
-            Tuple.Create("bootstrap-servers", "test-bootstrap-servers"),
-            Tuple.Create("consumer.bootstrap-servers", "test-consumer-bootstrap-servers"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, KafkaPostProcessor.BindingTypeKey,
+            Tuple.Create("bootstrap-servers", "test-bootstrap-servers"), Tuple.Create("consumer.bootstrap-servers", "test-consumer-bootstrap-servers"),
             Tuple.Create("producer.bootstrap-servers", "test-producer-bootstrap-servers"),
             Tuple.Create("streams.bootstrap-servers", "test-streams-bootstrap-servers"));
 
@@ -317,10 +271,9 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void KafkaTest_BindingTypeEnabled()
     {
         var postProcessor = new KafkaPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            KafkaPostProcessor.BindingTypeKey,
-            Tuple.Create("bootstrap-servers", "test-bootstrap-servers"),
-            Tuple.Create("consumer.bootstrap-servers", "test-consumer-bootstrap-servers"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, KafkaPostProcessor.BindingTypeKey,
+            Tuple.Create("bootstrap-servers", "test-bootstrap-servers"), Tuple.Create("consumer.bootstrap-servers", "test-consumer-bootstrap-servers"),
             Tuple.Create("producer.bootstrap-servers", "test-producer-bootstrap-servers"),
             Tuple.Create("streams.bootstrap-servers", "test-streams-bootstrap-servers"));
 
@@ -332,17 +285,13 @@ public class PostProcessorsTest : BasePostProcessorsTest
         Assert.Equal("test-streams-bootstrap-servers", configData[$"steeltoe:{KafkaPostProcessor.BindingTypeKey}:{TestBindingName}:streamsBootstrapServers"]);
     }
 
-
     [Fact]
     public void LdapTest_BindingTypeDisabled()
     {
         var postProcessor = new LdapPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            LdapPostProcessor.BindingTypeKey,
-            Tuple.Create("urls", "test-urls"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("username", "test-username"),
-            Tuple.Create("base", "test-base"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, LdapPostProcessor.BindingTypeKey, Tuple.Create("urls", "test-urls"),
+            Tuple.Create("password", "test-password"), Tuple.Create("username", "test-username"), Tuple.Create("base", "test-base"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, LdapPostProcessor.BindingTypeKey, false), configData);
@@ -353,12 +302,9 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void LdapTest_BindingTypeEnabled()
     {
         var postProcessor = new LdapPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            LdapPostProcessor.BindingTypeKey,
-            Tuple.Create("urls", "test-urls"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("username", "test-username"),
-            Tuple.Create("base", "test-base"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, LdapPostProcessor.BindingTypeKey, Tuple.Create("urls", "test-urls"),
+            Tuple.Create("password", "test-password"), Tuple.Create("username", "test-username"), Tuple.Create("base", "test-base"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, LdapPostProcessor.BindingTypeKey, true), configData);
@@ -372,16 +318,11 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void MongoDbTest_BindingTypeDisabled()
     {
         var postProcessor = new MongoDbPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            MongoDbPostProcessor.BindingTypeKey,
-            Tuple.Create("authentication-database", "test-authentication-database"),
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("grid-fs-database", "test-grid-fs-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("username", "test-username"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, MongoDbPostProcessor.BindingTypeKey,
+            Tuple.Create("authentication-database", "test-authentication-database"), Tuple.Create("database", "test-database"),
+            Tuple.Create("grid-fs-database", "test-grid-fs-database"), Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"),
+            Tuple.Create("port", "test-port"), Tuple.Create("uri", "test-uri"), Tuple.Create("username", "test-username"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingTypeKey, false), configData);
@@ -392,16 +333,11 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void MongoDbTest_BindingTypeEnabled()
     {
         var postProcessor = new MongoDbPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            MongoDbPostProcessor.BindingTypeKey,
-            Tuple.Create("authentication-database", "test-authentication-database"),
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("grid-fs-database", "test-grid-fs-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("username", "test-username"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, MongoDbPostProcessor.BindingTypeKey,
+            Tuple.Create("authentication-database", "test-authentication-database"), Tuple.Create("database", "test-database"),
+            Tuple.Create("grid-fs-database", "test-grid-fs-database"), Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"),
+            Tuple.Create("port", "test-port"), Tuple.Create("uri", "test-uri"), Tuple.Create("username", "test-username"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingTypeKey, true), configData);
@@ -419,14 +355,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void MySqlTest_BindingTypeDisabled()
     {
         var postProcessor = new MySqlPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            MySqlPostProcessor.BindingTypeKey,
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, MySqlPostProcessor.BindingTypeKey, Tuple.Create("database", "test-database"),
+            Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"),
+            Tuple.Create("jdbc-url", "test-jdbc-url"), Tuple.Create("username", "test-username"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingTypeKey, false), configData);
@@ -437,14 +369,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void MySqlTest_BindingTypeEnabled()
     {
         var postProcessor = new MySqlPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            MySqlPostProcessor.BindingTypeKey,
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, MySqlPostProcessor.BindingTypeKey, Tuple.Create("database", "test-database"),
+            Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"),
+            Tuple.Create("jdbc-url", "test-jdbc-url"), Tuple.Create("username", "test-username"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingTypeKey, true), configData);
@@ -460,11 +388,9 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void Neo4JTest_BindingTypeDisabled()
     {
         var postProcessor = new Neo4JPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            Neo4JPostProcessor.BindingTypeKey,
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("username", "test-username"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, Neo4JPostProcessor.BindingTypeKey, Tuple.Create("password", "test-password"),
+            Tuple.Create("uri", "test-uri"), Tuple.Create("username", "test-username"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, Neo4JPostProcessor.BindingTypeKey, false), configData);
@@ -475,11 +401,9 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void Neo4JTest_BindingTypeEnabled()
     {
         var postProcessor = new Neo4JPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            Neo4JPostProcessor.BindingTypeKey,
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("username", "test-username"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, Neo4JPostProcessor.BindingTypeKey, Tuple.Create("password", "test-password"),
+            Tuple.Create("uri", "test-uri"), Tuple.Create("username", "test-username"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, Neo4JPostProcessor.BindingTypeKey, true), configData);
@@ -492,14 +416,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void OracleTest_BindingTypeDisabled()
     {
         var postProcessor = new OraclePostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            OraclePostProcessor.BindingTypeKey,
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, OraclePostProcessor.BindingTypeKey, Tuple.Create("database", "test-database"),
+            Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"),
+            Tuple.Create("jdbc-url", "test-jdbc-url"), Tuple.Create("username", "test-username"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, OraclePostProcessor.BindingTypeKey, false), configData);
@@ -510,14 +430,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void OracleTest_BindingTypeEnabled()
     {
         var postProcessor = new OraclePostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            OraclePostProcessor.BindingTypeKey,
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, OraclePostProcessor.BindingTypeKey, Tuple.Create("database", "test-database"),
+            Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"),
+            Tuple.Create("jdbc-url", "test-jdbc-url"), Tuple.Create("username", "test-username"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, OraclePostProcessor.BindingTypeKey, true), configData);
@@ -529,22 +445,15 @@ public class PostProcessorsTest : BasePostProcessorsTest
         Assert.Equal("test-jdbc-url", configData[$"steeltoe:{OraclePostProcessor.BindingTypeKey}:{TestBindingName}:jdbcUrl"]);
     }
 
-
     [Fact]
     public void PostgreSqlTest_BindingTypeDisabled()
     {
         var postProcessor = new PostgreSqlPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            PostgreSqlPostProcessor.BindingTypeKey,
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username"),
-            Tuple.Create("sslmode", "verify-full"),
-            Tuple.Create("sslrootcert", "root.cert"),
-            Tuple.Create("options", "--cluster=routing-id&opt=val1"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, PostgreSqlPostProcessor.BindingTypeKey,
+            Tuple.Create("database", "test-database"), Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"),
+            Tuple.Create("port", "test-port"), Tuple.Create("jdbc-url", "test-jdbc-url"), Tuple.Create("username", "test-username"),
+            Tuple.Create("sslmode", "verify-full"), Tuple.Create("sslrootcert", "root.cert"), Tuple.Create("options", "--cluster=routing-id&opt=val1"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingTypeKey, false), configData);
@@ -555,17 +464,11 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void PostgreSqlTest_BindingTypeEnabled()
     {
         var postProcessor = new PostgreSqlPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            PostgreSqlPostProcessor.BindingTypeKey,
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username"),
-            Tuple.Create("sslmode", "verify-full"),
-            Tuple.Create("sslrootcert", "root.cert"),
-            Tuple.Create("options", "--cluster=routing-id&opt=val1"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, PostgreSqlPostProcessor.BindingTypeKey,
+            Tuple.Create("database", "test-database"), Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"),
+            Tuple.Create("port", "test-port"), Tuple.Create("jdbc-url", "test-jdbc-url"), Tuple.Create("username", "test-username"),
+            Tuple.Create("sslmode", "verify-full"), Tuple.Create("sslrootcert", "root.cert"), Tuple.Create("options", "--cluster=routing-id&opt=val1"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingTypeKey, true), configData);
@@ -584,14 +487,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void RabbitMQTest_BindingTypeDisabled()
     {
         var postProcessor = new RabbitMQPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            RabbitMQPostProcessor.BindingTypeKey,
-            Tuple.Create("addresses", "test-addresses"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("username", "test-username"),
-            Tuple.Create("virtual-host", "test-virtual-host"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, RabbitMQPostProcessor.BindingTypeKey,
+            Tuple.Create("addresses", "test-addresses"), Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"),
+            Tuple.Create("port", "test-port"), Tuple.Create("username", "test-username"), Tuple.Create("virtual-host", "test-virtual-host"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingTypeKey, false), configData);
@@ -602,14 +501,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void RabbitMQTest_BindingTypeEnabled()
     {
         var postProcessor = new RabbitMQPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            RabbitMQPostProcessor.BindingTypeKey,
-            Tuple.Create("addresses", "test-addresses"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("username", "test-username"),
-            Tuple.Create("virtual-host", "test-virtual-host"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, RabbitMQPostProcessor.BindingTypeKey,
+            Tuple.Create("addresses", "test-addresses"), Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"),
+            Tuple.Create("port", "test-port"), Tuple.Create("username", "test-username"), Tuple.Create("virtual-host", "test-virtual-host"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingTypeKey, true), configData);
@@ -621,24 +516,16 @@ public class PostProcessorsTest : BasePostProcessorsTest
         Assert.Equal("test-virtual-host", configData[$"steeltoe:{RabbitMQPostProcessor.BindingTypeKey}:{TestBindingName}:virtualHost"]);
     }
 
-
     [Fact]
     public void RedisTest_BindingTypeDisabled()
     {
         var postProcessor = new RedisPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            RedisPostProcessor.BindingTypeKey,
-            Tuple.Create("client-name", "test-client-name"),
-            Tuple.Create("cluster.max-redirects", "test-cluster-max-redirects"),
-            Tuple.Create("cluster.nodes", "test-cluster-nodes"),
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("sentinel.master", "test-sentinel-master"),
-            Tuple.Create("sentinel.nodes", "test-sentinel-nodes"),
-            Tuple.Create("ssl", "test-ssl"),
-            Tuple.Create("url", "test-url"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, RedisPostProcessor.BindingTypeKey,
+            Tuple.Create("client-name", "test-client-name"), Tuple.Create("cluster.max-redirects", "test-cluster-max-redirects"),
+            Tuple.Create("cluster.nodes", "test-cluster-nodes"), Tuple.Create("database", "test-database"), Tuple.Create("host", "test-host"),
+            Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"), Tuple.Create("sentinel.master", "test-sentinel-master"),
+            Tuple.Create("sentinel.nodes", "test-sentinel-nodes"), Tuple.Create("ssl", "test-ssl"), Tuple.Create("url", "test-url"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, RedisPostProcessor.BindingTypeKey, false), configData);
@@ -649,19 +536,12 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void RedisTest_BindingTypeEnabled()
     {
         var postProcessor = new RedisPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            RedisPostProcessor.BindingTypeKey,
-            Tuple.Create("client-name", "test-client-name"),
-            Tuple.Create("cluster.max-redirects", "test-cluster-max-redirects"),
-            Tuple.Create("cluster.nodes", "test-cluster-nodes"),
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("sentinel.master", "test-sentinel-master"),
-            Tuple.Create("sentinel.nodes", "test-sentinel-nodes"),
-            Tuple.Create("ssl", "test-ssl"),
-            Tuple.Create("url", "test-url"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, RedisPostProcessor.BindingTypeKey,
+            Tuple.Create("client-name", "test-client-name"), Tuple.Create("cluster.max-redirects", "test-cluster-max-redirects"),
+            Tuple.Create("cluster.nodes", "test-cluster-nodes"), Tuple.Create("database", "test-database"), Tuple.Create("host", "test-host"),
+            Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"), Tuple.Create("sentinel.master", "test-sentinel-master"),
+            Tuple.Create("sentinel.nodes", "test-sentinel-nodes"), Tuple.Create("ssl", "test-ssl"), Tuple.Create("url", "test-url"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, RedisPostProcessor.BindingTypeKey, true), configData);
@@ -678,19 +558,14 @@ public class PostProcessorsTest : BasePostProcessorsTest
         Assert.Equal("test-url", configData[$"steeltoe:{RedisPostProcessor.BindingTypeKey}:{TestBindingName}:url"]);
     }
 
-
     [Fact]
     public void SapHanaTest_BindingTypeDisabled()
     {
         var postProcessor = new SapHanaPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            SapHanaPostProcessor.BindingTypeKey,
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, SapHanaPostProcessor.BindingTypeKey, Tuple.Create("database", "test-database"),
+            Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"),
+            Tuple.Create("jdbc-url", "test-jdbc-url"), Tuple.Create("username", "test-username"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SapHanaPostProcessor.BindingTypeKey, false), configData);
@@ -701,14 +576,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void SapHanaTest_BindingTypeEnabled()
     {
         var postProcessor = new SapHanaPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            SapHanaPostProcessor.BindingTypeKey,
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, SapHanaPostProcessor.BindingTypeKey, Tuple.Create("database", "test-database"),
+            Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"),
+            Tuple.Create("jdbc-url", "test-jdbc-url"), Tuple.Create("username", "test-username"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SapHanaPostProcessor.BindingTypeKey, true), configData);
@@ -724,40 +595,24 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void SpringSecurityOauth2Test_BindingTypeDisabled()
     {
         var postProcessor = new SpringSecurityOAuth2PostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName1,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            "github",
-            Tuple.Create("client-id", "github-client-id"),
-            Tuple.Create("client-secret", "github-client-secret"));
-        GetConfigData(configData,
-            TestBindingName2,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            "okta",
-            Tuple.Create("client-id", "okta-client-id"),
-            Tuple.Create("client-secret", "okta-client-secret"),
-            Tuple.Create("issuer-uri", "okta-issuer-uri"));
-        GetConfigData(configData,
-            TestBindingName3,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            "my-provider",
-            Tuple.Create("client-id", "my-provider-client-id"),
-            Tuple.Create("client-secret", "my-provider-client-secret"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "github",
+            Tuple.Create("client-id", "github-client-id"), Tuple.Create("client-secret", "github-client-secret"));
+
+        GetConfigData(configData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", Tuple.Create("client-id", "okta-client-id"),
+            Tuple.Create("client-secret", "okta-client-secret"), Tuple.Create("issuer-uri", "okta-issuer-uri"));
+
+        GetConfigData(configData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider",
+            Tuple.Create("client-id", "my-provider-client-id"), Tuple.Create("client-secret", "my-provider-client-secret"),
             Tuple.Create("client-authentication-method", "my-provider-client-authentication-method"),
-            Tuple.Create("authorization-grant-type", "my-provider-authorization-grant-type"),
-            Tuple.Create("redirect-uri", "my-provider-redirect-uri"),
-            Tuple.Create("scope", "my-provider-scope1,my-provider-scope2"),
-            Tuple.Create("client-name", "my-provider-client-name"),
-            Tuple.Create("authorization-uri", "my-provider-authorization-uri"),
-            Tuple.Create("token-uri", "my-provider-token-uri"),
+            Tuple.Create("authorization-grant-type", "my-provider-authorization-grant-type"), Tuple.Create("redirect-uri", "my-provider-redirect-uri"),
+            Tuple.Create("scope", "my-provider-scope1,my-provider-scope2"), Tuple.Create("client-name", "my-provider-client-name"),
+            Tuple.Create("authorization-uri", "my-provider-authorization-uri"), Tuple.Create("token-uri", "my-provider-token-uri"),
             Tuple.Create("user-info-uri", "my-provider-user-info-uri"),
             Tuple.Create("user-info-authentication-method", "my-provider-user-info-authentication-method"),
-            Tuple.Create("jwk-set-uri", "my-provider-jwk-set-uri"),
-            Tuple.Create("user-name-attribute", "my-provider-user-name-attribute"));
-        GetConfigData(configData,
-            TestMissingProvider,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            Tuple.Create("client-id", "my-provider-client-id"));
+            Tuple.Create("jwk-set-uri", "my-provider-jwk-set-uri"), Tuple.Create("user-name-attribute", "my-provider-user-name-attribute"));
 
+        GetConfigData(configData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, Tuple.Create("client-id", "my-provider-client-id"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, false), configData);
@@ -768,88 +623,65 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void SpringSecurityOauth2Test_CommonProvider()
     {
         var postProcessor = new SpringSecurityOAuth2PostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName1,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            "github",
-            Tuple.Create("client-id", "github-client-id"),
-            Tuple.Create("client-secret", "github-client-secret"));
-        GetConfigData(configData,
-            TestBindingName2,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            "okta",
-            Tuple.Create("client-id", "okta-client-id"),
-            Tuple.Create("client-secret", "okta-client-secret"),
-            Tuple.Create("issuer-uri", "okta-issuer-uri"));
-        GetConfigData(configData,
-            TestBindingName3,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            "my-provider",
-            Tuple.Create("client-id", "my-provider-client-id"),
-            Tuple.Create("client-secret", "my-provider-client-secret"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "github",
+            Tuple.Create("client-id", "github-client-id"), Tuple.Create("client-secret", "github-client-secret"));
+
+        GetConfigData(configData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", Tuple.Create("client-id", "okta-client-id"),
+            Tuple.Create("client-secret", "okta-client-secret"), Tuple.Create("issuer-uri", "okta-issuer-uri"));
+
+        GetConfigData(configData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider",
+            Tuple.Create("client-id", "my-provider-client-id"), Tuple.Create("client-secret", "my-provider-client-secret"),
             Tuple.Create("client-authentication-method", "my-provider-client-authentication-method"),
-            Tuple.Create("authorization-grant-type", "my-provider-authorization-grant-type"),
-            Tuple.Create("redirect-uri", "my-provider-redirect-uri"),
-            Tuple.Create("scope", "my-provider-scope1,my-provider-scope2"),
-            Tuple.Create("client-name", "my-provider-client-name"),
-            Tuple.Create("authorization-uri", "my-provider-authorization-uri"),
-            Tuple.Create("token-uri", "my-provider-token-uri"),
+            Tuple.Create("authorization-grant-type", "my-provider-authorization-grant-type"), Tuple.Create("redirect-uri", "my-provider-redirect-uri"),
+            Tuple.Create("scope", "my-provider-scope1,my-provider-scope2"), Tuple.Create("client-name", "my-provider-client-name"),
+            Tuple.Create("authorization-uri", "my-provider-authorization-uri"), Tuple.Create("token-uri", "my-provider-token-uri"),
             Tuple.Create("user-info-uri", "my-provider-user-info-uri"),
             Tuple.Create("user-info-authentication-method", "my-provider-user-info-authentication-method"),
-            Tuple.Create("jwk-set-uri", "my-provider-jwk-set-uri"),
-            Tuple.Create("user-name-attribute", "my-provider-user-name-attribute"));
-        GetConfigData(configData,
-            TestMissingProvider,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            Tuple.Create("client-id", "my-provider-client-id"));
+            Tuple.Create("jwk-set-uri", "my-provider-jwk-set-uri"), Tuple.Create("user-name-attribute", "my-provider-user-name-attribute"));
+
+        GetConfigData(configData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, Tuple.Create("client-id", "my-provider-client-id"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true), configData);
         Assert.Equal("github-client-id", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName1}:registration:clientId"]);
-        Assert.Equal("github-client-secret", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName1}:registration:clientSecret"]);
+
+        Assert.Equal("github-client-secret",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName1}:registration:clientSecret"]);
+
         Assert.Equal("github", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName1}:registration:provider"]);
     }
+
     [Fact]
     public void SpringSecurityOauth2Test_OIDCProvider()
     {
         var postProcessor = new SpringSecurityOAuth2PostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName1,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            "github",
-            Tuple.Create("client-id", "github-client-id"),
-            Tuple.Create("client-secret", "github-client-secret"));
-        GetConfigData(configData,
-            TestBindingName2,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            "okta",
-            Tuple.Create("client-id", "okta-client-id"),
-            Tuple.Create("client-secret", "okta-client-secret"),
-            Tuple.Create("issuer-uri", "okta-issuer-uri"));
-        GetConfigData(configData,
-            TestBindingName3,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            "my-provider",
-            Tuple.Create("client-id", "my-provider-client-id"),
-            Tuple.Create("client-secret", "my-provider-client-secret"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "github",
+            Tuple.Create("client-id", "github-client-id"), Tuple.Create("client-secret", "github-client-secret"));
+
+        GetConfigData(configData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", Tuple.Create("client-id", "okta-client-id"),
+            Tuple.Create("client-secret", "okta-client-secret"), Tuple.Create("issuer-uri", "okta-issuer-uri"));
+
+        GetConfigData(configData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider",
+            Tuple.Create("client-id", "my-provider-client-id"), Tuple.Create("client-secret", "my-provider-client-secret"),
             Tuple.Create("client-authentication-method", "my-provider-client-authentication-method"),
-            Tuple.Create("authorization-grant-type", "my-provider-authorization-grant-type"),
-            Tuple.Create("redirect-uri", "my-provider-redirect-uri"),
-            Tuple.Create("scope", "my-provider-scope1,my-provider-scope2"),
-            Tuple.Create("client-name", "my-provider-client-name"),
-            Tuple.Create("authorization-uri", "my-provider-authorization-uri"),
-            Tuple.Create("token-uri", "my-provider-token-uri"),
+            Tuple.Create("authorization-grant-type", "my-provider-authorization-grant-type"), Tuple.Create("redirect-uri", "my-provider-redirect-uri"),
+            Tuple.Create("scope", "my-provider-scope1,my-provider-scope2"), Tuple.Create("client-name", "my-provider-client-name"),
+            Tuple.Create("authorization-uri", "my-provider-authorization-uri"), Tuple.Create("token-uri", "my-provider-token-uri"),
             Tuple.Create("user-info-uri", "my-provider-user-info-uri"),
             Tuple.Create("user-info-authentication-method", "my-provider-user-info-authentication-method"),
-            Tuple.Create("jwk-set-uri", "my-provider-jwk-set-uri"),
-            Tuple.Create("user-name-attribute", "my-provider-user-name-attribute"));
-        GetConfigData(configData,
-            TestMissingProvider,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            Tuple.Create("client-id", "my-provider-client-id"));
+            Tuple.Create("jwk-set-uri", "my-provider-jwk-set-uri"), Tuple.Create("user-name-attribute", "my-provider-user-name-attribute"));
+
+        GetConfigData(configData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, Tuple.Create("client-id", "my-provider-client-id"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true), configData);
         Assert.Equal("okta-client-id", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName2}:registration:clientId"]);
-        Assert.Equal("okta-client-secret", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName2}:registration:clientSecret"]);
+
+        Assert.Equal("okta-client-secret",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName2}:registration:clientSecret"]);
+
         Assert.Equal("okta", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName2}:registration:provider"]);
         Assert.Equal("okta-issuer-uri", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName2}:provider:issuerUri"]);
     }
@@ -858,98 +690,106 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void SpringSecurityOauth2Test_TestProvider()
     {
         var postProcessor = new SpringSecurityOAuth2PostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName1,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            "github",
-            Tuple.Create("client-id", "github-client-id"),
-            Tuple.Create("client-secret", "github-client-secret"));
-        GetConfigData(configData,
-            TestBindingName2,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            "okta",
-            Tuple.Create("client-id", "okta-client-id"),
-            Tuple.Create("client-secret", "okta-client-secret"),
-            Tuple.Create("issuer-uri", "okta-issuer-uri"));
-        GetConfigData(configData,
-            TestBindingName3,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            "my-provider",
-            Tuple.Create("client-id", "my-provider-client-id"),
-            Tuple.Create("client-secret", "my-provider-client-secret"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "github",
+            Tuple.Create("client-id", "github-client-id"), Tuple.Create("client-secret", "github-client-secret"));
+
+        GetConfigData(configData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", Tuple.Create("client-id", "okta-client-id"),
+            Tuple.Create("client-secret", "okta-client-secret"), Tuple.Create("issuer-uri", "okta-issuer-uri"));
+
+        GetConfigData(configData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider",
+            Tuple.Create("client-id", "my-provider-client-id"), Tuple.Create("client-secret", "my-provider-client-secret"),
             Tuple.Create("client-authentication-method", "my-provider-client-authentication-method"),
-            Tuple.Create("authorization-grant-type", "my-provider-authorization-grant-type"),
-            Tuple.Create("redirect-uri", "my-provider-redirect-uri"),
-            Tuple.Create("scope", "my-provider-scope1,my-provider-scope2"),
-            Tuple.Create("client-name", "my-provider-client-name"),
-            Tuple.Create("authorization-uri", "my-provider-authorization-uri"),
-            Tuple.Create("token-uri", "my-provider-token-uri"),
+            Tuple.Create("authorization-grant-type", "my-provider-authorization-grant-type"), Tuple.Create("redirect-uri", "my-provider-redirect-uri"),
+            Tuple.Create("scope", "my-provider-scope1,my-provider-scope2"), Tuple.Create("client-name", "my-provider-client-name"),
+            Tuple.Create("authorization-uri", "my-provider-authorization-uri"), Tuple.Create("token-uri", "my-provider-token-uri"),
             Tuple.Create("user-info-uri", "my-provider-user-info-uri"),
             Tuple.Create("user-info-authentication-method", "my-provider-user-info-authentication-method"),
-            Tuple.Create("jwk-set-uri", "my-provider-jwk-set-uri"),
-            Tuple.Create("user-name-attribute", "my-provider-user-name-attribute"));
-        GetConfigData(configData,
-            TestMissingProvider,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            Tuple.Create("client-id", "my-provider-client-id"));
+            Tuple.Create("jwk-set-uri", "my-provider-jwk-set-uri"), Tuple.Create("user-name-attribute", "my-provider-user-name-attribute"));
+
+        GetConfigData(configData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, Tuple.Create("client-id", "my-provider-client-id"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true), configData);
         Assert.Equal("my-provider", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:provider"]);
-        Assert.Equal("my-provider-client-id", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:clientId"]);
-        Assert.Equal("my-provider-client-secret", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:clientSecret"]);
-        Assert.Equal("my-provider-client-authentication-method", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:clientAuthenticationMethod"]);
-        Assert.Equal("my-provider-authorization-grant-type", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:authorizationGrantType"]);
-        Assert.Equal("my-provider-redirect-uri", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:redirectUri"]);
-        Assert.Equal("my-provider-scope1,my-provider-scope2", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:scope"]);
-        Assert.Equal("my-provider-client-name", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:clientName"]);
-        Assert.Equal("my-provider-authorization-uri", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:authorizationUri"]);
+
+        Assert.Equal("my-provider-client-id",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:clientId"]);
+
+        Assert.Equal("my-provider-client-secret",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:clientSecret"]);
+
+        Assert.Equal("my-provider-client-authentication-method",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:clientAuthenticationMethod"]);
+
+        Assert.Equal("my-provider-authorization-grant-type",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:authorizationGrantType"]);
+
+        Assert.Equal("my-provider-redirect-uri",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:redirectUri"]);
+
+        Assert.Equal("my-provider-scope1,my-provider-scope2",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:scope"]);
+
+        Assert.Equal("my-provider-client-name",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:clientName"]);
+
+        Assert.Equal("my-provider-authorization-uri",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:authorizationUri"]);
+
         Assert.Equal("my-provider-token-uri", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:tokenUri"]);
-        Assert.Equal("my-provider-user-info-uri", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:userInfoUri"]);
-        Assert.Equal("my-provider-user-info-authentication-method", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:userInfoAuthenticationMethod"]);
-        Assert.Equal("my-provider-jwk-set-uri", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:jwkSetUri"]);
-        Assert.Equal("my-provider-user-name-attribute", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:userNameAttribute"]);
+
+        Assert.Equal("my-provider-user-info-uri",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:userInfoUri"]);
+
+        Assert.Equal("my-provider-user-info-authentication-method",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:userInfoAuthenticationMethod"]);
+
+        Assert.Equal("my-provider-jwk-set-uri",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:jwkSetUri"]);
+
+        Assert.Equal("my-provider-user-name-attribute",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:userNameAttribute"]);
     }
 
     [Fact]
     public void SpringSecurityOauth2Test_AuthGrantTypes()
     {
         var postProcessor = new SpringSecurityOAuth2PostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            Tuple.Create("provider", "some-provider"),
-            Tuple.Create("authorization-grant-types", "authorization_code,client_credentials"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingTypeKey,
+            Tuple.Create("provider", "some-provider"), Tuple.Create("authorization-grant-types", "authorization_code,client_credentials"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true), configData);
-        Assert.Equal("authorization_code,client_credentials", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName}:registration:authorizationGrantTypes"]);
+
+        Assert.Equal("authorization_code,client_credentials",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName}:registration:authorizationGrantTypes"]);
     }
 
     [Fact]
     public void SpringSecurityOauth2Test_RedirectUris()
     {
         var postProcessor = new SpringSecurityOAuth2PostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            SpringSecurityOAuth2PostProcessor.BindingTypeKey,
-            Tuple.Create("provider", "some-provider"),
-            Tuple.Create("redirect-uris", "https://app.example.com/authorized,https://other-app.example.com/login"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingTypeKey,
+            Tuple.Create("provider", "some-provider"), Tuple.Create("redirect-uris", "https://app.example.com/authorized,https://other-app.example.com/login"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true), configData);
-        Assert.Equal("https://app.example.com/authorized,https://other-app.example.com/login", configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName}:registration:redirectUris"]);
+
+        Assert.Equal("https://app.example.com/authorized,https://other-app.example.com/login",
+            configData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName}:registration:redirectUris"]);
     }
 
     [Fact]
     public void SqlServerTest_BindingTypeDisabled()
     {
         var postProcessor = new SqlServerPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            SqlServerPostProcessor.BindingTypeKey,
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, SqlServerPostProcessor.BindingTypeKey, Tuple.Create("database", "test-database"),
+            Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"),
+            Tuple.Create("jdbc-url", "test-jdbc-url"), Tuple.Create("username", "test-username"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SqlServerPostProcessor.BindingTypeKey, false), configData);
@@ -960,14 +800,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void SqlServerTest_BindingTypeEnabled()
     {
         var postProcessor = new SqlServerPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            SqlServerPostProcessor.BindingTypeKey,
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, SqlServerPostProcessor.BindingTypeKey, Tuple.Create("database", "test-database"),
+            Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"),
+            Tuple.Create("jdbc-url", "test-jdbc-url"), Tuple.Create("username", "test-username"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SqlServerPostProcessor.BindingTypeKey, true), configData);
@@ -983,12 +819,9 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void VaultTest_BindingTypeDisabled()
     {
         var postProcessor = new VaultPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            VaultPostProcessor.BindingTypeKey,
-            Tuple.Create("namespace", "test-namespace"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("authentication-method", "token"),
-            Tuple.Create("token", "test-token"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, VaultPostProcessor.BindingTypeKey, Tuple.Create("namespace", "test-namespace"),
+            Tuple.Create("uri", "test-uri"), Tuple.Create("authentication-method", "token"), Tuple.Create("token", "test-token"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, false), configData);
@@ -999,12 +832,9 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void VaultTokenAuthenticationTest_BindingTypeEnabled()
     {
         var postProcessor = new VaultPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            VaultPostProcessor.BindingTypeKey,
-            Tuple.Create("namespace", "test-namespace"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("authentication-method", "token"),
-            Tuple.Create("token", "test-token"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, VaultPostProcessor.BindingTypeKey, Tuple.Create("namespace", "test-namespace"),
+            Tuple.Create("uri", "test-uri"), Tuple.Create("authentication-method", "token"), Tuple.Create("token", "test-token"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configData);
@@ -1018,15 +848,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void VaultAppRoleAuthenticationTest_BindingTypeEnabled()
     {
         var postProcessor = new VaultPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            VaultPostProcessor.BindingTypeKey,
-            Tuple.Create("namespace", "test-namespace"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("app-role-path", "test-app-role-path"),
-            Tuple.Create("authentication-method", "approle"),
-            Tuple.Create("role", "test-role"),
-            Tuple.Create("role-id", "test-role-id"),
-            Tuple.Create("secret-id", "test-secret-id"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, VaultPostProcessor.BindingTypeKey, Tuple.Create("namespace", "test-namespace"),
+            Tuple.Create("uri", "test-uri"), Tuple.Create("app-role-path", "test-app-role-path"), Tuple.Create("authentication-method", "approle"),
+            Tuple.Create("role", "test-role"), Tuple.Create("role-id", "test-role-id"), Tuple.Create("secret-id", "test-secret-id"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configData);
@@ -1043,12 +868,9 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void VaultCubbyHoleAuthenticationTest_BindingTypeEnabled()
     {
         var postProcessor = new VaultPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            VaultPostProcessor.BindingTypeKey,
-            Tuple.Create("namespace", "test-namespace"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("authentication-method", "cubbyhole"),
-            Tuple.Create("token", "test-token"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, VaultPostProcessor.BindingTypeKey, Tuple.Create("namespace", "test-namespace"),
+            Tuple.Create("uri", "test-uri"), Tuple.Create("authentication-method", "cubbyhole"), Tuple.Create("token", "test-token"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configData);
@@ -1063,14 +885,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     {
         // Note: This will likely need to be revisited.  See the VaultPostProcessor for more comments
         var postProcessor = new VaultPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            VaultPostProcessor.BindingTypeKey,
-            Tuple.Create("namespace", "test-namespace"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("authentication-method", "cert"),
-            Tuple.Create("cert-auth-path", "test-cert-auth-path"),
-            Tuple.Create("key-store-password", "test-key-store-password"),
-            Tuple.Create("key-store", "key store contents!"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, VaultPostProcessor.BindingTypeKey, Tuple.Create("namespace", "test-namespace"),
+            Tuple.Create("uri", "test-uri"), Tuple.Create("authentication-method", "cert"), Tuple.Create("cert-auth-path", "test-cert-auth-path"),
+            Tuple.Create("key-store-password", "test-key-store-password"), Tuple.Create("key-store", "key store contents!"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configData);
@@ -1086,15 +904,11 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void VaultAwsEc2AuthenticationTest_BindingTypeEnabled()
     {
         var postProcessor = new VaultPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            VaultPostProcessor.BindingTypeKey,
-            Tuple.Create("namespace", "test-namespace"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("authentication-method", "aws_ec2"),
-            Tuple.Create("aws-ec2-instance-identity-document", "test-identity-document"),
-            Tuple.Create("nonce", "test-nonce"),
-            Tuple.Create("aws-ec2-path", "test-aws-ec2-path"),
-            Tuple.Create("role", "test-role"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, VaultPostProcessor.BindingTypeKey, Tuple.Create("namespace", "test-namespace"),
+            Tuple.Create("uri", "test-uri"), Tuple.Create("authentication-method", "aws_ec2"),
+            Tuple.Create("aws-ec2-instance-identity-document", "test-identity-document"), Tuple.Create("nonce", "test-nonce"),
+            Tuple.Create("aws-ec2-path", "test-aws-ec2-path"), Tuple.Create("role", "test-role"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configData);
@@ -1111,15 +925,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void VaultAwsIamAuthenticationTest_BindingTypeEnabled()
     {
         var postProcessor = new VaultPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            VaultPostProcessor.BindingTypeKey,
-            Tuple.Create("namespace", "test-namespace"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("authentication-method", "aws_iam"),
-            Tuple.Create("aws-iam-server-id", "test-server-id"),
-            Tuple.Create("aws-path", "test-aws-path"),
-            Tuple.Create("aws-sts-endpoint-uri", "test-endpoint-uri"),
-            Tuple.Create("role", "test-role"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, VaultPostProcessor.BindingTypeKey, Tuple.Create("namespace", "test-namespace"),
+            Tuple.Create("uri", "test-uri"), Tuple.Create("authentication-method", "aws_iam"), Tuple.Create("aws-iam-server-id", "test-server-id"),
+            Tuple.Create("aws-path", "test-aws-path"), Tuple.Create("aws-sts-endpoint-uri", "test-endpoint-uri"), Tuple.Create("role", "test-role"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configData);
@@ -1136,12 +945,9 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void VaultAzureMsiAuthenticationTest_BindingTypeEnabled()
     {
         var postProcessor = new VaultPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            VaultPostProcessor.BindingTypeKey,
-            Tuple.Create("namespace", "test-namespace"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("authentication-method", "azure_msi"),
-            Tuple.Create("azure-path", "test-azure-path"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, VaultPostProcessor.BindingTypeKey, Tuple.Create("namespace", "test-namespace"),
+            Tuple.Create("uri", "test-uri"), Tuple.Create("authentication-method", "azure_msi"), Tuple.Create("azure-path", "test-azure-path"),
             Tuple.Create("role", "test-role"));
 
         // BindingType enabled
@@ -1157,14 +963,10 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void VaultGcpGceAuthenticationTest_BindingTypeEnabled()
     {
         var postProcessor = new VaultPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            VaultPostProcessor.BindingTypeKey,
-            Tuple.Create("namespace", "test-namespace"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("authentication-method", "gcp_gce"),
-            Tuple.Create("gcp-path", "test-gcp-path"),
-            Tuple.Create("gcp-service-account", "test-service-account"),
-            Tuple.Create("role", "test-role"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, VaultPostProcessor.BindingTypeKey, Tuple.Create("namespace", "test-namespace"),
+            Tuple.Create("uri", "test-uri"), Tuple.Create("authentication-method", "gcp_gce"), Tuple.Create("gcp-path", "test-gcp-path"),
+            Tuple.Create("gcp-service-account", "test-service-account"), Tuple.Create("role", "test-role"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configData);
@@ -1181,18 +983,11 @@ public class PostProcessorsTest : BasePostProcessorsTest
     {
         // Note: This will likely need to be revisited.  See the VaultPostProcessor for more comments
         var postProcessor = new VaultPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            VaultPostProcessor.BindingTypeKey,
-            Tuple.Create("namespace", "test-namespace"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("authentication-method", "gcp_iam"),
-            Tuple.Create("credentials.json", "credentials JSON contents!"),
-            Tuple.Create("encoded-key", "test-encoded-key"),
-            Tuple.Create("gcp-path", "test-gcp-path"),
-            Tuple.Create("gcp-project-id", "test-project-id"),
-            Tuple.Create("gcp-service-account", "test-service-account"),
-            Tuple.Create("jwt-validity", "test-jwt-validity"),
-            Tuple.Create("role", "test-role"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, VaultPostProcessor.BindingTypeKey, Tuple.Create("namespace", "test-namespace"),
+            Tuple.Create("uri", "test-uri"), Tuple.Create("authentication-method", "gcp_iam"), Tuple.Create("credentials.json", "credentials JSON contents!"),
+            Tuple.Create("encoded-key", "test-encoded-key"), Tuple.Create("gcp-path", "test-gcp-path"), Tuple.Create("gcp-project-id", "test-project-id"),
+            Tuple.Create("gcp-service-account", "test-service-account"), Tuple.Create("jwt-validity", "test-jwt-validity"), Tuple.Create("role", "test-role"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configData);
@@ -1212,12 +1007,9 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void VaultK8sAuthenticationTest_BindingTypeEnabled()
     {
         var postProcessor = new VaultPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            VaultPostProcessor.BindingTypeKey,
-            Tuple.Create("namespace", "test-namespace"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("authentication-method", "kubernetes"),
-            Tuple.Create("kubernetes-path", "test-kubernetes-path"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, VaultPostProcessor.BindingTypeKey, Tuple.Create("namespace", "test-namespace"),
+            Tuple.Create("uri", "test-uri"), Tuple.Create("authentication-method", "kubernetes"), Tuple.Create("kubernetes-path", "test-kubernetes-path"),
             Tuple.Create("role", "test-role"));
 
         // BindingType enabled
@@ -1233,9 +1025,8 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void VaultMissingProviderTest_BindingTypeEnabled()
     {
         var postProcessor = new VaultPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            VaultPostProcessor.BindingTypeKey,
-            Tuple.Create("namespace", "test-namespace"),
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, VaultPostProcessor.BindingTypeKey, Tuple.Create("namespace", "test-namespace"),
             Tuple.Create("uri", "test-uri"));
 
         // BindingType enabled
@@ -1249,10 +1040,9 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void WavefrontTest_BindingTypeDisabled()
     {
         var postProcessor = new WavefrontPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            WavefrontPostProcessor.BindingTypeKey,
-            Tuple.Create("api-token", "test-api-token"),
-            Tuple.Create("uri", "test-uri"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, WavefrontPostProcessor.BindingTypeKey,
+            Tuple.Create("api-token", "test-api-token"), Tuple.Create("uri", "test-uri"));
 
         // BindingType not enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, WavefrontPostProcessor.BindingTypeKey, false), configData);
@@ -1263,10 +1053,9 @@ public class PostProcessorsTest : BasePostProcessorsTest
     public void WavefrontTest_BindingTypeEnabled()
     {
         var postProcessor = new WavefrontPostProcessor();
-        Dictionary<string, string> configData = GetConfigData(TestBindingName,
-            WavefrontPostProcessor.BindingTypeKey,
-            Tuple.Create("api-token", "test-api-token"),
-            Tuple.Create("uri", "test-uri"));
+
+        Dictionary<string, string> configData = GetConfigData(TestBindingName, WavefrontPostProcessor.BindingTypeKey,
+            Tuple.Create("api-token", "test-api-token"), Tuple.Create("uri", "test-uri"));
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, WavefrontPostProcessor.BindingTypeKey, true), configData);

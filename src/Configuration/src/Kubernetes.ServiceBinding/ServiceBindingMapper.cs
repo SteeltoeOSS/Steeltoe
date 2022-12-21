@@ -2,14 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
+
 internal class ServiceBindingMapper : ConfigurationDictionaryMapper
 {
     public string BindingProvider { get; }
@@ -25,7 +21,6 @@ internal class ServiceBindingMapper : ConfigurationDictionaryMapper
         BindingType = GetBindingType(BindingKey + "type");
         BindingName = ConfigurationPath.GetSectionKey(bindingKey);
     }
-
 
     private string GetBindingProvider(string providerKey)
     {

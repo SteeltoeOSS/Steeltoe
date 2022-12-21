@@ -2,15 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
+
 public class ServiceBindingConfigurationSourceTest
 {
     [Fact]
@@ -21,12 +17,12 @@ public class ServiceBindingConfigurationSourceTest
         Assert.Null(source.ServiceBindingRoot);
     }
 
-
     [Fact]
     public void EnvironmentVariableSet()
     {
-        var rootDir = GetK8SResourcesDirectory(null);
+        string rootDir = GetK8SResourcesDirectory(null);
         Environment.SetEnvironmentVariable(ServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDir);
+
         try
         {
             var source = new ServiceBindingConfigurationSource();
@@ -43,13 +39,18 @@ public class ServiceBindingConfigurationSourceTest
     [Fact]
     public void Build_CapturesParentConfiguration()
     {
-        var rootDir = GetK8SResourcesDirectory(null);
+        string rootDir = GetK8SResourcesDirectory(null);
 
         var source = new ServiceBindingConfigurationSource(rootDir);
         var builder = new ConfigurationBuilder();
-        builder.AddInMemoryCollection(new Dictionary<string, string>() { { "steeltoe:cloud:bindings:enable", "true" } });
+
+        builder.AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "steeltoe:cloud:bindings:enable", "true" }
+        });
+
         builder.Add(source);
-        var configuration = builder.Build();
+        IConfigurationRoot configuration = builder.Build();
         Assert.NotNull(configuration);
         Assert.NotNull(source.ParentConfiguration);
         Assert.True(source.ParentConfiguration.GetValue<bool>("steeltoe:cloud:bindings:enable"));

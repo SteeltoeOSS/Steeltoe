@@ -6,6 +6,7 @@ using System.Globalization;
 using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
+
 public class BasePostProcessorsTest
 {
     protected const string TestBindingName = "test-name";
@@ -16,10 +17,11 @@ public class BasePostProcessorsTest
 
     protected void GetConfigData(Dictionary<string, string> dictionary, string bindingName, string bindingType, params Tuple<string, string>[] secrets)
     {
-        foreach (var kv in secrets)
+        foreach (Tuple<string, string> kv in secrets)
         {
             dictionary.Add(MakeSecretKey(bindingName, kv.Item1), kv.Item2);
         }
+
         dictionary.Add(MakeTypeKey(bindingName), bindingType);
     }
 
@@ -30,12 +32,14 @@ public class BasePostProcessorsTest
         return dictionary;
     }
 
-    protected void GetConfigData(Dictionary<string, string> dictionary, string bindingName, string bindingType, string bindingProvider, params Tuple<string, string>[] secrets)
+    protected void GetConfigData(Dictionary<string, string> dictionary, string bindingName, string bindingType, string bindingProvider,
+        params Tuple<string, string>[] secrets)
     {
-        foreach (var kv in secrets)
+        foreach (Tuple<string, string> kv in secrets)
         {
             dictionary.Add(MakeSecretKey(bindingName, kv.Item1), kv.Item2);
         }
+
         dictionary.Add(MakeTypeKey(bindingName), bindingType);
         dictionary.Add(MakeProviderKey(bindingName), bindingProvider);
     }
@@ -49,25 +53,32 @@ public class BasePostProcessorsTest
 
     protected string MakeTypeKey(string bindingName)
     {
-        return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter + ServiceBindingConfigurationProvider.TypeKey;
+        return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter +
+            ServiceBindingConfigurationProvider.TypeKey;
     }
 
     protected string MakeProviderKey(string bindingName)
     {
-        return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter + ServiceBindingConfigurationProvider.ProviderKey;
+        return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter +
+            ServiceBindingConfigurationProvider.ProviderKey;
     }
 
     protected string MakeSecretKey(string bindingName, string key)
     {
-        return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter + key;
+        return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter +
+            key;
     }
 
-    internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor, string bindingTypeKey, bool bindingTypeKeyValue)
+    internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor, string bindingTypeKey,
+        bool bindingTypeKeyValue)
     {
         var source = new TestPostProcessorConfigurationSource();
-        source.ParentConfiguration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>() { { $"steeltoe:kubernetes:bindings:{bindingTypeKey}:enable", bindingTypeKeyValue.ToString(CultureInfo.InvariantCulture) } })
-            .Build();
+
+        source.ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { $"steeltoe:kubernetes:bindings:{bindingTypeKey}:enable", bindingTypeKeyValue.ToString(CultureInfo.InvariantCulture) }
+        }).Build();
+
         source.RegisterPostProcessor(postProcessor);
 
         return new TestPostProcessorConfigurationProvider(source);

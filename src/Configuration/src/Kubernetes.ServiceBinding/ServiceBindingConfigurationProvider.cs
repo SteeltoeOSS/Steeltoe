@@ -2,12 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
@@ -17,17 +13,139 @@ namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationProvider, IDisposable
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
 {
-
-    public static readonly string KubernetesBindingsPrefix = "k8s" + ConfigurationPath.KeyDelimiter + "bindings";
-
     // The key for the provider of binding
     public const string ProviderKey = "provider";
 
     // The key for the type of binding
     public const string TypeKey = "type";
 
+    public static readonly string KubernetesBindingsPrefix = "k8s" + ConfigurationPath.KeyDelimiter + "bindings";
+
+    private readonly IDisposable _changeTokenRegistration;
+
+    private readonly ServiceBindingConfigurationSource _source;
+
+    public ServiceBindingConfigurationProvider(ServiceBindingConfigurationSource source)
+        : base(source)
+    {
+        _source = source ?? throw new ArgumentNullException(nameof(source));
+
+        if (source.ReloadOnChange && _source.FileProvider != null)
+        {
+            _changeTokenRegistration = ChangeToken.OnChange(() => _source.FileProvider.Watch("*"), () =>
+            {
+                Thread.Sleep(_source.ReloadDelay); // Default 250
+                Load(true);
+            });
+        }
+    }
+
+    public override void Load()
+    {
+        Load(false);
+    }
+
+    private void Load(bool reload)
+    {
+        var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        if (_source.FileProvider == null)
+        {
+            // Always optional on reload
+            if (_source.Optional || reload)
+            {
+                Data = data;
+                PostProcessConfiguration();
+                OnReload();
+                return;
+            }
+
+            throw new DirectoryNotFoundException("A service binding root is required when the source is not optional.");
+        }
+
+        IDirectoryContents directory = _source.FileProvider.GetDirectoryContents("/");
+
+        if (!directory.Exists)
+        {
+            // Always optional on reload
+            if (_source.Optional || reload)
+            {
+                Data = data;
+                PostProcessConfiguration();
+                OnReload();
+                return;
+            }
+
+            throw new DirectoryNotFoundException("The service binding root does not exist and is not optional.");
+        }
+
+        var bindings = new ServiceBindings(_source.FileProvider);
+
+        foreach (ServiceBinding binding in bindings.Bindings)
+        {
+            AddBindingType(binding, data);
+            AddBindingProvider(binding, data);
+
+            foreach (KeyValuePair<string, string> secretEntry in binding.Secrets)
+            {
+                AddBindingSecret(binding, secretEntry, data);
+            }
+        }
+
+        Data = data;
+        PostProcessConfiguration();
+        OnReload();
+    }
+
+    public void Dispose()
+    {
+        _changeTokenRegistration?.Dispose();
+    }
+
+    protected override void PostProcessConfiguration()
+    {
+        if (this.IsSteeltoeBindingsEnabled())
+        {
+            base.PostProcessConfiguration();
+        }
+    }
+
+    private void AddBindingType(ServiceBinding binding, Dictionary<string, string> data)
+    {
+        string typeKey = KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + binding.Name + ConfigurationPath.KeyDelimiter + TypeKey;
+
+        if (!_source.IgnoreKeyPredicate(typeKey))
+        {
+            data[typeKey] = binding.Type;
+        }
+    }
+
+    private void AddBindingProvider(ServiceBinding binding, Dictionary<string, string> data)
+    {
+        if (!string.IsNullOrEmpty(binding.Provider))
+        {
+            string provKey = KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + binding.Name + ConfigurationPath.KeyDelimiter + ProviderKey;
+
+            if (!_source.IgnoreKeyPredicate(provKey))
+            {
+                data[provKey] = binding.Provider;
+            }
+        }
+    }
+
+    private void AddBindingSecret(ServiceBinding binding, KeyValuePair<string, string> secretEntry, Dictionary<string, string> data)
+    {
+        string secretkey = KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + binding.Name + ConfigurationPath.KeyDelimiter + secretEntry.Key;
+
+        if (!_source.IgnoreKeyPredicate(secretkey))
+        {
+            data[secretkey] = secretEntry.Value;
+        }
+    }
+
     internal class ServiceBinding
     {
+        private readonly Dictionary<string, string> _secrets;
         public string Name { get; }
 
         public string Path { get; }
@@ -37,8 +155,6 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
         public IDictionary<string, string> Secrets => new ReadOnlyDictionary<string, string>(_secrets);
 
         public string Type { get; }
-
-        private readonly Dictionary<string, string> _secrets;
 
         // Creates a new Binding instance using the specified file system directory
         public ServiceBinding(string path)
@@ -56,7 +172,8 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
 
             string type = null;
             string provider = null;
-            foreach (var entry in secret)
+
+            foreach (KeyValuePair<string, string> entry in secret)
             {
                 switch (entry.Key)
                 {
@@ -76,7 +193,6 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
             Provider = provider;
         }
 
-
         private static IDictionary<string, string> CreateSecrets(string path)
         {
             return CreateFilePerEntry(path);
@@ -86,16 +202,18 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
         {
             try
             {
-                var files = Directory.EnumerateFiles(path);
+                IEnumerable<string> files = Directory.EnumerateFiles(path);
                 var result = new Dictionary<string, string>();
+
                 if (!files.Any())
                 {
                     return result;
                 }
 
-                foreach (var file in files)
+                foreach (string file in files)
                 {
                     FileInfo fileInfo = new(file);
+
                     if (fileInfo.Exists && !IsHidden(file))
                     {
                         result.Add(fileInfo.Name, ReadContentsAsString(file));
@@ -127,7 +245,7 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
         {
             try
             {
-                var bytes = File.ReadAllBytes(file);
+                byte[] bytes = File.ReadAllBytes(file);
                 return Encoding.UTF8.GetString(bytes).Trim();
             }
             catch (Exception e)
@@ -144,136 +262,21 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
         public ServiceBindings(IFileProvider fileProvider)
         {
             Bindings = new List<ServiceBinding>();
+
             if (fileProvider == null)
             {
                 return;
             }
-            var contents = fileProvider.GetDirectoryContents("/");
-            foreach (var element in contents)
+
+            IDirectoryContents contents = fileProvider.GetDirectoryContents("/");
+
+            foreach (IFileInfo element in contents)
             {
                 if (element != null && element.Exists)
                 {
                     Bindings.Add(new ServiceBinding(element.PhysicalPath));
                 }
             }
-        }
-    }
-
-    private readonly IDisposable _changeTokenRegistration;
-
-    private readonly ServiceBindingConfigurationSource _source;
-
-    public ServiceBindingConfigurationProvider(ServiceBindingConfigurationSource source)
-        : base(source)
-    {
-        _source = source ?? throw new ArgumentNullException(nameof(source));
-
-        if (source.ReloadOnChange && _source.FileProvider != null)
-        {
-            _changeTokenRegistration = ChangeToken.OnChange(
-                () => _source.FileProvider.Watch("*"),
-                () =>
-                {
-                    Thread.Sleep(_source.ReloadDelay); // Default 250
-                    Load(reload: true);
-                });
-        }
-    }
-
-    public override void Load()
-    {
-        Load(reload: false);
-    }
-
-    private void Load(bool reload)
-    {
-        var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        if (_source.FileProvider == null)
-        {
-            // Always optional on reload
-            if (_source.Optional || reload)
-            {
-                Data = data;
-                PostProcessConfiguration();
-                OnReload();
-                return;
-            }
-
-            throw new DirectoryNotFoundException("A service binding root is required when the source is not optional.");
-        }
-
-        var directory = _source.FileProvider.GetDirectoryContents("/");
-        if (!directory.Exists)
-        {
-            // Always optional on reload
-            if (_source.Optional || reload)
-            {
-                Data = data;
-                PostProcessConfiguration();
-                OnReload();
-                return;
-            }
-            throw new DirectoryNotFoundException("The service binding root does not exist and is not optional.");
-        }
-        else
-        {
-            var bindings = new ServiceBindings(_source.FileProvider);
-            foreach (var binding in bindings.Bindings)
-            {
-                AddBindingType(binding, data);
-                AddBindingProvider(binding, data);
-                foreach (var secretEntry in binding.Secrets)
-                {
-                    AddBindingSecret(binding, secretEntry, data);
-                }
-            }
-        }
-
-        Data = data;
-        PostProcessConfiguration();
-        OnReload();
-    }
-
-    public void Dispose()
-    {
-        _changeTokenRegistration?.Dispose();
-    }
-
-    protected override void PostProcessConfiguration()
-    {
-        if (this.IsSteeltoeBindingsEnabled())
-        {
-            base.PostProcessConfiguration();
-        }
-    }
-
-    private void AddBindingType(ServiceBinding binding, Dictionary<string, string> data)
-    {
-        var typeKey = KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + binding.Name + ConfigurationPath.KeyDelimiter + TypeKey;
-        if (!_source.IgnoreKeyPredicate(typeKey))
-        {
-            data[typeKey] = binding.Type;
-        }
-    }
-
-    private void AddBindingProvider(ServiceBinding binding, Dictionary<string, string> data)
-    {
-        if (!string.IsNullOrEmpty(binding.Provider))
-        {
-            var provKey = KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + binding.Name + ConfigurationPath.KeyDelimiter + ProviderKey;
-            if (!_source.IgnoreKeyPredicate(provKey))
-            {
-                data[provKey] = binding.Provider;
-            }
-        }
-    }
-
-    private void AddBindingSecret(ServiceBinding binding, KeyValuePair<string, string> secretEntry, Dictionary<string, string> data)
-    {
-        var secretkey = KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + binding.Name + ConfigurationPath.KeyDelimiter + secretEntry.Key;
-        if (!_source.IgnoreKeyPredicate(secretkey))
-        {
-            data[secretkey] = secretEntry.Value;
         }
     }
 }

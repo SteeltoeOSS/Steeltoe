@@ -2,40 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
+
 internal class ServiceBindingConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
 {
     internal const string ServiceBindingRootDirEnvVariable = "SERVICE_BINDING_ROOT";
-
-    public ServiceBindingConfigurationSource()
-        : this(Environment.GetEnvironmentVariable(ServiceBindingRootDirEnvVariable))
-    {
-    }
-
-    public ServiceBindingConfigurationSource(string serviceBindingRootDirectory)
-    {
-        ServiceBindingRoot = serviceBindingRootDirectory != null ? Path.GetFullPath(serviceBindingRootDirectory) : serviceBindingRootDirectory;
-        if (Directory.Exists(ServiceBindingRoot))
-        {
-            var fileProvider = new PhysicalFileProvider(ServiceBindingRoot, ExclusionFilters.Sensitive);
-            if (ReloadOnChange)
-            {
-                fileProvider.UsePollingFileWatcher = true;
-                fileProvider.UseActivePolling = true;
-            }
-
-            FileProvider = fileProvider;
-        }
-    }
 
     public IFileProvider FileProvider { get; set; }
 
@@ -47,7 +22,30 @@ internal class ServiceBindingConfigurationSource : PostProcessorConfigurationSou
 
     public bool Optional { get; set; } = true;
 
-    public Predicate<string> IgnoreKeyPredicate { get; set; } = (p) => false;
+    public Predicate<string> IgnoreKeyPredicate { get; set; } = p => false;
+
+    public ServiceBindingConfigurationSource()
+        : this(Environment.GetEnvironmentVariable(ServiceBindingRootDirEnvVariable))
+    {
+    }
+
+    public ServiceBindingConfigurationSource(string serviceBindingRootDirectory)
+    {
+        ServiceBindingRoot = serviceBindingRootDirectory != null ? Path.GetFullPath(serviceBindingRootDirectory) : serviceBindingRootDirectory;
+
+        if (Directory.Exists(ServiceBindingRoot))
+        {
+            var fileProvider = new PhysicalFileProvider(ServiceBindingRoot, ExclusionFilters.Sensitive);
+
+            if (ReloadOnChange)
+            {
+                fileProvider.UsePollingFileWatcher = true;
+                fileProvider.UseActivePolling = true;
+            }
+
+            FileProvider = fileProvider;
+        }
+    }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
@@ -55,6 +53,7 @@ internal class ServiceBindingConfigurationSource : PostProcessorConfigurationSou
         {
             ParentConfiguration = GetParentConfiguration(builder);
         }
+
         return new ServiceBindingConfigurationProvider(this);
     }
 
@@ -68,6 +67,7 @@ internal class ServiceBindingConfigurationSource : PostProcessorConfigurationSou
             {
                 break;
             }
+
             configurationBuilder.Add(source);
         }
 

@@ -2,22 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration;
+
 internal static class ConfigurationDictionaryExtensions
 {
     public static IEnumerable<string> Filter(this IDictionary<string, string> configData, string keyPrefix, string keySuffix, string keyValue)
     {
-        List<string> results = new List<string>();
-        foreach (var pair in configData)
+        var results = new List<string>();
+
+        foreach (KeyValuePair<string, string> pair in configData)
         {
-            if (pair.Key.StartsWith(keyPrefix, StringComparison.OrdinalIgnoreCase) && pair.Key.EndsWith(keySuffix, StringComparison.OrdinalIgnoreCase) && pair.Value == keyValue)
+            if (pair.Key.StartsWith(keyPrefix, StringComparison.OrdinalIgnoreCase) && pair.Key.EndsWith(keySuffix, StringComparison.OrdinalIgnoreCase) &&
+                pair.Value == keyValue)
             {
                 results.Add(ConfigurationPath.GetParentPath(pair.Key));
             }
@@ -28,8 +26,9 @@ internal static class ConfigurationDictionaryExtensions
 
     public static IEnumerable<string> Filter(this IDictionary<string, string> configData, string keyPrefix)
     {
-        List<string> results = new List<string>();
-        foreach (var pair in configData)
+        var results = new List<string>();
+
+        foreach (KeyValuePair<string, string> pair in configData)
         {
             if (pair.Key.StartsWith(keyPrefix, StringComparison.OrdinalIgnoreCase))
             {
@@ -42,10 +41,9 @@ internal static class ConfigurationDictionaryExtensions
 
     public static void ForEach(this IEnumerable<string> keys, Action<string> mapping)
     {
-        foreach (var key in keys)
+        foreach (string key in keys)
         {
             mapping(key);
         }
     }
-
 }

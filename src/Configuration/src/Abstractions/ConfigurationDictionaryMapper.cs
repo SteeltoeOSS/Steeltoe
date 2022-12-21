@@ -2,14 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration;
+
 internal abstract class ConfigurationDictionaryMapper
 {
     public string BindingKey { get; }
@@ -22,6 +18,7 @@ internal abstract class ConfigurationDictionaryMapper
     {
         ConfigData = configData;
         BindingKey = !string.IsNullOrEmpty(bindingKey) ? bindingKey + ConfigurationPath.KeyDelimiter : string.Empty;
+
         if (toPrefix.Length > 0)
         {
             ToPrefix = string.Join(ConfigurationPath.KeyDelimiter, toPrefix) + ConfigurationPath.KeyDelimiter;
@@ -48,6 +45,7 @@ internal abstract class ConfigurationDictionaryMapper
         if (ConfigData.TryGetValue(BindingKey + existingKey, out string value))
         {
             string newKey = string.Join(ConfigurationPath.KeyDelimiter, newKeyPath);
+
             if (ToPrefix != null)
             {
                 ConfigData[ToPrefix + newKey] = value;

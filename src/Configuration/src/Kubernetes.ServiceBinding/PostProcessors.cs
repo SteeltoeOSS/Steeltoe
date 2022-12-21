@@ -2,18 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
 internal sealed class ArtemisPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "artemis";
+    internal const string BindingTypeKey = "artemis";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -22,8 +17,8 @@ internal sealed class ArtemisPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.artemis.... and spring.rabbitmq.pool....
                 // Steeltoe -> steeltoe:artemis:binding-name:....
@@ -43,14 +38,13 @@ internal sealed class ArtemisPostProcessor : IConfigurationPostProcessor
                 mapper.MapFromTo("embedded.topics", "embeddedTopics");
 
                 // Note: Spring adds spring.rabbitmq.pool configuration settings also
-
             });
     }
 }
 
 internal sealed class CassandraPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "cassandra";
+    internal const string BindingTypeKey = "cassandra";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -59,27 +53,27 @@ internal sealed class CassandraPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.data.cassandra....
                 // Steeltoe -> steeltoe:cassandra:binding-name:....
                 var mapper = new ServiceBindingMapper(configData, bindingNameKey, "steeltoe", BindingTypeKey, ConfigurationPath.GetSectionKey(bindingNameKey));
                 mapper.MapFromTo("cluster-name", "clusterName");
                 mapper.MapFromTo("compression", "compression");
-                mapper.MapFromTo("contact-points","contactPoints");
-                mapper.MapFromTo("keyspace-name","keyspaceName");
-                mapper.MapFromTo("password","password");
-                mapper.MapFromTo("port","port");
-                mapper.MapFromTo("ssl","ssl");
-                mapper.MapFromTo("username","username");
+                mapper.MapFromTo("contact-points", "contactPoints");
+                mapper.MapFromTo("keyspace-name", "keyspaceName");
+                mapper.MapFromTo("password", "password");
+                mapper.MapFromTo("port", "port");
+                mapper.MapFromTo("ssl", "ssl");
+                mapper.MapFromTo("username", "username");
             });
     }
 }
 
 internal sealed class ConfigServerPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "config";
+    internal const string BindingTypeKey = "config";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -88,15 +82,15 @@ internal sealed class ConfigServerPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.cloud.config....
                 // Steeltoe -> steeltoe:config:binding-name...
                 var mapper = new ServiceBindingMapper(configData, bindingNameKey, "steeltoe", BindingTypeKey, ConfigurationPath.GetSectionKey(bindingNameKey));
                 mapper.MapFromTo("uri", "uri");
                 mapper.MapFromTo("client-id", "oauth2", "clientId");
-                mapper.MapFromTo("client-secret",  "oauth2", "clientSecret");
+                mapper.MapFromTo("client-secret", "oauth2", "clientSecret");
                 mapper.MapFromTo("access-token-uri", "oauth2", "accessTokenUri");
             });
     }
@@ -104,7 +98,7 @@ internal sealed class ConfigServerPostProcessor : IConfigurationPostProcessor
 
 internal sealed class CouchbasePostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "couchbase";
+    internal const string BindingTypeKey = "couchbase";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -113,8 +107,8 @@ internal sealed class CouchbasePostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.couchbase....
                 // Steeltoe -> steeltoe:couchbase:binding-name:....
@@ -132,7 +126,7 @@ internal sealed class CouchbasePostProcessor : IConfigurationPostProcessor
 
 internal sealed class DB2PostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "db2";
+    internal const string BindingTypeKey = "db2";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -141,8 +135,8 @@ internal sealed class DB2PostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.datasource....
                 // Steeltoe -> steeltoe:db2:binding-name....
@@ -163,7 +157,7 @@ internal sealed class DB2PostProcessor : IConfigurationPostProcessor
 
 internal sealed class ElasticSearchPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "elasticsearch";
+    internal const string BindingTypeKey = "elasticsearch";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -172,26 +166,26 @@ internal sealed class ElasticSearchPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.data.elasticsearch.client... and spring.elasticsearch.jest.... and spring.elasticsearch.rest....
                 // Steeltoe -> steeltoe:elasticsearch:binding-name:....
                 var mapper = new ServiceBindingMapper(configData, bindingNameKey, "steeltoe", BindingTypeKey, ConfigurationPath.GetSectionKey(bindingNameKey));
-                mapper.MapFromTo("endpoints","endpoints");
-                mapper.MapFromTo("password","password");
-                mapper.MapFromTo("use-ssl","useSsl");
-                mapper.MapFromTo("username","username");
-                mapper.MapFromTo("proxy.host","proxyHost");
-                mapper.MapFromTo("proxy.port","proxyPort");
-                mapper.MapFromTo("uris","uris");
+                mapper.MapFromTo("endpoints", "endpoints");
+                mapper.MapFromTo("password", "password");
+                mapper.MapFromTo("use-ssl", "useSsl");
+                mapper.MapFromTo("username", "username");
+                mapper.MapFromTo("proxy.host", "proxyHost");
+                mapper.MapFromTo("proxy.port", "proxyPort");
+                mapper.MapFromTo("uris", "uris");
             });
     }
 }
 
 internal sealed class EurekaPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "eureka";
+    internal const string BindingTypeKey = "eureka";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -200,8 +194,8 @@ internal sealed class EurekaPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> eureka.client....
                 // Steeltoe -> steeltoe:eureka:binding-name:....
@@ -221,7 +215,7 @@ internal sealed class EurekaPostProcessor : IConfigurationPostProcessor
 
 internal sealed class KafkaPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "kafka";
+    internal const string BindingTypeKey = "kafka";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -230,15 +224,15 @@ internal sealed class KafkaPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.kafka....
                 // Steeltoe -> steeltoe:kafka:binding-name:....
                 var mapper = new ServiceBindingMapper(configData, bindingNameKey, "steeltoe", BindingTypeKey, ConfigurationPath.GetSectionKey(bindingNameKey));
                 mapper.MapFromTo("bootstrap-servers", "bootstrapServers");
-                mapper.MapFromTo("consumer.bootstrap-servers","consumerBootstrapServers");
-                mapper.MapFromTo("producer.bootstrap-servers","producerBootstrapServers");
+                mapper.MapFromTo("consumer.bootstrap-servers", "consumerBootstrapServers");
+                mapper.MapFromTo("producer.bootstrap-servers", "producerBootstrapServers");
                 mapper.MapFromTo("streams.bootstrap-servers", "streamsBootstrapServers");
             });
     }
@@ -246,7 +240,7 @@ internal sealed class KafkaPostProcessor : IConfigurationPostProcessor
 
 internal sealed class LdapPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "ldap";
+    internal const string BindingTypeKey = "ldap";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -255,8 +249,8 @@ internal sealed class LdapPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.ldap....
                 // Steeltoe -> steeltoe:ldap:binding-name:....
@@ -271,7 +265,7 @@ internal sealed class LdapPostProcessor : IConfigurationPostProcessor
 
 internal sealed class MongoDbPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "mongodb";
+    internal const string BindingTypeKey = "mongodb";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -280,8 +274,8 @@ internal sealed class MongoDbPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.data.mongodb....
                 // Steeltoe -> steeltoe:mongodb....
@@ -300,7 +294,7 @@ internal sealed class MongoDbPostProcessor : IConfigurationPostProcessor
 
 internal sealed class MySqlPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "mysql";
+    internal const string BindingTypeKey = "mysql";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -309,8 +303,8 @@ internal sealed class MySqlPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.datasource....
                 // Steeltoe -> steeltoe:mysql:binding-name....
@@ -322,7 +316,7 @@ internal sealed class MySqlPostProcessor : IConfigurationPostProcessor
                 mapper.MapFromTo("database", "database");
 
                 // Spring indicates this takes precedence over above
-                mapper.MapFromTo("jdbc-url", "jdbcUrl"); 
+                mapper.MapFromTo("jdbc-url", "jdbcUrl");
 
                 // Note: Spring also adds spring.r2dbc.... properties as well
             });
@@ -331,7 +325,7 @@ internal sealed class MySqlPostProcessor : IConfigurationPostProcessor
 
 internal sealed class Neo4JPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "neo4j";
+    internal const string BindingTypeKey = "neo4j";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -340,8 +334,8 @@ internal sealed class Neo4JPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.data.neo4j....
                 // Steeltoe -> steeltoe:neo4j:binding-name....
@@ -355,7 +349,7 @@ internal sealed class Neo4JPostProcessor : IConfigurationPostProcessor
 
 internal sealed class OraclePostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "oracle";
+    internal const string BindingTypeKey = "oracle";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -364,8 +358,8 @@ internal sealed class OraclePostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.datasource....
                 // Steeltoe -> steeltoe:oracle:binding-name....
@@ -386,7 +380,7 @@ internal sealed class OraclePostProcessor : IConfigurationPostProcessor
 
 internal sealed class PostgreSqlPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "postgresql";
+    internal const string BindingTypeKey = "postgresql";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -395,8 +389,8 @@ internal sealed class PostgreSqlPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.datasource....
                 // Steeltoe -> steeltoe:postgresql:binding-name....
@@ -423,7 +417,7 @@ internal sealed class PostgreSqlPostProcessor : IConfigurationPostProcessor
 
 internal sealed class RabbitMQPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "rabbitmq";
+    internal const string BindingTypeKey = "rabbitmq";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -432,8 +426,8 @@ internal sealed class RabbitMQPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.rabbitmq....
                 // Steeltoe -> steeltoe:rabbitmq:binding-name:....
@@ -450,7 +444,7 @@ internal sealed class RabbitMQPostProcessor : IConfigurationPostProcessor
 
 internal sealed class RedisPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "redis";
+    internal const string BindingTypeKey = "redis";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -459,8 +453,8 @@ internal sealed class RedisPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.redis....
                 // Steeltoe -> steeltoe:redis:binding-name:....
@@ -475,14 +469,14 @@ internal sealed class RedisPostProcessor : IConfigurationPostProcessor
                 mapper.MapFromTo("sentinel.master", "sentinelMaster");
                 mapper.MapFromTo("sentinel.nodes", "sentinelNodes");
                 mapper.MapFromTo("ssl", "ssl");
-                mapper.MapFromTo("url","url");
+                mapper.MapFromTo("url", "url");
             });
     }
 }
 
 internal sealed class SapHanaPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "hana";
+    internal const string BindingTypeKey = "hana";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -491,8 +485,8 @@ internal sealed class SapHanaPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.datasource....
                 // Steeltoe -> steeltoe:hana:binding-name:....
@@ -513,7 +507,7 @@ internal sealed class SapHanaPostProcessor : IConfigurationPostProcessor
 
 internal sealed class SpringSecurityOAuth2PostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "oauth2";
+    internal const string BindingTypeKey = "oauth2";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -522,51 +516,51 @@ internal sealed class SpringSecurityOAuth2PostProcessor : IConfigurationPostProc
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.security.oauth2.client....
                 // Steeltoe -> steeltoe:oauth2:binding-name:....
                 var mapper = new ServiceBindingMapper(configData, bindingNameKey, "steeltoe", "oauth2", ConfigurationPath.GetSectionKey(bindingNameKey));
                 string provider = mapper.BindingProvider;
+
                 if (provider == null)
                 {
                     // Log
                     return;
                 }
 
-                mapper.AddKeyValue($"registration:provider", provider);
+                mapper.AddKeyValue("registration:provider", provider);
 
                 mapper.MapFromTo("client-id", "registration", "clientId");
-                mapper.MapFromTo("client-secret","registration", "clientSecret");
+                mapper.MapFromTo("client-secret", "registration", "clientSecret");
                 mapper.MapFromTo("client-authentication-method", "registration", "clientAuthenticationMethod");
-                mapper.MapFromTo("authorization-grant-type","registration", "authorizationGrantType");
+                mapper.MapFromTo("authorization-grant-type", "registration", "authorizationGrantType");
 
                 // Look at Springs SpringSecurityOAuth2BindingsPropertiesProcessor for details on this
                 mapper.MapFromTo("authorization-grant-types", "registration", "authorizationGrantTypes");
-        
-                mapper.MapFromTo("redirect-uri","registration", "redirectUri");
+
+                mapper.MapFromTo("redirect-uri", "registration", "redirectUri");
 
                 // Look at Springs SpringSecurityOAuth2BindingsPropertiesProcessor for details on this
-                mapper.MapFromTo("redirect-uris", "registration","redirectUris");
-                mapper.MapFromTo("scope", "registration","scope");
-                mapper.MapFromTo("client-name","registration", "clientName");
+                mapper.MapFromTo("redirect-uris", "registration", "redirectUris");
+                mapper.MapFromTo("scope", "registration", "scope");
+                mapper.MapFromTo("client-name", "registration", "clientName");
 
                 mapper.MapFromTo("issuer-uri", "provider", "issuerUri");
-                mapper.MapFromTo("authorization-uri","provider", "authorizationUri");
-                mapper.MapFromTo("token-uri","provider", "tokenUri");
-                mapper.MapFromTo("user-info-uri","provider", "userInfoUri");
+                mapper.MapFromTo("authorization-uri", "provider", "authorizationUri");
+                mapper.MapFromTo("token-uri", "provider", "tokenUri");
+                mapper.MapFromTo("user-info-uri", "provider", "userInfoUri");
                 mapper.MapFromTo("user-info-authentication-method", "provider", "userInfoAuthenticationMethod");
-                mapper.MapFromTo("jwk-set-uri","provider", "jwkSetUri");
-                mapper.MapFromTo("user-name-attribute","provider", "userNameAttribute");
-
+                mapper.MapFromTo("jwk-set-uri", "provider", "jwkSetUri");
+                mapper.MapFromTo("user-name-attribute", "provider", "userNameAttribute");
             });
     }
 }
 
 internal sealed class SqlServerPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "sqlserver";
+    internal const string BindingTypeKey = "sqlserver";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -575,8 +569,8 @@ internal sealed class SqlServerPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.datasource....
                 // Steeltoe -> steeltoe:sqlserver:binding-name:....
@@ -597,7 +591,7 @@ internal sealed class SqlServerPostProcessor : IConfigurationPostProcessor
 
 internal sealed class VaultPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "vault";
+    internal const string BindingTypeKey = "vault";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -606,8 +600,8 @@ internal sealed class VaultPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.cloud.vault....
                 // Steeltoe -> steeltoe:vault:binding-name:....
@@ -615,12 +609,15 @@ internal sealed class VaultPostProcessor : IConfigurationPostProcessor
                 mapper.MapFromTo("uri", "uri");
                 mapper.MapFromTo("namespace", "namespace");
                 string authenticationMethod = mapper.Get("authentication-method");
+
                 if (authenticationMethod == null)
                 {
                     // Log
                     return;
                 }
+
                 mapper.AddKeyValue("authentication", authenticationMethod);
+
                 switch (authenticationMethod.ToUpperInvariant())
                 {
                     case "TOKEN":
@@ -628,37 +625,37 @@ internal sealed class VaultPostProcessor : IConfigurationPostProcessor
                         mapper.MapFromTo("token", "token");
                         break;
                     case "APPROLE":
-                        mapper.MapFromTo("role-id","approle", "roleId");
-                        mapper.MapFromTo("secret-id","approle", "secretId");
-                        mapper.MapFromTo("role","approle", "role");
-                        mapper.MapFromTo("app-role-path","approle","appRolePath");
+                        mapper.MapFromTo("role-id", "approle", "roleId");
+                        mapper.MapFromTo("secret-id", "approle", "secretId");
+                        mapper.MapFromTo("role", "approle", "role");
+                        mapper.MapFromTo("app-role-path", "approle", "appRolePath");
                         break;
                     case "AWS_EC2":
-                        mapper.MapFromTo("role","awsEc2", "role");
-                        mapper.MapFromTo("aws-ec2-path","awsEc2", "awsEc2Path");
-                        mapper.MapFromTo("aws-ec2-instance-identity-document","awsEc2", "identityDocument");
-                        mapper.MapFromTo("nonce","awsEc2", "nonce");
+                        mapper.MapFromTo("role", "awsEc2", "role");
+                        mapper.MapFromTo("aws-ec2-path", "awsEc2", "awsEc2Path");
+                        mapper.MapFromTo("aws-ec2-instance-identity-document", "awsEc2", "identityDocument");
+                        mapper.MapFromTo("nonce", "awsEc2", "nonce");
                         break;
                     case "AWS_IAM":
-                        mapper.MapFromTo("role","awsIam", "role");
-                        mapper.MapFromTo("aws-path","awsIam", "awsPath");
-                        mapper.MapFromTo("aws-iam-server-id","awsIam", "serverId");
-                        mapper.MapFromTo("aws-sts-endpoint-uri","awsIam", "endpointUri");
+                        mapper.MapFromTo("role", "awsIam", "role");
+                        mapper.MapFromTo("aws-path", "awsIam", "awsPath");
+                        mapper.MapFromTo("aws-iam-server-id", "awsIam", "serverId");
+                        mapper.MapFromTo("aws-sts-endpoint-uri", "awsIam", "endpointUri");
                         break;
                     case "AZURE_MSI":
-                        mapper.MapFromTo("role","azureMsi", "role");
-                        mapper.MapFromTo("azure-path","azureMsi", "azurePath");
+                        mapper.MapFromTo("role", "azureMsi", "role");
+                        mapper.MapFromTo("azure-path", "azureMsi", "azurePath");
                         break;
                     case "CERT":
                         // Note: Spring adds the keystore.jks file path as the value of the key
                         // spring.cloud.vault.ssl.key-store. This needs to be revisted to see what
                         // Steeltoe should do. For now, look for key-store key and just map it
                         mapper.MapFromTo("key-store", "ssl", "keyStore");
-                        mapper.MapFromTo("key-store-password","ssl", "keyStorePassword");
-                        mapper.MapFromTo("cert-auth-path","ssl", "certAuthPath");
+                        mapper.MapFromTo("key-store-password", "ssl", "keyStorePassword");
+                        mapper.MapFromTo("cert-auth-path", "ssl", "certAuthPath");
                         break;
                     case "GCP_GCE":
-                        mapper.MapFromTo("role","gcpGce", "role");
+                        mapper.MapFromTo("role", "gcpGce", "role");
                         mapper.MapFromTo("gcp-path", "gcpGce", "gcpPath");
                         mapper.MapFromTo("gcp-service-account", "gcpGce", "gcpServiceAccount");
                         break;
@@ -667,19 +664,16 @@ internal sealed class VaultPostProcessor : IConfigurationPostProcessor
                         // spring.cloud.vault.gcp-iam.credentials.location. This needs to be revisted to see what
                         // Steeltoe should do. For now, look for credentials.json key and just map it
                         mapper.MapFromTo("credentials.json", "gcpIam", "credentialsJson");
-                        mapper.MapFromTo("role","gcpIam", "role");
-                        mapper.MapFromTo("encoded-key","gcpIam", "encodedKey");
-                        mapper.MapFromTo("gcp-path","gcpIam", "gcpPath");
-                        mapper.MapFromTo("jwt-validity","gcpIam", "jwtValidity");
-                        mapper.MapFromTo("gcp-project-id","gcpIam", "gcpProjectId");
-                        mapper.MapFromTo("gcp-service-account","gcpIam", "gcpServiceAccount");
+                        mapper.MapFromTo("role", "gcpIam", "role");
+                        mapper.MapFromTo("encoded-key", "gcpIam", "encodedKey");
+                        mapper.MapFromTo("gcp-path", "gcpIam", "gcpPath");
+                        mapper.MapFromTo("jwt-validity", "gcpIam", "jwtValidity");
+                        mapper.MapFromTo("gcp-project-id", "gcpIam", "gcpProjectId");
+                        mapper.MapFromTo("gcp-service-account", "gcpIam", "gcpServiceAccount");
                         break;
                     case "KUBERNETES":
-                        mapper.MapFromTo("role","kubernetes","role");
-                        mapper.MapFromTo("kubernetes-path","kubernetes", "kubernetesPath");
-                        break;
-                    default:
-                        // log 
+                        mapper.MapFromTo("role", "kubernetes", "role");
+                        mapper.MapFromTo("kubernetes-path", "kubernetes", "kubernetesPath");
                         break;
                 }
             });
@@ -688,7 +682,7 @@ internal sealed class VaultPostProcessor : IConfigurationPostProcessor
 
 internal sealed class WavefrontPostProcessor : IConfigurationPostProcessor
 {
-     internal const string BindingTypeKey = "wavefront";
+    internal const string BindingTypeKey = "wavefront";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
     {
@@ -697,8 +691,8 @@ internal sealed class WavefrontPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach((bindingNameKey) =>
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> management.metrics.export.....
                 // Steeltoe -> steeltoe:wavefront:binding-name: ...

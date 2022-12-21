@@ -2,23 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
+
 public class ServiceBindingMapperTest
 {
     [Fact]
     public void MapFromTo_Present()
     {
-        var source = new Dictionary<string, string>()
+        var source = new Dictionary<string, string>
         {
             { "test-source-key", "test-source-value" }
         };
+
         var mapper = new ServiceBindingMapper(source, string.Empty, Array.Empty<string>());
         mapper.MapFromTo("test-source-key", "test-destination-key");
         Assert.Equal("test-source-value", source["test-destination-key"]);
@@ -36,11 +33,11 @@ public class ServiceBindingMapperTest
     [Fact]
     public void MapFromTo_AllPresent()
     {
-        var source = new Dictionary<string, string>()
+        var source = new Dictionary<string, string>
         {
-            {"test-source-key-1", "test-source-value-1" },
-            {"test-source-key-2", "test-source-value-2" },
-            {"test-source-key-3", "test-source-value-3" }
+            { "test-source-key-1", "test-source-value-1" },
+            { "test-source-key-2", "test-source-value-2" },
+            { "test-source-key-3", "test-source-value-3" }
         };
 
         var mapper = new ServiceBindingMapper(source, string.Empty, Array.Empty<string>());
@@ -54,10 +51,10 @@ public class ServiceBindingMapperTest
     [Fact]
     public void MapFromTo_NotAllPresent()
     {
-        var source = new Dictionary<string, string>()
+        var source = new Dictionary<string, string>
         {
-            {"test-source-key-1", "test-source-value-1" },
-            {"test-source-key-3", "test-source-value-3" },
+            { "test-source-key-1", "test-source-value-1" },
+            { "test-source-key-3", "test-source-value-3" }
         };
 
         var mapper = new ServiceBindingMapper(source, string.Empty, Array.Empty<string>());
