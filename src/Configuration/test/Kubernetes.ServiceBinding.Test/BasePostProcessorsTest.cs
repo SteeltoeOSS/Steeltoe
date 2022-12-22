@@ -1,0 +1,98 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+
+namespace Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.Test;
+
+public class BasePostProcessorsTest
+{
+    internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor, string bindingTypeKey, bool bindingTypeKeyValue)
+    {
+        var source = new TestPostProcessorConfigurationSource();
+
+        source.ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { $"steeltoe:kubernetes:bindings:{bindingTypeKey}:enable", bindingTypeKeyValue.ToString(CultureInfo.InvariantCulture) }
+        }).Build();
+
+        source.RegisterPostProcessor(postProcessor);
+
+        return new TestPostProcessorConfigurationProvider(source);
+    }
+
+    internal class TestPostProcessorConfigurationProvider : PostProcessorConfigurationProvider
+    {
+        public TestPostProcessorConfigurationProvider(PostProcessorConfigurationSource source)
+            : base(source)
+        {
+        }
+    }
+
+    internal class TestPostProcessorConfigurationSource : PostProcessorConfigurationSource
+    {
+    }
+
+    protected const string _testBindingName = "test-name";
+    protected const string _testBindingName1 = "test-name-1";
+    protected const string _testBindingName2 = "test-name-2";
+    protected const string _testBindingName3 = "test-name-3";
+    protected const string _testMissingProvider = "test-missing-provider";
+
+    protected void GetConfigData(Dictionary<string, string> dictionary, string bindingName, string bindingType, params Tuple<string, string>[] secrets)
+    {
+        foreach (Tuple<string, string> kv in secrets)
+        {
+            dictionary.Add(MakeSecretKey(bindingName, kv.Item1), kv.Item2);
+        }
+
+        dictionary.Add(MakeTypeKey(bindingName), bindingType);
+    }
+
+    protected Dictionary<string, string> GetConfigData(string bindingName, string bindingType, params Tuple<string, string>[] secrets)
+    {
+        var dictionary = new Dictionary<string, string>();
+        GetConfigData(dictionary, bindingName, bindingType, secrets);
+        return dictionary;
+    }
+
+    protected void GetConfigData(Dictionary<string, string> dictionary, string bindingName, string bindingType, string bindingProvider, params Tuple<string, string>[] secrets)
+    {
+        foreach (Tuple<string, string> kv in secrets)
+        {
+            dictionary.Add(MakeSecretKey(bindingName, kv.Item1), kv.Item2);
+        }
+
+        dictionary.Add(MakeTypeKey(bindingName), bindingType);
+        dictionary.Add(MakeProviderKey(bindingName), bindingProvider);
+    }
+
+    protected Dictionary<string, string> GetConfigData(string bindingName, string bindingType, string bindingProvider, params Tuple<string, string>[] secrets)
+    {
+        var dictionary = new Dictionary<string, string>();
+        GetConfigData(dictionary, bindingName, bindingType, bindingProvider, secrets);
+        return dictionary;
+    }
+
+    protected string MakeTypeKey(string bindingName)
+    {
+        return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter +
+            ServiceBindingConfigurationProvider.TypeKey;
+    }
+
+    protected string MakeProviderKey(string bindingName)
+    {
+        return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter +
+            ServiceBindingConfigurationProvider.ProviderKey;
+    }
+
+    protected string MakeSecretKey(string bindingName, string key)
+    {
+        return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter +
+            key;
+    }
+}
