@@ -12,19 +12,20 @@ public class ServiceBindingConfigurationProviderTest
     [Fact]
     public void EnvironmentVariableNotSet()
     {
-        // Not optional, should throw
+        // Optional defaults true, no throw
         var source = new ServiceBindingConfigurationSource();
         var provider = new ServiceBindingConfigurationProvider(source);
-        Assert.Throws<DirectoryNotFoundException>(() => provider.Load());
+   
+        provider.Load();
 
         // Optional, no throw
         source = new ServiceBindingConfigurationSource
         {
-            Optional = true
+            Optional = false
         };
-
+        // Not optional, should throw
         provider = new ServiceBindingConfigurationProvider(source);
-        provider.Load();
+        Assert.Throws<DirectoryNotFoundException>(() => provider.Load());
     }
 
     [Fact]
@@ -38,16 +39,17 @@ public class ServiceBindingConfigurationProviderTest
             // Not optional, should throw
             var source = new ServiceBindingConfigurationSource();
             var provider = new ServiceBindingConfigurationProvider(source);
-            Assert.Throws<DirectoryNotFoundException>(() => provider.Load());
+            provider.Load();
 
             // Optional, no throw
             source = new ServiceBindingConfigurationSource
             {
-                Optional = true
+                Optional = false
             };
 
             provider = new ServiceBindingConfigurationProvider(source);
-            provider.Load();
+            Assert.Throws<DirectoryNotFoundException>(() => provider.Load());
+
         }
         finally
         {
