@@ -19,10 +19,7 @@ internal abstract class PostProcessorConfigurationSource
 
     public void RegisterPostProcessor(IConfigurationPostProcessor processor)
     {
-        if (processor == null)
-        {
-            throw new ArgumentNullException(nameof(processor));
-        }
+        ArgumentGuard.NotNull(processor);
 
         RegisteredProcessors.Add(processor);
     }
