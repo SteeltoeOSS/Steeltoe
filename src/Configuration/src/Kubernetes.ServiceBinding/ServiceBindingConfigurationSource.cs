@@ -49,10 +49,7 @@ internal class ServiceBindingConfigurationSource : PostProcessorConfigurationSou
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        if (ParentConfiguration == null)
-        {
-            ParentConfiguration = GetParentConfiguration(builder);
-        }
+        ParentConfiguration ??= GetParentConfiguration(builder);
 
         return new ServiceBindingConfigurationProvider(this);
     }
