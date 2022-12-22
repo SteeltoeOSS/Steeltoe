@@ -28,7 +28,8 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
     public ServiceBindingConfigurationProvider(ServiceBindingConfigurationSource source)
         : base(source)
     {
-        _source = source ?? throw new ArgumentNullException(nameof(source));
+        ArgumentGuard.NotNull(source);
+        _source = source;
 
         if (source.ReloadOnChange && _source.FileProvider != null)
         {
