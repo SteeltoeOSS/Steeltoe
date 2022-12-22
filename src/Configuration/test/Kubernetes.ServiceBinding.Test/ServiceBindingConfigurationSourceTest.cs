@@ -29,7 +29,7 @@ public class ServiceBindingConfigurationSourceTest
         try
         {
             var source = new ServiceBindingConfigurationSource();
-            Assert.Contains("resources\\k8s", source.ServiceBindingRoot, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains(Path.Combine("resources", "k8s"), source.ServiceBindingRoot, StringComparison.OrdinalIgnoreCase);
             Assert.NotNull(source.FileProvider);
             Assert.NotNull(source.FileProvider.GetDirectoryContents("/"));
         }
@@ -61,6 +61,6 @@ public class ServiceBindingConfigurationSourceTest
 
     private static string GetK8SResourcesDirectory(string name)
     {
-        return Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\resources\\k8s\\{name}");
+        return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s", $"{name}");
     }
 }
