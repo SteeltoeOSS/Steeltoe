@@ -141,6 +141,32 @@ public class HostBuilderExtensionsTest
     }
 
     [Fact]
+    public void UseCloudHosting_MultipleVariantsWorkTogether()
+    {
+        try
+        {
+            Environment.SetEnvironmentVariable("SERVER_PORT", "8080");
+
+            var config = new ConfigurationBuilder().AddCommandLine(new[] { "--urls", "http://0.0.0.0:8080" }).Build();
+
+            var hostBuilder = new WebHostBuilder().UseConfiguration(config).UseStartup<TestServerStartup>()
+                .UseKestrel();
+
+            hostBuilder.UseCloudHosting();
+            var server = hostBuilder.Build();
+
+            var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
+
+            Assert.Single(addresses.Addresses);
+            Assert.Contains("http://*:8080", addresses.Addresses);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("SERVER_PORT", null);
+        }
+    }
+
+    [Fact]
     public void UseCloudHosting_UsesCommandLine_Urls()
     {
         IConfigurationRoot config = new ConfigurationBuilder().AddCommandLine(new[]

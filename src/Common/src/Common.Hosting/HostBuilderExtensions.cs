@@ -80,7 +80,7 @@ public static class HostBuilderExtensions
 
     private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, int? managementHttpPort = null, int? managementHttpsPort = null)
     {
-        var urls = new List<string>();
+        var urls = new HashSet<string>();
 
         string portStr = Environment.GetEnvironmentVariable("PORT") ?? Environment.GetEnvironmentVariable("SERVER_PORT");
         string aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
@@ -89,12 +89,12 @@ public static class HostBuilderExtensions
 
         if (!string.IsNullOrEmpty(serverUrlSetting))
         {
-            urls.Add(serverUrlSetting);
+            urls.Add(GetCanonical(serverUrlSetting));;
         }
 
         if (!string.IsNullOrEmpty(urlSetting))
         {
-            urls.Add(urlSetting);
+            urls.Add(GetCanonical(urlSetting));
         }
 
         if (!string.IsNullOrWhiteSpace(portStr))
@@ -111,34 +111,49 @@ public static class HostBuilderExtensions
             urls.Add(DefaultUrl);
         }
 
-        urls.AddRange(GetUrlsFromPorts(managementHttpPort, managementHttpsPort));
+        foreach(var url in GetUrlsFromPorts(managementHttpPort, managementHttpsPort))
+        {
+            urls.Add(url);
+        }
         return webHostBuilder.BindToPorts(urls);
     }
 
-    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, List<string> urls)
+    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, HashSet<string> urls)
     {
         string currentSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
-        var currentUrls = new HashSet<string>(urls);
 
         if (!string.IsNullOrEmpty(currentSetting))
         {
-            currentUrls.UnionWith(currentSetting?.Split(';'));
+           foreach (var url in currentSetting.Split(';'))
+            {
+                urls.Add(GetCanonical(url));
+            }
         }
 
-        return webHostBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Join(";", currentUrls));
+        return webHostBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Join(";", urls));
     }
 
-    private static void AddPortAndAspNetCoreUrls(List<string> urls, string portStr, string aspnetUrls)
+    private static string GetCanonical(string serverUrlSetting)
+    {
+        var canonicalUrl = serverUrlSetting.Replace("0.0.0.0", "*", StringComparison.Ordinal);
+        canonicalUrl = canonicalUrl.Replace("[::]", "*", StringComparison.Ordinal);
+        return canonicalUrl;
+    }
+
+    private static void AddPortAndAspNetCoreUrls(HashSet<string> urls, string portStr, string aspnetUrls)
     {
         if (int.TryParse(portStr, out int port))
         {
             urls.Add($"http://*:{port}");
         }
-        else if (portStr.Contains(';'))
+        else if (portStr?.Contains(';') == true)
         {
             if (!string.IsNullOrEmpty(aspnetUrls))
             {
-                urls.AddRange(aspnetUrls.Split(';'));
+               foreach (var url in aspnetUrls.Split(';'))
+                {
+                   urls.Add(GetCanonical(url));
+                }
             }
             else
             {
@@ -149,9 +164,9 @@ public static class HostBuilderExtensions
         }
     }
 
-    private static void AddFromKubernetesEnv(List<string> urls)
+    private static void AddFromKubernetesEnv(HashSet<string> urls)
     {
-        string appName = Environment.GetEnvironmentVariable("HOSTNAME").Split('-')[0].ToUpperInvariant();
+        string appName = Environment.GetEnvironmentVariable("HOSTNAME")?.Split('-')[0].ToUpperInvariant();
         string foundPort = Environment.GetEnvironmentVariable($"{appName}_SERVICE_PORT_HTTP");
         urls.Add($"http://*:{foundPort ?? "80"}");
     }
