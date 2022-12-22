@@ -14,6 +14,7 @@ namespace Steeltoe.Common.Hosting;
 public static class HostBuilderExtensions
 {
     public const string DEFAULT_URL = "http://*:8080";
+    private const string DeprecatedServerUrlsKey = "server.urls";
 
     /// <summary>
     /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
@@ -80,10 +81,23 @@ public static class HostBuilderExtensions
 
     private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, int? runLocalHttpPort, int? runLocalHttpsPort)
     {
-        var urls = new List<string>();
+        var urls = new HashSet<string>();
 
         var portStr = Environment.GetEnvironmentVariable("PORT") ?? Environment.GetEnvironmentVariable("SERVER_PORT");
         var aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
+        var serverUrlSetting = webHostBuilder.GetSetting(DeprecatedServerUrlsKey); // check for deprecated setting
+        var urlSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+
+        if (!string.IsNullOrEmpty(serverUrlSetting))
+        {
+            urls.Add(GetCanonical(serverUrlSetting));
+        }
+
+        if (!string.IsNullOrEmpty(urlSetting))
+        {
+            urls.Add(GetCanonical(urlSetting));
+        }
+
         if (!string.IsNullOrWhiteSpace(portStr))
         {
             AddPortAndAspNetCoreUrls(urls, portStr, aspnetUrls);
@@ -111,34 +125,45 @@ public static class HostBuilderExtensions
             urls.Add(DEFAULT_URL);
         }
 
-        webHostBuilder.BindToPorts(urls);
-        return webHostBuilder;
+        return webHostBuilder.BindToPorts(urls);
     }
 
-    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, List<string> urls)
+    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, HashSet<string> urls)
     {
         string currentSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
-        var currentUrls = new HashSet<string>(urls);
 
         if (!string.IsNullOrEmpty(currentSetting))
         {
-            currentUrls.UnionWith(currentSetting?.Split(';'));
+            foreach (var url in currentSetting.Split(';'))
+            {
+                urls.Add(GetCanonical(url));
+            }
         }
 
-        return webHostBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Join(";", currentUrls));
+        return webHostBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Join(";", urls));
     }
 
-    private static void AddPortAndAspNetCoreUrls(List<string> urls, string portStr, string aspnetUrls)
+    private static string GetCanonical(string serverUrlSetting)
+    {
+        var canonicalUrl = serverUrlSetting.Replace("0.0.0.0", "*", StringComparison.Ordinal);
+        canonicalUrl = canonicalUrl.Replace("[::]", "*", StringComparison.Ordinal);
+        return canonicalUrl;
+    }
+
+    private static void AddPortAndAspNetCoreUrls(HashSet<string> urls, string portStr, string aspnetUrls)
     {
         if (int.TryParse(portStr, out var port))
         {
             urls.Add($"http://*:{port}");
         }
-        else if (portStr.Contains(";"))
+        else if (portStr?.Contains(";") == true)
         {
             if (!string.IsNullOrEmpty(aspnetUrls))
             {
-                urls.AddRange(aspnetUrls.Split(';'));
+                foreach (var url in aspnetUrls.Split(';'))
+                {
+                   urls.Add(GetCanonical(url));
+                }
             }
             else
             {
@@ -149,14 +174,14 @@ public static class HostBuilderExtensions
         }
     }
 
-    private static void AddFromKubernetesEnv(List<string> urls)
+    private static void AddFromKubernetesEnv(HashSet<string> urls)
     {
-        var appname = Environment.GetEnvironmentVariable("HOSTNAME").Split("-")[0].ToUpperInvariant();
+        var appname = Environment.GetEnvironmentVariable("HOSTNAME")?.Split("-")[0].ToUpperInvariant();
         var foundPort = Environment.GetEnvironmentVariable(appname + "_SERVICE_PORT_HTTP");
         urls.Add($"http://*:{foundPort ?? "80"}");
     }
 
-    private static void AddRunLocalPorts(List<string> urls, int? runLocalHttpPort = null, int? runLocalHttpsPort = null)
+    private static void AddRunLocalPorts(HashSet<string> urls, int? runLocalHttpPort = null, int? runLocalHttpsPort = null)
     {
         if (runLocalHttpPort != null)
         {
