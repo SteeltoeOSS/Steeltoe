@@ -57,6 +57,11 @@ public abstract class AbstractServiceConnectorOptions
     {
         if (!string.IsNullOrEmpty(value))
         {
+            if (sb.Length > 1 && !sb.ToString().EndsWith(_keyValueTerm.ToString()) && !sb.ToString().EndsWith("?"))
+            {
+                sb.Append(_keyValueTerm);
+            }
+
             sb.Append(key);
             sb.Append(_keyValueSep);
             sb.Append(value);
