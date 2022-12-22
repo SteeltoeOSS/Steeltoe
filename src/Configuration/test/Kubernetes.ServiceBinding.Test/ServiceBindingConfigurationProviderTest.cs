@@ -15,7 +15,7 @@ public class ServiceBindingConfigurationProviderTest
         // Optional defaults true, no throw
         var source = new ServiceBindingConfigurationSource();
         var provider = new ServiceBindingConfigurationProvider(source);
-   
+
         provider.Load();
 
         // Optional, no throw
@@ -23,6 +23,7 @@ public class ServiceBindingConfigurationProviderTest
         {
             Optional = false
         };
+
         // Not optional, should throw
         provider = new ServiceBindingConfigurationProvider(source);
         Assert.Throws<DirectoryNotFoundException>(() => provider.Load());
@@ -49,7 +50,6 @@ public class ServiceBindingConfigurationProviderTest
 
             provider = new ServiceBindingConfigurationProvider(source);
             Assert.Throws<DirectoryNotFoundException>(() => provider.Load());
-
         }
         finally
         {
