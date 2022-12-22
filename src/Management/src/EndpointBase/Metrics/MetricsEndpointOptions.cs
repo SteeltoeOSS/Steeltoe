@@ -46,5 +46,5 @@ public class MetricsEndpointOptions : AbstractEndpointOptions, IMetricsEndpointO
 
     public string EgressIgnorePattern { get; set; }
 
-    public int ScrapeResponseCacheDurationMilliseconds { get; set; }
+    public int ScrapeResponseCacheDurationMilliseconds { get; set; } = 5000;
 }
