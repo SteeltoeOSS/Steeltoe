@@ -20,6 +20,6 @@ internal static class PostProcessorConfigurationProviderExtensions
 
     private static bool GetValue(PostProcessorConfigurationProvider provider, string key, bool defaultValue)
     {
-        return provider.Source.ParentConfiguration != null ? provider.Source.ParentConfiguration.GetValue(key, defaultValue) : defaultValue;
+        return provider.Source.ParentConfiguration?.GetValue(key, defaultValue) ?? defaultValue;
     }
 }
