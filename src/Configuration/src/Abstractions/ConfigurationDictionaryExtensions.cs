@@ -26,17 +26,7 @@ internal static class ConfigurationDictionaryExtensions
 
     public static IEnumerable<string> Filter(this IDictionary<string, string> configData, string keyPrefix)
     {
-        var results = new List<string>();
-
-        foreach (KeyValuePair<string, string> pair in configData)
-        {
-            if (pair.Key.StartsWith(keyPrefix, StringComparison.OrdinalIgnoreCase))
-            {
-                results.Add(ConfigurationPath.GetParentPath(pair.Key));
-            }
-        }
-
-        return results;
+        return (from pair in configData where pair.Key.StartsWith(keyPrefix, StringComparison.OrdinalIgnoreCase) select ConfigurationPath.GetParentPath(pair.Key));
     }
 
     public static void ForEach(this IEnumerable<string> keys, Action<string> mapping)
