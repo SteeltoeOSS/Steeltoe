@@ -68,7 +68,7 @@ public class SqlServerProviderConfigurerTest
         string opts = configurer.Configure(null, _options);
         Assert.Contains("Data Source=localhost,1433", opts, StringComparison.Ordinal);
         Assert.Contains("User Id=username;", opts, StringComparison.Ordinal);
-        Assert.Contains("Password=password;", opts, StringComparison.Ordinal);
+        Assert.Contains("Password=password", opts, StringComparison.Ordinal);
         Assert.Contains("Initial Catalog=database;", opts, StringComparison.Ordinal);
     }
 
@@ -88,7 +88,7 @@ public class SqlServerProviderConfigurerTest
         Assert.Contains("Data Source=servername,1433", opts, StringComparison.Ordinal);
         Assert.Contains("Initial Catalog=de5aa3a747c134b3d8780f8cc80be519e;", opts, StringComparison.Ordinal);
         Assert.Contains("User Id=Dd6O1BPXUHdrmzbP;", opts, StringComparison.Ordinal);
-        Assert.Contains("Password=7E1LxXnlH2hhlPVt;", opts, StringComparison.Ordinal);
+        Assert.Contains("Password=7E1LxXnlH2hhlPVt", opts, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class SqlServerProviderConfigurerTest
         Assert.Contains("Data Source=servername,1433", opts, StringComparison.Ordinal);
         Assert.Contains("Initial Catalog=de5aa3a747c134b3d8780f8cc80be519e;", opts, StringComparison.Ordinal);
         Assert.Contains("User Id=Dd6O1BPXUHdrmzbP;", opts, StringComparison.Ordinal);
-        Assert.Contains("Password=7E1LxXnlH2hhlPVt;", opts, StringComparison.Ordinal);
+        Assert.Contains("Password=7E1LxXnlH2hhlPVt", opts, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -125,6 +125,6 @@ public class SqlServerProviderConfigurerTest
         // resulting options should contain values parsed from environment
         Assert.Contains("Data Source=servername\\someInstance", opts, StringComparison.Ordinal);
         Assert.Contains("Initial Catalog=de5aa3a747c134b3d8780f8cc80be519e;", opts, StringComparison.Ordinal);
-        Assert.Contains("integratedSecurity=true;", opts, StringComparison.Ordinal);
+        Assert.Contains("integratedSecurity=true", opts, StringComparison.Ordinal);
     }
 }

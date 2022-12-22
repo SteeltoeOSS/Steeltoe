@@ -77,7 +77,7 @@ public class PostgreSqlProviderConnectorOptionsTest
         };
 
         const string expected =
-            "Host=fake-db.host;Port=3000;Username=fakeUsername;Password=fakePassword;Database=fakeDB;Timeout=15;Command Timeout=30;Search Path=fakeSchema;";
+            "Host=fake-db.host;Port=3000;Username=fakeUsername;Password=fakePassword;Database=fakeDB;Timeout=15;Command Timeout=30;Search Path=fakeSchema";
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
@@ -137,6 +137,29 @@ public class PostgreSqlProviderConnectorOptionsTest
         var options = new PostgreSqlProviderConnectorOptions(configurationRoot);
 
         Assert.DoesNotContain(appsettings["postgres:client:ConnectionString"], options.ToString(), StringComparison.Ordinal);
-        Assert.EndsWith($"Search Path={options.SearchPath};", options.ToString(), StringComparison.Ordinal);
+        Assert.EndsWith($"Search Path={options.SearchPath}", options.ToString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ConnectionStringWithoutTrailingSemicolonResultsInValidConnection()
+    {
+        var appSettings = new Dictionary<string, string>()
+        {
+            ["postgres:client:ConnectionString"] = "Server=fake;Database=test;User Id=steeltoe;Password=password",
+            ["postgres:client:SearchPath"] = "SomeSchema"
+        };
+
+        // add settings to config
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appSettings);
+        configurationBuilder.AddEnvironmentVariables();
+        var config = configurationBuilder.Build();
+
+        var connectorOptions = new PostgreSqlProviderConnectorOptions(config);
+
+        var expectedConnection =
+            $"{appSettings["postgres:client:ConnectionString"]};Timeout={connectorOptions.Timeout};Command Timeout={connectorOptions.CommandTimeout};Search Path={connectorOptions.SearchPath}";
+
+        Assert.Equal(expectedConnection, connectorOptions.ToString());
     }
 }

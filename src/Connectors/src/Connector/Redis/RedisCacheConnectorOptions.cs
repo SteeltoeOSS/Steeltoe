@@ -136,8 +136,6 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
             AddKeyValue(sb, "syncTimeout", SyncTimeout);
         }
 
-        // Trim ending ','
-        sb.Remove(sb.Length - 1, 1);
         return sb.ToString();
     }
 

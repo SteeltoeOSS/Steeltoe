@@ -50,7 +50,7 @@ public class CosmosDbProviderConfigurerTest
 
         string connString = configurer.Configure(null, options);
 
-        Assert.Equal("AccountEndpoint=https://someHost:443;AccountKey=masterKey;", connString);
+        Assert.Equal("AccountEndpoint=https://someHost:443;AccountKey=masterKey", connString);
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class CosmosDbProviderConfigurerTest
         Assert.Equal("cbs/sTB+AA==/", options.DatabaseLink);
 
         Assert.Equal(
-            "AccountEndpoint=https://u332d11658f3.documents.azure.com:443/;AccountKey=lXYMGIE4mYITjXvHwQjkh0U07lwF513NdbTfeyGndeqjVXzwKQ3ZalKXQNYeIZovoyl57IY1J0KnJUH36EPufA==;",
+            "AccountEndpoint=https://u332d11658f3.documents.azure.com:443/;AccountKey=lXYMGIE4mYITjXvHwQjkh0U07lwF513NdbTfeyGndeqjVXzwKQ3ZalKXQNYeIZovoyl57IY1J0KnJUH36EPufA==",
             connString);
     }
 }
