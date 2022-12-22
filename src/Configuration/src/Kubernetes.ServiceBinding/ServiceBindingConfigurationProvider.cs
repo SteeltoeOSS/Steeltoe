@@ -271,12 +271,9 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
 
             IDirectoryContents contents = fileProvider.GetDirectoryContents("/");
 
-            foreach (IFileInfo element in contents)
+            foreach (IFileInfo element in contents.Where(element => element?.Exists == true))
             {
-                if (element != null && element.Exists)
-                {
-                    Bindings.Add(new ServiceBinding(element.PhysicalPath));
-                }
+                Bindings.Add(new ServiceBinding(element.PhysicalPath));
             }
         }
     }
