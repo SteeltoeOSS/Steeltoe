@@ -522,15 +522,15 @@ internal sealed class SpringSecurityOAuth2PostProcessor : IConfigurationPostProc
                 // Spring -> spring.security.oauth2.client....
                 // Steeltoe -> steeltoe:oauth2:binding-name:....
                 var mapper = new ServiceBindingMapper(configData, bindingNameKey, "steeltoe", "oauth2", ConfigurationPath.GetSectionKey(bindingNameKey));
-                string provider = mapper.BindingProvider;
+                string bindingProvider = mapper.BindingProvider;
 
-                if (provider == null)
+                if (bindingProvider == null)
                 {
                     // Log
                     return;
                 }
 
-                mapper.AddKeyValue("registration:provider", provider);
+                mapper.AddKeyValue("registration:provider", bindingProvider);
 
                 mapper.MapFromTo("client-id", "registration", "clientId");
                 mapper.MapFromTo("client-secret", "registration", "clientSecret");

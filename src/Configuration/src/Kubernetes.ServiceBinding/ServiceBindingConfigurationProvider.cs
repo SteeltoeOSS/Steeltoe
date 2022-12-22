@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
