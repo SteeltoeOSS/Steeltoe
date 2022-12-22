@@ -22,7 +22,7 @@ public class ServiceBindingTest
         Assert.Equal("test-name-1", binding.Name);
         Assert.Equal("test-type-1", binding.Type);
         Assert.Equal("test-provider-1", binding.Provider);
-        Assert.Contains("resources\\k8s\\test-name-1", binding.Path, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(Path.Combine("resources", "k8s", "test-name-1"), binding.Path, StringComparison.OrdinalIgnoreCase);
         Assert.NotNull(binding.Secrets);
         Assert.Single(binding.Secrets);
         Assert.Equal("test-secret-value", binding.Secrets["test-secret-key"]);
@@ -37,7 +37,7 @@ public class ServiceBindingTest
         Assert.Equal("test-k8s", binding.Name);
         Assert.Equal("test-type-1", binding.Type);
         Assert.Equal("test-provider-1", binding.Provider);
-        Assert.Contains("resources\\k8s\\test-k8s", binding.Path, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(Path.Combine("resources", "k8s", "test-k8s"), binding.Path, StringComparison.OrdinalIgnoreCase);
         Assert.NotNull(binding.Secrets);
         Assert.Single(binding.Secrets);
         Assert.Equal("test-secret-value", binding.Secrets["test-secret-key"]);
@@ -45,6 +45,6 @@ public class ServiceBindingTest
 
     private static string GetK8SResourcesDirectory(string name)
     {
-        return Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\resources\\k8s\\{name}");
+        return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s", $"{name}");
     }
 }
