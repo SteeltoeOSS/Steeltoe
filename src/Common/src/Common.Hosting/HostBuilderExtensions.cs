@@ -111,10 +111,11 @@ public static class HostBuilderExtensions
             urls.Add(DefaultUrl);
         }
 
-        foreach(var url in GetUrlsFromPorts(managementHttpPort, managementHttpsPort))
+        foreach (string url in GetUrlsFromPorts(managementHttpPort, managementHttpsPort))
         {
             urls.Add(url);
         }
+
         return webHostBuilder.BindToPorts(urls);
     }
 
@@ -124,7 +125,7 @@ public static class HostBuilderExtensions
 
         if (!string.IsNullOrEmpty(currentSetting))
         {
-           foreach (var url in currentSetting.Split(';'))
+            foreach (string url in currentSetting.Split(';'))
             {
                 urls.Add(GetCanonical(url));
             }
@@ -135,7 +136,7 @@ public static class HostBuilderExtensions
 
     private static string GetCanonical(string serverUrlSetting)
     {
-        var canonicalUrl = serverUrlSetting.Replace("0.0.0.0", "*", StringComparison.Ordinal);
+        string canonicalUrl = serverUrlSetting.Replace("0.0.0.0", "*", StringComparison.Ordinal);
         canonicalUrl = canonicalUrl.Replace("[::]", "*", StringComparison.Ordinal);
         return canonicalUrl;
     }
@@ -150,9 +151,9 @@ public static class HostBuilderExtensions
         {
             if (!string.IsNullOrEmpty(aspnetUrls))
             {
-               foreach (var url in aspnetUrls.Split(';'))
+                foreach (string url in aspnetUrls.Split(';'))
                 {
-                   urls.Add(GetCanonical(url));
+                    urls.Add(GetCanonical(url));
                 }
             }
             else

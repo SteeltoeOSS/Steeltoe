@@ -147,13 +147,16 @@ public class HostBuilderExtensionsTest
         {
             Environment.SetEnvironmentVariable("SERVER_PORT", "8080");
 
-            var config = new ConfigurationBuilder().AddCommandLine(new[] { "--urls", "http://0.0.0.0:8080" }).Build();
+            IConfigurationRoot config = new ConfigurationBuilder().AddCommandLine(new[]
+            {
+                "--urls",
+                "http://0.0.0.0:8080"
+            }).Build();
 
-            var hostBuilder = new WebHostBuilder().UseConfiguration(config).UseStartup<TestServerStartup>()
-                .UseKestrel();
+            IWebHostBuilder hostBuilder = new WebHostBuilder().UseConfiguration(config).UseStartup<TestServerStartup>().UseKestrel();
 
             hostBuilder.UseCloudHosting();
-            var server = hostBuilder.Build();
+            IWebHost server = hostBuilder.Build();
 
             var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
 
