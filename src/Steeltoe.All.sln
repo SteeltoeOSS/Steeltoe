@@ -357,6 +357,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{
 		..\build\templates\consolidate-coverage.yaml = ..\build\templates\consolidate-coverage.yaml
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding", "Configuration\src\Kubernetes.ServiceBinding\Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.csproj", "{6A064B5A-21F7-452A-AAFF-3C0A68286FDF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.Test", "Configuration\test\Kubernetes.ServiceBinding.Test\Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.Test.csproj", "{0D68FC03-7FD4-4280-852B-0E620872CE22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -907,6 +911,14 @@ Global
 		{5D86C95F-A0C3-417E-A9E3-4426927E2897}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D86C95F-A0C3-417E-A9E3-4426927E2897}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D86C95F-A0C3-417E-A9E3-4426927E2897}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A064B5A-21F7-452A-AAFF-3C0A68286FDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A064B5A-21F7-452A-AAFF-3C0A68286FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A064B5A-21F7-452A-AAFF-3C0A68286FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A064B5A-21F7-452A-AAFF-3C0A68286FDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D68FC03-7FD4-4280-852B-0E620872CE22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D68FC03-7FD4-4280-852B-0E620872CE22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D68FC03-7FD4-4280-852B-0E620872CE22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D68FC03-7FD4-4280-852B-0E620872CE22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1050,6 +1062,8 @@ Global
 		{B748B8B7-D6B8-40AC-AD19-73B6213CA363} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 		{5D86C95F-A0C3-417E-A9E3-4426927E2897} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 		{FC49CC5C-EFB6-4B08-AE63-05364EB27021} = {656A7881-FE4F-4EE0-81C8-DA1DE6CDF29E}
+		{6A064B5A-21F7-452A-AAFF-3C0A68286FDF} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
+		{0D68FC03-7FD4-4280-852B-0E620872CE22} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}
