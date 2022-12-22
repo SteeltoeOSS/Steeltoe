@@ -105,7 +105,7 @@ public class ServiceBindingConfigurationProviderTest
     }
 
     [Fact]
-    public void PostProcessors_DisabledbyDefault()
+    public void PostProcessors_OffByDefault()
     {
         string rootDir = GetK8SResourcesDirectory(null);
 
