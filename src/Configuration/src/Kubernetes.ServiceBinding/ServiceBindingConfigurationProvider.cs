@@ -225,7 +225,7 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
             catch (Exception)
             {
                 // Log
-                throw new ArgumentException("${path} is invalid");
+                throw new ArgumentException($"Path '{path}' is invalid");
             }
         }
 
