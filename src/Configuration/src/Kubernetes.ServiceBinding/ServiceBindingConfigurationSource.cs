@@ -31,7 +31,7 @@ internal class ServiceBindingConfigurationSource : PostProcessorConfigurationSou
 
     public ServiceBindingConfigurationSource(string serviceBindingRootDirectory)
     {
-        ServiceBindingRoot = serviceBindingRootDirectory != null ? Path.GetFullPath(serviceBindingRootDirectory) : serviceBindingRootDirectory;
+        ServiceBindingRoot = serviceBindingRootDirectory != null ? Path.GetFullPath(serviceBindingRootDirectory) : null;
 
         if (Directory.Exists(ServiceBindingRoot))
         {
