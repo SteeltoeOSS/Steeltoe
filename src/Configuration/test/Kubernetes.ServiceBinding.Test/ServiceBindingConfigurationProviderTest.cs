@@ -146,12 +146,12 @@ public class ServiceBindingConfigurationProviderTest
 
     private static string GetK8SResourcesDirectory(string name)
     {
-        return Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\resources\\k8s\\{name}");
+        return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s", $"{name}");
     }
 
     private static string GetEmptyK8SResourcesDirectory()
     {
-        return Path.Combine(Environment.CurrentDirectory, "..\\..\\..\\resources\\k8s-empty\\");
+        return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s-empty");
     }
 
     private class TestPostProcessor : IConfigurationPostProcessor

@@ -28,6 +28,6 @@ public class ServiceBindingsTest
 
     private static string GetK8SResourcesDirectory()
     {
-        return Path.Combine(Environment.CurrentDirectory, "..\\..\\..\\resources\\k8s\\");
+        return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s");
     }
 }
