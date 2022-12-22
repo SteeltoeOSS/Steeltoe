@@ -89,7 +89,7 @@ public static class HostBuilderExtensions
 
         if (!string.IsNullOrEmpty(serverUrlSetting))
         {
-            urls.Add(GetCanonical(serverUrlSetting));;
+            urls.Add(GetCanonical(serverUrlSetting));
         }
 
         if (!string.IsNullOrEmpty(urlSetting))
