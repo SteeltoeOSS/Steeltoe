@@ -143,7 +143,7 @@ public class PostgreSqlProviderConnectorOptionsTest
     [Fact]
     public void ConnectionStringWithoutTrailingSemicolonResultsInValidConnection()
     {
-        var appSettings = new Dictionary<string, string>()
+        var appSettings = new Dictionary<string, string>
         {
             ["postgres:client:ConnectionString"] = "Server=fake;Database=test;User Id=steeltoe;Password=password",
             ["postgres:client:SearchPath"] = "SomeSchema"
@@ -153,11 +153,11 @@ public class PostgreSqlProviderConnectorOptionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
         configurationBuilder.AddEnvironmentVariables();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var connectorOptions = new PostgreSqlProviderConnectorOptions(config);
 
-        var expectedConnection =
+        string expectedConnection =
             $"{appSettings["postgres:client:ConnectionString"]};Timeout={connectorOptions.Timeout};Command Timeout={connectorOptions.CommandTimeout};Search Path={connectorOptions.SearchPath}";
 
         Assert.Equal(expectedConnection, connectorOptions.ToString());
