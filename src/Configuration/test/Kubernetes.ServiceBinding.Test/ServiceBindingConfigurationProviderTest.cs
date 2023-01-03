@@ -12,19 +12,21 @@ public class ServiceBindingConfigurationProviderTest
     [Fact]
     public void EnvironmentVariableNotSet()
     {
-        // Not optional, should throw
+        // Optional defaults true, no throw
         var source = new ServiceBindingConfigurationSource();
         var provider = new ServiceBindingConfigurationProvider(source);
-        Assert.Throws<DirectoryNotFoundException>(() => provider.Load());
+
+        provider.Load();
 
         // Optional, no throw
         source = new ServiceBindingConfigurationSource
         {
-            Optional = true
+            Optional = false
         };
 
+        // Not optional, should throw
         provider = new ServiceBindingConfigurationProvider(source);
-        provider.Load();
+        Assert.Throws<DirectoryNotFoundException>(() => provider.Load());
     }
 
     [Fact]
@@ -38,16 +40,16 @@ public class ServiceBindingConfigurationProviderTest
             // Not optional, should throw
             var source = new ServiceBindingConfigurationSource();
             var provider = new ServiceBindingConfigurationProvider(source);
-            Assert.Throws<DirectoryNotFoundException>(() => provider.Load());
+            provider.Load();
 
             // Optional, no throw
             source = new ServiceBindingConfigurationSource
             {
-                Optional = true
+                Optional = false
             };
 
             provider = new ServiceBindingConfigurationProvider(source);
-            provider.Load();
+            Assert.Throws<DirectoryNotFoundException>(() => provider.Load());
         }
         finally
         {
@@ -142,12 +144,12 @@ public class ServiceBindingConfigurationProviderTest
 
     private static string GetK8SResourcesDirectory(string name)
     {
-        return Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\resources\\k8s\\{name}");
+        return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s", $"{name}");
     }
 
     private static string GetEmptyK8SResourcesDirectory()
     {
-        return Path.Combine(Environment.CurrentDirectory, "..\\..\\..\\resources\\k8s-empty\\");
+        return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s-empty");
     }
 
     private class TestPostProcessor : IConfigurationPostProcessor
