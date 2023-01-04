@@ -62,10 +62,10 @@ public class ConfigurationExtensionsTest
         string connStringByName = configurationRoot.GetConnectionString("spring-cloud-broker-db");
         string connStringByType = configurationRoot.GetConnectionString("mysql");
 
-        Assert.Equal("Server=192.168.0.90;Port=3306;Username=Dd6O1BPXUHdrmzbP;Password=7E1LxXnlH2hhlPVt;Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;",
+        Assert.Equal("Server=192.168.0.90;Port=3306;Username=Dd6O1BPXUHdrmzbP;Password=7E1LxXnlH2hhlPVt;Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355",
             connStringByName);
 
-        Assert.Equal("Server=192.168.0.90;Port=3306;Username=Dd6O1BPXUHdrmzbP;Password=7E1LxXnlH2hhlPVt;Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;",
+        Assert.Equal("Server=192.168.0.90;Port=3306;Username=Dd6O1BPXUHdrmzbP;Password=7E1LxXnlH2hhlPVt;Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355",
             connStringByType);
     }
 }
