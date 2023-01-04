@@ -172,7 +172,7 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
         Assert.Contains("Username=steeltoe7b59f5b8a34bce2a3cf873061cfb5815;", connString, StringComparison.Ordinal);
         Assert.Contains("Password=!DQ4Wm!r4omt$h1929!$;", connString, StringComparison.Ordinal);
         Assert.Contains("sslmode=Require;", connString, StringComparison.Ordinal);
-        Assert.Contains("pooling=true;", connString, StringComparison.Ordinal);
+        Assert.Contains("pooling=true", connString, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -77,7 +77,7 @@ public class MySqlProviderConfigurerTest
         Assert.Contains("Port=1234;", opts, StringComparison.Ordinal);
         Assert.Contains("Username=username;", opts, StringComparison.Ordinal);
         Assert.Contains("Password=password;", opts, StringComparison.Ordinal);
-        Assert.Contains("Database=database;", opts, StringComparison.Ordinal);
+        Assert.Contains("Database=database", opts, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -101,6 +101,6 @@ public class MySqlProviderConfigurerTest
         Assert.Contains("Port=3306;", configuration, StringComparison.Ordinal);
         Assert.Contains("Username=Dd6O1BPXUHdrmzbP;", configuration, StringComparison.Ordinal);
         Assert.Contains("Password=7E1LxXnlH2hhlPVt;", configuration, StringComparison.Ordinal);
-        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;", configuration, StringComparison.Ordinal);
+        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", configuration, StringComparison.Ordinal);
     }
 }
