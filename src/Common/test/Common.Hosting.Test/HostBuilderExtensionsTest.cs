@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Xunit;
 
@@ -117,6 +118,75 @@ public class HostBuilderExtensionsTest
         {
             Environment.SetEnvironmentVariable("SERVER_PORT", null);
         }
+    }
+
+    [Fact]
+    public void UseCloudHosting_UsesCommandLine_ServerUrls()
+    {
+        IConfigurationRoot config = new ConfigurationBuilder().AddCommandLine(new[]
+        {
+            "--server.urls",
+            "http://*:8081"
+        }).Build();
+
+        IWebHostBuilder hostBuilder = new WebHostBuilder().UseConfiguration(config).UseStartup<TestServerStartup>().UseKestrel();
+
+        hostBuilder.UseCloudHosting();
+        IWebHost server = hostBuilder.Build();
+
+        var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
+
+        Assert.Single(addresses.Addresses);
+        Assert.Contains("http://*:8081", addresses.Addresses);
+    }
+
+    [Fact]
+    public void UseCloudHosting_MultipleVariantsWorkTogether()
+    {
+        try
+        {
+            Environment.SetEnvironmentVariable("SERVER_PORT", "8080");
+
+            IConfigurationRoot config = new ConfigurationBuilder().AddCommandLine(new[]
+            {
+                "--urls",
+                "http://0.0.0.0:8080"
+            }).Build();
+
+            IWebHostBuilder hostBuilder = new WebHostBuilder().UseConfiguration(config).UseStartup<TestServerStartup>().UseKestrel();
+
+            hostBuilder.UseCloudHosting();
+            IWebHost server = hostBuilder.Build();
+
+            var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
+
+            Assert.Single(addresses.Addresses);
+            Assert.Contains("http://*:8080", addresses.Addresses);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("SERVER_PORT", null);
+        }
+    }
+
+    [Fact]
+    public void UseCloudHosting_UsesCommandLine_Urls()
+    {
+        IConfigurationRoot config = new ConfigurationBuilder().AddCommandLine(new[]
+        {
+            "--urls",
+            "http://*:8081"
+        }).Build();
+
+        IWebHostBuilder hostBuilder = new WebHostBuilder().UseConfiguration(config).UseStartup<TestServerStartup>().UseKestrel();
+
+        hostBuilder.UseCloudHosting();
+        IWebHost server = hostBuilder.Build();
+
+        var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
+
+        Assert.Single(addresses.Addresses);
+        Assert.Contains("http://*:8081", addresses.Addresses);
     }
 
     [Fact]
