@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Steeltoe.Connector.SqlServer;
 using Xunit;
 
@@ -10,12 +11,59 @@ namespace Steeltoe.Connector.Test.SqlServer;
 public class SqlServerTypeLocatorTest
 {
     [Fact]
-    public void Property_Can_Locate_ConnectionType()
+    public void Driver_Found_In_System_Assembly()
     {
-        // arrange -- handled by including System.Data.SqlClient
-        Type type = SqlServerTypeLocator.SqlConnection;
+        string[] backupAssemblies = SqlServerTypeLocator.Assemblies;
+        string[] backupTypes = SqlServerTypeLocator.ConnectionTypeNames;
 
-        Assert.NotNull(type);
+        try
+        {
+            SqlServerTypeLocator.Assemblies = new[]
+            {
+                "System.Data.SqlClient"
+            };
+
+            SqlServerTypeLocator.ConnectionTypeNames = new[]
+            {
+                "System.Data.SqlClient.SqlConnection"
+            };
+
+            Type type = SqlServerTypeLocator.SqlConnection;
+            type.Should().NotBeNull();
+        }
+        finally
+        {
+            SqlServerTypeLocator.Assemblies = backupAssemblies;
+            SqlServerTypeLocator.ConnectionTypeNames = backupTypes;
+        }
+    }
+
+    [Fact]
+    public void Driver_Found_In_Microsoft_Assembly()
+    {
+        string[] backupAssemblies = SqlServerTypeLocator.Assemblies;
+        string[] backupTypes = SqlServerTypeLocator.ConnectionTypeNames;
+
+        try
+        {
+            SqlServerTypeLocator.Assemblies = new[]
+            {
+                "Microsoft.Data.SqlClient"
+            };
+
+            SqlServerTypeLocator.ConnectionTypeNames = new[]
+            {
+                "Microsoft.Data.SqlClient.SqlConnection"
+            };
+
+            Type type = SqlServerTypeLocator.SqlConnection;
+            type.Should().NotBeNull();
+        }
+        finally
+        {
+            SqlServerTypeLocator.Assemblies = backupAssemblies;
+            SqlServerTypeLocator.ConnectionTypeNames = backupTypes;
+        }
     }
 
     [Fact]
