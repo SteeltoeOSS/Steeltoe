@@ -103,7 +103,7 @@ public static class PostgreSqlTestHelpers
                         ""database"": ""g01w0qnrb7"",
                         ""username"": ""c2cdhwt4nd@2980cfbe-e198-46fd-8f81-966584bb4678"",
                         ""password"": ""Dko4PGJAsQyEj5gj"",
-                        ""uri"": ""postgresql://c2cdhwt4nd%402980cfbe-e198-46fd-8f81-966584bb4678:Dko4PGJAsQyEj5gj@2980cfbe-e198-46fd-8f81-966584bb4678.postgres.database.azure.com:5432/g01w0qnrb7?&sslmode=require"",
+                        ""uri"": ""postgresql://c2cdhwt4nd%402980cfbe-e198-46fd-8f81-966584bb4678@2980cfbe-e198-46fd-8f81-966584bb4678.postgres.database.azure.com:Dko4PGJAsQyEj5gj@2980cfbe-e198-46fd-8f81-966584bb4678.postgres.database.azure.com:5432/g01w0qnrb7?&sslmode=require"",
                         ""sslRequired"": true,
                         ""tags"": [
                             ""postgresql""
