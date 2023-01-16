@@ -4,7 +4,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.OpenTelemetry.Metrics;
+namespace Steeltoe.Management.MetricCollectors;
 
 public class MetricSample
 {

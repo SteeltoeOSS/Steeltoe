@@ -19,7 +19,7 @@ public class MetricsEndpointTest : BaseTest
     public MetricsEndpointTest(ITestOutputHelper output)
     {
         _output = output;
-        OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
+        SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
     }
 
     [Fact]
@@ -41,9 +41,9 @@ public class MetricsEndpointTest : BaseTest
 
             tc.GetService<MeterProvider>();
             var ep = tc.GetService<IMetricsEndpoint>();
-            Counter<long> requests = OpenTelemetryMetrics.Meter.CreateCounter<long>("http.server.requests");
+            Counter<long> requests = SteeltoeMetrics.Meter.CreateCounter<long>("http.server.requests");
             requests.Add(1);
-            Counter<double> memory = OpenTelemetryMetrics.Meter.CreateCounter<double>("gc.memory.used");
+            Counter<double> memory = SteeltoeMetrics.Meter.CreateCounter<double>("gc.memory.used");
             memory.Add(25);
 
             IMetricsResponse result = ep.Invoke(null);
@@ -88,7 +88,7 @@ public class MetricsEndpointTest : BaseTest
         tc.GetService<MeterProvider>();
         var ep = tc.GetService<IMetricsEndpoint>();
 
-        Counter<double> testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test5");
+        Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.test5");
         long allKeysSum = 0;
 
         var labels = new Dictionary<string, object>
@@ -139,7 +139,7 @@ public class MetricsEndpointTest : BaseTest
         tc.GetService<MeterProvider>();
         var ep = tc.GetService<MetricsEndpoint>();
 
-        Counter<double> counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test7");
+        Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test7");
         counter.Add(100);
 
         (MetricsCollection<List<MetricSample>> measurements, _) = ep.GetMetrics();
@@ -162,7 +162,7 @@ public class MetricsEndpointTest : BaseTest
 
         tc.GetService<MeterProvider>();
         var ep = tc.GetService<MetricsEndpoint>();
-        Counter<double> counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test2");
+        Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test2");
 
         var v1Tags = new Dictionary<string, object>
         {
@@ -205,7 +205,7 @@ public class MetricsEndpointTest : BaseTest
         Assert.Contains("v1", tag.Values);
         Assert.Contains("v2", tag.Values);
 
-        Counter<double> counter2 = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test3");
+        Counter<double> counter2 = SteeltoeMetrics.Meter.CreateCounter<double>("test.test3");
 
         counter2.Add(1);
 
@@ -231,7 +231,7 @@ public class MetricsEndpointTest : BaseTest
         tc.GetService<MeterProvider>();
         var ep = tc.GetService<MetricsEndpoint>();
 
-        Histogram<double> testMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("test.test1");
+        Histogram<double> testMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("test.test1");
 
         var context1 = new Dictionary<string, object>
         {
@@ -400,7 +400,7 @@ public class MetricsEndpointTest : BaseTest
         tc.GetService<MeterProvider>();
         var ep = tc.GetService<IMetricsEndpoint>();
 
-        Counter<double> testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.total");
+        Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.total");
 
         var labels = new Dictionary<string, object>
         {

@@ -5,11 +5,11 @@
 using System.Diagnostics.Metrics;
 using System.Reflection;
 
-namespace Steeltoe.Management.OpenTelemetry.Metrics;
+namespace Steeltoe.Management.MetricCollectors;
 
-public static class OpenTelemetryMetrics
+public static class SteeltoeMetrics
 {
-    public static readonly AssemblyName AssemblyName = typeof(OpenTelemetryMetrics).Assembly.GetName();
+    public static readonly AssemblyName AssemblyName = typeof(SteeltoeMetrics).Assembly.GetName();
 
     public static readonly string InstrumentationVersion = AssemblyName.Version.ToString();
 

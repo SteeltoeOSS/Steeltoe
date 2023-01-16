@@ -8,8 +8,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="OpenTelemetry" Version="$(OpenTelemetryVersion)" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="$(OpenTelemetryInstrumentationVersion)" />
     <PackageReference Include="System.Text.Json" Version="$(SystemVersion)" />
     <PackageReference Include="Wavefront.SDK.CSharp" Version="$(WavefrontSdkVersion)" />
   </ItemGroup>

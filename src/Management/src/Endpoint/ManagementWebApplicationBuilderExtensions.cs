@@ -280,11 +280,11 @@ public static class ManagementWebApplicationBuilderExtensions
     /// <param name="applicationBuilder">
     /// Your <see cref="WebApplicationBuilder" />.
     /// </param>
-    public static WebApplicationBuilder AddWavefrontMetrics(this WebApplicationBuilder applicationBuilder)
-    {
-        applicationBuilder.Services.AddWavefrontMetrics();
-        return applicationBuilder;
-    }
+    //public static WebApplicationBuilder AddWavefrontMetrics(this WebApplicationBuilder applicationBuilder)
+    //{
+    //    applicationBuilder.Services.AddWavefrontMetrics();
+    //    return applicationBuilder;
+    //}
 
     private static void AddCommonServices(this WebApplicationBuilder applicationBuilder)
     {

@@ -316,10 +316,11 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="hostBuilder">
     /// Your HostBuilder.
     /// </param>
-    public static IWebHostBuilder AddWavefrontMetrics(this IWebHostBuilder hostBuilder)
-    {
-        return hostBuilder.ConfigureServices((context, collection) => collection.AddWavefrontMetrics());
-    }
+    //TODO: move to separate library
+    //public static IWebHostBuilder AddWavefrontMetrics(this IWebHostBuilder hostBuilder)
+    //{
+    //    return hostBuilder.ConfigureServices((context, collection) => collection.AddWavefrontMetrics());
+    //}
 
     internal static void GetManagementUrl(this IWebHostBuilder webHostBuilder, out int? httpPort, out int? httpsPort)
     {

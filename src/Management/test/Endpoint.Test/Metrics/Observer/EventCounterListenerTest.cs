@@ -46,7 +46,7 @@ public class EventCounterListenerTest : BaseTest
     public async Task EventCounterListenerGetsMetricsTest()
     {
         using var listener = new EventCounterListener(new MetricsObserverOptions());
-        OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
+        SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
         var exporter = new SteeltoeExporter(_scraperOptions);
         using MeterProvider metrics = GetTestMetrics(null, exporter, null);
@@ -65,7 +65,7 @@ public class EventCounterListenerTest : BaseTest
     [Fact]
     public async Task EventCounterListenerGetsMetricsWithExclusionsTest()
     {
-        OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
+        SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
         var exclusions = new List<string>
         {
@@ -107,7 +107,7 @@ public class EventCounterListenerTest : BaseTest
     [Fact]
     public async Task EventCounterListenerGetsMetricsWithInclusionsTest()
     {
-        OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
+        SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
         var inclusions = new List<string>
         {

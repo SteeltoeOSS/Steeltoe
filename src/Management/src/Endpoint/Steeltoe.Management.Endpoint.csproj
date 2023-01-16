@@ -10,6 +10,12 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
+    <Compile Remove="Metrics\Prometheus\**" />
+    <EmbeddedResource Remove="Metrics\Prometheus\**" />
+    <None Remove="Metrics\Prometheus\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
@@ -33,6 +39,6 @@
     <ProjectReference Include="..\..\..\Configuration\src\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Logging.DynamicLogger.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
-    <ProjectReference Include="..\OpenTelemetry\Steeltoe.Management.OpenTelemetry.csproj" />
+    <ProjectReference Include="..\OpenTelemetry\Steeltoe.Management.MetricCollectors.csproj" />
   </ItemGroup>
 </Project>

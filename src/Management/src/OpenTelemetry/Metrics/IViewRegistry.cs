@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using OpenTelemetry.Metrics;
+//using OpenTelemetry.Metrics;
 
-namespace Steeltoe.Management.OpenTelemetry.Metrics;
+//namespace Steeltoe.Management.OpenTelemetry.Metrics;
 
-public interface IViewRegistry
-{
-    List<KeyValuePair<string, MetricStreamConfiguration>> Views { get; }
+//public interface IViewRegistry
+//{
+//    List<KeyValuePair<string, MetricStreamConfiguration>> Views { get; }
 
-    void AddView(string instrumentName, MetricStreamConfiguration viewConfig);
-}
+//    void AddView(string instrumentName, MetricStreamConfiguration viewConfig);
+//}

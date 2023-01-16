@@ -324,13 +324,13 @@ public static class ManagementHostBuilderExtensions
     /// <returns>
     /// The updated HostBuilder.
     /// </returns>
-    public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
-    {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
-        {
-            collection.AddWavefrontMetrics();
-        });
-    }
+    //public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
+    //{
+    //    return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+    //    {
+    //        collection.AddWavefrontMetrics();
+    //    });
+    //}
 
     /// <summary>
     /// Registers an <see cref="IStartupFilter" /> that will map all configured actuators, initialize health.

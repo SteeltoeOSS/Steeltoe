@@ -10,8 +10,6 @@ using OpenTelemetry.Metrics;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
-using Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -59,7 +57,7 @@ public abstract class BaseTest : IDisposable
     public MeterProvider GetTestMetrics(IViewRegistry viewRegistry, SteeltoeExporter steeltoeExporter, SteeltoePrometheusExporter prometheusExporter)
     {
         MeterProviderBuilder builder = Sdk.CreateMeterProviderBuilder()
-            .AddMeter(OpenTelemetryMetrics.InstrumentationName, OpenTelemetryMetrics.InstrumentationVersion).AddRegisteredViews(viewRegistry);
+            .AddMeter(SteeltoeMetrics.InstrumentationName, SteeltoeMetrics.InstrumentationVersion).AddRegisteredViews(viewRegistry);
 
         if (steeltoeExporter != null)
         {

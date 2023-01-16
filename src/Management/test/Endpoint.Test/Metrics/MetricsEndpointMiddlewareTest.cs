@@ -139,7 +139,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var opts = new MetricsEndpointOptions();
         var managementOptions = new CloudFoundryManagementOptions();
         managementOptions.EndpointOptions.Add(opts);
-        OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
+        SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
         var exporter = new SteeltoeExporter(_scraperOptions);
 
         using MeterProvider meterProvider = GetTestMetrics(null, exporter, null);
@@ -247,7 +247,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
     private void SetupTestView()
     {
-        Counter<double> counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test");
+        Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test");
 
         var labels = new Dictionary<string, object>
         {

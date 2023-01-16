@@ -7,16 +7,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Extensions;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
-using Steeltoe.Management.Endpoint.Metrics.Prometheus;
-using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
-using Steeltoe.Management.OpenTelemetry.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
@@ -37,38 +33,40 @@ public static class EndpointServiceCollectionExtensions
         var observerOptions = new MetricsObserverOptions(configuration);
         services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
 
-        services.TryAddSingleton<IViewRegistry, ViewRegistry>();
+     //   services.TryAddSingleton<IViewRegistry, ViewRegistry>();
         AddMetricsObservers(services);
 
         services.AddActuatorEndpointMapping<MetricsEndpoint>();
     }
 
-    public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration configuration = null)
-    {
-        ArgumentGuard.NotNull(services);
+    //TODO: Move to separate assembly
+    //public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration configuration = null)
+    //{
+    //    ArgumentGuard.NotNull(services);
 
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+    //    configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
+    //    services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
+    //    services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(configuration)));
+    //    services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(configuration)));
 
-        var metricsEndpointOptions = new MetricsEndpointOptions(configuration);
-        services.TryAddSingleton<IMetricsEndpointOptions>(metricsEndpointOptions);
+    //    var metricsEndpointOptions = new MetricsEndpointOptions(configuration);
+    //    services.TryAddSingleton<IMetricsEndpointOptions>(metricsEndpointOptions);
 
-        var observerOptions = new MetricsObserverOptions(configuration);
-        services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
-        services.TryAddSingleton<IViewRegistry, ViewRegistry>();
-        services.TryAddSingleton<PrometheusEndpointOptions>();
+    //    var observerOptions = new MetricsObserverOptions(configuration);
+    //    services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
+    //    services.TryAddSingleton<IViewRegistry, ViewRegistry>();
+    //    services.TryAddSingleton<PrometheusEndpointOptions>();
 
-        services.AddPrometheusActuatorServices(configuration);
+    //    services.AddPrometheusActuatorServices(configuration);
 
-        AddMetricsObservers(services);
+    //    AddMetricsObservers(services);
 
-        services.AddActuatorEndpointMapping<PrometheusScraperEndpoint>();
-    }
+    //    services.AddActuatorEndpointMapping<PrometheusScraperEndpoint>();
+    //}
 
+    //TODO: Move to separate library
     /// <summary>
     /// Adds the services used by the Wavefront exporter.
     /// </summary>
@@ -78,34 +76,34 @@ public static class EndpointServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddWavefrontMetrics(this IServiceCollection services)
-    {
-        ArgumentGuard.NotNull(services);
+    //public static IServiceCollection AddWavefrontMetrics(this IServiceCollection services)
+    //{
+    //    ArgumentGuard.NotNull(services);
 
-        services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
+    //    services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
+    //    services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
 
-        services.TryAddSingleton<IMetricsObserverOptions>(provider =>
-        {
-            var configuration = provider.GetService<IConfiguration>();
-            return new MetricsObserverOptions(configuration);
-        });
+    //    services.TryAddSingleton<IMetricsObserverOptions>(provider =>
+    //    {
+    //        var configuration = provider.GetService<IConfiguration>();
+    //        return new MetricsObserverOptions(configuration);
+    //    });
 
-        services.TryAddSingleton<IViewRegistry, ViewRegistry>();
+    //    services.TryAddSingleton<IViewRegistry, ViewRegistry>();
 
-        AddMetricsObservers(services);
+    //    AddMetricsObservers(services);
 
-        services.TryAddSingleton(provider =>
-        {
-            var logger = provider.GetService<ILogger<WavefrontMetricsExporter>>();
-            var configuration = provider.GetService<IConfiguration>();
-            return new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);
-        });
+    //    services.TryAddSingleton(provider =>
+    //    {
+    //        var logger = provider.GetService<ILogger<WavefrontMetricsExporter>>();
+    //        var configuration = provider.GetService<IConfiguration>();
+    //        return new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);
+    //    });
 
-        services.AddOpenTelemetryMetricsForSteeltoe();
+    //    services.AddOpenTelemetryMetricsForSteeltoe();
 
-        return services;
-    }
+    //    return services;
+    //}
 
     internal static void AddMetricsObservers(IServiceCollection services)
     {

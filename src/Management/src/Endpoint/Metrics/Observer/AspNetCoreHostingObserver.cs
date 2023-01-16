@@ -9,9 +9,9 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.OpenTelemetry.Metrics;
+using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
@@ -28,13 +28,13 @@ public class AspNetCoreHostingObserver : MetricsObserver
     private readonly Histogram<double> _responseTime;
     private readonly Histogram<double> _serverCount;
 
-    public AspNetCoreHostingObserver(IMetricsObserverOptions options, IViewRegistry viewRegistry, ILogger<AspNetCoreHostingObserver> logger)
+    public AspNetCoreHostingObserver(IMetricsObserverOptions options,/* IViewRegistry viewRegistry, */ ILogger<AspNetCoreHostingObserver> logger)
         : base(DefaultObserverName, DiagnosticName, options, logger)
     {
-        ArgumentGuard.NotNull(viewRegistry);
+       // ArgumentGuard.NotNull(viewRegistry);
 
         SetPathMatcher(new Regex(options.IngressIgnorePattern));
-        Meter meter = OpenTelemetryMetrics.Meter;
+        Meter meter = SteeltoeMetrics.Meter;
 
         _responseTime = meter.CreateHistogram<double>("http.server.requests.seconds", "s", "measures the duration of the inbound request in seconds");
         _serverCount = meter.CreateHistogram<double>("http.server.requests.count", "total", "number of requests");

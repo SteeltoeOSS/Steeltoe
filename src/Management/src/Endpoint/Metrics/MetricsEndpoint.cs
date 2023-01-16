@@ -3,48 +3,47 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
-using Steeltoe.Management.OpenTelemetry.Exporters;
-using Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
-using Steeltoe.Management.OpenTelemetry.Metrics;
+using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Exporters;
+using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
 public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest>, IMetricsEndpoint
 {
-    private readonly SteeltoeExporter _exporter;
+    //private readonly SteeltoeExporter _exporter;
     private readonly ILogger<MetricsEndpoint> _logger;
 
     public new IMetricsEndpointOptions Options => options as IMetricsEndpointOptions;
 
-    public MetricsEndpoint(IMetricsEndpointOptions options, IEnumerable<MetricsExporter> exporters, ILogger<MetricsEndpoint> logger = null)
+    public MetricsEndpoint(IMetricsEndpointOptions options, /*IEnumerable<MetricsExporter> exporters,*/ ILogger<MetricsEndpoint> logger = null)
         : base(options)
     {
-        ArgumentGuard.NotNull(exporters);
+        //ArgumentGuard.NotNull(exporters);
 
-        _exporter = exporters.OfType<SteeltoeExporter>().SingleOrDefault() ??
-            throw new ArgumentException($"Exporters must contain a single {nameof(SteeltoeExporter)}.", nameof(exporters));
+        //_exporter = exporters.OfType<SteeltoeExporter>().SingleOrDefault() ??
+        //    throw new ArgumentException($"Exporters must contain a single {nameof(SteeltoeExporter)}.", nameof(exporters));
 
         _logger = logger;
     }
 
     public override IMetricsResponse Invoke(MetricsRequest request)
     {
-        (MetricsCollection<List<MetricSample>> measurements, MetricsCollection<List<MetricTag>> availTags) = GetMetrics();
+      //  (MetricsCollection<List<MetricSample>> measurements, MetricsCollection<List<MetricTag>> availTags) = GetMetrics();
 
-        var metricNames = new HashSet<string>(measurements.Keys);
+        //var metricNames = new HashSet<string>(measurements.Keys);
 
-        if (request == null)
-        {
-            return new MetricsListNamesResponse(metricNames);
-        }
+        //if (request == null)
+        //{
+        //    return new MetricsListNamesResponse(metricNames);
+        //}
 
-        if (metricNames.Contains(request.MetricName))
-        {
-            List<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
+        //if (metricNames.Contains(request.MetricName))
+        //{
+        //    List<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
 
-            return GetMetric(request, sampleList, availTags[request.MetricName]);
-        }
+        //    return GetMetric(request, sampleList, availTags[request.MetricName]);
+        //}
 
         return null;
     }
@@ -117,7 +116,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
 
     protected internal (MetricsCollection<List<MetricSample>> Samples, MetricsCollection<List<MetricTag>> Tags) GetMetrics()
     {
-        ICollectionResponse response = _exporter.CollectionManager.EnterCollectAsync().Result;
+        ICollectionResponse response = null;// = _exporter.CollectionManager.EnterCollectAsync().Result;
 
         if (response is SteeltoeCollectionResponse collectionResponse)
         {
