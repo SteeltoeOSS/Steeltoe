@@ -26,7 +26,7 @@
     <MySqlV8>8.0.23</MySqlV8>
     <NpgsqlVersion>4.0.0</NpgsqlVersion>
     <SqlClientVersion>4.8.1</SqlClientVersion>
-    <MicrosoftSqlClientVersion>5.0.*</MicrosoftSqlClientVersion>
+    <MicrosoftSqlClientVersion>5.0.1</MicrosoftSqlClientVersion>
     <StackExchangeVersion>2.0.593</StackExchangeVersion>
 
     <AutofacVersion>4.6.1</AutofacVersion>
