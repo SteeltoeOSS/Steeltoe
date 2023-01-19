@@ -19,5 +19,6 @@ public enum MetricStatistic
     Value,
     Unknown,
     Activetasks,
-    Duration
+    Duration,
+    Rate 
 }

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using Xunit;
 

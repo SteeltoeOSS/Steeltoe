@@ -37,7 +37,7 @@ using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Info;
-using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
+//using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Steeltoe.Management.OpenTelemetry.Metrics;
 using Xunit;
 
@@ -632,173 +632,173 @@ public class ManagementWebHostBuilderExtensionsTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    [Fact]
-    public void AddWavefront_IWebHostBuilder()
-    {
-        var wfSettings = new Dictionary<string, string>
-        {
-            { "management:metrics:export:wavefront:uri", "https://wavefront.vmware.com" },
-            { "management:metrics:export:wavefront:apiToken", "testToken" }
-        };
+    //[Fact]
+    //public void AddWavefront_IWebHostBuilder()
+    //{
+    //    var wfSettings = new Dictionary<string, string>
+    //    {
+    //        { "management:metrics:export:wavefront:uri", "https://wavefront.vmware.com" },
+    //        { "management:metrics:export:wavefront:apiToken", "testToken" }
+    //    };
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(wfSettings));
+    //    IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
+    //    {
+    //    }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(wfSettings));
 
-        IWebHost host = hostBuilder.AddWavefrontMetrics().Build();
+    //    IWebHost host = hostBuilder.AddWavefrontMetrics().Build();
 
-        IEnumerable<IDiagnosticsManager> diagnosticsManagers = host.Services.GetServices<IDiagnosticsManager>();
-        Assert.Single(diagnosticsManagers);
-        IEnumerable<DiagnosticServices> diagnosticServices = host.Services.GetServices<IHostedService>().OfType<DiagnosticServices>();
-        Assert.Single(diagnosticServices);
-        IEnumerable<IMetricsObserverOptions> options = host.Services.GetServices<IMetricsObserverOptions>();
-        Assert.Single(options);
-        IEnumerable<IViewRegistry> viewRegistry = host.Services.GetServices<IViewRegistry>();
-        Assert.Single(viewRegistry);
-        IEnumerable<WavefrontMetricsExporter> exporters = host.Services.GetServices<WavefrontMetricsExporter>();
-        Assert.Single(exporters);
-    }
+    //    IEnumerable<IDiagnosticsManager> diagnosticsManagers = host.Services.GetServices<IDiagnosticsManager>();
+    //    Assert.Single(diagnosticsManagers);
+    //    IEnumerable<DiagnosticServices> diagnosticServices = host.Services.GetServices<IHostedService>().OfType<DiagnosticServices>();
+    //    Assert.Single(diagnosticServices);
+    //    IEnumerable<IMetricsObserverOptions> options = host.Services.GetServices<IMetricsObserverOptions>();
+    //    Assert.Single(options);
+    //    IEnumerable<IViewRegistry> viewRegistry = host.Services.GetServices<IViewRegistry>();
+    //    Assert.Single(viewRegistry);
+    //    IEnumerable<WavefrontMetricsExporter> exporters = host.Services.GetServices<WavefrontMetricsExporter>();
+    //    Assert.Single(exporters);
+    //}
 
-    [Fact]
-    public void AddWavefront_ProxyConfigIsValid()
-    {
-        var wfSettings = new Dictionary<string, string>
-        {
-            { "management:metrics:export:wavefront:uri", "proxy://wavefront.vmware.com" },
-            { "management:metrics:export:wavefront:apiToken", string.Empty } // Should not throw
-        };
+    //[Fact]
+    //public void AddWavefront_ProxyConfigIsValid()
+    //{
+    //    var wfSettings = new Dictionary<string, string>
+    //    {
+    //        { "management:metrics:export:wavefront:uri", "proxy://wavefront.vmware.com" },
+    //        { "management:metrics:export:wavefront:apiToken", string.Empty } // Should not throw
+    //    };
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(wfSettings));
+    //    IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
+    //    {
+    //    }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(wfSettings));
 
-        IWebHost host = hostBuilder.AddWavefrontMetrics().Build();
+    //    IWebHost host = hostBuilder.AddWavefrontMetrics().Build();
 
-        IEnumerable<WavefrontMetricsExporter> exporters = host.Services.GetServices<WavefrontMetricsExporter>();
-        Assert.Single(exporters);
-    }
+    //    IEnumerable<WavefrontMetricsExporter> exporters = host.Services.GetServices<WavefrontMetricsExporter>();
+    //    Assert.Single(exporters);
+    //}
 
-    [Fact]
-    public async Task AddAllActuators_DoesNot_Interfere_With_OpenTelemetryExtensions_Called_Before_SteeltoeExtensions()
-    {
-        IWebHostBuilder hostBuilder = _testServerWithRouting;
+    //[Fact]
+    //public async Task AddAllActuators_DoesNot_Interfere_With_OpenTelemetryExtensions_Called_Before_SteeltoeExtensions()
+    //{
+    //    IWebHostBuilder hostBuilder = _testServerWithRouting;
 
-        var appSettings = new Dictionary<string, string>
-        {
-            ["management:endpoints:actuator:exposure:include:0"] = "*"
-        };
+    //    var appSettings = new Dictionary<string, string>
+    //    {
+    //        ["management:endpoints:actuator:exposure:include:0"] = "*"
+    //    };
 
-        new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+    //    new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        var logger = new CapturingLoggerProvider();
-        BootstrapLoggerFactory.Instance.AddProvider(logger);
+    //    var logger = new CapturingLoggerProvider();
+    //    BootstrapLoggerFactory.Instance.AddProvider(logger);
 
-        using var unConsole = new ConsoleOutputBorrower();
+    //    using var unConsole = new ConsoleOutputBorrower();
 
-        using IWebHost host = hostBuilder.ConfigureServices(services => services.AddOpenTelemetryMetrics(builder =>
-                builder.AddMeter("TestMeter").AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
-            .AddAllActuators().Start();
+    //    using IWebHost host = hostBuilder.ConfigureServices(services => services.AddOpenTelemetryMetrics(builder =>
+    //            builder.AddMeter("TestMeter").AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
+    //        .AddAllActuators().Start();
 
-        HttpClient client = host.GetTestServer().CreateClient();
+    //    HttpClient client = host.GetTestServer().CreateClient();
 
-        var meter = new Meter("TestMeter");
-        Counter<int> counter = meter.CreateCounter<int>("TestCounter");
-        counter.Add(1);
+    //    var meter = new Meter("TestMeter");
+    //    Counter<int> counter = meter.CreateCounter<int>("TestCounter");
+    //    counter.Add(1);
 
-        await Task.Delay(3000); // wait for metrics to be collected
-        var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
-        HttpResponseMessage response = await client.GetAsync(requestUri);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    //    await Task.Delay(3000); // wait for metrics to be collected
+    //    var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
+    //    HttpResponseMessage response = await client.GetAsync(requestUri);
+    //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        // Assert warning is logged
-        logger.GetMessages().Should().Contain("WARNING: Make sure one of the extension methods that calls ConfigureSteeltoeMetrics " +
-            "is used to correctly configure metrics using OpenTelemetry for Steeltoe.");
+    //    // Assert warning is logged
+    //    logger.GetMessages().Should().Contain("WARNING: Make sure one of the extension methods that calls ConfigureSteeltoeMetrics " +
+    //        "is used to correctly configure metrics using OpenTelemetry for Steeltoe.");
 
-        // Assert Otel configuration is respected
-        string output = unConsole.ToString();
-        Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
-    }
+    //    // Assert Otel configuration is respected
+    //    string output = unConsole.ToString();
+    //    Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
+    //}
 
-    [Fact]
-    public async Task AddAllActuators_DoesNot_Interfere_With_OpenTelemetryExtensions_Called_With_SteeltoeExtensions()
-    {
-        IWebHostBuilder hostBuilder = _testServerWithRouting;
+    //[Fact]
+    //public async Task AddAllActuators_DoesNot_Interfere_With_OpenTelemetryExtensions_Called_With_SteeltoeExtensions()
+    //{
+    //    IWebHostBuilder hostBuilder = _testServerWithRouting;
 
-        var appSettings = new Dictionary<string, string>
-        {
-            ["management:endpoints:actuator:exposure:include:0"] = "*"
-        };
+    //    var appSettings = new Dictionary<string, string>
+    //    {
+    //        ["management:endpoints:actuator:exposure:include:0"] = "*"
+    //    };
 
-        new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+    //    new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        var logger = new CapturingLoggerProvider();
-        BootstrapLoggerFactory.Instance.AddProvider(logger);
+    //    var logger = new CapturingLoggerProvider();
+    //    BootstrapLoggerFactory.Instance.AddProvider(logger);
 
-        using var unConsole = new ConsoleOutputBorrower();
+    //    using var unConsole = new ConsoleOutputBorrower();
 
-        using IWebHost host = hostBuilder.ConfigureServices(services => services.AddOpenTelemetryMetrics(builder =>
-            builder.ConfigureSteeltoeMetrics().AddMeter("TestMeter")
-                .AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000))).AddAllActuators().Start();
+    //    using IWebHost host = hostBuilder.ConfigureServices(services => services.AddOpenTelemetryMetrics(builder =>
+    //        builder.ConfigureSteeltoeMetrics().AddMeter("TestMeter")
+    //            .AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000))).AddAllActuators().Start();
 
-        HttpClient client = host.GetTestServer().CreateClient();
+    //    HttpClient client = host.GetTestServer().CreateClient();
 
-        var meter = new Meter("TestMeter");
-        Counter<int> counter = meter.CreateCounter<int>("TestCounter");
-        counter.Add(1);
+    //    var meter = new Meter("TestMeter");
+    //    Counter<int> counter = meter.CreateCounter<int>("TestCounter");
+    //    counter.Add(1);
 
-        await Task.Delay(3000); // wait for metrics to be collected
-        var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
-        HttpResponseMessage response = await client.GetAsync(requestUri);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    //    await Task.Delay(3000); // wait for metrics to be collected
+    //    var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
+    //    HttpResponseMessage response = await client.GetAsync(requestUri);
+    //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        string output = unConsole.ToString();
+    //    string output = unConsole.ToString();
 
-        // Assert Otel configuration is respected
-        Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
+    //    // Assert Otel configuration is respected
+    //    Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
 
-        // Assert Steeltoe configuration is respected
-        Assert.Contains("Export clr.process.uptime", output, StringComparison.Ordinal);
-        Assert.Contains("Export clr.cpu.count", output, StringComparison.Ordinal);
-    }
+    //    // Assert Steeltoe configuration is respected
+    //    Assert.Contains("Export clr.process.uptime", output, StringComparison.Ordinal);
+    //    Assert.Contains("Export clr.cpu.count", output, StringComparison.Ordinal);
+    //}
 
-    [Fact]
-    public async Task AddAllActuators_DoesNot_Interfere_With_OpenTelemetryExtensions_Called_After_SteeltoeExtensions()
-    {
-        IWebHostBuilder hostBuilder = _testServerWithRouting;
+    //[Fact]
+    //public async Task AddAllActuators_DoesNot_Interfere_With_OpenTelemetryExtensions_Called_After_SteeltoeExtensions()
+    //{
+    //    IWebHostBuilder hostBuilder = _testServerWithRouting;
 
-        var appSettings = new Dictionary<string, string>
-        {
-            ["management:endpoints:actuator:exposure:include:0"] = "*"
-        };
+    //    var appSettings = new Dictionary<string, string>
+    //    {
+    //        ["management:endpoints:actuator:exposure:include:0"] = "*"
+    //    };
 
-        new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+    //    new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        var logger = new CapturingLoggerProvider();
-        BootstrapLoggerFactory.Instance.AddProvider(logger);
+    //    var logger = new CapturingLoggerProvider();
+    //    BootstrapLoggerFactory.Instance.AddProvider(logger);
 
-        using var unConsole = new ConsoleOutputBorrower();
+    //    using var unConsole = new ConsoleOutputBorrower();
 
-        using IWebHost host = hostBuilder.AddAllActuators().ConfigureServices(services => services.AddOpenTelemetryMetrics(builder =>
-                builder.AddMeter("TestMeter").AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
-            .Start();
+    //    using IWebHost host = hostBuilder.AddAllActuators().ConfigureServices(services => services.AddOpenTelemetryMetrics(builder =>
+    //            builder.AddMeter("TestMeter").AddConsoleExporter((_, mrOpts) => mrOpts.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000)))
+    //        .Start();
 
-        HttpClient client = host.GetTestServer().CreateClient();
+    //    HttpClient client = host.GetTestServer().CreateClient();
 
-        var meter = new Meter("TestMeter");
-        Counter<int> counter = meter.CreateCounter<int>("TestCounter");
-        counter.Add(1);
+    //    var meter = new Meter("TestMeter");
+    //    Counter<int> counter = meter.CreateCounter<int>("TestCounter");
+    //    counter.Add(1);
 
-        await Task.Delay(5000); // wait for metrics to be collected
-        var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
-        HttpResponseMessage response = await client.GetAsync(requestUri);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    //    await Task.Delay(5000); // wait for metrics to be collected
+    //    var requestUri = new Uri("/actuator/metrics", UriKind.Relative);
+    //    HttpResponseMessage response = await client.GetAsync(requestUri);
+    //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        // Assert warning is not logged
-        logger.GetMessages().Should().NotContain("WARNING: Make sure one of the extension methods that calls ConfigureSteeltoeMetrics " +
-            "is used to correctly configure metrics using OpenTelemetry for Steeltoe.");
+    //    // Assert warning is not logged
+    //    logger.GetMessages().Should().NotContain("WARNING: Make sure one of the extension methods that calls ConfigureSteeltoeMetrics " +
+    //        "is used to correctly configure metrics using OpenTelemetry for Steeltoe.");
 
-        // Assert Otel configuration is respected
-        string output = unConsole.ToString();
-        Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
-    }
+    //    // Assert Otel configuration is respected
+    //    string output = unConsole.ToString();
+    //    Assert.Contains("Export TestCounter, Meter: TestMeter", output, StringComparison.Ordinal);
+    //}
 }

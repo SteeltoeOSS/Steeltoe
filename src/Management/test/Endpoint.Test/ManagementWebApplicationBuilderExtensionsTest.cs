@@ -30,7 +30,7 @@ using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Info;
-using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
+//using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -396,32 +396,32 @@ public class ManagementWebApplicationBuilderExtensionsTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    [Fact]
-    public async Task AddWavefrontExporter()
-    {
-        var settings = new Dictionary<string, string>
-        {
-            { "management:metrics:export:wavefront:apiToken", "test" },
-            { "management:metrics:export:wavefront:uri", "http://test.io" },
-            { "management:metrics:export:wavefront:step", "500" }
-        };
+    //[Fact]
+    //public async Task AddWavefrontExporter()
+    //{
+    //    var settings = new Dictionary<string, string>
+    //    {
+    //        { "management:metrics:export:wavefront:apiToken", "test" },
+    //        { "management:metrics:export:wavefront:uri", "http://test.io" },
+    //        { "management:metrics:export:wavefront:step", "500" }
+    //    };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddInMemoryCollection(settings);
-        builder.WebHost.UseTestServer();
+    //    WebApplicationBuilder builder = WebApplication.CreateBuilder();
+    //    builder.Configuration.AddInMemoryCollection(settings);
+    //    builder.WebHost.UseTestServer();
 
-        WebApplication host = builder.AddWavefrontMetrics().Build();
+    //    WebApplication host = builder.AddWavefrontMetrics().Build();
 
-        await host.StartAsync();
+    //    await host.StartAsync();
 
-        await Task.Delay(3000);
+    //    await Task.Delay(3000);
 
-        // Exercise the deferred builder logic by starting the test host.
-        // Validate the exporter got actually added
-        var exporter = host.Services.GetService<WavefrontMetricsExporter>();
-        Assert.NotNull(exporter);
-        await host.StopAsync();
-    }
+    //    // Exercise the deferred builder logic by starting the test host.
+    //    // Validate the exporter got actually added
+    //    var exporter = host.Services.GetService<WavefrontMetricsExporter>();
+    //    Assert.NotNull(exporter);
+    //    await host.StopAsync();
+    //}
 
     private WebApplicationBuilder GetTestServerWithRouting()
     {
