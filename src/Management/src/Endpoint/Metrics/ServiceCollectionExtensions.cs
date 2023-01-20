@@ -2,12 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Logging;
+using Steeltoe.Management.MetricCollectors.Exporters;
+using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
@@ -40,19 +43,19 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
 
-        //services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoeExporter>(provider =>
-        //{
-        //    var options = provider.GetService<IMetricsEndpointOptions>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<SteeltoeExporter>(provider =>
+        {
+            var options = provider.GetService<IMetricsEndpointOptions>();
 
-        //    var exporterOptions = new PullMetricsExporterOptions
-        //    {
-        //        ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds
-        //    };
+            var exporterOptions = new PullMetricsExporterOptions
+            {
+                ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds
+            };
 
-        //    return new SteeltoeExporter(exporterOptions);
-        //}));
+            return new SteeltoeExporter(exporterOptions);
+        }));
 
-        //services.AddOpenTelemetryMetricsForSteeltoe();
+        services.AddSteeltoeCollector();
 
         return services;
     }
@@ -138,6 +141,23 @@ public static class ServiceCollectionExtensions
 
     //    return services.AddOpenTelemetryMetrics(builder => builder.ConfigureSteeltoeMetrics());
     //}
+    public static IServiceCollection AddSteeltoeCollector(this IServiceCollection services)
+    {
+
+        return services.AddSingleton((provider) =>
+        {
+            var steeltoeExporter = provider.GetService<SteeltoeExporter>();
+            return new AggregationManager(10, 10,
+                    (instrument, stats) => { steeltoeExporter.AddMetrics(instrument, stats); },
+                    (date1, date2) => { /*begin*/ },
+                    (date1, date2) => { /*end*/ },
+                    (instrument) => { /*begin instrument*/},
+                    (instrument) => { /* end instrument */},
+                    (instrument) => { /* instrument published */},
+                    () => {  /* enumeration complete*/ });
+        });
+    }
+
 
     /// <summary>
     /// Configures the <see cref="MeterProviderBuilder"></see> as an underlying Metrics processor and exporter for Steeltoe in actuators and exporters. />.

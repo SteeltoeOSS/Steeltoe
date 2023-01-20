@@ -32,10 +32,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var managementOptions = new ActuatorManagementOptions();
         managementOptions.EndpointOptions.Add(opts);
 
-        var ep = new MetricsEndpoint(opts/*, new List<MetricsExporter>
-        {
-            new SteeltoeExporter(_scraperOptions)
-        }*/);
+        var ep = new MetricsEndpoint(opts,  new SteeltoeExporter(_scraperOptions));
 
         var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
@@ -52,10 +49,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var managementOptions = new ActuatorManagementOptions();
         managementOptions.EndpointOptions.Add(opts);
 
-        var ep = new MetricsEndpoint(opts/*, new List<MetricsExporter>
-        {
-            new SteeltoeExporter(_scraperOptions)
-        }*/);
+        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
 
         var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
@@ -90,10 +84,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var managementOptions = new CloudFoundryManagementOptions();
         managementOptions.EndpointOptions.Add(opts);
 
-        var ep = new MetricsEndpoint(opts/*, new List<MetricsExporter>
-        {
-            new SteeltoeExporter(_scraperOptions)
-        }*/);
+        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
 
         var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
@@ -119,10 +110,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
         managementOptions.EndpointOptions.Add(opts);
 
-        var ep = new MetricsEndpoint(opts/*, new List<MetricsExporter>
-        {
-            new SteeltoeExporter(_scraperOptions)
-        }*/);
+        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
 
         var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
@@ -146,35 +134,39 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var exporter = new SteeltoeExporter(_scraperOptions);
         Meter s_meter = new Meter("HatCo.HatStore", "1.0.0");
         Counter<int> s_hatsSold = s_meter.CreateCounter<int>("hats-sold");
+        Histogram<int> s_hist = s_meter.CreateHistogram<int>("hat-histogram");
 
         var agg =  GetTestMetrics(exporter);
-        agg.SetCollectionPeriod(TimeSpan.FromSeconds(1));
+       // agg.SetCollectionPeriod(TimeSpan.FromSeconds(1));
         agg.Start();
 
-        var ep = new MetricsEndpoint(opts, null);
+        var ep = new MetricsEndpoint(opts, exporter);
         //new List<MetricsExporter>
         //{
         //    exporter
         //});
-        s_hatsSold.Add(1);
-        s_hatsSold.Add(3);
+        s_hatsSold.Add(1, new KeyValuePair<string, object>("tag1", 5));
+        s_hatsSold.Add(3, new KeyValuePair<string, object>("tag1", 5));
+
+        s_hist.Record(1);
+        s_hist.Record(3);
 
         Task.Delay(5000).Wait();
         agg.Collect();
 
         Assert.NotEmpty(exporter.metricSamples);
         Assert.Equal(4, exporter.metricSamples["hats-sold"].First().Value);
-        
 
-        //var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
-        //HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
-        //await middle.HandleMetricsRequestAsync(context);
-        //context.Response.Body.Seek(0, SeekOrigin.Begin);
-        //var rdr = new StreamReader(context.Response.Body);
-        //string json = await rdr.ReadToEndAsync();
-        //Assert.Equal("{\"names\":[]}", json);
+        HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
+
+        await middle.HandleMetricsRequestAsync(context);
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var rdr = new StreamReader(context.Response.Body);
+        string json = await rdr.ReadToEndAsync();
+        Assert.Equal("{\"names\":[]}", json);
         agg.Dispose();
     }
 

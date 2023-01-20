@@ -13,17 +13,17 @@ namespace Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 /// <summary>
 /// Exporter of OpenTelemetry metrics to Steeltoe Format.
 /// </summary>
-public class SteeltoeExporter : MetricsExporter
+public class SteeltoeExporter// : MetricsExporter
 {
    // internal PullMetricsCollectionManager CollectionManager { get; }
 
-    internal override int ScrapeResponseCacheDurationMilliseconds { get; }
+    internal  int ScrapeResponseCacheDurationMilliseconds { get; }
 
     //   internal override Func<Batch<Metric>, ExportResult> OnExport { get; set; }
     internal MetricsCollection<List<MetricSample>> metricSamples = new();
     internal MetricsCollection<List<MetricTag>>  availTags = new ();
 
-    public override Func<int, bool> Collect { get; set; }
+    public  Action Collect { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SteeltoeExporter" /> class.
@@ -85,7 +85,7 @@ public class SteeltoeExporter : MetricsExporter
         }
         else if (stats.AggregationStatistics is HistogramStatistics histogramStats)
         {
-            double sum = histogramStats.Quantiles.Sum(x => x.Value); //T ODO: this is just a stub and a meaningless number
+            double sum = histogramStats.HistogramSum;
             //  Log.HistogramValuePublished(sessionId, instrument.Meter.Name, instrument.Meter.Version, instrument.Name, instrument.Unit, FormatTags(stats.Labels), FormatQuantiles(histogramStats.Quantiles));
             var sample = new MetricSample(MetricStatistic.Value, sum, stats.Labels);
             metricSamples[instrument.Name].Add(sample);

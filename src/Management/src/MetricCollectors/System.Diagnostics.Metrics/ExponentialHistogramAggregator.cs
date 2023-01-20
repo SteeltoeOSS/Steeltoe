@@ -47,6 +47,7 @@ namespace System.Diagnostics.Metrics
         private readonly QuantileAggregation _config;
         private int[]?[] _counters;
         private int _count;
+        private double _sum;
         private readonly int _mantissaMax;
         private readonly int _mantissaMask;
         private readonly int _mantissaShift;
@@ -93,7 +94,7 @@ namespace System.Diagnostics.Metrics
             int nextQuantileIndex = 0;
             if (nextQuantileIndex == _config.Quantiles.Length)
             {
-                return new HistogramStatistics(quantiles);
+                return new HistogramStatistics(quantiles, _sum);
             }
 
             // Reduce the count if there are any NaN or +/-Infinity values that were logged
@@ -116,14 +117,14 @@ namespace System.Diagnostics.Metrics
                     nextQuantileIndex++;
                     if (nextQuantileIndex == _config.Quantiles.Length)
                     {
-                        return new HistogramStatistics(quantiles);
+                        return new HistogramStatistics(quantiles, _sum);
                     }
                     target = QuantileToRank(_config.Quantiles[nextQuantileIndex], count);
                 }
             }
 
             Debug.Assert(count == 0);
-            return new HistogramStatistics(Array.Empty<QuantileValue>());
+            return new HistogramStatistics(Array.Empty<QuantileValue>(), 0);
         }
 
         private static int GetInvalidCount(int[]?[] counters)
@@ -194,6 +195,8 @@ namespace System.Diagnostics.Metrics
         {
             lock (this)
             {
+                _sum += measurement;
+
                 // This is relying on the bit representation of IEEE 754 to decompose
                 // the double. The sign bit + exponent bits land in exponent, the
                 // remainder lands in mantissa.
@@ -206,6 +209,7 @@ namespace System.Diagnostics.Metrics
                 mantissaCounts ??= new int[_mantissaMax];
                 mantissaCounts[mantissa]++;
                 _count++;
+                
             }
         }
 

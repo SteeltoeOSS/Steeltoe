@@ -19,11 +19,11 @@ namespace System.Diagnostics.Metrics
         // these fields are modified after construction and accessed on multiple threads, use lock(this) to ensure the data
         // is synchronized
         private readonly List<Predicate<Instrument>> _instrumentConfigFuncs = new();
-        private TimeSpan _collectionPeriod;
+     //   private TimeSpan _collectionPeriod;
 
         private readonly ConcurrentDictionary<Instrument, InstrumentState> _instrumentStates = new();
-        private readonly CancellationTokenSource _cts = new();
-        private Thread? _collectThread;
+     //   private readonly CancellationTokenSource _cts = new();
+     //   private Thread? _collectThread;
         private readonly MeterListener _listener;
         private int _currentTimeSeries;
         private int _currentHistograms;
@@ -117,104 +117,104 @@ namespace System.Diagnostics.Metrics
             }
         }
 
-        public AggregationManager SetCollectionPeriod(TimeSpan collectionPeriod)
-        {
-            // The caller, MetricsEventSource, is responsible for enforcing this
-            Debug.Assert(collectionPeriod.TotalSeconds >= MinCollectionTimeSecs);
-            lock (this)
-            {
-                _collectionPeriod = collectionPeriod;
-            }
-            return this;
-        }
+        //public AggregationManager SetCollectionPeriod(TimeSpan collectionPeriod)
+        //{
+        //    // The caller, MetricsEventSource, is responsible for enforcing this
+        //    Debug.Assert(collectionPeriod.TotalSeconds >= MinCollectionTimeSecs);
+        //    lock (this)
+        //    {
+        //        _collectionPeriod = collectionPeriod;
+        //    }
+        //    return this;
+        //}
 
         public void Start()
         {
-            // if already started or already stopped we can't be started again
-            Debug.Assert(_collectThread == null && !_cts.IsCancellationRequested);
-            Debug.Assert(_collectionPeriod.TotalSeconds >= MinCollectionTimeSecs);
+            //// if already started or already stopped we can't be started again
+            //Debug.Assert(_collectThread == null && !_cts.IsCancellationRequested);
+            //Debug.Assert(_collectionPeriod.TotalSeconds >= MinCollectionTimeSecs);
 
-            // This explicitly uses a Thread and not a Task so that metrics still work
-            // even when an app is experiencing thread-pool starvation. Although we
-            // can't make in-proc metrics robust to everything, this is a common enough
-            // problem in .NET apps that it feels worthwhile to take the precaution.
-            _collectThread = new Thread(() => CollectWorker(_cts.Token));
-            _collectThread.IsBackground = true;
-            _collectThread.Name = "MetricsEventSource CollectWorker";
-            _collectThread.Start();
+            //// This explicitly uses a Thread and not a Task so that metrics still work
+            //// even when an app is experiencing thread-pool starvation. Although we
+            //// can't make in-proc metrics robust to everything, this is a common enough
+            //// problem in .NET apps that it feels worthwhile to take the precaution.
+            //_collectThread = new Thread(() => CollectWorker(_cts.Token));
+            //_collectThread.IsBackground = true;
+            //_collectThread.Name = "MetricsEventSource CollectWorker";
+            //_collectThread.Start();
 
             _listener.Start();
             _initialInstrumentEnumerationComplete();
         }
 
-        private void CollectWorker(CancellationToken cancelToken)
-        {
-            try
-            {
-                double collectionIntervalSecs = -1;
-                lock (this)
-                {
-                    collectionIntervalSecs = _collectionPeriod.TotalSeconds;
-                }
-                Debug.Assert(collectionIntervalSecs >= MinCollectionTimeSecs);
+        //private void CollectWorker(CancellationToken cancelToken)
+        //{
+        //    try
+        //    {
+        //        double collectionIntervalSecs = -1;
+        //        lock (this)
+        //        {
+        //            collectionIntervalSecs = _collectionPeriod.TotalSeconds;
+        //        }
+        //        Debug.Assert(collectionIntervalSecs >= MinCollectionTimeSecs);
 
-                DateTime startTime = DateTime.UtcNow;
-                DateTime intervalStartTime = startTime;
-                while (!cancelToken.IsCancellationRequested)
-                {
-                    // intervals end at startTime + X*collectionIntervalSecs. Under normal
-                    // circumstance X increases by 1 each interval, but if the time it
-                    // takes to do collection is very large then we might need to skip
-                    // ahead multiple intervals to catch back up.
-                    //
-                    DateTime now = DateTime.UtcNow;
-                    double secsSinceStart = (now - startTime).TotalSeconds;
-                    double alignUpSecsSinceStart = Math.Ceiling(secsSinceStart / collectionIntervalSecs) *
-                        collectionIntervalSecs;
-                    DateTime nextIntervalStartTime = startTime.AddSeconds(alignUpSecsSinceStart);
+        //        DateTime startTime = DateTime.UtcNow;
+        //        DateTime intervalStartTime = startTime;
+        //        while (!cancelToken.IsCancellationRequested)
+        //        {
+        //            // intervals end at startTime + X*collectionIntervalSecs. Under normal
+        //            // circumstance X increases by 1 each interval, but if the time it
+        //            // takes to do collection is very large then we might need to skip
+        //            // ahead multiple intervals to catch back up.
+        //            //
+        //            DateTime now = DateTime.UtcNow;
+        //            double secsSinceStart = (now - startTime).TotalSeconds;
+        //            double alignUpSecsSinceStart = Math.Ceiling(secsSinceStart / collectionIntervalSecs) *
+        //                collectionIntervalSecs;
+        //            DateTime nextIntervalStartTime = startTime.AddSeconds(alignUpSecsSinceStart);
 
-                    // The delay timer precision isn't exact. We might have a situation
-                    // where in the previous loop iterations intervalStartTime=20.00,
-                    // nextIntervalStartTime=21.00, the timer was supposed to delay for 1s but
-                    // it exited early so we looped around and DateTime.Now=20.99.
-                    // Aligning up from DateTime.Now would give us 21.00 again so we also need to skip
-                    // forward one time interval
-                    DateTime minNextInterval = intervalStartTime.AddSeconds(collectionIntervalSecs);
-                    if (nextIntervalStartTime <= minNextInterval)
-                    {
-                        nextIntervalStartTime = minNextInterval;
-                    }
+        //            // The delay timer precision isn't exact. We might have a situation
+        //            // where in the previous loop iterations intervalStartTime=20.00,
+        //            // nextIntervalStartTime=21.00, the timer was supposed to delay for 1s but
+        //            // it exited early so we looped around and DateTime.Now=20.99.
+        //            // Aligning up from DateTime.Now would give us 21.00 again so we also need to skip
+        //            // forward one time interval
+        //            DateTime minNextInterval = intervalStartTime.AddSeconds(collectionIntervalSecs);
+        //            if (nextIntervalStartTime <= minNextInterval)
+        //            {
+        //                nextIntervalStartTime = minNextInterval;
+        //            }
 
-                    // pause until the interval is complete
-                    TimeSpan delayTime = nextIntervalStartTime - now;
-                    if (cancelToken.WaitHandle.WaitOne(delayTime))
-                    {
-                        // don't do collection if timer may not have run to completion
-                        break;
-                    }
+        //            // pause until the interval is complete
+        //            TimeSpan delayTime = nextIntervalStartTime - now;
+        //            if (cancelToken.WaitHandle.WaitOne(delayTime))
+        //            {
+        //                // don't do collection if timer may not have run to completion
+        //                break;
+        //            }
 
-                    // collect statistics for the completed interval
-                    _beginCollection(intervalStartTime, nextIntervalStartTime);
-                    Collect();
-                    _endCollection(intervalStartTime, nextIntervalStartTime);
-                    intervalStartTime = nextIntervalStartTime;
-                }
-            }
-            catch (Exception e)
-            {
-               // _collectionError(e);
-               // Handler inline
-            }
-        }
+        //            // collect statistics for the completed interval
+        //            _beginCollection(intervalStartTime, nextIntervalStartTime);
+        //            Collect();
+        //            _endCollection(intervalStartTime, nextIntervalStartTime);
+        //            intervalStartTime = nextIntervalStartTime;
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //       // _collectionError(e);
+        //       // Handler inline
+        //    }
+        //}
 
         public void Dispose()
         {
-            _cts.Cancel();
-            if (_collectThread != null)
-            {
-                _collectThread.Join();
-                _collectThread = null;
-            }
+            //_cts.Cancel();
+            //if (_collectThread != null)
+            //{
+            //    _collectThread.Join();
+            //    _collectThread = null;
+            //}
             _listener.Dispose();
         }
 
@@ -229,7 +229,7 @@ namespace System.Diagnostics.Metrics
             {
                 lock (this) // protect _instrumentConfigFuncs list
                 {
-                    //foreach (Predicate<Instrument> filter in _instrumentConfigFuncs)
+                    //foreach (Predicate<Instrument> filter in _instrumentConfigFuncs) // D
                     //{
                     //    if (filter(instrument))
                     //    {

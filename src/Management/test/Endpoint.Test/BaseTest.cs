@@ -68,7 +68,7 @@ public abstract class BaseTest : IDisposable
             (instrument) => { /* instrument published */},
             () => {  /* enumeration complete*/ });
 
-
+        steeltoeExporter.Collect = aggregator.Collect;
         //if (steeltoeExporter != null)
         //{
         //    builder.AddSteeltoeExporter(steeltoeExporter);

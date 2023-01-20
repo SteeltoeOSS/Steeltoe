@@ -11,39 +11,40 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest>, IMetricsEndpoint
 {
-    //private readonly SteeltoeExporter _exporter;
+    private readonly SteeltoeExporter _exporter;
     private readonly ILogger<MetricsEndpoint> _logger;
 
     public new IMetricsEndpointOptions Options => options as IMetricsEndpointOptions;
 
-    public MetricsEndpoint(IMetricsEndpointOptions options, /*IEnumerable<MetricsExporter> exporters,*/ ILogger<MetricsEndpoint> logger = null)
+    public MetricsEndpoint(IMetricsEndpointOptions options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
         : base(options)
     {
         //ArgumentGuard.NotNull(exporters);
 
         //_exporter = exporters.OfType<SteeltoeExporter>().SingleOrDefault() ??
-        //    throw new ArgumentException($"Exporters must contain a single {nameof(SteeltoeExporter)}.", nameof(exporters));
+        _exporter = exporter ?? throw new ArgumentException($"Exporters must contain a single {nameof(SteeltoeExporter)}.", nameof(exporter));
+        
 
         _logger = logger;
     }
 
     public override IMetricsResponse Invoke(MetricsRequest request)
     {
-      //  (MetricsCollection<List<MetricSample>> measurements, MetricsCollection<List<MetricTag>> availTags) = GetMetrics();
+        (MetricsCollection<List<MetricSample>> measurements, MetricsCollection<List<MetricTag>> availTags) = GetMetrics();
 
-        //var metricNames = new HashSet<string>(measurements.Keys);
+        var metricNames = new HashSet<string>(measurements.Keys);
 
-        //if (request == null)
-        //{
-        //    return new MetricsListNamesResponse(metricNames);
-        //}
+        if (request == null)
+        {
+            return new MetricsListNamesResponse(metricNames);
+        }
 
-        //if (metricNames.Contains(request.MetricName))
-        //{
-        //    List<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
+        if (metricNames.Contains(request.MetricName))
+        {
+            List<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
 
-        //    return GetMetric(request, sampleList, availTags[request.MetricName]);
-        //}
+            return GetMetric(request, sampleList, availTags[request.MetricName]);
+        }
 
         return null;
     }
@@ -115,16 +116,16 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
     }
 
     protected internal (MetricsCollection<List<MetricSample>> Samples, MetricsCollection<List<MetricTag>> Tags) GetMetrics()
-    {
-        ICollectionResponse response = null;// = _exporter.CollectionManager.EnterCollectAsync().Result;
+    {//ICollectionResponse response = _exporter.;
 
-        if (response is SteeltoeCollectionResponse collectionResponse)
-        {
-            return (collectionResponse.MetricSamples, collectionResponse.AvailableTags);
-        }
+        _exporter.Collect();
+        //if (response is SteeltoeCollectionResponse collectionResponse)
+        //{
+            return (_exporter.metricSamples, new MetricsCollection<List<MetricTag>>());
+        //}
 
-        _logger?.LogWarning("Please ensure OpenTelemetry is configured via Steeltoe extension methods.");
+        //_logger?.LogWarning("Please ensure OpenTelemetry is configured via Steeltoe extension methods.");
 
-        return (new MetricsCollection<List<MetricSample>>(), new MetricsCollection<List<MetricTag>>());
+        //return (new MetricsCollection<List<MetricSample>>(), new MetricsCollection<List<MetricTag>>());
     }
 }
