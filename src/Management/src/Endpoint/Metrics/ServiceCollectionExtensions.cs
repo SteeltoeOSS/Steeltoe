@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<SteeltoeExporter>(provider =>
+        services.TryAddSingleton<SteeltoeExporter>(provider =>
         {
             var options = provider.GetService<IMetricsEndpointOptions>();
 
@@ -53,7 +53,7 @@ public static class ServiceCollectionExtensions
             };
 
             return new SteeltoeExporter(exporterOptions);
-        }));
+        });
 
         services.AddSteeltoeCollector();
 
@@ -143,11 +143,10 @@ public static class ServiceCollectionExtensions
     //}
     public static IServiceCollection AddSteeltoeCollector(this IServiceCollection services)
     {
-
-        return services.AddSingleton((provider) =>
+       return services.AddSingleton((provider) =>
         {
             var steeltoeExporter = provider.GetService<SteeltoeExporter>();
-            return new AggregationManager(10, 10,
+            var aggMan =  new AggregationManager(10, 10,
                     (instrument, stats) => { steeltoeExporter.AddMetrics(instrument, stats); },
                     (date1, date2) => { /*begin*/ },
                     (date1, date2) => { /*end*/ },
@@ -155,7 +154,9 @@ public static class ServiceCollectionExtensions
                     (instrument) => { /* end instrument */},
                     (instrument) => { /* instrument published */},
                     () => {  /* enumeration complete*/ });
-        });
+            steeltoeExporter.Collect = aggMan.Collect;
+            return aggMan;
+        }).AddHostedService<MetricCollectionHostedService>();
     }
 
 
