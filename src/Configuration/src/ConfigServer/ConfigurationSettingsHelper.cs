@@ -52,6 +52,27 @@ internal static class ConfigurationSettingsHelper
         settings.HealthTimeToLive = configurationSection.GetValue("health:timeToLive", settings.HealthTimeToLive);
         settings.PollingInterval = configurationSection.GetValue("pollingInterval", settings.PollingInterval);
 
+
+
+        // encrypt:
+        //   rsa:
+        //     strong: true
+        //     salt: nohexsaltvalue
+        //     algorithm: DEFAULT
+        //   keyStore:
+        //     location: classpath:/server.jks
+        //     password: letmein
+        //     alias: mytestkey
+        //     type: jks
+
+        // or
+
+        //  encrypt:
+        //    key: key
+
+
+
+
         // Override Config Server URI
         settings.Uri = GetCloudFoundryUri(sectionPrefix, configuration, settings.Uri);
     }
