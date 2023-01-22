@@ -913,7 +913,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         ConfigServerClientSettings settings = _commonSettings;
         _commonSettings.EncryptionEnabled = true;
-        _commonSettings.EncryptionKeyStoreLocation = ".\\server.jks";
+        _commonSettings.EncryptionKeyStoreLocation = "./server.jks";
         _commonSettings.EncryptionRsaAlgorithm = "OAEP";
         _commonSettings.EncryptionRsaStrong = true;
         _commonSettings.EncryptionKeyStorePassword = "letmein";
