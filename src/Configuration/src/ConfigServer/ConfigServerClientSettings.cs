@@ -286,39 +286,42 @@ public sealed class ConfigServerClientSettings
     }
 
     /// <summary>
-    ///
+    /// Gets or sets the enable decryption option
     /// </summary>
     public bool EncryptionEnabled { get; set; }
+
     /// <summary>
-    ///
+    /// Gets or sets the strong encryption flag
     /// </summary>
     public bool EncryptionRsaStrong { get; set; }
+
     /// <summary>
-    ///
+    /// Gets of sets the salt value
     /// </summary>
-    public string EncryptionRsaSalt { get; set; } = DefaultEncryptionRsaSalt;
+    public string EncryptionRsaSalt { get; set; }
+
     /// <summary>
-    ///
+    /// Gets or sets the Rsa Algorithm (DEFAULT or OAEP)
     /// </summary>
-    public string EncryptionRsaAlgorithm { get; set; } = DefaultÈncryptionRsaAlgorithm;
+    public string EncryptionRsaAlgorithm { get; set; }
+
     /// <summary>
-    ///
+    /// Gets or sets the location of the keystore
     /// </summary>
     public string EncryptionKeyStoreLocation { get; set; }
+
     /// <summary>
-    ///
+    /// Gets or sets the keystore password
     /// </summary>
     public string EncryptionKeyStorePassword { get; set; }
+
     /// <summary>
-    ///
+    /// Gets or sets the alias of the key in the keystor
     /// </summary>
     public string EncryptionKeyStoreAlias { get; set; }
+
     /// <summary>
-    ///
-    /// </summary>
-    public string EncryptionKeyStoreType { get; set; }
-    /// <summary>
-    ///
+    /// Gets or sets the key of the simple encryption
     /// </summary>
     public string EncryptionKey { get; set; }
 

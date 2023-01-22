@@ -59,7 +59,6 @@ internal static class ConfigurationSettingsHelper
         settings.EncryptionKeyStoreLocation = configurationSection.GetValue("encrypt:keyStore:Location", settings.EncryptionKeyStoreLocation);
         settings.EncryptionKeyStorePassword = configurationSection.GetValue("encrypt:keyStore:password", settings.EncryptionKeyStorePassword);
         settings.EncryptionKeyStoreAlias = configurationSection.GetValue("encrypt:keyStore:alias", settings.EncryptionKeyStoreAlias);
-        settings.EncryptionKeyStoreType = configurationSection.GetValue("encrypt:keyStore:type", settings.EncryptionKeyStoreType);
         settings.EncryptionKey = configurationSection.GetValue("encrypt:key", settings.EncryptionKey);
 
         // Override Config Server URI
