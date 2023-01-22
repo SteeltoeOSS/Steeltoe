@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Buffers.Binary;
-using System.Data;
-using System.Globalization;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
 
@@ -25,10 +23,10 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
         _defaultKeyAlias = alias;
         _strong = strong;
         _keyProvider = keyProvider;
-        _cipher = GetCyper(algorithm);
+        _cipher = GetCipher(algorithm);
     }
 
-    public IBufferedCipher GetCyper(string algorithm)
+    public IBufferedCipher GetCipher(string algorithm)
     {
         switch (algorithm.ToUpperInvariant())
         {
@@ -41,10 +39,10 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
         }
     }
 
-    public string Decrypt(string cipher)
+    public string Decrypt(string fullCipher)
     {
-        var fullCipher = Convert.FromBase64String(cipher);
-        return Decrypt(fullCipher);
+        var bytes = Convert.FromBase64String(fullCipher);
+        return Decrypt(bytes);
     }
 
     public string Decrypt(byte[] fullCipher)
@@ -74,7 +72,7 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
         try
         {
             string secret = Convert.ToHexString(_cipher.DoFinal(secretBytes)).ToLowerInvariant();
-            AesTextDecryptor decryptor = new AesTextDecryptor(secret, salt: _salt, strong: _strong);
+            var decryptor = new AesTextDecryptor(secret, salt: _salt, strong: _strong);
             return decryptor.Decrypt(cipherTextBytes);
         }
         catch (Exception ex)
@@ -83,7 +81,7 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
         }
     }
 
-    private int ReadSecretLenght(MemoryStream ms)
+    private int ReadSecretLenght(Stream ms)
     {
         byte[] length = new byte[2];
         if (ms.Read(length) != length.Length)

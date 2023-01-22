@@ -12,7 +12,7 @@ namespace Steeltoe.Configuration.ConfigServer.Encryption;
 
 internal sealed class AesTextDecryptor : ITextDecryptor
 {
-    private readonly short KEYSIZE = 256;
+    private static short _keySize = 256;
     private readonly byte[] _key;
     private readonly IBufferedCipher _cipher;
 
@@ -24,7 +24,7 @@ internal sealed class AesTextDecryptor : ITextDecryptor
 
         byte[] saltBytes = GetSaltBytes(salt);
 
-        _key =  KeyDerivation.Pbkdf2(key, saltBytes, KeyDerivationPrf.HMACSHA1, 1024, KEYSIZE / 8);
+        _key =  KeyDerivation.Pbkdf2(key, saltBytes, KeyDerivationPrf.HMACSHA1, 1024, _keySize / 8);
     }
 
     private static byte[] GetSaltBytes(string salt)
@@ -35,15 +35,14 @@ internal sealed class AesTextDecryptor : ITextDecryptor
         }
         catch
         {
-            return UTF8Encoding.Default.GetBytes(salt);
+            return Encoding.Default.GetBytes(salt);
         }
     }
 
-    public string Decrypt(string cipher)
+    public string Decrypt(string fullCipher)
     {
-        var fullCipher = Convert.FromHexString(cipher);
-
-        return Decrypt(fullCipher);
+        byte[] bytes = Convert.FromHexString(fullCipher);
+        return Decrypt(bytes);
     }
 
     public string Decrypt(byte[] fullCipher)
@@ -68,7 +67,7 @@ internal sealed class AesTextDecryptor : ITextDecryptor
             InitializeCipher(iv);
 
             byte[] clearTextBytes = _cipher.DoFinal(cipherBytes);
-            return UTF8Encoding.Default.GetString(clearTextBytes);
+            return Encoding.Default.GetString(clearTextBytes);
         }
         catch (Exception ex)
         {
