@@ -6,12 +6,12 @@ namespace Steeltoe.Configuration.ConfigServer.Encryption;
 
 public sealed class DecryptionException: Exception
 {
-    public DecryptionException(string message)
+    internal DecryptionException(string message)
         : base(message)
     {
     }
 
-    public DecryptionException(string message, Exception exception): base(message, exception)
+    internal DecryptionException(string message, Exception exception): base(message, exception)
     {
     }
 }

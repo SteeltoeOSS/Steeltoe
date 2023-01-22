@@ -70,7 +70,10 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
 
         try
         {
+#pragma warning disable S4040
+            // Spring Cloud Config hex string is lower case
             string secret = Convert.ToHexString(_cipher.DoFinal(secretBytes)).ToLowerInvariant();
+#pragma warning restore S4040
             var decryptor = new AesTextDecryptor(secret, salt: _salt, strong: _strong);
             return decryptor.Decrypt(cipherTextBytes);
         }
