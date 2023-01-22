@@ -930,7 +930,7 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void ReLoad_DataDictionary_With_New_Configurations()
+    public async Task ReLoad_DataDictionary_With_New_Configurations()
     {
         const string environment = @"
                     {
@@ -1003,7 +1003,7 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void AddConfigServerClientSettings_ChangesDataDictionary()
+    public async Task AddConfigServerClientSettings_ChangesDataDictionary()
     {
         var settings = new ConfigServerClientSettings
         {
