@@ -115,12 +115,12 @@ public sealed class ConfigServerClientSettings
     public const bool DefaultHealthEnabled = true;
 
     /// <summary>
-    /// Default Encryption method
+    /// Default Encryption method.
     /// </summary>
     public const string DefaultÈncryptionRsaAlgorithm = "DEFAULT";
 
     /// <summary>
-    /// Default salt
+    /// Default salt.
     /// </summary>
     public const string DefaultEncryptionRsaSalt = "deadbeef";
 
@@ -286,22 +286,22 @@ public sealed class ConfigServerClientSettings
     }
 
     /// <summary>
-    /// Gets or sets the enable decryption option
+    /// Gets or sets a value indicating whether decryption is enabled.
     /// </summary>
     public bool EncryptionEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the strong encryption flag
+    /// Gets or sets a value indicating whether strong encryption flag is enabled.
     /// </summary>
     public bool EncryptionRsaStrong { get; set; }
 
     /// <summary>
-    /// Gets of sets the salt value
+    /// Gets or sets the salt value.
     /// </summary>
     public string EncryptionRsaSalt { get; set; }
 
     /// <summary>
-    /// Gets or sets the Rsa Algorithm (DEFAULT or OAEP)
+    /// Gets or sets the Rsa Algorithm (DEFAULT or OAEP).
     /// </summary>
     public string EncryptionRsaAlgorithm { get; set; }
 

@@ -181,6 +181,7 @@ Steeltoe.Configuration.ConfigServer.ConfigServerException.ConfigServerException(
 Steeltoe.Configuration.ConfigServer.ConfigServerException.ConfigServerException(string message, System.Exception innerException) -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions
 Steeltoe.Configuration.ConfigServer.ConfigServerServiceCollectionExtensions
+Steeltoe.Configuration.ConfigServer.Encryption.DecryptionException
 Steeltoe.Configuration.ConfigServer.PropertySource
 Steeltoe.Configuration.ConfigServer.PropertySource.Name.get -> string
 Steeltoe.Configuration.ConfigServer.PropertySource.Name.set -> void
