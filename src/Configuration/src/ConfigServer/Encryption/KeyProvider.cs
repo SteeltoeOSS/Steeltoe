@@ -11,11 +11,12 @@ internal sealed class KeyProvider : IKeyProvider
 {
     private readonly Pkcs12Store _pkcs12;
 
-    public KeyProvider(string fileName, string pfxPassword): this(new FileStream(fileName, FileMode.Open, FileAccess.Read), pfxPassword)
+    public KeyProvider(string fileName, string pfxPassword)
+        : this(new FileStream(fileName, FileMode.Open, FileAccess.Read), pfxPassword)
     {
     }
 
-    public KeyProvider(FileStream fileStream,  string pfxPassword)
+    public KeyProvider(FileStream fileStream, string pfxPassword)
     {
         _pkcs12 = new Pkcs12Store(fileStream, pfxPassword.ToArray());
     }

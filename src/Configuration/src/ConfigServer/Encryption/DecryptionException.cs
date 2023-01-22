@@ -4,14 +4,15 @@
 
 namespace Steeltoe.Configuration.ConfigServer.Encryption;
 
-public sealed class DecryptionException: Exception
+public sealed class DecryptionException : Exception
 {
     internal DecryptionException(string message)
         : base(message)
     {
     }
 
-    internal DecryptionException(string message, Exception exception): base(message, exception)
+    internal DecryptionException(string message, Exception exception)
+        : base(message, exception)
     {
     }
 }

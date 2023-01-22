@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Configuration.ConfigServer.Encryption;
 
-internal class NoopDecryptor: ITextDecryptor
+internal sealed class NoopDecryptor : ITextDecryptor
 {
     public string Decrypt(string fullCipher)
     {

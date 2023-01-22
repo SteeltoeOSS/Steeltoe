@@ -124,7 +124,6 @@ public sealed class ConfigServerClientSettings
     /// </summary>
     public const string DefaultEncryptionRsaSalt = "deadbeef";
 
-
     /// <summary>
     /// Default health check time-to-live setting, in milliseconds.
     /// </summary>

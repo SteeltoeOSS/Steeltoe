@@ -840,7 +840,7 @@ public sealed class ConfigServerConfigurationProviderTest
         Assert.Equal("10", value);
     }
 
-     [Fact]
+    [Fact]
     public void Load_WithSimpleKeyDecryptionResultsInExpectedResult()
     {
         const string environment = @"
@@ -899,7 +899,6 @@ public sealed class ConfigServerConfigurationProviderTest
                             }
                         ]
                     }";
-
 
         IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();

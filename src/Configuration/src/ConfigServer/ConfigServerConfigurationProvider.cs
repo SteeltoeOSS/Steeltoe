@@ -161,12 +161,12 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
 
         if (settings.EncryptionEnabled)
         {
-            if (!String.IsNullOrEmpty(settings.EncryptionKey))
+            if (!string.IsNullOrEmpty(settings.EncryptionKey))
             {
                 return new AesTextDecryptor(settings.EncryptionKey);
             }
 
-            FileStream keystoreStream = new FileStream(settings.EncryptionKeyStoreLocation, FileMode.Open, FileAccess.Read);
+            var keystoreStream = new FileStream(settings.EncryptionKeyStoreLocation, FileMode.Open, FileAccess.Read);
 
             return new RsaKeyStoreDecryptor(new KeyProvider(keystoreStream, settings.EncryptionKeyStorePassword), settings.EncryptionKeyStoreAlias,
                 settings.EncryptionRsaSalt, settings.EncryptionRsaStrong, settings.EncryptionRsaAlgorithm);

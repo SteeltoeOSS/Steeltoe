@@ -16,8 +16,7 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
     private readonly IBufferedCipher _cipher;
     private readonly string _defaultKeyAlias;
 
-    public RsaKeyStoreDecryptor(IKeyProvider keyProvider, string alias, string salt = "deadbeaf",
-        bool strong = false, string algorithm = "DEFAULT")
+    public RsaKeyStoreDecryptor(IKeyProvider keyProvider, string alias, string salt = "deadbeaf", bool strong = false, string algorithm = "DEFAULT")
     {
         _salt = salt;
         _defaultKeyAlias = alias;
@@ -26,7 +25,7 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
         _cipher = GetCipher(algorithm);
     }
 
-    public IBufferedCipher GetCipher(string algorithm)
+    private IBufferedCipher GetCipher(string algorithm)
     {
         switch (algorithm.ToUpperInvariant())
         {
@@ -41,7 +40,7 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
 
     public string Decrypt(string fullCipher)
     {
-        var bytes = Convert.FromBase64String(fullCipher);
+        byte[] bytes = Convert.FromBase64String(fullCipher);
         return Decrypt(bytes);
     }
 
@@ -58,6 +57,7 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
         {
             throw new DecryptionException($"Key {alias} does not exist in keystor");
         }
+
         _cipher.Init(false, key);
         using var ms = new MemoryStream(fullCipher);
 
@@ -67,11 +67,11 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
 
         int secretBytesRead = ms.Read(secretBytes);
         int cipherBytesRead = ms.Read(cipherTextBytes);
+
         if (secretBytesRead != secretBytes.Length || cipherBytesRead != cipherTextBytes.Length)
         {
             throw new DecryptionException("Unexpected number of bytes read from cipher");
         }
-
 
         try
         {
@@ -79,7 +79,7 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
             // Spring Cloud Config hex string is lower case
             string secret = Convert.ToHexString(_cipher.DoFinal(secretBytes)).ToLowerInvariant();
 #pragma warning restore S4040
-            var decryptor = new AesTextDecryptor(secret, salt: _salt, strong: _strong);
+            var decryptor = new AesTextDecryptor(secret, _salt, _strong);
             return decryptor.Decrypt(cipherTextBytes);
         }
         catch (Exception ex)
@@ -97,6 +97,7 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
         {
             throw new DecryptionException("Unexpected number of bytes read from cipher");
         }
+
         return BinaryPrimitives.ReadInt16BigEndian(lengthBytes);
     }
 }

@@ -7,14 +7,14 @@ using Xunit;
 
 namespace Steeltoe.Configuration.ConfigServer.Test.Encryption;
 
-public class AesTextDecryptorTests
+public sealed class AesTextDecryptorTests
 {
     [Theory]
-    [MemberData(nameof(GetTestVector), parameters: 4)]
+    [MemberData(nameof(GetTestVector), 4)]
     public void DecodeTestForSpringConfigCipher(string salt, string key, string cipher, string plainText)
     {
         var textDecryptor = new AesTextDecryptor(key, salt);
-        var decrypted = textDecryptor.Decrypt(cipher);
+        string decrypted = textDecryptor.Decrypt(cipher);
         Assert.Equal(plainText, decrypted);
     }
 
