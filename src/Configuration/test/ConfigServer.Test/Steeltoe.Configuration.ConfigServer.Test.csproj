@@ -9,7 +9,7 @@
     <None Update="instance.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Encryption\server.jks">
+    <None Update="server.jks">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

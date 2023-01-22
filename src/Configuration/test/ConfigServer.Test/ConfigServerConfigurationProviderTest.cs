@@ -422,8 +422,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-   
+                    ""propertySources"": [
+
                     ]
                 }";
 
@@ -466,8 +466,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""key1"": ""value1"",
@@ -516,8 +516,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""key1"": ""value1"",
@@ -805,8 +805,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""key1"": ""value1"",
@@ -840,6 +840,95 @@ public sealed class ConfigServerConfigurationProviderTest
         Assert.Equal("10", value);
     }
 
+     [Fact]
+    public async Task Load_WithSimpleKeyDecryptionResultsInExpectedResult()
+    {
+        const string environment = @"
+                    {
+                        ""name"": ""testname"",
+                        ""profiles"": [""Production""],
+                        ""label"": ""testlabel"",
+                        ""version"": ""testversion"",
+                        ""propertySources"": [
+                            {
+                                ""name"": ""source"",
+                                ""source"": {
+                                            ""secret1"": ""{cipher}e401ca0578839c9e5207f52d0ae4dc836f8c6530cdc90f14b544180f6fdb9265b80d6ace9fbbab700c7af32141171358""
+                                    }
+                            }
+                        ]
+                    }";
+
+        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
+        TestConfigServerStartup.Reset();
+        TestConfigServerStartup.Response = environment;
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+
+        using var server = new TestServer(builder)
+        {
+            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
+        };
+
+        ConfigServerClientSettings settings = _commonSettings;
+        _commonSettings.EncryptionEnabled = true;
+        _commonSettings.EncryptionKey = "12345678901234567890";
+        using HttpClient client = server.CreateClient();
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+
+        provider.Load();
+        Assert.NotNull(TestConfigServerStartup.LastRequest);
+        Assert.True(provider.TryGet("secret1", out string value));
+        Assert.Equal("encrypt the world", value);
+    }
+
+    [Fact]
+    public async Task Load_WithKeyStoreDecryptionResultsInExpectedResult()
+    {
+        const string environment = @"
+                    {
+                        ""name"": ""testname"",
+                        ""profiles"": [""Production""],
+                        ""label"": ""testlabel"",
+                        ""version"": ""testversion"",
+                        ""propertySources"": [
+                            {
+                                ""name"": ""source"",
+                                ""source"": {
+                                            ""secret1"": ""{cipher}AQAbWqohCeQ+TTqyJ3ZlNvAtx5cC2I3PmJetuSR82yRRyX+wWd7mTkUXuN/wANJ+nr1ySdzPudjml1lHaxZn42I9szkIKSkNT+6Yg+zNaREMetcE5SXA1awtSbEaFY2NcualSzPVWs8ulsUkKlYyyh6XP9gT/kODbmX0mS6DCtxalJgjei7WujLaJaPjc3jk+EhV9M1TovexqI7XoLlsgrGf6/1gQE+SSOamTFJopWpYEeSpSEwY2dXZfct5KCFWGJVA7eDPRJk0dT6EWIvqd6J4YoMWonxgVy4nG/Gq0NTisXv9XpJHAPYBg0c8B0WrWi2PG/Q00wvFRqGmYQ1hQIVmbJm8z+f0WoCxKwnCZvvdLlgrx2qeK1S21dPdgtmLXlj5bRUrektFrNhlevlENW7wgg==""
+                                    }
+                            }
+                        ]
+                    }";
+
+
+        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
+        TestConfigServerStartup.Reset();
+        TestConfigServerStartup.Response = environment;
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+
+        using var server = new TestServer(builder)
+        {
+            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
+        };
+
+        ConfigServerClientSettings settings = _commonSettings;
+        _commonSettings.EncryptionEnabled = true;
+        _commonSettings.EncryptionKeyStoreLocation = ".\\server.jks";
+        _commonSettings.EncryptionRsaAlgorithm = "OAEP";
+        _commonSettings.EncryptionRsaStrong = true;
+        _commonSettings.EncryptionKeyStorePassword = "letmein";
+        _commonSettings.EncryptionKeyStoreAlias = "mytestkey";
+        _commonSettings.EncryptionRsaSalt = "beefdead";
+
+        using HttpClient client = server.CreateClient();
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+
+        provider.Load();
+        Assert.NotNull(TestConfigServerStartup.LastRequest);
+        Assert.True(provider.TryGet("secret1", out string value));
+        Assert.Equal("encrypt the world", value);
+    }
+
     [Fact]
     public void ReLoad_DataDictionary_With_New_Configurations()
     {
@@ -849,8 +938,8 @@ public sealed class ConfigServerConfigurationProviderTest
                         ""profiles"": [""Production""],
                         ""label"": ""testlabel"",
                         ""version"": ""testversion"",
-                        ""propertySources"": [ 
-                            { 
+                        ""propertySources"": [
+                            {
                                 ""name"": ""source"",
                                 ""source"": {
                                             ""featureToggles.ShowModule[0]"": ""FT1"",
@@ -895,8 +984,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""featureToggles.ShowModule[0]"": ""none""
@@ -1250,8 +1339,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""name"": ""my-app"",
