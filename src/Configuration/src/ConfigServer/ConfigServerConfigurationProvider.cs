@@ -732,9 +732,9 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
 
     private string ConvertValue(object value)
     {
-        string convertedValue =  Convert.ToString(value, CultureInfo.InvariantCulture);
+        string convertedValue = Convert.ToString(value, CultureInfo.InvariantCulture);
 
-        if (convertedValue.StartsWith("{cipher}"))
+        if (convertedValue.StartsWith("{cipher}", StringComparison.InvariantCulture))
         {
             string cipher = convertedValue.Substring("{cipher}".Length);
             return _decryptor.Decrypt(cipher);
