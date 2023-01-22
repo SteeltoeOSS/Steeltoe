@@ -736,7 +736,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
 
         if (convertedValue.StartsWith("{cipher}"))
         {
-            string cipher = convertedValue.Substring("cipher".Length);
+            string cipher = convertedValue.Substring("{cipher}".Length);
             return _decryptor.Decrypt(cipher);
         }
 
