@@ -115,6 +115,17 @@ public sealed class ConfigServerClientSettings
     public const bool DefaultHealthEnabled = true;
 
     /// <summary>
+    /// Default Encryption method
+    /// </summary>
+    public const string DefaultÈncryptionRsaAlgorithm = "DEFAULT";
+
+    /// <summary>
+    /// Default salt
+    /// </summary>
+    public const string DefaultEncryptionRsaSalt = "deadbeef";
+
+
+    /// <summary>
     /// Default health check time-to-live setting, in milliseconds.
     /// </summary>
     public const long DefaultHealthTimeToLive = 60 * 5 * 1000;
@@ -275,6 +286,43 @@ public sealed class ConfigServerClientSettings
     }
 
     /// <summary>
+    ///
+    /// </summary>
+    public bool EncryptionEnabled { get; set; }
+    /// <summary>
+    ///
+    /// </summary>
+    public bool EncryptionRsaStrong { get; set; }
+    /// <summary>
+    ///
+    /// </summary>
+    public string EncryptionRsaSalt { get; set; } = DefaultEncryptionRsaSalt;
+    /// <summary>
+    ///
+    /// </summary>
+    public string EncryptionRsaAlgorithm { get; set; } = DefaultÈncryptionRsaAlgorithm;
+    /// <summary>
+    ///
+    /// </summary>
+    public string EncryptionKeyStoreLocation { get; set; }
+    /// <summary>
+    ///
+    /// </summary>
+    public string EncryptionKeyStorePassword { get; set; }
+    /// <summary>
+    ///
+    /// </summary>
+    public string EncryptionKeyStoreAlias { get; set; }
+    /// <summary>
+    ///
+    /// </summary>
+    public string EncryptionKeyStoreType { get; set; }
+    /// <summary>
+    ///
+    /// </summary>
+    public string EncryptionKey { get; set; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerClientSettings" /> class.
     /// </summary>
     /// <remarks>
@@ -297,6 +345,8 @@ public sealed class ConfigServerClientSettings
         DiscoveryServiceId = DefaultConfigserverServiceId;
         HealthEnabled = DefaultHealthEnabled;
         HealthTimeToLive = DefaultHealthTimeToLive;
+        EncryptionRsaAlgorithm = DefaultÈncryptionRsaAlgorithm;
+        EncryptionRsaSalt = DefaultEncryptionRsaSalt;
     }
 
     internal static bool IsMultiServerConfiguration(string uris)

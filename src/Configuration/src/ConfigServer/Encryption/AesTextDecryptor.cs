@@ -52,15 +52,8 @@ internal sealed class AesTextDecryptor : ITextDecryptor
 
         using var ms = new MemoryStream(fullCipher);
 
-        if (ms.Read(iv) != iv.Length)
-        {
-            throw new DecryptionException($"Failed to read {nameof(iv)} from encrypted text");
-        }
-
-        if (ms.Read(cipherBytes) != cipherBytes.Length)
-        {
-            throw new DecryptionException($"Failed to read {nameof(cipherBytes)} from encrypted text");
-        }
+        ms.Read(iv);
+        ms.Read(cipherBytes);
 
         try
         {

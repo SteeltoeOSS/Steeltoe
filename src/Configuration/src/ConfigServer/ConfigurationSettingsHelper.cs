@@ -52,26 +52,15 @@ internal static class ConfigurationSettingsHelper
         settings.HealthTimeToLive = configurationSection.GetValue("health:timeToLive", settings.HealthTimeToLive);
         settings.PollingInterval = configurationSection.GetValue("pollingInterval", settings.PollingInterval);
 
-
-
-        // encrypt:
-        //   rsa:
-        //     strong: true
-        //     salt: nohexsaltvalue
-        //     algorithm: DEFAULT
-        //   keyStore:
-        //     location: classpath:/server.jks
-        //     password: letmein
-        //     alias: mytestkey
-        //     type: jks
-
-        // or
-
-        //  encrypt:
-        //    key: key
-
-
-
+        settings.EncryptionEnabled = configurationSection.GetValue("encrypt:enabled", settings.EncryptionEnabled);
+        settings.EncryptionRsaStrong = configurationSection.GetValue("encrypt:rsa:strong", settings.EncryptionRsaStrong);
+        settings.EncryptionRsaSalt = configurationSection.GetValue("encrypt:rsa:salt", settings.EncryptionRsaSalt);
+        settings.EncryptionRsaAlgorithm = configurationSection.GetValue("encrypt:rsa:algorithm", settings.EncryptionRsaAlgorithm);
+        settings.EncryptionKeyStoreLocation = configurationSection.GetValue("encrypt:keyStore:Location", settings.EncryptionKeyStoreLocation);
+        settings.EncryptionKeyStorePassword = configurationSection.GetValue("encrypt:keyStore:password", settings.EncryptionKeyStorePassword);
+        settings.EncryptionKeyStoreAlias = configurationSection.GetValue("encrypt:keyStore:alias", settings.EncryptionKeyStoreAlias);
+        settings.EncryptionKeyStoreType = configurationSection.GetValue("encrypt:keyStore:type", settings.EncryptionKeyStoreType);
+        settings.EncryptionKey = configurationSection.GetValue("encrypt:key", settings.EncryptionKey);
 
         // Override Config Server URI
         settings.Uri = GetCloudFoundryUri(sectionPrefix, configuration, settings.Uri);

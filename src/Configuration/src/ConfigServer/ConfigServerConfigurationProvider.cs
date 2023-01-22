@@ -17,6 +17,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Logging;
+using Steeltoe.Configuration.ConfigServer.Encryption;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Discovery;
 
@@ -55,6 +56,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
     private IConfiguration _configuration;
     private Timer _refreshTimer;
     private bool _hasConfiguration;
+    private ITextDecryptor _decryptor;
 
     internal JsonSerializerOptions SerializerOptions { get; } = new()
     {
@@ -145,10 +147,32 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
             _hasConfiguration = false;
         }
 
+        _decryptor = CreateEncryptor(settings);
+
         Settings = settings;
         HttpClient = httpClient ?? GetConfiguredHttpClient(Settings);
 
         OnSettingsChanged();
+    }
+
+    private ITextDecryptor CreateEncryptor(ConfigServerClientSettings settings)
+    {
+        ITextDecryptor decryptor = new NoopDecryptor();
+
+        if (settings.EncryptionEnabled)
+        {
+            if (!String.IsNullOrEmpty(settings.EncryptionKey))
+            {
+                return new AesTextDecryptor(settings.EncryptionKey);
+            }
+
+            FileStream keystoreStream = new FileStream(settings.EncryptionKeyStoreLocation, FileMode.Open, FileAccess.Read);
+
+            return new RsaKeyStoreDecryptor(new KeyProvider(keystoreStream, settings.EncryptionKeyStorePassword), settings.EncryptionKeyStoreAlias,
+                settings.EncryptionRsaSalt, settings.EncryptionRsaStrong, settings.EncryptionRsaAlgorithm);
+        }
+
+        return decryptor;
     }
 
     private void OnSettingsChanged()
@@ -708,7 +732,15 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
 
     private string ConvertValue(object value)
     {
-        return Convert.ToString(value, CultureInfo.InvariantCulture);
+        string convertedValue =  Convert.ToString(value, CultureInfo.InvariantCulture);
+
+        if (convertedValue.StartsWith("{cipher}"))
+        {
+            string cipher = convertedValue.Substring("cipher".Length);
+            return _decryptor.Decrypt(cipher);
+        }
+
+        return convertedValue;
     }
 
     /// <summary>

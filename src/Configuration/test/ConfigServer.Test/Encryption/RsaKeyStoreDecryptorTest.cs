@@ -5,7 +5,7 @@ namespace Steeltoe.Configuration.ConfigServer.Test.Encryption;
 
 public class RsaKeyStoreDecryptorTest
 {
-    private KeyProvider _keyProvider;
+    private readonly KeyProvider _keyProvider;
 
     public RsaKeyStoreDecryptorTest()
     {
@@ -13,14 +13,30 @@ public class RsaKeyStoreDecryptorTest
     }
 
     [Fact]
-    public void CreateWithUnsupportedAlgorithmThrows()
+    public void Decrypt_WithNonexistingKeyThrows()
+    {
+        var rsaKeyStoreDecryptor = new RsaKeyStoreDecryptor(_keyProvider, "nonexistingKey");
+        Assert.Throws<DecryptionException>(() => rsaKeyStoreDecryptor.Decrypt(new byte[] { }));
+    }
+
+    [Fact]
+    public void Decrypt_WithWrongCiphertextKeyThrows()
+    {
+        var cipher = Convert.FromBase64String(
+                "AQAbWqohCeQ+TTqyJ3ZlNvAtx5cC2I3PmJetuSR82yRRyX+wWd7mTkUXuN/wANJ+nr1ySdzPudjml1lHaxZn42I9szkIKSkNT+6Yg+zNaREMetcE5SXA1awtSbEaFY2NcualSzPVWs8ulsUkKlYyyh6XP9gT/kODbmX0mS6DCtxalJgjei7WujLaJaPjc3jk+EhV9M1TovexqI7XoLlsgrGf6/1gQE+SSOamTFJopWpYEeSpSEwY2dXZfct5KCFWGJVA7eDPRJk0dT6EWIvqd6J4YoMWonxgVy4nG/Gq0NTisXv9XpJHAPYBg0c8B0WrWi2PG/Q00wvFRqGmYQ1hQIVmbJm8z+f0WoCxKwnCZvvdLlgrx2qeK1S21dPdgtmLXlj5bRUrektFrNhlevlENW7wgg==");
+        var rsaKeyStoreDecryptor = new RsaKeyStoreDecryptor(_keyProvider, "mytestkey");
+        Assert.Throws<DecryptionException>(() => rsaKeyStoreDecryptor.Decrypt(cipher));
+    }
+
+    [Fact]
+    public void Constructor_WithUnsupportedAlgorithmThrows()
     {
         Assert.Throws<ArgumentException>(() => new RsaKeyStoreDecryptor(_keyProvider, "mytestkey", algorithm: "Exception"));
     }
 
     [Theory]
     [MemberData(nameof(GetTestVector), parameters: 5)]
-    public void DecodeTestForSpringConfigCipher(string salt, string strong, string algorithm, string cipher, string plainText)
+    public void Decode_TestForSpringConfigCipher(string salt, string strong, string algorithm, string cipher, string plainText)
     {
         RsaKeyStoreDecryptor decryptor = new RsaKeyStoreDecryptor(_keyProvider, "mytestkey", salt: salt, strong: Boolean.Parse(strong), algorithm: algorithm);
         var decrypted = decryptor.Decrypt(cipher);

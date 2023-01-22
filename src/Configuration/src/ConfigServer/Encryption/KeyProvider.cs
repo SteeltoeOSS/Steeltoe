@@ -22,6 +22,6 @@ internal sealed class KeyProvider : IKeyProvider
 
     public ICipherParameters GetKey(string keyAlias)
     {
-        return _pkcs12.GetKey(keyAlias).Key;
+        return _pkcs12.GetKey(keyAlias)?.Key;
     }
 }

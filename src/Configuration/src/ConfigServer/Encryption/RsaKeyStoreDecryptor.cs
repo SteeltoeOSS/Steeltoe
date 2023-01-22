@@ -52,22 +52,21 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
 
     public string Decrypt(byte[] fullCipher, string alias)
     {
-        _cipher.Init(false, _keyProvider.GetKey(alias));
+        ICipherParameters key = _keyProvider.GetKey(alias);
+
+        if (key == null)
+        {
+            throw new DecryptionException($"Key {alias} does not exist in keystor");
+        }
+        _cipher.Init(false, key);
         using var ms = new MemoryStream(fullCipher);
 
         int secretLength = ReadSecretLenght(ms);
         byte[] secretBytes = new byte[secretLength];
         byte[] cipherTextBytes = new byte[fullCipher.Length - secretBytes.Length - 2];
 
-        if (ms.Read(secretBytes) != secretBytes.Length)
-        {
-            throw new DecryptionException($"Failed to read {nameof(secretBytes)} from encrypted text");
-        }
-
-        if (ms.Read(cipherTextBytes) != cipherTextBytes.Length)
-        {
-            throw new DecryptionException($"Failed to read {nameof(cipherTextBytes)} from encrypted text");
-        }
+        ms.Read(secretBytes);
+        ms.Read(cipherTextBytes);
 
         try
         {
@@ -84,10 +83,7 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
     private int ReadSecretLenght(Stream ms)
     {
         byte[] length = new byte[2];
-        if (ms.Read(length) != length.Length)
-        {
-            throw new DecryptionException($"Failed to read {nameof(length)} from encrypted text");
-        }
+        ms.Read(length);
         return BinaryPrimitives.ReadInt16BigEndian(length);
     }
 }
