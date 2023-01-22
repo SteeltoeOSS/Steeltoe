@@ -4,11 +4,14 @@
 
 namespace Steeltoe.Configuration.ConfigServer.Encryption;
 
-internal interface ITextDecryptor
+public sealed class DecryptionException: Exception
 {
-    string Decrypt(string fullCipher);
+    public DecryptionException(string message)
+        : base(message)
+    {
+    }
 
-    string Decrypt(byte[] fullCipher);
-
-    string Decrypt(byte[] fullCipher, string alias);
+    public DecryptionException(string message, Exception exception): base(message, exception)
+    {
+    }
 }

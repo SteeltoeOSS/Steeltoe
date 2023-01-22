@@ -1,4 +1,8 @@
-﻿using System.Text;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using System.Text;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -6,7 +10,7 @@ using Org.BouncyCastle.Security;
 
 namespace Steeltoe.Configuration.ConfigServer.Encryption;
 
-public class AesTextDecryptor : ITextDecryptor
+internal sealed class AesTextDecryptor : ITextDecryptor
 {
     private readonly short KEYSIZE = 256;
     private readonly byte[] _key;
@@ -44,17 +48,37 @@ public class AesTextDecryptor : ITextDecryptor
 
     public string Decrypt(byte[] fullCipher)
     {
-        var iv = new byte[16];
-        var cipherBytes = new byte[fullCipher.Length - 16];
+        byte[] iv = new byte[16];
+        byte[] cipherBytes = new byte[fullCipher.Length - 16];
 
         using var ms = new MemoryStream(fullCipher);
-        ms.Read(iv);
-        ms.Read(cipherBytes);
 
-        InitializeCipher(iv);
+        if (ms.Read(iv) != iv.Length)
+        {
+            throw new DecryptionException($"Failed to read {nameof(iv)} from encrypted text");
+        }
 
-        var clearTextBytes = _cipher.DoFinal(cipherBytes);
-        return UTF8Encoding.Default.GetString(clearTextBytes);
+        if (ms.Read(cipherBytes) != cipherBytes.Length)
+        {
+            throw new DecryptionException($"Failed to read {nameof(cipherBytes)} from encrypted text");
+        }
+
+        try
+        {
+            InitializeCipher(iv);
+
+            byte[] clearTextBytes = _cipher.DoFinal(cipherBytes);
+            return UTF8Encoding.Default.GetString(clearTextBytes);
+        }
+        catch (Exception ex)
+        {
+            throw new DecryptionException("Failed to decrypt", ex);
+        }
+    }
+
+    public string Decrypt(byte[] fullCipher, string alias)
+    {
+        throw new NotSupportedException();
     }
 
     private void InitializeCipher(byte[] iv)
