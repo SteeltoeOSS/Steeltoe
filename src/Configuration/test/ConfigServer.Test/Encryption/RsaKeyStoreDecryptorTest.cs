@@ -13,7 +13,7 @@ public class RsaKeyStoreDecryptorTest
 
     public RsaKeyStoreDecryptorTest()
     {
-        _keyProvider = new KeyProvider(".\\server.jks", "letmein");
+        _keyProvider = new KeyProvider("./server.jks", "letmein");
     }
 
     [Fact]
