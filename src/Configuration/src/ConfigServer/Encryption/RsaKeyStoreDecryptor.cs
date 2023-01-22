@@ -65,8 +65,13 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
         byte[] secretBytes = new byte[secretLength];
         byte[] cipherTextBytes = new byte[fullCipher.Length - secretBytes.Length - 2];
 
-        ms.Read(secretBytes);
-        ms.Read(cipherTextBytes);
+        int secretBytesRead = ms.Read(secretBytes);
+        int cipherBytesRead = ms.Read(cipherTextBytes);
+        if (secretBytesRead != secretBytes.Length || cipherBytesRead != cipherTextBytes.Length)
+        {
+            throw new DecryptionException("Unexpected number of bytes read from cipher");
+        }
+
 
         try
         {
@@ -85,8 +90,13 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
 
     private int ReadSecretLenght(Stream ms)
     {
-        byte[] length = new byte[2];
-        ms.Read(length);
-        return BinaryPrimitives.ReadInt16BigEndian(length);
+        byte[] lengthBytes = new byte[2];
+        int read = ms.Read(lengthBytes);
+
+        if (read != lengthBytes.Length)
+        {
+            throw new DecryptionException("Unexpected number of bytes read from cipher");
+        }
+        return BinaryPrimitives.ReadInt16BigEndian(lengthBytes);
     }
 }

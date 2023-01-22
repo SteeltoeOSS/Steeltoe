@@ -13,18 +13,17 @@ namespace Steeltoe.Configuration.ConfigServer.Encryption;
 internal sealed class AesTextDecryptor : ITextDecryptor
 {
     private static short _keySize = 256;
+    private static short _ivSize = 128;
     private readonly byte[] _key;
     private readonly IBufferedCipher _cipher;
 
     public AesTextDecryptor(string key, string salt = "deadbeef", bool strong = false)
     {
-        _cipher = strong
-            ? CipherUtilities.GetCipher("AES/GCM/NoPadding")
-            : CipherUtilities.GetCipher("AES/CBC/PKCS5Padding");
+        _cipher = strong ? CipherUtilities.GetCipher("AES/GCM/NoPadding") : CipherUtilities.GetCipher("AES/CBC/PKCS5Padding");
 
         byte[] saltBytes = GetSaltBytes(salt);
 
-        _key =  KeyDerivation.Pbkdf2(key, saltBytes, KeyDerivationPrf.HMACSHA1, 1024, _keySize / 8);
+        _key = KeyDerivation.Pbkdf2(key, saltBytes, KeyDerivationPrf.HMACSHA1, 1024, _keySize / 8);
     }
 
     private static byte[] GetSaltBytes(string salt)
@@ -47,13 +46,18 @@ internal sealed class AesTextDecryptor : ITextDecryptor
 
     public string Decrypt(byte[] fullCipher)
     {
-        byte[] iv = new byte[16];
-        byte[] cipherBytes = new byte[fullCipher.Length - 16];
+        byte[] iv = new byte[_ivSize / 8];
+        byte[] cipherBytes = new byte[fullCipher.Length - iv.Length];
 
         using var ms = new MemoryStream(fullCipher);
 
-        ms.Read(iv);
-        ms.Read(cipherBytes);
+        int readIv = ms.Read(iv);
+        int readCipherBytes = ms.Read(cipherBytes);
+
+        if (readIv != iv.Length || readCipherBytes != cipherBytes.Length)
+        {
+            throw new DecryptionException("Unexpected number of bytes read from cipher");
+        }
 
         try
         {
