@@ -841,7 +841,7 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
      [Fact]
-    public async Task Load_WithSimpleKeyDecryptionResultsInExpectedResult()
+    public void Load_WithSimpleKeyDecryptionResultsInExpectedResult()
     {
         const string environment = @"
                     {
@@ -882,7 +882,7 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public async Task Load_WithKeyStoreDecryptionResultsInExpectedResult()
+    public void Load_WithKeyStoreDecryptionResultsInExpectedResult()
     {
         const string environment = @"
                     {
@@ -930,7 +930,7 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public async Task ReLoad_DataDictionary_With_New_Configurations()
+    public void ReLoad_DataDictionary_With_New_Configurations()
     {
         const string environment = @"
                     {
@@ -1003,7 +1003,7 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public async Task AddConfigServerClientSettings_ChangesDataDictionary()
+    public void AddConfigServerClientSettings_ChangesDataDictionary()
     {
         var settings = new ConfigServerClientSettings
         {
