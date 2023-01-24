@@ -20,7 +20,7 @@ const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultTime
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultUri = "http://localhost:8888" -> string
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultVaultTokenRenewRate = 60000 -> int
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultVaultTokenTtl = 300000 -> int
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultÈncryptionRsaAlgorithm = "DEFAULT" -> string
+const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultEncryptionRsaAlgorithm = "DEFAULT" -> string
 static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
 static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder, Microsoft.Extensions.Hosting.IHostEnvironment environment) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
 static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder, Microsoft.Extensions.Hosting.IHostEnvironment environment, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder

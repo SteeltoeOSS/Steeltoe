@@ -117,7 +117,7 @@ public sealed class ConfigServerClientSettings
     /// <summary>
     /// Default Encryption method.
     /// </summary>
-    public const string DefaultÈncryptionRsaAlgorithm = "DEFAULT";
+    public const string DefaultEncryptionRsaAlgorithm = "DEFAULT";
 
     /// <summary>
     /// Default salt.
@@ -347,7 +347,7 @@ public sealed class ConfigServerClientSettings
         DiscoveryServiceId = DefaultConfigserverServiceId;
         HealthEnabled = DefaultHealthEnabled;
         HealthTimeToLive = DefaultHealthTimeToLive;
-        EncryptionRsaAlgorithm = DefaultÈncryptionRsaAlgorithm;
+        EncryptionRsaAlgorithm = DefaultEncryptionRsaAlgorithm;
         EncryptionRsaSalt = DefaultEncryptionRsaSalt;
     }
 

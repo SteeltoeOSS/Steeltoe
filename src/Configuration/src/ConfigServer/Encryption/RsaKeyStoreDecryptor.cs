@@ -55,13 +55,13 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
 
         if (key == null)
         {
-            throw new DecryptionException($"Key {alias} does not exist in keystor");
+            throw new DecryptionException($"Key {alias} does not exist in keystore.");
         }
 
         _cipher.Init(false, key);
         using var ms = new MemoryStream(fullCipher);
 
-        int secretLength = ReadSecretLenght(ms);
+        int secretLength = ReadSecretLength(ms);
         byte[] secretBytes = new byte[secretLength];
         byte[] cipherTextBytes = new byte[fullCipher.Length - secretBytes.Length - 2];
 
@@ -88,7 +88,7 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
         }
     }
 
-    private int ReadSecretLenght(Stream ms)
+    private int ReadSecretLength(Stream ms)
     {
         byte[] lengthBytes = new byte[2];
         int read = ms.Read(lengthBytes);
