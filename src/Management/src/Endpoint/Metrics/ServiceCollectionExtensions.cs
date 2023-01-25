@@ -146,7 +146,7 @@ public static class ServiceCollectionExtensions
        return services.AddSingleton((provider) =>
         {
             var steeltoeExporter = provider.GetService<SteeltoeExporter>();
-            var aggMan =  new AggregationManager(10, 10,
+            var aggMan =  new AggregationManager(100, 100,
                     (instrument, stats) => { steeltoeExporter.AddMetrics(instrument, stats); },
                     (date1, date2) => { /*begin*/ },
                     (date1, date2) => { /*end*/ },

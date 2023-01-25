@@ -115,24 +115,24 @@ public static class EndpointServiceCollectionExtensions
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
         }
 
-        //if (observerOptions.HttpClientCore)
-        //{
-        //    services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientCoreObserver>());
-        //}
+        if (observerOptions.HttpClientCore)
+        {
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientCoreObserver>());
+        }
 
-        //if (observerOptions.HttpClientDesktop)
-        //{
-        //    services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientDesktopObserver>());
-        //}
+        if (observerOptions.HttpClientDesktop)
+        {
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientDesktopObserver>());
+        }
 
-        //if (observerOptions.GCEvents || observerOptions.ThreadPoolEvents)
-        //{
-        //    services.TryAddEnumerable(ServiceDescriptor.Singleton<IRuntimeDiagnosticSource, ClrRuntimeObserver>());
-        //}
+        if (observerOptions.GCEvents || observerOptions.ThreadPoolEvents)
+        {
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IRuntimeDiagnosticSource, ClrRuntimeObserver>());
+        }
 
-        //if (observerOptions.EventCounterEvents)
-        //{
-        //    services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
-        //}
+        if (observerOptions.EventCounterEvents)
+        {
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
+        }
     }
 }

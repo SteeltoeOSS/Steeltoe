@@ -328,7 +328,8 @@ namespace System.Diagnostics.Metrics
             else if (_currentTimeSeries == _maxTimeSeries)
             {
                 _currentTimeSeries++;
-               // _timeSeriesLimitReached(); Handle inline
+                // _timeSeriesLimitReached(); Handle inline
+                Console.WriteLine("Time series limit reached");
                 return false;
             }
             else
@@ -348,6 +349,8 @@ namespace System.Diagnostics.Metrics
             {
                 _currentHistograms++;
                 //_histogramLimitReached();
+
+                Console.WriteLine("Histogram series limit reached");
                 return false;
             }
             else
@@ -365,6 +368,7 @@ namespace System.Diagnostics.Metrics
             catch (Exception e)
             {
                 //_observableInstrumentCallbackError(e);
+                Console.WriteLine(e);
             }
 
             foreach (KeyValuePair<Instrument, InstrumentState> kv in _instrumentStates)
