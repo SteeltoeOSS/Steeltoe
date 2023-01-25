@@ -30,15 +30,17 @@ namespace System.Diagnostics.Metrics
 
     internal sealed class HistogramStatistics : IAggregationStatistics
     {
-        internal HistogramStatistics(QuantileValue[] quantiles, double sum)
+        internal HistogramStatistics(QuantileValue[] quantiles, double sum, double max)
         {
             Quantiles = quantiles;
             HistogramSum = sum;
+            HistograMax = max;
         }
 
         public QuantileValue[] Quantiles { get; }
 
         public double HistogramSum { get; }
+        public double HistograMax { get; }
     }
 
     internal sealed class LabeledAggregationStatistics

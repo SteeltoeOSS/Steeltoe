@@ -287,6 +287,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.Kube
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.MetricCollectors", "Management\src\MetricCollectors\Steeltoe.Management.MetricCollectors.csproj", "{7207D047-2F02-4946-9A3D-16928E62F37B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample", "..\..\steeltoe-weatherforecast\Sample.csproj", "{E7B1DD8A-BEFA-461E-916C-9B88F02D1980}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -701,6 +703,10 @@ Global
 		{7207D047-2F02-4946-9A3D-16928E62F37B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7207D047-2F02-4946-9A3D-16928E62F37B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7207D047-2F02-4946-9A3D-16928E62F37B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7B1DD8A-BEFA-461E-916C-9B88F02D1980}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7B1DD8A-BEFA-461E-916C-9B88F02D1980}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7B1DD8A-BEFA-461E-916C-9B88F02D1980}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7B1DD8A-BEFA-461E-916C-9B88F02D1980}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

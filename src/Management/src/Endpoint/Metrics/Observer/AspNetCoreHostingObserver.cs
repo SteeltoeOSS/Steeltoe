@@ -81,6 +81,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
         {
             IEnumerable<KeyValuePair<string, object>> labelSets = GetLabelSets(arg);
 
+
             _serverCount.Record(1, labelSets.AsReadonlySpan());
             _responseTime.Record(current.Duration.TotalSeconds, labelSets.AsReadonlySpan());
         }

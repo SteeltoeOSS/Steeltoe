@@ -61,7 +61,7 @@ public class SteeltoeExporter// : MetricsExporter
     //    return new SteeltoeCollectionResponse(response.MetricSamples, response.AvailableTags, DateTime.Now);
     //}
 
-    internal void AddMetrics(System.Diagnostics.Metrics.Instrument instrument, LabeledAggregationStatistics stats)
+    internal void AddMetrics(Instrument instrument, LabeledAggregationStatistics stats)
     {
         if (stats.AggregationStatistics is RateStatistics rateStats)
         {
@@ -87,8 +87,17 @@ public class SteeltoeExporter// : MetricsExporter
         {
             double sum = histogramStats.HistogramSum;
             //  Log.HistogramValuePublished(sessionId, instrument.Meter.Name, instrument.Meter.Version, instrument.Name, instrument.Unit, FormatTags(stats.Labels), FormatQuantiles(histogramStats.Quantiles));
-            var sample = new MetricSample(MetricStatistic.Value, sum, stats.Labels);
-            metricSamples[instrument.Name].Add(sample);
+            if (instrument.Unit == "s")
+            {
+                metricSamples[instrument.Name].Add(new MetricSample(MetricStatistic.TotalTime, sum, stats.Labels));
+                metricSamples[instrument.Name].Add(new MetricSample(MetricStatistic.Max, histogramStats.HistograMax, stats.Labels));
+
+            }
+            else
+            {
+                var sample = new MetricSample(MetricStatistic.Count, sum, stats.Labels);
+                metricSamples[instrument.Name].Add(sample);
+            }
         }
 
         //var tags = new List<KeyValuePair<string, string>>();
