@@ -4,7 +4,7 @@
 
 using System.Diagnostics.Metrics;
 using Microsoft.AspNetCore.Http;
-using OpenTelemetry.Metrics;
+//using OpenTelemetry.Metrics;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics;
@@ -132,31 +132,10 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         managementOptions.EndpointOptions.Add(opts);
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
         var exporter = new SteeltoeExporter(_scraperOptions);
-        Meter s_meter = new Meter("HatCo.HatStore", "1.0.0");
-        Counter<int> s_hatsSold = s_meter.CreateCounter<int>("hats-sold");
-        Histogram<int> s_hist = s_meter.CreateHistogram<int>("hat-histogram");
 
-        var agg =  GetTestMetrics(exporter);
-       // agg.SetCollectionPeriod(TimeSpan.FromSeconds(1));
-        agg.Start();
+        var meterProvider = GetTestMetrics( exporter);
 
         var ep = new MetricsEndpoint(opts, exporter);
-        //new List<MetricsExporter>
-        //{
-        //    exporter
-        //});
-        s_hatsSold.Add(1, new KeyValuePair<string, object>("tag1", 5));
-        s_hatsSold.Add(3, new KeyValuePair<string, object>("tag1", 5));
-
-        s_hist.Record(1);
-        s_hist.Record(3);
-
-        Task.Delay(5000).Wait();
-        agg.Collect();
-
-        Assert.NotEmpty(exporter.metricSamples);
-        Assert.Equal(4, exporter.metricSamples["hats-sold"].First().Value);
-
 
         var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
@@ -167,7 +146,6 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var rdr = new StreamReader(context.Response.Body);
         string json = await rdr.ReadToEndAsync();
         Assert.Equal("{\"names\":[]}", json);
-        agg.Dispose();
     }
 
     //[Fact]

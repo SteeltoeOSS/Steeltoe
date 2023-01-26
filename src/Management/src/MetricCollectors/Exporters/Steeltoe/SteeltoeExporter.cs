@@ -105,7 +105,7 @@ public class SteeltoeExporter// : MetricsExporter
             }
             else
             {
-                var sample = new MetricSample(MetricStatistic.Count, sum, stats.Labels);
+                var sample = new MetricSample(MetricStatistic.Total, sum, stats.Labels);
                 metricSamples[instrument.Name].Add(sample);
             }
         }

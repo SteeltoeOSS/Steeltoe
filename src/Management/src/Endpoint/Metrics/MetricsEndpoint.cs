@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Exporters;
@@ -22,7 +23,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         //ArgumentGuard.NotNull(exporters);
 
         //_exporter = exporters.OfType<SteeltoeExporter>().SingleOrDefault() ??
-        _exporter = exporter ?? throw new ArgumentException($"Exporters must contain a single {nameof(SteeltoeExporter)}.", nameof(exporter));
+        _exporter = exporter ?? throw new ArgumentNullException($"Exporters must contain a single {nameof(SteeltoeExporter)}.", nameof(exporter));
         
 
         _logger = logger;
@@ -68,6 +69,13 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         static MetricSample MaxAggregator(MetricSample current, MetricSample next)
         {
             return new MetricSample(current.Statistic, current.Value > next.Value ? current.Value : next.Value, current.Tags);
+        }
+        IEnumerable<MetricSample> rateSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Rate);
+
+        if (rateSamples.Any())
+        {
+            MetricSample sample = rateSamples.Aggregate(SumAggregator);
+            sampleList.Add(new MetricSample(MetricStatistic.Rate, sample.Value / rateSamples.Count(), sample.Tags)); //TODO: What should this be? 
         }
 
         IEnumerable<MetricSample> valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Value);
@@ -117,7 +125,10 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
 
     protected internal (MetricsCollection<List<MetricSample>> Samples, MetricsCollection<List<MetricTag>> Tags) GetMetrics()
     {//ICollectionResponse response = _exporter.;
-
+        if(_exporter.Collect == null)
+        {
+            throw new InvalidOperationException("Collect should not be null");
+        }
         _exporter.Collect();
         //if (response is SteeltoeCollectionResponse collectionResponse)
         //{

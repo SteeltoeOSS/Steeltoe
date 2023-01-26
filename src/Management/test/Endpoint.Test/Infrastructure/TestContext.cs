@@ -53,21 +53,31 @@ internal sealed class TestContext : IDisposable
     }
 
     public T GetService<T>()
+    {   
+        return ServiceProvider.GetRequiredService<T>();
+    }
+    public IEnumerable<T> GetServices<T>()
     {
-        if (_serviceProvider == null)
+        return ServiceProvider.GetServices<T>();
+    }
+    private IServiceProvider ServiceProvider
+    { 
+        get
         {
-            // add standard services
-            _serviceCollection.AddOptions();
-            _serviceCollection.AddLogging(setup => setup.AddProvider(_loggerProvider));
-            _serviceCollection.AddSingleton<IConfiguration>(Configuration);
+            if (_serviceProvider == null)
+            {
+                // add standard services
+                _serviceCollection.AddOptions();
+                _serviceCollection.AddLogging(setup => setup.AddProvider(_loggerProvider));
+                _serviceCollection.AddSingleton<IConfiguration>(Configuration);
 
-            // allow test to customize services
-            AdditionalServices?.Invoke(_serviceCollection, Configuration);
+                // allow test to customize services
+                AdditionalServices?.Invoke(_serviceCollection, Configuration);
 
-            _serviceProvider = _serviceCollection.BuildServiceProvider();
+                _serviceProvider = _serviceCollection.BuildServiceProvider();
+            }
+            return _serviceProvider;
         }
-
-        return _serviceProvider.GetRequiredService<T>();
     }
 
     public void Dispose()

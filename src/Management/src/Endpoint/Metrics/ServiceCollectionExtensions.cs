@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
 
-        services.TryAddSingleton<SteeltoeExporter>(provider =>
+        services.TryAddSingleton(provider =>
         {
             var options = provider.GetService<IMetricsEndpointOptions>();
 

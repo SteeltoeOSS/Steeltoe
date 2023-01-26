@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OpenTelemetry.Metrics;
+//using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.Logging;

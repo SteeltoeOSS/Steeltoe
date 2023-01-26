@@ -109,7 +109,7 @@ public static class WebApplicationBuilderExtensions
             webApplicationBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.SteeltoeManagementEndpoint);
         }
 
-        webApplicationBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeManagementEndpoint);
+     //   webApplicationBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeManagementEndpoint);
 
         webApplicationBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblies.SteeltoeManagementTracing);
 
@@ -274,17 +274,17 @@ public static class WebApplicationBuilderExtensions
         Log(LogMessages.WireAllActuators);
     }
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireWavefrontMetrics(this WebApplicationBuilder webApplicationBuilder)
-    {
-        if (!webApplicationBuilder.Configuration.HasWavefront())
-        {
-            return;
-        }
+    //[MethodImpl(MethodImplOptions.NoInlining)]
+    //private static void WireWavefrontMetrics(this WebApplicationBuilder webApplicationBuilder)
+    //{
+    //    if (!webApplicationBuilder.Configuration.HasWavefront())
+    //    {
+    //        return;
+    //    }
 
-        webApplicationBuilder.AddWavefrontMetrics();
-        Log(LogMessages.WireWavefrontMetrics);
-    }
+    //    webApplicationBuilder.AddWavefrontMetrics();
+    //    Log(LogMessages.WireWavefrontMetrics);
+    //}
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDynamicSerilog(this WebApplicationBuilder webApplicationBuilder)

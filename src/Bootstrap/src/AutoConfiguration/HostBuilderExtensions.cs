@@ -107,7 +107,7 @@ public static class HostBuilderExtensions
             hostBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.SteeltoeManagementEndpoint);
         }
 
-        hostBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeManagementEndpoint);
+     //   hostBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeManagementEndpoint);
 
         hostBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblies.SteeltoeManagementTracing);
 
@@ -250,17 +250,17 @@ public static class HostBuilderExtensions
         hostBuilder.AddAllActuators().Log(LogMessages.WireAllActuators);
     }
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireWavefrontMetrics(this IHostBuilder hostBuilder)
-    {
-        hostBuilder.ConfigureServices((context, collection) =>
-        {
-            if (context.Configuration.HasWavefront())
-            {
-                collection.AddWavefrontMetrics();
-            }
-        });
-    }
+    //[MethodImpl(MethodImplOptions.NoInlining)]
+    //private static void WireWavefrontMetrics(this IHostBuilder hostBuilder)
+    //{
+    //    hostBuilder.ConfigureServices((context, collection) =>
+    //    {
+    //        if (context.Configuration.HasWavefront())
+    //        {
+    //            collection.AddWavefrontMetrics();
+    //        }
+    //    });
+    //}
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDynamicSerilog(this IHostBuilder hostBuilder)
