@@ -105,7 +105,7 @@ internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigu
 
     protected override void PostProcessConfiguration()
     {
-        if (this.IsSteeltoeBindingsEnabled())
+        if (this.IsKubernetesBindingsEnabled())
         {
             base.PostProcessConfiguration();
         }

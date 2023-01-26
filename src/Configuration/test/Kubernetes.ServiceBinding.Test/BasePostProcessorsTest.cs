@@ -52,19 +52,19 @@ public abstract class BasePostProcessorsTest
         return dictionary;
     }
 
-    protected string MakeTypeKey(string bindingName)
+    private string MakeTypeKey(string bindingName)
     {
         return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter +
             ServiceBindingConfigurationProvider.TypeKey;
     }
 
-    protected string MakeProviderKey(string bindingName)
+    private string MakeProviderKey(string bindingName)
     {
         return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter +
             ServiceBindingConfigurationProvider.ProviderKey;
     }
 
-    protected string MakeSecretKey(string bindingName, string key)
+    private string MakeSecretKey(string bindingName, string key)
     {
         return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter +
             key;
@@ -73,19 +73,20 @@ public abstract class BasePostProcessorsTest
     internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor, string bindingTypeKey,
         bool bindingTypeKeyValue)
     {
-        var source = new TestPostProcessorConfigurationSource();
-
-        source.ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        var source = new TestPostProcessorConfigurationSource
         {
-            { $"steeltoe:kubernetes:bindings:{bindingTypeKey}:enable", bindingTypeKeyValue.ToString(CultureInfo.InvariantCulture) }
-        }).Build();
+            ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { $"steeltoe:kubernetes:bindings:{bindingTypeKey}:enable", bindingTypeKeyValue.ToString(CultureInfo.InvariantCulture) }
+            }).Build()
+        };
 
         source.RegisterPostProcessor(postProcessor);
 
         return new TestPostProcessorConfigurationProvider(source);
     }
 
-    internal class TestPostProcessorConfigurationProvider : PostProcessorConfigurationProvider
+    private sealed class TestPostProcessorConfigurationProvider : PostProcessorConfigurationProvider
     {
         public TestPostProcessorConfigurationProvider(PostProcessorConfigurationSource source)
             : base(source)
@@ -93,7 +94,7 @@ public abstract class BasePostProcessorsTest
         }
     }
 
-    internal class TestPostProcessorConfigurationSource : PostProcessorConfigurationSource
+    private sealed class TestPostProcessorConfigurationSource : PostProcessorConfigurationSource
     {
     }
 }
