@@ -63,6 +63,16 @@ public class SteeltoeExporter// : MetricsExporter
 
     internal void AddMetrics(Instrument instrument, LabeledAggregationStatistics stats)
     {
+        //var tags = new List<KeyValuePair<string, string>>();
+        //stats.
+
+        //foreach (KeyValuePair<string, object> tag in metricPoint.Tags)
+        //{
+        //    tags.Add(new KeyValuePair<string, string>(tag.Key, tag.Value.ToString()));
+        //}
+
+        UpdateAvailableTags(availTags, instrument.Name, stats.Labels);
+
         if (stats.AggregationStatistics is RateStatistics rateStats)
         {
             //Log.CounterRateValuePublished(sessionId, instrument.Meter.Name, instrument.Meter.Version, instrument.Name, instrument.Unit, FormatTags(stats.Labels),

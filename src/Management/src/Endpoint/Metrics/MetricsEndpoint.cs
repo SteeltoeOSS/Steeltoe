@@ -121,7 +121,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         _exporter.Collect();
         //if (response is SteeltoeCollectionResponse collectionResponse)
         //{
-            return (_exporter.metricSamples, new MetricsCollection<List<MetricTag>>());
+            return (_exporter.metricSamples, _exporter.availTags);
         //}
 
         //_logger?.LogWarning("Please ensure OpenTelemetry is configured via Steeltoe extension methods.");
