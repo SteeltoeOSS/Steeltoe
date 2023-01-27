@@ -2,9 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
+
 namespace Steeltoe.Management.MetricCollectors;
 
-public class MetricsCollection<T> : Dictionary<string, T>
+public class MetricsCollection<T> : ConcurrentDictionary<string, T>
     where T : new()
 {
     public new T this[string key]

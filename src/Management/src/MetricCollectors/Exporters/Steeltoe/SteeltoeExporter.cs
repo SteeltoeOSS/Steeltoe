@@ -20,8 +20,8 @@ public class SteeltoeExporter// : MetricsExporter
     internal  int ScrapeResponseCacheDurationMilliseconds { get; }
 
     //   internal override Func<Batch<Metric>, ExportResult> OnExport { get; set; }
-    internal MetricsCollection<List<MetricSample>> metricSamples = new();
-    internal MetricsCollection<List<MetricTag>>  availTags = new ();
+    private MetricsCollection<List<MetricSample>> _metricSamples = new();
+    private MetricsCollection<List<MetricTag>>  _availTags = new ();
 
     public  Action Collect { get; set; }
 
@@ -60,6 +60,16 @@ public class SteeltoeExporter// : MetricsExporter
     //    var response = (SteeltoeCollectionResponse)collectionResponse;
     //    return new SteeltoeCollectionResponse(response.MetricSamples, response.AvailableTags, DateTime.Now);
     //}
+    internal (MetricsCollection<List<MetricSample>>, MetricsCollection<List<MetricTag>>) Export()
+    {
+        if(Collect == null)
+        {
+            throw new InvalidOperationException("Collect should not be null");
+        }
+
+        Collect();
+        return (_metricSamples, _availTags);
+    }
 
     internal void AddMetrics(Instrument instrument, LabeledAggregationStatistics stats)
     {
@@ -71,7 +81,7 @@ public class SteeltoeExporter// : MetricsExporter
         //    tags.Add(new KeyValuePair<string, string>(tag.Key, tag.Value.ToString()));
         //}
 
-        UpdateAvailableTags(availTags, instrument.Name, stats.Labels);
+        UpdateAvailableTags(_availTags, instrument.Name, stats.Labels);
 
         if (stats.AggregationStatistics is RateStatistics rateStats)
         {
@@ -80,7 +90,7 @@ public class SteeltoeExporter// : MetricsExporter
             if (rateStats.Delta.HasValue)
             {
                 var sample = new MetricSample(MetricStatistic.Rate, rateStats.Delta.Value, stats.Labels);
-                metricSamples[instrument.Name].Add(sample);
+                _metricSamples[instrument.Name].Add(sample);
             }
         }
         else if (stats.AggregationStatistics is LastValueStatistics lastValueStats)
@@ -90,7 +100,7 @@ public class SteeltoeExporter// : MetricsExporter
             if (lastValueStats.LastValue.HasValue)
             {
                 var sample = new MetricSample(MetricStatistic.Value, lastValueStats.LastValue.Value, stats.Labels);
-                metricSamples[instrument.Name].Add(sample);
+                _metricSamples[instrument.Name].Add(sample);
             }
         }
         else if (stats.AggregationStatistics is HistogramStatistics histogramStats)
@@ -99,14 +109,14 @@ public class SteeltoeExporter// : MetricsExporter
             //  Log.HistogramValuePublished(sessionId, instrument.Meter.Name, instrument.Meter.Version, instrument.Name, instrument.Unit, FormatTags(stats.Labels), FormatQuantiles(histogramStats.Quantiles));
             if (instrument.Unit == "s")
             {
-                metricSamples[instrument.Name].Add(new MetricSample(MetricStatistic.TotalTime, sum, stats.Labels));
-                metricSamples[instrument.Name].Add(new MetricSample(MetricStatistic.Max, histogramStats.HistograMax, stats.Labels));
+                _metricSamples[instrument.Name].Add(new MetricSample(MetricStatistic.TotalTime, sum, stats.Labels));
+                _metricSamples[instrument.Name].Add(new MetricSample(MetricStatistic.Max, histogramStats.HistograMax, stats.Labels));
 
             }
             else
             {
                 var sample = new MetricSample(MetricStatistic.Total, sum, stats.Labels);
-                metricSamples[instrument.Name].Add(sample);
+                _metricSamples[instrument.Name].Add(sample);
             }
         }
 

@@ -70,51 +70,57 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         {
             return new MetricSample(current.Statistic, current.Value > next.Value ? current.Value : next.Value, current.Tags);
         }
-        IEnumerable<MetricSample> rateSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Rate);
-
-        if (rateSamples.Any())
+        try
         {
-            MetricSample sample = rateSamples.Aggregate(SumAggregator);
-            sampleList.Add(new MetricSample(MetricStatistic.Rate, sample.Value / rateSamples.Count(), sample.Tags)); //TODO: What should this be? 
+            IEnumerable<MetricSample> rateSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Rate).ToList();
+
+            if (rateSamples.Any())
+            {
+                MetricSample sample = rateSamples.Aggregate(SumAggregator);
+                sampleList.Add(new MetricSample(MetricStatistic.Rate, sample.Value / rateSamples.Count(), sample.Tags)); //TODO: What should this be? 
+            }
+
+            IEnumerable<MetricSample> valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Value).ToList();
+
+            if (valueSamples.Any())
+            {
+                MetricSample sample = valueSamples.Aggregate(SumAggregator);
+                sampleList.Add(new MetricSample(MetricStatistic.Value, sample.Value / valueSamples.Count(), sample.Tags));
+            }
+
+            IEnumerable<MetricSample> totalSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Total).ToList();
+
+            if (totalSamples.Any())
+            {
+                sampleList.Add(totalSamples.Aggregate(SumAggregator));
+            }
+
+            IEnumerable<MetricSample> totalTimeSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TotalTime).ToList();
+
+            if (totalTimeSamples.Any())
+            {
+                sampleList.Add(totalTimeSamples.Aggregate(SumAggregator));
+            }
+
+            IEnumerable<MetricSample> countSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Count).ToList();
+
+            if (countSamples.Any())
+            {
+                sampleList.Add(countSamples.Aggregate(SumAggregator));
+            }
+
+            IEnumerable<MetricSample> maxSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Max).ToList();
+
+            if (maxSamples.Any())
+            {
+                MetricSample sample = maxSamples.Aggregate(MaxAggregator);
+                sampleList.Add(new MetricSample(MetricStatistic.Max, sample.Value, sample.Tags));
+            }
         }
-
-        IEnumerable<MetricSample> valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Value);
-
-        if (valueSamples.Any())
+        catch(Exception ex)
         {
-            MetricSample sample = valueSamples.Aggregate(SumAggregator);
-            sampleList.Add(new MetricSample(MetricStatistic.Value, sample.Value / valueSamples.Count(), sample.Tags));
+            // Nothing we can do , log and move on 
         }
-
-        IEnumerable<MetricSample> totalSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Total);
-
-        if (totalSamples.Any())
-        {
-            sampleList.Add(totalSamples.Aggregate(SumAggregator));
-        }
-
-        IEnumerable<MetricSample> totalTimeSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TotalTime);
-
-        if (totalTimeSamples.Any())
-        {
-            sampleList.Add(totalTimeSamples.Aggregate(SumAggregator));
-        }
-
-        IEnumerable<MetricSample> countSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Count);
-
-        if (countSamples.Any())
-        {
-            sampleList.Add(countSamples.Aggregate(SumAggregator));
-        }
-
-        IEnumerable<MetricSample> maxSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Max);
-
-        if (maxSamples.Any())
-        {
-            MetricSample sample = maxSamples.Aggregate(MaxAggregator);
-            sampleList.Add(new MetricSample(MetricStatistic.Max, sample.Value, sample.Tags));
-        }
-
         return sampleList;
     }
 
@@ -123,20 +129,5 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         return new MetricsResponse(request.MetricName, metricSamples, availTags);
     }
 
-    protected internal (MetricsCollection<List<MetricSample>> Samples, MetricsCollection<List<MetricTag>> Tags) GetMetrics()
-    {//ICollectionResponse response = _exporter.;
-        if(_exporter.Collect == null)
-        {
-            throw new InvalidOperationException("Collect should not be null");
-        }
-        _exporter.Collect();
-        //if (response is SteeltoeCollectionResponse collectionResponse)
-        //{
-            return (_exporter.metricSamples, _exporter.availTags);
-        //}
-
-        //_logger?.LogWarning("Please ensure OpenTelemetry is configured via Steeltoe extension methods.");
-
-        //return (new MetricsCollection<List<MetricSample>>(), new MetricsCollection<List<MetricTag>>());
-    }
+    protected internal (MetricsCollection<List<MetricSample>> Samples, MetricsCollection<List<MetricTag>> Tags) GetMetrics() => _exporter.Export();
 }

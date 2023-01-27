@@ -6,6 +6,8 @@
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Exporters;
+using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 //using Steeltoe.Management.OpenTelemetry.Exporters;
 //using Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
 using Steeltoe.Management.OpenTelemetry.Metrics;
@@ -15,10 +17,10 @@ namespace Steeltoe.Management.Endpoint.Test.Metrics.Observer;
 
 public class EventCounterListenerTest : BaseTest
 {
-    //private readonly PullMetricsExporterOptions _scraperOptions = new()
-    //{
-    //    ScrapeResponseCacheDurationMilliseconds = 500
-    //};
+    private readonly PullMetricsExporterOptions _scraperOptions = new()
+    {
+        ScrapeResponseCacheDurationMilliseconds = 500
+    };
 
     private readonly string[] _metrics =
     {
@@ -43,25 +45,26 @@ public class EventCounterListenerTest : BaseTest
         "System.Runtime.working-set"
     };
 
-    //[Fact]
-    //public async Task EventCounterListenerGetsMetricsTest()
-    //{
-    //    using var listener = new EventCounterListener(new MetricsObserverOptions());
-    //    SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
+    [Fact]
+    public async Task EventCounterListenerGetsMetricsTest()
+    {
+        using var listener = new EventCounterListener(new MetricsObserverOptions());
+        SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
-    //    var exporter = new SteeltoeExporter(_scraperOptions);
-    //    using MeterProvider metrics = GetTestMetrics(null, exporter, null);
-    //    await Task.Delay(2000);
+        var exporter = new SteeltoeExporter(_scraperOptions);
+        var aggregationManager = GetTestMetrics(exporter);
+        aggregationManager.Start();
+        await Task.Delay(2000);
 
-    //    var collectionResponse = (SteeltoeCollectionResponse)await exporter.CollectionManager.EnterCollectAsync();
+        (var metricSamples, _) = exporter.Export();
 
-    //    foreach (string metric in _metrics)
-    //    {
-    //        List<KeyValuePair<string, List<MetricSample>>> summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
-    //        Assert.NotNull(summary);
-    //        Assert.True(summary.Count > 0);
-    //    }
-    //}
+        foreach (string metric in _metrics)
+        {
+            List<KeyValuePair<string, List<MetricSample>>> summary = metricSamples.Where(x => x.Key == metric).ToList();
+            Assert.True(summary != null, $"Summary was null for {metric}");
+            Assert.True(summary.Count > 0, $"Summary was empty for {metric}");
+        }
+    }
 
     //[Fact]
     //public async Task EventCounterListenerGetsMetricsWithExclusionsTest()

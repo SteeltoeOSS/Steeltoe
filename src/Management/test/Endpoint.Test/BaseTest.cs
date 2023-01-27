@@ -59,7 +59,7 @@ public abstract class BaseTest : IDisposable
         //    .AddMeter(SteeltoeMetrics.InstrumentationName, SteeltoeMetrics.InstrumentationVersion); //.AddRegisteredViews(viewRegistry);
       
 
-        var aggregator = new AggregationManager(10, 10,
+        var aggregator = new AggregationManager(100, 100,
             (instrument, stats) => { steeltoeExporter.AddMetrics(instrument, stats);  },
             (date1, date2) => { /*begin*/ },
             (date1, date2) => { /*end*/ },
