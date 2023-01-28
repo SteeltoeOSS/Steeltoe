@@ -90,6 +90,6 @@ internal sealed class EncryptionResolverSource : IConfigurationSource
             providers.Add(provider);
         }
 
-        return new EncryptionResolverProvider(providers, LoggerFactory);
+        return new EncryptionResolverProvider(providers, LoggerFactory, _textDecryptor);
     }
 }

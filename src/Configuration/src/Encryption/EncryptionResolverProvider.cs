@@ -39,6 +39,9 @@ internal sealed class EncryptionResolverProvider : IEncryptionResolverProvider
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
+    /// </param>
     public EncryptionResolverProvider(IConfigurationRoot root, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
     {
         ArgumentGuard.NotNull(root);
@@ -62,14 +65,20 @@ internal sealed class EncryptionResolverProvider : IEncryptionResolverProvider
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
-    public EncryptionResolverProvider(IList<IConfigurationProvider> providers, ILoggerFactory loggerFactory)
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
+    /// </param>
+    public EncryptionResolverProvider(IList<IConfigurationProvider> providers, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
     {
         ArgumentGuard.NotNull(providers);
         ArgumentGuard.NotNull(loggerFactory);
+        ArgumentGuard.NotNull(textDecryptor);
 
         Providers = providers;
         Logger = loggerFactory.CreateLogger<EncryptionResolverProvider>();
+        Decriptor = textDecryptor;
     }
+
 
     /// <summary>
     /// Tries to get a configuration value for the specified key. If the value is a encryption, it will try to resolve the encryption before returning it.

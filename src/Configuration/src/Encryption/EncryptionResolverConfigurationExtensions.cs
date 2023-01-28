@@ -20,6 +20,9 @@ public static class EncryptionResolverConfigurationExtensions
     /// <param name="builder">
     /// The configuration builder.
     /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
+    /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" />.
     /// </returns>
@@ -39,6 +42,9 @@ public static class EncryptionResolverConfigurationExtensions
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" />.
@@ -71,12 +77,15 @@ public static class EncryptionResolverConfigurationExtensions
     /// <param name="configuration">
     /// The configuration to wrap.
     /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
+    /// </param>
     /// <returns>
     /// A new configuration.
     /// </returns>
-    public static IConfiguration AddEncryptionResolver(this IConfiguration configuration)
+    public static IConfiguration AddEncryptionResolver(this IConfiguration configuration, ITextDecryptor textDecryptor)
     {
-        return AddEncryptionResolver(configuration, NullLoggerFactory.Instance);
+        return AddEncryptionResolver(configuration, NullLoggerFactory.Instance, textDecryptor);
     }
 
     /// <summary>
@@ -90,13 +99,17 @@ public static class EncryptionResolverConfigurationExtensions
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
+    /// </param>
     /// <returns>
     /// A new configuration.
     /// </returns>
-    public static IConfiguration AddEncryptionResolver(this IConfiguration configuration, ILoggerFactory loggerFactory)
+    public static IConfiguration AddEncryptionResolver(this IConfiguration configuration, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
     {
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(loggerFactory);
+        ArgumentGuard.NotNull(textDecryptor);
 
         if (configuration is not IConfigurationRoot root)
         {
@@ -105,7 +118,7 @@ public static class EncryptionResolverConfigurationExtensions
 
         return new ConfigurationRoot(new List<IConfigurationProvider>
         {
-            new EncryptionResolverProvider(new List<IConfigurationProvider>(root.Providers), loggerFactory)
+            new EncryptionResolverProvider(new List<IConfigurationProvider>(root.Providers), loggerFactory, textDecryptor)
         });
     }
 
@@ -117,6 +130,9 @@ public static class EncryptionResolverConfigurationExtensions
     /// </summary>
     /// <param name="configurationManager">
     /// The configuration manager.
+    /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
     /// </param>
     /// <returns>
     /// The incoming <paramref name="configurationManager" />.
@@ -137,6 +153,9 @@ public static class EncryptionResolverConfigurationExtensions
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
     /// </param>
     /// <returns>
     /// The incoming <paramref name="configurationManager" />.

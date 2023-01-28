@@ -27,12 +27,15 @@ public static class EncryptionResolverExtensions
     /// <param name="configuration">
     /// The configuration the encryption resolver will wrap.
     /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
+    /// </param>
     /// <returns>
     /// The new configuration.
     /// </returns>
-    public static IConfiguration ConfigureEncryptionResolver(this IServiceCollection services, IConfiguration configuration)
+    public static IConfiguration ConfigureEncryptionResolver(this IServiceCollection services, IConfiguration configuration, ITextDecryptor textDecryptor)
     {
-        return ConfigureEncryptionResolver(services, configuration, NullLoggerFactory.Instance);
+        return ConfigureEncryptionResolver(services, configuration, NullLoggerFactory.Instance, textDecryptor);
     }
 
     /// <summary>
@@ -49,16 +52,19 @@ public static class EncryptionResolverExtensions
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
+    /// </param>
     /// <returns>
     /// The new configuration.
     /// </returns>
-    public static IConfiguration ConfigureEncryptionResolver(this IServiceCollection services, IConfiguration configuration, ILoggerFactory loggerFactory)
+    public static IConfiguration ConfigureEncryptionResolver(this IServiceCollection services, IConfiguration configuration, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(loggerFactory);
 
-        IConfiguration newConfiguration = configuration.AddEncryptionResolver(loggerFactory);
+        IConfiguration newConfiguration = configuration.AddEncryptionResolver(loggerFactory, textDecryptor);
         services.Replace(ServiceDescriptor.Singleton(typeof(IConfiguration), newConfiguration));
 
         return newConfiguration;
@@ -72,6 +78,9 @@ public static class EncryptionResolverExtensions
     /// </summary>
     /// <param name="hostBuilder">
     /// The host builder.
+    /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
     /// </param>
     /// <returns>
     /// The provided host builder.
@@ -93,6 +102,9 @@ public static class EncryptionResolverExtensions
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
+    /// </param>
     /// <returns>
     /// The provided host builder.
     /// </returns>
@@ -100,6 +112,7 @@ public static class EncryptionResolverExtensions
     {
         ArgumentGuard.NotNull(hostBuilder);
         ArgumentGuard.NotNull(loggerFactory);
+        ArgumentGuard.NotNull(textDecryptor);
 
         return hostBuilder.ConfigureAppConfiguration((_, builder) => builder.AddEncryptionResolver(loggerFactory, textDecryptor));
     }
@@ -112,6 +125,9 @@ public static class EncryptionResolverExtensions
     /// </summary>
     /// <param name="hostBuilder">
     /// The host builder.
+    /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
     /// </param>
     /// <returns>
     /// The provided host builder.
@@ -133,6 +149,9 @@ public static class EncryptionResolverExtensions
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
+    /// </param>
     /// <returns>
     /// The provided host builder.
     /// </returns>
@@ -140,6 +159,7 @@ public static class EncryptionResolverExtensions
     {
         ArgumentGuard.NotNull(hostBuilder);
         ArgumentGuard.NotNull(loggerFactory);
+        ArgumentGuard.NotNull(textDecryptor);
 
         return hostBuilder.ConfigureAppConfiguration((_, builder) => builder.AddEncryptionResolver(loggerFactory, textDecryptor));
     }
@@ -153,12 +173,15 @@ public static class EncryptionResolverExtensions
     /// <param name="applicationBuilder">
     /// The application builder.
     /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
+    /// </param>
     /// <returns>
     /// The provided application builder.
     /// </returns>
-    public static WebApplicationBuilder AddEncryptionResolver(this WebApplicationBuilder applicationBuilder)
+    public static WebApplicationBuilder AddEncryptionResolver(this WebApplicationBuilder applicationBuilder, ITextDecryptor textDecryptor)
     {
-        return AddEncryptionResolver(applicationBuilder, NullLoggerFactory.Instance);
+        return AddEncryptionResolver(applicationBuilder, NullLoggerFactory.Instance, textDecryptor);
     }
 
     /// <summary>
@@ -173,15 +196,19 @@ public static class EncryptionResolverExtensions
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use
+    /// </param>
     /// <returns>
     /// The provided application builder.
     /// </returns>
-    public static WebApplicationBuilder AddEncryptionResolver(this WebApplicationBuilder applicationBuilder, ILoggerFactory loggerFactory)
+    public static WebApplicationBuilder AddEncryptionResolver(this WebApplicationBuilder applicationBuilder, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
     {
         ArgumentGuard.NotNull(applicationBuilder);
         ArgumentGuard.NotNull(loggerFactory);
+        ArgumentGuard.NotNull(textDecryptor);
 
-        applicationBuilder.Configuration.AddEncryptionResolver(loggerFactory);
+        applicationBuilder.Configuration.AddEncryptionResolver(loggerFactory, textDecryptor);
         return applicationBuilder;
     }
 }
