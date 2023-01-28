@@ -8,7 +8,5 @@ public interface ITextDecryptor
 {
     string Decrypt(string fullCipher);
 
-    string Decrypt(byte[] fullCipher);
-
-    string Decrypt(byte[] fullCipher, string alias);
+    string Decrypt(string fullCipher, string alias);
 }

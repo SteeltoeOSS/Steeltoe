@@ -11,13 +11,8 @@ internal sealed class NoopDecryptor : ITextDecryptor
         return fullCipher;
     }
 
-    public string Decrypt(byte[] fullCipher)
+    public string Decrypt(string fullCipher, string alias)
     {
-        throw new NotSupportedException();
-    }
-
-    public string Decrypt(byte[] fullCipher, string alias)
-    {
-        throw new NotSupportedException();
+        return fullCipher;
     }
 }

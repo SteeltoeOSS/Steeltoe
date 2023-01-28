@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Configuration.Encryption.ConfigServer;
 using Xunit;
 
-namespace Steeltoe.Configuration.ConfigServer.Test.Encryption;
+namespace Steeltoe.Configuration.Encryption.ConfigServer.Test;
 
 public sealed class RsaKeyStoreDecryptorTest
 {
@@ -17,20 +16,18 @@ public sealed class RsaKeyStoreDecryptorTest
     }
 
     [Fact]
-    public void Decrypt_WithNonexistingKeyThrows()
+    public void Decrypt_WithGarbageBase64Throws()
     {
         var rsaKeyStoreDecryptor = new RsaKeyStoreDecryptor(_keyProvider, "nonexistingKey");
 
-        Assert.Throws<DecryptionException>(() => rsaKeyStoreDecryptor.Decrypt(new byte[]
-        {
-        }));
+        Assert.Throws<DecryptionException>(() => rsaKeyStoreDecryptor.Decrypt("dGhpcyBpcyBjb21wbGV0ZSBnYXJiYWdl"));
     }
 
     [Fact]
     public void Decrypt_WithWrongCiphertextKeyThrows()
     {
-        byte[] cipher = Convert.FromBase64String(
-            "AQAbWqohCeQ+TTqyJ3ZlNvAtx5cC2I3PmJetuSR82yRRyX+wWd7mTkUXuN/wANJ+nr1ySdzPudjml1lHaxZn42I9szkIKSkNT+6Yg+zNaREMetcE5SXA1awtSbEaFY2NcualSzPVWs8ulsUkKlYyyh6XP9gT/kODbmX0mS6DCtxalJgjei7WujLaJaPjc3jk+EhV9M1TovexqI7XoLlsgrGf6/1gQE+SSOamTFJopWpYEeSpSEwY2dXZfct5KCFWGJVA7eDPRJk0dT6EWIvqd6J4YoMWonxgVy4nG/Gq0NTisXv9XpJHAPYBg0c8B0WrWi2PG/Q00wvFRqGmYQ1hQIVmbJm8z+f0WoCxKwnCZvvdLlgrx2qeK1S21dPdgtmLXlj5bRUrektFrNhlevlENW7wgg==");
+        string cipher =
+            "AQAbWqohCeQ+TTqyJ3ZlNvAtx5cC2I3PmJetuSR82yRRyX+wWd7mTkUXuN/wANJ+nr1ySdzPudjml1lHaxZn42I9szkIKSkNT+6Yg+zNaREMetcE5SXA1awtSbEaFY2NcualSzPVWs8ulsUkKlYyyh6XP9gT/kODbmX0mS6DCtxalJgjei7WujLaJaPjc3jk+EhV9M1TovexqI7XoLlsgrGf6/1gQE+SSOamTFJopWpYEeSpSEwY2dXZfct5KCFWGJVA7eDPRJk0dT6EWIvqd6J4YoMWonxgVy4nG/Gq0NTisXv9XpJHAPYBg0c8B0WrWi2PG/Q00wvFRqGmYQ1hQIVmbJm8z+f0WoCxKwnCZvvdLlgrx2qeK1S21dPdgtmLXlj5bRUrektFrNhlevlENW7wgg==";
 
         var rsaKeyStoreDecryptor = new RsaKeyStoreDecryptor(_keyProvider, "mytestkey");
         Assert.Throws<DecryptionException>(() => rsaKeyStoreDecryptor.Decrypt(cipher));

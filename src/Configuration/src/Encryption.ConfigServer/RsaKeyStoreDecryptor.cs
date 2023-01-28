@@ -41,15 +41,16 @@ public sealed class RsaKeyStoreDecryptor : ITextDecryptor
     public string Decrypt(string fullCipher)
     {
         byte[] bytes = Convert.FromBase64String(fullCipher);
-        return Decrypt(bytes);
+        return Decrypt(bytes, _defaultKeyAlias);
     }
 
-    public string Decrypt(byte[] fullCipher)
+    public string Decrypt(string fullCipher, string alias)
     {
-        return Decrypt(fullCipher, _defaultKeyAlias);
+        byte[] bytes = Convert.FromBase64String(fullCipher);
+        return Decrypt(bytes, alias);
     }
-
-    public string Decrypt(byte[] fullCipher, string alias)
+    
+    private string Decrypt(byte[] fullCipher, string alias)
     {
         ICipherParameters key = _keyProvider.GetKey(alias);
 

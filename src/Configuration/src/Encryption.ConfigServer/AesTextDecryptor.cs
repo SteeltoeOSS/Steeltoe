@@ -44,6 +44,11 @@ public sealed class AesTextDecryptor : ITextDecryptor
         return Decrypt(bytes);
     }
 
+    public string Decrypt(string fullCipher, string alias)
+    {
+        throw new NotSupportedException("Key alias is not supported for symmetric encryption");
+    }
+
     public string Decrypt(byte[] fullCipher)
     {
         byte[] iv = new byte[IvSize / 8];
@@ -70,11 +75,6 @@ public sealed class AesTextDecryptor : ITextDecryptor
         {
             throw new DecryptionException("Failed to decrypt", ex);
         }
-    }
-
-    public string Decrypt(byte[] fullCipher, string alias)
-    {
-        throw new NotSupportedException();
     }
 
     private void InitializeCipher(byte[] iv)
