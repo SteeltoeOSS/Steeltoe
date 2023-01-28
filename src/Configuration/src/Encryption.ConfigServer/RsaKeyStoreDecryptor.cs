@@ -6,9 +6,9 @@ using System.Buffers.Binary;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
 
-namespace Steeltoe.Configuration.ConfigServer.Encryption;
+namespace Steeltoe.Configuration.Encryption.ConfigServer;
 
-internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
+public sealed class RsaKeyStoreDecryptor : ITextDecryptor
 {
     private readonly string _salt;
     private readonly bool _strong;

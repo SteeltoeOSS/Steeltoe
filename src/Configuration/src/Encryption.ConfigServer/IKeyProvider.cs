@@ -4,9 +4,9 @@
 
 using Org.BouncyCastle.Crypto;
 
-namespace Steeltoe.Configuration.ConfigServer.Encryption;
+namespace Steeltoe.Configuration.Encryption.ConfigServer;
 
-internal interface IKeyProvider
+public interface IKeyProvider
 {
     ICipherParameters GetKey(string keyAlias);
 }

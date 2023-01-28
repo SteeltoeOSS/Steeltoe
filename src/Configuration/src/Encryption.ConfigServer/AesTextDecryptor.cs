@@ -8,9 +8,9 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 
-namespace Steeltoe.Configuration.ConfigServer.Encryption;
+namespace Steeltoe.Configuration.Encryption.ConfigServer;
 
-internal sealed class AesTextDecryptor : ITextDecryptor
+public sealed class AesTextDecryptor : ITextDecryptor
 {
     private const short KeySize = 256;
     private const short IvSize = 128;

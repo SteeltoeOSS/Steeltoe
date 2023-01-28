@@ -5,9 +5,9 @@
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
 
-namespace Steeltoe.Configuration.ConfigServer.Encryption;
+namespace Steeltoe.Configuration.Encryption.ConfigServer;
 
-internal sealed class KeyProvider : IKeyProvider
+public sealed class KeyProvider : IKeyProvider
 {
     private readonly Pkcs12Store _pkcs12;
 

@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Configuration.ConfigServer.Encryption;
 using Xunit;
 
-namespace Steeltoe.Configuration.ConfigServer.Test.Encryption;
+namespace Steeltoe.Configuration.Encryption.ConfigServer.Test;
 
 public sealed class AesTextDecryptorTests
 {
