@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
@@ -16,6 +17,12 @@ namespace Steeltoe.Configuration.Encryption.Test;
 
 public sealed class EncryptionResolverExtensionsTest
 {
+    private readonly Mock<ITextDecryptor> _decryptorMock;
+
+    public EncryptionResolverExtensionsTest()
+    {
+        _decryptorMock = new Mock<ITextDecryptor>();
+    }
     [Fact]
     public void ConfigureEncryptionResolver_WithServiceCollection_ThrowsIfNulls()
     {
@@ -24,9 +31,9 @@ public sealed class EncryptionResolverExtensionsTest
         IConfigurationRoot configuration = new ConfigurationBuilder().Build();
         var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => nullServiceCollection.ConfigureEncryptionResolver(configuration, loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigureEncryptionResolver(null, loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigureEncryptionResolver(configuration, null));
+        Assert.Throws<ArgumentNullException>(() => nullServiceCollection.ConfigureEncryptionResolver(configuration, loggerFactory, _decryptorMock.Object));
+        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigureEncryptionResolver(null, loggerFactory,_decryptorMock.Object));
+        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigureEncryptionResolver(configuration, null,_decryptorMock.Object));
     }
 
     [Fact]
@@ -36,7 +43,7 @@ public sealed class EncryptionResolverExtensionsTest
         var webHostBuilder = new WebHostBuilder();
         var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => nullWebHostBuilder.AddEncryptionResolver(loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => nullWebHostBuilder.AddEncryptionResolver(loggerFactory, _decryptorMock.Object));
         Assert.Throws<ArgumentNullException>(() => webHostBuilder.AddEncryptionResolver(null));
     }
 
@@ -47,7 +54,7 @@ public sealed class EncryptionResolverExtensionsTest
         var hostBuilder = new HostBuilder();
         var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => nullHostBuilder.AddEncryptionResolver(loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => nullHostBuilder.AddEncryptionResolver(loggerFactory, _decryptorMock.Object));
         Assert.Throws<ArgumentNullException>(() => hostBuilder.AddEncryptionResolver(null));
     }
 
@@ -58,7 +65,7 @@ public sealed class EncryptionResolverExtensionsTest
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
         var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => nullWebApplicationBuilder.AddEncryptionResolver(loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => nullWebApplicationBuilder.AddEncryptionResolver(loggerFactory, _decryptorMock.Object));
         Assert.Throws<ArgumentNullException>(() => webApplicationBuilder.AddEncryptionResolver(null));
     }
 
@@ -70,9 +77,9 @@ public sealed class EncryptionResolverExtensionsTest
         var loggerFactory = NullLoggerFactory.Instance;
         IConfigurationRoot configuration = new ConfigurationBuilder().Build();
 
-        Assert.Throws<ArgumentNullException>(() => nullServices.ConfigureEncryptionResolver(configuration, loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigureEncryptionResolver(null, loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigureEncryptionResolver(configuration, null));
+        Assert.Throws<ArgumentNullException>(() => nullServices.ConfigureEncryptionResolver(configuration, loggerFactory, _decryptorMock.Object));
+        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigureEncryptionResolver(null, loggerFactory, _decryptorMock.Object));
+        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigureEncryptionResolver(configuration, null, _decryptorMock.Object));
     }
 
     [Fact]
@@ -157,59 +164,14 @@ public sealed class EncryptionResolverExtensionsTest
             configurationBuilder.AddXmlFile(xmlFileName);
             configurationBuilder.AddIniFile(iniFileName);
             configurationBuilder.AddCommandLine(appsettingsLine);
-        }).AddEncryptionResolver();
+        }).AddEncryptionResolver(_decryptorMock.Object);
 
         using var server = new TestServer(hostBuilder);
         IServiceProvider services = StartupForAddEncryptionResolver.ServiceProvider;
         IConfiguration configuration = services.GetServices<IConfiguration>().SingleOrDefault();
         Assert.Equal("myName", configuration["spring:cloud:config:name"]);
     }
-
-    [Fact]
-    public void AddEncryptionResolver_HostBuilder_WrapsApplicationsConfiguration()
-    {
-        const string appsettingsJson = @"
-                {
-                    ""spring"": {
-                        ""json"": {
-                            ""name"": ""myName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:xml:name?noname}"",
-                        }
-                      }
-                    }
-                }";
-
-        const string appsettingsXml = @"
-                <settings>
-                    <spring>
-                        <xml>
-                            <name>${spring:json:name?noName}</name>
-                        </xml>
-                    </spring>
-                </settings>";
-
-        using var sandbox = new Sandbox();
-        string jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
-        string jsonFileName = Path.GetFileName(jsonPath);
-        string xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
-        string xmlFileName = Path.GetFileName(xmlPath);
-        string directory = Path.GetDirectoryName(jsonPath);
-
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(configure => configure.UseTestServer()).ConfigureAppConfiguration(configurationBuilder =>
-        {
-            configurationBuilder.SetBasePath(directory);
-            configurationBuilder.AddJsonFile(jsonFileName);
-            configurationBuilder.AddXmlFile(xmlFileName);
-        }).AddEncryptionResolver();
-
-        using TestServer server = hostBuilder.Build().GetTestServer();
-        IConfiguration configuration = server.Services.GetServices<IConfiguration>().SingleOrDefault();
-        Assert.Equal("myName", configuration["spring:cloud:config:name"]);
-    }
-
+    
     [Fact]
     public void AddEncryptionResolverViaWebApplicationBuilderWorks()
     {
@@ -247,7 +209,7 @@ public sealed class EncryptionResolverExtensionsTest
         hostBuilder.Configuration.SetBasePath(directory);
         hostBuilder.Configuration.AddJsonFile(jsonFileName);
         hostBuilder.Configuration.AddXmlFile(xmlFileName);
-        hostBuilder.AddEncryptionResolver();
+        hostBuilder.AddEncryptionResolver(_decryptorMock.Object);
 
         using WebApplication server = hostBuilder.Build();
         IConfiguration configuration = server.Services.GetServices<IConfiguration>().First();

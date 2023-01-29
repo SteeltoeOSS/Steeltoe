@@ -11,17 +11,19 @@ namespace Steeltoe.Configuration.Encryption.Test;
 public sealed class StartupForConfigureEncryptionResolver
 {
     private readonly IConfiguration _configuration;
+    private readonly ITextDecryptor _textDecryptor;
 
     internal static IServiceProvider ServiceProvider { get; private set; }
 
-    public StartupForConfigureEncryptionResolver(IConfiguration configuration)
+    public StartupForConfigureEncryptionResolver(IConfiguration configuration, ITextDecryptor textDecryptor)
     {
         _configuration = configuration;
+        _textDecryptor = textDecryptor;
     }
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.ConfigureEncryptionResolver(_configuration);
+        services.ConfigureEncryptionResolver(_configuration, _textDecryptor);
     }
 
     public void Configure(IApplicationBuilder app)

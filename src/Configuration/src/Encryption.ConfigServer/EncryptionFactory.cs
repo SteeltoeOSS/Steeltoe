@@ -4,9 +4,9 @@
 
 namespace Steeltoe.Configuration.Encryption.ConfigServer;
 
-public class Factory
+internal static class EncryptionFactory
 {
-    private ITextDecryptor CreateEncryptor(ConfigServerEncryptionSettings settings)
+    public static ITextDecryptor CreateEncryptor(ConfigServerEncryptionSettings settings)
     {
         ITextDecryptor decryptor = new NoopDecryptor();
     
@@ -25,15 +25,4 @@ public class Factory
     
         return decryptor;
     }
-    //
-    // public void te()
-    // {
-    //     if (convertedValue.StartsWith("{cipher}", StringComparison.InvariantCulture))
-    //     {
-    //         string cipher = convertedValue.Substring("{cipher}".Length);
-    //         return _decryptor.Decrypt(cipher);
-    //     }
-    //
-    //     return convertedValue;
-    // }
 }

@@ -13,5 +13,13 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Moq" Version="4.18.4" />
+  </ItemGroup>
+
+  
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj" />
+    <ProjectReference Include="..\..\src\Encryption\Steeltoe.Configuration.Encryption.csproj" />
   </ItemGroup>
 </Project>

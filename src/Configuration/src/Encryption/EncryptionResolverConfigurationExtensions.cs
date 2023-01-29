@@ -54,7 +54,7 @@ public static class EncryptionResolverConfigurationExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(loggerFactory);
         ArgumentGuard.NotNull(textDecryptor);
-
+        
         if (builder is IConfigurationRoot configuration)
         {
             builder.Add(new EncryptionResolverSource(configuration, loggerFactory, textDecryptor));

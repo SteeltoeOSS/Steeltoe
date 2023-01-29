@@ -113,17 +113,7 @@ public sealed class ConfigServerClientSettings
     /// Default health check enabled setting.
     /// </summary>
     public const bool DefaultHealthEnabled = true;
-
-    /// <summary>
-    /// Default Encryption method.
-    /// </summary>
-    public const string DefaultEncryptionRsaAlgorithm = "DEFAULT";
-
-    /// <summary>
-    /// Default salt.
-    /// </summary>
-    public const string DefaultEncryptionRsaSalt = "deadbeef";
-
+    
     /// <summary>
     /// Default health check time-to-live setting, in milliseconds.
     /// </summary>
@@ -285,46 +275,6 @@ public sealed class ConfigServerClientSettings
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether decryption is enabled.
-    /// </summary>
-    public bool EncryptionEnabled { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether strong encryption flag is enabled.
-    /// </summary>
-    public bool EncryptionRsaStrong { get; set; }
-
-    /// <summary>
-    /// Gets or sets the salt value.
-    /// </summary>
-    public string EncryptionRsaSalt { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Rsa Algorithm (DEFAULT or OAEP).
-    /// </summary>
-    public string EncryptionRsaAlgorithm { get; set; }
-
-    /// <summary>
-    /// Gets or sets the location of the keystore.
-    /// </summary>
-    public string EncryptionKeyStoreLocation { get; set; }
-
-    /// <summary>
-    /// Gets or sets the keystore password.
-    /// </summary>
-    public string EncryptionKeyStorePassword { get; set; }
-
-    /// <summary>
-    /// Gets or sets the alias of the key in the keystore.
-    /// </summary>
-    public string EncryptionKeyStoreAlias { get; set; }
-
-    /// <summary>
-    /// Gets or sets the key of the simple encryption.
-    /// </summary>
-    public string EncryptionKey { get; set; }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerClientSettings" /> class.
     /// </summary>
     /// <remarks>
@@ -347,8 +297,6 @@ public sealed class ConfigServerClientSettings
         DiscoveryServiceId = DefaultConfigserverServiceId;
         HealthEnabled = DefaultHealthEnabled;
         HealthTimeToLive = DefaultHealthTimeToLive;
-        EncryptionRsaAlgorithm = DefaultEncryptionRsaAlgorithm;
-        EncryptionRsaSalt = DefaultEncryptionRsaSalt;
     }
 
     internal static bool IsMultiServerConfiguration(string uris)

@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
-using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Configuration.Encryption;
 
@@ -17,18 +17,19 @@ namespace Steeltoe.Configuration.Encryption;
 /// ${some:config:reference?default_if_not_present}
 /// ]]></code>
 /// </summary>
-internal sealed class EncryptionResolverProvider : IEncryptionResolverProvider
+internal sealed class EncryptionResolverProvider : IConfigurationProvider
 {
+    // regex for matching {cipher:keyAlias} at the start of the string
+    private Regex cipherRegex = new Regex("^{cipher(:.*)?}");
     internal ILogger<EncryptionResolverProvider> Logger { get; }
 
     /// <summary>
     /// Gets the configuration this encryption resolver wraps.
     /// </summary>
     internal IConfigurationRoot Configuration { get; private set; }
-    
+
     public IList<IConfigurationProvider> Providers { get; } = new List<IConfigurationProvider>();
-    public IList<string> ResolvedKeys { get; } = new List<string>();
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="EncryptionResolverProvider" /> class. The new encryption resolver wraps the provided configuration
     /// root.
@@ -79,7 +80,6 @@ internal sealed class EncryptionResolverProvider : IEncryptionResolverProvider
         Decriptor = textDecryptor;
     }
 
-
     /// <summary>
     /// Tries to get a configuration value for the specified key. If the value is a encryption, it will try to resolve the encryption before returning it.
     /// </summary>
@@ -98,12 +98,26 @@ internal sealed class EncryptionResolverProvider : IEncryptionResolverProvider
         EnsureInitialized();
 
         string originalValue = Configuration[key];
-        //TODO: actual decryp
-        value = "DECRYPT here";
-
-        if (value != originalValue && !ResolvedKeys.Contains(key))
+        value = originalValue;
+      
+        if (!string.IsNullOrEmpty(originalValue))
         {
-            ResolvedKeys.Add(key);
+            Match match = cipherRegex.Match(originalValue);
+
+            if (match.Success)
+            {
+                var cipherText = originalValue.Substring(match.Length);
+
+                if (match.Groups.Values.Any())
+                {
+                    var keyAlias = match.Groups[1].Value;
+                    value = string.IsNullOrEmpty(keyAlias) ? Decriptor.Decrypt(cipherText) : Decriptor.Decrypt(cipherText, keyAlias.TrimStart(':'));
+                }
+                else
+                {
+                    value = Decriptor.Decrypt(cipherText);
+                }
+            }
         }
 
         return !string.IsNullOrEmpty(value);

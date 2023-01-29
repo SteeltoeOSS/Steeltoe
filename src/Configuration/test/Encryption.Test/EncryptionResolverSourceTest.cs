@@ -6,12 +6,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using Xunit;
 
 namespace Steeltoe.Configuration.Encryption.Test;
 
 public sealed class EncryptionResolverSourceTest
 {
+    private readonly Mock<ITextDecryptor> _decryptorMock;
+
+    public EncryptionResolverSourceTest()
+    {
+        _decryptorMock = new Mock<ITextDecryptor>();
+    }
+    
     [Fact]
     public void Constructor_WithSources_ThrowsIfNulls()
     {
@@ -19,8 +27,9 @@ public sealed class EncryptionResolverSourceTest
         var sources = new List<IConfigurationSource>();
         var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(nullSources, loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(sources, null));
+        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(nullSources, loggerFactory, _decryptorMock.Object));
+        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(sources, null, _decryptorMock.Object));
+        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(sources, loggerFactory, null));
     }
 
     [Fact]
@@ -30,8 +39,9 @@ public sealed class EncryptionResolverSourceTest
         IConfigurationRoot configuration = new ConfigurationBuilder().Build();
         var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(nullConfiguration, loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(configuration, null));
+        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(nullConfiguration, loggerFactory, _decryptorMock.Object));
+        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(configuration, null, _decryptorMock.Object));
+        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(configuration, loggerFactory, null));
     }
 
     [Fact]
@@ -46,7 +56,7 @@ public sealed class EncryptionResolverSourceTest
 
         var factory = new LoggerFactory();
 
-        var source = new EncryptionResolverSource(sources, factory);
+        var source = new EncryptionResolverSource(sources, factory, _decryptorMock.Object);
         Assert.Equal(factory, source.LoggerFactory);
         Assert.NotNull(source.Sources);
         Assert.Single(source.Sources);
@@ -64,7 +74,7 @@ public sealed class EncryptionResolverSourceTest
             memSource
         };
 
-        var source = new EncryptionResolverSource(sources, NullLoggerFactory.Instance);
+        var source = new EncryptionResolverSource(sources, NullLoggerFactory.Instance, _decryptorMock.Object);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<EncryptionResolverProvider>(provider);
     }

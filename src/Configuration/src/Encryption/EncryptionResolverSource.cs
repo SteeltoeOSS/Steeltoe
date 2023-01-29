@@ -38,6 +38,7 @@ internal sealed class EncryptionResolverSource : IConfigurationSource
         ArgumentGuard.NotNull(loggerFactory);
         ArgumentGuard.NotNull(textDecryptor);
 
+        _textDecryptor = textDecryptor;
         Sources = sources.ToList();
         LoggerFactory = loggerFactory;
     }
