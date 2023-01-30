@@ -5,7 +5,6 @@ const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultClie
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultConfigserverServiceId = "configserver" -> string
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultDisableTokenRenewal = false -> bool
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultDiscoveryEnabled = false -> bool
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultEncryptionRsaSalt = "deadbeef" -> string
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultEnvironment = "Production" -> string
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultFailFast = false -> bool
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultHealthEnabled = true -> bool
@@ -20,7 +19,6 @@ const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultTime
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultUri = "http://localhost:8888" -> string
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultVaultTokenRenewRate = 60000 -> int
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultVaultTokenTtl = 300000 -> int
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultEncryptionRsaAlgorithm = "DEFAULT" -> string
 static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
 static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder, Microsoft.Extensions.Hosting.IHostEnvironment environment) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
 static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder, Microsoft.Extensions.Hosting.IHostEnvironment environment, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
@@ -72,22 +70,6 @@ Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DiscoveryServiceI
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DiscoveryServiceId.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Enabled.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Enabled.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionEnabled.get -> bool
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionEnabled.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionKey.get -> string
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionKey.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionKeyStoreAlias.get -> string
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionKeyStoreAlias.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionKeyStoreLocation.get -> string
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionKeyStoreLocation.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionKeyStorePassword.get -> string
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionKeyStorePassword.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionRsaAlgorithm.get -> string
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionRsaAlgorithm.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionRsaSalt.get -> string
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionRsaSalt.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionRsaStrong.get -> bool
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.EncryptionRsaStrong.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Environment.get -> string
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Environment.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.FailFast.get -> bool
@@ -197,7 +179,6 @@ Steeltoe.Configuration.ConfigServer.ConfigServerException.ConfigServerException(
 Steeltoe.Configuration.ConfigServer.ConfigServerException.ConfigServerException(string message, System.Exception innerException) -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions
 Steeltoe.Configuration.ConfigServer.ConfigServerServiceCollectionExtensions
-Steeltoe.Configuration.ConfigServer.Encryption.DecryptionException
 Steeltoe.Configuration.ConfigServer.PropertySource
 Steeltoe.Configuration.ConfigServer.PropertySource.Name.get -> string
 Steeltoe.Configuration.ConfigServer.PropertySource.Name.set -> void

@@ -21,7 +21,7 @@ public static class EncryptionResolverConfigurationExtensions
     /// The configuration builder.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" />.
@@ -44,7 +44,7 @@ public static class EncryptionResolverConfigurationExtensions
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" />.
@@ -78,7 +78,7 @@ public static class EncryptionResolverConfigurationExtensions
     /// The configuration to wrap.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     /// <returns>
     /// A new configuration.
@@ -100,7 +100,7 @@ public static class EncryptionResolverConfigurationExtensions
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     /// <returns>
     /// A new configuration.
@@ -132,7 +132,7 @@ public static class EncryptionResolverConfigurationExtensions
     /// The configuration manager.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="configurationManager" />.
@@ -155,7 +155,7 @@ public static class EncryptionResolverConfigurationExtensions
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="configurationManager" />.

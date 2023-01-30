@@ -32,6 +32,7 @@ internal sealed class EncryptionResolverSource : IConfigurationSource
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
+    /// <param name="textDecryptor">The decryptor to use.</param>
     public EncryptionResolverSource(IList<IConfigurationSource> sources, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
     {
         ArgumentGuard.NotNull(sources);
@@ -52,7 +53,7 @@ internal sealed class EncryptionResolverSource : IConfigurationSource
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
-    /// <param name="textDecryptor"></param>
+    /// <param name="textDecryptor">Decryptor to use.</param>
     public EncryptionResolverSource(IConfigurationRoot root, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
     {
         ArgumentGuard.NotNull(root);

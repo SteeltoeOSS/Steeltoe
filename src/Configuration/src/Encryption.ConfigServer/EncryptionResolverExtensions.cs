@@ -173,14 +173,6 @@ public static class EncryptionResolverExtensions
         });
     }
 
-    private static ITextDecryptor GetTextDecryptor(IConfiguration configuration)
-    {
-        ConfigServerEncryptionSettings settings = new ConfigServerEncryptionSettings();
-        ConfigurationSettingsHelper.Initialize(settings, configuration);
-        var textDecryptor = EncryptionFactory.CreateEncryptor(settings);
-        return textDecryptor;
-    }
-
     /// <summary>
     /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap
     /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
@@ -228,5 +220,13 @@ public static class EncryptionResolverExtensions
 
         applicationBuilder.Configuration.AddEncryptionResolver(loggerFactory, textDecryptor);
         return applicationBuilder;
+    }
+    
+    private static ITextDecryptor GetTextDecryptor(IConfiguration configuration)
+    {
+        ConfigServerEncryptionSettings settings = new ConfigServerEncryptionSettings();
+        ConfigurationSettingsHelper.Initialize(settings, configuration);
+        var textDecryptor = EncryptionFactory.CreateEncryptor(settings);
+        return textDecryptor;
     }
 }

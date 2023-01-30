@@ -28,7 +28,7 @@ public static class EncryptionResolverExtensions
     /// The configuration the encryption resolver will wrap.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     /// <returns>
     /// The new configuration.
@@ -53,7 +53,7 @@ public static class EncryptionResolverExtensions
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     /// <returns>
     /// The new configuration.
@@ -82,7 +82,7 @@ public static class EncryptionResolverExtensions
     /// The host builder.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use..
     /// </param>
     /// <returns>
     /// The provided host builder.
@@ -105,7 +105,7 @@ public static class EncryptionResolverExtensions
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     /// <returns>
     /// The provided host builder.
@@ -129,7 +129,7 @@ public static class EncryptionResolverExtensions
     /// The host builder.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     /// <returns>
     /// The provided host builder.
@@ -152,7 +152,7 @@ public static class EncryptionResolverExtensions
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     /// <returns>
     /// The provided host builder.
@@ -176,7 +176,7 @@ public static class EncryptionResolverExtensions
     /// The application builder.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     /// <returns>
     /// The provided application builder.
@@ -199,7 +199,7 @@ public static class EncryptionResolverExtensions
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     /// <returns>
     /// The provided application builder.

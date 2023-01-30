@@ -20,7 +20,7 @@ namespace Steeltoe.Configuration.Encryption;
 internal sealed class EncryptionResolverProvider : IConfigurationProvider
 {
     // regex for matching {cipher:keyAlias} at the start of the string
-    private Regex cipherRegex = new Regex("^{cipher(:.*)?}");
+    private readonly Regex _cipherRegex = new Regex("^{cipher(:.*)?}");
     internal ILogger<EncryptionResolverProvider> Logger { get; }
 
     /// <summary>
@@ -29,6 +29,8 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider
     internal IConfigurationRoot Configuration { get; private set; }
 
     public IList<IConfigurationProvider> Providers { get; } = new List<IConfigurationProvider>();
+    
+    public ITextDecryptor Decriptor { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EncryptionResolverProvider" /> class. The new encryption resolver wraps the provided configuration
@@ -41,7 +43,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     public EncryptionResolverProvider(IConfigurationRoot root, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
     {
@@ -53,9 +55,8 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider
         Logger = loggerFactory.CreateLogger<EncryptionResolverProvider>();
         Decriptor = textDecryptor;
     }
-
-    public ITextDecryptor Decriptor { get; set; }
-
+    
+    
     /// <summary>
     /// Initializes a new instance of the <see cref="EncryptionResolverProvider" /> class. The new encryption resolver wraps the provided configuration
     /// providers. The <see cref="Configuration" /> will be created from these providers.
@@ -67,7 +68,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use
+    /// The the decryptor to use.
     /// </param>
     public EncryptionResolverProvider(IList<IConfigurationProvider> providers, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
     {
@@ -102,7 +103,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider
       
         if (!string.IsNullOrEmpty(originalValue))
         {
-            Match match = cipherRegex.Match(originalValue);
+            Match match = _cipherRegex.Match(originalValue);
 
             if (match.Success)
             {
