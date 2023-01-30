@@ -82,14 +82,14 @@ public sealed class EncryptionResolverProviderTest
     }
 
     [Fact]
-    public void TryGet_ReturnsResolvedValues()
-    {
+    public void TryGet_ReturnsResolvedDecryptedValues()
+    {   
+        _decryptorMock.Setup(x => x.Decrypt("something")).Returns("DECRYPTED");
+
         var settings = new Dictionary<string, string>
         {
             { "key1", "value1" },
-            { "key2", "${key1?notfound}" },
-            { "key3", "${nokey?notfound}" },
-            { "key4", "${nokey}" }
+            { "key2", "{cipher}something" }
         };
 
         var builder = new ConfigurationBuilder();
@@ -102,22 +102,18 @@ public sealed class EncryptionResolverProviderTest
         Assert.True(holder.TryGet("key1", out val));
         Assert.Equal("value1", val);
         Assert.True(holder.TryGet("key2", out val));
-        Assert.Equal("value1", val);
-        Assert.True(holder.TryGet("key3", out val));
-        Assert.Equal("notfound", val);
-        Assert.True(holder.TryGet("key4", out val));
-        Assert.Equal("${nokey}", val);
+        Assert.Equal("DECRYPTED", val);
     }
 
     [Fact]
-    public void Set_SetsValues_ReturnsResolvedValues()
+    public void Set_SetsValues_ReturnsResolvedDecryptedValues()
     {
+        _decryptorMock.Setup(x => x.Decrypt("something")).Returns("DECRYPTED");
+        _decryptorMock.Setup(x => x.Decrypt("something2")).Returns("DECRYPTED2");
         var settings = new Dictionary<string, string>
         {
             { "key1", "value1" },
-            { "key2", "${key1?notfound}" },
-            { "key3", "${nokey?notfound}" },
-            { "key4", "${nokey}" }
+            { "key2", "{cipher}something" }
         };
 
         var builder = new ConfigurationBuilder();
@@ -130,91 +126,24 @@ public sealed class EncryptionResolverProviderTest
         Assert.True(holder.TryGet("key1", out val));
         Assert.Equal("value1", val);
         Assert.True(holder.TryGet("key2", out val));
-        Assert.Equal("value1", val);
-        Assert.True(holder.TryGet("key3", out val));
-        Assert.Equal("notfound", val);
-        Assert.True(holder.TryGet("key4", out val));
-        Assert.Equal("${nokey}", val);
-
-        holder.Set("nokey", "nokeyvalue");
-        Assert.True(holder.TryGet("key3", out val));
-        Assert.Equal("nokeyvalue", val);
-        Assert.True(holder.TryGet("key4", out val));
-        Assert.Equal("nokeyvalue", val);
+        Assert.Equal("DECRYPTED", val);
+    
+        holder.Set("key2", "{cipher}something2");
+        Assert.True(holder.TryGet("key2", out val));
+        Assert.Equal("DECRYPTED2", val);
+        
+        holder.Set("key2", "nocipher");
+        Assert.True(holder.TryGet("key2", out val));
+        Assert.Equal("nocipher", val);
     }
-
-    [Fact]
-    public void GetReloadToken_ReturnsExpected_NotifyChanges()
-    {
-        const string appsettings1 = @"
-                {
-                    ""spring"": {
-                        ""bar"": {
-                            ""name"": ""myName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:bar:name?noname}"",
-                        }
-                      }
-                    }
-                }";
-
-        const string appsettings2 = @"
-                {
-                    ""spring"": {
-                        ""bar"": {
-                            ""name"": ""newMyName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:bar:name?noname}"",
-                        }
-                      }
-                    }
-                }";
-
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings1);
-        string directory = Path.GetDirectoryName(path);
-        string fileName = Path.GetFileName(path);
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-
-        configurationBuilder.AddJsonFile(fileName, false, true);
-
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var holder = new EncryptionResolverProvider(new List<IConfigurationProvider>(configurationRoot.Providers), NullLoggerFactory.Instance,
-            _decryptorMock.Object);
-
-        IChangeToken token = holder.GetReloadToken();
-        Assert.NotNull(token);
-        Assert.False(token.HasChanged);
-
-        Assert.True(holder.TryGet("spring:cloud:config:name", out string val));
-        Assert.Equal("myName", val);
-
-        File.WriteAllText(path, appsettings2);
-
-        // There is a 250ms delay to detect change
-        // ASP.NET Core tests use 2000 Sleep for this kind of test
-        Thread.Sleep(2000);
-
-        Assert.True(token.HasChanged);
-        Assert.True(holder.TryGet("spring:cloud:config:name", out val));
-        Assert.Equal("newMyName", val);
-    }
-
+    
     [Fact]
     public void Load_CreatesConfiguration()
     {
         var settings = new Dictionary<string, string>
         {
             { "key1", "value1" },
-            { "key2", "${key1?notfound}" },
-            { "key3", "${nokey?notfound}" },
-            { "key4", "${nokey}" }
+            { "key2", "{cipher}encrypted" }
         };
 
         var builder = new ConfigurationBuilder();
@@ -229,109 +158,29 @@ public sealed class EncryptionResolverProviderTest
     }
 
     [Fact]
-    public void Load_ReloadsConfiguration()
-    {
-        const string appsettings1 = @"
-                {
-                    ""spring"": {
-                        ""bar"": {
-                            ""name"": ""myName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:bar:name?noname}"",
-                        }
-                      }
-                    }
-                }";
-
-        const string appsettings2 = @"
-                {
-                    ""spring"": {
-                        ""bar"": {
-                            ""name"": ""newMyName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:bar:name?noname}"",
-                        }
-                      }
-                    }
-                }";
-
-        using var sandbox = new Sandbox();
-        string path = sandbox.CreateFile("appsettings.json", appsettings1);
-        string directory = Path.GetDirectoryName(path);
-        string fileName = Path.GetFileName(path);
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-
-        configurationBuilder.AddJsonFile(fileName, false, true);
-
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var holder = new EncryptionResolverProvider(configurationRoot, NullLoggerFactory.Instance, _decryptorMock.Object);
-        Assert.True(holder.TryGet("spring:cloud:config:name", out string val));
-        Assert.Equal("myName", val);
-
-        File.WriteAllText(path, appsettings2);
-        Thread.Sleep(1000); // There is a 250ms delay
-
-        holder.Load();
-
-        Assert.True(holder.TryGet("spring:cloud:config:name", out val));
-        Assert.Equal("newMyName", val);
-    }
-
-    [Fact]
-    public void GetChildKeys_ReturnsResolvableSection()
-    {
-        var settings = new Dictionary<string, string>
-        {
-            { "spring:bar:name", "myName" },
-            { "spring:cloud:name", "${spring:bar:name?noname}" }
-        };
-
-        var builder = new ConfigurationBuilder();
-        builder.AddInMemoryCollection(settings);
-        List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
-
-        var holder = new EncryptionResolverProvider(providers, NullLoggerFactory.Instance, _decryptorMock.Object);
-        IEnumerable<string> result = holder.GetChildKeys(Array.Empty<string>(), "spring");
-
-        Assert.NotNull(result);
-        List<string> list = result.ToList();
-
-        Assert.Equal(2, list.Count);
-        Assert.Contains("bar", list);
-        Assert.Contains("cloud", list);
-    }
-
-    [Fact]
     public void AdjustConfigManagerBuilder_CorrectlyReflectNewValues()
     {
+        _decryptorMock.Setup(x => x.Decrypt("encrypted")).Returns("DECRYPTED");
+        
         var manager = new ConfigurationManager();
-
-        var template = new Dictionary<string, string>
-        {
-            { "encryption", "${value}" }
-        };
 
         var valueProviderA = new Dictionary<string, string>
         {
             { "value", "a" }
         };
-
-        var valueProviderB = new Dictionary<string, string>
+        
+        var encryption = new Dictionary<string, string>
         {
-            { "value", "b" }
+            { "value", "{cipher}encrypted" }
         };
 
-        manager.AddInMemoryCollection(template);
         manager.AddInMemoryCollection(valueProviderA);
-        manager.AddInMemoryCollection(valueProviderB);
+        manager.AddInMemoryCollection(encryption);
         manager.AddEncryptionResolver(_decryptorMock.Object);
-        string result = manager.GetValue<string>("encryption");
-        Assert.Equal("b", result);
+        string result = manager.GetValue<string>("value");
+        Assert.Equal("DECRYPTED", result);
+        
+        _decryptorMock.Verify(x=>x.Decrypt("encrypted"));
+        _decryptorMock.VerifyNoOtherCalls();
     }
 }

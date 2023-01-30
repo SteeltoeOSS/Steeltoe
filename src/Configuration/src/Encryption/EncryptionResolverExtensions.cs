@@ -63,9 +63,11 @@ public static class EncryptionResolverExtensions
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(loggerFactory);
+        ArgumentGuard.NotNull(textDecryptor);
 
         IConfiguration newConfiguration = configuration.AddEncryptionResolver(loggerFactory, textDecryptor);
         services.Replace(ServiceDescriptor.Singleton(typeof(IConfiguration), newConfiguration));
+        services.Replace(ServiceDescriptor.Singleton(typeof(ITextDecryptor), textDecryptor));
 
         return newConfiguration;
     }

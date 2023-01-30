@@ -15,10 +15,10 @@ public sealed class StartupForConfigureEncryptionResolver
 
     internal static IServiceProvider ServiceProvider { get; private set; }
 
-    public StartupForConfigureEncryptionResolver(IConfiguration configuration, ITextDecryptor textDecryptor)
+    public StartupForConfigureEncryptionResolver(IConfiguration configuration)
     {
         _configuration = configuration;
-        _textDecryptor = textDecryptor;
+        _textDecryptor = new TextDecryptor();
     }
 
     public void ConfigureServices(IServiceCollection services)

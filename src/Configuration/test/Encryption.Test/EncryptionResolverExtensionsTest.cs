@@ -88,9 +88,8 @@ public sealed class EncryptionResolverExtensionsTest
         var settings = new Dictionary<string, string>
         {
             { "key1", "value1" },
-            { "key2", "${key1?notfound}" },
-            { "key3", "${nokey?notfound}" },
-            { "key4", "${nokey}" }
+            { "key2", "{cipher}somecipher" },
+            { "key3", "{cipher:keyalias}somekeyaliascipher" },
         };
 
         var builder = new ConfigurationBuilder();
@@ -106,113 +105,7 @@ public sealed class EncryptionResolverExtensionsTest
 
         Assert.Null(config2["nokey"]);
         Assert.Equal("value1", config2["key1"]);
-        Assert.Equal("value1", config2["key2"]);
-        Assert.Equal("notfound", config2["key3"]);
-        Assert.Equal("${nokey}", config2["key4"]);
-    }
-
-    [Fact]
-    public void AddEncryptionResolver_WebHostBuilder_WrapsApplicationsConfiguration()
-    {
-        const string appsettingsJson = @"
-                {
-                    ""spring"": {
-                        ""json"": {
-                            ""name"": ""myName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:xml:name?noname}"",
-                        }
-                      }
-                    }
-                }";
-
-        const string appsettingsXml = @"
-                <settings>
-                    <spring>
-                        <xml>
-                            <name>${spring:ini:name?noName}</name>
-                        </xml>
-                    </spring>
-                </settings>";
-
-        const string appsettingsIni = @"
-[spring:ini]
-    name=${spring:line:name?noName}
-";
-
-        string[] appsettingsLine =
-        {
-            "--spring:line:name=${spring:json:name?noName}"
-        };
-
-        using var sandbox = new Sandbox();
-        string jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
-        string jsonFileName = Path.GetFileName(jsonPath);
-        string xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
-        string xmlFileName = Path.GetFileName(xmlPath);
-        string iniPath = sandbox.CreateFile("appsettings.ini", appsettingsIni);
-        string iniFileName = Path.GetFileName(iniPath);
-
-        string directory = Path.GetDirectoryName(jsonPath);
-
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<StartupForAddEncryptionResolver>().ConfigureAppConfiguration(configurationBuilder =>
-        {
-            configurationBuilder.SetBasePath(directory);
-            configurationBuilder.AddJsonFile(jsonFileName);
-            configurationBuilder.AddXmlFile(xmlFileName);
-            configurationBuilder.AddIniFile(iniFileName);
-            configurationBuilder.AddCommandLine(appsettingsLine);
-        }).AddEncryptionResolver(_decryptorMock.Object);
-
-        using var server = new TestServer(hostBuilder);
-        IServiceProvider services = StartupForAddEncryptionResolver.ServiceProvider;
-        IConfiguration configuration = services.GetServices<IConfiguration>().SingleOrDefault();
-        Assert.Equal("myName", configuration["spring:cloud:config:name"]);
-    }
-    
-    [Fact]
-    public void AddEncryptionResolverViaWebApplicationBuilderWorks()
-    {
-        const string appsettingsJson = @"
-            {
-                ""spring"": {
-                    ""json"": {
-                        ""name"": ""myName""
-                },
-                  ""cloud"": {
-                    ""config"": {
-                        ""name"" : ""${spring:xml:name?noname}"",
-                    }
-                  }
-                }
-            }";
-
-        const string appsettingsXml = @"
-            <settings>
-                <spring>
-                    <xml>
-                        <name>${spring:json:name?noName}</name>
-                    </xml>
-                </spring>
-            </settings>";
-
-        using var sandbox = new Sandbox();
-        string jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
-        string jsonFileName = Path.GetFileName(jsonPath);
-        string xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
-        string xmlFileName = Path.GetFileName(xmlPath);
-        string directory = Path.GetDirectoryName(jsonPath);
-
-        WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
-        hostBuilder.Configuration.SetBasePath(directory);
-        hostBuilder.Configuration.AddJsonFile(jsonFileName);
-        hostBuilder.Configuration.AddXmlFile(xmlFileName);
-        hostBuilder.AddEncryptionResolver(_decryptorMock.Object);
-
-        using WebApplication server = hostBuilder.Build();
-        IConfiguration configuration = server.Services.GetServices<IConfiguration>().First();
-        Assert.Equal("myName", configuration["spring:cloud:config:name"]);
+        Assert.Equal("DECRYPTED", config2["key2"]);
+        Assert.Equal("DECRYPTEDWITHALIAS", config2["key3"]);
     }
 }
