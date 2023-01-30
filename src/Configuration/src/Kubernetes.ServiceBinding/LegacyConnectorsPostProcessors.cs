@@ -8,19 +8,19 @@ internal sealed class RabbitMQLegacyConnectorPostProcessor : IConfigurationPostP
 {
     internal const string BindingTypeKey = "rabbitmq";
 
-    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
+    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
     {
         if (!provider.IsBindingTypeEnabled(BindingTypeKey))
         {
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
-            bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
+            .ForEach(bindingNameKey =>
             {
                 // Spring -> spring.rabbitmq....
                 // Steeltoe -> rabbitmq:client:....
-                var mapper = new ServiceBindingMapper(configData, bindingNameKey, "rabbitmq", "client");
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "rabbitmq", "client");
                 mapper.MapFromTo("addresses", "uri");
                 mapper.MapFromTo("host", "server");
                 mapper.MapFromTo("password", "password");
@@ -35,19 +35,19 @@ internal sealed class MySqlLegacyConnectorPostProcessor : IConfigurationPostProc
 {
     internal const string BindingTypeKey = "mysql";
 
-    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
+    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
     {
         if (!provider.IsBindingTypeEnabled(BindingTypeKey))
         {
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
-            bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
+            .ForEach(bindingNameKey =>
             {
                 // Spring -> spring.datasource....
                 // Steeltoe -> mysql:client:...
-                var mapper = new ServiceBindingMapper(configData, bindingNameKey, "mysql", "client");
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "mysql", "client");
                 mapper.MapFromTo("username", "username");
                 mapper.MapFromTo("password", "password");
                 mapper.MapFromTo("host", "server");
@@ -66,19 +66,19 @@ internal sealed class PostgreSqlLegacyConnectorPostProcessor : IConfigurationPos
 {
     internal const string BindingTypeKey = "postgresql";
 
-    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
+    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
     {
         if (!provider.IsBindingTypeEnabled(BindingTypeKey))
         {
             return;
         }
 
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
-            bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
+            .ForEach(bindingNameKey =>
             {
                 // Spring -> spring.datasource....
                 // Steeltoe -> postgres:client:...
-                var mapper = new ServiceBindingMapper(configData, bindingNameKey, "postgres", "client");
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "postgres", "client");
                 mapper.MapFromTo("username", "username");
                 mapper.MapFromTo("password", "password");
                 mapper.MapFromTo("host", "host");

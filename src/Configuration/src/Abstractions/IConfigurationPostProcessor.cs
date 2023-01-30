@@ -6,5 +6,5 @@ namespace Steeltoe.Configuration;
 
 internal interface IConfigurationPostProcessor
 {
-    void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData);
+    void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData);
 }

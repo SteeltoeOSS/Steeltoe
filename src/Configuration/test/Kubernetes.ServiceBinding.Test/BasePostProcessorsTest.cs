@@ -15,7 +15,7 @@ public class BasePostProcessorsTest
     protected const string TestBindingName3 = "test-name-3";
     protected const string TestMissingProvider = "test-missing-provider";
 
-    protected void GetConfigData(Dictionary<string, string> dictionary, string bindingName, string bindingType, params Tuple<string, string>[] secrets)
+    protected void GetConfigurationData(Dictionary<string, string> dictionary, string bindingName, string bindingType, params Tuple<string, string>[] secrets)
     {
         foreach (Tuple<string, string> kv in secrets)
         {
@@ -25,14 +25,14 @@ public class BasePostProcessorsTest
         dictionary.Add(MakeTypeKey(bindingName), bindingType);
     }
 
-    protected Dictionary<string, string> GetConfigData(string bindingName, string bindingType, params Tuple<string, string>[] secrets)
+    protected Dictionary<string, string> GetConfigurationData(string bindingName, string bindingType, params Tuple<string, string>[] secrets)
     {
         var dictionary = new Dictionary<string, string>();
-        GetConfigData(dictionary, bindingName, bindingType, secrets);
+        GetConfigurationData(dictionary, bindingName, bindingType, secrets);
         return dictionary;
     }
 
-    protected void GetConfigData(Dictionary<string, string> dictionary, string bindingName, string bindingType, string bindingProvider,
+    protected void GetConfigurationData(Dictionary<string, string> dictionary, string bindingName, string bindingType, string bindingProvider,
         params Tuple<string, string>[] secrets)
     {
         foreach (Tuple<string, string> kv in secrets)
@@ -44,10 +44,11 @@ public class BasePostProcessorsTest
         dictionary.Add(MakeProviderKey(bindingName), bindingProvider);
     }
 
-    protected Dictionary<string, string> GetConfigData(string bindingName, string bindingType, string bindingProvider, params Tuple<string, string>[] secrets)
+    protected Dictionary<string, string> GetConfigurationData(string bindingName, string bindingType, string bindingProvider,
+        params Tuple<string, string>[] secrets)
     {
         var dictionary = new Dictionary<string, string>();
-        GetConfigData(dictionary, bindingName, bindingType, bindingProvider, secrets);
+        GetConfigurationData(dictionary, bindingName, bindingType, bindingProvider, secrets);
         return dictionary;
     }
 

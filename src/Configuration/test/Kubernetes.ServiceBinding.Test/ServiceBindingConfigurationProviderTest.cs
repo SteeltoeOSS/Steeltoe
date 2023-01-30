@@ -156,7 +156,7 @@ public class ServiceBindingConfigurationProviderTest
     {
         public bool PostProcessorCalled { get; set; }
 
-        public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
+        public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
         {
             PostProcessorCalled = true;
         }
