@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
-internal class ServiceBindingMapper : ConfigurationDictionaryMapper
+internal sealed class ServiceBindingMapper : ConfigurationDictionaryMapper
 {
     public string BindingProvider { get; }
 

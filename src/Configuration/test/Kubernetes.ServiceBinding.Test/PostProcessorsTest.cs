@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 
-public class PostProcessorsTest : BasePostProcessorsTest
+public sealed class PostProcessorsTest : BasePostProcessorsTest
 {
     [Fact]
     public void ArtemisTest_BindingTypeDisabled()

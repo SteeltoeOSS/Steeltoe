@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 
-public class ServiceBindingConfigurationSourceTest
+public sealed class ServiceBindingConfigurationSourceTest
 {
     [Fact]
     public void EnvironmentVariableNotSet()

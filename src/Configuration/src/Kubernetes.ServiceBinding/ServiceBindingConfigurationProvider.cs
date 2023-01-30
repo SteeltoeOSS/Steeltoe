@@ -10,9 +10,8 @@ using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
-internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationProvider, IDisposable
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
+
+internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigurationProvider, IDisposable
 {
     // The key for the provider of binding
     public const string ProviderKey = "provider";
@@ -145,7 +144,7 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
         }
     }
 
-    internal class ServiceBinding
+    internal sealed class ServiceBinding
     {
         private readonly Dictionary<string, string> _secrets;
         public string Name { get; }
@@ -257,7 +256,7 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
         }
     }
 
-    internal class ServiceBindings
+    internal sealed class ServiceBindings
     {
         public IList<ServiceBinding> Bindings { get; }
 

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 
-public class ServiceBindingMapperTest
+public sealed class ServiceBindingMapperTest
 {
     [Fact]
     public void MapFromTo_Present()

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 
-public class BasePostProcessorsTest
+public abstract class BasePostProcessorsTest
 {
     protected const string TestBindingName = "test-name";
     protected const string TestBindingName1 = "test-name-1";

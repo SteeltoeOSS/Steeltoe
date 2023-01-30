@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 
-public class ServiceBindingTest
+public sealed class ServiceBindingTest
 {
     [Fact]
     public void InvalidDirectory_Throws()

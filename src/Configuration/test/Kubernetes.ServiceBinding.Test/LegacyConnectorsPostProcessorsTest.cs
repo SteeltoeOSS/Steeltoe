@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 
-public class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
+public sealed class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
 {
     [Fact]
     public void RabbitMQTest_BindingTypeEnabled()

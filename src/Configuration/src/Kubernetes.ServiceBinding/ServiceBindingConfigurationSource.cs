@@ -8,7 +8,7 @@ using Microsoft.Extensions.FileProviders.Physical;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
-internal class ServiceBindingConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
+internal sealed class ServiceBindingConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
 {
     internal const string ServiceBindingRootDirEnvVariable = "SERVICE_BINDING_ROOT";
 

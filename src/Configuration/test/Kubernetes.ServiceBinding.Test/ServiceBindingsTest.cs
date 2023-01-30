@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 
-public class ServiceBindingsTest
+public sealed class ServiceBindingsTest
 {
     [Fact]
     public void NullPath()

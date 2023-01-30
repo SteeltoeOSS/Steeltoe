@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 
-public class ConfigurationBuilderExtensionsTest
+public sealed class ConfigurationBuilderExtensionsTest
 {
     [Fact]
     public void AddKubernetesServiceBindings_AddsSourceAndRegistersProcessors()
