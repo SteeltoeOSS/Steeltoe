@@ -13,9 +13,17 @@ public sealed class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new RabbitMQLegacyConnectorPostProcessor();
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQPostProcessor.BindingTypeKey,
-            Tuple.Create("addresses", "test-addresses"), Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"), Tuple.Create("username", "test-username"), Tuple.Create("virtual-host", "test-virtual-host"));
+        var secrets = new[]
+        {
+            Tuple.Create("addresses", "test-addresses"),
+            Tuple.Create("host", "test-host"),
+            Tuple.Create("password", "test-password"),
+            Tuple.Create("port", "test-port"),
+            Tuple.Create("username", "test-username"),
+            Tuple.Create("virtual-host", "test-virtual-host")
+        };
+
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQPostProcessor.BindingTypeKey, secrets);
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingTypeKey, true), configurationData);
@@ -32,9 +40,17 @@ public sealed class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new MySqlLegacyConnectorPostProcessor();
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlPostProcessor.BindingTypeKey,
-            Tuple.Create("database", "test-database"), Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"), Tuple.Create("jdbc-url", "test-jdbc-url"), Tuple.Create("username", "test-username"));
+        var secrets = new[]
+        {
+            Tuple.Create("database", "test-database"),
+            Tuple.Create("host", "test-host"),
+            Tuple.Create("password", "test-password"),
+            Tuple.Create("port", "test-port"),
+            Tuple.Create("jdbc-url", "test-jdbc-url"),
+            Tuple.Create("username", "test-username")
+        };
+
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlPostProcessor.BindingTypeKey, secrets);
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingTypeKey, true), configurationData);
@@ -51,10 +67,20 @@ public sealed class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
     {
         var postProcessor = new PostgreSqlLegacyConnectorPostProcessor();
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlPostProcessor.BindingTypeKey,
-            Tuple.Create("database", "test-database"), Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"), Tuple.Create("jdbc-url", "test-jdbc-url"), Tuple.Create("username", "test-username"),
-            Tuple.Create("sslmode", "verify-full"), Tuple.Create("sslrootcert", "root.cert"), Tuple.Create("options", "--cluster=routing-id&opt=val1"));
+        var secrets = new[]
+        {
+            Tuple.Create("database", "test-database"),
+            Tuple.Create("host", "test-host"),
+            Tuple.Create("password", "test-password"),
+            Tuple.Create("port", "test-port"),
+            Tuple.Create("jdbc-url", "test-jdbc-url"),
+            Tuple.Create("username", "test-username"),
+            Tuple.Create("sslmode", "verify-full"),
+            Tuple.Create("sslrootcert", "root.cert"),
+            Tuple.Create("options", "--cluster=routing-id&opt=val1")
+        };
+
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlPostProcessor.BindingTypeKey, secrets);
 
         // BindingType enabled
         postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingTypeKey, true), configurationData);
