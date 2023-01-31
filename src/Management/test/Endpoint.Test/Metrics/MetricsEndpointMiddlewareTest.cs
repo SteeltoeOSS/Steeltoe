@@ -133,7 +133,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
         var exporter = new SteeltoeExporter(_scraperOptions);
 
-        var meterProvider = GetTestMetrics( exporter);
+        var aggManager = GetTestMetrics( exporter);
 
         var ep = new MetricsEndpoint(opts, exporter);
 
@@ -148,69 +148,63 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         Assert.Equal("{\"names\":[]}", json);
     }
 
-    //[Fact]
-    //public async Task HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
-    //{
-    //    var opts = new MetricsEndpointOptions();
-    //    var managementOptions = new CloudFoundryManagementOptions();
-    //    managementOptions.EndpointOptions.Add(opts);
-    //    var exporter = new SteeltoeExporter(_scraperOptions);
+    [Fact]
+    public async Task HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
+    {
+        var opts = new MetricsEndpointOptions();
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
+        var exporter = new SteeltoeExporter(_scraperOptions);
 
-    //    var ep = new MetricsEndpoint(opts, new List<MetricsExporter>
-    //    {
-    //        exporter
-    //    });
+        var ep = new MetricsEndpoint(opts, exporter);
 
-    //    using MeterProvider meterProvider = GetTestMetrics(null, exporter, null);
-    //    var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
+        var aggManager = GetTestMetrics(exporter);
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
-    //    HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
+        HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
 
-    //    await middle.HandleMetricsRequestAsync(context);
-    //    Assert.Equal(404, context.Response.StatusCode);
-    //}
+        await middle.HandleMetricsRequestAsync(context);
+        Assert.Equal(404, context.Response.StatusCode);
+    }
 
-    //[Fact]
-    //public async Task HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
-    //{
-    //    var opts = new MetricsEndpointOptions();
-    //    var managementOptions = new CloudFoundryManagementOptions();
-    //    managementOptions.EndpointOptions.Add(opts);
-    //    var exporter = new SteeltoeExporter(_scraperOptions);
-    //    using MeterProvider meterProvider = GetTestMetrics(null, exporter, null);
+    [Fact]
+    public async Task HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
+    {
+        var opts = new MetricsEndpointOptions();
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
+        var exporter = new SteeltoeExporter(_scraperOptions);
+        var aggManager = GetTestMetrics(exporter);
+        aggManager.Start();
+        var ep = new MetricsEndpoint(opts, exporter);
 
-    //    var ep = new MetricsEndpoint(opts, new List<MetricsExporter>
-    //    {
-    //        exporter
-    //    });
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
-    //    var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
+        SetupTestView();
 
-    //    SetupTestView();
+        HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/test", "?tag=a:v1");
 
-    //    HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/test", "?tag=a:v1");
+        await middle.HandleMetricsRequestAsync(context);
+        Assert.Equal(200, context.Response.StatusCode);
 
-    //    await middle.HandleMetricsRequestAsync(context);
-    //    Assert.Equal(200, context.Response.StatusCode);
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var rdr = new StreamReader(context.Response.Body);
+        string json = await rdr.ReadToEndAsync();
 
-    //    context.Response.Body.Seek(0, SeekOrigin.Begin);
-    //    var rdr = new StreamReader(context.Response.Body);
-    //    string json = await rdr.ReadToEndAsync();
+        Assert.Equal(
+            "{\"name\":\"test\",\"measurements\":[{\"statistic\":\"RATE\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}",
+            json);
+    }
 
-    //    Assert.Equal(
-    //        "{\"name\":\"test\",\"measurements\":[{\"statistic\":\"TOTAL\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}",
-    //        json);
-    //}
-
-    //[Fact]
-    //public void RoutesByPathAndVerb()
-    //{
-    //    var options = new MetricsEndpointOptions();
-    //    Assert.False(options.ExactMatch);
-    //    Assert.Equal("/actuator/metrics/{**_}", options.GetContextPath(new ActuatorManagementOptions()));
-    //    Assert.Equal("/cloudfoundryapplication/metrics/{**_}", options.GetContextPath(new CloudFoundryManagementOptions()));
-    //    Assert.Null(options.AllowedVerbs);
-    //}
+    [Fact]
+    public void RoutesByPathAndVerb()
+    {
+        var options = new MetricsEndpointOptions();
+        Assert.False(options.ExactMatch);
+        Assert.Equal("/actuator/metrics/{**_}", options.GetContextPath(new ActuatorManagementOptions()));
+        Assert.Equal("/cloudfoundryapplication/metrics/{**_}", options.GetContextPath(new CloudFoundryManagementOptions()));
+        Assert.Null(options.AllowedVerbs);
+    }
 
     private HttpContext CreateRequest(string method, string path, string query = null)
     {
@@ -233,20 +227,20 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         return context;
     }
 
-    //private void SetupTestView()
-    //{
-    //    Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test");
+    private void SetupTestView()
+    {
+        Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test");
 
-    //    var labels = new Dictionary<string, object>
-    //    {
-    //        { "a", "v1" },
-    //        { "b", "v1" },
-    //        { "c", "v1" }
-    //    };
+        var labels = new Dictionary<string, object>
+        {
+            { "a", "v1" },
+            { "b", "v1" },
+            { "c", "v1" }
+        };
 
-    //    for (int i = 0; i < 10; i++)
-    //    {
-    //        counter.Add(i, new ReadOnlySpan<KeyValuePair<string, object>>(labels.ToArray()));
-    //    }
-    //}
+        for (int i = 0; i < 10; i++)
+        {
+            counter.Add(i, new ReadOnlySpan<KeyValuePair<string, object>>(labels.ToArray()));
+        }
+    }
 }
