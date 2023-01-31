@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -67,6 +68,8 @@ public abstract class BaseTest : IDisposable
             (instrument) => { /* end instrument */},
             (instrument) => { /* instrument published */},
             () => {  /* enumeration complete*/ });
+
+        aggregator.Include(SteeltoeMetrics.InstrumentationName);
 
         steeltoeExporter.Collect = aggregator.Collect;
         //if (steeltoeExporter != null)

@@ -3,16 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.Metrics;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Configuration;
-//using OpenTelemetry.Metrics;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.MetricCollectors;
-using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 using Steeltoe.Management.MetricCollectors.Metrics;
-using Steeltoe.Management.OpenTelemetry.Metrics;
 using Xunit;
 using Xunit.Abstractions;
 

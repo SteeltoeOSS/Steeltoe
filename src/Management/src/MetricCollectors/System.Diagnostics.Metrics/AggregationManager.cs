@@ -229,10 +229,10 @@ namespace System.Diagnostics.Metrics
             {
                 lock (this) // protect _instrumentConfigFuncs list
                 {
-                    //foreach (Predicate<Instrument> filter in _instrumentConfigFuncs) // D
-                    //{
-                    //    if (filter(instrument))
-                    //    {
+                    foreach (Predicate<Instrument> filter in _instrumentConfigFuncs) // D
+                    {
+                        if (filter(instrument))
+                        {
                             instrumentState = BuildInstrumentState(instrument);
                             if (instrumentState != null)
                             {
@@ -242,9 +242,9 @@ namespace System.Diagnostics.Metrics
                                 // this defensively.
                                 _instrumentStates.TryGetValue(instrument, out instrumentState);
                             }
-                          //  break;
-                    //    }
-                    //}
+                            break;
+                        }
+                    }
                 }
             }
             return instrumentState;

@@ -4,7 +4,7 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.OpenTelemetry.Test")]
+//TODO: [assembly: InternalsVisibleTo("Steeltoe.Management.MetricCollectors.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Test")]
