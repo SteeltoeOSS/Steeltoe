@@ -41,10 +41,20 @@ public sealed class RsaKeyStoreDecryptorTest
 
     [Theory]
     [MemberData(nameof(GetTestVector), 5)]
-    public void Decode_TestForSpringConfigCipher(string salt, string strong, string algorithm, string cipher, string plainText)
+    public void Decode_TestForSpringConfigCipher_WithDefaultKey(string salt, string strong, string algorithm, string cipher, string plainText)
     {
         var decryptor = new RsaKeyStoreDecryptor(_keyProvider, "mytestkey", salt, bool.Parse(strong), algorithm);
         string decrypted = decryptor.Decrypt(cipher);
+
+        Assert.Equal(plainText, decrypted);
+    }
+    
+    [Theory]
+    [MemberData(nameof(GetTestVector), 5)]
+    public void Decode_TestForSpringConfigCipher_WithSpecifiedKey(string salt, string strong, string algorithm, string cipher, string plainText)
+    {
+        var decryptor = new RsaKeyStoreDecryptor(_keyProvider, "someKey", salt, bool.Parse(strong), algorithm);
+        string decrypted = decryptor.Decrypt(cipher,"mytestkey");
 
         Assert.Equal(plainText, decrypted);
     }

@@ -5,6 +5,7 @@
 using System.Buffers.Binary;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
+using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Encryption.ConfigServer;
 
@@ -18,6 +19,12 @@ public sealed class RsaKeyStoreDecryptor : ITextDecryptor
 
     public RsaKeyStoreDecryptor(IKeyProvider keyProvider, string alias, string salt = "deadbeaf", bool strong = false, string algorithm = "DEFAULT")
     {
+        ArgumentGuard.NotNull(keyProvider);
+        ArgumentGuard.NotNull(alias);
+        ArgumentGuard.NotNull(salt);
+        ArgumentGuard.NotNull(strong);
+        ArgumentGuard.NotNull(algorithm);
+        
         _salt = salt;
         _defaultKeyAlias = alias;
         _strong = strong;
