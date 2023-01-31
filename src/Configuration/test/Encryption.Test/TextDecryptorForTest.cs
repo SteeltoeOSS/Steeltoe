@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Configuration.Encryption.Test;
 
-public class TextDecryptor: ITextDecryptor
+public class TextDecryptorForTest: ITextDecryptor
 {
     public string Decrypt(string fullCipher)
     {

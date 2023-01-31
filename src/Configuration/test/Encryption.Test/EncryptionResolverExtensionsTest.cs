@@ -89,7 +89,7 @@ public sealed class EncryptionResolverExtensionsTest
         {
             { "key1", "value1" },
             { "key2", "{cipher}somecipher" },
-            { "key3", "{cipher:keyalias}somekeyaliascipher" },
+            { "key3", "{cipher}{key:keyalias}somekeyaliascipher" },
         };
 
         var builder = new ConfigurationBuilder();

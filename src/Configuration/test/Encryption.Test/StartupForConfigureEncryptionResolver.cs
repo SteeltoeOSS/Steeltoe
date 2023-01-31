@@ -18,7 +18,7 @@ public sealed class StartupForConfigureEncryptionResolver
     public StartupForConfigureEncryptionResolver(IConfiguration configuration)
     {
         _configuration = configuration;
-        _textDecryptor = new TextDecryptor();
+        _textDecryptor = new TextDecryptorForTest();
     }
 
     public void ConfigureServices(IServiceCollection services)

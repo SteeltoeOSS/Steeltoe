@@ -139,7 +139,7 @@ public sealed class EncryptionResolverConfigurationExtensionsTest
         var settings = new Dictionary<string, string>
         {
             { "key1", "value1" },
-            { "key2", "{cipher:keyalias}something"}
+            { "key2", "{cipher}{key:keyalias}something"}
         };
 
         var builder = new ConfigurationBuilder();
