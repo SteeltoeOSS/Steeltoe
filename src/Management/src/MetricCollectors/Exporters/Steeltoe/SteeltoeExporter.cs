@@ -16,8 +16,8 @@ public class SteeltoeExporter
 {
 
     internal  int ScrapeResponseCacheDurationMilliseconds { get; }
-    private MetricsCollection<List<MetricSample>> _metricSamples = new();
-    private MetricsCollection<List<MetricTag>>  _availTags = new ();
+    private readonly MetricsCollection<List<MetricSample>> _metricSamples = new();
+    private readonly MetricsCollection<List<MetricTag>>  _availTags = new ();
 
     public  Action Collect { get; set; }
 
@@ -32,7 +32,7 @@ public class SteeltoeExporter
         ScrapeResponseCacheDurationMilliseconds = options?.ScrapeResponseCacheDurationMilliseconds ?? 5000;
     }
 
-    internal (MetricsCollection<List<MetricSample>>, MetricsCollection<List<MetricTag>>) Export()
+    internal (MetricsCollection<List<MetricSample>> MetricSamples, MetricsCollection<List<MetricTag>> AvailableTags) Export()
     {
         if(Collect == null)
         {
@@ -47,10 +47,9 @@ public class SteeltoeExporter
     {
         UpdateAvailableTags(_availTags, instrument.Name, stats.Labels);
 
+        // WILLDO: Add Logs, trace logs
         if (stats.AggregationStatistics is RateStatistics rateStats)
         {
-            //Log.CounterRateValuePublished(sessionId, instrument.Meter.Name, instrument.Meter.Version, instrument.Name, instrument.Unit, FormatTags(stats.Labels),
-            //    rateStats.Delta.HasValue ? rateStats.Delta.Value.ToString(CultureInfo.InvariantCulture) : "");
             if (rateStats.Delta.HasValue)
             {
                 var sample = new MetricSample(MetricStatistic.Rate, rateStats.Delta.Value, stats.Labels);
@@ -59,8 +58,6 @@ public class SteeltoeExporter
         }
         else if (stats.AggregationStatistics is LastValueStatistics lastValueStats)
         {
-            //Log.GaugeValuePublished(sessionId, instrument.Meter.Name, instrument.Meter.Version, instrument.Name, instrument.Unit, FormatTags(stats.Labels),
-            //    lastValueStats.LastValue.HasValue ? lastValueStats.LastValue.Value.ToString(CultureInfo.InvariantCulture) : "");
             if (lastValueStats.LastValue.HasValue)
             {
                 var sample = new MetricSample(MetricStatistic.Value, lastValueStats.LastValue.Value, stats.Labels);
@@ -70,7 +67,6 @@ public class SteeltoeExporter
         else if (stats.AggregationStatistics is HistogramStatistics histogramStats)
         {
             double sum = histogramStats.HistogramSum;
-            //  Log.HistogramValuePublished(sessionId, instrument.Meter.Name, instrument.Meter.Version, instrument.Name, instrument.Unit, FormatTags(stats.Labels), FormatQuantiles(histogramStats.Quantiles));
             if (instrument.Unit == "s")
             {
                 _metricSamples[instrument.Name].Add(new MetricSample(MetricStatistic.TotalTime, sum, stats.Labels));

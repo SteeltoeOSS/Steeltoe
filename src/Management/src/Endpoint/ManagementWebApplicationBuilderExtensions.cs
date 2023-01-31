@@ -274,6 +274,7 @@ public static class ManagementWebApplicationBuilderExtensions
         return applicationBuilder;
     }
 
+    /*
     /// <summary>
     /// Add Wavefront Metrics Exporter.
     /// </summary>
@@ -285,6 +286,7 @@ public static class ManagementWebApplicationBuilderExtensions
     //    applicationBuilder.Services.AddWavefrontMetrics();
     //    return applicationBuilder;
     //}
+    */
 
     private static void AddCommonServices(this WebApplicationBuilder applicationBuilder)
     {

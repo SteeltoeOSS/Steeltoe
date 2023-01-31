@@ -135,9 +135,12 @@ public static class TracingBaseServiceCollectionExtensions
                 AddOpenTelemetryProtocolExporter(builder);
             }
 
-           // AddWavefrontExporter(builder);
+
+#pragma warning disable S125 // Sections of code should not be commented out
+                            // AddWavefrontExporter(builder);
 
             action?.Invoke(builder);
+#pragma warning restore S125 // Sections of code should not be commented out
         });
 
         return services;
@@ -197,21 +200,36 @@ public static class TracingBaseServiceCollectionExtensions
         builder.AddOtlpExporter();
     }
 
-    //private static void AddWavefrontExporter(TracerProviderBuilder builder)
-    //{
+    
+#pragma warning disable SA1005 // Single line comments should begin with single space
+//private static void AddWavefrontExporter(TracerProviderBuilder builder)
+    
+#pragma warning disable SA1005 // Single line comments should begin with single space
+//{
     //    var deferredTracerProviderBuilder = builder as IDeferredTracerProviderBuilder;
 
-    //    deferredTracerProviderBuilder.Configure(delegate(IServiceProvider sp, TracerProviderBuilder builder)
+    
+#pragma warning disable SA1005 // Single line comments should begin with single space
+//    deferredTracerProviderBuilder.Configure(delegate(IServiceProvider sp, TracerProviderBuilder builder)
     //    {
     //        var configuration = sp.GetService<IConfiguration>();
     //        var wavefrontOptions = new WavefrontExporterOptions(configuration);
 
-    //        // Only add if wavefront is configured
+    
+#pragma warning disable SA1005 // Single line comments should begin with single space
+//        // Only add if wavefront is configured
     //        if (!string.IsNullOrEmpty(wavefrontOptions.Uri))
     //        {
     //            var logger = sp.GetService<ILogger<WavefrontTraceExporter>>();
     //            builder.AddWavefrontExporter(wavefrontOptions, logger);
     //        }
     //    });
-    //}
+    
+#pragma warning disable SA1005 // Single line comments should begin with single space
+//}
 }
+#pragma warning restore SA1005 // Single line comments should begin with single space
+#pragma warning restore SA1005 // Single line comments should begin with single space
+#pragma warning restore SA1005 // Single line comments should begin with single space
+#pragma warning restore SA1005 // Single line comments should begin with single space
+#pragma warning restore SA1005 // Single line comments should begin with single space

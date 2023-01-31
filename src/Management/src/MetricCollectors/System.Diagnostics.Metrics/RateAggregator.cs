@@ -1,67 +1,77 @@
 // Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
-namespace System.Diagnostics.Metrics
+namespace System.Diagnostics.Metrics;
+
+internal sealed class RateSumAggregator : Aggregator
 {
-    internal sealed class RateSumAggregator : Aggregator
+    private double _sum;
+
+    public override void Update(double measurement)
     {
-        private double _sum;
-
-        public override void Update(double value)
+#pragma warning disable S2551 // Shared resources should not be used for locking
+        lock (this)
         {
-            lock (this)
-            {
-                _sum += value;
-            }
+            _sum += measurement;
         }
-
-        public override IAggregationStatistics Collect()
-        {
-            lock (this)
-            {
-                RateStatistics? stats = new RateStatistics(_sum);
-                _sum = 0;
-                return stats;
-            }
-        }
+#pragma warning restore S2551 // Shared resources should not be used for locking
     }
 
-    internal sealed class RateAggregator : Aggregator
+    public override IAggregationStatistics Collect()
     {
-        private double? _prevValue;
-        private double _value;
-
-        public override void Update(double value)
+#pragma warning disable S2551 // Shared resources should not be used for locking
+        lock (this)
         {
-            lock (this)
-            {
-                _value = value;
-            }
+#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+            RateStatistics? stats = new RateStatistics(_sum);
+#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+            _sum = 0;
+            return stats;
         }
+#pragma warning restore S2551 // Shared resources should not be used for locking
+    }
+}
 
-        public override IAggregationStatistics Collect()
+internal sealed class RateAggregator : Aggregator
+{
+    private double? _prevValue;
+    private double _value;
+
+    public override void Update(double measurement)
+    {
+#pragma warning disable S2551 // Shared resources should not be used for locking
+        lock (this)
         {
-            lock (this)
-            {
-                double? delta = null;
-                if (_prevValue.HasValue)
-                {
-                    delta = _value - _prevValue.Value;
-                }
-                RateStatistics stats = new RateStatistics(delta);
-                _prevValue = _value;
-                return stats;
-            }
+            _value = measurement;
         }
+#pragma warning restore S2551 // Shared resources should not be used for locking
     }
 
-    internal sealed class RateStatistics : IAggregationStatistics
+    public override IAggregationStatistics Collect()
     {
-        public RateStatistics(double? delta)
+#pragma warning disable S2551 // Shared resources should not be used for locking
+        lock (this)
         {
-            Delta = delta;
+            double? delta = null;
+            if (_prevValue.HasValue)
+            {
+                delta = _value - _prevValue.Value;
+            }
+            RateStatistics stats = new RateStatistics(delta);
+            _prevValue = _value;
+            return stats;
         }
-
-        public double? Delta { get; }
+#pragma warning restore S2551 // Shared resources should not be used for locking
     }
+}
+
+internal sealed class RateStatistics : IAggregationStatistics
+{
+    public RateStatistics(double? delta)
+    {
+        Delta = delta;
+    }
+
+    public double? Delta { get; }
 }

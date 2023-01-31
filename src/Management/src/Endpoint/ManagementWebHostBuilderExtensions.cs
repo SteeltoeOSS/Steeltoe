@@ -310,7 +310,9 @@ public static class ManagementWebHostBuilderExtensions
         });
     }
 
-    /// <summary>
+    /*
+#pragma warning disable SA1612 // Element parameter documentation should match element parameters
+/// <summary>
     /// Adds Wavefront to the application.
     /// </summary>
     /// <param name="hostBuilder">
@@ -321,8 +323,9 @@ public static class ManagementWebHostBuilderExtensions
     //{
     //    return hostBuilder.ConfigureServices((context, collection) => collection.AddWavefrontMetrics());
     //}
-
+    */
     internal static void GetManagementUrl(this IWebHostBuilder webHostBuilder, out int? httpPort, out int? httpsPort)
+#pragma warning restore SA1612 // Element parameter documentation should match element parameters
     {
         string portSetting = webHostBuilder.GetSetting(ManagementPortKey);
         string sslSetting = webHostBuilder.GetSetting(ManagementSSLKey);

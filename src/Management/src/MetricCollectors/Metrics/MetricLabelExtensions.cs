@@ -4,8 +4,10 @@
 
 
 namespace Steeltoe.Management.MetricCollectors.Metrics;
-//TODO: Move to common 
+#pragma warning disable S1135 // Track uses of "TODO" tags
+// TODO: Move to common 
 public static class MetricLabelExtensions
+#pragma warning restore S1135 // Track uses of "TODO" tags
 {
     public static ReadOnlySpan<KeyValuePair<string, object>> AsReadonlySpan(this IDictionary<string, object> keyValuePairs)
     {
@@ -16,21 +18,4 @@ public static class MetricLabelExtensions
     {
         return new ReadOnlySpan<KeyValuePair<string, object>>(keyValuePairs.ToArray());
     }
-
-    //public static IDictionary<string, string> AsDictionary(this ReadOnlyTagCollection tagCollection)
-    //{
-    //    var tags = new Dictionary<string, string>();
-
-    //    foreach (KeyValuePair<string, object> tag in tagCollection)
-    //    {
-    //        if (string.IsNullOrEmpty(tag.Key) || string.IsNullOrEmpty(tag.Value.ToString()))
-    //        {
-    //            continue;
-    //        }
-
-    //        tags.Add(tag.Key, tag.Value.ToString());
-    //    }
-
-    //    return tags;
-    //}
 }

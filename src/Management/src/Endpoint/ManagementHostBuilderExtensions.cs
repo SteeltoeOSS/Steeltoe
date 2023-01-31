@@ -314,33 +314,30 @@ public static class ManagementHostBuilderExtensions
             ActivateActuatorEndpoints(collection, configureEndpoints);
         });
     }
+    /*
 
+#pragma warning disable SA1612 // Element parameter documentation should match element parameters
     /// <summary>
     /// Add wavefront metrics to the application.
     /// </summary>
     /// <param name="hostBuilder">
     /// Your Hostbuilder.
     /// </param>
-    /// <returns>
-    /// The updated HostBuilder.
-    /// </returns>
-    //public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
-    //{
+    // public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
+    // {
     //    return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
     //    {
     //        collection.AddWavefrontMetrics();
     //    });
-    //}
+    // }
 
+#pragma warning restore SA1612 // Element parameter documentation should match element parameters
+    */
     /// <summary>
     /// Registers an <see cref="IStartupFilter" /> that will map all configured actuators, initialize health.
     /// </summary>
-    /// <param name="collection">
-    /// <see cref="IServiceCollection" /> that has actuators to activate.
-    /// </param>
-    /// <param name="configureEndpoints">
-    /// IEndpointConventionBuilder customizations (such as auth policy customization).
-    /// </param>
+    /// <param name="collection"> <see cref="IServiceCollection" /> that has actuators to activate. </param>
+    /// <param name="configureEndpoints"> IEndpointConventionBuilder customizations (such as auth policy customization). </param>
     public static void ActivateActuatorEndpoints(this IServiceCollection collection, Action<IEndpointConventionBuilder> configureEndpoints = null)
     {
         // check for existing AllActuatorsStartupFilter

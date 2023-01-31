@@ -23,7 +23,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         //ArgumentGuard.NotNull(exporters);
 
         //_exporter = exporters.OfType<SteeltoeExporter>().SingleOrDefault() ??
-        _exporter = exporter ?? throw new ArgumentNullException($"Exporters must contain a single {nameof(SteeltoeExporter)}.", nameof(exporter));
+        _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter), $"Exporters must contain a single {nameof(SteeltoeExporter)}.");
         
 
         _logger = logger;
@@ -42,6 +42,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
 
         if (metricNames.Contains(request.MetricName))
         {
+            _logger?.LogTrace("Fetching metrics for " + request.MetricName);
             List<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
 
             return GetMetric(request, sampleList, availTags[request.MetricName]);
@@ -117,7 +118,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
                 sampleList.Add(new MetricSample(MetricStatistic.Max, sample.Value, sample.Tags));
             }
         }
-        catch(Exception ex)
+        catch (Exception)
         {
             // Nothing we can do , log and move on 
         }

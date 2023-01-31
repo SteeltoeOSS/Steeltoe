@@ -1,35 +1,37 @@
 // Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
-namespace System.Diagnostics.Metrics
+namespace System.Diagnostics.Metrics;
+
+internal sealed class LastValue : Aggregator
 {
-    internal sealed class LastValue : Aggregator
+    private double? _lastValue;
+
+    public override void Update(double measurement)
     {
-        private double? _lastValue;
-
-        public override void Update(double value)
-        {
-            _lastValue = value;
-        }
-
-        public override IAggregationStatistics Collect()
-        {
-            lock (this)
-            {
-                LastValueStatistics stats = new LastValueStatistics(_lastValue);
-                _lastValue = null;
-                return stats;
-            }
-        }
+        _lastValue = measurement;
     }
 
-    internal sealed class LastValueStatistics : IAggregationStatistics
+    public override IAggregationStatistics Collect()
     {
-        internal LastValueStatistics(double? lastValue)
+#pragma warning disable S2551 // Shared resources should not be used for locking
+        lock (this)
         {
-            LastValue = lastValue;
+            LastValueStatistics stats = new LastValueStatistics(_lastValue);
+            _lastValue = null;
+            return stats;
         }
-
-        public double? LastValue { get; }
+#pragma warning restore S2551 // Shared resources should not be used for locking
     }
+}
+
+internal sealed class LastValueStatistics : IAggregationStatistics
+{
+    internal LastValueStatistics(double? lastValue)
+    {
+        LastValue = lastValue;
+    }
+
+    public double? LastValue { get; }
 }

@@ -129,8 +129,8 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
         var exporter = new SteeltoeExporter(_scraperOptions);
 
-        var aggManager = GetTestMetrics( exporter);
-
+        GetTestMetrics( exporter);
+            
         var ep = new MetricsEndpoint(opts, exporter);
 
         var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
@@ -154,7 +154,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
         var ep = new MetricsEndpoint(opts, exporter);
 
-        var aggManager = GetTestMetrics(exporter);
+        GetTestMetrics(exporter);
         var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
