@@ -16,11 +16,14 @@ public class SteeltoeExporter
 {
     private readonly MetricsCollection<List<MetricSample>> _metricSamples = new();
     private readonly MetricsCollection<List<MetricTag>>  _availTags = new ();
-    
+    private MetricsCollection<List<MetricSample>> _lastCollectionSamples = new ();
+    private MetricsCollection<List<MetricTag>> _lastAvailableTags = new ();
+
     private readonly int _cacheDurationMilliseconds;
-    private readonly DateTime _lastCollection = DateTime.MinValue;
+    private DateTime _lastCollection = DateTime.MinValue;
 
     public  Action? Collect { get; set; }
+    private object _collectionLock = new object ();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SteeltoeExporter" /> class.
@@ -35,28 +38,33 @@ public class SteeltoeExporter
 
     internal (MetricsCollection<List<MetricSample>> MetricSamples, MetricsCollection<List<MetricTag>> AvailableTags) Export()
     {
-        if(Collect == null)
+        if (Collect == null)
         {
             throw new InvalidOperationException("Collect should not be null");
         }
-
-        if (DateTime.Now > _lastCollection.AddMilliseconds(_cacheDurationMilliseconds))
+        
+        lock (_collectionLock)
         {
-            lock (Collect)
+            if (DateTime.Now > _lastCollection.AddMilliseconds(_cacheDurationMilliseconds))
             {
+
+                Console.WriteLine("cache miss at " + DateTime.Now + " for " + Thread.CurrentThread.ManagedThreadId);
+                _lastCollectionSamples = new MetricsCollection<List<MetricSample>>(_metricSamples);
+                _lastAvailableTags = new MetricsCollection<List<MetricTag>>(_availTags);
                 _metricSamples.Clear();
                 _availTags.Clear();
-                Collect();
+                Collect(); // Calls aggregation Manager.Collect
+                _lastCollection = DateTime.Now;
             }
         }
-        return (_metricSamples, _availTags);
+
+        return (_lastCollectionSamples, _lastAvailableTags);
     }
 
     internal void AddMetrics(Instrument instrument, LabeledAggregationStatistics stats)
     {
         UpdateAvailableTags(_availTags, instrument.Name, stats.Labels);
 
-        // TODO: Add Logs, trace logs
         if (stats.AggregationStatistics is RateStatistics rateStats)
         {
             if (rateStats.Delta.HasValue)

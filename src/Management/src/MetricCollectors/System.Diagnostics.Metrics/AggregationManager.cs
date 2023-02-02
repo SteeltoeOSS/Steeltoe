@@ -14,7 +14,7 @@ internal sealed class AggregationManager
     private static readonly QuantileAggregation s_defaultHistogramConfig = new QuantileAggregation(new double[] { 0.50, 0.95, 0.99 });
 #pragma warning restore SA1311 // Static readonly fields should begin with upper-case letter
 
-    // these fields are modified after construction and accessed on multiple threads, use lock(this) to ensure the data
+    // these fields are modified after construction and accessed on multiple threads, use lock(_lockObject) to ensure the data
     // is synchronized
     private readonly List<Predicate<Instrument>> _instrumentConfigFuncs = new();
     private readonly ConcurrentDictionary<Instrument, InstrumentState> _instrumentStates = new();
