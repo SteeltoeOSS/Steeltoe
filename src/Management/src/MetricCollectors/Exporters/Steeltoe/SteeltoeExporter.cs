@@ -14,12 +14,13 @@ namespace Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 /// </summary>
 public class SteeltoeExporter
 {
-
-    internal  int ScrapeResponseCacheDurationMilliseconds { get; }
     private readonly MetricsCollection<List<MetricSample>> _metricSamples = new();
     private readonly MetricsCollection<List<MetricTag>>  _availTags = new ();
+    
+    private readonly int _cacheDurationMilliseconds;
+    private readonly DateTime _lastCollection = DateTime.MinValue;
 
-    public  Action Collect { get; set; }
+    public  Action? Collect { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SteeltoeExporter" /> class.
@@ -27,9 +28,9 @@ public class SteeltoeExporter
     /// <param name="options">
     /// Options for the exporter.
     /// </param>
-    internal SteeltoeExporter(IPullMetricsExporterOptions options)
+    internal SteeltoeExporter(IExporterOptions options)
     {
-        ScrapeResponseCacheDurationMilliseconds = options?.ScrapeResponseCacheDurationMilliseconds ?? 5000;
+        _cacheDurationMilliseconds = options?.CacheDurationMilliseconds ?? 5000;
     }
 
     internal (MetricsCollection<List<MetricSample>> MetricSamples, MetricsCollection<List<MetricTag>> AvailableTags) Export()
@@ -39,7 +40,15 @@ public class SteeltoeExporter
             throw new InvalidOperationException("Collect should not be null");
         }
 
-        Collect();
+        if (DateTime.Now > _lastCollection.AddMilliseconds(_cacheDurationMilliseconds))
+        {
+            lock (Collect)
+            {
+                _metricSamples.Clear();
+                _availTags.Clear();
+                Collect();
+            }
+        }
         return (_metricSamples, _availTags);
     }
 
@@ -47,7 +56,7 @@ public class SteeltoeExporter
     {
         UpdateAvailableTags(_availTags, instrument.Name, stats.Labels);
 
-        // WILLDO: Add Logs, trace logs
+        // TODO: Add Logs, trace logs
         if (stats.AggregationStatistics is RateStatistics rateStats)
         {
             if (rateStats.Delta.HasValue)
@@ -86,7 +95,7 @@ public class SteeltoeExporter
         foreach (KeyValuePair<string, string> label in labels)
         {
             List<MetricTag> currentTags = availTags[name];
-            MetricTag existingTag = currentTags.FirstOrDefault(tag => tag.Tag.Equals(label.Key, StringComparison.OrdinalIgnoreCase));
+            MetricTag? existingTag = currentTags.FirstOrDefault(tag => tag.Tag.Equals(label.Key, StringComparison.OrdinalIgnoreCase));
 
             if (existingTag != null)
             {

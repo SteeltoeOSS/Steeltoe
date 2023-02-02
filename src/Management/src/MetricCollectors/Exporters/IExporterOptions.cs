@@ -4,7 +4,10 @@
 
 namespace Steeltoe.Management.MetricCollectors.Exporters;
 
-internal interface IPullMetricsExporterOptions
+internal interface IExporterOptions
 {
-    int ScrapeResponseCacheDurationMilliseconds { get; set; }
+    int CacheDurationMilliseconds { get; set; }
+    public int MaxTimeSeries { get; set; }
+    public int MaxHistograms { get; set; }
+    public List<KeyValuePair<string, string>>? IncludedMetrics { get; set; }
 }

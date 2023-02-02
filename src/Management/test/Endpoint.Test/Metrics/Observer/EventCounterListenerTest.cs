@@ -13,9 +13,9 @@ namespace Steeltoe.Management.Endpoint.Test.Metrics.Observer;
 
 public class EventCounterListenerTest : BaseTest
 {
-    private readonly PullMetricsExporterOptions _scraperOptions = new()
+    private readonly MetricsExporterOptions _exporterOptions = new()
     {
-        ScrapeResponseCacheDurationMilliseconds = 500
+        CacheDurationMilliseconds = 500
     };
 
     private readonly string[] _metrics =
@@ -47,7 +47,7 @@ public class EventCounterListenerTest : BaseTest
         using var listener = new EventCounterListener(new MetricsObserverOptions());
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
-        var exporter = new SteeltoeExporter(_scraperOptions);
+        var exporter = new SteeltoeExporter(_exporterOptions);
         var aggregationManager = GetTestMetrics(exporter);
         aggregationManager.Start();
         await Task.Delay(2000);
@@ -82,7 +82,7 @@ public class EventCounterListenerTest : BaseTest
 
         using var listener = new EventCounterListener(options);
 
-        var exporter = new SteeltoeExporter(_scraperOptions);
+        var exporter = new SteeltoeExporter(_exporterOptions);
         var aggregationManager = GetTestMetrics(exporter);
         aggregationManager.Start();
         await Task.Delay(2000);
@@ -120,7 +120,7 @@ public class EventCounterListenerTest : BaseTest
             IncludedMetrics = inclusions
         });
 
-        var exporter = new SteeltoeExporter(_scraperOptions);
+        var exporter = new SteeltoeExporter(_exporterOptions);
         var aggregationManager = GetTestMetrics(exporter);
         aggregationManager.Start();
         await Task.Delay(2000);

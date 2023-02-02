@@ -54,35 +54,24 @@ public abstract class BaseTest : IDisposable
         return options;
     }
 
-    internal AggregationManager GetTestMetrics(/*IViewRegistry viewRegistry,*/ SteeltoeExporter steeltoeExporter /*, SteeltoePrometheusExporter prometheusExporter*/)
+    internal AggregationManager GetTestMetrics(SteeltoeExporter steeltoeExporter)
     {
-        //MeterProviderBuilder builder = Sdk.CreateMeterProviderBuilder()
-        //    .AddMeter(SteeltoeMetrics.InstrumentationName, SteeltoeMetrics.InstrumentationVersion); //.AddRegisteredViews(viewRegistry);
-      
-
-        var aggregator = new AggregationManager(100, 100,
-            (instrument, stats) => { steeltoeExporter.AddMetrics(instrument, stats);  },
-            (date1, date2) => { /*begin*/ },
-            (date1, date2) => { /*end*/ },
-            (instrument) => { /*begin instrument*/},
-            (instrument) => { /* end instrument */},
-            (instrument) => { /* instrument published */},
-            () => {  /* enumeration complete*/ });
+        var aggregator = new AggregationManager(
+            maxTimeSeries: 100,
+            maxHistograms: 100,
+            collectMeasurement: steeltoeExporter.AddMetrics,
+            beginInstrumentMeasurements: (instrument) => { },
+            endInstrumentMeasurements: (instrument) => { },
+            instrumentPublished: (instrument) => { },
+            initialInstrumentEnumerationComplete: () => { },
+            timeSeriesLimitReached: () => { },
+            histogramLimitReached: () => { },
+            observableInstrumentCallbackError: (ex) => { throw ex; });
 
         aggregator.Include(SteeltoeMetrics.InstrumentationName);
 
         steeltoeExporter.Collect = aggregator.Collect;
-        //if (steeltoeExporter != null)
-        //{
-        //    builder.AddSteeltoeExporter(steeltoeExporter);
-        //}
 
-        //if (prometheusExporter != null)
-        //{
-        //    builder.AddReader(new BaseExportingMetricReader(prometheusExporter));
-        //}
-
-        //return builder.Build();
         return aggregator;
     }
 }

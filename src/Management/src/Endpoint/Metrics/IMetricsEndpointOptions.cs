@@ -6,5 +6,8 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 public interface IMetricsEndpointOptions : IEndpointOptions
 {
-    int ScrapeResponseCacheDurationMilliseconds { get; }
+    int CacheDurationMilliseconds { get; }
+    public int MaxTimeSeries { get; set; }
+    public int MaxHistograms { get; set; }
+    public List<KeyValuePair<string, string>> IncludedMetrics { get; set; } // Includes all when not set
 }

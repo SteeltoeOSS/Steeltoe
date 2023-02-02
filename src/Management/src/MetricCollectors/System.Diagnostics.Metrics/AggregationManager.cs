@@ -17,67 +17,53 @@ internal sealed class AggregationManager
     // these fields are modified after construction and accessed on multiple threads, use lock(this) to ensure the data
     // is synchronized
     private readonly List<Predicate<Instrument>> _instrumentConfigFuncs = new();
-    // private TimeSpan _collectionPeriod;
-
     private readonly ConcurrentDictionary<Instrument, InstrumentState> _instrumentStates = new();
-   // private readonly CancellationTokenSource _cts = new();
-   // private Thread? _collectThread;
     private readonly MeterListener _listener;
     private int _currentTimeSeries;
     private int _currentHistograms;
+    private readonly object _lockObject = new object();
 
     private readonly int _maxTimeSeries;
     private readonly int _maxHistograms;
     private readonly Action<Instrument, LabeledAggregationStatistics> _collectMeasurement;
-    // private readonly Action<DateTime, DateTime> _beginCollection;
-    // private readonly Action<DateTime, DateTime> _endCollection;
     private readonly Action<Instrument> _beginInstrumentMeasurements;
     private readonly Action<Instrument> _endInstrumentMeasurements;
     private readonly Action<Instrument> _instrumentPublished;
     private readonly Action _initialInstrumentEnumerationComplete;
-    // private readonly Action<Exception> _collectionError;
-    // private readonly Action _timeSeriesLimitReached;
-    // private readonly Action _histogramLimitReached;
-    // private readonly Action<Exception> _observableInstrumentCallbackError;
+    private readonly Action _timeSeriesLimitReached;
+    private readonly Action _histogramLimitReached;
+    private readonly Action<Exception> _observableInstrumentCallbackError;
 
     public AggregationManager(
         int maxTimeSeries,
         int maxHistograms,
         Action<Instrument, LabeledAggregationStatistics> collectMeasurement,
-        Action<DateTime, DateTime> beginCollection,
-        Action<DateTime, DateTime> endCollection,
         Action<Instrument> beginInstrumentMeasurements,
         Action<Instrument> endInstrumentMeasurements,
         Action<Instrument> instrumentPublished,
-        Action initialInstrumentEnumerationComplete
-       /* //Action<Exception> collectionError,
-        //Action timeSeriesLimitReached,
-        //Action histogramLimitReached,
-        //Action<Exception> observableInstrumentCallbackError */
+        Action initialInstrumentEnumerationComplete,
+        Action timeSeriesLimitReached,
+        Action histogramLimitReached,
+        Action<Exception> observableInstrumentCallbackError 
         )
     {
         _maxTimeSeries = maxTimeSeries;
         _maxHistograms = maxHistograms;
         _collectMeasurement = collectMeasurement;
-        // _beginCollection = beginCollection;
-        // _endCollection = endCollection;
-        _beginInstrumentMeasurements = beginInstrumentMeasurements;
+       _beginInstrumentMeasurements = beginInstrumentMeasurements;
         _endInstrumentMeasurements = endInstrumentMeasurements;
         _instrumentPublished = instrumentPublished;
         _initialInstrumentEnumerationComplete = initialInstrumentEnumerationComplete;
-       /* //_collectionError = collectionError;
-        //_timeSeriesLimitReached = timeSeriesLimitReached;
-        //_histogramLimitReached = histogramLimitReached;
-        //_observableInstrumentCallbackError = observableInstrumentCallbackError;
-       */
+        _timeSeriesLimitReached = timeSeriesLimitReached;
+        _histogramLimitReached = histogramLimitReached;
+        _observableInstrumentCallbackError = observableInstrumentCallbackError;
+
         _listener = new MeterListener()
         {
             InstrumentPublished = (instrument, listener) =>
             {
                 _instrumentPublished(instrument);
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
                 InstrumentState? state = GetInstrumentState(instrument);
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
                 if (state != null)
                 {
                     _beginInstrumentMeasurements(instrument);
@@ -90,9 +76,7 @@ internal sealed class AggregationManager
                 RemoveInstrumentState(instrument);
             }
         };
-#pragma warning disable S1905 // Redundant casts should not be used
-        _listener.SetMeasurementEventCallback<double>((i, m, l, c) => ((InstrumentState)c!).Update((double)m, l));
-#pragma warning restore S1905 // Redundant casts should not be used
+        _listener.SetMeasurementEventCallback<double>((i, m, l, c) => ((InstrumentState)c!).Update(m, l));
         _listener.SetMeasurementEventCallback<float>((i, m, l, c) => ((InstrumentState)c!).Update((double)m, l));
         _listener.SetMeasurementEventCallback<long>((i, m, l, c) => ((InstrumentState)c!).Update((double)m, l));
         _listener.SetMeasurementEventCallback<int>((i, m, l, c) => ((InstrumentState)c!).Update((double)m, l));
@@ -113,15 +97,13 @@ internal sealed class AggregationManager
 
     private void Include(Predicate<Instrument> instrumentFilter)
     {
-#pragma warning disable S2551 // Shared resources should not be used for locking
-        lock (this)
+        lock (_lockObject)
         {
             _instrumentConfigFuncs.Add(instrumentFilter);
         }
-#pragma warning restore S2551 // Shared resources should not be used for locking
     }
 
-    
+
     public void Start()
     {
         _listener.Start();
@@ -141,16 +123,12 @@ internal sealed class AggregationManager
         _instrumentStates.TryRemove(instrument, out _);
     }
 
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private InstrumentState? GetInstrumentState(Instrument instrument)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         if (!_instrumentStates.TryGetValue(instrument, out InstrumentState? instrumentState))
         {
-#pragma warning disable S2551 // Shared resources should not be used for locking
-            // protect _instrumentConfigFuncs list
-            lock (this) 
+            // protect _instrumentConfigFuncs list 
+            lock (_lockObject) 
             {
                 foreach (Predicate<Instrument> filter in _instrumentConfigFuncs)
                 {
@@ -169,23 +147,16 @@ internal sealed class AggregationManager
                     }
                 }
             }
-#pragma warning restore S2551 // Shared resources should not be used for locking
         }
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
         return instrumentState;
     }
 
     [UnconditionalSuppressMessage("AotAnalysis", "IL3050:RequiresDynamicCode",
                     Justification = "MakeGenericType is creating instances over reference types that works fine in AOT.")]
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     internal InstrumentState? BuildInstrumentState(Instrument instrument)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         Func<Aggregator?>? createAggregatorFunc = GetAggregatorFactory(instrument);
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         if (createAggregatorFunc == null)
         {
             return null;
@@ -195,66 +166,53 @@ internal sealed class AggregationManager
         return (InstrumentState)Activator.CreateInstance(instrumentStateType, createAggregatorFunc)!;
     }
 
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private Func<Aggregator?>? GetAggregatorFactory(Instrument instrument)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
         Type type = instrument.GetType();
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         Type? genericDefType = null;
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         genericDefType = type.IsGenericType ? type.GetGenericTypeDefinition() : null;
         if (genericDefType == typeof(Counter<>))
         {
             return () =>
             {
-#pragma warning disable S2551 // Shared resources should not be used for locking
-                lock (this)
+                lock (_lockObject)
                 {
                     return CheckTimeSeriesAllowed() ? new RateSumAggregator() : null;
                 }
-#pragma warning restore S2551 // Shared resources should not be used for locking
+
             };
         }
         else if (genericDefType == typeof(ObservableCounter<>))
         {
             return () =>
             {
-#pragma warning disable S2551 // Shared resources should not be used for locking
-                lock (this)
+                lock (_lockObject)
                 {
                     return CheckTimeSeriesAllowed() ? new RateAggregator() : null;
                 }
-#pragma warning restore S2551 // Shared resources should not be used for locking
             };
         }
         else if (genericDefType == typeof(ObservableGauge<>))
         {
             return () =>
             {
-#pragma warning disable S2551 // Shared resources should not be used for locking
-                lock (this)
+                lock (_lockObject)
                 {
                     return CheckTimeSeriesAllowed() ? new LastValue() : null;
                 }
-#pragma warning restore S2551 // Shared resources should not be used for locking
             };
         }
         else if (genericDefType == typeof(Histogram<>))
         {
             return () =>
             {
-#pragma warning disable S2551 // Shared resources should not be used for locking
-                lock (this)
+                lock (_lockObject)
                 {
                     // checking currentHistograms first because avoiding unexpected increment of TimeSeries count.
                     return (!CheckHistogramAllowed() || !CheckTimeSeriesAllowed()) ?
                         null :
                         new ExponentialHistogramAggregator(s_defaultHistogramConfig);
                 }
-#pragma warning restore S2551 // Shared resources should not be used for locking
             };
         }
         else
@@ -273,8 +231,7 @@ internal sealed class AggregationManager
         else if (_currentTimeSeries == _maxTimeSeries)
         {
             _currentTimeSeries++;
-            // _timeSeriesLimitReached(); Handle inline
-            // Console.WriteLine("Time series limit reached");
+            _timeSeriesLimitReached();
             return false;
         }
         else
@@ -293,9 +250,8 @@ internal sealed class AggregationManager
         else if (_currentHistograms == _maxHistograms)
         {
             _currentHistograms++;
-            // _histogramLimitReached();
+            _histogramLimitReached();
 
-            // Console.WriteLine("Histogram series limit reached");
             return false;
         }
         else
@@ -303,17 +259,15 @@ internal sealed class AggregationManager
             return false;
         }
     }
-
     internal void Collect()
     {
         try
         {
             _listener.RecordObservableInstruments();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // _observableInstrumentCallbackError(e);
-            // Console.WriteLine(e);
+            _observableInstrumentCallbackError(ex);
         }
 
         foreach (KeyValuePair<Instrument, InstrumentState> kv in _instrumentStates)

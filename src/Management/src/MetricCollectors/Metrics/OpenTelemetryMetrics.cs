@@ -11,9 +11,9 @@ public static class SteeltoeMetrics
 {
     public static readonly AssemblyName AssemblyName = typeof(SteeltoeMetrics).Assembly.GetName();
 
-    public static readonly string InstrumentationVersion = AssemblyName.Version.ToString();
+    public static readonly string? InstrumentationVersion = AssemblyName.Version?.ToString();
 
     public static Meter Meter => new(InstrumentationName, InstrumentationVersion);
 
-    public static string InstrumentationName { get; set; } = AssemblyName.Name;
+    public static string InstrumentationName { get; set; } = AssemblyName.Name ?? throw new InvalidOperationException(nameof(InstrumentationName));
 }

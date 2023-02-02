@@ -43,19 +43,19 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<MetricsEndpoint>();
 
         services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
-
-        services.TryAddSingleton(provider =>
+        var exporterOptions = new MetricsExporterOptions
         {
-            var options = provider.GetService<IMetricsEndpointOptions>();
-
-            var exporterOptions = new PullMetricsExporterOptions
-            {
-                ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds
-            };
-
+            CacheDurationMilliseconds = options.CacheDurationMilliseconds,
+            MaxTimeSeries = options.MaxTimeSeries,
+            MaxHistograms = options.MaxHistograms,
+            IncludedMetrics = options.IncludedMetrics
+        };
+        services.TryAddSingleton<IExporterOptions>(exporterOptions);
+        services.TryAddSingleton((provider)=>
+        {
+            var exporterOptions = provider.GetService<IExporterOptions>();
             return new SteeltoeExporter(exporterOptions);
         });
-
         services.AddSteeltoeCollector();
 
         return services;
@@ -66,17 +66,23 @@ public static class ServiceCollectionExtensions
        return services.AddSingleton((provider) =>
         {
             var steeltoeExporter = provider.GetService<SteeltoeExporter>();
-            var aggMan =  new AggregationManager(100, 100,
-                    (instrument, stats) => { steeltoeExporter.AddMetrics(instrument, stats); },
-                    (date1, date2) => { /*begin*/ },
-                    (date1, date2) => { /*end*/ },
-                    (instrument) => { /*begin instrument*/},
-                    (instrument) => { /* end instrument */},
-                    (instrument) => { /* instrument published */},
-                    () => {  /* enumeration complete*/ });
-            steeltoeExporter.Collect = aggMan.Collect;
-            aggMan.Include(SteeltoeMetrics.InstrumentationName);
-            return aggMan;
+            var exporterOptions = provider.GetService<IExporterOptions>();
+            var logger = provider.GetService<ILogger<SteeltoeExporter>>();
+            var aggregationManager = new AggregationManager(
+                maxTimeSeries: exporterOptions.MaxTimeSeries,
+                maxHistograms: exporterOptions.MaxHistograms,
+                collectMeasurement: steeltoeExporter.AddMetrics,
+                beginInstrumentMeasurements: (instrument) => logger.LogTrace($"Begin measurements from {instrument.Name} for {instrument.Meter.Name}"),
+                endInstrumentMeasurements: (instrument) => logger.LogTrace($"End measurements from {instrument.Name} for {instrument.Meter.Name}"),
+                instrumentPublished: (instrument) => logger.LogTrace($"Instrument {instrument.Name} published for {instrument.Meter.Name}"),
+                initialInstrumentEnumerationComplete: () => logger.LogTrace("Steeltoe metrics collector started."),
+                timeSeriesLimitReached: () => logger.LogWarning($"Cannnot collect any more time series because the configured limit of {exporterOptions.MaxTimeSeries} was reached"),
+                histogramLimitReached: () => logger.LogWarning($"Cannnot collect any more Histograms because the configured limit of {exporterOptions.MaxHistograms} was reached"),
+                observableInstrumentCallbackError: (ex) => logger.LogError(ex, "An error occured while collecting Observable Instruments "));
+
+            steeltoeExporter.Collect = aggregationManager.Collect;
+            aggregationManager.Include(SteeltoeMetrics.InstrumentationName); // Limit to Steeltoe Metrics; TODO: Configurable
+            return aggregationManager;
         }).AddHostedService<MetricCollectionHostedService>();
     }
 
