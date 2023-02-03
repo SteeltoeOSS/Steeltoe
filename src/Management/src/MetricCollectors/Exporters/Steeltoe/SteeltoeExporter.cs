@@ -42,13 +42,11 @@ public class SteeltoeExporter
         {
             throw new InvalidOperationException("Collect should not be null");
         }
-        
+
         lock (_collectionLock)
         {
             if (DateTime.Now > _lastCollection.AddMilliseconds(_cacheDurationMilliseconds))
             {
-
-                Console.WriteLine("cache miss at " + DateTime.Now + " for " + Thread.CurrentThread.ManagedThreadId);
                 _lastCollectionSamples = new MetricsCollection<List<MetricSample>>(_metricSamples);
                 _lastAvailableTags = new MetricsCollection<List<MetricTag>>(_availTags);
                 _metricSamples.Clear();
