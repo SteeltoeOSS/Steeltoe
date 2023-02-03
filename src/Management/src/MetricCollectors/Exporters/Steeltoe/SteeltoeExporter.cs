@@ -23,7 +23,7 @@ public class SteeltoeExporter
     private DateTime _lastCollection = DateTime.MinValue;
 
     public  Action? Collect { get; set; }
-    private object _collectionLock = new object ();
+    private readonly object _collectionLock = new object ();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SteeltoeExporter" /> class.

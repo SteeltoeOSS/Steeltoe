@@ -1,3 +1,7 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,7 +10,6 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Metrics.Prometheus;
 using Steeltoe.Management.MetricCollectors;
 
 namespace Steeltoe.Management.Prometheus;
@@ -18,9 +21,6 @@ public static class PrometheusExtensions
     /// <param name="services">
     /// Reference to the service collection.
     /// </param>
-    /// <param name="configuration">
-    /// Reference to the configuration system.
-    /// </param>
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
@@ -30,9 +30,9 @@ public static class PrometheusExtensions
 
         services
             .AddOptions<PrometheusEndpointOptions>()
-            .Configure<IConfiguration>((options, Configuration) =>
+            .Configure<IConfiguration>((options, configuration) =>
             {
-                Configuration.GetSection(PrometheusEndpointOptions.ManagementInfoPrefix).Bind(options);
+                configuration.GetSection(PrometheusEndpointOptions.ManagementInfoPrefix).Bind(options);
             });
 
         var sd = ServiceDescriptor.Singleton<IEndpointOptions, PrometheusEndpointOptions>();

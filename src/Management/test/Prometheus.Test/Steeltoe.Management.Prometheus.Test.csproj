@@ -3,9 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Prometheus\Steeltoe.Management.Prometheus.csproj" />
+  </ItemGroup>
 
 </Project>

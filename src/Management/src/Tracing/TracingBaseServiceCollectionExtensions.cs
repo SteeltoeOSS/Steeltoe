@@ -15,6 +15,7 @@ using OpenTelemetry.Trace;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Logging;
+using Steeltoe.Management.Wavefront.Exporters;
 
 namespace Steeltoe.Management.Tracing;
 
@@ -136,11 +137,9 @@ public static class TracingBaseServiceCollectionExtensions
             }
 
 
-#pragma warning disable S125 // Sections of code should not be commented out
-                            // AddWavefrontExporter(builder);
+            AddWavefrontExporter(builder);
 
             action?.Invoke(builder);
-#pragma warning restore S125 // Sections of code should not be commented out
         });
 
         return services;
@@ -200,36 +199,25 @@ public static class TracingBaseServiceCollectionExtensions
         builder.AddOtlpExporter();
     }
 
-    
-#pragma warning disable SA1005 // Single line comments should begin with single space
-//private static void AddWavefrontExporter(TracerProviderBuilder builder)
-    
-#pragma warning disable SA1005 // Single line comments should begin with single space
-//{
-    //    var deferredTracerProviderBuilder = builder as IDeferredTracerProviderBuilder;
+    private static void AddWavefrontExporter(TracerProviderBuilder builder)
 
-    
-#pragma warning disable SA1005 // Single line comments should begin with single space
-//    deferredTracerProviderBuilder.Configure(delegate(IServiceProvider sp, TracerProviderBuilder builder)
-    //    {
-    //        var configuration = sp.GetService<IConfiguration>();
-    //        var wavefrontOptions = new WavefrontExporterOptions(configuration);
+    {
+        var deferredTracerProviderBuilder = builder as IDeferredTracerProviderBuilder;
 
-    
-#pragma warning disable SA1005 // Single line comments should begin with single space
-//        // Only add if wavefront is configured
-    //        if (!string.IsNullOrEmpty(wavefrontOptions.Uri))
-    //        {
-    //            var logger = sp.GetService<ILogger<WavefrontTraceExporter>>();
-    //            builder.AddWavefrontExporter(wavefrontOptions, logger);
-    //        }
-    //    });
-    
-#pragma warning disable SA1005 // Single line comments should begin with single space
-//}
+
+        deferredTracerProviderBuilder.Configure(delegate(IServiceProvider sp, TracerProviderBuilder builder)
+        {
+            var configuration = sp.GetService<IConfiguration>();
+            var wavefrontOptions = new WavefrontExporterOptions(configuration);
+
+
+            // Only add if wavefront is configured
+            if (!string.IsNullOrEmpty(wavefrontOptions.Uri))
+            {
+                var logger = sp.GetService<ILogger<WavefrontTraceExporter>>();
+                builder.AddWavefrontTraceExporter(wavefrontOptions, logger);
+            }
+        });
+
+    }
 }
-#pragma warning restore SA1005 // Single line comments should begin with single space
-#pragma warning restore SA1005 // Single line comments should begin with single space
-#pragma warning restore SA1005 // Single line comments should begin with single space
-#pragma warning restore SA1005 // Single line comments should begin with single space
-#pragma warning restore SA1005 // Single line comments should begin with single space

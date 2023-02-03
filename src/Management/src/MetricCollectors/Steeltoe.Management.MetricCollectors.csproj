@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="$(SystemVersion)" />
-    <PackageReference Include="Wavefront.SDK.CSharp" Version="$(WavefrontSdkVersion)" />
   </ItemGroup>
 
   <ItemGroup>

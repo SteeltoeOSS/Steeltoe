@@ -10,9 +10,7 @@ namespace System.Diagnostics.Metrics;
 internal sealed class AggregationManager
 {
     public const double MinCollectionTimeSecs = 0.1;
-#pragma warning disable SA1311 // Static readonly fields should begin with upper-case letter
-    private static readonly QuantileAggregation s_defaultHistogramConfig = new QuantileAggregation(new double[] { 0.50, 0.95, 0.99 });
-#pragma warning restore SA1311 // Static readonly fields should begin with upper-case letter
+    private static readonly QuantileAggregation DefaultHistogramConfig = new QuantileAggregation(new double[] { 0.50, 0.95, 0.99 });
 
     // these fields are modified after construction and accessed on multiple threads, use lock(_lockObject) to ensure the data
     // is synchronized
@@ -211,7 +209,7 @@ internal sealed class AggregationManager
                     // checking currentHistograms first because avoiding unexpected increment of TimeSeries count.
                     return (!CheckHistogramAllowed() || !CheckTimeSeriesAllowed()) ?
                         null :
-                        new ExponentialHistogramAggregator(s_defaultHistogramConfig);
+                        new ExponentialHistogramAggregator(DefaultHistogramConfig);
                 }
             };
         }

@@ -1,8 +1,26 @@
-namespace Steeltoe.Management.Wavefront;
-public class Class1
-{
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
-    //TODO: Move to separate library
+using System.Xml.Linq;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using Steeltoe.Common;
+using Steeltoe.Management.Diagnostics;
+using Steeltoe.Management.Endpoint.Diagnostics;
+using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.Wavefront.Exporters;
+
+namespace Steeltoe.Management.Wavefront;
+public static class WavefrontExtensions
+{
     /// <summary>
     /// Adds the services used by the Wavefront exporter.
     /// </summary>
@@ -12,35 +30,48 @@ public class Class1
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    //public static IServiceCollection AddWavefrontMetrics(this IServiceCollection services)
-    //{
-    //    ArgumentGuard.NotNull(services);
+    public static IServiceCollection AddWavefrontMetrics(this IServiceCollection services)
+    {
+        ArgumentGuard.NotNull(services);
 
-    //    services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
-    //    services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
+        services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
 
-    //    services.TryAddSingleton<IMetricsObserverOptions>(provider =>
-    //    {
-    //        var configuration = provider.GetService<IConfiguration>();
-    //        return new MetricsObserverOptions(configuration);
-    //    });
+        services.TryAddSingleton<IMetricsObserverOptions>(provider =>
+        {
+            var configuration = provider.GetService<IConfiguration>();
+            return new MetricsObserverOptions(configuration);
+        });
 
-    //    services.TryAddSingleton<IViewRegistry, ViewRegistry>();
+        //services.TryAddSingleton<IViewRegistry, ViewRegistry>();
 
-    //    AddMetricsObservers(services);
+        services.AddMetricsObservers();
 
-    //    services.TryAddSingleton(provider =>
-    //    {
-    //        var logger = provider.GetService<ILogger<WavefrontMetricsExporter>>();
-    //        var configuration = provider.GetService<IConfiguration>();
-    //        return new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);
-    //    });
+        services.AddOpenTelemetry()
+             .WithMetrics(builder =>
+             {
+                 builder.AddMeter(SteeltoeMetrics.InstrumentationName);
+                 builder.AddWavefrontExporter();
+             })
+        .StartWithHost();
 
-    //    services.AddOpenTelemetryMetricsForSteeltoe();
+        return services;
+    }
+    public static MeterProviderBuilder AddWavefrontExporter(this MeterProviderBuilder builder)
+    {
+        return builder.AddReader((sp) =>
+        {
+            var options = sp.GetRequiredService<IOptionsMonitor<WavefrontExporterOptions>>();
+            var logger = sp.GetService<ILogger<WavefrontMetricsExporter>>();
+            var configuration = sp.GetService<IConfiguration>();
+            var wavefrontExporter = new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);
+            var metricReader = new PeriodicExportingMetricReader(wavefrontExporter, wavefrontExporter.Options.Step);
 
-    //    return services;
-    //}
-
+            metricReader.TemporalityPreference = MetricReaderTemporalityPreference.Cumulative;
+            return metricReader;
+        });
+    }
+    
     //[Fact]
     //public async Task AddWavefrontExporter()
     //{

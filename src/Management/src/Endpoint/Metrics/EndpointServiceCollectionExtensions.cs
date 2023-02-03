@@ -34,13 +34,13 @@ public static class EndpointServiceCollectionExtensions
         services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
 
      //   services.TryAddSingleton<IViewRegistry, ViewRegistry>();
-        AddMetricsObservers(services);
+        services.AddMetricsObservers();
 
         services.AddActuatorEndpointMapping<MetricsEndpoint>();
     }
 
 
-    internal static void AddMetricsObservers(IServiceCollection services)
+    public static void AddMetricsObservers(this IServiceCollection services)
     {
         var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
         var observerOptions = new MetricsObserverOptions(configuration);
