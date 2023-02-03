@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Prometheus;
 
-public class PrometheusEndpointOptions : AbstractEndpointOptions//, IPrometheusEndpointOptions
+public class PrometheusEndpointOptions : AbstractEndpointOptions, IPrometheusEndpointOptions
 {
     internal const string ManagementInfoPrefix = "management:endpoints:prometheus";
 

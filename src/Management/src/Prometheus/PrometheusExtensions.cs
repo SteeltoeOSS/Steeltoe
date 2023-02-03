@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenTelemetry;
-using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -13,8 +12,6 @@ using Steeltoe.Management.MetricCollectors;
 namespace Steeltoe.Management.Prometheus;
 public static class PrometheusExtensions
 {
-
-
     /// <summary>
     /// Adds the services used by the Prometheus actuator.
     /// </summary>
@@ -27,33 +24,24 @@ public static class PrometheusExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    /// TODO: Move to separate assembly
     public static IServiceCollection AddPrometheusActuator(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
 
-        services.AddOpenTelemetry()
+        services
+            .AddOptions<PrometheusEndpointOptions>()
+            .Configure<IConfiguration>((options, Configuration) =>
+            {
+                Configuration.GetSection(PrometheusEndpointOptions.ManagementInfoPrefix).Bind(options);
+            });
 
+        var sd = ServiceDescriptor.Singleton<IEndpointOptions, PrometheusEndpointOptions>();
+        services.TryAddEnumerable(sd);
+
+        services.AddOpenTelemetry()
         .WithMetrics(builder =>
         {
             builder.AddMeter(SteeltoeMetrics.InstrumentationName);
-            var idpdb = builder as IDeferredMeterProviderBuilder;
-            idpdb?.Configure((provider, builder) =>
-            {
-                //provider.GetRequiredService<IManagementOptions>
-
-
-                //provider.GetRequiredService< PrometheusEndpointOptions>
-                var mgmtOptions = new ActuatorManagementOptions();
-                var prometheusOptions = new PrometheusEndpointOptions();
-                //builder.ConfigureServices(services => services.Configure<PrometheusAspNetCoreOptions>(options =>
-                //{
-                //    options.ScrapeResponseCacheDurationMilliseconds = (int)prometheusOptions.ScrapeResponseCacheDurationMilliseconds;
-                //    options.ScrapeEndpointPath = mgmtOptions.Path + "/" + prometheusOptions.Id;
-                //}));
-
-            });
-
             builder.AddPrometheusExporter();
         })
         .StartWithHost();
@@ -63,30 +51,12 @@ public static class PrometheusExtensions
     public static IApplicationBuilder MapPrometheusActuator(
           this IApplicationBuilder app)
     {
-        // Note: Order is important here. MeterProvider is accessed before
-        // GetOptions<PrometheusExporterOptions> so that any changes made to
-        // PrometheusExporterOptions in deferred AddPrometheusExporter
-        // configure actions are reflected.
-        var meterProvider = app.ApplicationServices.GetRequiredService<MeterProvider>();
         var managementOptions = app.ApplicationServices.GetService<IEnumerable<IManagementOptions>>()?.OfType<ActuatorManagementOptions>().FirstOrDefault();
-        // var prometheusOptions = app.ApplicationServices.GetServices<>  TODO configure
-        var prometheusOptions = new PrometheusEndpointOptions(); //Default
+        var prometheusOptions = app.ApplicationServices.GetService<IEnumerable<IEndpointOptions>>()?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
 
-
-        var path = managementOptions.Path + "/" + prometheusOptions.Id;
-
-        //if (!path.StartsWith("/"))
-        //{
-        //    path = $"/{path}";
-        //}
-
-        //return app.Map(
-        //    new PathString(path),
-        //    builder =>
-        //    {
-        //       // configureBranchedPipeline?.Invoke(builder);
-        //        builder.UseMiddleware<PrometheusExporterMiddleware>(meterProvider);
-        //    });
+        var root = managementOptions?.Path ?? "/actuator";
+        var id = prometheusOptions?.Id ?? "prometheus";
+        var path = root + "/" + id;
 
         return app.UseOpenTelemetryPrometheusScrapingEndpoint(path);
     }
