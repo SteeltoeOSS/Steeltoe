@@ -14,7 +14,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Encryption.ConfigServer;
 
-public static class EncryptionResolverExtensions
+public static class ConfigServerEncryptionResolverExtensions
 {
     /// <summary>
     /// Creates a new <see cref="IConfiguration" /> using a <see cref="EncryptionResolverProvider" /> which wraps the provided <see cref="IConfiguration" />

@@ -19,7 +19,7 @@ namespace Steeltoe.Configuration.Encryption;
 /// </summary>
 internal sealed class EncryptionResolverProvider : IConfigurationProvider
 {
-    // regex for matching {cipher:keyAlias} at the start of the string
+    // regex for matching {cipher}{key:keyAlias} at the start of the string
     private readonly Regex _cipherRegex = new ("^{cipher}({key:(.*)})?");
     internal ILogger<EncryptionResolverProvider> Logger { get; }
 

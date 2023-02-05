@@ -11,8 +11,6 @@ namespace Steeltoe.Configuration.Encryption;
 /// <summary>
 /// Specialized implementation of <see cref="IConfigurationRoot" /> that does not call <see cref="Reload" /> on providers.
 /// </summary>
-
-//TODO: Needed here?
 internal sealed class ConfigurationView : IConfigurationRoot
 {
     private readonly IList<IConfigurationProvider> _providers;
