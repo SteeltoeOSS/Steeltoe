@@ -14,7 +14,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Encryption.ConfigServer;
 
-public static class ConfigServerEncryptionResolverExtensions
+internal static class ConfigServerEncryptionResolverExtensions
 {
     /// <summary>
     /// Creates a new <see cref="IConfiguration" /> using a <see cref="EncryptionResolverProvider" /> which wraps the provided <see cref="IConfiguration" />
@@ -26,9 +26,6 @@ public static class ConfigServerEncryptionResolverExtensions
     /// </param>
     /// <param name="configuration">
     /// The configuration the encryption resolver will wrap.
-    /// </param>
-    /// <param name="textDecryptor">
-    /// The the decryptor to use
     /// </param>
     /// <returns>
     /// The new configuration.
@@ -51,9 +48,6 @@ public static class ConfigServerEncryptionResolverExtensions
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
-    /// <param name="textDecryptor">
-    /// The the decryptor to use
     /// </param>
     /// <returns>
     /// The new configuration.
@@ -82,9 +76,6 @@ public static class ConfigServerEncryptionResolverExtensions
     /// <param name="hostBuilder">
     /// The host builder.
     /// </param>
-    /// <param name="textDecryptor">
-    /// The the decryptor to use
-    /// </param>
     /// <returns>
     /// The provided host builder.
     /// </returns>
@@ -104,9 +95,6 @@ public static class ConfigServerEncryptionResolverExtensions
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
-    /// <param name="textDecryptor">
-    /// The the decryptor to use
     /// </param>
     /// <returns>
     /// The provided host builder.
@@ -132,9 +120,6 @@ public static class ConfigServerEncryptionResolverExtensions
     /// <param name="hostBuilder">
     /// The host builder.
     /// </param>
-    /// <param name="textDecryptor">
-    /// The the decryptor to use
-    /// </param>
     /// <returns>
     /// The provided host builder.
     /// </returns>
@@ -154,9 +139,6 @@ public static class ConfigServerEncryptionResolverExtensions
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
-    /// <param name="textDecryptor">
-    /// The the decryptor to use
     /// </param>
     /// <returns>
     /// The provided host builder.
@@ -182,9 +164,6 @@ public static class ConfigServerEncryptionResolverExtensions
     /// <param name="applicationBuilder">
     /// The application builder.
     /// </param>
-    /// <param name="textDecryptor">
-    /// The the decryptor to use
-    /// </param>
     /// <returns>
     /// The provided application builder.
     /// </returns>
@@ -204,9 +183,6 @@ public static class ConfigServerEncryptionResolverExtensions
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
-    /// <param name="textDecryptor">
-    /// The the decryptor to use
     /// </param>
     /// <returns>
     /// The provided application builder.
