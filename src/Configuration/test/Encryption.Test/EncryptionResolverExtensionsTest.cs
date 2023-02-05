@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Steeltoe.Common.Utils.IO;
 using Xunit;
 
 namespace Steeltoe.Configuration.Encryption.Test;
@@ -23,6 +22,7 @@ public sealed class EncryptionResolverExtensionsTest
     {
         _decryptorMock = new Mock<ITextDecryptor>();
     }
+
     [Fact]
     public void ConfigureEncryptionResolver_WithServiceCollection_ThrowsIfNulls()
     {
@@ -32,8 +32,8 @@ public sealed class EncryptionResolverExtensionsTest
         var loggerFactory = NullLoggerFactory.Instance;
 
         Assert.Throws<ArgumentNullException>(() => nullServiceCollection.ConfigureEncryptionResolver(configuration, loggerFactory, _decryptorMock.Object));
-        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigureEncryptionResolver(null, loggerFactory,_decryptorMock.Object));
-        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigureEncryptionResolver(configuration, null,_decryptorMock.Object));
+        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigureEncryptionResolver(null, loggerFactory, _decryptorMock.Object));
+        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigureEncryptionResolver(configuration, null, _decryptorMock.Object));
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public sealed class EncryptionResolverExtensionsTest
         {
             { "key1", "value1" },
             { "key2", "{cipher}somecipher" },
-            { "key3", "{cipher}{key:keyalias}somekeyaliascipher" },
+            { "key3", "{cipher}{key:keyalias}somekeyaliascipher" }
         };
 
         var builder = new ConfigurationBuilder();

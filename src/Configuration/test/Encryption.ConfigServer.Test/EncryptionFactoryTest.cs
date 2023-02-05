@@ -14,7 +14,7 @@ public class EncryptionFactoryTest
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings();
         Assert.IsType<NoopDecryptor>(EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));
     }
-    
+
     [Fact]
     public void Create_WhenEnabledWithKey_CreateAesDecrytor()
     {
@@ -23,9 +23,10 @@ public class EncryptionFactoryTest
             EncryptionEnabled = true,
             EncryptionKey = "something"
         };
+
         Assert.IsType<AesTextDecryptor>(EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));
     }
-    
+
     [Fact]
     public void Create_WhenEnabledKeyStorelocation_CreateRsaDecrytor()
     {
@@ -36,6 +37,7 @@ public class EncryptionFactoryTest
             EncryptionKeyStorePassword = "letmein",
             EncryptionKeyStoreAlias = "mytestkey"
         };
+
         Assert.IsType<RsaKeyStoreDecryptor>(EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));
     }
 }

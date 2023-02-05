@@ -51,7 +51,7 @@ internal static class ConfigurationSettingsHelper
         settings.HealthEnabled = configurationSection.GetValue("health:enabled", settings.HealthEnabled);
         settings.HealthTimeToLive = configurationSection.GetValue("health:timeToLive", settings.HealthTimeToLive);
         settings.PollingInterval = configurationSection.GetValue("pollingInterval", settings.PollingInterval);
-        
+
         // Override Config Server URI
         settings.Uri = GetCloudFoundryUri(sectionPrefix, configuration, settings.Uri);
     }

@@ -5,9 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Primitives;
 using Moq;
-using Steeltoe.Common.Utils.IO;
 using Xunit;
 
 namespace Steeltoe.Configuration.Encryption.Test;
@@ -83,7 +81,7 @@ public sealed class EncryptionResolverProviderTest
 
     [Fact]
     public void TryGet_ReturnsResolvedDecryptedValues()
-    {   
+    {
         _decryptorMock.Setup(x => x.Decrypt("something")).Returns("DECRYPTED");
 
         var settings = new Dictionary<string, string>
@@ -110,6 +108,7 @@ public sealed class EncryptionResolverProviderTest
     {
         _decryptorMock.Setup(x => x.Decrypt("something")).Returns("DECRYPTED");
         _decryptorMock.Setup(x => x.Decrypt("something2")).Returns("DECRYPTED2");
+
         var settings = new Dictionary<string, string>
         {
             { "key1", "value1" },
@@ -127,16 +126,16 @@ public sealed class EncryptionResolverProviderTest
         Assert.Equal("value1", val);
         Assert.True(holder.TryGet("key2", out val));
         Assert.Equal("DECRYPTED", val);
-    
+
         holder.Set("key2", "{cipher}something2");
         Assert.True(holder.TryGet("key2", out val));
         Assert.Equal("DECRYPTED2", val);
-        
+
         holder.Set("key2", "nocipher");
         Assert.True(holder.TryGet("key2", out val));
         Assert.Equal("nocipher", val);
     }
-    
+
     [Fact]
     public void Load_CreatesConfiguration()
     {
@@ -161,14 +160,14 @@ public sealed class EncryptionResolverProviderTest
     public void AdjustConfigManagerBuilder_CorrectlyReflectNewValues()
     {
         _decryptorMock.Setup(x => x.Decrypt("encrypted")).Returns("DECRYPTED");
-        
+
         var manager = new ConfigurationManager();
 
         var valueProviderA = new Dictionary<string, string>
         {
             { "value", "a" }
         };
-        
+
         var encryption = new Dictionary<string, string>
         {
             { "value", "{cipher}encrypted" }
@@ -179,8 +178,8 @@ public sealed class EncryptionResolverProviderTest
         manager.AddEncryptionResolver(_decryptorMock.Object);
         string result = manager.GetValue<string>("value");
         Assert.Equal("DECRYPTED", result);
-        
-        _decryptorMock.Verify(x=>x.Decrypt("encrypted"));
+
+        _decryptorMock.Verify(x => x.Decrypt("encrypted"));
         _decryptorMock.VerifyNoOtherCalls();
     }
 }

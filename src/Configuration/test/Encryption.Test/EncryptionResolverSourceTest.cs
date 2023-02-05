@@ -19,7 +19,7 @@ public sealed class EncryptionResolverSourceTest
     {
         _decryptorMock = new Mock<ITextDecryptor>();
     }
-    
+
     [Fact]
     public void Constructor_WithSources_ThrowsIfNulls()
     {

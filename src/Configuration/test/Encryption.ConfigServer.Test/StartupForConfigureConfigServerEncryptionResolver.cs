@@ -12,7 +12,7 @@ namespace Steeltoe.Configuration.Encryption.Test;
 public sealed class StartupForConfigureConfigServerEncryptionResolver
 {
     private readonly IConfiguration _configuration;
-   
+
     internal static IServiceProvider ServiceProvider { get; private set; }
 
     public StartupForConfigureConfigServerEncryptionResolver(IConfiguration configuration)

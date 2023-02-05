@@ -8,7 +8,7 @@ namespace Steeltoe.Configuration.Encryption.ConfigServer;
 /// Holds the settings used to configure the Spring Cloud Config Server provider <see cref="ConfigServerConfigurationProvider" />.
 /// </summary>
 public sealed class ConfigServerEncryptionSettings
-{ 
+{
     /// <summary>
     /// Default Encryption method.
     /// </summary>

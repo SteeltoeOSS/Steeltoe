@@ -17,13 +17,21 @@ public sealed class AesTextDecryptor : ITextDecryptor
     private const short IvSize = 128;
     private readonly byte[] _key;
     private readonly IBufferedCipher _cipher;
+    
+    public AesTextDecryptor(string key): this(key,"deadbeef")
+    {
+    }
 
-    public AesTextDecryptor(string key, string salt = "deadbeef", bool strong = false)
+    public AesTextDecryptor(string key, string salt):this(key, salt, false)
+    {
+    }
+
+    public AesTextDecryptor(string key, string salt, bool strong)
     {
         ArgumentGuard.NotNull(key);
         ArgumentGuard.NotNull(salt);
         ArgumentGuard.NotNull(strong);
-        
+
         _cipher = strong ? CipherUtilities.GetCipher("AES/GCM/NoPadding") : CipherUtilities.GetCipher("AES/CBC/PKCS5Padding");
 
         byte[] saltBytes = GetSaltBytes(salt);

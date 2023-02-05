@@ -59,7 +59,7 @@ internal static class ConfigServerEncryptionResolverExtensions
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(loggerFactory);
 
-        var textDecryptor = GetTextDecryptor(configuration);
+        ITextDecryptor textDecryptor = GetTextDecryptor(configuration);
 
         IConfiguration newConfiguration = configuration.AddEncryptionResolver(loggerFactory, textDecryptor);
         services.Replace(ServiceDescriptor.Singleton(typeof(IConfiguration), newConfiguration));
@@ -68,10 +68,10 @@ internal static class ConfigServerEncryptionResolverExtensions
     }
 
     /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap
-    /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
-    /// sources and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that
-    /// you wrap all of the applications' configuration sources with encryption resolution.
+    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
+    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
+    /// all of the applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="hostBuilder">
     /// The host builder.
@@ -85,10 +85,10 @@ internal static class ConfigServerEncryptionResolverExtensions
     }
 
     /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap
-    /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
-    /// sources and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that
-    /// you wrap all of the applications' configuration sources with encryption resolution.
+    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
+    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
+    /// all of the applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="hostBuilder">
     /// The host builder.
@@ -106,16 +106,16 @@ internal static class ConfigServerEncryptionResolverExtensions
 
         return hostBuilder.ConfigureAppConfiguration((context, builder) =>
         {
-            var textDecryptor = GetTextDecryptor(context.Configuration);
+            ITextDecryptor textDecryptor = GetTextDecryptor(context.Configuration);
             builder.AddEncryptionResolver(loggerFactory, textDecryptor);
         });
     }
 
     /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap
-    /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
-    /// sources and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that
-    /// you wrap all of the applications configuration sources with encryption resolution.
+    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
+    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
+    /// all of the applications configuration sources with encryption resolution.
     /// </summary>
     /// <param name="hostBuilder">
     /// The host builder.
@@ -129,10 +129,10 @@ internal static class ConfigServerEncryptionResolverExtensions
     }
 
     /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap
-    /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
-    /// sources and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that
-    /// you wrap all of the applications configuration sources with encryption resolution.
+    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
+    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
+    /// all of the applications configuration sources with encryption resolution.
     /// </summary>
     /// <param name="hostBuilder">
     /// The host builder.
@@ -156,10 +156,10 @@ internal static class ConfigServerEncryptionResolverExtensions
     }
 
     /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap
-    /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
-    /// sources and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that
-    /// you wrap all of the applications configuration sources with encryption resolution.
+    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
+    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
+    /// all of the applications configuration sources with encryption resolution.
     /// </summary>
     /// <param name="applicationBuilder">
     /// The application builder.
@@ -173,10 +173,10 @@ internal static class ConfigServerEncryptionResolverExtensions
     }
 
     /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap
-    /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
-    /// sources and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that
-    /// you wrap all of the applications configuration sources with encryption resolution.
+    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
+    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
+    /// all of the applications configuration sources with encryption resolution.
     /// </summary>
     /// <param name="applicationBuilder">
     /// The application builder.
@@ -192,17 +192,17 @@ internal static class ConfigServerEncryptionResolverExtensions
         ArgumentGuard.NotNull(applicationBuilder);
         ArgumentGuard.NotNull(loggerFactory);
 
-        var textDecryptor = GetTextDecryptor(applicationBuilder.Configuration);
+        ITextDecryptor textDecryptor = GetTextDecryptor(applicationBuilder.Configuration);
 
         applicationBuilder.Configuration.AddEncryptionResolver(loggerFactory, textDecryptor);
         return applicationBuilder;
     }
-    
+
     private static ITextDecryptor GetTextDecryptor(IConfiguration configuration)
     {
-        ConfigServerEncryptionSettings settings = new ConfigServerEncryptionSettings();
+        var settings = new ConfigServerEncryptionSettings();
         ConfigurationSettingsHelper.Initialize(settings, configuration);
-        var textDecryptor = EncryptionFactory.CreateEncryptor(settings);
+        ITextDecryptor textDecryptor = EncryptionFactory.CreateEncryptor(settings);
         return textDecryptor;
     }
 }

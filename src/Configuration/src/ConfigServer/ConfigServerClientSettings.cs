@@ -113,7 +113,7 @@ public sealed class ConfigServerClientSettings
     /// Default health check enabled setting.
     /// </summary>
     public const bool DefaultHealthEnabled = true;
-    
+
     /// <summary>
     /// Default health check time-to-live setting, in milliseconds.
     /// </summary>

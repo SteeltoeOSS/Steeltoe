@@ -17,7 +17,7 @@ internal static class ConfigurationSettingsHelper
         ArgumentGuard.NotNull(configuration);
 
         IConfigurationSection configurationSection = configuration.GetSection(ConfigurationPrefix);
-        
+
         settings.EncryptionEnabled = configurationSection.GetValue("encrypt:enabled", settings.EncryptionEnabled);
         settings.EncryptionRsaStrong = configurationSection.GetValue("encrypt:rsa:strong", settings.EncryptionRsaStrong);
         settings.EncryptionRsaSalt = configurationSection.GetValue("encrypt:rsa:salt", settings.EncryptionRsaSalt);

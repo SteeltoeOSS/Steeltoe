@@ -144,13 +144,12 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
             _configuration = new ConfigurationBuilder().Build();
             _hasConfiguration = false;
         }
+
         Settings = settings;
         HttpClient = httpClient ?? GetConfiguredHttpClient(Settings);
 
         OnSettingsChanged();
     }
-
-    
 
     private void OnSettingsChanged()
     {

@@ -20,7 +20,7 @@ namespace Steeltoe.Configuration.Encryption;
 internal sealed class EncryptionResolverProvider : IConfigurationProvider
 {
     // regex for matching {cipher}{key:keyAlias} at the start of the string
-    private readonly Regex _cipherRegex = new ("^{cipher}({key:(.*)})?");
+    private readonly Regex _cipherRegex = new("^{cipher}({key:(.*)})?");
     internal ILogger<EncryptionResolverProvider> Logger { get; }
 
     /// <summary>
@@ -29,12 +29,11 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider
     internal IConfigurationRoot Configuration { get; private set; }
 
     public IList<IConfigurationProvider> Providers { get; } = new List<IConfigurationProvider>();
-    
+
     public ITextDecryptor Decriptor { get; set; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EncryptionResolverProvider" /> class. The new encryption resolver wraps the provided configuration
-    /// root.
+    /// Initializes a new instance of the <see cref="EncryptionResolverProvider" /> class. The new encryption resolver wraps the provided configuration root.
     /// </summary>
     /// <param name="root">
     /// The configuration the provider uses when resolving encryptions.
@@ -55,8 +54,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider
         Logger = loggerFactory.CreateLogger<EncryptionResolverProvider>();
         Decriptor = textDecryptor;
     }
-    
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="EncryptionResolverProvider" /> class. The new encryption resolver wraps the provided configuration
     /// providers. The <see cref="Configuration" /> will be created from these providers.
@@ -100,18 +98,18 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider
 
         string originalValue = Configuration[key];
         value = originalValue;
-      
+
         if (!string.IsNullOrEmpty(originalValue))
         {
             Match match = _cipherRegex.Match(originalValue);
 
             if (match.Success)
             {
-                var cipherText = originalValue.Substring(match.Length);
+                string cipherText = originalValue.Substring(match.Length);
 
                 if (match.Groups.Values.Any())
                 {
-                    var keyAlias = match.Groups[2].Value;
+                    string keyAlias = match.Groups[2].Value;
                     value = string.IsNullOrEmpty(keyAlias) ? Decriptor.Decrypt(cipherText) : Decriptor.Decrypt(cipherText, keyAlias.TrimStart(':'));
                 }
                 else

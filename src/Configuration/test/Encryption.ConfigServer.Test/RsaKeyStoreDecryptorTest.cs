@@ -36,7 +36,7 @@ public sealed class RsaKeyStoreDecryptorTest
     [Fact]
     public void Constructor_WithUnsupportedAlgorithmThrows()
     {
-        Assert.Throws<ArgumentException>(() => new RsaKeyStoreDecryptor(_keyProvider, "mytestkey", algorithm: "Exception"));
+        Assert.Throws<ArgumentException>(() => new RsaKeyStoreDecryptor(_keyProvider, "mytestkey", "deadbeef", false, " Exception"));
     }
 
     [Theory]
@@ -48,13 +48,13 @@ public sealed class RsaKeyStoreDecryptorTest
 
         Assert.Equal(plainText, decrypted);
     }
-    
+
     [Theory]
     [MemberData(nameof(GetTestVector), 5)]
     public void Decode_TestForSpringConfigCipher_WithSpecifiedKey(string salt, string strong, string algorithm, string cipher, string plainText)
     {
         var decryptor = new RsaKeyStoreDecryptor(_keyProvider, "someKey", salt, bool.Parse(strong), algorithm);
-        string decrypted = decryptor.Decrypt(cipher,"mytestkey");
+        string decrypted = decryptor.Decrypt(cipher, "mytestkey");
 
         Assert.Equal(plainText, decrypted);
     }

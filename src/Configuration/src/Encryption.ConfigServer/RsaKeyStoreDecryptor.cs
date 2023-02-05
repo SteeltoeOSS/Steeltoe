@@ -17,22 +17,27 @@ public sealed class RsaKeyStoreDecryptor : ITextDecryptor
     private readonly IBufferedCipher _cipher;
     private readonly string _defaultKeyAlias;
 
-    public RsaKeyStoreDecryptor(IKeyProvider keyProvider, string alias, string salt = "deadbeaf", bool strong = false, string algorithm = "DEFAULT")
+    public RsaKeyStoreDecryptor(IKeyProvider keyProvider, string alias)
+        : this(keyProvider, alias, ConfigServerEncryptionSettings.DefaultEncryptionRsaSalt, false, ConfigServerEncryptionSettings.DefaultEncryptionRsaAlgorithm)
+    {
+    }
+
+    public RsaKeyStoreDecryptor(IKeyProvider keyProvider, string alias, string salt, bool strong , string algorithm)
     {
         ArgumentGuard.NotNull(keyProvider);
         ArgumentGuard.NotNull(alias);
         ArgumentGuard.NotNull(salt);
         ArgumentGuard.NotNull(strong);
         ArgumentGuard.NotNull(algorithm);
-        
+
         _salt = salt;
         _defaultKeyAlias = alias;
         _strong = strong;
         _keyProvider = keyProvider;
-        _cipher = GetCipher(algorithm);
+        _cipher = CreateCipher(algorithm);
     }
 
-    private IBufferedCipher GetCipher(string algorithm)
+    private IBufferedCipher CreateCipher(string algorithm)
     {
         switch (algorithm.ToUpperInvariant())
         {
@@ -56,7 +61,7 @@ public sealed class RsaKeyStoreDecryptor : ITextDecryptor
         byte[] bytes = Convert.FromBase64String(fullCipher);
         return Decrypt(bytes, alias);
     }
-    
+
     private string Decrypt(byte[] fullCipher, string alias)
     {
         ICipherParameters key = _keyProvider.GetKey(alias);

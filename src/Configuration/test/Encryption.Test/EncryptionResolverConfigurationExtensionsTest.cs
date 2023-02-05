@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Steeltoe.Common.Utils.IO;
 using Xunit;
 
 namespace Steeltoe.Configuration.Encryption.Test;
@@ -19,7 +18,7 @@ public sealed class EncryptionResolverConfigurationExtensionsTest
     {
         _decryptorMock = new Mock<ITextDecryptor>();
     }
-    
+
     [Fact]
     public void AddEncryptionResolver_WithConfigurationBuilder_ThrowsIfNulls()
     {
@@ -37,9 +36,8 @@ public sealed class EncryptionResolverConfigurationExtensionsTest
         const IConfiguration nullConfiguration = null;
         IConfiguration configuration = new ConfigurationBuilder().Build();
         var loggerFactory = NullLoggerFactory.Instance;
-        
 
-        Assert.Throws<ArgumentNullException>(() => nullConfiguration.AddEncryptionResolver(loggerFactory,_decryptorMock.Object));
+        Assert.Throws<ArgumentNullException>(() => nullConfiguration.AddEncryptionResolver(loggerFactory, _decryptorMock.Object));
         Assert.Throws<ArgumentNullException>(() => configuration.AddEncryptionResolver(null));
     }
 
@@ -105,10 +103,11 @@ public sealed class EncryptionResolverConfigurationExtensionsTest
     public void AddEncryptionResolver_WithConfiguration_ReturnsNewConfigurationWithDecryption()
     {
         _decryptorMock.Setup(x => x.Decrypt(It.IsAny<string>())).Returns((string x) => "DECRYPTED");
+
         var settings = new Dictionary<string, string>
         {
             { "key1", "value1" },
-            { "key2", "{cipher}something"}
+            { "key2", "{cipher}something" }
         };
 
         var builder = new ConfigurationBuilder();
@@ -126,20 +125,20 @@ public sealed class EncryptionResolverConfigurationExtensionsTest
         Assert.Null(config2["nokey"]);
         Assert.Equal("value1", config2["key1"]);
         Assert.Equal("DECRYPTED", config2["key2"]);
-        
-        _decryptorMock.Verify(x=>x.Decrypt("something"));
+
+        _decryptorMock.Verify(x => x.Decrypt("something"));
         _decryptorMock.VerifyNoOtherCalls();
     }
-    
+
     [Fact]
     public void AddEncryptionResolver_WithConfiguration_ReturnsNewConfigurationWithWithKeyAliasDecryption()
     {
-        _decryptorMock.Setup(x => x.Decrypt(
-            It.IsAny<string>(), It.IsAny<string>())).Returns((string cipher, string _) => "DECRYPTED");
+        _decryptorMock.Setup(x => x.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string cipher, string _) => "DECRYPTED");
+
         var settings = new Dictionary<string, string>
         {
             { "key1", "value1" },
-            { "key2", "{cipher}{key:keyalias}something"}
+            { "key2", "{cipher}{key:keyalias}something" }
         };
 
         var builder = new ConfigurationBuilder();
@@ -157,8 +156,8 @@ public sealed class EncryptionResolverConfigurationExtensionsTest
         Assert.Null(config2["nokey"]);
         Assert.Equal("value1", config2["key1"]);
         Assert.Equal("DECRYPTED", config2["key2"]);
-        
-        _decryptorMock.Verify(x=>x.Decrypt("something", "keyalias"));
+
+        _decryptorMock.Verify(x => x.Decrypt("something", "keyalias"));
         _decryptorMock.VerifyNoOtherCalls();
     }
 }

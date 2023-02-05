@@ -12,10 +12,10 @@ namespace Steeltoe.Configuration.Encryption;
 public static class EncryptionResolverConfigurationExtensions
 {
     /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap
-    /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
-    /// sources and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that
-    /// you wrap all of the applications configuration sources with encryption resolution.
+    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
+    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
+    /// all of the applications configuration sources with encryption resolution.
     /// </summary>
     /// <param name="builder">
     /// The configuration builder.
@@ -32,10 +32,10 @@ public static class EncryptionResolverConfigurationExtensions
     }
 
     /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap
-    /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
-    /// sources and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that
-    /// you wrap all of the applications configuration sources with encryption resolution.
+    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
+    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
+    /// all of the applications configuration sources with encryption resolution.
     /// </summary>
     /// <param name="builder">
     /// The configuration builder.
@@ -54,7 +54,7 @@ public static class EncryptionResolverConfigurationExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(loggerFactory);
         ArgumentGuard.NotNull(textDecryptor);
-        
+
         if (builder is IConfigurationRoot configuration)
         {
             builder.Add(new EncryptionResolverSource(configuration, loggerFactory, textDecryptor));
@@ -123,10 +123,10 @@ public static class EncryptionResolverConfigurationExtensions
     }
 
     /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap
-    /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
-    /// sources and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that
-    /// you wrap all of the applications configuration sources with encryption resolution.
+    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
+    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
+    /// all of the applications configuration sources with encryption resolution.
     /// </summary>
     /// <param name="configurationManager">
     /// The configuration manager.
@@ -143,10 +143,10 @@ public static class EncryptionResolverConfigurationExtensions
     }
 
     /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap
-    /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
-    /// sources and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that
-    /// you wrap all of the applications configuration sources with encryption resolution.
+    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
+    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
+    /// all of the applications configuration sources with encryption resolution.
     /// </summary>
     /// <param name="configurationManager">
     /// The configuration manager.
@@ -160,7 +160,8 @@ public static class EncryptionResolverConfigurationExtensions
     /// <returns>
     /// The incoming <paramref name="configurationManager" />.
     /// </returns>
-    public static ConfigurationManager AddEncryptionResolver(this ConfigurationManager configurationManager, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
+    public static ConfigurationManager AddEncryptionResolver(this ConfigurationManager configurationManager, ILoggerFactory loggerFactory,
+        ITextDecryptor textDecryptor)
     {
         ArgumentGuard.NotNull(configurationManager);
         ArgumentGuard.NotNull(loggerFactory);
