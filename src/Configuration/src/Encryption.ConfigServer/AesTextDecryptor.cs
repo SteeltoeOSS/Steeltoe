@@ -18,11 +18,12 @@ public sealed class AesTextDecryptor : ITextDecryptor
     private readonly byte[] _key;
     private readonly IBufferedCipher _cipher;
     
-    public AesTextDecryptor(string key): this(key,"deadbeef")
+    public AesTextDecryptor(string key): this(key, ConfigServerEncryptionSettings.DefaultEncryptionRsaSalt, false)
     {
     }
 
-    public AesTextDecryptor(string key, string salt):this(key, salt, false)
+    public AesTextDecryptor(string key, string salt)
+        : this(key, salt, false)
     {
     }
 
