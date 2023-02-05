@@ -17,8 +17,9 @@ public sealed class AesTextDecryptor : ITextDecryptor
     private const short IvSize = 128;
     private readonly byte[] _key;
     private readonly IBufferedCipher _cipher;
-    
-    public AesTextDecryptor(string key): this(key, ConfigServerEncryptionSettings.DefaultEncryptionRsaSalt, false)
+
+    public AesTextDecryptor(string key)
+        : this(key, ConfigServerEncryptionSettings.DefaultEncryptionRsaSalt, false)
     {
     }
 

@@ -22,7 +22,7 @@ public sealed class RsaKeyStoreDecryptor : ITextDecryptor
     {
     }
 
-    public RsaKeyStoreDecryptor(IKeyProvider keyProvider, string alias, string salt, bool strong , string algorithm)
+    public RsaKeyStoreDecryptor(IKeyProvider keyProvider, string alias, string salt, bool strong, string algorithm)
     {
         ArgumentGuard.NotNull(keyProvider);
         ArgumentGuard.NotNull(alias);
