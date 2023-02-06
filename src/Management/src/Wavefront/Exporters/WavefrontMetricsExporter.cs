@@ -32,8 +32,11 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
 
         string token = string.Empty;
         string uri = Options.Uri;
-
-        if (Options.Uri.StartsWith("proxy://", StringComparison.Ordinal))
+        if(string.IsNullOrEmpty(uri))
+        {
+            throw new ArgumentException("management:metrics:export:wavefront:uri cannot be null or empty");
+        }
+        if (uri.StartsWith("proxy://", StringComparison.Ordinal))
         {
             uri = $"http{Options.Uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
         }
