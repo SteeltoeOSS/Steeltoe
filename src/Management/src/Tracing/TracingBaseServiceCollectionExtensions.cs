@@ -78,6 +78,7 @@ public static class TracingBaseServiceCollectionExtensions
             ConfigureOpenTelemetryProtocolOptions(services);
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddOpenTelemetryTracing(builder =>
         {
             builder.Configure((serviceProvider, deferredBuilder) =>
@@ -141,6 +142,7 @@ public static class TracingBaseServiceCollectionExtensions
 
             action?.Invoke(builder);
         });
+#pragma warning restore CS0618 // Type or member is obsolete
 
         return services;
     }

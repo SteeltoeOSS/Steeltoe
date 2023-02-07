@@ -28,11 +28,9 @@ public class AspNetCoreHostingObserver : MetricsObserver
     private readonly Histogram<double> _responseTime;
     private readonly Histogram<double> _serverCount;
 
-    public AspNetCoreHostingObserver(IMetricsObserverOptions options,/* IViewRegistry viewRegistry, */ ILogger<AspNetCoreHostingObserver> logger)
+    public AspNetCoreHostingObserver(IMetricsObserverOptions options,ILogger<AspNetCoreHostingObserver> logger)
         : base(DefaultObserverName, DiagnosticName, options, logger)
     {
-       // ArgumentGuard.NotNull(viewRegistry);
-
         SetPathMatcher(new Regex(options.IngressIgnorePattern));
         Meter meter = SteeltoeMetrics.Meter;
 

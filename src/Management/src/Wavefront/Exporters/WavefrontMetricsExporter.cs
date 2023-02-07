@@ -121,11 +121,9 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
     private IDictionary<string, string> GetTags(ReadOnlyTagCollection inputTags)
     {
         IDictionary<string, string> tags = inputTags.AsDictionary();
-
-#pragma warning disable S4040 // Strings should be normalized to uppercase
+        
         tags.Add("application", Options.Name.ToLowerInvariant());
         tags.Add("service", Options.Service.ToLowerInvariant());
-#pragma warning restore S4040 // Strings should be normalized to uppercase
 
         tags.Add("component", "wavefront-metrics-exporter");
         return tags;

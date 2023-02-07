@@ -11,6 +11,6 @@ internal sealed class MetricsExporterOptions : IExporterOptions
     public int CacheDurationMilliseconds { get; set; }
     public int MaxTimeSeries { get; set; }
     public int MaxHistograms { get; set; }
-    public List<KeyValuePair<string, string>>? IncludedMetrics { get;set; }
+    public List<string>? IncludedMetrics { get;set; }
     public int MetricsCacheDurationMilliseconds { get; internal set; }
 }

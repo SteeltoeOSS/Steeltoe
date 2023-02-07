@@ -9,5 +9,5 @@ public interface IMetricsEndpointOptions : IEndpointOptions
     int CacheDurationMilliseconds { get; }
     public int MaxTimeSeries { get; set; }
     public int MaxHistograms { get; set; }
-    public List<KeyValuePair<string, string>> IncludedMetrics { get; set; } // Includes all when not set
+    public List<string> IncludedMetrics { get; set; }
 }

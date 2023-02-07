@@ -31,49 +31,11 @@ public class HttpClientCoreObserver : MetricsObserver
     public HttpClientCoreObserver(IMetricsObserverOptions options, ILogger<HttpClientCoreObserver> logger/*, IViewRegistry viewRegistry*/)
         : base(DefaultObserverName, DiagnosticName, options, logger)
     {
-      //  ArgumentGuard.NotNull(viewRegistry);
-
+     
         SetPathMatcher(new Regex(options.EgressIgnorePattern));
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.time");
         _clientCountMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.count");
-
-        //viewRegistry.AddView("http.client.request.time", new ExplicitBucketHistogramConfiguration
-        //{
-        //    Boundaries = new[]
-        //    {
-        //        0.0,
-        //        1.0,
-        //        5.0,
-        //        10.0,
-        //        100.0
-        //    },
-        //    TagKeys = new[]
-        //    {
-        //        StatusTagKey,
-        //        UriTagKey,
-        //        MethodTagKey,
-        //        ClientTagKey
-        //    }
-        //});
-
-        //viewRegistry.AddView("http.client.request.count", new ExplicitBucketHistogramConfiguration
-        //{
-        //    Boundaries = new[]
-        //    {
-        //        0.0,
-        //        1.0,
-        //        5.0,
-        //        10.0,
-        //        100.0
-        //    },
-        //    TagKeys = new[]
-        //    {
-        //        StatusTagKey,
-        //        UriTagKey,
-        //        MethodTagKey,
-        //        ClientTagKey
-        //    }
-        //});
+        
     }
 
     public override void ProcessEvent(string eventName, object value)

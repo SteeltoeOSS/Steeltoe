@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.Metrics;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
@@ -149,6 +151,84 @@ public class MetricsEndpointTest : BaseTest
             req = new MetricsRequest("foo.bar", tags);
             resp = ep.Invoke(req) as MetricsResponse;
             Assert.Null(resp);
+        }
+        finally
+        {
+            await service.StopAsync(CancellationToken.None);
+        }
+    }
+
+    [Fact]
+    public async Task Invoke_WithMetricsRequest_ReturnsExpected_IncudesAdditionalInstruments()
+    {
+        using var tc = new TestContext(_output);
+
+      
+        tc.AdditionalConfiguration = configuration =>
+        {
+            configuration.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["management:endpoints:metrics:includedmetrics:0"] = "AdditionalTestMeter:AdditionalInstrument"
+            });
+        };
+
+        tc.AdditionalServices = (services, configuration) =>
+        {
+            services.AddMetricsActuatorServices(configuration);
+        };
+
+
+        var service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+
+        await service.StartAsync(CancellationToken.None);
+        try
+        {
+            var ep = tc.GetService<IMetricsEndpoint>();
+
+            Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.test5");
+            var additionalMeter = new Meter("AdditionalTestMeter");
+            Counter<double> additionalInstrument = additionalMeter.CreateCounter<double>("AdditionalInstrument");
+
+            long allKeysSum = 0;
+
+
+            var labels = new Dictionary<string, object>
+                {
+                    { "a", "v1" },
+                    { "b", "v1" },
+                    { "c", "v1" }
+                };
+
+            for (int i = 0; i < 10; i++)
+            {
+                allKeysSum += i;
+                testMeasure.Add(i, labels.AsReadonlySpan());
+                additionalInstrument.Add(i, labels.AsReadonlySpan());
+            }
+
+
+            List<KeyValuePair<string, string>> tags = labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
+            var req = new MetricsRequest("test.test5", tags);
+            var resp = ep.Invoke(req) as MetricsResponse;
+            Assert.NotNull(resp);
+
+            Assert.Equal("test.test5", resp.Name);
+
+            Assert.NotNull(resp.Measurements);
+            Assert.Single(resp.Measurements);
+
+            MetricSample sample = resp.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.Rate);
+            Assert.NotNull(sample);
+            Assert.Equal(allKeysSum, sample.Value);
+
+            Assert.NotNull(resp.AvailableTags);
+            Assert.Equal(3, resp.AvailableTags.Count);
+
+            req = new MetricsRequest("AdditionalInstrument", tags);
+            resp = ep.Invoke(req) as MetricsResponse;
+            Assert.NotNull(resp);
+
+            Assert.Equal("AdditionalInstrument", resp.Name);
         }
         finally
         {

@@ -81,7 +81,21 @@ public static class ServiceCollectionExtensions
                 observableInstrumentCallbackError: (ex) => logger.LogError(ex, "An error occured while collecting Observable Instruments "));
 
             steeltoeExporter.Collect = aggregationManager.Collect;
-            aggregationManager.Include(SteeltoeMetrics.InstrumentationName); // Limit to Steeltoe Metrics; TODO: Configurable
+            aggregationManager.Include(SteeltoeMetrics.InstrumentationName); // Default to Steeltoe Metrics
+            if (exporterOptions.IncludedMetrics != null)
+            {
+                foreach (var filter in exporterOptions.IncludedMetrics)
+                {
+                    var filterParts = filter?.Split(":");
+                    if (filterParts != null && filterParts.Length == 2)
+                    {
+                        var meter = filterParts[0];
+                        var instrument = filterParts[1];
+                        aggregationManager.Include(meter, instrument);
+                    }
+                }
+            }
+
             return aggregationManager;
         }).AddHostedService<MetricCollectionHostedService>();
     }

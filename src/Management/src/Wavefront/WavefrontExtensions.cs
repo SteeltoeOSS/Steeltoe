@@ -2,7 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Xml.Linq;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -42,9 +43,7 @@ public static class WavefrontExtensions
             var configuration = provider.GetService<IConfiguration>();
             return new MetricsObserverOptions(configuration);
         });
-
-        //services.TryAddSingleton<IViewRegistry, ViewRegistry>();
-
+        
         services.AddMetricsObservers();
 
         services.AddOpenTelemetry()
@@ -56,6 +55,44 @@ public static class WavefrontExtensions
         .StartWithHost();
 
         return services;
+    }
+
+    /// <summary>
+    /// Add wavefront metrics to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your Hostbuilder.
+    /// </param>
+    /// <returns>
+    /// The updated HostBuilder.
+    /// </returns>
+    public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
+    {
+        return hostBuilder.ConfigureServices((context, collection) =>
+        {
+            collection.AddWavefrontMetrics();
+        });
+    }
+    /// <summary>
+    /// Add Wavefront Metrics Exporter.
+    /// </summary>
+    /// <param name="applicationBuilder">
+    /// Your <see cref="WebApplicationBuilder" />.
+    /// </param>
+    public static WebApplicationBuilder AddWavefrontMetrics(this WebApplicationBuilder applicationBuilder)
+    {
+        applicationBuilder.Services.AddWavefrontMetrics();
+        return applicationBuilder;
+    }
+    /// <summary>
+    /// Adds Wavefront to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    public static IWebHostBuilder AddWavefrontMetrics(this IWebHostBuilder hostBuilder)
+    {
+        return hostBuilder.ConfigureServices((context, collection) => collection.AddWavefrontMetrics());
     }
     public static MeterProviderBuilder AddWavefrontExporter(this MeterProviderBuilder builder)
     {
@@ -71,79 +108,4 @@ public static class WavefrontExtensions
             return metricReader;
         });
     }
-    
-    //[Fact]
-    //public async Task AddWavefrontExporter()
-    //{
-    //    var settings = new Dictionary<string, string>
-    //    {
-    //        { "management:metrics:export:wavefront:apiToken", "test" },
-    //        { "management:metrics:export:wavefront:uri", "http://test.io" },
-    //        { "management:metrics:export:wavefront:step", "500" }
-    //    };
-
-    //    WebApplicationBuilder builder = WebApplication.CreateBuilder();
-    //    builder.Configuration.AddInMemoryCollection(settings);
-    //    builder.WebHost.UseTestServer();
-
-    //    WebApplication host = builder.AddWavefrontMetrics().Build();
-
-    //    await host.StartAsync();
-
-    //    await Task.Delay(3000);
-
-    //    // Exercise the deferred builder logic by starting the test host.
-    //    // Validate the exporter got actually added
-    //    var exporter = host.Services.GetService<WavefrontMetricsExporter>();
-    //    Assert.NotNull(exporter);
-    //    await host.StopAsync();
-    //}
-
-    //[Fact]
-    //public void AddWavefront_IWebHostBuilder()
-    //{
-    //    var wfSettings = new Dictionary<string, string>
-    //    {
-    //        { "management:metrics:export:wavefront:uri", "https://wavefront.vmware.com" },
-    //        { "management:metrics:export:wavefront:apiToken", "testToken" }
-    //    };
-
-    //    IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-    //    {
-    //    }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(wfSettings));
-
-    //    IWebHost host = hostBuilder.AddWavefrontMetrics().Build();
-
-    //    IEnumerable<IDiagnosticsManager> diagnosticsManagers = host.Services.GetServices<IDiagnosticsManager>();
-    //    Assert.Single(diagnosticsManagers);
-    //    IEnumerable<DiagnosticServices> diagnosticServices = host.Services.GetServices<IHostedService>().OfType<DiagnosticServices>();
-    //    Assert.Single(diagnosticServices);
-    //    IEnumerable<IMetricsObserverOptions> options = host.Services.GetServices<IMetricsObserverOptions>();
-    //    Assert.Single(options);
-    //    IEnumerable<IViewRegistry> viewRegistry = host.Services.GetServices<IViewRegistry>();
-    //    Assert.Single(viewRegistry);
-    //    IEnumerable<WavefrontMetricsExporter> exporters = host.Services.GetServices<WavefrontMetricsExporter>();
-    //    Assert.Single(exporters);
-    //}
-
-    //[Fact]
-    //public void AddWavefront_ProxyConfigIsValid()
-    //{
-    //    var wfSettings = new Dictionary<string, string>
-    //    {
-    //        { "management:metrics:export:wavefront:uri", "proxy://wavefront.vmware.com" },
-    //        { "management:metrics:export:wavefront:apiToken", string.Empty } // Should not throw
-    //    };
-
-    //    IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-    //    {
-    //    }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(wfSettings));
-
-    //    IWebHost host = hostBuilder.AddWavefrontMetrics().Build();
-
-    //    IEnumerable<WavefrontMetricsExporter> exporters = host.Services.GetServices<WavefrontMetricsExporter>();
-    //    Assert.Single(exporters);
-    //}
-
-
 }

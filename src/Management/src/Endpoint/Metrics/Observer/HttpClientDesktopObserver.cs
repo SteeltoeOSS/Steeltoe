@@ -29,53 +29,15 @@ public class HttpClientDesktopObserver : MetricsObserver
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
 
-    public HttpClientDesktopObserver(IMetricsObserverOptions options, ILogger<HttpClientDesktopObserver> logger/*, IViewRegistry viewRegistry*/)
+    public HttpClientDesktopObserver(IMetricsObserverOptions options, ILogger<HttpClientDesktopObserver> logger)
         : base(DefaultObserverName, DiagnosticName, options, logger)
     {
-      //  ArgumentGuard.NotNull(viewRegistry);
 
         SetPathMatcher(new Regex(options.EgressIgnorePattern));
 
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.desktop.client.request.time");
         _clientCountMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.desktop.client.request.count");
-
-        //viewRegistry.AddView("http.desktop.client.request.time", new ExplicitBucketHistogramConfiguration
-        //{
-        //    Boundaries = new[]
-        //    {
-        //        0.0,
-        //        1.0,
-        //        5.0,
-        //        10.0,
-        //        100.0
-        //    },
-        //    TagKeys = new[]
-        //    {
-        //        StatusTagKey,
-        //        UriTagKey,
-        //        MethodTagKey,
-        //        ClientTagKey
-        //    }
-        //});
-
-        //viewRegistry.AddView("http.desktop.client.request.count", new ExplicitBucketHistogramConfiguration
-        //{
-        //    Boundaries = new[]
-        //    {
-        //        0.0,
-        //        1.0,
-        //        5.0,
-        //        10.0,
-        //        100.0
-        //    },
-        //    TagKeys = new[]
-        //    {
-        //        StatusTagKey,
-        //        UriTagKey,
-        //        MethodTagKey,
-        //        ClientTagKey
-        //    }
-        //});
+        
     }
 
     public override void ProcessEvent(string eventName, object value)

@@ -22,7 +22,7 @@ public class MetricsEndpointOptions : AbstractEndpointOptions, IMetricsEndpointO
     public int CacheDurationMilliseconds { get; set; } = 500;
     public int MaxTimeSeries { get; set; } = 100;
     public int MaxHistograms { get; set; } = 100;
-    public List<KeyValuePair<string, string>> IncludedMetrics { get; set; } // Includes all when not set
+    public List<string> IncludedMetrics { get; set; } 
 
     public MetricsEndpointOptions()
     {

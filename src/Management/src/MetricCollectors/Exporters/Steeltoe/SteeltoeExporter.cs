@@ -47,11 +47,11 @@ public class SteeltoeExporter
         {
             if (DateTime.Now > _lastCollection.AddMilliseconds(_cacheDurationMilliseconds))
             {
-                _lastCollectionSamples = new MetricsCollection<List<MetricSample>>(_metricSamples);
-                _lastAvailableTags = new MetricsCollection<List<MetricTag>>(_availTags);
                 _metricSamples.Clear();
                 _availTags.Clear();
                 Collect(); // Calls aggregation Manager.Collect
+                _lastCollectionSamples = new MetricsCollection<List<MetricSample>>(_metricSamples);
+                _lastAvailableTags = new MetricsCollection<List<MetricTag>>(_availTags);
                 _lastCollection = DateTime.Now;
             }
         }

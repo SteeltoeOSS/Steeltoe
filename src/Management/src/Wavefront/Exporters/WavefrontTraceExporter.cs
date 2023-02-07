@@ -86,10 +86,8 @@ public class WavefrontTraceExporter : BaseExporter<Activity>
     {
         List<KeyValuePair<string, string>> tags = inputTags.ToList();
 
-#pragma warning disable S4040 // Strings should be normalized to uppercase
         tags.Add(new KeyValuePair<string, string>("application", _options.Name.ToLowerInvariant()));
         tags.Add(new KeyValuePair<string, string>("service", _options.Service.ToLowerInvariant()));
-#pragma warning restore S4040 // Strings should be normalized to uppercase
 
         tags.Add(new KeyValuePair<string, string>("component", "wavefront-trace-exporter"));
         return tags;
