@@ -4,7 +4,6 @@
 
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
@@ -42,10 +41,10 @@ public class MetricsEndpointTest : BaseTest
                 services.AddMetricsActuatorServices(configuration);
             };
 
-
-            var service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+            MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
 
             await service.StartAsync(CancellationToken.None);
+
             try
             {
                 var ep = tc.GetService<IMetricsEndpoint>();
@@ -77,9 +76,10 @@ public class MetricsEndpointTest : BaseTest
                 services.AddMetricsActuatorServices(configuration);
             };
 
-            var service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+            MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
 
             await service.StartAsync(CancellationToken.None);
+
             try
             {
                 var ep = tc.GetService<IMetricsEndpoint>();
@@ -107,10 +107,10 @@ public class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices(configuration);
         };
 
-
-        var service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
 
         await service.StartAsync(CancellationToken.None);
+
         try
         {
             var ep = tc.GetService<IMetricsEndpoint>();
@@ -119,11 +119,11 @@ public class MetricsEndpointTest : BaseTest
             long allKeysSum = 0;
 
             var labels = new Dictionary<string, object>
-        {
-            { "a", "v1" },
-            { "b", "v1" },
-            { "c", "v1" }
-        };
+            {
+                { "a", "v1" },
+                { "b", "v1" },
+                { "c", "v1" }
+            };
 
             for (int i = 0; i < 10; i++)
             {
@@ -163,7 +163,6 @@ public class MetricsEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-      
         tc.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string>
@@ -177,10 +176,10 @@ public class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices(configuration);
         };
 
-
-        var service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
 
         await service.StartAsync(CancellationToken.None);
+
         try
         {
             var ep = tc.GetService<IMetricsEndpoint>();
@@ -191,13 +190,12 @@ public class MetricsEndpointTest : BaseTest
 
             long allKeysSum = 0;
 
-
             var labels = new Dictionary<string, object>
-                {
-                    { "a", "v1" },
-                    { "b", "v1" },
-                    { "c", "v1" }
-                };
+            {
+                { "a", "v1" },
+                { "b", "v1" },
+                { "c", "v1" }
+            };
 
             for (int i = 0; i < 10; i++)
             {
@@ -205,7 +203,6 @@ public class MetricsEndpointTest : BaseTest
                 testMeasure.Add(i, labels.AsReadonlySpan());
                 additionalInstrument.Add(i, labels.AsReadonlySpan());
             }
-
 
             List<KeyValuePair<string, string>> tags = labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
             var req = new MetricsRequest("test.test5", tags);
@@ -246,10 +243,10 @@ public class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices(configuration);
         };
 
-
-        var service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
 
         await service.StartAsync(CancellationToken.None);
+
         try
         {
             var ep = tc.GetService<MetricsEndpoint>();
@@ -280,27 +277,28 @@ public class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices(configuration);
         };
 
-        var service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
 
         await service.StartAsync(CancellationToken.None);
+
         try
         {
             var ep = tc.GetService<MetricsEndpoint>();
             Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test2");
 
             var v1Tags = new Dictionary<string, object>
-                            {
-                                { "a", "v1" },
-                                { "b", "v1" },
-                                { "c", "v1" }
-                            };
+            {
+                { "a", "v1" },
+                { "b", "v1" },
+                { "c", "v1" }
+            };
 
             var v2Tags = new Dictionary<string, object>
-                            {
-                                { "a", "v2" },
-                                { "b", "v2" },
-                                { "c", "v2" }
-                            };
+            {
+                { "a", "v2" },
+                { "b", "v2" },
+                { "c", "v2" }
+            };
 
             counter.Add(1, v1Tags.AsReadonlySpan());
             counter.Add(1, v2Tags.AsReadonlySpan());
@@ -357,10 +355,10 @@ public class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices(configuration);
         };
 
-
-        var service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
 
         await service.StartAsync(CancellationToken.None);
+
         try
         {
             var ep = tc.GetService<MetricsEndpoint>();
@@ -368,26 +366,26 @@ public class MetricsEndpointTest : BaseTest
             Histogram<double> testMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("test.test1");
 
             var context1 = new Dictionary<string, object>
-        {
-            { "a", "v1" },
-            { "b", "v1" },
-            { "c", "v1" }
-        };
+            {
+                { "a", "v1" },
+                { "b", "v1" },
+                { "c", "v1" }
+            };
 
             var context2 = new Dictionary<string, object>
-        {
-            { "a", "v1" }
-        };
+            {
+                { "a", "v1" }
+            };
 
             var context3 = new Dictionary<string, object>
-        {
-            { "b", "v1" }
-        };
+            {
+                { "b", "v1" }
+            };
 
             var context4 = new Dictionary<string, object>
-        {
-            { "c", "v1" }
-        };
+            {
+                { "c", "v1" }
+            };
 
             long allKeysSum = 0;
 
@@ -433,9 +431,9 @@ public class MetricsEndpointTest : BaseTest
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
             var aTags = new List<KeyValuePair<string, string>>
-        {
-            new("a", "v1")
-        };
+            {
+                new("a", "v1")
+            };
 
             List<MetricSample> result = ep.GetMetricSamplesByTags(measurements, "test.test1", aTags);
             Assert.NotNull(result);
@@ -446,9 +444,9 @@ public class MetricsEndpointTest : BaseTest
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
             var bTags = new List<KeyValuePair<string, string>>
-        {
-            new("b", "v1")
-        };
+            {
+                new("b", "v1")
+            };
 
             result = ep.GetMetricSamplesByTags(measurements, "test.test1", bTags);
 
@@ -461,9 +459,9 @@ public class MetricsEndpointTest : BaseTest
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
             var cTags = new List<KeyValuePair<string, string>>
-        {
-            new("c", "v1")
-        };
+            {
+                new("c", "v1")
+            };
 
             result = ep.GetMetricSamplesByTags(measurements, "test.test1", cTags);
             Assert.NotNull(result);
@@ -474,10 +472,10 @@ public class MetricsEndpointTest : BaseTest
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
             var abTags = new List<KeyValuePair<string, string>>
-        {
-            new("a", "v1"),
-            new("b", "v1")
-        };
+            {
+                new("a", "v1"),
+                new("b", "v1")
+            };
 
             result = ep.GetMetricSamplesByTags(measurements, "test.test1", abTags);
 
@@ -489,10 +487,10 @@ public class MetricsEndpointTest : BaseTest
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
             var acTags = new List<KeyValuePair<string, string>>
-        {
-            new("a", "v1"),
-            new("c", "v1")
-        };
+            {
+                new("a", "v1"),
+                new("c", "v1")
+            };
 
             result = ep.GetMetricSamplesByTags(measurements, "test.test1", acTags);
 
@@ -505,10 +503,10 @@ public class MetricsEndpointTest : BaseTest
             Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
             var bcTags = new List<KeyValuePair<string, string>>
-        {
-            new("b", "v1"),
-            new("c", "v1")
-        };
+            {
+                new("b", "v1"),
+                new("c", "v1")
+            };
 
             result = ep.GetMetricSamplesByTags(measurements, "test.test1", bcTags);
 
@@ -536,9 +534,10 @@ public class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices(configuration);
         };
 
-        var service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
 
         await service.StartAsync(CancellationToken.None);
+
         try
         {
             var ep = tc.GetService<IMetricsEndpoint>();

@@ -37,7 +37,6 @@ public static class EndpointServiceCollectionExtensions
         services.AddActuatorEndpointMapping<MetricsEndpoint>();
     }
 
-
     public static void AddMetricsObservers(this IServiceCollection services)
     {
         var configuration = services.BuildServiceProvider().GetService<IConfiguration>();

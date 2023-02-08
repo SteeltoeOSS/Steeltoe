@@ -24,7 +24,7 @@ internal sealed class RateSumAggregator : Aggregator
         lock (this)
         {
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-            RateStatistics? stats = new RateStatistics(_sum);
+            var stats = new RateStatistics(_sum);
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             _sum = 0;
             return stats;
@@ -54,11 +54,13 @@ internal sealed class RateAggregator : Aggregator
         lock (this)
         {
             double? delta = null;
+
             if (_prevValue.HasValue)
             {
                 delta = _value - _prevValue.Value;
             }
-            RateStatistics stats = new RateStatistics(delta);
+
+            var stats = new RateStatistics(delta);
             _prevValue = _value;
             return stats;
         }
@@ -68,10 +70,10 @@ internal sealed class RateAggregator : Aggregator
 
 internal sealed class RateStatistics : IAggregationStatistics
 {
+    public double? Delta { get; }
+
     public RateStatistics(double? delta)
     {
         Delta = delta;
     }
-
-    public double? Delta { get; }
 }

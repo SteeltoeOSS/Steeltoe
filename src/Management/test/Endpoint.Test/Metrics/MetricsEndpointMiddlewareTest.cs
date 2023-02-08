@@ -28,7 +28,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var managementOptions = new ActuatorManagementOptions();
         managementOptions.EndpointOptions.Add(opts);
 
-        var ep = new MetricsEndpoint(opts,  new SteeltoeExporter(_scraperOptions));
+        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
 
         var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
@@ -129,8 +129,8 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
         var exporter = new SteeltoeExporter(_scraperOptions);
 
-        GetTestMetrics( exporter);
-            
+        GetTestMetrics(exporter);
+
         var ep = new MetricsEndpoint(opts, exporter);
 
         var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
@@ -170,7 +170,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var managementOptions = new CloudFoundryManagementOptions();
         managementOptions.EndpointOptions.Add(opts);
         var exporter = new SteeltoeExporter(_scraperOptions);
-        var aggManager = GetTestMetrics(exporter);
+        AggregationManager aggManager = GetTestMetrics(exporter);
         aggManager.Start();
         var ep = new MetricsEndpoint(opts, exporter);
 

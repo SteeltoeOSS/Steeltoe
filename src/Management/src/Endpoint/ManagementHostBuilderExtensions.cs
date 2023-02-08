@@ -314,12 +314,16 @@ public static class ManagementHostBuilderExtensions
             ActivateActuatorEndpoints(collection, configureEndpoints);
         });
     }
- 
+
     /// <summary>
     /// Registers an <see cref="IStartupFilter" /> that will map all configured actuators, initialize health.
     /// </summary>
-    /// <param name="collection"> <see cref="IServiceCollection" /> that has actuators to activate. </param>
-    /// <param name="configureEndpoints"> IEndpointConventionBuilder customizations (such as auth policy customization). </param>
+    /// <param name="collection">
+    /// <see cref="IServiceCollection" /> that has actuators to activate.
+    /// </param>
+    /// <param name="configureEndpoints">
+    /// IEndpointConventionBuilder customizations (such as auth policy customization).
+    /// </param>
     public static void ActivateActuatorEndpoints(this IServiceCollection collection, Action<IEndpointConventionBuilder> configureEndpoints = null)
     {
         // check for existing AllActuatorsStartupFilter

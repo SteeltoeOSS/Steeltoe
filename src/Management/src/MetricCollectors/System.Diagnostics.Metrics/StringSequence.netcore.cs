@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace System.Diagnostics.Metrics;
@@ -14,7 +13,6 @@ internal interface IStringSequence
 
 internal partial struct StringSequence1 : IEquatable<StringSequence1>, IStringSequence
 {
-
     public Span<string> AsSpan()
     {
         return MemoryMarshal.CreateSpan(ref Value1, 1);
@@ -29,7 +27,10 @@ internal partial struct StringSequence2 : IEquatable<StringSequence2>, IStringSe
     }
 
 #pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-    public override int GetHashCode() => HashCode.Combine(Value1, Value2);
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Value1, Value2);
+    }
 #pragma warning restore S2328 // "GetHashCode" should not reference mutable fields
 }
 
@@ -41,7 +42,10 @@ internal partial struct StringSequence3 : IEquatable<StringSequence3>, IStringSe
     }
 
 #pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-    public override int GetHashCode() => HashCode.Combine(Value1, Value2, Value3);
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Value1, Value2, Value3);
+    }
 #pragma warning restore S2328 // "GetHashCode" should not reference mutable fields
 }
 
@@ -50,10 +54,12 @@ internal partial struct StringSequenceMany : IEquatable<StringSequenceMany>, ISt
     public override int GetHashCode()
     {
         HashCode h = default;
+
         for (int i = 0; i < _values.Length; i++)
         {
             h.Add(_values[i]);
         }
+
         return h.ToHashCode();
     }
 }

@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
@@ -20,6 +19,7 @@ using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.Wavefront.Exporters;
 
 namespace Steeltoe.Management.Wavefront;
+
 public static class WavefrontExtensions
 {
     /// <summary>
@@ -40,19 +40,17 @@ public static class WavefrontExtensions
 
         services.TryAddSingleton<IMetricsObserverOptions>(provider =>
         {
-            IConfiguration configuration = provider.GetService<IConfiguration>();
+            var configuration = provider.GetService<IConfiguration>();
             return new MetricsObserverOptions(configuration);
         });
-        
+
         services.AddMetricsObservers();
 
-        services.AddOpenTelemetry()
-             .WithMetrics(builder =>
-             {
-                 builder.AddMeter(SteeltoeMetrics.InstrumentationName);
-                 builder.AddWavefrontExporter();
-             })
-        .StartWithHost();
+        services.AddOpenTelemetry().WithMetrics(builder =>
+        {
+            builder.AddMeter(SteeltoeMetrics.InstrumentationName);
+            builder.AddWavefrontExporter();
+        }).StartWithHost();
 
         return services;
     }
@@ -73,6 +71,7 @@ public static class WavefrontExtensions
             collection.AddWavefrontMetrics();
         });
     }
+
     /// <summary>
     /// Add Wavefront Metrics Exporter.
     /// </summary>
@@ -84,6 +83,7 @@ public static class WavefrontExtensions
         applicationBuilder.Services.AddWavefrontMetrics();
         return applicationBuilder;
     }
+
     /// <summary>
     /// Adds Wavefront to the application.
     /// </summary>
@@ -94,17 +94,20 @@ public static class WavefrontExtensions
     {
         return hostBuilder.ConfigureServices((context, collection) => collection.AddWavefrontMetrics());
     }
+
     public static MeterProviderBuilder AddWavefrontExporter(this MeterProviderBuilder builder)
     {
-        return builder.AddReader((sp) =>
+        return builder.AddReader(sp =>
         {
             var logger = sp.GetService<ILogger<WavefrontMetricsExporter>>();
             var configuration = sp.GetService<IConfiguration>();
             var wavefrontExporter = new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);
+
             var metricReader = new PeriodicExportingMetricReader(wavefrontExporter, wavefrontExporter.Options.Step)
             {
                 TemporalityPreference = MetricReaderTemporalityPreference.Cumulative
             };
+
             return metricReader;
         });
     }

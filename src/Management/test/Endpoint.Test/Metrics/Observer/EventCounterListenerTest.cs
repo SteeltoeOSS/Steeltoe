@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.Metrics;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.MetricCollectors;
@@ -48,11 +49,11 @@ public class EventCounterListenerTest : BaseTest
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
         var exporter = new SteeltoeExporter(_exporterOptions);
-        var aggregationManager = GetTestMetrics(exporter);
+        AggregationManager aggregationManager = GetTestMetrics(exporter);
         aggregationManager.Start();
         await Task.Delay(2000);
 
-        (var metricSamples, _) = exporter.Export();
+        (MetricsCollection<List<MetricSample>> metricSamples, _) = exporter.Export();
 
         foreach (string metric in _metrics)
         {
@@ -83,11 +84,11 @@ public class EventCounterListenerTest : BaseTest
         using var listener = new EventCounterListener(options);
 
         var exporter = new SteeltoeExporter(_exporterOptions);
-        var aggregationManager = GetTestMetrics(exporter);
+        AggregationManager aggregationManager = GetTestMetrics(exporter);
         aggregationManager.Start();
         await Task.Delay(2000);
 
-        (var metricSamples, _) = exporter.Export();
+        (MetricsCollection<List<MetricSample>> metricSamples, _) = exporter.Export();
 
         foreach (string metric in _metrics)
         {
@@ -121,11 +122,11 @@ public class EventCounterListenerTest : BaseTest
         });
 
         var exporter = new SteeltoeExporter(_exporterOptions);
-        var aggregationManager = GetTestMetrics(exporter);
+        AggregationManager aggregationManager = GetTestMetrics(exporter);
         aggregationManager.Start();
         await Task.Delay(2000);
 
-        (var metricSamples, _) = exporter.Export();
+        (MetricsCollection<List<MetricSample>> metricSamples, _) = exporter.Export();
 
         foreach (string metric in _metrics)
         {

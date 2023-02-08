@@ -10,16 +10,14 @@ namespace System.Diagnostics.Metrics;
 internal sealed class AggregationManager
 {
     public const double MinCollectionTimeSecs = 0.1;
-    private static readonly QuantileAggregation DefaultHistogramConfig = new QuantileAggregation(new double[] { 0.50, 0.95, 0.99 });
+    private static readonly QuantileAggregation DefaultHistogramConfig = new(0.50, 0.95, 0.99);
 
     // these fields are modified after construction and accessed on multiple threads, use lock(_lockObject) to ensure the data
     // is synchronized
     private readonly List<Predicate<Instrument>> _instrumentConfigFuncs = new();
     private readonly ConcurrentDictionary<Instrument, InstrumentState> _instrumentStates = new();
     private readonly MeterListener _listener;
-    private int _currentTimeSeries;
-    private int _currentHistograms;
-    private readonly object _lockObject = new object();
+    private readonly object _lockObject = new();
 
     private readonly int _maxTimeSeries;
     private readonly int _maxHistograms;
@@ -31,24 +29,18 @@ internal sealed class AggregationManager
     private readonly Action _timeSeriesLimitReached;
     private readonly Action _histogramLimitReached;
     private readonly Action<Exception> _observableInstrumentCallbackError;
+    private int _currentTimeSeries;
+    private int _currentHistograms;
 
-    public AggregationManager(
-        int maxTimeSeries,
-        int maxHistograms,
-        Action<Instrument, LabeledAggregationStatistics> collectMeasurement,
-        Action<Instrument> beginInstrumentMeasurements,
-        Action<Instrument> endInstrumentMeasurements,
-        Action<Instrument> instrumentPublished,
-        Action initialInstrumentEnumerationComplete,
-        Action timeSeriesLimitReached,
-        Action histogramLimitReached,
-        Action<Exception> observableInstrumentCallbackError 
-        )
+    public AggregationManager(int maxTimeSeries, int maxHistograms, Action<Instrument, LabeledAggregationStatistics> collectMeasurement,
+        Action<Instrument> beginInstrumentMeasurements, Action<Instrument> endInstrumentMeasurements, Action<Instrument> instrumentPublished,
+        Action initialInstrumentEnumerationComplete, Action timeSeriesLimitReached, Action histogramLimitReached,
+        Action<Exception> observableInstrumentCallbackError)
     {
         _maxTimeSeries = maxTimeSeries;
         _maxHistograms = maxHistograms;
         _collectMeasurement = collectMeasurement;
-       _beginInstrumentMeasurements = beginInstrumentMeasurements;
+        _beginInstrumentMeasurements = beginInstrumentMeasurements;
         _endInstrumentMeasurements = endInstrumentMeasurements;
         _instrumentPublished = instrumentPublished;
         _initialInstrumentEnumerationComplete = initialInstrumentEnumerationComplete;
@@ -56,12 +48,13 @@ internal sealed class AggregationManager
         _histogramLimitReached = histogramLimitReached;
         _observableInstrumentCallbackError = observableInstrumentCallbackError;
 
-        _listener = new MeterListener()
+        _listener = new MeterListener
         {
             InstrumentPublished = (instrument, listener) =>
             {
                 _instrumentPublished(instrument);
                 InstrumentState? state = GetInstrumentState(instrument);
+
                 if (state != null)
                 {
                     _beginInstrumentMeasurements(instrument);
@@ -74,12 +67,13 @@ internal sealed class AggregationManager
                 RemoveInstrumentState(instrument);
             }
         };
+
         _listener.SetMeasurementEventCallback<double>((i, m, l, c) => ((InstrumentState)c!).Update(m, l));
-        _listener.SetMeasurementEventCallback<float>((i, m, l, c) => ((InstrumentState)c!).Update((double)m, l));
-        _listener.SetMeasurementEventCallback<long>((i, m, l, c) => ((InstrumentState)c!).Update((double)m, l));
-        _listener.SetMeasurementEventCallback<int>((i, m, l, c) => ((InstrumentState)c!).Update((double)m, l));
-        _listener.SetMeasurementEventCallback<short>((i, m, l, c) => ((InstrumentState)c!).Update((double)m, l));
-        _listener.SetMeasurementEventCallback<byte>((i, m, l, c) => ((InstrumentState)c!).Update((double)m, l));
+        _listener.SetMeasurementEventCallback<float>((i, m, l, c) => ((InstrumentState)c!).Update(m, l));
+        _listener.SetMeasurementEventCallback<long>((i, m, l, c) => ((InstrumentState)c!).Update(m, l));
+        _listener.SetMeasurementEventCallback<int>((i, m, l, c) => ((InstrumentState)c!).Update(m, l));
+        _listener.SetMeasurementEventCallback<short>((i, m, l, c) => ((InstrumentState)c!).Update(m, l));
+        _listener.SetMeasurementEventCallback<byte>((i, m, l, c) => ((InstrumentState)c!).Update(m, l));
         _listener.SetMeasurementEventCallback<decimal>((i, m, l, c) => ((InstrumentState)c!).Update((double)m, l));
     }
 
@@ -101,13 +95,11 @@ internal sealed class AggregationManager
         }
     }
 
-
     public void Start()
     {
         _listener.Start();
         _initialInstrumentEnumerationComplete();
     }
-
 
 #pragma warning disable S2953 // Methods named "Dispose" should implement "IDisposable.Dispose"
     public void Dispose()
@@ -126,13 +118,14 @@ internal sealed class AggregationManager
         if (!_instrumentStates.TryGetValue(instrument, out InstrumentState? instrumentState))
         {
             // protect _instrumentConfigFuncs list 
-            lock (_lockObject) 
+            lock (_lockObject)
             {
                 foreach (Predicate<Instrument> filter in _instrumentConfigFuncs)
                 {
                     if (filter(instrument))
                     {
                         instrumentState = BuildInstrumentState(instrument);
+
                         if (instrumentState != null)
                         {
                             _instrumentStates.TryAdd(instrument, instrumentState);
@@ -141,6 +134,7 @@ internal sealed class AggregationManager
                             // this defensively.
                             _instrumentStates.TryGetValue(instrument, out instrumentState);
                         }
+
                         break;
                     }
                 }
@@ -151,14 +145,16 @@ internal sealed class AggregationManager
     }
 
     [UnconditionalSuppressMessage("AotAnalysis", "IL3050:RequiresDynamicCode",
-                    Justification = "MakeGenericType is creating instances over reference types that works fine in AOT.")]
+        Justification = "MakeGenericType is creating instances over reference types that works fine in AOT.")]
     internal InstrumentState? BuildInstrumentState(Instrument instrument)
     {
         Func<Aggregator?>? createAggregatorFunc = GetAggregatorFactory(instrument);
+
         if (createAggregatorFunc == null)
         {
             return null;
         }
+
         Type aggregatorType = createAggregatorFunc.GetType().GenericTypeArguments[0];
         Type instrumentStateType = typeof(InstrumentState<>).MakeGenericType(aggregatorType);
         return (InstrumentState)Activator.CreateInstance(instrumentStateType, createAggregatorFunc)!;
@@ -169,6 +165,7 @@ internal sealed class AggregationManager
         Type type = instrument.GetType();
         Type? genericDefType = null;
         genericDefType = type.IsGenericType ? type.GetGenericTypeDefinition() : null;
+
         if (genericDefType == typeof(Counter<>))
         {
             return () =>
@@ -177,10 +174,10 @@ internal sealed class AggregationManager
                 {
                     return CheckTimeSeriesAllowed() ? new RateSumAggregator() : null;
                 }
-
             };
         }
-        else if (genericDefType == typeof(ObservableCounter<>))
+
+        if (genericDefType == typeof(ObservableCounter<>))
         {
             return () =>
             {
@@ -190,7 +187,8 @@ internal sealed class AggregationManager
                 }
             };
         }
-        else if (genericDefType == typeof(ObservableGauge<>))
+
+        if (genericDefType == typeof(ObservableGauge<>))
         {
             return () =>
             {
@@ -200,23 +198,20 @@ internal sealed class AggregationManager
                 }
             };
         }
-        else if (genericDefType == typeof(Histogram<>))
+
+        if (genericDefType == typeof(Histogram<>))
         {
             return () =>
             {
                 lock (_lockObject)
                 {
                     // checking currentHistograms first because avoiding unexpected increment of TimeSeries count.
-                    return (!CheckHistogramAllowed() || !CheckTimeSeriesAllowed()) ?
-                        null :
-                        new ExponentialHistogramAggregator(DefaultHistogramConfig);
+                    return !CheckHistogramAllowed() || !CheckTimeSeriesAllowed() ? null : new ExponentialHistogramAggregator(DefaultHistogramConfig);
                 }
             };
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     private bool CheckTimeSeriesAllowed()
@@ -226,16 +221,15 @@ internal sealed class AggregationManager
             _currentTimeSeries++;
             return true;
         }
-        else if (_currentTimeSeries == _maxTimeSeries)
+
+        if (_currentTimeSeries == _maxTimeSeries)
         {
             _currentTimeSeries++;
             _timeSeriesLimitReached();
             return false;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
     private bool CheckHistogramAllowed()
@@ -245,18 +239,18 @@ internal sealed class AggregationManager
             _currentHistograms++;
             return true;
         }
-        else if (_currentHistograms == _maxHistograms)
+
+        if (_currentHistograms == _maxHistograms)
         {
             _currentHistograms++;
             _histogramLimitReached();
 
             return false;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
+
     internal void Collect()
     {
         try
@@ -270,7 +264,7 @@ internal sealed class AggregationManager
 
         foreach (KeyValuePair<Instrument, InstrumentState> kv in _instrumentStates)
         {
-            kv.Value.Collect(kv.Key, (LabeledAggregationStatistics labeledAggStats) =>
+            kv.Value.Collect(kv.Key, labeledAggStats =>
             {
                 _collectMeasurement(kv.Key, labeledAggStats);
             });

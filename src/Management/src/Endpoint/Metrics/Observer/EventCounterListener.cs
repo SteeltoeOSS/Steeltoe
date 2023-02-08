@@ -183,8 +183,7 @@ public class EventCounterListener : EventListener
             _lastDoubleValue[metricName] = doubleValue.Value;
 
             _doubleMeasureMetrics.GetOrAddEx(metricName,
-                name => SteeltoeMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveDouble(name, labelSet), counterDisplayUnit,
-                    counterDisplayName));
+                name => SteeltoeMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveDouble(name, labelSet), counterDisplayUnit, counterDisplayName));
         }
         else if (longValue.HasValue)
         {

@@ -178,7 +178,7 @@ public class WebApplicationBuilderExtensionsTest
 
         webApp.UseRouting();
         await webApp.StartAsync();
-        var meterProvider = webApp.Services.GetService <MeterProvider>();
+        var meterProvider = webApp.Services.GetService<MeterProvider>();
 
         Assert.NotNull(meterProvider);
     }

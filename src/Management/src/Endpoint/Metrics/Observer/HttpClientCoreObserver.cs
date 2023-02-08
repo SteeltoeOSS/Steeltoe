@@ -28,14 +28,12 @@ public class HttpClientCoreObserver : MetricsObserver
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
 
-    public HttpClientCoreObserver(IMetricsObserverOptions options, ILogger<HttpClientCoreObserver> logger/*, IViewRegistry viewRegistry*/)
+    public HttpClientCoreObserver(IMetricsObserverOptions options, ILogger<HttpClientCoreObserver> logger /*, IViewRegistry viewRegistry*/)
         : base(DefaultObserverName, DiagnosticName, options, logger)
     {
-     
         SetPathMatcher(new Regex(options.EgressIgnorePattern));
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.time");
         _clientCountMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.count");
-        
     }
 
     public override void ProcessEvent(string eventName, object value)

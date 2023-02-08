@@ -28,7 +28,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
     private readonly Histogram<double> _responseTime;
     private readonly Histogram<double> _serverCount;
 
-    public AspNetCoreHostingObserver(IMetricsObserverOptions options,ILogger<AspNetCoreHostingObserver> logger)
+    public AspNetCoreHostingObserver(IMetricsObserverOptions options, ILogger<AspNetCoreHostingObserver> logger)
         : base(DefaultObserverName, DiagnosticName, options, logger)
     {
         SetPathMatcher(new Regex(options.IngressIgnorePattern));
@@ -78,7 +78,6 @@ public class AspNetCoreHostingObserver : MetricsObserver
         if (current.Duration.TotalMilliseconds > 0)
         {
             IEnumerable<KeyValuePair<string, object>> labelSets = GetLabelSets(arg);
-
 
             _serverCount.Record(1, labelSets.AsReadonlySpan());
             _responseTime.Record(current.Duration.TotalSeconds, labelSets.AsReadonlySpan());
