@@ -15,7 +15,6 @@ public class PrometheusTests
     public void AddPrometheusActuator_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(services.AddPrometheusActuator);
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);

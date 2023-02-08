@@ -9,4 +9,4 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Minor Code Smell", "S4040:Strings should be normalized to uppercase", Justification = "External dependencies dictate the casing", Scope = "member")]
+[assembly: SuppressMessage("Minor Code Smell", "S4040:Strings should be normalized to uppercase", Justification = "External dependencies dictate the casing", Scope = "namespaceanddescendants", Target = "~N:Steeltoe.Management.Wavefront.Exporters")]

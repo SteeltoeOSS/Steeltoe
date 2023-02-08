@@ -310,20 +310,6 @@ public static class ManagementWebHostBuilderExtensions
         });
     }
 
-    /*
-#pragma warning disable SA1612 // Element parameter documentation should match element parameters
-/// <summary>
-    /// Adds Wavefront to the application.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
-    /// </param>
-    //TODO: move to separate library
-    //public static IWebHostBuilder AddWavefrontMetrics(this IWebHostBuilder hostBuilder)
-    //{
-    //    return hostBuilder.ConfigureServices((context, collection) => collection.AddWavefrontMetrics());
-    //}
-    */
     internal static void GetManagementUrl(this IWebHostBuilder webHostBuilder, out int? httpPort, out int? httpsPort)
 #pragma warning restore SA1612 // Element parameter documentation should match element parameters
     {

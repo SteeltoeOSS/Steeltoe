@@ -55,46 +55,30 @@ internal struct AggregatorStore<TAggregator> where TAggregator : Aggregator
     // FixedSizeLabelNameDictionary<StringSequence3, ConcurrentDictionary<ObjectSequence3, TAggregator>>
     // FixedSizeLabelNameDictionary<StringSequenceMany, ConcurrentDictionary<ObjectSequenceMany, TAggregator>>
     // MultiSizeLabelNameDictionary<TAggregator> - this is used when we need to store more than one of the above union items
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private volatile object? _stateUnion;
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private volatile AggregatorLookupFunc<TAggregator>? _cachedLookupFunc;
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private readonly Func<TAggregator?> _createAggregatorFunc;
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     public AggregatorStore(Func<TAggregator?> createAggregator)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
         _stateUnion = null;
         _cachedLookupFunc = null;
         _createAggregatorFunc = createAggregator;
     }
 
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 #pragma warning disable S4136 // Method overloads should be grouped together
     public TAggregator? GetAggregator(ReadOnlySpan<KeyValuePair<string, object?>> labels)
 #pragma warning restore S4136 // Method overloads should be grouped together
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         AggregatorLookupFunc<TAggregator>? lookupFunc = _cachedLookupFunc;
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         if (lookupFunc != null)
         {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 #pragma warning disable S1066 // Collapsible "if" statements should be merged
             if (lookupFunc(labels, out TAggregator? aggregator))
             {
                 return aggregator;
             }
 #pragma warning restore S1066 // Collapsible "if" statements should be merged
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         }
 
         // slow path, label names have changed from what the lookupFunc cached so we need to
@@ -102,17 +86,11 @@ internal struct AggregatorStore<TAggregator> where TAggregator : Aggregator
         return GetAggregatorSlow(labels);
     }
 
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private TAggregator? GetAggregatorSlow(ReadOnlySpan<KeyValuePair<string, object?>> labels)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
         AggregatorLookupFunc<TAggregator> lookupFunc = LabelInstructionCompiler.Create(ref this, _createAggregatorFunc, labels);
         _cachedLookupFunc = lookupFunc;
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         bool match = lookupFunc(labels, out TAggregator? aggregator);
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         Debug.Assert(match, "Did not find a match");
         return aggregator;
     }
@@ -148,25 +126,18 @@ internal struct AggregatorStore<TAggregator> where TAggregator : Aggregator
         }
     }
 
-
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     public TAggregator? GetAggregator()
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
         while (true)
         {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             object? state = _stateUnion;
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             if (state == null)
             {
                 // running this delegate will increment the counter for the number of time series
                 // even though in the rare race condition we don't store it. If we wanted to be perfectly
                 // accurate we need to decrement the counter again, but I don't think mitigating that
                 // error is worth the complexity
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
                 TAggregator? newState = _createAggregatorFunc();
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
                 if (newState == null)
                 {
                     return newState;
@@ -203,9 +174,7 @@ internal struct AggregatorStore<TAggregator> where TAggregator : Aggregator
     {
         while (true)
         {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             object? state = _stateUnion;
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             if (state == null)
             {
                 FixedSizeLabelNameDictionary<TStringSequence, TObjectSequence, TAggregator> newState = new();
@@ -238,127 +207,90 @@ internal struct AggregatorStore<TAggregator> where TAggregator : Aggregator
 
 internal sealed class MultiSizeLabelNameDictionary<TAggregator> where TAggregator : Aggregator
 {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable SA1306 // Field names should begin with lower-case letter
-    [CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SX1309:Field names should begin with underscore", Justification = "Will change later")]
-    private TAggregator? NoLabelAggregator;
-#pragma warning restore SA1306 // Field names should begin with lower-case letter
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable SA1306 // Field names should begin with lower-case letter
-#pragma warning disable SX1309 // Field names should begin with underscore
-    private FixedSizeLabelNameDictionary<StringSequence1, ObjectSequence1, TAggregator>? Label1;
-#pragma warning restore SX1309 // Field names should begin with underscore
-#pragma warning restore SA1306 // Field names should begin with lower-case letter
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable SA1306 // Field names should begin with lower-case letter
-#pragma warning disable SX1309 // Field names should begin with underscore
-    private FixedSizeLabelNameDictionary<StringSequence2, ObjectSequence2, TAggregator>? Label2;
-#pragma warning restore SX1309 // Field names should begin with underscore
-#pragma warning restore SA1306 // Field names should begin with lower-case letter
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable SA1306 // Field names should begin with lower-case letter
-#pragma warning disable SX1309 // Field names should begin with underscore
-    private FixedSizeLabelNameDictionary<StringSequence3, ObjectSequence3, TAggregator>? Label3;
-#pragma warning restore SX1309 // Field names should begin with underscore
-#pragma warning restore SA1306 // Field names should begin with lower-case letter
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable SA1306 // Field names should begin with lower-case letter
-#pragma warning disable SX1309 // Field names should begin with underscore
-    private FixedSizeLabelNameDictionary<StringSequenceMany, ObjectSequenceMany, TAggregator>? LabelMany;
-#pragma warning restore SX1309 // Field names should begin with underscore
-#pragma warning restore SA1306 // Field names should begin with lower-case letter
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+    private TAggregator? _noLabelAggregator;
+    private FixedSizeLabelNameDictionary<StringSequence1, ObjectSequence1, TAggregator>? _label1;
+    private FixedSizeLabelNameDictionary<StringSequence2, ObjectSequence2, TAggregator>? _label2;
+    private FixedSizeLabelNameDictionary<StringSequence3, ObjectSequence3, TAggregator>? _label3;
+    private FixedSizeLabelNameDictionary<StringSequenceMany, ObjectSequenceMany, TAggregator>? _labelMany;
 
     public MultiSizeLabelNameDictionary(object initialLabelNameDict)
     {
-        NoLabelAggregator = null;
-        Label1 = null;
-        Label2 = null;
-        Label3 = null;
-        LabelMany = null;
+        _noLabelAggregator = null;
+        _label1 = null;
+        _label2 = null;
+        _label3 = null;
+        _labelMany = null;
         switch (initialLabelNameDict)
         {
             case TAggregator val0:
-                NoLabelAggregator = val0;
+                _noLabelAggregator = val0;
                 break;
 
             case FixedSizeLabelNameDictionary<StringSequence1, ObjectSequence1, TAggregator> val1:
-                Label1 = val1;
+                _label1 = val1;
                 break;
 
             case FixedSizeLabelNameDictionary<StringSequence2, ObjectSequence2, TAggregator> val2:
-                Label2 = val2;
+                _label2 = val2;
                 break;
 
             case FixedSizeLabelNameDictionary<StringSequence3, ObjectSequence3, TAggregator> val3:
-                Label3 = val3;
+                _label3 = val3;
                 break;
 
             case FixedSizeLabelNameDictionary<StringSequenceMany, ObjectSequenceMany, TAggregator> valMany:
-                LabelMany = valMany;
+                _labelMany = valMany;
                 break;
         }
     }
 
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     public TAggregator? GetNoLabelAggregator(Func<TAggregator?> createFunc)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
-        if (NoLabelAggregator == null)
+        if (_noLabelAggregator == null)
         {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             TAggregator? aggregator = createFunc();
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             if (aggregator != null)
             {
-                Interlocked.CompareExchange(ref NoLabelAggregator, aggregator, null);
+                Interlocked.CompareExchange(ref _noLabelAggregator, aggregator, null);
             }
         }
-        return NoLabelAggregator;
+        return _noLabelAggregator;
     }
 
     public FixedSizeLabelNameDictionary<TStringSequence, TObjectSequence, TAggregator> GetFixedSizeLabelNameDictionary<TStringSequence, TObjectSequence>()
         where TStringSequence : IStringSequence, IEquatable<TStringSequence>
         where TObjectSequence : IObjectSequence, IEquatable<TObjectSequence>
     {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         TStringSequence? seq = default;
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         switch (seq)
         {
             case StringSequence1:
-                if (Label1 == null)
+                if (_label1 == null)
                 {
-                    Interlocked.CompareExchange(ref Label1, new FixedSizeLabelNameDictionary<StringSequence1, ObjectSequence1, TAggregator>(), null);
+                    Interlocked.CompareExchange(ref _label1, new FixedSizeLabelNameDictionary<StringSequence1, ObjectSequence1, TAggregator>(), null);
                 }
-                return (FixedSizeLabelNameDictionary<TStringSequence, TObjectSequence, TAggregator>)(object)Label1;
+                return (FixedSizeLabelNameDictionary<TStringSequence, TObjectSequence, TAggregator>)(object)_label1;
 
             case StringSequence2:
-                if (Label2 == null)
+                if (_label2 == null)
                 {
-                    Interlocked.CompareExchange(ref Label2, new FixedSizeLabelNameDictionary<StringSequence2, ObjectSequence2, TAggregator>(), null);
+                    Interlocked.CompareExchange(ref _label2, new FixedSizeLabelNameDictionary<StringSequence2, ObjectSequence2, TAggregator>(), null);
                 }
-                return (FixedSizeLabelNameDictionary<TStringSequence, TObjectSequence, TAggregator>)(object)Label2;
+                return (FixedSizeLabelNameDictionary<TStringSequence, TObjectSequence, TAggregator>)(object)_label2;
 
             case StringSequence3:
-                if (Label3 == null)
+                if (_label3 == null)
                 {
-                    Interlocked.CompareExchange(ref Label3, new FixedSizeLabelNameDictionary<StringSequence3, ObjectSequence3, TAggregator>(), null);
+                    Interlocked.CompareExchange(ref _label3, new FixedSizeLabelNameDictionary<StringSequence3, ObjectSequence3, TAggregator>(), null);
                 }
-                return (FixedSizeLabelNameDictionary<TStringSequence, TObjectSequence, TAggregator>)(object)Label3;
+                return (FixedSizeLabelNameDictionary<TStringSequence, TObjectSequence, TAggregator>)(object)_label3;
 
             case StringSequenceMany:
-                if (LabelMany == null)
+                if (_labelMany == null)
                 {
-                    Interlocked.CompareExchange(ref LabelMany, new FixedSizeLabelNameDictionary<StringSequenceMany, ObjectSequenceMany, TAggregator>(), null);
+                    Interlocked.CompareExchange(ref _labelMany, new FixedSizeLabelNameDictionary<StringSequenceMany, ObjectSequenceMany, TAggregator>(), null);
                 }
-                return (FixedSizeLabelNameDictionary<TStringSequence, TObjectSequence, TAggregator>)(object)LabelMany;
+                return (FixedSizeLabelNameDictionary<TStringSequence, TObjectSequence, TAggregator>)(object)_labelMany;
 
             default:
                 // we should never get here unless this library has a bug
@@ -369,15 +301,15 @@ internal sealed class MultiSizeLabelNameDictionary<TAggregator> where TAggregato
 
     public void Collect(Action<LabeledAggregationStatistics> visitFunc)
     {
-        if (NoLabelAggregator != null)
+        if (_noLabelAggregator != null)
         {
-            IAggregationStatistics stats = NoLabelAggregator.Collect();
+            IAggregationStatistics stats = _noLabelAggregator.Collect();
             visitFunc(new LabeledAggregationStatistics(stats));
         }
-        Label1?.Collect(visitFunc);
-        Label2?.Collect(visitFunc);
-        Label3?.Collect(visitFunc);
-        LabelMany?.Collect(visitFunc);
+        _label1?.Collect(visitFunc);
+        _label2?.Collect(visitFunc);
+        _label3?.Collect(visitFunc);
+        _labelMany?.Collect(visitFunc);
     }
 }
 
@@ -396,24 +328,15 @@ internal struct LabelInstruction
     public readonly string LabelName { get; }
 }
 
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 internal delegate bool AggregatorLookupFunc<TAggregator>(ReadOnlySpan<KeyValuePair<string, object?>> labels, out TAggregator? aggregator);
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
 [System.Security.SecurityCritical] // using SecurityCritical type ReadOnlySpan
 internal static class LabelInstructionCompiler
 {
     public static AggregatorLookupFunc<TAggregator> Create<TAggregator>(
         ref AggregatorStore<TAggregator> aggregatorStore,
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         Func<TAggregator?> createAggregatorFunc,
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-        ReadOnlySpan<KeyValuePair<string, object?>> labels)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-        where TAggregator : Aggregator
+        ReadOnlySpan<KeyValuePair<string, object?>> labels) where TAggregator : Aggregator
     {
         LabelInstruction[] instructions = Compile(labels);
         Array.Sort(instructions, (LabelInstruction a, LabelInstruction b) => string.CompareOrdinal(a.LabelName, b.LabelName));
@@ -421,11 +344,7 @@ internal static class LabelInstructionCompiler
         switch (instructions.Length)
         {
             case 0:
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
                 TAggregator? defaultAggregator = aggregatorStore.GetAggregator();
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
                 return (ReadOnlySpan<KeyValuePair<string, object?>> l, out TAggregator? aggregator) =>
                 {
                     if (l.Length != expectedLabels)
@@ -436,8 +355,6 @@ internal static class LabelInstructionCompiler
                     aggregator = defaultAggregator;
                     return true;
                 };
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
             case 1:
                 StringSequence1 names1 = new StringSequence1(instructions[0].LabelName);
@@ -483,9 +400,7 @@ internal static class LabelInstructionCompiler
         }
     }
 
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private static LabelInstruction[] Compile(ReadOnlySpan<KeyValuePair<string, object?>> labels)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
         LabelInstruction[] valueFetches = new LabelInstruction[labels.Length];
         for (int i = 0; i < labels.Length; i++)
@@ -517,21 +432,17 @@ internal sealed class LabelInstructionInterpreter<TObjectSequence, TAggregator>
     private ConcurrentDictionary<TObjectSequence, TAggregator> _valuesDict;
 #pragma warning restore S2933 // Fields that are only assigned in the constructor should be "readonly"
 #pragma warning restore IDE0044 // Add readonly modifier
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 #pragma warning disable IDE0044 // Add readonly modifier
 #pragma warning disable S2933 // Fields that are only assigned in the constructor should be "readonly"
     private Func<TObjectSequence, TAggregator?> _createAggregator;
 #pragma warning restore S2933 // Fields that are only assigned in the constructor should be "readonly"
 #pragma warning restore IDE0044 // Add readonly modifier
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
     public LabelInstructionInterpreter(
         int expectedLabelCount,
         LabelInstruction[] instructions,
         ConcurrentDictionary<TObjectSequence, TAggregator> valuesDict,
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         Func<TAggregator?> createAggregator)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
         _expectedLabelCount = expectedLabelCount;
         _instructions = instructions;
@@ -543,12 +454,8 @@ internal sealed class LabelInstructionInterpreter<TObjectSequence, TAggregator>
     // aggregator may be null even when true is returned if
     // we have hit the storage limits
     public bool GetAggregator(
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         ReadOnlySpan<KeyValuePair<string, object?>> labels,
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         out TAggregator? aggregator)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
         aggregator = null;
         if (labels.Length != _expectedLabelCount)
@@ -561,9 +468,8 @@ internal sealed class LabelInstructionInterpreter<TObjectSequence, TAggregator>
         {
             values = (TObjectSequence)(object)new ObjectSequenceMany(new object[_expectedLabelCount]);
         }
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
         Span<object?> indexedValues = values.AsSpan();
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         for (int i = 0; i < _instructions.Length; i++)
         {
             LabelInstruction instr = _instructions[i];
@@ -604,9 +510,7 @@ internal sealed class FixedSizeLabelNameDictionary<TStringSequence, TObjectSeque
             Span<string> indexedNames = kvName.Key.AsSpan();
             foreach (KeyValuePair<TObjectSequence, TAggregator> kvValue in kvName.Value)
             {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
                 Span<object?> indexedValues = kvValue.Key.AsSpan();
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
                 KeyValuePair<string, string>[] labels = new KeyValuePair<string, string>[indexedNames.Length];
                 for (int i = 0; i < labels.Length; i++)
                 {

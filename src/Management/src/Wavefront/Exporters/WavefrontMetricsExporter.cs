@@ -82,9 +82,7 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
 
                         IDictionary<string, string> tags = GetTags(metricPoint.Tags);
 
-#pragma warning disable S4040 // Strings should be normalized to uppercase
                         _wavefrontSender.SendMetric(metric.Name.ToLowerInvariant(), doubleValue, timestamp, Options.Source, tags);
-#pragma warning restore S4040 // Strings should be normalized to uppercase
 
                         metricCount++;
                     }
@@ -97,12 +95,10 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
 
                         IDictionary<string, string> tags = GetTags(metricPoint.Tags);
 
-#pragma warning disable S4040 // Strings should be normalized to uppercase
                         _wavefrontSender.SendMetric($"{metric.Name.ToLowerInvariant()}_count", metricPoint.GetHistogramCount(), timestamp, Options.Source,
                             tags);
 
                         _wavefrontSender.SendMetric($"{metric.Name.ToLowerInvariant()}_sum", metricPoint.GetHistogramSum(), timestamp, Options.Source, tags);
-#pragma warning restore S4040 // Strings should be normalized to uppercase
 
                         metricCount += 2;
                     }
@@ -114,7 +110,7 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
             }
         }
 
-        _logger?.LogTrace($"Exported {metricCount} metrics to {Options.Uri}");
+        _logger?.LogTrace("Exported {MetricCount} metrics to {Uri}", metricCount, Options.Uri);
         return ExportResult.Success;
     }
 

@@ -106,6 +106,15 @@ public class WavefrontMetricsTests
         }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(wfSettings));
 
         IWebHost host = hostBuilder.AddWavefrontMetrics().Build();
+        Assert.NotNull(host);
 
+    }
+
+
+    [Fact]
+    public void AddWavefront_ThrowsWhenNull()
+    {
+        var ex = Assert.Throws<ArgumentNullException>(() => WavefrontExtensions.AddWavefrontMetrics((IServiceCollection)null));
+        Assert.Contains("services", ex.Message, StringComparison.Ordinal);
     }
 }

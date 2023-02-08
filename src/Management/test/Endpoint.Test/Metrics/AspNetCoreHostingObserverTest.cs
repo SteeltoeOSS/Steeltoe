@@ -17,8 +17,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
     {
         var options = new MetricsObserverOptions();
 
-       // var viewRegistry = new ViewRegistry();
-        var observer = new AspNetCoreHostingObserver(options,/* viewRegistry,*/ null);
+        var observer = new AspNetCoreHostingObserver(options, null);
 
         Assert.True(observer.ShouldIgnoreRequest("/cloudfoundryapplication/info"));
         Assert.True(observer.ShouldIgnoreRequest("/cloudfoundryapplication/health"));
@@ -39,8 +38,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
     public void GetException_ReturnsExpected()
     {
         var options = new MetricsObserverOptions();
-    //    var viewRegistry = new ViewRegistry();
-        var observer = new AspNetCoreHostingObserver(options,/* viewRegistry, */null);
+        var observer = new AspNetCoreHostingObserver(options,null);
 
         HttpContext context = GetHttpRequestMessage();
         string exception = observer.GetException(context);
@@ -62,8 +60,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
     public void GetLabelSets_ReturnsExpected()
     {
         var options = new MetricsObserverOptions();
-        //var viewRegistry = new ViewRegistry();
-        var observer = new AspNetCoreHostingObserver(options, /*viewRegistry,*/ null);
+        var observer = new AspNetCoreHostingObserver(options, null);
 
         HttpContext context = GetHttpRequestMessage();
 

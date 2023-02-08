@@ -274,20 +274,6 @@ public static class ManagementWebApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    /*
-    /// <summary>
-    /// Add Wavefront Metrics Exporter.
-    /// </summary>
-    /// <param name="applicationBuilder">
-    /// Your <see cref="WebApplicationBuilder" />.
-    /// </param>
-    //public static WebApplicationBuilder AddWavefrontMetrics(this WebApplicationBuilder applicationBuilder)
-    //{
-    //    applicationBuilder.Services.AddWavefrontMetrics();
-    //    return applicationBuilder;
-    //}
-    */
-
     private static void AddCommonServices(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.WebHost.GetManagementUrl(out int? httpPort, out int? httpsPort);

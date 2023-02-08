@@ -314,25 +314,7 @@ public static class ManagementHostBuilderExtensions
             ActivateActuatorEndpoints(collection, configureEndpoints);
         });
     }
-    /*
-
-#pragma warning disable SA1612 // Element parameter documentation should match element parameters
-    /// <summary>
-    /// Add wavefront metrics to the application.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// Your Hostbuilder.
-    /// </param>
-    // public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
-    // {
-    //    return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
-    //    {
-    //        collection.AddWavefrontMetrics();
-    //    });
-    // }
-
-#pragma warning restore SA1612 // Element parameter documentation should match element parameters
-    */
+ 
     /// <summary>
     /// Registers an <see cref="IStartupFilter" /> that will map all configured actuators, initialize health.
     /// </summary>

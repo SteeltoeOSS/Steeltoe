@@ -23,7 +23,7 @@ public class SteeltoeExporter
     private DateTime _lastCollection = DateTime.MinValue;
 
     public  Action? Collect { get; set; }
-    private readonly object _collectionLock = new object ();
+    private readonly object _collectionLock = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SteeltoeExporter" /> class.
@@ -96,7 +96,7 @@ public class SteeltoeExporter
         }
     }
 
-    private void UpdateAvailableTags(MetricsCollection<List<MetricTag>> availTags, string name, IEnumerable<KeyValuePair<string, string>> labels)
+    private static void UpdateAvailableTags(MetricsCollection<List<MetricTag>> availTags, string name, IEnumerable<KeyValuePair<string, string>> labels)
     {
         foreach (KeyValuePair<string, string> label in labels)
         {
@@ -105,7 +105,7 @@ public class SteeltoeExporter
 
             if (existingTag != null)
             {
-                existingTag.Values.Add(label.Value);
+                _ = existingTag.Values.Add(label.Value);
             }
             else
             {

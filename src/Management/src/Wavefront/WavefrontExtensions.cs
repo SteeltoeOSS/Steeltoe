@@ -40,7 +40,7 @@ public static class WavefrontExtensions
 
         services.TryAddSingleton<IMetricsObserverOptions>(provider =>
         {
-            var configuration = provider.GetService<IConfiguration>();
+            IConfiguration configuration = provider.GetService<IConfiguration>();
             return new MetricsObserverOptions(configuration);
         });
         
@@ -98,13 +98,13 @@ public static class WavefrontExtensions
     {
         return builder.AddReader((sp) =>
         {
-            var options = sp.GetRequiredService<IOptionsMonitor<WavefrontExporterOptions>>();
             var logger = sp.GetService<ILogger<WavefrontMetricsExporter>>();
             var configuration = sp.GetService<IConfiguration>();
             var wavefrontExporter = new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);
-            var metricReader = new PeriodicExportingMetricReader(wavefrontExporter, wavefrontExporter.Options.Step);
-
-            metricReader.TemporalityPreference = MetricReaderTemporalityPreference.Cumulative;
+            var metricReader = new PeriodicExportingMetricReader(wavefrontExporter, wavefrontExporter.Options.Step)
+            {
+                TemporalityPreference = MetricReaderTemporalityPreference.Cumulative
+            };
             return metricReader;
         });
     }

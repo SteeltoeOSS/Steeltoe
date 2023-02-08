@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Steeltoe management endpoints</Description>
@@ -8,12 +8,6 @@
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
-
-  <ItemGroup>
-    <Compile Remove="Metrics\Prometheus\**" />
-    <EmbeddedResource Remove="Metrics\Prometheus\**" />
-    <None Remove="Metrics\Prometheus\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -40,5 +34,9 @@
     <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Logging.DynamicLogger.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
     <ProjectReference Include="..\MetricCollectors\Steeltoe.Management.MetricCollectors.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Metrics\Prometheus\" />
   </ItemGroup>
 </Project>

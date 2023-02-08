@@ -25,9 +25,10 @@ using Steeltoe.Connector.SqlServer;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Kubernetes;
+using Steeltoe.Management.Prometheus;
 using Steeltoe.Management.Tracing;
+using Steeltoe.Management.Wavefront;
 using Steeltoe.Security.Authentication.CloudFoundry;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration;
@@ -107,7 +108,9 @@ public static class HostBuilderExtensions
             hostBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.SteeltoeManagementEndpoint);
         }
 
-     //   hostBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeManagementEndpoint);
+        hostBuilder.WireIfLoaded(WireSteeltoePrometheus, SteeltoeAssemblies.SteeltoePrometheus);
+
+        hostBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeWavefront);
 
         hostBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblies.SteeltoeManagementTracing);
 
@@ -250,17 +253,23 @@ public static class HostBuilderExtensions
         hostBuilder.AddAllActuators().Log(LogMessages.WireAllActuators);
     }
 
-    //[MethodImpl(MethodImplOptions.NoInlining)]
-    //private static void WireWavefrontMetrics(this IHostBuilder hostBuilder)
-    //{
-    //    hostBuilder.ConfigureServices((context, collection) =>
-    //    {
-    //        if (context.Configuration.HasWavefront())
-    //        {
-    //            collection.AddWavefrontMetrics();
-    //        }
-    //    });
-    //}
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void WireWavefrontMetrics(this IHostBuilder hostBuilder)
+    {
+        hostBuilder.ConfigureServices((context, collection) =>
+        {
+            if (context.Configuration.HasWavefront())
+            {
+                collection.AddWavefrontMetrics();
+            }
+        });
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void WireSteeltoePrometheus(this IHostBuilder hostBuilder)
+    {
+        hostBuilder.ConfigureServices((context, collection) => collection.AddPrometheusActuator());
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDynamicSerilog(this IHostBuilder hostBuilder)

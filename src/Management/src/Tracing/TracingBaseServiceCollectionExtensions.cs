@@ -202,7 +202,6 @@ public static class TracingBaseServiceCollectionExtensions
     }
 
     private static void AddWavefrontExporter(TracerProviderBuilder builder)
-
     {
         var deferredTracerProviderBuilder = builder as IDeferredTracerProviderBuilder;
 

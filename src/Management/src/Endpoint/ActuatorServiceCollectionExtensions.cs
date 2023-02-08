@@ -57,7 +57,6 @@ public static class ActuatorServiceCollectionExtensions
         services.AddTraceActuator(configuration, version);
         services.AddMappingsActuator(configuration);
         services.AddMetricsActuator(configuration);
-     //   services.AddPrometheusActuator(configuration);
         services.AddRefreshActuator(configuration);
         return services;
     }

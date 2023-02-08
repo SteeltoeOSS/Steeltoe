@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MySql.Data.MySqlClient;
 using Npgsql;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Oracle.ManagedDataAccess.Client;
 using RabbitMQ.Client;
@@ -36,6 +37,7 @@ using Steeltoe.Logging;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Wavefront.Exporters;
 using Xunit;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
@@ -208,47 +210,47 @@ public class WebHostBuilderExtensionsTest
         Assert.IsType<EurekaDiscoveryClient>(discoveryClient.First());
     }
 
-    //[Fact]
-    //public void WavefrontMetricsExporter_IsAutowired()
-    //{
-    //    IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
-    //    {
-    //        SteeltoeAssemblies.SteeltoeManagementEndpoint
-    //    });
+    [Fact]
+    public void WavefrontMetricsExporter_IsAutowired()
+    {
+        IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
+        {
+            SteeltoeAssemblies.SteeltoeWavefront
+        });
 
-    //    IWebHost host = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
-    //        .AddSteeltoe(exclusions).Configure(_ =>
-    //        {
-    //        }).Build();
+        IWebHost host = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
+            .AddSteeltoe(exclusions).Configure(_ =>
+            {
+            }).Build();
 
-    //    var exporter = host.Services.GetService<WavefrontMetricsExporter>();
+        var meterProvider = host.Services.GetService<MeterProvider>();
 
-    //    Assert.NotNull(exporter);
-    //}
+        Assert.NotNull(meterProvider);
+    }
 
-    //[Fact]
-    //public void WavefrontTraceExporter_IsAutowired()
-    //{
-    //    IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
-    //    {
-    //        SteeltoeAssemblies.SteeltoeManagementTracing
-    //    });
+    [Fact]
+    public void WavefrontTraceExporter_IsAutowired()
+    {
+        IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
+        {
+            SteeltoeAssemblies.SteeltoeManagementTracing
+        });
 
-    //    IWebHost host = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
-    //        .AddSteeltoe(exclusions).Configure(_ =>
-    //        {
-    //        }).Build();
+        IWebHost host = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
+            .AddSteeltoe(exclusions).Configure(_ =>
+            {
+            }).Build();
 
-    //    var tracerProvider = host.Services.GetService<TracerProvider>();
-    //    Assert.NotNull(tracerProvider);
+        var tracerProvider = host.Services.GetService<TracerProvider>();
+        Assert.NotNull(tracerProvider);
 
-    //    object processor = tracerProvider.GetType().GetProperty("Processor", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-    //        .GetValue(tracerProvider);
+        object processor = tracerProvider.GetType().GetProperty("Processor", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            .GetValue(tracerProvider);
 
-    //    object exporter = processor.GetType().GetField("exporter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(processor);
-    //    Assert.NotNull(exporter);
-    //    Assert.IsType<WavefrontTraceExporter>(exporter);
-    //}
+        object exporter = processor.GetType().GetField("exporter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(processor);
+        Assert.NotNull(exporter);
+        Assert.IsType<WavefrontTraceExporter>(exporter);
+    }
 
     [Fact]
     public async Task KubernetesActuators_AreAutowired()

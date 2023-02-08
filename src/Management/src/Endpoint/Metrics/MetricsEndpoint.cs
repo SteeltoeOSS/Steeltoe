@@ -20,12 +20,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
     public MetricsEndpoint(IMetricsEndpointOptions options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
         : base(options)
     {
-        //ArgumentGuard.NotNull(exporters);
-
-        //_exporter = exporters.OfType<SteeltoeExporter>().SingleOrDefault() ??
         _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter), $"Exporters must contain a single {nameof(SteeltoeExporter)}.");
-        
-
         _logger = logger;
     }
 
@@ -78,7 +73,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
             if (rateSamples.Any())
             {
                 MetricSample sample = rateSamples.Aggregate(SumAggregator);
-                sampleList.Add(new MetricSample(MetricStatistic.Rate, sample.Value / rateSamples.Count(), sample.Tags)); //TODO: What should this be? 
+                sampleList.Add(new MetricSample(MetricStatistic.Rate, sample.Value / rateSamples.Count(), sample.Tags));
             }
 
             IEnumerable<MetricSample> valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Value).ToList();

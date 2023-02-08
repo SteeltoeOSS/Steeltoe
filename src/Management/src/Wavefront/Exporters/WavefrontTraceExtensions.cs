@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Wavefront.Exporters;
 public static class WavefrontTraceExtensions
 {
     public static TracerProviderBuilder AddWavefrontTraceExporter(this TracerProviderBuilder builder, IWavefrontExporterOptions options,
-        ILogger<WavefrontTraceExporter> logger = null)
+        ILogger<WavefrontTraceExporter> logger)
     {
         ArgumentGuard.NotNull(options);
 

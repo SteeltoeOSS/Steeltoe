@@ -20,7 +20,10 @@ public static class SteeltoeAssemblies
     public const string SteeltoeManagementKubernetes = "Steeltoe.Management.Kubernetes";
     public const string SteeltoeManagementTracing = "Steeltoe.Management.Tracing";
     public const string SteeltoeSecurityAuthenticationCloudFoundry = "Steeltoe.Security.Authentication.CloudFoundry";
+    public const string SteeltoeWavefront = "Steeltoe.Management.Wavefront";
+    public const string SteeltoePrometheus = "Steeltoe.Management.Prometheus";
 
     internal static readonly string[] AllAssemblies = typeof(SteeltoeAssemblies).GetFields().Where(x => x.FieldType == typeof(string))
         .Select(x => x.GetValue(null)).Cast<string>().ToArray();
+
 }

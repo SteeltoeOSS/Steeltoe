@@ -26,6 +26,7 @@ using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Kubernetes;
 using Steeltoe.Management.Tracing;
+using Steeltoe.Management.Wavefront;
 using Steeltoe.Security.Authentication.CloudFoundry;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration;
@@ -109,7 +110,7 @@ public static class WebApplicationBuilderExtensions
             webApplicationBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.SteeltoeManagementEndpoint);
         }
 
-     //   webApplicationBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeManagementEndpoint);
+        webApplicationBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeWavefront);
 
         webApplicationBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblies.SteeltoeManagementTracing);
 
@@ -274,17 +275,17 @@ public static class WebApplicationBuilderExtensions
         Log(LogMessages.WireAllActuators);
     }
 
-    //[MethodImpl(MethodImplOptions.NoInlining)]
-    //private static void WireWavefrontMetrics(this WebApplicationBuilder webApplicationBuilder)
-    //{
-    //    if (!webApplicationBuilder.Configuration.HasWavefront())
-    //    {
-    //        return;
-    //    }
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void WireWavefrontMetrics(this WebApplicationBuilder webApplicationBuilder)
+    {
+        if (!webApplicationBuilder.Configuration.HasWavefront())
+        {
+            return;
+        }
 
-    //    webApplicationBuilder.AddWavefrontMetrics();
-    //    Log(LogMessages.WireWavefrontMetrics);
-    //}
+        webApplicationBuilder.AddWavefrontMetrics();
+        Log(LogMessages.WireWavefrontMetrics);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireDynamicSerilog(this WebApplicationBuilder webApplicationBuilder)

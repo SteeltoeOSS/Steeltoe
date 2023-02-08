@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MySql.Data.MySqlClient;
 using Npgsql;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Oracle.ManagedDataAccess.Client;
 using RabbitMQ.Client;
@@ -36,6 +37,7 @@ using Steeltoe.Logging;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Wavefront.Exporters;
 using Xunit;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
@@ -159,56 +161,56 @@ public class WebApplicationBuilderExtensionsTest
         await ActuatorTestAsync(webApp.GetTestClient());
     }
 
-    //[Fact]
-    //public async Task WavefrontMetricsExporter_IsAutowired()
-    //{
-    //    WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
-    //    webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers.WavefrontConfiguration);
+    [Fact]
+    public async Task WavefrontMetricsExporter_IsAutowired()
+    {
+        WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
+        webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers.WavefrontConfiguration);
 
-    //    var exclusions = new List<string>
-    //    {
-    //        SteeltoeAssemblies.SteeltoeManagementEndpoint
-    //    };
+        var exclusions = new List<string>
+        {
+            SteeltoeAssemblies.SteeltoeWavefront
+        };
 
-    //    webAppBuilder.AddSteeltoe(SteeltoeAssemblies.AllAssemblies.Except(exclusions));
-    //    webAppBuilder.WebHost.UseTestServer();
-    //    WebApplication webApp = webAppBuilder.Build();
+        webAppBuilder.AddSteeltoe(SteeltoeAssemblies.AllAssemblies.Except(exclusions));
+        webAppBuilder.WebHost.UseTestServer();
+        WebApplication webApp = webAppBuilder.Build();
 
-    //    webApp.UseRouting();
-    //    await webApp.StartAsync();
-    //    var exporter = webApp.Services.GetService<WavefrontMetricsExporter>();
+        webApp.UseRouting();
+        await webApp.StartAsync();
+        var meterProvider = webApp.Services.GetService <MeterProvider>();
 
-    //    Assert.NotNull(exporter);
-    //}
+        Assert.NotNull(meterProvider);
+    }
 
-    //[Fact]
-    //public async Task WavefrontTraceExporter_IsAutowired()
-    //{
-    //    WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
-    //    webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers.WavefrontConfiguration);
+    [Fact]
+    public async Task WavefrontTraceExporter_IsAutowired()
+    {
+        WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
+        webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers.WavefrontConfiguration);
 
-    //    var exclusions = new List<string>
-    //    {
-    //        SteeltoeAssemblies.SteeltoeManagementTracing
-    //    };
+        var exclusions = new List<string>
+        {
+            SteeltoeAssemblies.SteeltoeManagementTracing
+        };
 
-    //    webAppBuilder.AddSteeltoe(SteeltoeAssemblies.AllAssemblies.Except(exclusions));
-    //    webAppBuilder.WebHost.UseTestServer();
-    //    WebApplication webApp = webAppBuilder.Build();
+        webAppBuilder.AddSteeltoe(SteeltoeAssemblies.AllAssemblies.Except(exclusions));
+        webAppBuilder.WebHost.UseTestServer();
+        WebApplication webApp = webAppBuilder.Build();
 
-    //    webApp.UseRouting();
-    //    await webApp.StartAsync();
+        webApp.UseRouting();
+        await webApp.StartAsync();
 
-    //    var tracerProvider = webApp.Services.GetService<TracerProvider>();
-    //    Assert.NotNull(tracerProvider);
+        var tracerProvider = webApp.Services.GetService<TracerProvider>();
+        Assert.NotNull(tracerProvider);
 
-    //    object processor = tracerProvider.GetType().GetProperty("Processor", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-    //        .GetValue(tracerProvider);
+        object processor = tracerProvider.GetType().GetProperty("Processor", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            .GetValue(tracerProvider);
 
-    //    object exporter = processor.GetType().GetField("exporter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(processor);
-    //    Assert.NotNull(exporter);
-    //    Assert.IsType<WavefrontTraceExporter>(exporter);
-    //}
+        object exporter = processor.GetType().GetField("exporter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(processor);
+        Assert.NotNull(exporter);
+        Assert.IsType<WavefrontTraceExporter>(exporter);
+    }
 
     [Fact]
     public void Tracing_IsAutowired()
