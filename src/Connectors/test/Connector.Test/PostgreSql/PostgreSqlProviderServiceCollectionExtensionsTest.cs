@@ -5,10 +5,14 @@
 using System.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Npgsql;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connector.PostgreSql;
+using Steeltoe.Connector.Services;
 using Xunit;
 
 namespace Steeltoe.Connector.Test.PostgreSQL;
@@ -226,5 +230,31 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
         Assert.NotNull(healthContributor);
+    }
+
+    [Fact]
+    public void AddPostgreSqlConnectionWithConnectionStringAndCloudNativeBindingsAddsRightPostgreSqlConnection()
+    {
+        string rootDir = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
+        Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", rootDir);
+        IServiceCollection services = new ServiceCollection();
+        var appsettings = new Dictionary<string, string> {
+            { "postgres:client:ConnectionString", "Server=fake;Database=test;User Id=steeltoe;Password=password;" },
+            { "steeltoe:kubernetes:bindings:enable", "true" }
+        };
+        var configurationBuilder = new ConfigurationBuilder();
+        _ = configurationBuilder.AddInMemoryCollection(appsettings).AddEnvironmentVariables().AddKubernetesServiceBindings();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        services.AddPostgreSqlConnection(configurationRoot);
+
+        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        string connString = service.ConnectionString;
+
+        Assert.NotEqual(appsettings["postgres:client:ConnectionString"], connString);
+        Assert.Contains("Host=10.194.59.205", connString, StringComparison.Ordinal);
+        Assert.Contains("Port=5432", connString, StringComparison.Ordinal);
+        Assert.Contains("Username=testrolee93ccf859894dc60dcd53218492b37b4", connString, StringComparison.Ordinal);
+        Assert.Contains("Password=Qp!1mB1$Zk2T!$!D85_E", connString, StringComparison.Ordinal);
+        Assert.Contains("Database=steeltoe", connString, StringComparison.Ordinal);
     }
 }

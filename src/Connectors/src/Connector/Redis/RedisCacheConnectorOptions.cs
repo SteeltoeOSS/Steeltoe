@@ -16,7 +16,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     private const string DefaultHost = "localhost";
     private const int DefaultPort = 6379;
     private const string RedisClientSectionPrefix = "redis:client";
-    private readonly bool _cloudFoundryConfigFound;
+    private readonly bool _bindingsFound;
 
     // Configure either a single Host/Port or optionally provide
     // a list of endpoints (ie. host1:port1,host2:port2)
@@ -75,12 +75,12 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         IConfigurationSection section = configuration.GetSection(RedisClientSectionPrefix);
         section.Bind(this);
 
-        _cloudFoundryConfigFound = configuration.HasCloudFoundryServiceConfigurations();
+        _bindingsFound = configuration.HasCloudFoundryServiceConfigurations() || configuration.HasCloudNativeBindings();
     }
 
     public override string ToString()
     {
-        if (!string.IsNullOrEmpty(ConnectionString) && !_cloudFoundryConfigFound)
+        if (!string.IsNullOrEmpty(ConnectionString) && !_bindingsFound)
         {
             return ConnectionString;
         }

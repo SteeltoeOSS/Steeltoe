@@ -14,7 +14,7 @@ public class MongoDbConnectorOptions : AbstractServiceConnectorOptions
     private const string MongodbClientSectionPrefix = "mongodb:client";
     public const string DefaultServer = "localhost";
     public const int DefaultPort = 27017;
-    private readonly bool _cloudFoundryConfigFound;
+    private readonly bool _bindingsFound;
 
     internal string Uri { get; set; }
 
@@ -44,12 +44,12 @@ public class MongoDbConnectorOptions : AbstractServiceConnectorOptions
         IConfigurationSection section = configuration.GetSection(MongodbClientSectionPrefix);
         section.Bind(this);
 
-        _cloudFoundryConfigFound = configuration.HasCloudFoundryServiceConfigurations();
+        _bindingsFound = configuration.HasCloudFoundryServiceConfigurations() || configuration.HasCloudNativeBindings();
     }
 
     public override string ToString()
     {
-        if (!string.IsNullOrEmpty(ConnectionString) && !_cloudFoundryConfigFound)
+        if (!string.IsNullOrEmpty(ConnectionString) && !_bindingsFound)
         {
             // Connection string was provided and VCAP_SERVICES wasn't found, just use the connectionstring
             return ConnectionString;
