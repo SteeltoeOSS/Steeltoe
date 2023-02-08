@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connector.EntityFrameworkCore.PostgreSql;
 using Xunit;
 
@@ -201,6 +202,41 @@ public class PostgreSqlDbContextOptionsExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appsettings);
         builder.AddCloudFoundry();
+        IConfigurationRoot configurationRoot = builder.Build();
+
+        services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(configurationRoot));
+
+        ServiceProvider built = services.BuildServiceProvider();
+        var service = built.GetService<GoodDbContext>();
+        Assert.NotNull(service);
+
+        DbConnection con = service.Database.GetDbConnection();
+        Assert.NotNull(con);
+        var postCon = con as NpgsqlConnection;
+        Assert.NotNull(postCon);
+
+        string connString = con.ConnectionString;
+        Assert.NotNull(connString);
+
+        Assert.Contains("Host=10.194.59.205", connString, StringComparison.Ordinal);
+        Assert.Contains("Port=5432", connString, StringComparison.Ordinal);
+        Assert.Contains("Username=testrolee93ccf859894dc60dcd53218492b37b4", connString, StringComparison.Ordinal);
+        Assert.Contains("Password=Qp!1mB1$Zk2T!$!D85_E", connString, StringComparison.Ordinal);
+        Assert.Contains("Database=steeltoe", connString, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void AddDbContext_WithK8sBinding_AddsDbContext()
+    {
+        string rootDir = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
+        Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", rootDir);
+        IServiceCollection services = new ServiceCollection();
+
+        var appsettings = new Dictionary<string, string>() { { "steeltoe:kubernetes:bindings:enable", "true" } };
+
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(appsettings);
+        builder.AddKubernetesServiceBindings(false);
         IConfigurationRoot configurationRoot = builder.Build();
 
         services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(configurationRoot));
