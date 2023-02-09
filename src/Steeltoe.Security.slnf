@@ -15,11 +15,9 @@
       "Discovery\\src\\Abstractions\\Steeltoe.Discovery.Abstractions.csproj",
       "Security\\src\\Authentication.CloudFoundry\\Steeltoe.Security.Authentication.CloudFoundry.csproj",
       "Security\\src\\Authentication.Mtls\\Steeltoe.Security.Authentication.Mtls.csproj",
-      "Security\\src\\DataProtection.CredHub\\Steeltoe.Security.DataProtection.CredHub.csproj",
       "Security\\src\\DataProtection.Redis\\Steeltoe.Security.DataProtection.Redis.csproj",
       "Security\\test\\Authentication.CloudFoundry.Test\\Steeltoe.Security.Authentication.CloudFoundry.Test.csproj",
       "Security\\test\\Authentication.Mtls.Test\\Steeltoe.Security.Authentication.Mtls.Test.csproj",
-      "Security\\test\\DataProtection.CredHub.Test\\Steeltoe.Security.DataProtection.CredHub.Test.csproj",
       "Security\\test\\DataProtection.Redis.Test\\Steeltoe.Security.DataProtection.Redis.Test.csproj"
     ]
   }
