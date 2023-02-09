@@ -32,12 +32,10 @@ public class HttpClientDesktopObserver : MetricsObserver
     public HttpClientDesktopObserver(IMetricsObserverOptions options, ILogger<HttpClientDesktopObserver> logger)
         : base(DefaultObserverName, DiagnosticName, options, logger)
     {
-
         SetPathMatcher(new Regex(options.EgressIgnorePattern));
 
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.desktop.client.request.time");
         _clientCountMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.desktop.client.request.count");
-        
     }
 
     public override void ProcessEvent(string eventName, object value)

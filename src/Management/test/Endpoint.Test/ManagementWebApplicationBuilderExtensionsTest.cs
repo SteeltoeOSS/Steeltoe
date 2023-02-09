@@ -394,8 +394,6 @@ public class ManagementWebApplicationBuilderExtensionsTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-
-
     private WebApplicationBuilder GetTestServerWithRouting()
     {
         WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();

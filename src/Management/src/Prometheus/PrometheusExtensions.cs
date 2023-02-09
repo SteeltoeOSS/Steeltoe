@@ -13,6 +13,7 @@ using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.MetricCollectors;
 
 namespace Steeltoe.Management.Prometheus;
+
 public static class PrometheusExtensions
 {
     /// <summary>
@@ -28,35 +29,34 @@ public static class PrometheusExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services
-            .AddOptions<PrometheusEndpointOptions>()
-            .Configure<IConfiguration>((options, configuration) =>
-            {
-                configuration.GetSection(PrometheusEndpointOptions.ManagementInfoPrefix).Bind(options);
-            });
+        services.AddOptions<PrometheusEndpointOptions>().Configure<IConfiguration>((options, configuration) =>
+        {
+            configuration.GetSection(PrometheusEndpointOptions.ManagementInfoPrefix).Bind(options);
+        });
 
-        var sd = ServiceDescriptor.Singleton<IEndpointOptions, PrometheusEndpointOptions>();
+        ServiceDescriptor sd = ServiceDescriptor.Singleton<IEndpointOptions, PrometheusEndpointOptions>();
         services.TryAddEnumerable(sd);
 
-        services.AddOpenTelemetry()
-        .WithMetrics(builder =>
+        services.AddOpenTelemetry().WithMetrics(builder =>
         {
             builder.AddMeter(SteeltoeMetrics.InstrumentationName);
             builder.AddPrometheusExporter();
-        })
-        .StartWithHost();
+        }).StartWithHost();
 
         return services;
     }
-    public static IApplicationBuilder MapPrometheusActuator(
-          this IApplicationBuilder app)
-    {
-        var managementOptions = app.ApplicationServices.GetService<IEnumerable<IManagementOptions>>()?.OfType<ActuatorManagementOptions>().FirstOrDefault();
-        var prometheusOptions = app.ApplicationServices.GetService<IEnumerable<IEndpointOptions>>()?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
 
-        var root = managementOptions?.Path ?? "/actuator";
-        var id = prometheusOptions?.Id ?? "prometheus";
-        var path = root + "/" + id;
+    public static IApplicationBuilder MapPrometheusActuator(this IApplicationBuilder app)
+    {
+        ActuatorManagementOptions? managementOptions =
+            app.ApplicationServices.GetService<IEnumerable<IManagementOptions>>()?.OfType<ActuatorManagementOptions>().FirstOrDefault();
+
+        PrometheusEndpointOptions? prometheusOptions =
+            app.ApplicationServices.GetService<IEnumerable<IEndpointOptions>>()?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
+
+        string root = managementOptions?.Path ?? "/actuator";
+        string id = prometheusOptions?.Id ?? "prometheus";
+        string path = root + "/" + id;
 
         return app.UseOpenTelemetryPrometheusScrapingEndpoint(path);
     }

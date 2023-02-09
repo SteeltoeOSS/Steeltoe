@@ -13,7 +13,9 @@ internal abstract class Aggregator
     public abstract IAggregationStatistics Collect();
 }
 
-internal interface IAggregationStatistics { }
+internal interface IAggregationStatistics
+{
+}
 
 #pragma warning disable S3898 // Value types should implement "IEquatable<T>"
 internal readonly struct QuantileValue
@@ -24,33 +26,34 @@ internal readonly struct QuantileValue
         Quantile = quantile;
         Value = value;
     }
+
     public double Quantile { get; }
     public double Value { get; }
 }
 
 internal sealed class HistogramStatistics : IAggregationStatistics
 {
+    public QuantileValue[] Quantiles { get; }
+
+    public double HistogramSum { get; }
+    public double HistograMax { get; }
+
     internal HistogramStatistics(QuantileValue[] quantiles, double sum, double max)
     {
         Quantiles = quantiles;
         HistogramSum = sum;
         HistograMax = max;
     }
-
-    public QuantileValue[] Quantiles { get; }
-
-    public double HistogramSum { get; }
-    public double HistograMax { get; }
 }
 
 internal sealed class LabeledAggregationStatistics
 {
+    public KeyValuePair<string, string>[] Labels { get; }
+    public IAggregationStatistics AggregationStatistics { get; }
+
     public LabeledAggregationStatistics(IAggregationStatistics stats, params KeyValuePair<string, string>[] labels)
     {
         AggregationStatistics = stats;
         Labels = labels;
     }
-
-    public KeyValuePair<string, string>[] Labels { get; }
-    public IAggregationStatistics AggregationStatistics { get; }
 }

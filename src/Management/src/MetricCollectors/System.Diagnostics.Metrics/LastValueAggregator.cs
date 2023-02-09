@@ -18,7 +18,7 @@ internal sealed class LastValue : Aggregator
 #pragma warning disable S2551 // Shared resources should not be used for locking
         lock (this)
         {
-            LastValueStatistics stats = new LastValueStatistics(_lastValue);
+            var stats = new LastValueStatistics(_lastValue);
             _lastValue = null;
             return stats;
         }
@@ -28,10 +28,10 @@ internal sealed class LastValue : Aggregator
 
 internal sealed class LastValueStatistics : IAggregationStatistics
 {
+    public double? LastValue { get; }
+
     internal LastValueStatistics(double? lastValue)
     {
         LastValue = lastValue;
     }
-
-    public double? LastValue { get; }
 }

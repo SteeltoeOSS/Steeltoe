@@ -2,10 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.MetricCollectors;
-using Steeltoe.Management.MetricCollectors.Exporters;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
@@ -66,6 +64,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         {
             return new MetricSample(current.Statistic, current.Value > next.Value ? current.Value : next.Value, current.Tags);
         }
+
         try
         {
             IEnumerable<MetricSample> rateSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Rate).ToList();
@@ -117,6 +116,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         {
             // Nothing we can do , log and move on 
         }
+
         return sampleList;
     }
 
@@ -125,5 +125,8 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         return new MetricsResponse(request.MetricName, metricSamples, availTags);
     }
 
-    protected internal (MetricsCollection<List<MetricSample>> Samples, MetricsCollection<List<MetricTag>> Tags) GetMetrics() => _exporter.Export();
+    protected internal (MetricsCollection<List<MetricSample>> Samples, MetricsCollection<List<MetricTag>> Tags) GetMetrics()
+    {
+        return _exporter.Export();
+    }
 }

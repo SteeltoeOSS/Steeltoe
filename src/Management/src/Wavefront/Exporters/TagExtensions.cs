@@ -5,6 +5,7 @@
 using OpenTelemetry;
 
 namespace Steeltoe.Management.Wavefront.Exporters;
+
 internal static class TagExtensions
 {
     public static IDictionary<string, string> AsDictionary(this ReadOnlyTagCollection tagCollection)

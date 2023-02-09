@@ -2,9 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-
-
-
 using System.Diagnostics.Metrics;
 
 namespace Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
@@ -15,15 +12,15 @@ namespace Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 public class SteeltoeExporter
 {
     private readonly MetricsCollection<List<MetricSample>> _metricSamples = new();
-    private readonly MetricsCollection<List<MetricTag>>  _availTags = new ();
-    private MetricsCollection<List<MetricSample>> _lastCollectionSamples = new ();
-    private MetricsCollection<List<MetricTag>> _lastAvailableTags = new ();
+    private readonly MetricsCollection<List<MetricTag>> _availTags = new();
 
     private readonly int _cacheDurationMilliseconds;
+    private readonly object _collectionLock = new();
+    private MetricsCollection<List<MetricSample>> _lastCollectionSamples = new();
+    private MetricsCollection<List<MetricTag>> _lastAvailableTags = new();
     private DateTime _lastCollection = DateTime.MinValue;
 
-    public  Action? Collect { get; set; }
-    private readonly object _collectionLock = new();
+    public Action? Collect { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SteeltoeExporter" /> class.
@@ -82,11 +79,11 @@ public class SteeltoeExporter
         else if (stats.AggregationStatistics is HistogramStatistics histogramStats)
         {
             double sum = histogramStats.HistogramSum;
+
             if (instrument.Unit == "s")
             {
                 _metricSamples[instrument.Name].Add(new MetricSample(MetricStatistic.TotalTime, sum, stats.Labels));
                 _metricSamples[instrument.Name].Add(new MetricSample(MetricStatistic.Max, histogramStats.HistograMax, stats.Labels));
-
             }
             else
             {

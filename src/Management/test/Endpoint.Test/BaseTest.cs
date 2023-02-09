@@ -56,17 +56,22 @@ public abstract class BaseTest : IDisposable
 
     internal AggregationManager GetTestMetrics(SteeltoeExporter steeltoeExporter)
     {
-        var aggregator = new AggregationManager(
-            maxTimeSeries: 100,
-            maxHistograms: 100,
-            collectMeasurement: steeltoeExporter.AddMetrics,
-            beginInstrumentMeasurements: (instrument) => { },
-            endInstrumentMeasurements: (instrument) => { },
-            instrumentPublished: (instrument) => { },
-            initialInstrumentEnumerationComplete: () => { },
-            timeSeriesLimitReached: () => { },
-            histogramLimitReached: () => { },
-            observableInstrumentCallbackError: (ex) => { throw ex; });
+        var aggregator = new AggregationManager(100, 100, steeltoeExporter.AddMetrics, instrument =>
+        {
+        }, instrument =>
+        {
+        }, instrument =>
+        {
+        }, () =>
+        {
+        }, () =>
+        {
+        }, () =>
+        {
+        }, ex =>
+        {
+            throw ex;
+        });
 
         aggregator.Include(SteeltoeMetrics.InstrumentationName);
 

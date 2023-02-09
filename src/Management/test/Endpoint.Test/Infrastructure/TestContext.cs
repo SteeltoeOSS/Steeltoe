@@ -19,6 +19,27 @@ internal sealed class TestContext : IDisposable
     private IServiceProvider _serviceProvider;
     private IConfigurationRoot _configurationRoot;
 
+    private IServiceProvider ServiceProvider
+    {
+        get
+        {
+            if (_serviceProvider == null)
+            {
+                // add standard services
+                _serviceCollection.AddOptions();
+                _serviceCollection.AddLogging(setup => setup.AddProvider(_loggerProvider));
+                _serviceCollection.AddSingleton<IConfiguration>(Configuration);
+
+                // allow test to customize services
+                AdditionalServices?.Invoke(_serviceCollection, Configuration);
+
+                _serviceProvider = _serviceCollection.BuildServiceProvider();
+            }
+
+            return _serviceProvider;
+        }
+    }
+
     /// <summary>
     /// Gets or sets a delegate that allows tests to configure <see cref="IServiceCollection" />.
     /// </summary>
@@ -53,31 +74,13 @@ internal sealed class TestContext : IDisposable
     }
 
     public T GetService<T>()
-    {   
+    {
         return ServiceProvider.GetRequiredService<T>();
     }
+
     public IEnumerable<T> GetServices<T>()
     {
         return ServiceProvider.GetServices<T>();
-    }
-    private IServiceProvider ServiceProvider
-    { 
-        get
-        {
-            if (_serviceProvider == null)
-            {
-                // add standard services
-                _serviceCollection.AddOptions();
-                _serviceCollection.AddLogging(setup => setup.AddProvider(_loggerProvider));
-                _serviceCollection.AddSingleton<IConfiguration>(Configuration);
-
-                // allow test to customize services
-                AdditionalServices?.Invoke(_serviceCollection, Configuration);
-
-                _serviceProvider = _serviceCollection.BuildServiceProvider();
-            }
-            return _serviceProvider;
-        }
     }
 
     public void Dispose()

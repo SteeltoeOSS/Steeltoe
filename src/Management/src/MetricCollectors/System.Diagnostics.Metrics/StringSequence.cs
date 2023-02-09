@@ -2,8 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Numerics;
-using System.Runtime.InteropServices;
+using System.Diagnostics.CodeAnalysis;
 
 namespace System.Diagnostics.Metrics;
 
@@ -16,8 +15,12 @@ internal partial struct StringSequence1 : IEquatable<StringSequence1>, IStringSe
         Value1 = value1;
     }
 
-    [CodeAnalysis.SuppressMessage("Minor Bug", "S2328:\"GetHashCode\" should not reference mutable fields", Justification = "Value1 cannot be readonly since it is used as a ref param")]
-    public override int GetHashCode() => Value1.GetHashCode();
+    [SuppressMessage("Minor Bug", "S2328:\"GetHashCode\" should not reference mutable fields",
+        Justification = "Value1 cannot be readonly since it is used as a ref param")]
+    public override int GetHashCode()
+    {
+        return Value1.GetHashCode();
+    }
 
     public bool Equals(StringSequence1 other)
     {
@@ -91,18 +94,26 @@ internal partial struct StringSequenceMany : IEquatable<StringSequenceMany>, ISt
 {
     private readonly string[] _values;
 
-    public StringSequenceMany(string[] values) =>
+    public StringSequenceMany(string[] values)
+    {
         _values = values;
+    }
 
-    public Span<string> AsSpan() =>
-        _values.AsSpan();
+    public Span<string> AsSpan()
+    {
+        return _values.AsSpan();
+    }
 
-    public bool Equals(StringSequenceMany other) =>
-        _values.AsSpan().SequenceEqual(other._values.AsSpan());
+    public bool Equals(StringSequenceMany other)
+    {
+        return _values.AsSpan().SequenceEqual(other._values.AsSpan());
+    }
 
     // GetHashCode() is in the platform specific files
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-    public override bool Equals(object? obj) =>
-        obj is StringSequenceMany ssm && Equals(ssm);
+    public override bool Equals(object? obj)
+    {
+        return obj is StringSequenceMany ssm && Equals(ssm);
+    }
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 }

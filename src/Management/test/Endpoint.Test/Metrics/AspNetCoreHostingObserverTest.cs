@@ -38,7 +38,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
     public void GetException_ReturnsExpected()
     {
         var options = new MetricsObserverOptions();
-        var observer = new AspNetCoreHostingObserver(options,null);
+        var observer = new AspNetCoreHostingObserver(options, null);
 
         HttpContext context = GetHttpRequestMessage();
         string exception = observer.GetException(context);

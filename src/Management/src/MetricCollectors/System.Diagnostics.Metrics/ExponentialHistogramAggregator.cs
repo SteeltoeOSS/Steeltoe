@@ -2,23 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.Generic;
-
 namespace System.Diagnostics.Metrics;
 
 internal sealed class QuantileAggregation
 {
+    public double[] Quantiles { get; set; }
+    public double MaxRelativeError { get; set; } = 0.001;
+
     public QuantileAggregation(params double[] quantiles)
     {
         Quantiles = quantiles;
         Array.Sort(Quantiles);
     }
-
-    public double[] Quantiles { get; set; }
-    public double MaxRelativeError { get; set; } = 0.001;
 }
-
-
 
 // This histogram ensures that the quantiles reported from the histogram are within some bounded % error of the correct
 // value. More mathematically, if we have a set of measurements where quantile X = Y, the histogram should always report a
@@ -46,33 +42,21 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
     private const double MinRelativeError = 0.0001;
 
     private readonly QuantileAggregation _config;
+    private readonly int _mantissaMax;
+    private readonly int _mantissaMask;
+    private readonly int _mantissaShift;
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private int[]?[] _counters;
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private int _count;
     private double _sum;
     private double _max;
-    private readonly int _mantissaMax;
-    private readonly int _mantissaMask;
-    private readonly int _mantissaShift;
-
-#pragma warning disable S3898 // Value types should implement "IEquatable<T>"
-    private struct Bucket
-#pragma warning restore S3898 // Value types should implement "IEquatable<T>"
-    {
-        public Bucket(double value, int count)
-        {
-            Value = value;
-            Count = count;
-        }
-        public double Value;
-        public int Count;
-    }
 
     public ExponentialHistogramAggregator(QuantileAggregation config)
     {
         _config = config;
         _counters = new int[ExponentArraySize][];
+
         if (_config.MaxRelativeError < MinRelativeError)
         {
             // Ensure that we don't create enormous histograms trying to get overly high precision
@@ -82,6 +66,7 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
 #pragma warning restore S3928 // Parameter names used into ArgumentException constructors should match an existing one 
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
         }
+
         int mantissaBits = (int)Math.Ceiling(Math.Log(1 / _config.MaxRelativeError, 2)) - 1;
         _mantissaShift = 52 - mantissaBits;
         _mantissaMax = 1 << mantissaBits;
@@ -110,8 +95,9 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
         }
 #pragma warning restore S2551 // Shared resources should not be used for locking
 
-        QuantileValue[] quantiles = new QuantileValue[_config.Quantiles.Length];
+        var quantiles = new QuantileValue[_config.Quantiles.Length];
         int nextQuantileIndex = 0;
+
         if (nextQuantileIndex == _config.Quantiles.Length)
         {
             return new HistogramStatistics(quantiles, sum, max);
@@ -127,18 +113,21 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
 
         // the total number of entries in all buckets iterated so far
         int cur = 0;
+
         foreach (Bucket b in IterateBuckets(counters))
         {
             cur += b.Count;
+
             while (cur > target)
             {
-                quantiles[nextQuantileIndex] = new QuantileValue(
-                    _config.Quantiles[nextQuantileIndex], b.Value);
+                quantiles[nextQuantileIndex] = new QuantileValue(_config.Quantiles[nextQuantileIndex], b.Value);
                 nextQuantileIndex++;
+
                 if (nextQuantileIndex == _config.Quantiles.Length)
                 {
                     return new HistogramStatistics(quantiles, sum, max);
                 }
+
                 target = QuantileToRank(_config.Quantiles[nextQuantileIndex], count);
             }
         }
@@ -158,6 +147,7 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
         int[]? negativeInfAndNan = counters[ExponentArraySize - 1];
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         int count = 0;
+
         if (positiveInfAndNan != null)
         {
             foreach (int bucketCount in positiveInfAndNan)
@@ -165,6 +155,7 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
                 count += bucketCount;
             }
         }
+
         if (negativeInfAndNan != null)
         {
             foreach (int bucketCount in negativeInfAndNan)
@@ -172,6 +163,7 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
                 count += bucketCount;
             }
         }
+
         return count;
     }
 
@@ -181,6 +173,7 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
     {
         // iterate over the negative exponent buckets
         const int LowestNegativeOffset = ExponentArraySize / 2;
+
         // exponent = ExponentArraySize-1 encodes infinity and NaN, which we want to ignore
         for (int exponent = ExponentArraySize - 2; exponent >= LowestNegativeOffset; exponent--)
         {
@@ -191,9 +184,11 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
             {
                 continue;
             }
+
             for (int mantissa = _mantissaMax - 1; mantissa >= 0; mantissa--)
             {
                 int count = mantissaCounts[mantissa];
+
                 if (count > 0)
                 {
                     yield return new Bucket(GetBucketCanonicalValue(exponent, mantissa), count);
@@ -212,9 +207,11 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
             {
                 continue;
             }
+
             for (int mantissa = 0; mantissa < _mantissaMax; mantissa++)
             {
                 int count = mantissaCounts[mantissa];
+
                 if (count > 0)
                 {
                     yield return new Bucket(GetBucketCanonicalValue(exponent, mantissa), count);
@@ -245,7 +242,6 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
             mantissaCounts ??= new int[_mantissaMax];
             mantissaCounts[mantissa]++;
             _count++;
-            
         }
 #pragma warning restore S2551 // Shared resources should not be used for locking
     }
@@ -261,5 +257,19 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
     {
         long bits = ((long)exponent << ExponentShift) | ((long)mantissa << _mantissaShift);
         return BitConverter.Int64BitsToDouble(bits);
+    }
+
+#pragma warning disable S3898 // Value types should implement "IEquatable<T>"
+    private struct Bucket
+#pragma warning restore S3898 // Value types should implement "IEquatable<T>"
+    {
+        public Bucket(double value, int count)
+        {
+            Value = value;
+            Count = count;
+        }
+
+        public readonly double Value;
+        public readonly int Count;
     }
 }

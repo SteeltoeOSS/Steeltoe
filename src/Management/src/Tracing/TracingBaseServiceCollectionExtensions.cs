@@ -137,7 +137,6 @@ public static class TracingBaseServiceCollectionExtensions
                 AddOpenTelemetryProtocolExporter(builder);
             }
 
-
             AddWavefrontExporter(builder);
 
             action?.Invoke(builder);
@@ -205,12 +204,10 @@ public static class TracingBaseServiceCollectionExtensions
     {
         var deferredTracerProviderBuilder = builder as IDeferredTracerProviderBuilder;
 
-
         deferredTracerProviderBuilder.Configure(delegate(IServiceProvider sp, TracerProviderBuilder builder)
         {
             var configuration = sp.GetService<IConfiguration>();
             var wavefrontOptions = new WavefrontExporterOptions(configuration);
-
 
             // Only add if wavefront is configured
             if (!string.IsNullOrEmpty(wavefrontOptions.Uri))
@@ -219,6 +216,5 @@ public static class TracingBaseServiceCollectionExtensions
                 builder.AddWavefrontTraceExporter(wavefrontOptions, logger);
             }
         });
-
     }
 }

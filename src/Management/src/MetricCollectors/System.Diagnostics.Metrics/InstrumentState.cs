@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.Generic;
 using System.Security;
 
 namespace System.Diagnostics.Metrics;
@@ -18,7 +17,6 @@ internal abstract class InstrumentState
     // This can be called concurrently with Update()
     public abstract void Collect(Instrument instrument, Action<LabeledAggregationStatistics> aggregationVisitFunc);
 }
-
 
 internal sealed class InstrumentState<TAggregator> : InstrumentState
     where TAggregator : Aggregator

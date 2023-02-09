@@ -2,9 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Numerics;
-using System.Runtime.InteropServices;
-
 namespace System.Diagnostics.Metrics;
 
 internal partial struct ObjectSequence1 : IEquatable<ObjectSequence1>, IObjectSequence
@@ -21,7 +18,10 @@ internal partial struct ObjectSequence1 : IEquatable<ObjectSequence1>, IObjectSe
     }
 
 #pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-    public override int GetHashCode() => Value1?.GetHashCode() ?? 0;
+    public override int GetHashCode()
+    {
+        return Value1?.GetHashCode() ?? 0;
+    }
 #pragma warning restore S2328 // "GetHashCode" should not reference mutable fields
 
     public bool Equals(ObjectSequence1 other)
@@ -59,8 +59,7 @@ internal partial struct ObjectSequence2 : IEquatable<ObjectSequence2>, IObjectSe
 
     public bool Equals(ObjectSequence2 other)
     {
-        return (Value1 is null ? other.Value1 is null : Value1.Equals(other.Value1)) &&
-               (Value2 is null ? other.Value2 is null : Value2.Equals(other.Value2));
+        return (Value1 is null ? other.Value1 is null : Value1.Equals(other.Value1)) && (Value2 is null ? other.Value2 is null : Value2.Equals(other.Value2));
     }
 
     // GetHashCode() is in the platform specific files
@@ -100,9 +99,8 @@ internal partial struct ObjectSequence3 : IEquatable<ObjectSequence3>, IObjectSe
     public bool Equals(ObjectSequence3 other)
     {
 #pragma warning disable S1067 // Expressions should not be too complex
-        return (Value1 is null ? other.Value1 is null : Value1.Equals(other.Value1)) &&
-               (Value2 is null ? other.Value2 is null : Value2.Equals(other.Value2)) &&
-               (Value3 is null ? other.Value3 is null : Value3.Equals(other.Value3));
+        return (Value1 is null ? other.Value1 is null : Value1.Equals(other.Value1)) && (Value2 is null ? other.Value2 is null : Value2.Equals(other.Value2)) &&
+            (Value3 is null ? other.Value3 is null : Value3.Equals(other.Value3));
 #pragma warning restore S1067 // Expressions should not be too complex
     }
 
@@ -132,6 +130,7 @@ internal partial struct ObjectSequenceMany : IEquatable<ObjectSequenceMany>, IOb
         {
             return false;
         }
+
         for (int i = 0; i < _values.Length; i++)
         {
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
@@ -151,6 +150,7 @@ internal partial struct ObjectSequenceMany : IEquatable<ObjectSequenceMany>, IOb
                 return false;
             }
         }
+
         return true;
     }
 
