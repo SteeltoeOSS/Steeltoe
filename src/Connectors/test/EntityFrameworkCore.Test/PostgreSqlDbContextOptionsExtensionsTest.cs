@@ -233,7 +233,7 @@ public class PostgreSqlDbContextOptionsExtensionsTest
         Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", rootDir);
 
         try
-        { 
+        {
             IServiceCollection services = new ServiceCollection();
 
             var appsettings = new Dictionary<string, string>
