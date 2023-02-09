@@ -26,6 +26,7 @@ public static class SqlServerTypeLocator
     /// </summary>
     public static string[] Assemblies { get; internal set; } =
     {
+        "Microsoft.Data.SqlClient",
         "System.Data.SqlClient"
     };
 
@@ -34,6 +35,7 @@ public static class SqlServerTypeLocator
     /// </summary>
     public static string[] ConnectionTypeNames { get; internal set; } =
     {
+        "Microsoft.Data.SqlClient.SqlConnection",
         "System.Data.SqlClient.SqlConnection"
     };
 }

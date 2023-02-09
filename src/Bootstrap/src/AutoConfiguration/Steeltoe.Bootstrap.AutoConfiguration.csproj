@@ -31,7 +31,6 @@
     <ProjectReference Include="..\..\..\Management\src\Wavefront\Steeltoe.Management.Wavefront.csproj" />
     <ProjectReference Include="..\..\..\Security\src\Authentication.CloudFoundry\Steeltoe.Security.Authentication.CloudFoundry.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Security\src\Authentication.Mtls\Steeltoe.Security.Authentication.Mtls.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Security\src\DataProtection.CredHub\Steeltoe.Security.DataProtection.CredHub.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Security\src\DataProtection.Redis\Steeltoe.Security.DataProtection.Redis.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Connectors\src\EntityFrameworkCore\Steeltoe.Connector.EntityFrameworkCore.csproj" PrivateAssets="All" />

@@ -11,6 +11,7 @@
     <NpgsqlVersion>6.0.*</NpgsqlVersion>
     <OracleVersion>3.21.*</OracleVersion>
     <SqlClientVersion>4.8.*</SqlClientVersion>
+    <MicrosoftSqlClientVersion>5.0.*</MicrosoftSqlClientVersion>
     <MicrosoftAzureCosmosVersion>3.28.*</MicrosoftAzureCosmosVersion>
     <StackExchangeVersion>2.6.*</StackExchangeVersion>
     <CoverletVersion>3.2.*</CoverletVersion>

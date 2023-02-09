@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="$(MicrosoftAzureCosmosVersion)" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="$(OracleVersion)" />
     <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="$(MicrosoftSqlClientVersion)" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />

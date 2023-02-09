@@ -136,6 +136,8 @@ public class UriInfo
             uriString = ConvertJdbcToUri(uriString);
         }
 
+        uriString = EscapeFirstAtSignIfMultipleOccurrences(uriString);
+
         try
         {
             return new Uri(uriString);
@@ -165,6 +167,15 @@ public class UriInfo
 
             return null;
         }
+    }
+
+    private static string EscapeFirstAtSignIfMultipleOccurrences(string uriString)
+    {
+        // Workaround for CloudFoundry bug: it forgets to uri-escape the '@' character in username field when using Azure, resulting in an invalid Uri.
+        // For example: postgresql://<user>@<host>:<password>@<host>:5432/vsbdb -> postgresql://<user>%40<host>:<password>@<host>:5432/vsbdb
+
+        string[] parts = uriString.Split('@', 3);
+        return parts.Length == 3 ? $"{parts[0]}%40{parts[1]}@{parts[2]}" : uriString;
     }
 
     private string ConvertJdbcToUri(string uriString)
