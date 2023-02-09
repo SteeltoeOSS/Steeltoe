@@ -23,10 +23,32 @@
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="$(PomeloEFCoreVersion)" />
+    <ProjectReference Include="..\..\..\Configuration\src\Kubernetes.ServiceBinding\Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\src\Connector.EFCore\Steeltoe.Connector.EFCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="resources\bindings\customer-profiles\database">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\bindings\customer-profiles\password">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\bindings\customer-profiles\username">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\bindings\customer-profiles\provider">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\bindings\customer-profiles\host">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\bindings\customer-profiles\type">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

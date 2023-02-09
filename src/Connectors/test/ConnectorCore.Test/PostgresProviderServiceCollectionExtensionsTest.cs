@@ -2,13 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
+#if NET6_0_OR_GREATER
+using Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using Xunit;
 
 namespace Steeltoe.Connector.PostgreSql.Test;
@@ -174,6 +180,45 @@ public class PostgresProviderServiceCollectionExtensionsTest
         Assert.Contains("sslmode=Require;", connString);
         Assert.Contains("pooling=true;", connString);
     }
+
+#if NET6_0_OR_GREATER
+    [Fact]
+    public void AddPostgreSqlConnectionWithConnectionStringAndCloudNativeBindingsAddsRightPostgreSqlConnection()
+    {
+        var rootDir = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
+        Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", rootDir);
+
+        try
+        {
+            IServiceCollection services = new ServiceCollection();
+
+            var appsettings = new Dictionary<string, string>
+            {
+                { "postgres:client:ConnectionString", "Server=fake;Database=test;User Id=steeltoe;Password=password;" },
+                { "steeltoe:kubernetes:bindings:enable", "true" }
+            };
+
+            var configurationBuilder = new ConfigurationBuilder();
+            _ = configurationBuilder.AddInMemoryCollection(appsettings).AddEnvironmentVariables().AddKubernetesServiceBindings(false);
+            var configurationRoot = configurationBuilder.Build();
+            services.AddPostgresConnection(configurationRoot);
+            using var built = services.BuildServiceProvider();
+
+            using var connection = built.GetService<IDbConnection>();
+            connection.Should().BeOfType<NpgsqlConnection>().And.Subject.Should().NotBeNull();
+
+            connection.ConnectionString.Should().Contain("Host=10.194.59.205");
+            connection.ConnectionString.Should().Contain("Port=5432");
+            connection.ConnectionString.Should().Contain("Username=testrolee93ccf859894dc60dcd53218492b37b4");
+            connection.ConnectionString.Should().Contain("Password=Qp!1mB1$Zk2T!$!D85_E");
+            connection.ConnectionString.Should().Contain("Database=steeltoe");
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", null);
+        }
+    }
+#endif
 
     [Fact]
     public void AddPosgreSqlConnection_AddsRelationalHealthContributor()

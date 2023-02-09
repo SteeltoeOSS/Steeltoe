@@ -2,14 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Steeltoe.Connector.EFCore.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
+#if NET6_0_OR_GREATER
+using Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding;
+#endif
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Xunit;
 
 namespace Steeltoe.Connector.PostgreSql.EFCore.Test;
@@ -229,4 +234,47 @@ public class PostgresDbContextOptionsExtensionsTest
         Assert.Contains("Password=Qp!1mB1$Zk2T!$!D85_E", connString);
         Assert.Contains("Database=steeltoe", connString);
     }
+
+#if NET6_0_OR_GREATER
+    [Fact]
+    public void AddDbContext_WithK8sBinding_AddsDbContext()
+    {
+        var rootDir = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
+        Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", rootDir);
+
+        try
+        {
+            IServiceCollection services = new ServiceCollection();
+
+            var appsettings = new Dictionary<string, string>
+            {
+                { "steeltoe:kubernetes:bindings:enable", "true" }
+            };
+
+            var builder = new ConfigurationBuilder();
+            builder.AddInMemoryCollection(appsettings);
+            builder.AddKubernetesServiceBindings(false);
+            var configurationRoot = builder.Build();
+
+            services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(configurationRoot));
+
+            using var built = services.BuildServiceProvider();
+            using var dbContext = built.GetService<GoodDbContext>();
+            dbContext.Should().NotBeNull();
+
+            using var connection = dbContext.Database.GetDbConnection();
+            connection.Should().BeOfType<NpgsqlConnection>().And.Subject.Should().NotBeNull();
+
+            connection.ConnectionString.Should().Contain("Host=10.194.59.205");
+            connection.ConnectionString.Should().Contain("Port=5432");
+            connection.ConnectionString.Should().Contain("Username=testrolee93ccf859894dc60dcd53218492b37b4");
+            connection.ConnectionString.Should().Contain("Password=Qp!1mB1$Zk2T!$!D85_E");
+            connection.ConnectionString.Should().Contain("Database=steeltoe");
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", null);
+        }
+    }
+#endif
 }

@@ -15,7 +15,7 @@ public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
     public const string Default_Server = "localhost";
     public const int Default_Port = 1433;
     private const string SQL_CLIENT_SECTION_PREFIX = "sqlserver:credentials";
-    private readonly bool _cloudFoundryConfigFound = false;
+    private readonly bool _bindingsFound;
 
     public SqlServerProviderConnectorOptions()
     {
@@ -44,7 +44,7 @@ public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
 
         section.Bind(this);
 
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+        _bindingsFound = config.HasCloudFoundryServiceConfigurations() || config.HasKubernetesServiceBindings();
     }
 
     public string ConnectionString { get; set; }
@@ -84,7 +84,7 @@ public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public override string ToString()
     {
-        if (!string.IsNullOrEmpty(ConnectionString) && !_cloudFoundryConfigFound)
+        if (!string.IsNullOrEmpty(ConnectionString) && !_bindingsFound)
         {
             return ConnectionString;
         }

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +15,7 @@ public class PostgresProviderConnectorOptions : AbstractServiceConnectorOptions
     public const string Default_Host = "localhost";
     public const int Default_Port = 5432;
     private const string POSTGRES_CLIENT_SECTION_PREFIX = "postgres:client";
-    private readonly bool _cloudFoundryConfigFound = false;
+    private readonly bool _bindingsFound = false;
 
     public PostgresProviderConnectorOptions()
     {
@@ -33,7 +32,7 @@ public class PostgresProviderConnectorOptions : AbstractServiceConnectorOptions
         var section = config.GetSection(POSTGRES_CLIENT_SECTION_PREFIX);
         section.Bind(this);
 
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+        _bindingsFound = config.HasCloudFoundryServiceConfigurations() || config.HasKubernetesServiceBindings();
     }
 
     public string ConnectionString { get; set; }
@@ -70,7 +69,7 @@ public class PostgresProviderConnectorOptions : AbstractServiceConnectorOptions
     {
         StringBuilder sb;
 
-        if (!string.IsNullOrEmpty(ConnectionString) && !_cloudFoundryConfigFound)
+        if (!string.IsNullOrEmpty(ConnectionString) && !_bindingsFound)
         {
             sb = new StringBuilder(ConnectionString);
         }

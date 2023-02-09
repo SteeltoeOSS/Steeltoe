@@ -18,7 +18,7 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
     public const string Default_Server = "localhost";
     public const int Default_Port = 3306;
     private const string MYSQL_CLIENT_SECTION_PREFIX = "mysql:client";
-    private readonly bool _cloudFoundryConfigFound = false;
+    private readonly bool _bindingsFound;
 
     public MySqlProviderConnectorOptions()
     {
@@ -35,7 +35,7 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
         var section = config.GetSection(MYSQL_CLIENT_SECTION_PREFIX);
         section.Bind(this);
 
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+        _bindingsFound = config.HasCloudFoundryServiceConfigurations() || config.HasKubernetesServiceBindings();
     }
 
     public string ConnectionString { get; set; }
@@ -86,7 +86,7 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public override string ToString()
     {
-        if (!string.IsNullOrEmpty(ConnectionString) && !_cloudFoundryConfigFound)
+        if (!string.IsNullOrEmpty(ConnectionString) && !_bindingsFound)
         {
             return ConnectionString;
         }
