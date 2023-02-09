@@ -7,7 +7,6 @@ using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using RabbitMQ.Client.Framing.Impl;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
@@ -254,7 +253,7 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
             services.AddPostgreSqlConnection(configurationRoot);
             using ServiceProvider built = services.BuildServiceProvider();
 
-            var connection = built.GetService<IDbConnection>();
+            using var connection = built.GetService<IDbConnection>();
             connection.Should().BeOfType<NpgsqlConnection>().And.Subject.Should().NotBeNull();
 
             connection.ConnectionString.Should().Contain("Host=10.194.59.205");

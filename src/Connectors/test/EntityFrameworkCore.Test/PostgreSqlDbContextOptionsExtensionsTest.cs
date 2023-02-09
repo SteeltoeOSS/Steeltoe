@@ -236,7 +236,7 @@ public class PostgreSqlDbContextOptionsExtensionsTest
         { 
             IServiceCollection services = new ServiceCollection();
 
-            var appsettings = new Dictionary<string, string>()
+            var appsettings = new Dictionary<string, string>
             {
                 { "steeltoe:kubernetes:bindings:enable", "true" }
             };
@@ -249,7 +249,7 @@ public class PostgreSqlDbContextOptionsExtensionsTest
             services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(configurationRoot));
 
             using ServiceProvider built = services.BuildServiceProvider();
-            var dbContext = built.GetService<GoodDbContext>();
+            using var dbContext = built.GetService<GoodDbContext>();
             dbContext.Should().NotBeNull();
 
             using DbConnection connection = dbContext.Database.GetDbConnection();
