@@ -36,7 +36,4 @@
     <ProjectReference Include="..\MetricCollectors\Steeltoe.Management.MetricCollectors.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Metrics\Prometheus\" />
-  </ItemGroup>
 </Project>
