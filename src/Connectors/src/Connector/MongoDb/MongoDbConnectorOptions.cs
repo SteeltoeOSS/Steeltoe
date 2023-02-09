@@ -44,7 +44,7 @@ public class MongoDbConnectorOptions : AbstractServiceConnectorOptions
         IConfigurationSection section = configuration.GetSection(MongodbClientSectionPrefix);
         section.Bind(this);
 
-        _bindingsFound = configuration.HasCloudFoundryServiceConfigurations() || configuration.HasCloudNativeBindings();
+        _bindingsFound = configuration.HasCloudFoundryServiceConfigurations() || configuration.HasKubernetesServiceBindings();
     }
 
     public override string ToString()

@@ -170,7 +170,7 @@ public static class ConfigurationExtensions
     /// <returns>
     /// true if k8s:bindings found in configuration, otherwise false.
     /// </returns>
-    public static bool HasCloudNativeBindings(this IConfiguration configuration)
+    public static bool HasKubernetesServiceBindings(this IConfiguration configuration)
     {
         return configuration.GetSection("k8s:bindings").GetChildren().Any();
     }

@@ -56,7 +56,7 @@ public class PostgreSqlProviderConnectorOptions : AbstractServiceConnectorOption
         IConfigurationSection section = configuration.GetSection(PostgreSqlClientSectionPrefix);
         section.Bind(this);
 
-        _bindingsFound = configuration.HasCloudFoundryServiceConfigurations() || configuration.HasCloudNativeBindings();
+        _bindingsFound = configuration.HasCloudFoundryServiceConfigurations() || configuration.HasKubernetesServiceBindings();
     }
 
     public override string ToString()

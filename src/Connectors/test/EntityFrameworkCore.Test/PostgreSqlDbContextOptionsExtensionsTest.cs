@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data.Common;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -230,33 +231,39 @@ public class PostgreSqlDbContextOptionsExtensionsTest
     {
         string rootDir = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
         Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", rootDir);
-        IServiceCollection services = new ServiceCollection();
 
-        var appsettings = new Dictionary<string, string>() { { "steeltoe:kubernetes:bindings:enable", "true" } };
+        try
+        { 
+            IServiceCollection services = new ServiceCollection();
 
-        var builder = new ConfigurationBuilder();
-        builder.AddInMemoryCollection(appsettings);
-        builder.AddKubernetesServiceBindings(false);
-        IConfigurationRoot configurationRoot = builder.Build();
+            var appsettings = new Dictionary<string, string>()
+            {
+                { "steeltoe:kubernetes:bindings:enable", "true" }
+            };
 
-        services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(configurationRoot));
+            var builder = new ConfigurationBuilder();
+            builder.AddInMemoryCollection(appsettings);
+            builder.AddKubernetesServiceBindings(false);
+            IConfigurationRoot configurationRoot = builder.Build();
 
-        ServiceProvider built = services.BuildServiceProvider();
-        var service = built.GetService<GoodDbContext>();
-        Assert.NotNull(service);
+            services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(configurationRoot));
 
-        DbConnection con = service.Database.GetDbConnection();
-        Assert.NotNull(con);
-        var postCon = con as NpgsqlConnection;
-        Assert.NotNull(postCon);
+            using ServiceProvider built = services.BuildServiceProvider();
+            var dbContext = built.GetService<GoodDbContext>();
+            dbContext.Should().NotBeNull();
 
-        string connString = con.ConnectionString;
-        Assert.NotNull(connString);
+            using DbConnection connection = dbContext.Database.GetDbConnection();
+            connection.Should().BeOfType<NpgsqlConnection>().And.Subject.Should().NotBeNull();
 
-        Assert.Contains("Host=10.194.59.205", connString, StringComparison.Ordinal);
-        Assert.Contains("Port=5432", connString, StringComparison.Ordinal);
-        Assert.Contains("Username=testrolee93ccf859894dc60dcd53218492b37b4", connString, StringComparison.Ordinal);
-        Assert.Contains("Password=Qp!1mB1$Zk2T!$!D85_E", connString, StringComparison.Ordinal);
-        Assert.Contains("Database=steeltoe", connString, StringComparison.Ordinal);
+            connection.ConnectionString.Should().Contain("Host=10.194.59.205");
+            connection.ConnectionString.Should().Contain("Port=5432");
+            connection.ConnectionString.Should().Contain("Username=testrolee93ccf859894dc60dcd53218492b37b4");
+            connection.ConnectionString.Should().Contain("Password=Qp!1mB1$Zk2T!$!D85_E");
+            connection.ConnectionString.Should().Contain("Database=steeltoe");
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", null);
+        }
     }
 }

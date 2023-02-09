@@ -75,7 +75,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         IConfigurationSection section = configuration.GetSection(RedisClientSectionPrefix);
         section.Bind(this);
 
-        _bindingsFound = configuration.HasCloudFoundryServiceConfigurations() || configuration.HasCloudNativeBindings();
+        _bindingsFound = configuration.HasCloudFoundryServiceConfigurations() || configuration.HasKubernetesServiceBindings();
     }
 
     public override string ToString()

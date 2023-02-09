@@ -76,7 +76,7 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
         IConfigurationSection section = configuration.GetSection(MysqlClientSectionPrefix);
         section.Bind(this);
 
-        _bindingsFound = configuration.HasCloudFoundryServiceConfigurations() || configuration.HasCloudNativeBindings();
+        _bindingsFound = configuration.HasCloudFoundryServiceConfigurations() || configuration.HasKubernetesServiceBindings();
     }
 
     public override string ToString()
