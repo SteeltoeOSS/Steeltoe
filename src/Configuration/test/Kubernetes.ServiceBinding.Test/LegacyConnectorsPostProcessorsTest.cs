@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
@@ -24,15 +25,16 @@ public sealed class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-addresses", configurationData["rabbitmq:client:uri"]);
-        Assert.Equal("test-host", configurationData["rabbitmq:client:server"]);
-        Assert.Equal("test-password", configurationData["rabbitmq:client:password"]);
-        Assert.Equal("test-port", configurationData["rabbitmq:client:port"]);
-        Assert.Equal("test-username", configurationData["rabbitmq:client:username"]);
-        Assert.Equal("test-virtual-host", configurationData["rabbitmq:client:virtualhost"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        configurationData["rabbitmq:client:uri"].Should().Be("test-addresses");
+        configurationData["rabbitmq:client:server"].Should().Be("test-host");
+        configurationData["rabbitmq:client:password"].Should().Be("test-password");
+        configurationData["rabbitmq:client:port"].Should().Be("test-port");
+        configurationData["rabbitmq:client:username"].Should().Be("test-username");
+        configurationData["rabbitmq:client:virtualhost"].Should().Be("test-virtual-host");
     }
 
     [Fact]
@@ -51,15 +53,16 @@ public sealed class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-database", configurationData["mysql:client:database"]);
-        Assert.Equal("test-host", configurationData["mysql:client:server"]);
-        Assert.Equal("test-password", configurationData["mysql:client:password"]);
-        Assert.Equal("test-port", configurationData["mysql:client:port"]);
-        Assert.Equal("test-username", configurationData["mysql:client:username"]);
-        Assert.Equal("test-jdbc-url", configurationData["mysql:client:jdbcUrl"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        configurationData["mysql:client:database"].Should().Be("test-database");
+        configurationData["mysql:client:server"].Should().Be("test-host");
+        configurationData["mysql:client:password"].Should().Be("test-password");
+        configurationData["mysql:client:port"].Should().Be("test-port");
+        configurationData["mysql:client:username"].Should().Be("test-username");
+        configurationData["mysql:client:jdbcUrl"].Should().Be("test-jdbc-url");
     }
 
     [Fact]
@@ -81,17 +84,18 @@ public sealed class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-database", configurationData["postgres:client:database"]);
-        Assert.Equal("test-host", configurationData["postgres:client:host"]);
-        Assert.Equal("test-password", configurationData["postgres:client:password"]);
-        Assert.Equal("test-port", configurationData["postgres:client:port"]);
-        Assert.Equal("test-username", configurationData["postgres:client:username"]);
-        Assert.Equal("test-jdbc-url", configurationData["postgres:client:jdbcUrl"]);
-        Assert.Equal("verify-full", configurationData["postgres:client:sslmode"]);
-        Assert.Equal("root.cert", configurationData["postgres:client:sslrootcert"]);
-        Assert.Equal("--cluster=routing-id&opt=val1", configurationData["postgres:client:options"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        configurationData["postgres:client:database"].Should().Be("test-database");
+        configurationData["postgres:client:host"].Should().Be("test-host");
+        configurationData["postgres:client:password"].Should().Be("test-password");
+        configurationData["postgres:client:port"].Should().Be("test-port");
+        configurationData["postgres:client:username"].Should().Be("test-username");
+        configurationData["postgres:client:jdbcUrl"].Should().Be("test-jdbc-url");
+        configurationData["postgres:client:sslmode"].Should().Be("verify-full");
+        configurationData["postgres:client:sslrootcert"].Should().Be("root.cert");
+        configurationData["postgres:client:options"].Should().Be("--cluster=routing-id&opt=val1");
     }
 }

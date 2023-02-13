@@ -15,7 +15,7 @@ public sealed class ServiceBindingConfigurationSourceTest
     {
         // Not optional, should throw
         var source = new ServiceBindingConfigurationSource();
-        Assert.Null(source.ServiceBindingRoot);
+        source.ServiceBindingRoot.Should().BeNull();
     }
 
     [Fact]
@@ -27,9 +27,9 @@ public sealed class ServiceBindingConfigurationSourceTest
         try
         {
             var source = new ServiceBindingConfigurationSource();
-            Assert.Contains(Path.Combine("resources", "k8s"), source.ServiceBindingRoot, StringComparison.OrdinalIgnoreCase);
-            Assert.NotNull(source.FileProvider);
-            Assert.NotNull(source.FileProvider.GetDirectoryContents("/"));
+            source.ServiceBindingRoot.Should().Contain(Path.Combine("resources", "k8s"));
+            source.FileProvider.Should().NotBeNull();
+            source.FileProvider.GetDirectoryContents("/").Should().NotBeNull();
         }
         finally
         {

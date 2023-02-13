@@ -109,7 +109,7 @@ public sealed class ServiceBindingConfigurationProviderTest
 
         builder.AddInMemoryCollection(new Dictionary<string, string>
         {
-            { "steeltoe:cloudfoundry:bindings:enable", "false" }
+            { "steeltoe:cloudfoundry:service-bindings:enable", "false" }
         });
 
         builder.Build();

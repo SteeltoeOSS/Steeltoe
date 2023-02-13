@@ -13,16 +13,12 @@ namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
 internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigurationProvider, IDisposable
 {
-    // The key for the provider of binding
     public const string ProviderKey = "provider";
-
-    // The key for the type of binding
     public const string TypeKey = "type";
-
-    public static readonly string KubernetesBindingsPrefix = "k8s" + ConfigurationPath.KeyDelimiter + "bindings";
+    public static readonly string InputKeyPrefix = ConfigurationPath.Combine("k8s", "bindings");
+    public static readonly string OutputKeyPrefix = ConfigurationPath.Combine("steeltoe", "service-bindings");
 
     private readonly IDisposable _changeTokenRegistration;
-
     private readonly ServiceBindingConfigurationSource _source;
 
     public ServiceBindingConfigurationProvider(ServiceBindingConfigurationSource source)
@@ -113,7 +109,7 @@ internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigu
 
     private void AddBindingType(ServiceBinding binding, Dictionary<string, string> data)
     {
-        string typeKey = KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + binding.Name + ConfigurationPath.KeyDelimiter + TypeKey;
+        string typeKey = ConfigurationPath.Combine(InputKeyPrefix, binding.Name, TypeKey);
 
         if (!_source.IgnoreKeyPredicate(typeKey))
         {
@@ -125,22 +121,22 @@ internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigu
     {
         if (!string.IsNullOrEmpty(binding.Provider))
         {
-            string provKey = KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + binding.Name + ConfigurationPath.KeyDelimiter + ProviderKey;
+            string providerKey = ConfigurationPath.Combine(InputKeyPrefix, binding.Name, ProviderKey);
 
-            if (!_source.IgnoreKeyPredicate(provKey))
+            if (!_source.IgnoreKeyPredicate(providerKey))
             {
-                data[provKey] = binding.Provider;
+                data[providerKey] = binding.Provider;
             }
         }
     }
 
     private void AddBindingSecret(ServiceBinding binding, KeyValuePair<string, string> secretEntry, Dictionary<string, string> data)
     {
-        string secretkey = KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + binding.Name + ConfigurationPath.KeyDelimiter + secretEntry.Key;
+        string secretKey = ConfigurationPath.Combine(InputKeyPrefix, binding.Name, secretEntry.Key);
 
-        if (!_source.IgnoreKeyPredicate(secretkey))
+        if (!_source.IgnoreKeyPredicate(secretKey))
         {
-            data[secretkey] = secretEntry.Value;
+            data[secretKey] = secretEntry.Value;
         }
     }
 

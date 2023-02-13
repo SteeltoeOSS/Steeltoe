@@ -15,68 +15,66 @@ public abstract class BasePostProcessorsTest
     protected const string TestBindingName3 = "test-name-3";
     protected const string TestMissingProvider = "test-missing-provider";
 
-    protected void GetConfigurationData(Dictionary<string, string> dictionary, string bindingName, string bindingType, params Tuple<string, string>[] secrets)
-    {
-        foreach (Tuple<string, string> kv in secrets)
-        {
-            dictionary.Add(MakeSecretKey(bindingName, kv.Item1), kv.Item2);
-        }
-
-        dictionary.Add(MakeTypeKey(bindingName), bindingType);
-    }
-
     protected Dictionary<string, string> GetConfigurationData(string bindingName, string bindingType, params Tuple<string, string>[] secrets)
     {
-        var dictionary = new Dictionary<string, string>();
-        GetConfigurationData(dictionary, bindingName, bindingType, secrets);
+        var dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        AddConfigurationData(dictionary, bindingName, bindingType, secrets);
         return dictionary;
-    }
-
-    protected void GetConfigurationData(Dictionary<string, string> dictionary, string bindingName, string bindingType, string bindingProvider,
-        params Tuple<string, string>[] secrets)
-    {
-        foreach (Tuple<string, string> kv in secrets)
-        {
-            dictionary.Add(MakeSecretKey(bindingName, kv.Item1), kv.Item2);
-        }
-
-        dictionary.Add(MakeTypeKey(bindingName), bindingType);
-        dictionary.Add(MakeProviderKey(bindingName), bindingProvider);
     }
 
     protected Dictionary<string, string> GetConfigurationData(string bindingName, string bindingType, string bindingProvider,
         params Tuple<string, string>[] secrets)
     {
-        var dictionary = new Dictionary<string, string>();
-        GetConfigurationData(dictionary, bindingName, bindingType, bindingProvider, secrets);
+        var dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        AddConfigurationData(dictionary, bindingName, bindingType, bindingProvider, secrets);
         return dictionary;
+    }
+
+    protected void AddConfigurationData(Dictionary<string, string> dictionary, string bindingName, string bindingType, string bindingProvider,
+        params Tuple<string, string>[] secrets)
+    {
+        AddConfigurationData(dictionary, bindingName, bindingType, secrets);
+
+        dictionary.Add(MakeProviderKey(bindingName), bindingProvider);
+    }
+
+    protected void AddConfigurationData(Dictionary<string, string> dictionary, string bindingName, string bindingType, params Tuple<string, string>[] secrets)
+    {
+        foreach (Tuple<string, string> kv in secrets)
+        {
+            dictionary.Add(MakeSecretKey(bindingName, kv.Item1), kv.Item2);
+        }
+
+        dictionary.Add(MakeTypeKey(bindingName), bindingType);
     }
 
     private string MakeTypeKey(string bindingName)
     {
-        return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter +
-            ServiceBindingConfigurationProvider.TypeKey;
+        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.InputKeyPrefix, bindingName, ServiceBindingConfigurationProvider.TypeKey);
     }
 
     private string MakeProviderKey(string bindingName)
     {
-        return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter +
-            ServiceBindingConfigurationProvider.ProviderKey;
+        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.InputKeyPrefix, bindingName, ServiceBindingConfigurationProvider.ProviderKey);
     }
 
     private string MakeSecretKey(string bindingName, string key)
     {
-        return ServiceBindingConfigurationProvider.KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + bindingName + ConfigurationPath.KeyDelimiter +
-            key;
+        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.InputKeyPrefix, bindingName, key);
+    }
+
+    internal string GetOutputKeyPrefix(string bindingName, string bindingType)
+    {
+        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.OutputKeyPrefix, bindingType, bindingName);
     }
 
     internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor, string bindingTypeKey, bool isEnabled)
     {
         var source = new TestPostProcessorConfigurationSource
         {
-            ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+            ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                { $"steeltoe:kubernetes:bindings:{bindingTypeKey}:enable", isEnabled.ToString(CultureInfo.InvariantCulture) }
+                { $"steeltoe:kubernetes:service-bindings:{bindingTypeKey}:enable", isEnabled.ToString(CultureInfo.InvariantCulture) }
             }).Build()
         };
 

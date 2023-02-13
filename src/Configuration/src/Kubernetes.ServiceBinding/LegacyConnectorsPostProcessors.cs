@@ -15,7 +15,7 @@ internal sealed class RabbitMQLegacyConnectorPostProcessor : IConfigurationPostP
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
             .ForEach(bindingNameKey =>
             {
                 // Spring -> spring.rabbitmq....
@@ -42,7 +42,7 @@ internal sealed class MySqlLegacyConnectorPostProcessor : IConfigurationPostProc
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
             .ForEach(bindingNameKey =>
             {
                 // Spring -> spring.datasource....
@@ -73,7 +73,7 @@ internal sealed class PostgreSqlLegacyConnectorPostProcessor : IConfigurationPos
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
             .ForEach(bindingNameKey =>
             {
                 // Spring -> spring.datasource....

@@ -13,7 +13,7 @@ internal static class PostProcessorConfigurationProviderExtensions
     {
         ArgumentGuard.NotNull(provider);
 
-        return GetBooleanValue(provider, "steeltoe:cloudfoundry:bindings:enable", true);
+        return GetBooleanValue(provider, "steeltoe:cloudfoundry:service-bindings:enable", true);
     }
 
     private static bool GetBooleanValue(PostProcessorConfigurationProvider provider, string key, bool defaultValue)

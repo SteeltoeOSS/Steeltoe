@@ -17,12 +17,12 @@ internal sealed class ArtemisPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.artemis.... and spring.rabbitmq.pool....
-                // Steeltoe -> steeltoe:artemis:binding-name:....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:artemis:binding-name:....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("host", "host");
@@ -55,12 +55,12 @@ internal sealed class CassandraPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.data.cassandra....
-                // Steeltoe -> steeltoe:cassandra:binding-name:....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:cassandra:binding-name:....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("cluster-name", "clusterName");
@@ -86,12 +86,12 @@ internal sealed class ConfigServerPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.cloud.config....
-                // Steeltoe -> steeltoe:config:binding-name...
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:config:binding-name...
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("uri", "uri");
@@ -113,12 +113,12 @@ internal sealed class CouchbasePostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.couchbase....
-                // Steeltoe -> steeltoe:couchbase:binding-name:....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:couchbase:binding-name:....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("bootstrap-hosts", "bootstrapHosts");
@@ -143,12 +143,12 @@ internal sealed class DB2PostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.datasource....
-                // Steeltoe -> steeltoe:db2:binding-name....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:db2:binding-name....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("username", "username");
@@ -176,12 +176,12 @@ internal sealed class ElasticSearchPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.data.elasticsearch.client... and spring.elasticsearch.jest.... and spring.elasticsearch.rest....
-                // Steeltoe -> steeltoe:elasticsearch:binding-name:....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:elasticsearch:binding-name:....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("endpoints", "endpoints");
@@ -206,12 +206,12 @@ internal sealed class EurekaPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> eureka.client....
-                // Steeltoe -> steeltoe:eureka:binding-name:....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:eureka:binding-name:....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.AddKeyValue("region", "default");
@@ -238,12 +238,12 @@ internal sealed class KafkaPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.kafka....
-                // Steeltoe -> steeltoe:kafka:binding-name:....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:kafka:binding-name:....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("bootstrap-servers", "bootstrapServers");
@@ -265,12 +265,12 @@ internal sealed class LdapPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.ldap....
-                // Steeltoe -> steeltoe:ldap:binding-name:....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:ldap:binding-name:....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("base", "base");
@@ -292,12 +292,12 @@ internal sealed class MongoDbPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.data.mongodb....
-                // Steeltoe -> steeltoe:mongodb....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:mongodb....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("authentication-database", "authenticationDatabase");
@@ -323,12 +323,12 @@ internal sealed class MySqlPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.datasource....
-                // Steeltoe -> steeltoe:mysql:binding-name....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:mysql:binding-name....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("username", "username");
@@ -356,12 +356,12 @@ internal sealed class Neo4JPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.data.neo4j....
-                // Steeltoe -> steeltoe:neo4j:binding-name....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:neo4j:binding-name....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("username", "username");
@@ -382,12 +382,12 @@ internal sealed class OraclePostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.datasource....
-                // Steeltoe -> steeltoe:oracle:binding-name....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:oracle:binding-name....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("username", "username");
@@ -415,12 +415,12 @@ internal sealed class PostgreSqlPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.datasource....
-                // Steeltoe -> steeltoe:postgresql:binding-name....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:postgresql:binding-name....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("username", "username");
@@ -454,12 +454,12 @@ internal sealed class RabbitMQPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.rabbitmq....
-                // Steeltoe -> steeltoe:rabbitmq:binding-name:....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:rabbitmq:binding-name:....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("addresses", "addresses");
@@ -483,12 +483,12 @@ internal sealed class RedisPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.redis....
-                // Steeltoe -> steeltoe:redis:binding-name:....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:redis:binding-name:....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("client-name", "clientName");
@@ -517,12 +517,12 @@ internal sealed class SapHanaPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.datasource....
-                // Steeltoe -> steeltoe:hana:binding-name:....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:hana:binding-name:....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("username", "username");
@@ -550,12 +550,14 @@ internal sealed class SpringSecurityOAuth2PostProcessor : IConfigurationPostProc
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.security.oauth2.client....
-                // Steeltoe -> steeltoe:oauth2:binding-name:....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", "oauth2", ConfigurationPath.GetSectionKey(bindingNameKey));
+                // Steeltoe -> steeltoe:service-bindings:oauth2:binding-name:....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, "oauth2",
+                    ConfigurationPath.GetSectionKey(bindingNameKey));
+
                 string bindingProvider = mapper.BindingProvider;
 
                 if (bindingProvider == null)
@@ -603,12 +605,12 @@ internal sealed class SqlServerPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.datasource....
-                // Steeltoe -> steeltoe:sqlserver:binding-name:....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:sqlserver:binding-name:....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("username", "username");
@@ -636,12 +638,12 @@ internal sealed class VaultPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> spring.cloud.vault....
-                // Steeltoe -> steeltoe:vault:binding-name:....
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:vault:binding-name:....
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("uri", "uri");
@@ -729,12 +731,12 @@ internal sealed class WavefrontPostProcessor : IConfigurationPostProcessor
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey)
-            .ForEach(bindingNameKey =>
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
             {
                 // Spring -> management.metrics.export.....
-                // Steeltoe -> steeltoe:wavefront:binding-name: ...
-                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, "steeltoe", BindingTypeKey,
+                // Steeltoe -> steeltoe:service-bindings:wavefront:binding-name: ...
+                var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingTypeKey,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
                 mapper.MapFromTo("api-token", "apiToken");

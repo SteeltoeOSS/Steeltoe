@@ -9,16 +9,14 @@ namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 internal sealed class ServiceBindingMapper : ConfigurationDictionaryMapper
 {
     public string BindingProvider { get; }
-
     public string BindingName { get; }
-
     public string BindingType { get; }
 
     public ServiceBindingMapper(IDictionary<string, string> configurationData, string bindingKey, params string[] toPrefix)
         : base(configurationData, bindingKey, toPrefix)
     {
-        BindingProvider = GetBindingProvider(BindingKey + "provider");
-        BindingType = GetBindingType(BindingKey + "type");
+        BindingProvider = GetBindingProvider($"{BindingKey}provider");
+        BindingType = GetBindingType($"{BindingKey}type");
         BindingName = ConfigurationPath.GetSectionKey(bindingKey);
     }
 

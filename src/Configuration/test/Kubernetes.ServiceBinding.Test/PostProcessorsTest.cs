@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
@@ -23,10 +24,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ArtemisPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ArtemisPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, ArtemisPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{ArtemisPostProcessor.BindingTypeKey}:{TestBindingName}:host", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ArtemisPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:host");
     }
 
     [Fact]
@@ -44,14 +47,16 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ArtemisPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ArtemisPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, ArtemisPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("EMBEDDED", configurationData[$"steeltoe:{ArtemisPostProcessor.BindingTypeKey}:{TestBindingName}:mode"]);
-        Assert.Equal("test-host", configurationData[$"steeltoe:{ArtemisPostProcessor.BindingTypeKey}:{TestBindingName}:host"]);
-        Assert.Equal("test-port", configurationData[$"steeltoe:{ArtemisPostProcessor.BindingTypeKey}:{TestBindingName}:port"]);
-        Assert.Equal("test-user", configurationData[$"steeltoe:{ArtemisPostProcessor.BindingTypeKey}:{TestBindingName}:user"]);
-        Assert.Equal("test-password", configurationData[$"steeltoe:{ArtemisPostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ArtemisPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:mode"].Should().Be("EMBEDDED");
+        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:user"].Should().Be("test-user");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
     }
 
     [Fact]
@@ -72,10 +77,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, CassandraPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CassandraPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, CassandraPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{CassandraPostProcessor.BindingTypeKey}:{TestBindingName}:ssl", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CassandraPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:ssl");
     }
 
     [Fact]
@@ -96,17 +103,19 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, CassandraPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CassandraPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, CassandraPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-cluster-name", configurationData[$"steeltoe:{CassandraPostProcessor.BindingTypeKey}:{TestBindingName}:clusterName"]);
-        Assert.Equal("test-compression", configurationData[$"steeltoe:{CassandraPostProcessor.BindingTypeKey}:{TestBindingName}:compression"]);
-        Assert.Equal("test-contact-points", configurationData[$"steeltoe:{CassandraPostProcessor.BindingTypeKey}:{TestBindingName}:contactPoints"]);
-        Assert.Equal("test-keyspace-name", configurationData[$"steeltoe:{CassandraPostProcessor.BindingTypeKey}:{TestBindingName}:keyspaceName"]);
-        Assert.Equal("test-password", configurationData[$"steeltoe:{CassandraPostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
-        Assert.Equal("test-port", configurationData[$"steeltoe:{CassandraPostProcessor.BindingTypeKey}:{TestBindingName}:port"]);
-        Assert.Equal("test-ssl", configurationData[$"steeltoe:{CassandraPostProcessor.BindingTypeKey}:{TestBindingName}:ssl"]);
-        Assert.Equal("test-username", configurationData[$"steeltoe:{CassandraPostProcessor.BindingTypeKey}:{TestBindingName}:username"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CassandraPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:clusterName"].Should().Be("test-cluster-name");
+        configurationData[$"{keyPrefix}:compression"].Should().Be("test-compression");
+        configurationData[$"{keyPrefix}:contactPoints"].Should().Be("test-contact-points");
+        configurationData[$"{keyPrefix}:keyspaceName"].Should().Be("test-keyspace-name");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:ssl"].Should().Be("test-ssl");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
     }
 
     [Fact]
@@ -123,10 +132,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ConfigServerPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ConfigServerPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, ConfigServerPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{ConfigServerPostProcessor.BindingTypeKey}:{TestBindingName}:uri", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ConfigServerPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:uri");
     }
 
     [Fact]
@@ -143,15 +154,15 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ConfigServerPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ConfigServerPostProcessor.BindingTypeKey, true);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, ConfigServerPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{ConfigServerPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("test-client-id", configurationData[$"steeltoe:{ConfigServerPostProcessor.BindingTypeKey}:{TestBindingName}:oauth2:clientId"]);
-        Assert.Equal("test-client-secret", configurationData[$"steeltoe:{ConfigServerPostProcessor.BindingTypeKey}:{TestBindingName}:oauth2:clientSecret"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        Assert.Equal("test-access-token-uri",
-            configurationData[$"steeltoe:{ConfigServerPostProcessor.BindingTypeKey}:{TestBindingName}:oauth2:accessTokenUri"]);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ConfigServerPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:oauth2:clientId"].Should().Be("test-client-id");
+        configurationData[$"{keyPrefix}:oauth2:clientSecret"].Should().Be("test-client-secret");
+        configurationData[$"{keyPrefix}:oauth2:accessTokenUri"].Should().Be("test-access-token-uri");
     }
 
     [Fact]
@@ -171,10 +182,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, CouchbasePostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CouchbasePostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, CouchbasePostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:ssl", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CouchbasePostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:bootstrapHosts");
     }
 
     [Fact]
@@ -194,21 +207,18 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, CouchbasePostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CouchbasePostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, CouchbasePostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-bootstrap-hosts", configurationData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:bootstrapHosts"]);
-        Assert.Equal("test-bucket-name", configurationData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:bucketName"]);
-        Assert.Equal("test-bucket-password", configurationData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:bucketPassword"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        Assert.Equal("test-env-bootstrap-http-direct-port",
-            configurationData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:envBootstrapHttpDirectPort"]);
-
-        Assert.Equal("test-env-bootstrap-http-ssl-port",
-            configurationData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:envBootstrapHttpSslPort"]);
-
-        Assert.Equal("test-password", configurationData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
-        Assert.Equal("test-username", configurationData[$"steeltoe:{CouchbasePostProcessor.BindingTypeKey}:{TestBindingName}:username"]);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CouchbasePostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:bootstrapHosts"].Should().Be("test-bootstrap-hosts");
+        configurationData[$"{keyPrefix}:bucketName"].Should().Be("test-bucket-name");
+        configurationData[$"{keyPrefix}:bucketPassword"].Should().Be("test-bucket-password");
+        configurationData[$"{keyPrefix}:envBootstrapHttpDirectPort"].Should().Be("test-env-bootstrap-http-direct-port");
+        configurationData[$"{keyPrefix}:envBootstrapHttpSslPort"].Should().Be("test-env-bootstrap-http-ssl-port");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
     }
 
     [Fact]
@@ -227,10 +237,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, DB2PostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, DB2PostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, DB2PostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{DB2PostProcessor.BindingTypeKey}:{TestBindingName}:database", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, DB2PostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:database");
     }
 
     [Fact]
@@ -249,15 +261,17 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, DB2PostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, DB2PostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, DB2PostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-database", configurationData[$"steeltoe:{DB2PostProcessor.BindingTypeKey}:{TestBindingName}:database"]);
-        Assert.Equal("test-host", configurationData[$"steeltoe:{DB2PostProcessor.BindingTypeKey}:{TestBindingName}:host"]);
-        Assert.Equal("test-password", configurationData[$"steeltoe:{DB2PostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
-        Assert.Equal("test-port", configurationData[$"steeltoe:{DB2PostProcessor.BindingTypeKey}:{TestBindingName}:port"]);
-        Assert.Equal("test-username", configurationData[$"steeltoe:{DB2PostProcessor.BindingTypeKey}:{TestBindingName}:username"]);
-        Assert.Equal("test-jdbc-url", configurationData[$"steeltoe:{DB2PostProcessor.BindingTypeKey}:{TestBindingName}:jdbcUrl"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, DB2PostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:jdbcUrl"].Should().Be("test-jdbc-url");
     }
 
     [Fact]
@@ -277,10 +291,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ElasticSearchPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ElasticSearchPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, ElasticSearchPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{ElasticSearchPostProcessor.BindingTypeKey}:{TestBindingName}:endpoints", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ElasticSearchPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:endpoints");
     }
 
     [Fact]
@@ -300,16 +316,18 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ElasticSearchPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ElasticSearchPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, ElasticSearchPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-endpoints", configurationData[$"steeltoe:{ElasticSearchPostProcessor.BindingTypeKey}:{TestBindingName}:endpoints"]);
-        Assert.Equal("test-password", configurationData[$"steeltoe:{ElasticSearchPostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
-        Assert.Equal("test-use-ssl", configurationData[$"steeltoe:{ElasticSearchPostProcessor.BindingTypeKey}:{TestBindingName}:useSsl"]);
-        Assert.Equal("test-username", configurationData[$"steeltoe:{ElasticSearchPostProcessor.BindingTypeKey}:{TestBindingName}:username"]);
-        Assert.Equal("test-proxy-host", configurationData[$"steeltoe:{ElasticSearchPostProcessor.BindingTypeKey}:{TestBindingName}:proxyHost"]);
-        Assert.Equal("test-proxy-port", configurationData[$"steeltoe:{ElasticSearchPostProcessor.BindingTypeKey}:{TestBindingName}:proxyPort"]);
-        Assert.Equal("test-uris", configurationData[$"steeltoe:{ElasticSearchPostProcessor.BindingTypeKey}:{TestBindingName}:uris"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ElasticSearchPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:endpoints"].Should().Be("test-endpoints");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:useSsl"].Should().Be("test-use-ssl");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:proxyHost"].Should().Be("test-proxy-host");
+        configurationData[$"{keyPrefix}:proxyPort"].Should().Be("test-proxy-port");
+        configurationData[$"{keyPrefix}:uris"].Should().Be("test-uris");
     }
 
     [Fact]
@@ -326,10 +344,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, EurekaPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, EurekaPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, EurekaPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{EurekaPostProcessor.BindingTypeKey}:{TestBindingName}:uri", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, EurekaPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:uri");
     }
 
     [Fact]
@@ -346,14 +366,16 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, EurekaPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, EurekaPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, EurekaPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{EurekaPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("default", configurationData[$"steeltoe:{EurekaPostProcessor.BindingTypeKey}:{TestBindingName}:region"]);
-        Assert.Equal("test-client-id", configurationData[$"steeltoe:{EurekaPostProcessor.BindingTypeKey}:{TestBindingName}:oauth2:clientId"]);
-        Assert.Equal("test-client-secret", configurationData[$"steeltoe:{EurekaPostProcessor.BindingTypeKey}:{TestBindingName}:oauth2:clientSecret"]);
-        Assert.Equal("test-access-token-uri", configurationData[$"steeltoe:{EurekaPostProcessor.BindingTypeKey}:{TestBindingName}:oauth2:accessTokenUri"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, EurekaPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:region"].Should().Be("default");
+        configurationData[$"{keyPrefix}:oauth2:clientId"].Should().Be("test-client-id");
+        configurationData[$"{keyPrefix}:oauth2:clientSecret"].Should().Be("test-client-secret");
+        configurationData[$"{keyPrefix}:oauth2:accessTokenUri"].Should().Be("test-access-token-uri");
     }
 
     [Fact]
@@ -370,10 +392,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, KafkaPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, KafkaPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, KafkaPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{KafkaPostProcessor.BindingTypeKey}:{TestBindingName}:bootstrapServers", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, KafkaPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:bootstrapServers");
     }
 
     [Fact]
@@ -390,19 +414,15 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, KafkaPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, KafkaPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, KafkaPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-bootstrap-servers", configurationData[$"steeltoe:{KafkaPostProcessor.BindingTypeKey}:{TestBindingName}:bootstrapServers"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        Assert.Equal("test-consumer-bootstrap-servers",
-            configurationData[$"steeltoe:{KafkaPostProcessor.BindingTypeKey}:{TestBindingName}:consumerBootstrapServers"]);
-
-        Assert.Equal("test-producer-bootstrap-servers",
-            configurationData[$"steeltoe:{KafkaPostProcessor.BindingTypeKey}:{TestBindingName}:producerBootstrapServers"]);
-
-        Assert.Equal("test-streams-bootstrap-servers",
-            configurationData[$"steeltoe:{KafkaPostProcessor.BindingTypeKey}:{TestBindingName}:streamsBootstrapServers"]);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, KafkaPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:bootstrapServers"].Should().Be("test-bootstrap-servers");
+        configurationData[$"{keyPrefix}:consumerBootstrapServers"].Should().Be("test-consumer-bootstrap-servers");
+        configurationData[$"{keyPrefix}:producerBootstrapServers"].Should().Be("test-producer-bootstrap-servers");
+        configurationData[$"{keyPrefix}:streamsBootstrapServers"].Should().Be("test-streams-bootstrap-servers");
     }
 
     [Fact]
@@ -419,10 +439,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, LdapPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, LdapPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, LdapPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{LdapPostProcessor.BindingTypeKey}:{TestBindingName}:urls", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, LdapPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:urls");
     }
 
     [Fact]
@@ -439,13 +461,15 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, LdapPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, LdapPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, LdapPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-urls", configurationData[$"steeltoe:{LdapPostProcessor.BindingTypeKey}:{TestBindingName}:urls"]);
-        Assert.Equal("test-password", configurationData[$"steeltoe:{LdapPostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
-        Assert.Equal("test-username", configurationData[$"steeltoe:{LdapPostProcessor.BindingTypeKey}:{TestBindingName}:username"]);
-        Assert.Equal("test-base", configurationData[$"steeltoe:{LdapPostProcessor.BindingTypeKey}:{TestBindingName}:base"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, LdapPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:urls"].Should().Be("test-urls");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:base"].Should().Be("test-base");
     }
 
     [Fact]
@@ -466,10 +490,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MongoDbPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{MongoDbPostProcessor.BindingTypeKey}:{TestBindingName}:authenticationDatabase", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:authenticationDatabase");
     }
 
     [Fact]
@@ -490,20 +516,20 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MongoDbPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingTypeKey, true), configurationData);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        Assert.Equal("test-authentication-database",
-            configurationData[$"steeltoe:{MongoDbPostProcessor.BindingTypeKey}:{TestBindingName}:authenticationDatabase"]);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbPostProcessor.BindingTypeKey);
 
-        Assert.Equal("test-database", configurationData[$"steeltoe:{MongoDbPostProcessor.BindingTypeKey}:{TestBindingName}:database"]);
-        Assert.Equal("test-grid-fs-database", configurationData[$"steeltoe:{MongoDbPostProcessor.BindingTypeKey}:{TestBindingName}:gridfsDatabase"]);
-        Assert.Equal("test-host", configurationData[$"steeltoe:{MongoDbPostProcessor.BindingTypeKey}:{TestBindingName}:host"]);
-        Assert.Equal("test-password", configurationData[$"steeltoe:{MongoDbPostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
-        Assert.Equal("test-port", configurationData[$"steeltoe:{MongoDbPostProcessor.BindingTypeKey}:{TestBindingName}:port"]);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{MongoDbPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("test-username", configurationData[$"steeltoe:{MongoDbPostProcessor.BindingTypeKey}:{TestBindingName}:username"]);
+        configurationData[$"{keyPrefix}:authenticationDatabase"].Should().Be("test-authentication-database");
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:gridfsDatabase"].Should().Be("test-grid-fs-database");
+        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
     }
 
     [Fact]
@@ -522,10 +548,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{MySqlPostProcessor.BindingTypeKey}:{TestBindingName}:database", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:database");
     }
 
     [Fact]
@@ -544,15 +572,17 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-database", configurationData[$"steeltoe:{MySqlPostProcessor.BindingTypeKey}:{TestBindingName}:database"]);
-        Assert.Equal("test-host", configurationData[$"steeltoe:{MySqlPostProcessor.BindingTypeKey}:{TestBindingName}:host"]);
-        Assert.Equal("test-password", configurationData[$"steeltoe:{MySqlPostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
-        Assert.Equal("test-port", configurationData[$"steeltoe:{MySqlPostProcessor.BindingTypeKey}:{TestBindingName}:port"]);
-        Assert.Equal("test-username", configurationData[$"steeltoe:{MySqlPostProcessor.BindingTypeKey}:{TestBindingName}:username"]);
-        Assert.Equal("test-jdbc-url", configurationData[$"steeltoe:{MySqlPostProcessor.BindingTypeKey}:{TestBindingName}:jdbcUrl"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:jdbcUrl"].Should().Be("test-jdbc-url");
     }
 
     [Fact]
@@ -568,10 +598,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, Neo4JPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, Neo4JPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, Neo4JPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{Neo4JPostProcessor.BindingTypeKey}:{TestBindingName}:password", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, Neo4JPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:password");
     }
 
     [Fact]
@@ -587,12 +619,14 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, Neo4JPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, Neo4JPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, Neo4JPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-password", configurationData[$"steeltoe:{Neo4JPostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{Neo4JPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("test-username", configurationData[$"steeltoe:{Neo4JPostProcessor.BindingTypeKey}:{TestBindingName}:username"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, Neo4JPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
     }
 
     [Fact]
@@ -611,10 +645,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, OraclePostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, OraclePostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, OraclePostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{OraclePostProcessor.BindingTypeKey}:{TestBindingName}:database", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, OraclePostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:database");
     }
 
     [Fact]
@@ -633,15 +669,17 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, OraclePostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, OraclePostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, OraclePostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-database", configurationData[$"steeltoe:{OraclePostProcessor.BindingTypeKey}:{TestBindingName}:database"]);
-        Assert.Equal("test-host", configurationData[$"steeltoe:{OraclePostProcessor.BindingTypeKey}:{TestBindingName}:host"]);
-        Assert.Equal("test-password", configurationData[$"steeltoe:{OraclePostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
-        Assert.Equal("test-port", configurationData[$"steeltoe:{OraclePostProcessor.BindingTypeKey}:{TestBindingName}:port"]);
-        Assert.Equal("test-username", configurationData[$"steeltoe:{OraclePostProcessor.BindingTypeKey}:{TestBindingName}:username"]);
-        Assert.Equal("test-jdbc-url", configurationData[$"steeltoe:{OraclePostProcessor.BindingTypeKey}:{TestBindingName}:jdbcUrl"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, OraclePostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:jdbcUrl"].Should().Be("test-jdbc-url");
     }
 
     [Fact]
@@ -663,10 +701,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{PostgreSqlPostProcessor.BindingTypeKey}:{TestBindingName}:database", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:database");
     }
 
     [Fact]
@@ -688,18 +728,20 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-database", configurationData[$"steeltoe:{PostgreSqlPostProcessor.BindingTypeKey}:{TestBindingName}:database"]);
-        Assert.Equal("test-host", configurationData[$"steeltoe:{PostgreSqlPostProcessor.BindingTypeKey}:{TestBindingName}:host"]);
-        Assert.Equal("test-password", configurationData[$"steeltoe:{PostgreSqlPostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
-        Assert.Equal("test-port", configurationData[$"steeltoe:{PostgreSqlPostProcessor.BindingTypeKey}:{TestBindingName}:port"]);
-        Assert.Equal("test-username", configurationData[$"steeltoe:{PostgreSqlPostProcessor.BindingTypeKey}:{TestBindingName}:username"]);
-        Assert.Equal("test-jdbc-url", configurationData[$"steeltoe:{PostgreSqlPostProcessor.BindingTypeKey}:{TestBindingName}:jdbcUrl"]);
-        Assert.Equal("verify-full", configurationData[$"steeltoe:{PostgreSqlPostProcessor.BindingTypeKey}:{TestBindingName}:sslmode"]);
-        Assert.Equal("root.cert", configurationData[$"steeltoe:{PostgreSqlPostProcessor.BindingTypeKey}:{TestBindingName}:sslrootcert"]);
-        Assert.Equal("--cluster=routing-id&opt=val1", configurationData[$"steeltoe:{PostgreSqlPostProcessor.BindingTypeKey}:{TestBindingName}:options"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:jdbcUrl"].Should().Be("test-jdbc-url");
+        configurationData[$"{keyPrefix}:sslmode"].Should().Be("verify-full");
+        configurationData[$"{keyPrefix}:sslrootcert"].Should().Be("root.cert");
+        configurationData[$"{keyPrefix}:options"].Should().Be("--cluster=routing-id&opt=val1");
     }
 
     [Fact]
@@ -718,10 +760,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{RabbitMQPostProcessor.BindingTypeKey}:{TestBindingName}:addresses", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:addresses");
     }
 
     [Fact]
@@ -740,15 +784,17 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-addresses", configurationData[$"steeltoe:{RabbitMQPostProcessor.BindingTypeKey}:{TestBindingName}:addresses"]);
-        Assert.Equal("test-host", configurationData[$"steeltoe:{RabbitMQPostProcessor.BindingTypeKey}:{TestBindingName}:host"]);
-        Assert.Equal("test-password", configurationData[$"steeltoe:{RabbitMQPostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
-        Assert.Equal("test-port", configurationData[$"steeltoe:{RabbitMQPostProcessor.BindingTypeKey}:{TestBindingName}:port"]);
-        Assert.Equal("test-username", configurationData[$"steeltoe:{RabbitMQPostProcessor.BindingTypeKey}:{TestBindingName}:username"]);
-        Assert.Equal("test-virtual-host", configurationData[$"steeltoe:{RabbitMQPostProcessor.BindingTypeKey}:{TestBindingName}:virtualHost"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:addresses"].Should().Be("test-addresses");
+        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:virtualHost"].Should().Be("test-virtual-host");
     }
 
     [Fact]
@@ -772,10 +818,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RedisPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RedisPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, RedisPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{RedisPostProcessor.BindingTypeKey}:{TestBindingName}:clientname", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:clientName");
     }
 
     [Fact]
@@ -799,20 +847,22 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RedisPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RedisPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, RedisPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-client-name", configurationData[$"steeltoe:{RedisPostProcessor.BindingTypeKey}:{TestBindingName}:clientName"]);
-        Assert.Equal("test-cluster-max-redirects", configurationData[$"steeltoe:{RedisPostProcessor.BindingTypeKey}:{TestBindingName}:clusterMaxRedirects"]);
-        Assert.Equal("test-cluster-nodes", configurationData[$"steeltoe:{RedisPostProcessor.BindingTypeKey}:{TestBindingName}:clusterNodes"]);
-        Assert.Equal("test-database", configurationData[$"steeltoe:{RedisPostProcessor.BindingTypeKey}:{TestBindingName}:database"]);
-        Assert.Equal("test-host", configurationData[$"steeltoe:{RedisPostProcessor.BindingTypeKey}:{TestBindingName}:host"]);
-        Assert.Equal("test-password", configurationData[$"steeltoe:{RedisPostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
-        Assert.Equal("test-port", configurationData[$"steeltoe:{RedisPostProcessor.BindingTypeKey}:{TestBindingName}:port"]);
-        Assert.Equal("test-sentinel-master", configurationData[$"steeltoe:{RedisPostProcessor.BindingTypeKey}:{TestBindingName}:sentinelMaster"]);
-        Assert.Equal("test-sentinel-nodes", configurationData[$"steeltoe:{RedisPostProcessor.BindingTypeKey}:{TestBindingName}:sentinelNodes"]);
-        Assert.Equal("test-ssl", configurationData[$"steeltoe:{RedisPostProcessor.BindingTypeKey}:{TestBindingName}:ssl"]);
-        Assert.Equal("test-url", configurationData[$"steeltoe:{RedisPostProcessor.BindingTypeKey}:{TestBindingName}:url"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:clientName"].Should().Be("test-client-name");
+        configurationData[$"{keyPrefix}:clusterMaxRedirects"].Should().Be("test-cluster-max-redirects");
+        configurationData[$"{keyPrefix}:clusterNodes"].Should().Be("test-cluster-nodes");
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:sentinelMaster"].Should().Be("test-sentinel-master");
+        configurationData[$"{keyPrefix}:sentinelNodes"].Should().Be("test-sentinel-nodes");
+        configurationData[$"{keyPrefix}:ssl"].Should().Be("test-ssl");
+        configurationData[$"{keyPrefix}:url"].Should().Be("test-url");
     }
 
     [Fact]
@@ -831,10 +881,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SapHanaPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SapHanaPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SapHanaPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{SapHanaPostProcessor.BindingTypeKey}:{TestBindingName}:database", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SapHanaPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:database");
     }
 
     [Fact]
@@ -853,15 +905,17 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SapHanaPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SapHanaPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SapHanaPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-database", configurationData[$"steeltoe:{SapHanaPostProcessor.BindingTypeKey}:{TestBindingName}:database"]);
-        Assert.Equal("test-host", configurationData[$"steeltoe:{SapHanaPostProcessor.BindingTypeKey}:{TestBindingName}:host"]);
-        Assert.Equal("test-password", configurationData[$"steeltoe:{SapHanaPostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
-        Assert.Equal("test-port", configurationData[$"steeltoe:{SapHanaPostProcessor.BindingTypeKey}:{TestBindingName}:port"]);
-        Assert.Equal("test-username", configurationData[$"steeltoe:{SapHanaPostProcessor.BindingTypeKey}:{TestBindingName}:username"]);
-        Assert.Equal("test-jdbc-url", configurationData[$"steeltoe:{SapHanaPostProcessor.BindingTypeKey}:{TestBindingName}:jdbcUrl"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SapHanaPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:jdbcUrl"].Should().Be("test-jdbc-url");
     }
 
     [Fact]
@@ -885,7 +939,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("issuer-uri", "okta-issuer-uri")
         };
 
-        GetConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", secrets2);
+        AddConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", secrets2);
 
         var secrets3 = new[]
         {
@@ -904,21 +958,20 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("user-name-attribute", "my-provider-user-name-attribute")
         };
 
-        GetConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider", secrets3);
+        AddConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider", secrets3);
 
         var secrets4 = new[]
         {
             Tuple.Create("client-id", "my-provider-client-id")
         };
 
-        GetConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets4);
+        AddConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets4);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, false),
-            configurationData);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        Assert.False(configurationData.TryGetValue($"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName1}:registration:clientId",
-            out _));
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:registration:clientId");
     }
 
     [Fact]
@@ -942,7 +995,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("issuer-uri", "okta-issuer-uri")
         };
 
-        GetConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", secrets2);
+        AddConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", secrets2);
 
         var secrets3 = new[]
         {
@@ -961,26 +1014,22 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("user-name-attribute", "my-provider-user-name-attribute")
         };
 
-        GetConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider", secrets3);
+        AddConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider", secrets3);
 
         var secrets4 = new[]
         {
             Tuple.Create("client-id", "my-provider-client-id")
         };
 
-        GetConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets4);
+        AddConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets4);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true),
-            configurationData);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        Assert.Equal("github-client-id",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName1}:registration:clientId"]);
-
-        Assert.Equal("github-client-secret",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName1}:registration:clientSecret"]);
-
-        Assert.Equal("github", configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName1}:registration:provider"]);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:registration:clientId"].Should().Be("github-client-id");
+        configurationData[$"{keyPrefix}:registration:clientSecret"].Should().Be("github-client-secret");
+        configurationData[$"{keyPrefix}:registration:provider"].Should().Be("github");
     }
 
     [Fact]
@@ -1004,7 +1053,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("issuer-uri", "okta-issuer-uri")
         };
 
-        GetConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", secrets2);
+        AddConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", secrets2);
 
         var secrets3 = new[]
         {
@@ -1023,29 +1072,23 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("user-name-attribute", "my-provider-user-name-attribute")
         };
 
-        GetConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider", secrets3);
+        AddConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider", secrets3);
 
         var secrets4 = new[]
         {
             Tuple.Create("client-id", "my-provider-client-id")
         };
 
-        GetConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets4);
+        AddConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets4);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true),
-            configurationData);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        Assert.Equal("okta-client-id",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName2}:registration:clientId"]);
-
-        Assert.Equal("okta-client-secret",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName2}:registration:clientSecret"]);
-
-        Assert.Equal("okta", configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName2}:registration:provider"]);
-
-        Assert.Equal("okta-issuer-uri",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName2}:provider:issuerUri"]);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:registration:clientId"].Should().Be("okta-client-id");
+        configurationData[$"{keyPrefix}:registration:clientSecret"].Should().Be("okta-client-secret");
+        configurationData[$"{keyPrefix}:registration:provider"].Should().Be("okta");
+        configurationData[$"{keyPrefix}:provider:issuerUri"].Should().Be("okta-issuer-uri");
     }
 
     [Fact]
@@ -1069,7 +1112,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("issuer-uri", "okta-issuer-uri")
         };
 
-        GetConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", secrets2);
+        AddConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", secrets2);
 
         var secrets3 = new[]
         {
@@ -1088,59 +1131,33 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("user-name-attribute", "my-provider-user-name-attribute")
         };
 
-        GetConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider", secrets3);
+        AddConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider", secrets3);
 
         var secrets4 = new[]
         {
             Tuple.Create("client-id", "my-provider-client-id")
         };
 
-        GetConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets4);
+        AddConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets4);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true),
-            configurationData);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        Assert.Equal("my-provider", configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:provider"]);
-
-        Assert.Equal("my-provider-client-id",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:clientId"]);
-
-        Assert.Equal("my-provider-client-secret",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:clientSecret"]);
-
-        Assert.Equal("my-provider-client-authentication-method",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:clientAuthenticationMethod"]);
-
-        Assert.Equal("my-provider-authorization-grant-type",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:authorizationGrantType"]);
-
-        Assert.Equal("my-provider-redirect-uri",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:redirectUri"]);
-
-        Assert.Equal("my-provider-scope1,my-provider-scope2",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:scope"]);
-
-        Assert.Equal("my-provider-client-name",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:registration:clientName"]);
-
-        Assert.Equal("my-provider-authorization-uri",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:authorizationUri"]);
-
-        Assert.Equal("my-provider-token-uri",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:tokenUri"]);
-
-        Assert.Equal("my-provider-user-info-uri",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:userInfoUri"]);
-
-        Assert.Equal("my-provider-user-info-authentication-method",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:userInfoAuthenticationMethod"]);
-
-        Assert.Equal("my-provider-jwk-set-uri",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:jwkSetUri"]);
-
-        Assert.Equal("my-provider-user-name-attribute",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName3}:provider:userNameAttribute"]);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:registration:provider"].Should().Be("my-provider");
+        configurationData[$"{keyPrefix}:registration:clientId"].Should().Be("my-provider-client-id");
+        configurationData[$"{keyPrefix}:registration:clientSecret"].Should().Be("my-provider-client-secret");
+        configurationData[$"{keyPrefix}:registration:clientAuthenticationMethod"].Should().Be("my-provider-client-authentication-method");
+        configurationData[$"{keyPrefix}:registration:authorizationGrantType"].Should().Be("my-provider-authorization-grant-type");
+        configurationData[$"{keyPrefix}:registration:redirectUri"].Should().Be("my-provider-redirect-uri");
+        configurationData[$"{keyPrefix}:registration:scope"].Should().Be("my-provider-scope1,my-provider-scope2");
+        configurationData[$"{keyPrefix}:registration:clientName"].Should().Be("my-provider-client-name");
+        configurationData[$"{keyPrefix}:provider:authorizationUri"].Should().Be("my-provider-authorization-uri");
+        configurationData[$"{keyPrefix}:provider:tokenUri"].Should().Be("my-provider-token-uri");
+        configurationData[$"{keyPrefix}:provider:userInfoUri"].Should().Be("my-provider-user-info-uri");
+        configurationData[$"{keyPrefix}:provider:userInfoAuthenticationMethod"].Should().Be("my-provider-user-info-authentication-method");
+        configurationData[$"{keyPrefix}:provider:jwkSetUri"].Should().Be("my-provider-jwk-set-uri");
+        configurationData[$"{keyPrefix}:provider:userNameAttribute"].Should().Be("my-provider-user-name-attribute");
     }
 
     [Fact]
@@ -1155,13 +1172,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true),
-            configurationData);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        Assert.Equal("authorization_code,client_credentials",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName}:registration:authorizationGrantTypes"]);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:registration:authorizationGrantTypes"].Should().Be("authorization_code,client_credentials");
     }
 
     [Fact]
@@ -1176,13 +1192,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true),
-            configurationData);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        Assert.Equal("https://app.example.com/authorized,https://other-app.example.com/login",
-            configurationData[$"steeltoe:{SpringSecurityOAuth2PostProcessor.BindingTypeKey}:{TestBindingName}:registration:redirectUris"]);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:registration:redirectUris"].Should().Be("https://app.example.com/authorized,https://other-app.example.com/login");
     }
 
     [Fact]
@@ -1201,10 +1216,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SqlServerPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SqlServerPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SqlServerPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{SqlServerPostProcessor.BindingTypeKey}:{TestBindingName}:database", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SqlServerPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:database");
     }
 
     [Fact]
@@ -1223,15 +1240,17 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SqlServerPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SqlServerPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, SqlServerPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-database", configurationData[$"steeltoe:{SqlServerPostProcessor.BindingTypeKey}:{TestBindingName}:database"]);
-        Assert.Equal("test-host", configurationData[$"steeltoe:{SqlServerPostProcessor.BindingTypeKey}:{TestBindingName}:host"]);
-        Assert.Equal("test-password", configurationData[$"steeltoe:{SqlServerPostProcessor.BindingTypeKey}:{TestBindingName}:password"]);
-        Assert.Equal("test-port", configurationData[$"steeltoe:{SqlServerPostProcessor.BindingTypeKey}:{TestBindingName}:port"]);
-        Assert.Equal("test-username", configurationData[$"steeltoe:{SqlServerPostProcessor.BindingTypeKey}:{TestBindingName}:username"]);
-        Assert.Equal("test-jdbc-url", configurationData[$"steeltoe:{SqlServerPostProcessor.BindingTypeKey}:{TestBindingName}:jdbcUrl"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SqlServerPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:jdbcUrl"].Should().Be("test-jdbc-url");
     }
 
     [Fact]
@@ -1248,10 +1267,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:token", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:token");
     }
 
     [Fact]
@@ -1268,13 +1289,15 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-token", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:token"]);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("token", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:authentication"]);
-        Assert.Equal("test-namespace", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:namespace"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:token"].Should().Be("test-token");
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:authentication"].Should().Be("token");
+        configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
     }
 
     [Fact]
@@ -1294,16 +1317,18 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("test-namespace", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:namespace"]);
-        Assert.Equal("approle", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:authentication"]);
-        Assert.Equal("test-role-id", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:approle:roleId"]);
-        Assert.Equal("test-secret-id", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:approle:secretId"]);
-        Assert.Equal("test-role", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:approle:role"]);
-        Assert.Equal("test-app-role-path", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:approle:appRolePath"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
+        configurationData[$"{keyPrefix}:authentication"].Should().Be("approle");
+        configurationData[$"{keyPrefix}:approle:roleId"].Should().Be("test-role-id");
+        configurationData[$"{keyPrefix}:approle:secretId"].Should().Be("test-secret-id");
+        configurationData[$"{keyPrefix}:approle:role"].Should().Be("test-role");
+        configurationData[$"{keyPrefix}:approle:appRolePath"].Should().Be("test-app-role-path");
     }
 
     [Fact]
@@ -1320,13 +1345,15 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("test-namespace", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:namespace"]);
-        Assert.Equal("cubbyhole", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:authentication"]);
-        Assert.Equal("test-token", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:token"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
+        configurationData[$"{keyPrefix}:authentication"].Should().Be("cubbyhole");
+        configurationData[$"{keyPrefix}:token"].Should().Be("test-token");
     }
 
     [Fact]
@@ -1346,15 +1373,17 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("test-namespace", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:namespace"]);
-        Assert.Equal("cert", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:authentication"]);
-        Assert.Equal("test-cert-auth-path", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:ssl:certAuthPath"]);
-        Assert.Equal("test-key-store-password", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:ssl:keyStorePassword"]);
-        Assert.Equal("key store contents!", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:ssl:keyStore"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
+        configurationData[$"{keyPrefix}:authentication"].Should().Be("cert");
+        configurationData[$"{keyPrefix}:ssl:certAuthPath"].Should().Be("test-cert-auth-path");
+        configurationData[$"{keyPrefix}:ssl:keyStorePassword"].Should().Be("test-key-store-password");
+        configurationData[$"{keyPrefix}:ssl:keyStore"].Should().Be("key store contents!");
     }
 
     [Fact]
@@ -1374,16 +1403,18 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("test-namespace", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:namespace"]);
-        Assert.Equal("aws_ec2", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:authentication"]);
-        Assert.Equal("test-role", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:awsEc2:role"]);
-        Assert.Equal("test-aws-ec2-path", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:awsEc2:awsEc2Path"]);
-        Assert.Equal("test-identity-document", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:awsEc2:identityDocument"]);
-        Assert.Equal("test-nonce", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:awsEc2:nonce"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
+        configurationData[$"{keyPrefix}:authentication"].Should().Be("aws_ec2");
+        configurationData[$"{keyPrefix}:awsEc2:role"].Should().Be("test-role");
+        configurationData[$"{keyPrefix}:awsEc2:awsEc2Path"].Should().Be("test-aws-ec2-path");
+        configurationData[$"{keyPrefix}:awsEc2:identityDocument"].Should().Be("test-identity-document");
+        configurationData[$"{keyPrefix}:awsEc2:nonce"].Should().Be("test-nonce");
     }
 
     [Fact]
@@ -1403,16 +1434,18 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("test-namespace", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:namespace"]);
-        Assert.Equal("aws_iam", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:authentication"]);
-        Assert.Equal("test-role", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:awsIam:role"]);
-        Assert.Equal("test-aws-path", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:awsIam:awsPath"]);
-        Assert.Equal("test-server-id", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:awsIam:serverId"]);
-        Assert.Equal("test-endpoint-uri", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:awsIam:endpointUri"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
+        configurationData[$"{keyPrefix}:authentication"].Should().Be("aws_iam");
+        configurationData[$"{keyPrefix}:awsIam:role"].Should().Be("test-role");
+        configurationData[$"{keyPrefix}:awsIam:awsPath"].Should().Be("test-aws-path");
+        configurationData[$"{keyPrefix}:awsIam:serverId"].Should().Be("test-server-id");
+        configurationData[$"{keyPrefix}:awsIam:endpointUri"].Should().Be("test-endpoint-uri");
     }
 
     [Fact]
@@ -1430,14 +1463,16 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("test-namespace", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:namespace"]);
-        Assert.Equal("azure_msi", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:authentication"]);
-        Assert.Equal("test-role", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:azureMsi:role"]);
-        Assert.Equal("test-azure-path", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:azureMsi:azurePath"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
+        configurationData[$"{keyPrefix}:authentication"].Should().Be("azure_msi");
+        configurationData[$"{keyPrefix}:azureMsi:role"].Should().Be("test-role");
+        configurationData[$"{keyPrefix}:azureMsi:azurePath"].Should().Be("test-azure-path");
     }
 
     [Fact]
@@ -1456,15 +1491,17 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("test-namespace", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:namespace"]);
-        Assert.Equal("gcp_gce", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:authentication"]);
-        Assert.Equal("test-role", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:gcpGce:role"]);
-        Assert.Equal("test-gcp-path", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:gcpGce:gcpPath"]);
-        Assert.Equal("test-service-account", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:gcpGce:gcpServiceAccount"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
+        configurationData[$"{keyPrefix}:authentication"].Should().Be("gcp_gce");
+        configurationData[$"{keyPrefix}:gcpGce:role"].Should().Be("test-role");
+        configurationData[$"{keyPrefix}:gcpGce:gcpPath"].Should().Be("test-gcp-path");
+        configurationData[$"{keyPrefix}:gcpGce:gcpServiceAccount"].Should().Be("test-service-account");
     }
 
     [Fact]
@@ -1488,19 +1525,21 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("test-namespace", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:namespace"]);
-        Assert.Equal("gcp_iam", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:authentication"]);
-        Assert.Equal("credentials JSON contents!", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:gcpIam:credentialsJson"]);
-        Assert.Equal("test-encoded-key", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:gcpIam:encodedKey"]);
-        Assert.Equal("test-gcp-path", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:gcpIam:gcpPath"]);
-        Assert.Equal("test-project-id", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:gcpIam:gcpProjectId"]);
-        Assert.Equal("test-service-account", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:gcpIam:gcpServiceAccount"]);
-        Assert.Equal("test-jwt-validity", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:gcpIam:jwtValidity"]);
-        Assert.Equal("test-role", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:gcpIam:role"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
+        configurationData[$"{keyPrefix}:authentication"].Should().Be("gcp_iam");
+        configurationData[$"{keyPrefix}:gcpIam:credentialsJson"].Should().Be("credentials JSON contents!");
+        configurationData[$"{keyPrefix}:gcpIam:encodedKey"].Should().Be("test-encoded-key");
+        configurationData[$"{keyPrefix}:gcpIam:gcpPath"].Should().Be("test-gcp-path");
+        configurationData[$"{keyPrefix}:gcpIam:gcpProjectId"].Should().Be("test-project-id");
+        configurationData[$"{keyPrefix}:gcpIam:gcpServiceAccount"].Should().Be("test-service-account");
+        configurationData[$"{keyPrefix}:gcpIam:jwtValidity"].Should().Be("test-jwt-validity");
+        configurationData[$"{keyPrefix}:gcpIam:role"].Should().Be("test-role");
     }
 
     [Fact]
@@ -1518,14 +1557,16 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("test-namespace", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:namespace"]);
-        Assert.Equal("kubernetes", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:authentication"]);
-        Assert.Equal("test-role", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:kubernetes:role"]);
-        Assert.Equal("test-kubernetes-path", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:kubernetes:kubernetesPath"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
+        configurationData[$"{keyPrefix}:authentication"].Should().Be("kubernetes");
+        configurationData[$"{keyPrefix}:kubernetes:role"].Should().Be("test-role");
+        configurationData[$"{keyPrefix}:kubernetes:kubernetesPath"].Should().Be("test-kubernetes-path");
     }
 
     [Fact]
@@ -1540,12 +1581,14 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("test-namespace", configurationData[$"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:namespace"]);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{VaultPostProcessor.BindingTypeKey}:{TestBindingName}:authentication", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
+        configurationData.Should().NotContainKey($"{keyPrefix}:authentication");
     }
 
     [Fact]
@@ -1560,10 +1603,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, WavefrontPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, WavefrontPostProcessor.BindingTypeKey, false);
 
-        // BindingType not enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, WavefrontPostProcessor.BindingTypeKey, false), configurationData);
-        Assert.False(configurationData.TryGetValue($"steeltoe:{WavefrontPostProcessor.BindingTypeKey}:{TestBindingName}:uri", out _));
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, WavefrontPostProcessor.BindingTypeKey);
+        configurationData.Should().NotContainKey($"{keyPrefix}:uri");
     }
 
     [Fact]
@@ -1578,10 +1623,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, WavefrontPostProcessor.BindingTypeKey, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, WavefrontPostProcessor.BindingTypeKey, true);
 
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, WavefrontPostProcessor.BindingTypeKey, true), configurationData);
-        Assert.Equal("test-uri", configurationData[$"steeltoe:{WavefrontPostProcessor.BindingTypeKey}:{TestBindingName}:uri"]);
-        Assert.Equal("test-api-token", configurationData[$"steeltoe:{WavefrontPostProcessor.BindingTypeKey}:{TestBindingName}:apiToken"]);
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, WavefrontPostProcessor.BindingTypeKey);
+        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:apiToken"].Should().Be("test-api-token");
     }
 }
