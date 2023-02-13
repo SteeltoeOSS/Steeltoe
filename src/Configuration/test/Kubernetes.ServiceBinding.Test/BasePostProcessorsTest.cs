@@ -70,14 +70,13 @@ public abstract class BasePostProcessorsTest
             key;
     }
 
-    internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor, string bindingTypeKey,
-        bool bindingTypeKeyValue)
+    internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor, string bindingTypeKey, bool isEnabled)
     {
         var source = new TestPostProcessorConfigurationSource
         {
             ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
             {
-                { $"steeltoe:kubernetes:bindings:{bindingTypeKey}:enable", bindingTypeKeyValue.ToString(CultureInfo.InvariantCulture) }
+                { $"steeltoe:kubernetes:bindings:{bindingTypeKey}:enable", isEnabled.ToString(CultureInfo.InvariantCulture) }
             }).Build()
         };
 

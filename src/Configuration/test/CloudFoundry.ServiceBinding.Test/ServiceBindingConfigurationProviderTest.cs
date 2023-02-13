@@ -80,7 +80,7 @@ public sealed class ServiceBindingConfigurationProviderTest
     }";
 
     [Fact]
-    public void PostProcessors_OffByDefault()
+    public void PostProcessors_OnByDefault()
     {
         var postProcessor = new TestPostProcessor();
 
@@ -92,7 +92,7 @@ public sealed class ServiceBindingConfigurationProviderTest
         builder.Add(source);
         builder.Build();
 
-        postProcessor.PostProcessorCalled.Should().BeFalse();
+        postProcessor.PostProcessorCalled.Should().BeTrue();
     }
 
     [Fact]
@@ -109,12 +109,12 @@ public sealed class ServiceBindingConfigurationProviderTest
 
         builder.AddInMemoryCollection(new Dictionary<string, string>
         {
-            { "steeltoe:cloudfoundry:bindings:enable", "true" }
+            { "steeltoe:cloudfoundry:bindings:enable", "false" }
         });
 
         builder.Build();
 
-        postProcessor.PostProcessorCalled.Should().BeTrue();
+        postProcessor.PostProcessorCalled.Should().BeFalse();
     }
 
     [Fact]

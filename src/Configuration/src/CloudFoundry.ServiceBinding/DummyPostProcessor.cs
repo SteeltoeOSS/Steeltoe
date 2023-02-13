@@ -10,6 +10,5 @@ internal sealed class DummyPostProcessor : IConfigurationPostProcessor
     {
         // This dummy only exists to make tests succeed.
         // To be removed after adding real processors to this project.
-        throw new NotImplementedException();
     }
 }

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
@@ -107,7 +108,7 @@ public sealed class ServiceBindingConfigurationProviderTest
     }
 
     [Fact]
-    public void PostProcessors_OffByDefault()
+    public void PostProcessors_OnByDefault()
     {
         string rootDir = GetK8SResourcesDirectory(null);
 
@@ -118,20 +119,21 @@ public sealed class ServiceBindingConfigurationProviderTest
         var provider = new ServiceBindingConfigurationProvider(source);
         provider.Load();
 
-        Assert.False(postProcessor.PostProcessorCalled);
+        postProcessor.PostProcessorCalled.Should().BeTrue();
     }
 
     [Fact]
-    public void PostProcessors_CanBeEnabled()
+    public void PostProcessors_CanBeDisabled()
     {
         string rootDir = GetK8SResourcesDirectory(null);
 
-        var source = new ServiceBindingConfigurationSource(rootDir);
-
-        source.ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        var source = new ServiceBindingConfigurationSource(rootDir)
         {
-            { "steeltoe:kubernetes:bindings:enable", "true" }
-        }).Build();
+            ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { "steeltoe:kubernetes:bindings:enable", "false" }
+            }).Build()
+        };
 
         var postProcessor = new TestPostProcessor();
         source.RegisterPostProcessor(postProcessor);
@@ -139,7 +141,7 @@ public sealed class ServiceBindingConfigurationProviderTest
         var provider = new ServiceBindingConfigurationProvider(source);
         provider.Load();
 
-        Assert.True(postProcessor.PostProcessorCalled);
+        postProcessor.PostProcessorCalled.Should().BeFalse();
     }
 
     private static string GetK8SResourcesDirectory(string name)
