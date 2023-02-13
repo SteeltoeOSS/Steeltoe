@@ -206,11 +206,6 @@ internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigu
                 IEnumerable<string> files = Directory.EnumerateFiles(path);
                 var result = new Dictionary<string, string>();
 
-                if (!files.Any())
-                {
-                    return result;
-                }
-
                 foreach (string file in files)
                 {
                     FileInfo fileInfo = new(file);
