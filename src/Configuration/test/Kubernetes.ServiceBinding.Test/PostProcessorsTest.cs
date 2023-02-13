@@ -23,12 +23,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("password", "test-password")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ArtemisPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ArtemisPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ArtemisPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ArtemisPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ArtemisPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ArtemisPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:host");
     }
 
@@ -46,12 +46,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("password", "test-password")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ArtemisPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ArtemisPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ArtemisPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ArtemisPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ArtemisPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ArtemisPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:mode"].Should().Be("EMBEDDED");
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
         configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
@@ -76,12 +76,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, CassandraPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CassandraPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, CassandraPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CassandraPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CassandraPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CassandraPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:ssl");
     }
 
@@ -102,12 +102,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, CassandraPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CassandraPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, CassandraPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CassandraPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CassandraPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CassandraPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:clusterName"].Should().Be("test-cluster-name");
         configurationData[$"{keyPrefix}:compression"].Should().Be("test-compression");
         configurationData[$"{keyPrefix}:contactPoints"].Should().Be("test-contact-points");
@@ -131,12 +131,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("access-token-uri", "test-access-token-uri")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ConfigServerPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ConfigServerPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ConfigServerPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ConfigServerPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ConfigServerPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ConfigServerPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:uri");
     }
 
@@ -153,12 +153,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("access-token-uri", "test-access-token-uri")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ConfigServerPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ConfigServerPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ConfigServerPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ConfigServerPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ConfigServerPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ConfigServerPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:oauth2:clientId"].Should().Be("test-client-id");
         configurationData[$"{keyPrefix}:oauth2:clientSecret"].Should().Be("test-client-secret");
@@ -181,12 +181,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, CouchbasePostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CouchbasePostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, CouchbasePostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CouchbasePostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CouchbasePostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CouchbasePostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:bootstrapHosts");
     }
 
@@ -206,12 +206,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, CouchbasePostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CouchbasePostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, CouchbasePostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CouchbasePostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CouchbasePostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CouchbasePostProcessor.BindingType);
         configurationData[$"{keyPrefix}:bootstrapHosts"].Should().Be("test-bootstrap-hosts");
         configurationData[$"{keyPrefix}:bucketName"].Should().Be("test-bucket-name");
         configurationData[$"{keyPrefix}:bucketPassword"].Should().Be("test-bucket-password");
@@ -236,12 +236,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, DB2PostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, DB2PostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, DB2PostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, DB2PostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, DB2PostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, DB2PostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:database");
     }
 
@@ -260,12 +260,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, DB2PostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, DB2PostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, DB2PostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, DB2PostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, DB2PostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, DB2PostProcessor.BindingType);
         configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
         configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
@@ -290,12 +290,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("uris", "test-uris")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ElasticSearchPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ElasticSearchPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ElasticSearchPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ElasticSearchPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ElasticSearchPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ElasticSearchPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:endpoints");
     }
 
@@ -315,12 +315,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("uris", "test-uris")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ElasticSearchPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ElasticSearchPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, ElasticSearchPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ElasticSearchPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ElasticSearchPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, ElasticSearchPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:endpoints"].Should().Be("test-endpoints");
         configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
         configurationData[$"{keyPrefix}:useSsl"].Should().Be("test-use-ssl");
@@ -343,12 +343,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("access-token-uri", "test-access-token-uri")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, EurekaPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, EurekaPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, EurekaPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, EurekaPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, EurekaPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, EurekaPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:uri");
     }
 
@@ -365,12 +365,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("access-token-uri", "test-access-token-uri")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, EurekaPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, EurekaPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, EurekaPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, EurekaPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, EurekaPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, EurekaPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:region"].Should().Be("default");
         configurationData[$"{keyPrefix}:oauth2:clientId"].Should().Be("test-client-id");
@@ -391,12 +391,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("streams.bootstrap-servers", "test-streams-bootstrap-servers")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, KafkaPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, KafkaPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, KafkaPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, KafkaPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, KafkaPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, KafkaPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:bootstrapServers");
     }
 
@@ -413,12 +413,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("streams.bootstrap-servers", "test-streams-bootstrap-servers")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, KafkaPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, KafkaPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, KafkaPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, KafkaPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, KafkaPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, KafkaPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:bootstrapServers"].Should().Be("test-bootstrap-servers");
         configurationData[$"{keyPrefix}:consumerBootstrapServers"].Should().Be("test-consumer-bootstrap-servers");
         configurationData[$"{keyPrefix}:producerBootstrapServers"].Should().Be("test-producer-bootstrap-servers");
@@ -438,12 +438,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("base", "test-base")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, LdapPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, LdapPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, LdapPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, LdapPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, LdapPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, LdapPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:urls");
     }
 
@@ -460,12 +460,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("base", "test-base")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, LdapPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, LdapPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, LdapPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, LdapPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, LdapPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, LdapPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:urls"].Should().Be("test-urls");
         configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
         configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
@@ -489,12 +489,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MongoDbPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MongoDbPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:authenticationDatabase");
     }
 
@@ -515,12 +515,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MongoDbPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MongoDbPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbPostProcessor.BindingType);
 
         configurationData[$"{keyPrefix}:authenticationDatabase"].Should().Be("test-authentication-database");
         configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
@@ -547,12 +547,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:database");
     }
 
@@ -571,12 +571,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
         configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
@@ -597,12 +597,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, Neo4JPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, Neo4JPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, Neo4JPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, Neo4JPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, Neo4JPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, Neo4JPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:password");
     }
 
@@ -618,12 +618,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, Neo4JPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, Neo4JPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, Neo4JPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, Neo4JPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, Neo4JPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, Neo4JPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
@@ -644,12 +644,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, OraclePostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, OraclePostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, OraclePostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, OraclePostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, OraclePostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, OraclePostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:database");
     }
 
@@ -668,12 +668,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, OraclePostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, OraclePostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, OraclePostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, OraclePostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, OraclePostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, OraclePostProcessor.BindingType);
         configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
         configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
@@ -700,12 +700,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("options", "--cluster=routing-id&opt=val1")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:database");
     }
 
@@ -727,12 +727,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("options", "--cluster=routing-id&opt=val1")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
         configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
@@ -759,12 +759,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("virtual-host", "test-virtual-host")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:addresses");
     }
 
@@ -783,12 +783,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("virtual-host", "test-virtual-host")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:addresses"].Should().Be("test-addresses");
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
         configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
@@ -817,12 +817,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("url", "test-url")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RedisPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RedisPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RedisPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RedisPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:clientName");
     }
 
@@ -846,12 +846,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("url", "test-url")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RedisPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RedisPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RedisPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RedisPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:clientName"].Should().Be("test-client-name");
         configurationData[$"{keyPrefix}:clusterMaxRedirects"].Should().Be("test-cluster-max-redirects");
         configurationData[$"{keyPrefix}:clusterNodes"].Should().Be("test-cluster-nodes");
@@ -880,12 +880,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SapHanaPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SapHanaPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SapHanaPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SapHanaPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SapHanaPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SapHanaPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:database");
     }
 
@@ -904,12 +904,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SapHanaPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SapHanaPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SapHanaPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SapHanaPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SapHanaPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SapHanaPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
         configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
@@ -929,7 +929,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("client-secret", "github-client-secret")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "github",
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingType, "github",
             secrets1);
 
         var secrets2 = new[]
@@ -939,7 +939,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("issuer-uri", "okta-issuer-uri")
         };
 
-        AddConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", secrets2);
+        AddConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingType, "okta", secrets2);
 
         var secrets3 = new[]
         {
@@ -958,19 +958,19 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("user-name-attribute", "my-provider-user-name-attribute")
         };
 
-        AddConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider", secrets3);
+        AddConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingType, "my-provider", secrets3);
 
         var secrets4 = new[]
         {
             Tuple.Create("client-id", "my-provider-client-id")
         };
 
-        AddConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets4);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, false);
+        AddConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingType, secrets4);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:registration:clientId");
     }
 
@@ -985,7 +985,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("client-secret", "github-client-secret")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "github",
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingType, "github",
             secrets1);
 
         var secrets2 = new[]
@@ -995,7 +995,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("issuer-uri", "okta-issuer-uri")
         };
 
-        AddConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", secrets2);
+        AddConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingType, "okta", secrets2);
 
         var secrets3 = new[]
         {
@@ -1014,19 +1014,19 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("user-name-attribute", "my-provider-user-name-attribute")
         };
 
-        AddConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider", secrets3);
+        AddConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingType, "my-provider", secrets3);
 
         var secrets4 = new[]
         {
             Tuple.Create("client-id", "my-provider-client-id")
         };
 
-        AddConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets4);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true);
+        AddConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingType, secrets4);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingType);
         configurationData[$"{keyPrefix}:registration:clientId"].Should().Be("github-client-id");
         configurationData[$"{keyPrefix}:registration:clientSecret"].Should().Be("github-client-secret");
         configurationData[$"{keyPrefix}:registration:provider"].Should().Be("github");
@@ -1043,7 +1043,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("client-secret", "github-client-secret")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "github",
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingType, "github",
             secrets1);
 
         var secrets2 = new[]
@@ -1053,7 +1053,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("issuer-uri", "okta-issuer-uri")
         };
 
-        AddConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", secrets2);
+        AddConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingType, "okta", secrets2);
 
         var secrets3 = new[]
         {
@@ -1072,19 +1072,19 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("user-name-attribute", "my-provider-user-name-attribute")
         };
 
-        AddConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider", secrets3);
+        AddConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingType, "my-provider", secrets3);
 
         var secrets4 = new[]
         {
             Tuple.Create("client-id", "my-provider-client-id")
         };
 
-        AddConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets4);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true);
+        AddConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingType, secrets4);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingType);
         configurationData[$"{keyPrefix}:registration:clientId"].Should().Be("okta-client-id");
         configurationData[$"{keyPrefix}:registration:clientSecret"].Should().Be("okta-client-secret");
         configurationData[$"{keyPrefix}:registration:provider"].Should().Be("okta");
@@ -1102,7 +1102,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("client-secret", "github-client-secret")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "github",
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName1, SpringSecurityOAuth2PostProcessor.BindingType, "github",
             secrets1);
 
         var secrets2 = new[]
@@ -1112,7 +1112,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("issuer-uri", "okta-issuer-uri")
         };
 
-        AddConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "okta", secrets2);
+        AddConfigurationData(configurationData, TestBindingName2, SpringSecurityOAuth2PostProcessor.BindingType, "okta", secrets2);
 
         var secrets3 = new[]
         {
@@ -1131,19 +1131,19 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("user-name-attribute", "my-provider-user-name-attribute")
         };
 
-        AddConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey, "my-provider", secrets3);
+        AddConfigurationData(configurationData, TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingType, "my-provider", secrets3);
 
         var secrets4 = new[]
         {
             Tuple.Create("client-id", "my-provider-client-id")
         };
 
-        AddConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets4);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true);
+        AddConfigurationData(configurationData, TestMissingProvider, SpringSecurityOAuth2PostProcessor.BindingType, secrets4);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName3, SpringSecurityOAuth2PostProcessor.BindingType);
         configurationData[$"{keyPrefix}:registration:provider"].Should().Be("my-provider");
         configurationData[$"{keyPrefix}:registration:clientId"].Should().Be("my-provider-client-id");
         configurationData[$"{keyPrefix}:registration:clientSecret"].Should().Be("my-provider-client-secret");
@@ -1171,12 +1171,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("authorization-grant-types", "authorization_code,client_credentials")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingType);
         configurationData[$"{keyPrefix}:registration:authorizationGrantTypes"].Should().Be("authorization_code,client_credentials");
     }
 
@@ -1191,12 +1191,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("redirect-uris", "https://app.example.com/authorized,https://other-app.example.com/login")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SpringSecurityOAuth2PostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SpringSecurityOAuth2PostProcessor.BindingType);
         configurationData[$"{keyPrefix}:registration:redirectUris"].Should().Be("https://app.example.com/authorized,https://other-app.example.com/login");
     }
 
@@ -1215,12 +1215,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SqlServerPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SqlServerPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SqlServerPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SqlServerPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SqlServerPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SqlServerPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:database");
     }
 
@@ -1239,12 +1239,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SqlServerPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SqlServerPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SqlServerPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SqlServerPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SqlServerPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SqlServerPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
         configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
@@ -1266,12 +1266,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("token", "test-token")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:token");
     }
 
@@ -1288,12 +1288,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("token", "test-token")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:token"].Should().Be("test-token");
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:authentication"].Should().Be("token");
@@ -1316,12 +1316,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("secret-id", "test-secret-id")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
         configurationData[$"{keyPrefix}:authentication"].Should().Be("approle");
@@ -1344,12 +1344,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("token", "test-token")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
         configurationData[$"{keyPrefix}:authentication"].Should().Be("cubbyhole");
@@ -1372,12 +1372,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("key-store", "key store contents!")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
         configurationData[$"{keyPrefix}:authentication"].Should().Be("cert");
@@ -1402,12 +1402,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("role", "test-role")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
         configurationData[$"{keyPrefix}:authentication"].Should().Be("aws_ec2");
@@ -1433,12 +1433,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("role", "test-role")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
         configurationData[$"{keyPrefix}:authentication"].Should().Be("aws_iam");
@@ -1462,12 +1462,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("role", "test-role")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
         configurationData[$"{keyPrefix}:authentication"].Should().Be("azure_msi");
@@ -1490,12 +1490,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("role", "test-role")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
         configurationData[$"{keyPrefix}:authentication"].Should().Be("gcp_gce");
@@ -1524,12 +1524,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("role", "test-role")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
         configurationData[$"{keyPrefix}:authentication"].Should().Be("gcp_iam");
@@ -1556,12 +1556,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("role", "test-role")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
         configurationData[$"{keyPrefix}:authentication"].Should().Be("kubernetes");
@@ -1580,12 +1580,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("uri", "test-uri")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, VaultPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, VaultPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, VaultPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:namespace"].Should().Be("test-namespace");
         configurationData.Should().NotContainKey($"{keyPrefix}:authentication");
@@ -1602,12 +1602,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("uri", "test-uri")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, WavefrontPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, WavefrontPostProcessor.BindingTypeKey, false);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, WavefrontPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, WavefrontPostProcessor.BindingType, false);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, WavefrontPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, WavefrontPostProcessor.BindingType);
         configurationData.Should().NotContainKey($"{keyPrefix}:uri");
     }
 
@@ -1622,12 +1622,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("uri", "test-uri")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, WavefrontPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, WavefrontPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, WavefrontPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, WavefrontPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, WavefrontPostProcessor.BindingTypeKey);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, WavefrontPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
         configurationData[$"{keyPrefix}:apiToken"].Should().Be("test-api-token");
     }

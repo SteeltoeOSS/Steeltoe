@@ -13,9 +13,9 @@ internal static class PostProcessorConfigurationProviderExtensions
         return GetBooleanValue(provider, "steeltoe:kubernetes:service-bindings:enable", true);
     }
 
-    public static bool IsBindingTypeEnabled(this PostProcessorConfigurationProvider provider, string bindingTypeKey)
+    public static bool IsBindingTypeEnabled(this PostProcessorConfigurationProvider provider, string bindingType)
     {
-        return GetBooleanValue(provider, $"steeltoe:kubernetes:service-bindings:{bindingTypeKey}:enable", true);
+        return GetBooleanValue(provider, $"steeltoe:kubernetes:service-bindings:{bindingType}:enable", true);
     }
 
     private static bool GetBooleanValue(PostProcessorConfigurationProvider provider, string key, bool defaultValue)

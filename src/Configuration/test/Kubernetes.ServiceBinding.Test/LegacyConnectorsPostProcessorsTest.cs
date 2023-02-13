@@ -24,8 +24,8 @@ public sealed class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("virtual-host", "test-virtual-host")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -52,8 +52,8 @@ public sealed class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("username", "test-username")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -83,8 +83,8 @@ public sealed class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("options", "--cluster=routing-id&opt=val1")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlPostProcessor.BindingTypeKey, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingTypeKey, true);
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 

@@ -6,16 +6,16 @@ namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
 internal sealed class RabbitMQLegacyConnectorPostProcessor : IConfigurationPostProcessor
 {
-    internal const string BindingTypeKey = "rabbitmq";
+    private const string BindingType = "rabbitmq";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
     {
-        if (!provider.IsBindingTypeEnabled(BindingTypeKey))
+        if (!provider.IsBindingTypeEnabled(BindingType))
         {
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingType).ForEach(
             bindingNameKey =>
             {
                 // Spring -> spring.rabbitmq....
@@ -33,16 +33,16 @@ internal sealed class RabbitMQLegacyConnectorPostProcessor : IConfigurationPostP
 
 internal sealed class MySqlLegacyConnectorPostProcessor : IConfigurationPostProcessor
 {
-    internal const string BindingTypeKey = "mysql";
+    private const string BindingType = "mysql";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
     {
-        if (!provider.IsBindingTypeEnabled(BindingTypeKey))
+        if (!provider.IsBindingTypeEnabled(BindingType))
         {
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingType).ForEach(
             bindingNameKey =>
             {
                 // Spring -> spring.datasource....
@@ -64,16 +64,16 @@ internal sealed class MySqlLegacyConnectorPostProcessor : IConfigurationPostProc
 
 internal sealed class PostgreSqlLegacyConnectorPostProcessor : IConfigurationPostProcessor
 {
-    internal const string BindingTypeKey = "postgresql";
+    private const string BindingType = "postgresql";
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
     {
-        if (!provider.IsBindingTypeEnabled(BindingTypeKey))
+        if (!provider.IsBindingTypeEnabled(BindingType))
         {
             return;
         }
 
-        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+        configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingType).ForEach(
             bindingNameKey =>
             {
                 // Spring -> spring.datasource....

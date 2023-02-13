@@ -68,13 +68,13 @@ public abstract class BasePostProcessorsTest
         return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.OutputKeyPrefix, bindingType, bindingName);
     }
 
-    internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor, string bindingTypeKey, bool isEnabled)
+    internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor, string bindingType, bool isEnabled)
     {
         var source = new TestPostProcessorConfigurationSource
         {
             ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                { $"steeltoe:kubernetes:service-bindings:{bindingTypeKey}:enable", isEnabled.ToString(CultureInfo.InvariantCulture) }
+                { $"steeltoe:kubernetes:service-bindings:{bindingType}:enable", isEnabled.ToString(CultureInfo.InvariantCulture) }
             }).Build()
         };
 
