@@ -12,11 +12,11 @@ internal abstract class ConfigurationDictionaryMapper
 
     public string ToPrefix { get; }
 
-    public IDictionary<string, string> ConfigData { get; }
+    public IDictionary<string, string> ConfigurationData { get; }
 
-    protected ConfigurationDictionaryMapper(IDictionary<string, string> configData, string bindingKey, params string[] toPrefix)
+    protected ConfigurationDictionaryMapper(IDictionary<string, string> configurationData, string bindingKey, params string[] toPrefix)
     {
-        ConfigData = configData;
+        ConfigurationData = configurationData;
         BindingKey = !string.IsNullOrEmpty(bindingKey) ? bindingKey + ConfigurationPath.KeyDelimiter : string.Empty;
 
         if (toPrefix.Length > 0)
@@ -27,39 +27,39 @@ internal abstract class ConfigurationDictionaryMapper
 
     public void MapFromTo(string existingKey, string newKey)
     {
-        if (ConfigData.TryGetValue(BindingKey + existingKey, out string value))
+        if (ConfigurationData.TryGetValue(BindingKey + existingKey, out string value))
         {
             if (ToPrefix != null)
             {
-                ConfigData[ToPrefix + newKey] = value;
+                ConfigurationData[ToPrefix + newKey] = value;
             }
             else
             {
-                ConfigData[newKey] = value;
+                ConfigurationData[newKey] = value;
             }
         }
     }
 
     public void MapFromTo(string existingKey, params string[] newKeyPath)
     {
-        if (ConfigData.TryGetValue(BindingKey + existingKey, out string value))
+        if (ConfigurationData.TryGetValue(BindingKey + existingKey, out string value))
         {
             string newKey = string.Join(ConfigurationPath.KeyDelimiter, newKeyPath);
 
             if (ToPrefix != null)
             {
-                ConfigData[ToPrefix + newKey] = value;
+                ConfigurationData[ToPrefix + newKey] = value;
             }
             else
             {
-                ConfigData[newKey] = value;
+                ConfigurationData[newKey] = value;
             }
         }
     }
 
     public void AddKeyValue(string newKey, string value)
     {
-        ConfigData.Add(ToPrefix + newKey, value);
+        ConfigurationData.Add(ToPrefix + newKey, value);
     }
 
     public string Get(string key)
@@ -69,7 +69,7 @@ internal abstract class ConfigurationDictionaryMapper
 
     public string Get(string key, string defaultValue)
     {
-        _ = ConfigData.TryGetValue(BindingKey + key, out string result);
+        _ = ConfigurationData.TryGetValue(BindingKey + key, out string result);
         return result ?? defaultValue;
     }
 }

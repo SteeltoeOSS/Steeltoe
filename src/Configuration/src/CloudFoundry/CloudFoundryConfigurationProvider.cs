@@ -116,6 +116,7 @@ internal sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
             return;
         }
 
-        data[prefix + ConfigurationPath.KeyDelimiter + section.Path] = section.Value;
+        string key = ConfigurationPath.Combine(prefix, section.Path);
+        data[key] = section.Value;
     }
 }
