@@ -120,8 +120,7 @@ public class PostgreSqlProviderConnectorOptionsTest
         // simulate an appsettings file
         var appsettings = new Dictionary<string, string>
         {
-            { "postgres:client:ConnectionString", "Server=fake;Database=test;User Id=steeltoe;Password=password;" },
-            { "steeltoe:kubernetes:bindings:enable", "true" }
+            { "postgres:client:ConnectionString", "Server=fake;Database=test;User Id=steeltoe;Password=password;" }
         };
 
         // add environment variables as Cloud Foundry would

@@ -243,8 +243,7 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
 
             var appsettings = new Dictionary<string, string>
             {
-                { "postgres:client:ConnectionString", "Server=fake;Database=test;User Id=steeltoe;Password=password;" },
-                { "steeltoe:kubernetes:bindings:enable", "true" }
+                { "postgres:client:ConnectionString", "Server=fake;Database=test;User Id=steeltoe;Password=password;" }
             };
 
             var configurationBuilder = new ConfigurationBuilder();

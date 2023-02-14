@@ -236,13 +236,7 @@ public class PostgreSqlDbContextOptionsExtensionsTest
         {
             IServiceCollection services = new ServiceCollection();
 
-            var appsettings = new Dictionary<string, string>
-            {
-                { "steeltoe:kubernetes:bindings:enable", "true" }
-            };
-
             var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(appsettings);
             builder.AddKubernetesServiceBindings(false);
             IConfigurationRoot configurationRoot = builder.Build();
 
