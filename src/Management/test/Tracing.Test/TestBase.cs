@@ -72,10 +72,8 @@ public class TestBase
         var comp = Propagators.DefaultTextMapPropagator as CompositeTextMapPropagator;
         var props = GetPrivateField(comp, "propagators") as List<TextMapPropagator>;
         Assert.Equal(2, props.Count);
-
-#pragma warning disable CS0618 // Type or member is obsolete
-        Assert.Contains(props, p => p is B3Propagator);
-#pragma warning restore CS0618 // Type or member is obsolete
+        
+        Assert.Contains(props, p => p is OpenTelemetry.Extensions.Propagators.B3Propagator);
         Assert.Contains(props, p => p is BaggagePropagator);
     }
 
