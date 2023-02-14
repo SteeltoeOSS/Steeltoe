@@ -3,19 +3,17 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
-namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
+namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 
 internal static class PostProcessorConfigurationProviderExtensions
 {
-    public static bool IsKubernetesBindingsEnabled(this PostProcessorConfigurationProvider provider)
+    public static bool IsCloudFoundryBindingsEnabled(this PostProcessorConfigurationProvider provider)
     {
-        return GetBooleanValue(provider, "steeltoe:kubernetes:service-bindings:enable", true);
-    }
+        ArgumentGuard.NotNull(provider);
 
-    public static bool IsBindingTypeEnabled(this PostProcessorConfigurationProvider provider, string bindingType)
-    {
-        return GetBooleanValue(provider, $"steeltoe:kubernetes:service-bindings:{bindingType}:enable", true);
+        return GetBooleanValue(provider, "steeltoe:cloudfoundry:service-bindings:enable", true);
     }
 
     private static bool GetBooleanValue(PostProcessorConfigurationProvider provider, string key, bool defaultValue)

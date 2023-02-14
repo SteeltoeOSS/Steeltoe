@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 
-public class ServiceBindingMapperTest
+public sealed class ServiceBindingMapperTest
 {
     [Fact]
     public void MapFromTo_Present()
@@ -18,7 +19,7 @@ public class ServiceBindingMapperTest
 
         var mapper = new ServiceBindingMapper(source, string.Empty, Array.Empty<string>());
         mapper.MapFromTo("test-source-key", "test-destination-key");
-        Assert.Equal("test-source-value", source["test-destination-key"]);
+        source["test-destination-key"].Should().Be("test-source-value");
     }
 
     [Fact]
@@ -27,7 +28,7 @@ public class ServiceBindingMapperTest
         var source = new Dictionary<string, string>();
         var mapper = new ServiceBindingMapper(source, string.Empty, Array.Empty<string>());
         mapper.MapFromTo("test-source-key", "test-destination-key");
-        Assert.DoesNotContain("test-destination-key", source.Keys);
+        source.Keys.Should().NotContain("test-destination-key");
     }
 
     [Fact]
@@ -45,7 +46,7 @@ public class ServiceBindingMapperTest
         mapper.MapFromTo("test-source-key-2", "test-destination-key");
         mapper.MapFromTo("test-source-key-3", "test-destination-key");
 
-        Assert.Equal("test-source-value-3", source["test-destination-key"]);
+        source["test-destination-key"].Should().Be("test-source-value-3");
     }
 
     [Fact]
@@ -62,6 +63,6 @@ public class ServiceBindingMapperTest
         mapper.MapFromTo("test-source-key-2", "test-destination-key");
         mapper.MapFromTo("test-source-key-3", "test-destination-key");
 
-        Assert.Equal("test-source-value-3", source["test-destination-key"]);
+        source["test-destination-key"].Should().Be("test-source-value-3");
     }
 }

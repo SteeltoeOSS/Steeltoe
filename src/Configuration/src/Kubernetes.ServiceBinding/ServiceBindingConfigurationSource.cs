@@ -8,7 +8,7 @@ using Microsoft.Extensions.FileProviders.Physical;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
-internal class ServiceBindingConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
+internal sealed class ServiceBindingConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
 {
     internal const string ServiceBindingRootDirEnvVariable = "SERVICE_BINDING_ROOT";
 
@@ -21,8 +21,6 @@ internal class ServiceBindingConfigurationSource : PostProcessorConfigurationSou
     public int ReloadDelay { get; set; } = 250;
 
     public bool Optional { get; set; } = true;
-
-    public Predicate<string> IgnoreKeyPredicate { get; set; } = p => false;
 
     public ServiceBindingConfigurationSource()
         : this(Environment.GetEnvironmentVariable(ServiceBindingRootDirEnvVariable))
@@ -52,27 +50,5 @@ internal class ServiceBindingConfigurationSource : PostProcessorConfigurationSou
         ParentConfiguration ??= GetParentConfiguration(builder);
 
         return new ServiceBindingConfigurationProvider(this);
-    }
-
-    private IConfigurationRoot GetParentConfiguration(IConfigurationBuilder builder)
-    {
-        var configurationBuilder = new ConfigurationBuilder();
-
-        foreach (IConfigurationSource source in builder.Sources)
-        {
-            if (source is ServiceBindingConfigurationSource)
-            {
-                break;
-            }
-
-            configurationBuilder.Add(source);
-        }
-
-        foreach (KeyValuePair<string, object> pair in builder.Properties)
-        {
-            configurationBuilder.Properties.Add(pair);
-        }
-
-        return configurationBuilder.Build();
     }
 }

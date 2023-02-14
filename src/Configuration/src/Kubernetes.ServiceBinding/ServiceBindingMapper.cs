@@ -6,29 +6,27 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
-internal class ServiceBindingMapper : ConfigurationDictionaryMapper
+internal sealed class ServiceBindingMapper : ConfigurationDictionaryMapper
 {
     public string BindingProvider { get; }
-
     public string BindingName { get; }
-
     public string BindingType { get; }
 
-    public ServiceBindingMapper(IDictionary<string, string> configData, string bindingKey, params string[] toPrefix)
-        : base(configData, bindingKey, toPrefix)
+    public ServiceBindingMapper(IDictionary<string, string> configurationData, string bindingKey, params string[] toPrefix)
+        : base(configurationData, bindingKey, toPrefix)
     {
-        BindingProvider = GetBindingProvider(BindingKey + "provider");
-        BindingType = GetBindingType(BindingKey + "type");
+        BindingProvider = GetBindingProvider($"{BindingKey}provider");
+        BindingType = GetBindingType($"{BindingKey}type");
         BindingName = ConfigurationPath.GetSectionKey(bindingKey);
     }
 
     private string GetBindingProvider(string providerKey)
     {
-        return ConfigData.TryGetValue(providerKey, out string result) ? result : string.Empty;
+        return ConfigurationData.TryGetValue(providerKey, out string result) ? result : string.Empty;
     }
 
     private string GetBindingType(string typeKey)
     {
-        return ConfigData.TryGetValue(typeKey, out string result) ? result : string.Empty;
+        return ConfigurationData.TryGetValue(typeKey, out string result) ? result : string.Empty;
     }
 }

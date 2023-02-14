@@ -2,19 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 
-public class ServiceBindingConfigurationSourceTest
+public sealed class ServiceBindingConfigurationSourceTest
 {
     [Fact]
     public void EnvironmentVariableNotSet()
     {
         // Not optional, should throw
         var source = new ServiceBindingConfigurationSource();
-        Assert.Null(source.ServiceBindingRoot);
+        source.ServiceBindingRoot.Should().BeNull();
     }
 
     [Fact]
@@ -26,9 +27,9 @@ public class ServiceBindingConfigurationSourceTest
         try
         {
             var source = new ServiceBindingConfigurationSource();
-            Assert.Contains(Path.Combine("resources", "k8s"), source.ServiceBindingRoot, StringComparison.OrdinalIgnoreCase);
-            Assert.NotNull(source.FileProvider);
-            Assert.NotNull(source.FileProvider.GetDirectoryContents("/"));
+            source.ServiceBindingRoot.Should().Contain(Path.Combine("resources", "k8s"));
+            source.FileProvider.Should().NotBeNull();
+            source.FileProvider.GetDirectoryContents("/").Should().NotBeNull();
         }
         finally
         {
@@ -40,20 +41,20 @@ public class ServiceBindingConfigurationSourceTest
     public void Build_CapturesParentConfiguration()
     {
         string rootDir = GetK8SResourcesDirectory(null);
-
         var source = new ServiceBindingConfigurationSource(rootDir);
+
         var builder = new ConfigurationBuilder();
+        builder.Add(source);
 
         builder.AddInMemoryCollection(new Dictionary<string, string>
         {
-            { "steeltoe:cloud:bindings:enable", "true" }
+            { "some:value:in:configuration:path", "true" }
         });
 
-        builder.Add(source);
-        IConfigurationRoot configuration = builder.Build();
-        Assert.NotNull(configuration);
-        Assert.NotNull(source.ParentConfiguration);
-        Assert.True(source.ParentConfiguration.GetValue<bool>("steeltoe:cloud:bindings:enable"));
+        builder.Build();
+
+        source.ParentConfiguration.Should().NotBeNull();
+        source.ParentConfiguration.GetValue<bool>("some:value:in:configuration:path").Should().BeTrue();
     }
 
     private static string GetK8SResourcesDirectory(string name)
