@@ -311,7 +311,6 @@ public static class ManagementWebHostBuilderExtensions
     }
 
     internal static void GetManagementUrl(this IWebHostBuilder webHostBuilder, out int? httpPort, out int? httpsPort)
-#pragma warning restore SA1612 // Element parameter documentation should match element parameters
     {
         string portSetting = webHostBuilder.GetSetting(ManagementPortKey);
         string sslSetting = webHostBuilder.GetSetting(ManagementSSLKey);
