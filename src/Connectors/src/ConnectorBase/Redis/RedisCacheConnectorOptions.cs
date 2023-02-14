@@ -16,7 +16,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     private const string Default_Host = "localhost";
     private const int Default_Port = 6379;
     private const string RedisClientSectionPrefix = "redis:client";
-    private readonly bool _cloudFoundryConfigFound = false;
+    private readonly bool _bindingsFound;
 
     public RedisCacheConnectorOptions()
         : base(',', Default_Separator)
@@ -34,7 +34,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         var section = config.GetSection(RedisClientSectionPrefix);
         section.Bind(this);
 
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+        _bindingsFound = config.HasCloudFoundryServiceConfigurations() || config.HasKubernetesServiceBindings();
     }
 
     // Configure either a single Host/Port or optionaly provide
@@ -87,7 +87,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     // public int? DefaultDatabase { get; set; }
     public override string ToString()
     {
-        if (!string.IsNullOrEmpty(ConnectionString) && !_cloudFoundryConfigFound)
+        if (!string.IsNullOrEmpty(ConnectionString) && !_bindingsFound)
         {
             return ConnectionString;
         }

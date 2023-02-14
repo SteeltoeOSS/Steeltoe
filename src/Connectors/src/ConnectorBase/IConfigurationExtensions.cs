@@ -99,9 +99,21 @@ public static class IConfigurationExtensions
     /// Evaluate whether an IConfiguration contains services bound by Cloud Foundry
     /// </summary>
     /// <param name="configuration">Application Configuration</param>
-    /// <returns>true if vcap:services found in config, othwerwise false</returns>
+    /// <returns>true if vcap:services found in config, otherwise false</returns>
     public static bool HasCloudFoundryServiceConfigurations(this IConfiguration configuration)
         => configuration.GetSection("vcap:services").GetChildren().Any();
+
+    /// <summary>
+    /// Evaluate whether an IConfiguration contains Kubernetes service bindings.
+    /// </summary>
+    /// <param name="configuration">
+    /// Application Configuration.
+    /// </param>
+    /// <returns>
+    /// true if k8s:bindings found in configuration, otherwise false.
+    /// </returns>
+    public static bool HasKubernetesServiceBindings(this IConfiguration configuration)
+        => configuration.GetSection("k8s:bindings").GetChildren().Any();
 
     /// <summary>
     /// Adds a configuration provider that uses Connector logic to fulfill requests for GetConnectionString("serviceType") or GetConnectionString("serviceBindingName")

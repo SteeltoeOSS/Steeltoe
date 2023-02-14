@@ -13,7 +13,7 @@ public class OracleProviderConnectorOptions : AbstractServiceConnectorOptions
     public const string Default_Server = "localhost";
     public const int Default_Port = 1521;
     private const string ORACLE_CLIENT_SECTION_PREFIX = "oracle:client";
-    private readonly bool _cloudFoundryConfigFound = false;
+    private readonly bool _bindingsFound;
 
     public OracleProviderConnectorOptions()
     {
@@ -31,7 +31,7 @@ public class OracleProviderConnectorOptions : AbstractServiceConnectorOptions
 
         section.Bind(this);
 
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+        _bindingsFound = config.HasCloudFoundryServiceConfigurations() || config.HasKubernetesServiceBindings();
     }
 
     public string ConnectionString { get; set; }
@@ -52,7 +52,7 @@ public class OracleProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public override string ToString()
     {
-        if (!string.IsNullOrEmpty(ConnectionString) && !_cloudFoundryConfigFound)
+        if (!string.IsNullOrEmpty(ConnectionString) && !_bindingsFound)
         {
             return ConnectionString;
         }
