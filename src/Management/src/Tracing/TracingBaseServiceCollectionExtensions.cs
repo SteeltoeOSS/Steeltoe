@@ -16,6 +16,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Logging;
 using Steeltoe.Management.Wavefront.Exporters;
+using B3Propagator = OpenTelemetry.Extensions.Propagators.B3Propagator;
 
 namespace Steeltoe.Management.Tracing;
 
@@ -103,7 +104,7 @@ public static class TracingBaseServiceCollectionExtensions
                 {
                     var propagators = new List<TextMapPropagator>
                     {
-                        new OpenTelemetry.Extensions.Propagators.B3Propagator(traceOpts.SingleB3Header),
+                        new B3Propagator(traceOpts.SingleB3Header),
                         new BaggagePropagator()
                     };
 
