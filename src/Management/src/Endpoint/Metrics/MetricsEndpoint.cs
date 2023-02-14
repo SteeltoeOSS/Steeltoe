@@ -112,9 +112,10 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
                 sampleList.Add(new MetricSample(MetricStatistic.Max, sample.Value, sample.Tags));
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             // Nothing we can do , log and move on 
+            _logger?.LogError(ex, "Error transforming metrics.");
         }
 
         return sampleList;

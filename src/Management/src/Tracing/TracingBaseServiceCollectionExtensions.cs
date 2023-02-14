@@ -78,10 +78,9 @@ public static class TracingBaseServiceCollectionExtensions
             ConfigureOpenTelemetryProtocolOptions(services);
         }
 
-#pragma warning disable CS0618 // Type or member is obsolete
-        services.AddOpenTelemetryTracing(builder =>
+        services.AddOpenTelemetry().WithTracing(builder =>
         {
-            builder.Configure((serviceProvider, deferredBuilder) =>
+            (builder as IDeferredTracerProviderBuilder)?.Configure((serviceProvider, deferredBuilder) =>
             {
                 string appName = serviceProvider.GetRequiredService<IApplicationInstanceInfo>()
                     .GetApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.ConfigurationPrefix}:name");
@@ -102,13 +101,12 @@ public static class TracingBaseServiceCollectionExtensions
 
                 if (traceOpts.PropagationType.Equals("B3", StringComparison.OrdinalIgnoreCase))
                 {
-#pragma warning disable CS0618 // Type or member is obsolete
                     var propagators = new List<TextMapPropagator>
                     {
-                        new B3Propagator(traceOpts.SingleB3Header),
+                        new OpenTelemetry.Extensions.Propagators.B3Propagator(traceOpts.SingleB3Header),
                         new BaggagePropagator()
                     };
-#pragma warning restore CS0618 // Type or member is obsolete
+
                     Sdk.SetDefaultTextMapPropagator(new CompositeTextMapPropagator(propagators));
                 }
 
@@ -140,8 +138,7 @@ public static class TracingBaseServiceCollectionExtensions
             AddWavefrontExporter(builder);
 
             action?.Invoke(builder);
-        });
-#pragma warning restore CS0618 // Type or member is obsolete
+        }).StartWithHost();
 
         return services;
     }
