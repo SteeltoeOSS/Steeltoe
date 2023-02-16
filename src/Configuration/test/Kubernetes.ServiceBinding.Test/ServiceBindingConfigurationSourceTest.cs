@@ -13,7 +13,7 @@ public sealed class ServiceBindingConfigurationSourceTest
     [Fact]
     public void EnvironmentVariableNotSet()
     {
-        // Not optional, should throw
+        Environment.SetEnvironmentVariable(ServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, null);
         var source = new ServiceBindingConfigurationSource();
         source.ServiceBindingRoot.Should().BeNull();
     }
