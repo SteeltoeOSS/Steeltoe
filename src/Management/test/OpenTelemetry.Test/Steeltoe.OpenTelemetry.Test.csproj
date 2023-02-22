@@ -7,7 +7,7 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OpenTelemetry\Steeltoe.Management.OpenTelemetry.csproj" />
+    <ProjectReference Include="..\..\src\OpenTelemetry\Steeltoe.Management.MetricCollectors.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -310,17 +310,6 @@ public static class ManagementWebHostBuilderExtensions
         });
     }
 
-    /// <summary>
-    /// Adds Wavefront to the application.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
-    /// </param>
-    public static IWebHostBuilder AddWavefrontMetrics(this IWebHostBuilder hostBuilder)
-    {
-        return hostBuilder.ConfigureServices((context, collection) => collection.AddWavefrontMetrics());
-    }
-
     internal static void GetManagementUrl(this IWebHostBuilder webHostBuilder, out int? httpPort, out int? httpsPort)
     {
         string portSetting = webHostBuilder.GetSetting(ManagementPortKey);

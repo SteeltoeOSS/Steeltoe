@@ -7,10 +7,10 @@ using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.OpenTelemetry.Metrics;
+using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
@@ -28,52 +28,12 @@ public class HttpClientCoreObserver : MetricsObserver
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
 
-    public HttpClientCoreObserver(IMetricsObserverOptions options, ILogger<HttpClientCoreObserver> logger, IViewRegistry viewRegistry)
+    public HttpClientCoreObserver(IMetricsObserverOptions options, ILogger<HttpClientCoreObserver> logger /*, IViewRegistry viewRegistry*/)
         : base(DefaultObserverName, DiagnosticName, options, logger)
     {
-        ArgumentGuard.NotNull(viewRegistry);
-
         SetPathMatcher(new Regex(options.EgressIgnorePattern));
-        _clientTimeMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("http.client.request.time");
-        _clientCountMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("http.client.request.count");
-
-        viewRegistry.AddView("http.client.request.time", new ExplicitBucketHistogramConfiguration
-        {
-            Boundaries = new[]
-            {
-                0.0,
-                1.0,
-                5.0,
-                10.0,
-                100.0
-            },
-            TagKeys = new[]
-            {
-                StatusTagKey,
-                UriTagKey,
-                MethodTagKey,
-                ClientTagKey
-            }
-        });
-
-        viewRegistry.AddView("http.client.request.count", new ExplicitBucketHistogramConfiguration
-        {
-            Boundaries = new[]
-            {
-                0.0,
-                1.0,
-                5.0,
-                10.0,
-                100.0
-            },
-            TagKeys = new[]
-            {
-                StatusTagKey,
-                UriTagKey,
-                MethodTagKey,
-                ClientTagKey
-            }
-        });
+        _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.time");
+        _clientCountMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.count");
     }
 
     public override void ProcessEvent(string eventName, object value)

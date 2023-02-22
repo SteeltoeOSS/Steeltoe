@@ -9,7 +9,8 @@ using System.Diagnostics.Tracing;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using Steeltoe.Management.OpenTelemetry.Metrics;
+using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
@@ -134,12 +135,12 @@ public class EventSourceListener : EventListener
 
         if (longValue.HasValue)
         {
-            Counter<long> currentMetric = LongCounters.GetOrAddEx(metricName, name => OpenTelemetryMetrics.Meter.CreateCounter<long>(name));
+            Counter<long> currentMetric = LongCounters.GetOrAddEx(metricName, name => SteeltoeMetrics.Meter.CreateCounter<long>(name));
             currentMetric.Add(longValue.Value, labels.AsReadonlySpan());
         }
         else if (doubleValue.HasValue)
         {
-            Counter<double> currentMetric = DoubleCounters.GetOrAddEx(metricName, name => OpenTelemetryMetrics.Meter.CreateCounter<double>(name));
+            Counter<double> currentMetric = DoubleCounters.GetOrAddEx(metricName, name => SteeltoeMetrics.Meter.CreateCounter<double>(name));
             currentMetric.Add(doubleValue.Value, labels.AsReadonlySpan());
         }
     }

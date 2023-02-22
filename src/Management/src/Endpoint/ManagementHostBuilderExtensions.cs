@@ -316,23 +316,6 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Add wavefront metrics to the application.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// Your Hostbuilder.
-    /// </param>
-    /// <returns>
-    /// The updated HostBuilder.
-    /// </returns>
-    public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
-    {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
-        {
-            collection.AddWavefrontMetrics();
-        });
-    }
-
-    /// <summary>
     /// Registers an <see cref="IStartupFilter" /> that will map all configured actuators, initialize health.
     /// </summary>
     /// <param name="collection">

@@ -11,6 +11,7 @@ using OpenTelemetry.Trace;
 using Steeltoe.Common;
 using Steeltoe.Logging;
 using Xunit;
+using B3Propagator = OpenTelemetry.Extensions.Propagators.B3Propagator;
 
 namespace Steeltoe.Management.Tracing.Test;
 
@@ -73,9 +74,7 @@ public class TestBase
         var props = GetPrivateField(comp, "propagators") as List<TextMapPropagator>;
         Assert.Equal(2, props.Count);
 
-#pragma warning disable CS0618 // Type or member is obsolete
         Assert.Contains(props, p => p is B3Propagator);
-#pragma warning restore CS0618 // Type or member is obsolete
         Assert.Contains(props, p => p is BaggagePropagator);
     }
 

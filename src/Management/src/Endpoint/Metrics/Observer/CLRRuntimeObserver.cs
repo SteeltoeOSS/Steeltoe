@@ -5,7 +5,8 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.OpenTelemetry.Metrics;
+using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
@@ -36,9 +37,9 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
 
     private readonly ClrRuntimeSource.HeapMetrics _previous = default;
 
-    public ClrRuntimeObserver(IViewRegistry viewRegistry)
+    public ClrRuntimeObserver()
     {
-        Meter meter = OpenTelemetryMetrics.Meter;
+        Meter meter = SteeltoeMetrics.Meter;
         meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");
         meter.CreateObservableGauge("clr.gc.collections", GetCollectionCount, "Garbage collection count", "count");
 
