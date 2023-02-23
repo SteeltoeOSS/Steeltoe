@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 
@@ -11,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
 {
-    public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, IManagementOptions managementOptions,
+    public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<TraceEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
@@ -19,7 +20,7 @@ public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
 
     public Task InvokeAsync(HttpContext context)
     {
-        if (Endpoint.ShouldInvoke(managementOptions))
+        if (((TraceEndpoint)Endpoint).Options.CurrentValue.EndpointOptions.ShouldInvoke(managementOptions.CurrentValue))
         {
             return HandleTraceRequestAsync(context);
         }

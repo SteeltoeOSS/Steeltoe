@@ -7,26 +7,30 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-public class HeapDumpEndpointOptions : AbstractEndpointOptions, IHeapDumpOptions
+public class HeapDumpEndpointOptions// : AbstractEndpointOptions, IHeapDumpOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:heapdump";
 
     public string HeapDumpType { get; set; }
 
     // Default to disabled on Linux + Cloud Foundry until PTRACE is allowed
-    public override bool DefaultEnabled { get; } = !(Platform.IsCloudFoundry && Platform.IsLinux);
+    public bool DefaultEnabled { get; } = !(Platform.IsCloudFoundry && Platform.IsLinux);
+    public EndpointSharedOptions EndpointOptions { get; set; }
 
     public HeapDumpEndpointOptions()
     {
-        Id = "heapdump";
+        EndpointOptions = new EndpointSharedOptions
+        {
+            Id = "heapdump"
+        };
     }
 
-    public HeapDumpEndpointOptions(IConfiguration configuration)
-        : base(ManagementInfoPrefix, configuration)
-    {
-        if (string.IsNullOrEmpty(Id))
-        {
-            Id = "heapdump";
-        }
-    }
+    //public HeapDumpEndpointOptions(IConfiguration configuration)
+    //    : base(ManagementInfoPrefix, configuration)
+    //{
+    //    if (string.IsNullOrEmpty(Id))
+    //    {
+    //        Id = "heapdump";
+    //    }
+    //}
 }

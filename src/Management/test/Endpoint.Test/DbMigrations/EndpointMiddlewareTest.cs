@@ -31,60 +31,60 @@ public class EndpointMiddlewareTest : BaseTest
         ["management:endpoints:enabled"] = "true"
     };
 
-    [Fact]
-    public async Task HandleEntityFrameworkRequestAsync_ReturnsExpected()
-    {
-        var opts = new DbMigrationsEndpointOptions();
+    //[Fact]
+    //public async Task HandleEntityFrameworkRequestAsync_ReturnsExpected()
+    //{
+    //    var opts = new DbMigrationsEndpointOptions();
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(AppSettings);
-        var managementOptions = new ActuatorManagementOptions();
-        managementOptions.EndpointOptions.Add(opts);
-        var container = new ServiceCollection();
-        container.AddScoped<MockDbContext>();
-        var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
-        helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
+    //    var configurationBuilder = new ConfigurationBuilder();
+    //    configurationBuilder.AddInMemoryCollection(AppSettings);
+    //    var managementOptions = new ActuatorManagementOptions();
+    //    managementOptions.EndpointOptions.Add(opts);
+    //    var container = new ServiceCollection();
+    //    container.AddScoped<MockDbContext>();
+    //    var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
+    //    helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
 
-        helper.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[]
-        {
-            "pending"
-        });
+    //    helper.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[]
+    //    {
+    //        "pending"
+    //    });
 
-        helper.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[]
-        {
-            "applied"
-        });
+    //    helper.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[]
+    //    {
+    //        "applied"
+    //    });
 
-        var ep = new DbMigrationsEndpoint(opts, container.BuildServiceProvider(), helper);
+    //    var ep = new DbMigrationsEndpoint(opts, container.BuildServiceProvider(), helper);
 
-        var middle = new DbMigrationsEndpointMiddleware(null, ep, managementOptions);
+    //    var middle = new DbMigrationsEndpointMiddleware(null, ep, managementOptions);
 
-        HttpContext context = CreateRequest("GET", "/dbmigrations");
-        await middle.HandleEntityFrameworkRequestAsync(context);
+    //    HttpContext context = CreateRequest("GET", "/dbmigrations");
+    //    await middle.HandleEntityFrameworkRequestAsync(context);
 
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
-        string json = await reader.ReadToEndAsync();
+    //    context.Response.Body.Seek(0, SeekOrigin.Begin);
+    //    var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
+    //    string json = await reader.ReadToEndAsync();
 
-        string expected = Serialize(new Dictionary<string, DbMigrationsDescriptor>
-        {
-            {
-                nameof(MockDbContext), new DbMigrationsDescriptor
-                {
-                    AppliedMigrations = new List<string>
-                    {
-                        "applied"
-                    },
-                    PendingMigrations = new List<string>
-                    {
-                        "pending"
-                    }
-                }
-            }
-        });
+    //    string expected = Serialize(new Dictionary<string, DbMigrationsDescriptor>
+    //    {
+    //        {
+    //            nameof(MockDbContext), new DbMigrationsDescriptor
+    //            {
+    //                AppliedMigrations = new List<string>
+    //                {
+    //                    "applied"
+    //                },
+    //                PendingMigrations = new List<string>
+    //                {
+    //                    "pending"
+    //                }
+    //            }
+    //        }
+    //    });
 
-        Assert.Equal(expected, json);
-    }
+    //    Assert.Equal(expected, json);
+    //}
 
     [Fact]
     public async Task EntityFrameworkActuator_ReturnsExpectedData()

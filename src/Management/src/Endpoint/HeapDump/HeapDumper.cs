@@ -7,6 +7,7 @@ using Graphs;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.GCDump;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
@@ -14,10 +15,11 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 public class HeapDumper : IHeapDumper
 {
     private readonly string _basePathOverride;
+    private readonly IOptionsMonitor<HeapDumpEndpointOptions> _options;
     private readonly ILogger<HeapDumper> _logger;
-    private readonly IHeapDumpOptions _options;
+    //private readonly IHeapDumpOptions _options;
 
-    public HeapDumper(IHeapDumpOptions options, string basePathOverride = null, ILogger<HeapDumper> logger = null)
+    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> options, string basePathOverride = null, ILogger<HeapDumper> logger = null)
     {
         ArgumentGuard.NotNull(options);
 
@@ -34,10 +36,10 @@ public class HeapDumper : IHeapDumper
         {
             fileName = _basePathOverride + fileName;
         }
-
+        
         try
         {
-            if (Environment.Version.Major == 3 || "gcdump".Equals(_options.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+            if (Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
             {
                 _logger?.LogInformation("Attempting to create a gcdump");
 
@@ -50,7 +52,7 @@ public class HeapDumper : IHeapDumper
                 return null;
             }
 
-            if (!Enum.TryParse(typeof(DumpType), _options.HeapDumpType, out object dumpType))
+            if (!Enum.TryParse(typeof(DumpType), _options.CurrentValue.HeapDumpType, out object dumpType))
             {
                 dumpType = DumpType.Full;
             }
@@ -68,7 +70,7 @@ public class HeapDumper : IHeapDumper
 
     internal string CreateFileName()
     {
-        if (Environment.Version.Major == 3 || "gcdump".Equals(_options.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+        if (Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
         {
             return $"gcdump-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}-live.gcdump";
         }

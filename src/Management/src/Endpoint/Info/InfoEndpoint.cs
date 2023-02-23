@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info;
@@ -10,16 +11,20 @@ namespace Steeltoe.Management.Endpoint.Info;
 public class InfoEndpoint : AbstractEndpoint<Dictionary<string, object>>, IInfoEndpoint
 {
     private readonly IList<IInfoContributor> _contributors;
+    private readonly IOptionsMonitor<InfoEndpointOptions> _options;
     private readonly ILogger<InfoEndpoint> _logger;
 
-    public new IInfoOptions Options => options as IInfoOptions;
+    //public new IInfoOptions Options => options as IInfoOptions;
 
-    public InfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
-        : base(options)
+    public InfoEndpoint(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
+       // : base(options)
     {
+        _options = options;
         _logger = logger;
         _contributors = contributors.ToList();
     }
+
+    public IOptionsMonitor<InfoEndpointOptions> Options => _options;
 
     public override Dictionary<string, object> Invoke()
     {

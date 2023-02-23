@@ -10,7 +10,7 @@ public interface IEndpoint
 
     bool Enabled { get; }
 
-    IEndpointOptions Options { get; }
+  //  IEndpointOptions Options { get; }
 
     string Path { get; }
 }

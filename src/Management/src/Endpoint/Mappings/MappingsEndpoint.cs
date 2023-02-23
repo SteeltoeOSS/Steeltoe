@@ -3,17 +3,21 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
 public class MappingsEndpoint : AbstractEndpoint<ApplicationMappings>
 {
-    public new IMappingsOptions Options => options as IMappingsOptions;
+    //public new IMappingsOptions Options => options as IMappingsOptions;
 
-    public MappingsEndpoint(IMappingsOptions options, ILogger<MappingsEndpoint> logger = null)
-        : base(options)
+    public MappingsEndpoint(IOptionsMonitor<MappingsEndpointOptions> options, ILogger<MappingsEndpoint> logger = null)
+       // : base(options)
     {
+        Options = options;
     }
+
+    public IOptionsMonitor<MappingsEndpointOptions> Options { get; }
 
     public override ApplicationMappings Invoke()
     {

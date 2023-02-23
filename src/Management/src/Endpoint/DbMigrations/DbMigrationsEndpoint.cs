@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
@@ -25,24 +26,27 @@ public class DbMigrationsEndpoint : AbstractEndpoint<Dictionary<string, DbMigrat
         MigrationsExtensionsType?.GetMethod("GetAppliedMigrations", BindingFlags.Static | BindingFlags.Public);
 
     internal static readonly MethodInfo GetMigrationsMethod = MigrationsExtensionsType?.GetMethod("GetMigrations", BindingFlags.Static | BindingFlags.Public);
-
+    private readonly IOptionsMonitor<DbMigrationsEndpointOptions> _options;
     private readonly IServiceProvider _container;
     private readonly DbMigrationsEndpointHelper _endpointHelper;
     private readonly ILogger<DbMigrationsEndpoint> _logger;
 
-    public DbMigrationsEndpoint(IDbMigrationsOptions options, IServiceProvider container, ILogger<DbMigrationsEndpoint> logger = null)
+    public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, ILogger<DbMigrationsEndpoint> logger = null)
         : this(options, container, new DbMigrationsEndpointHelper(), logger)
     {
     }
 
-    public DbMigrationsEndpoint(IDbMigrationsOptions options, IServiceProvider container, DbMigrationsEndpointHelper endpointHelper,
+    public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, DbMigrationsEndpointHelper endpointHelper,
         ILogger<DbMigrationsEndpoint> logger = null)
-        : base(options)
+      //  : base(options)
     {
+        _options = options;
         _container = container;
         _endpointHelper = endpointHelper;
         _logger = logger;
     }
+
+    public IOptionsMonitor<DbMigrationsEndpointOptions> Options => _options;
 
     public override Dictionary<string, DbMigrationsDescriptor> Invoke()
     {

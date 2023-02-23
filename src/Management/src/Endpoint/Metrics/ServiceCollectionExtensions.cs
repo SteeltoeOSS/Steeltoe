@@ -40,24 +40,24 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
 
-        var options = new MetricsEndpointOptions(configuration);
-        services.TryAddSingleton<IMetricsEndpointOptions>(options);
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+        //var options = new MetricsEndpointOptions(configuration);
+        //services.TryAddSingleton<IMetricsEndpointOptions>(options);
+        //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
         services.TryAddSingleton<MetricsEndpoint>();
 
         services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoeExporter>(provider =>
-        {
-            var options = provider.GetService<IMetricsEndpointOptions>();
+        //services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoeExporter>(provider =>
+        //{
+        //    //var options = provider.GetService<IMetricsEndpointOptions>();
 
-            var exporterOptions = new PullMetricsExporterOptions
-            {
-                ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds
-            };
+        //    //var exporterOptions = new PullMetricsExporterOptions
+        //    //{
+        //    //    ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds
+        //    //};
 
-            return new SteeltoeExporter(exporterOptions);
-        }));
+        //    //return new SteeltoeExporter(exporterOptions);
+        //}));
 
         services.AddOpenTelemetryMetricsForSteeltoe();
 
@@ -76,32 +76,32 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddPrometheusActuatorServices(this IServiceCollection services, IConfiguration configuration)
-    {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
+    //public static IServiceCollection AddPrometheusActuatorServices(this IServiceCollection services, IConfiguration configuration)
+    //{
+    //    ArgumentGuard.NotNull(services);
+    //    ArgumentGuard.NotNull(configuration);
 
-        var options = new PrometheusEndpointOptions(configuration);
-        services.TryAddSingleton<IPrometheusEndpointOptions>(options);
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
-        services.TryAddSingleton<PrometheusScraperEndpoint>();
+    //    var options = new PrometheusEndpointOptions(configuration);
+    //    services.TryAddSingleton<IPrometheusEndpointOptions>(options);
+    //    services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+    //    services.TryAddSingleton<PrometheusScraperEndpoint>();
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoePrometheusExporter>(provider =>
-        {
-            var options = provider.GetService<IMetricsEndpointOptions>();
+    //    services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoePrometheusExporter>(provider =>
+    //    {
+    //        var options = provider.GetService<IMetricsEndpointOptions>();
 
-            var exporterOptions = new PullMetricsExporterOptions
-            {
-                ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds
-            };
+    //        var exporterOptions = new PullMetricsExporterOptions
+    //        {
+    //            ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds
+    //        };
 
-            return new SteeltoePrometheusExporter(exporterOptions);
-        }));
+    //        return new SteeltoePrometheusExporter(exporterOptions);
+    //    }));
 
-        services.AddOpenTelemetryMetricsForSteeltoe();
+    //    services.AddOpenTelemetryMetricsForSteeltoe();
 
-        return services;
-    }
+    //    return services;
+    //}
 
     /// <summary>
     /// Helper method to configure opentelemetry metrics. Do not use in conjunction with Extension methods provided by OpenTelemetry.

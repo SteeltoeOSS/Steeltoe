@@ -31,9 +31,9 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
 
-        var options = new HeapDumpEndpointOptions(configuration);
-        services.TryAddSingleton<IHeapDumpOptions>(options);
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+        //var options = new HeapDumpEndpointOptions(configuration);
+        //services.TryAddSingleton<IHeapDumpOptions>(options);
+        //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
         services.TryAddSingleton<HeapDumpEndpoint>();
         services.TryAddSingleton<IHeapDumpEndpoint>(provider => provider.GetRequiredService<HeapDumpEndpoint>());
 

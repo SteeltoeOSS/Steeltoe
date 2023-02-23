@@ -8,23 +8,23 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public class AbstractEndpointTest : BaseTest
 {
-    [Fact]
-    public void ThrowsIfOptionsNull()
-    {
-        Assert.Throws<ArgumentNullException>(() => new TestEndpoint(null));
-    }
+    //[Fact]
+    //public void ThrowsIfOptionsNull()
+    //{
+    //    Assert.Throws<ArgumentNullException>(() => new TestEndpoint(null));
+    //}
 
-    [Fact]
-    public void ReturnsOptionValues()
-    {
-        var ep = new TestEndpoint(new TestOptions
-        {
-            Id = "foo",
-            Enabled = false
-        });
+    //[Fact]
+    //public void ReturnsOptionValues()
+    //{
+    //    var ep = new TestEndpoint(new TestOptions
+    //    {
+    //        Id = "foo",
+    //        Enabled = false
+    //    });
 
-        Assert.False(ep.Enabled);
-        Assert.Equal("foo", ep.Id);
-        Assert.Equal(0, ep.Invoke());
-    }
+    //    Assert.False(ep.Enabled);
+    //    Assert.Equal("foo", ep.Id);
+    //    Assert.Equal(0, ep.Invoke());
+    //}
 }

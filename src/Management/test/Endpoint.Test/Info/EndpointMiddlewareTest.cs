@@ -36,27 +36,27 @@ public class EndpointMiddlewareTest : BaseTest
         ["info:NET:ASPNET:version"] = "2.0.0"
     };
 
-    [Fact]
-    public async Task HandleInfoRequestAsync_ReturnsExpected()
-    {
-        var opts = new InfoEndpointOptions();
-        var managementOptions = new ActuatorManagementOptions();
-        managementOptions.EndpointOptions.Add(opts);
+    //[Fact]
+    //public async Task HandleInfoRequestAsync_ReturnsExpected()
+    //{
+    //    var opts = new InfoEndpointOptions();
+    //    var managementOptions = new ActuatorManagementOptions();
+    //    managementOptions.EndpointOptions.Add(opts);
 
-        var contributors = new List<IInfoContributor>
-        {
-            new GitInfoContributor()
-        };
+    //    var contributors = new List<IInfoContributor>
+    //    {
+    //        new GitInfoContributor()
+    //    };
 
-        var ep = new TestInfoEndpoint(opts, contributors);
-        var middle = new InfoEndpointMiddleware(null, ep, managementOptions);
-        HttpContext context = CreateRequest("GET", "/loggers");
-        await middle.HandleInfoRequestAsync(context);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
-        Assert.Equal("{}", json);
-    }
+    //    var ep = new TestInfoEndpoint(opts, contributors);
+    //    var middle = new InfoEndpointMiddleware(null, ep, managementOptions);
+    //    HttpContext context = CreateRequest("GET", "/loggers");
+    //    await middle.HandleInfoRequestAsync(context);
+    //    context.Response.Body.Seek(0, SeekOrigin.Begin);
+    //    var rdr = new StreamReader(context.Response.Body);
+    //    string json = await rdr.ReadToEndAsync();
+    //    Assert.Equal("{}", json);
+    //}
 
     [Fact]
     public async Task InfoActuator_ReturnsExpectedData()

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public class CloudFoundryEndpointOptions : AbstractEndpointOptions, ICloudFoundryOptions
+public class CloudFoundryEndpointOptions //: AbstractEndpointOptions, ICloudFoundryOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:cloudfoundry";
     private const string VcapApplicationIdKey = "vcap:application:application_id";
@@ -19,16 +19,17 @@ public class CloudFoundryEndpointOptions : AbstractEndpointOptions, ICloudFoundr
 
     public string CloudFoundryApi { get; set; }
 
+    public EndpointSharedOptions EndpointOptions { get; set; }
+
     public CloudFoundryEndpointOptions()
     {
-        Id = string.Empty;
     }
 
-    public CloudFoundryEndpointOptions(IConfiguration configuration)
-        : base(ManagementInfoPrefix, configuration)
-    {
-        Id = string.Empty;
-        ApplicationId = configuration[VcapApplicationIdKey];
-        CloudFoundryApi = configuration[VcapApplicationCloudfoundryApiKey];
-    }
+    //public CloudFoundryEndpointOptions(IConfiguration configuration)
+    //    : base(ManagementInfoPrefix, configuration)
+    //{
+    //    Id = string.Empty;
+    //    ApplicationId = configuration[VcapApplicationIdKey];
+    //    CloudFoundryApi = configuration[VcapApplicationCloudfoundryApiKey];
+    //}
 }

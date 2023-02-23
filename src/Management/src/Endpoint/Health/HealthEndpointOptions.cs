@@ -8,9 +8,9 @@ using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthEndpointOptions : AbstractEndpointOptions, IHealthOptions
+public class HealthEndpointOptions: IEndpointOptions /* AbstractEndpointOptions IHealthOptions */
 {
-    private const string ManagementInfoPrefix = "management:endpoints:health";
+    public const string ManagementInfoPrefix = "management:endpoints:health";
 
     public ShowDetails ShowDetails { get; set; }
 
@@ -20,27 +20,26 @@ public class HealthEndpointOptions : AbstractEndpointOptions, IHealthOptions
 
     public Dictionary<string, HealthGroupOptions> Groups { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
+    public EndpointSharedOptions EndpointSharedOptions { get; set; }
+
     public HealthEndpointOptions()
     {
-        Id = "health";
-        RequiredPermissions = Permissions.Restricted;
-        ExactMatch = false;
+        //    Id = "health";
+        //    RequiredPermissions = Permissions.Restricted;
 
-        AddDefaultGroups();
-    }
-
-    public HealthEndpointOptions(IConfiguration configuration)
-        : base(ManagementInfoPrefix, configuration)
-    {
-        if (string.IsNullOrEmpty(Id))
+        EndpointSharedOptions = new EndpointSharedOptions
         {
-            Id = "health";
-        }
+            Id = "health",
+            RequiredPermissions = Permissions.Restricted,
+            ExactMatch = false,
+            
 
-        if (RequiredPermissions == Permissions.Undefined)
-        {
-            RequiredPermissions = Permissions.Restricted;
-        }
+        };
+
+        //if (RequiredPermissions == Permissions.Undefined)
+        //{
+        //    RequiredPermissions = Permissions.Restricted;
+        //}
 
         if (Claim == null && !string.IsNullOrEmpty(Role))
         {
@@ -51,10 +50,34 @@ public class HealthEndpointOptions : AbstractEndpointOptions, IHealthOptions
             };
         }
 
-        ExactMatch = false;
-
         AddDefaultGroups();
     }
+    //public HealthEndpointOptions(IConfiguration configuration)
+    //    : base(ManagementInfoPrefix, configuration)
+    //{
+    //    if (string.IsNullOrEmpty(Id))
+    //    {
+    //        Id = "health";
+    //    }
+
+    //    if (RequiredPermissions == Permissions.Undefined)
+    //    {
+    //        RequiredPermissions = Permissions.Restricted;
+    //    }
+
+    //    if (Claim == null && !string.IsNullOrEmpty(Role))
+    //    {
+    //        Claim = new EndpointClaim
+    //        {
+    //            Type = ClaimTypes.Role,
+    //            Value = Role
+    //        };
+    //    }
+
+    //    ExactMatch = false;
+
+    //    AddDefaultGroups();
+    //}
 
     private void AddDefaultGroups()
     {

@@ -13,9 +13,8 @@ public class Exposure
 
     private static readonly List<string> DefaultInclude = new()
     {
-        "health",
-        "info"
-    };
+        "*"
+    }; // TODO: Change this to "Info" and "Health" only when you use "AddAllActuators"; 
 
     public List<string> Include { get; set; }
 

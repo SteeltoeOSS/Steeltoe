@@ -6,17 +6,5 @@ namespace Steeltoe.Management;
 
 public interface IEndpointOptions
 {
-    bool? Enabled { get; }
-
-    string Id { get; }
-
-    string Path { get; }
-
-    Permissions RequiredPermissions { get; }
-
-    IEnumerable<string> AllowedVerbs { get; }
-
-    bool ExactMatch { get; }
-
-    bool IsAccessAllowed(Permissions permissions);
+    EndpointSharedOptions EndpointSharedOptions { get; set; }
 }

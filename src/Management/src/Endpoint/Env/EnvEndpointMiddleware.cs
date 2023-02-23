@@ -4,21 +4,27 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
+public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>, IEndpointMiddleware
 {
-    public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, IManagementOptions managementOptions, ILogger<EnvEndpointMiddleware> logger = null)
+    public EnvEndpointMiddleware(/*RequestDelegate next, */EnvEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<EnvEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
+        Endpoint = endpoint;
     }
+    
+    public EnvEndpoint EnvEndpoint { get; }
+
+    public IEndpointOptions EndpointOptions => throw new NotImplementedException();
 
     public Task InvokeAsync(HttpContext context)
     {
-        if (Endpoint.ShouldInvoke(managementOptions, logger))
+        if (EnvEndpoint.Options.CurrentValue.EndpointOptions.ShouldInvoke(managementOptions.CurrentValue, logger))
         {
             return HandleEnvRequestAsync(context);
         }

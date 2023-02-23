@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -17,17 +18,22 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 /// </summary>
 public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 {
-    public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IManagementOptions managementOptions,
+    public CloudFoundryEndpoint CloudFoundryEndpoint { get; }
+
+    public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<CloudFoundryEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
+        Endpoint = endpoint;
+        CloudFoundryEndpoint = endpoint;
     }
 
     public Task InvokeAsync(HttpContext context)
     {
         logger?.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
-
-        if (Endpoint.ShouldInvoke(managementOptions, logger))
+        var mgmtOption = managementOptions.Get(ManagementEndpointOptions.CFOptionName);
+        var cfOptions = CloudFoundryEndpoint.Options.CurrentValue;
+        if (cfOptions.EndpointOptions.ShouldInvoke(mgmtOption, logger))
         {
             return HandleCloudFoundryRequestAsync(context);
         }

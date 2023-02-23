@@ -4,13 +4,14 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
 public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResult>
 {
-    public ThreadDumpEndpointMiddlewareV2(RequestDelegate next, ThreadDumpEndpointV2 endpoint, IManagementOptions managementOptions,
+    public ThreadDumpEndpointMiddlewareV2(RequestDelegate next, ThreadDumpEndpointV2 endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<ThreadDumpEndpointMiddlewareV2> logger = null)
         : base(endpoint, managementOptions, logger)
     {
@@ -18,7 +19,7 @@ public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResul
 
     public Task InvokeAsync(HttpContext context)
     {
-        if (Endpoint.ShouldInvoke(managementOptions, logger))
+        if (((ThreadDumpEndpointV2) Endpoint).Options.CurrentValue.EndpointOptions.ShouldInvoke(managementOptions.CurrentValue, logger))
         {
             return HandleThreadDumpRequestAsync(context);
         }

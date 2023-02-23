@@ -65,8 +65,8 @@ public static class EndpointServiceCollectionExtensions
             default:
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpTraceDiagnosticObserver>());
 
-                services.TryAddSingleton(p =>
-                    new HttpTraceEndpoint(p.GetService<ITraceOptions>(), p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
+            //    services.TryAddSingleton(p =>
+           //         new HttpTraceEndpoint(p.GetService<ITraceOptions>(), p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
 
                 services.AddActuatorEndpointMapping<HttpTraceEndpoint>();
                 break;

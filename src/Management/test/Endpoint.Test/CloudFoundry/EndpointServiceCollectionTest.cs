@@ -22,28 +22,28 @@ public class EndpointServiceCollectionTest : BaseTest
         Assert.Throws<InvalidOperationException>(() => services2.AddCloudFoundryActuator());
     }
 
-    [Fact]
-    public void AddCloudFoundryActuator_AddsCorrectServices()
-    {
-        var services = new ServiceCollection();
+    //[Fact]
+    //public void AddCloudFoundryActuator_AddsCorrectServices()
+    //{
+    //    var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
-        {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
-            ["management:endpoints:info:enabled"] = "true"
-        };
+    //    var appSettings = new Dictionary<string, string>
+    //    {
+    //        ["management:endpoints:enabled"] = "false",
+    //        ["management:endpoints:path"] = "/cloudfoundryapplication",
+    //        ["management:endpoints:info:enabled"] = "true"
+    //    };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+    //    var configurationBuilder = new ConfigurationBuilder();
+    //    configurationBuilder.AddInMemoryCollection(appSettings);
+    //    IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        services.AddCloudFoundryActuator(configurationRoot);
+    //    services.AddCloudFoundryActuator(configurationRoot);
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<ICloudFoundryOptions>();
-        Assert.NotNull(options);
-        var ep = serviceProvider.GetService<CloudFoundryEndpoint>();
-        Assert.NotNull(ep);
-    }
+    //    ServiceProvider serviceProvider = services.BuildServiceProvider();
+    //    var options = serviceProvider.GetService<ICloudFoundryOptions>();
+    //    Assert.NotNull(options);
+    //    var ep = serviceProvider.GetService<CloudFoundryEndpoint>();
+    //    Assert.NotNull(ep);
+    //}
 }

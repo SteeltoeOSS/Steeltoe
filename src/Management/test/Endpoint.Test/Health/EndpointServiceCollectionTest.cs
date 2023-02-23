@@ -9,7 +9,10 @@ using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
+using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Security;
 using Xunit;
+using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
@@ -49,16 +52,23 @@ public class EndpointServiceCollectionTest : BaseTest
 
         services.Configure<HealthCheckServiceOptions>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IHealthOptions>();
-        Assert.NotNull(options);
-        var ep = serviceProvider.GetService<HealthEndpointCore>();
-        Assert.NotNull(ep);
+        //var options = serviceProvider.GetService<IHealthOptions>();
+        //Assert.NotNull(options);
+        //var ep = serviceProvider.GetService<HealthEndpointCore>();
+        //Assert.NotNull(ep);
+       
         var agg = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(agg);
         IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
         Assert.NotNull(contributors);
         List<IHealthContributor> contributorList = contributors.ToList();
         Assert.Single(contributorList);
+
+        //New:
+        var ep = serviceProvider.GetService<IEndpoint<HealthEndpointResponse, ISecurityContext>>();
+        Assert.NotNull(ep);
+        var actuatorMiddlware = serviceProvider.GetService<ActuatorsMiddleware>();
+        Assert.NotNull(actuatorMiddlware);
     }
 
     [Fact]
@@ -81,10 +91,10 @@ public class EndpointServiceCollectionTest : BaseTest
 
         services.Configure<HealthCheckServiceOptions>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IHealthOptions>();
-        Assert.NotNull(options);
-        var ep = serviceProvider.GetService<HealthEndpointCore>();
-        Assert.NotNull(ep);
+        //var options = serviceProvider.GetService<IHealthOptions>();
+        //Assert.NotNull(options);
+        //var ep = serviceProvider.GetService<HealthEndpointCore>();
+        //Assert.NotNull(ep);
         var agg = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(agg);
         IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();

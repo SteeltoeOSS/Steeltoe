@@ -6,37 +6,39 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public class LoggersEndpointOptions : AbstractEndpointOptions, ILoggersOptions
+public class LoggersEndpointOptions //: AbstractEndpointOptions, ILoggersOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:loggers";
 
+    public EndpointSharedOptions EndpointOptions { get; set; }
     public LoggersEndpointOptions()
     {
-        Id = "loggers";
-
-        AllowedVerbs = new List<string>
+        EndpointOptions = new EndpointSharedOptions
         {
-            "Get",
-            "Post"
+            Id = "loggers",
+            AllowedVerbs = new List<string>
+            {
+                "Get",
+                "Post"
+            },
+            ExactMatch = false
         };
-
-        ExactMatch = false;
     }
 
-    public LoggersEndpointOptions(IConfiguration configuration)
-        : base(ManagementInfoPrefix, configuration)
-    {
-        if (string.IsNullOrEmpty(Id))
-        {
-            Id = "loggers";
-        }
+    //public LoggersEndpointOptions(IConfiguration configuration)
+    //    : base(ManagementInfoPrefix, configuration)
+    //{
+    //    if (string.IsNullOrEmpty(Id))
+    //    {
+    //        Id = "loggers";
+    //    }
 
-        AllowedVerbs = new List<string>
-        {
-            "Get",
-            "Post"
-        };
+    //    AllowedVerbs = new List<string>
+    //    {
+    //        "Get",
+    //        "Post"
+    //    };
 
-        ExactMatch = false;
-    }
+    //    ExactMatch = false;
+    //}
 }

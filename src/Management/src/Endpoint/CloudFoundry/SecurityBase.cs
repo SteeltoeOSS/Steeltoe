@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
 
@@ -23,22 +24,28 @@ public class SecurityBase
     public const string AuthorizationHeader = "Authorization";
     public const string Bearer = "bearer";
     public const string ReadSensitiveData = "read_sensitive_data";
-    private readonly ICloudFoundryOptions _options;
-    private readonly IManagementOptions _managementOptions;
+    private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
+
+    //private readonly ICloudFoundryOptions _options;
+    private readonly ManagementEndpointOptions _managementOptions;
+
+    //private readonly IManagementOptions _managementOptions;
     private readonly ILogger _logger;
     private HttpClient _httpClient;
 
-    public SecurityBase(ICloudFoundryOptions options, IManagementOptions managementOptions, ILogger logger = null, HttpClient httpClient = null)
+    public SecurityBase(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null, HttpClient httpClient = null)
     {
         _options = options;
-        _managementOptions = managementOptions;
+        _managementOptions = managementOptions.Get(ManagementEndpointOptions.CFOptionName);
         _logger = logger;
         _httpClient = httpClient;
     }
 
     public bool IsCloudFoundryRequest(string requestPath)
     {
-        string contextPath = _managementOptions == null ? _options.Path : _managementOptions.Path;
+        var optionsPath = _options.CurrentValue.EndpointOptions.Path;
+
+        string contextPath = _managementOptions == null ? optionsPath : _managementOptions.Path;
         return requestPath.StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -55,7 +62,7 @@ public class SecurityBase
 
         return string.Empty;
     }
-
+    
     public async Task<SecurityResult> GetPermissionsAsync(string token)
     {
         if (string.IsNullOrEmpty(token))
@@ -63,7 +70,7 @@ public class SecurityBase
             return new SecurityResult(HttpStatusCode.Unauthorized, AuthorizationHeaderInvalid);
         }
 
-        string checkPermissionsUri = $"{_options.CloudFoundryApi}/v2/apps/{_options.ApplicationId}/permissions";
+        string checkPermissionsUri = $"{_options.CurrentValue.CloudFoundryApi}/v2/apps/{_options.CurrentValue.ApplicationId}/permissions";
         var request = new HttpRequestMessage(HttpMethod.Get, new Uri(checkPermissionsUri, UriKind.RelativeOrAbsolute));
         var auth = new AuthenticationHeaderValue("bearer", token);
         request.Headers.Authorization = auth;
@@ -71,7 +78,7 @@ public class SecurityBase
         try
         {
             _logger?.LogDebug("GetPermissionsAsync({uri}, {token})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
-            _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DefaultGetPermissionsTimeout);
+            _httpClient ??= HttpClientHelper.GetHttpClient(_options.CurrentValue.ValidateCertificates, DefaultGetPermissionsTimeout);
             using HttpResponseMessage response = await _httpClient.SendAsync(request);
 
             if (response.StatusCode != HttpStatusCode.OK)

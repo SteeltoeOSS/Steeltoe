@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 
@@ -11,15 +12,19 @@ namespace Steeltoe.Management.Endpoint.DbMigrations;
 
 public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
 {
-    public DbMigrationsEndpointMiddleware(RequestDelegate next, DbMigrationsEndpoint endpoint, IManagementOptions managementOptions,
+    
+    public DbMigrationsEndpointMiddleware(RequestDelegate next, DbMigrationsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<DbMigrationsEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
+        DbMigrationsEndpoint = endpoint;
     }
+
+    public DbMigrationsEndpoint DbMigrationsEndpoint { get; }
 
     public Task InvokeAsync(HttpContext context)
     {
-        if (Endpoint.ShouldInvoke(managementOptions, logger))
+        if (DbMigrationsEndpoint.Options.CurrentValue.EndpointOptions.ShouldInvoke(managementOptions.CurrentValue, logger))
         {
             return HandleEntityFrameworkRequestAsync(context);
         }

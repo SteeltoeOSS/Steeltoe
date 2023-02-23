@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
 
@@ -10,24 +11,28 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>, ICloudFoundryEndpoint
 {
+    private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
+    private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
     private readonly ILogger<CloudFoundryEndpoint> _logger;
-    private readonly IManagementOptions _managementOptions;
+  //  private readonly IManagementOptions _managementOptions;
 
-    protected new ICloudFoundryOptions Options => options as ICloudFoundryOptions;
+    //protected new ICloudFoundryOptions Options => options as ICloudFoundryOptions;
 
-    public CloudFoundryEndpoint(ICloudFoundryOptions options, CloudFoundryManagementOptions managementOptions, ILogger<CloudFoundryEndpoint> logger = null)
-        : base(options)
+    public CloudFoundryEndpoint(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundryEndpoint> logger = null)
+       // : base(options)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(managementOptions);
-
+        _options = options;
         _managementOptions = managementOptions;
         _logger = logger;
     }
 
+    public IOptionsMonitor<CloudFoundryEndpointOptions> Options => _options;
+
     public override Links Invoke(string baseUrl)
     {
-        var hypermediaService = new HypermediaService(_managementOptions, options, _logger);
+        var hypermediaService = new HypermediaService(_managementOptions, _options, _logger);
         return hypermediaService.Invoke(baseUrl);
     }
 }

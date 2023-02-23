@@ -11,6 +11,8 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Extensions;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
@@ -89,9 +91,16 @@ public static class EndpointServiceCollectionExtensions
         AddHealthContributors(services, contributors);
 
         services.TryAddSingleton(aggregator);
-        services.TryAddScoped<HealthEndpointCore>();
-        services.AddActuatorEndpointMapping<HealthEndpointCore>();
+        //services.TryAddScoped<HealthEndpointCore>();
+        services.TryAddScoped<IEndpoint<HealthEndpointResponse, ISecurityContext>, HealthEndpointCore>();
+       // services.AddActuatorEndpointMapping<HealthEndpointCore>();
         services.TryAddSingleton<ApplicationAvailability>();
+
+        //New:
+
+        services.TryAddScoped<ActuatorRouter>();
+        services.TryAddScoped<ActuatorsMiddleware>();
+        services.TryAddScoped<IEndpointMiddleware, HealthEndpointMiddleware>();
     }
 
     public static void AddHealthContributors(this IServiceCollection services, params Type[] contributors)

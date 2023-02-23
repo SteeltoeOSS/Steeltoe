@@ -6,15 +6,18 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
-public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>
+public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>, IEndpointMiddleware
 {
-    public ActuatorHypermediaEndpointMiddleware(RequestDelegate next, ActuatorEndpoint endpoint, ActuatorManagementOptions managementOptions,
+    public IEndpointOptions EndpointOptions => ((ActuatorEndpoint)Endpoint).Options.CurrentValue;
+
+    public ActuatorHypermediaEndpointMiddleware(/*RequestDelegate next,*/ ActuatorEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<ActuatorHypermediaEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
@@ -24,7 +27,7 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
     {
         logger?.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
-        if (Endpoint.ShouldInvoke(managementOptions, logger))
+        if (((ActuatorEndpoint)Endpoint).Options.CurrentValue.EndpointSharedOptions.ShouldInvoke(managementOptions.CurrentValue, logger))
         {
             string serialInfo = HandleRequest(Endpoint, GetRequestUri(context.Request), logger);
             logger?.LogDebug("Returning: {info}", serialInfo);

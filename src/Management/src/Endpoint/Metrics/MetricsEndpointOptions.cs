@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsEndpointOptions : AbstractEndpointOptions, IMetricsEndpointOptions
+public class MetricsEndpointOptions //: AbstractEndpointOptions, IMetricsEndpointOptions
 {
     internal const string ManagementInfoPrefix = "management:endpoints:metrics";
 
@@ -21,32 +21,38 @@ public class MetricsEndpointOptions : AbstractEndpointOptions, IMetricsEndpointO
 
     public int ScrapeResponseCacheDurationMilliseconds { get; set; }
 
+    public EndpointSharedOptions EndpointOptions { get; set; }
+
     public MetricsEndpointOptions()
     {
-        Id = "metrics";
-        IngressIgnorePattern = DefaultIngressIgnorePattern;
+        EndpointOptions = new EndpointSharedOptions
+        {
+            Id = "metrics",
+
+            ExactMatch = false
+        };
+           IngressIgnorePattern = DefaultIngressIgnorePattern;
         EgressIgnorePattern = DefaultEgressIgnorePattern;
-        ExactMatch = false;
     }
 
-    public MetricsEndpointOptions(IConfiguration configuration)
-        : base(ManagementInfoPrefix, configuration)
-    {
-        if (string.IsNullOrEmpty(Id))
-        {
-            Id = "metrics";
-        }
+    //public MetricsEndpointOptions(IConfiguration configuration)
+    //    : base(ManagementInfoPrefix, configuration)
+    //{
+    //    if (string.IsNullOrEmpty(Id))
+    //    {
+    //        Id = "metrics";
+    //    }
 
-        if (string.IsNullOrEmpty(IngressIgnorePattern))
-        {
-            IngressIgnorePattern = DefaultIngressIgnorePattern;
-        }
+    //    if (string.IsNullOrEmpty(IngressIgnorePattern))
+    //    {
+    //        IngressIgnorePattern = DefaultIngressIgnorePattern;
+    //    }
 
-        if (string.IsNullOrEmpty(EgressIgnorePattern))
-        {
-            EgressIgnorePattern = DefaultEgressIgnorePattern;
-        }
+    //    if (string.IsNullOrEmpty(EgressIgnorePattern))
+    //    {
+    //        EgressIgnorePattern = DefaultEgressIgnorePattern;
+    //    }
 
-        ExactMatch = false;
-    }
+    //    ExactMatch = false;
+    //}
 }

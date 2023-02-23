@@ -5,7 +5,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
@@ -23,15 +25,23 @@ public class AuthStartup
         services.AddRouting();
         services.AddHealthActuator(Configuration);
     }
-
+    
     public void Configure(IApplicationBuilder app)
     {
         app.UseMiddleware<AuthenticatedTestMiddleware>();
         app.UseRouting();
+        
+        //app.UseEndpoints(endpoints =>
+        //{
+        //    endpoints.Map<HealthEndpointCore>();
+        //});
 
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<HealthEndpointCore>();
-        });
+        MapHealthActuator(app);
+    }
+
+    public static void MapHealthActuator(IApplicationBuilder app)
+    {
+        app.UseMiddleware<ActuatorsMiddleware>();
+        app.UseEndpoints(endpoints => endpoints.MapTheActuators(null));
     }
 }

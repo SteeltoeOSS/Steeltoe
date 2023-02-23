@@ -1,24 +1,24 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the Apache 2.0 License.
-// See the LICENSE file in the project root for more information.
+//// Licensed to the .NET Foundation under one or more agreements.
+//// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+//// See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
-using Steeltoe.Common.HealthChecks;
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Security;
+//using Microsoft.Extensions.Logging;
+//using Steeltoe.Common.HealthChecks;
+//using Steeltoe.Management.Endpoint.Health;
+//using Steeltoe.Management.Endpoint.Security;
 
-namespace Steeltoe.Management.Endpoint.Test.Health;
+//namespace Steeltoe.Management.Endpoint.Test.Health;
 
-internal sealed class TestHealthEndpoint : HealthEndpoint
-{
-    public TestHealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
-        ILogger<HealthEndpoint> logger = null)
-        : base(options, aggregator, contributors, logger)
-    {
-    }
+//internal sealed class TestHealthEndpoint : HealthEndpointCore
+//{
+//    public TestHealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
+//        ILogger<HealthEndpointCore> logger = null)
+//        : base(options, aggregator, contributors, logger)
+//    {
+//    }
 
-    public override HealthEndpointResponse Invoke(ISecurityContext securityContext)
-    {
-        return new HealthEndpointResponse(null);
-    }
-}
+//    public override HealthEndpointResponse Invoke(ISecurityContext securityContext)
+//    {
+//        return new HealthEndpointResponse(null);
+//    }
+//}

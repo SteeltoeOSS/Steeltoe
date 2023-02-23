@@ -31,9 +31,9 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
 
-        var options = new LoggersEndpointOptions(configuration);
-        services.TryAddSingleton<ILoggersOptions>(options);
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+        //var options = new LoggersEndpointOptions(configuration);
+        //services.TryAddSingleton<ILoggersOptions>(options);
+        //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
         services.TryAddSingleton<LoggersEndpoint>();
         services.TryAddSingleton<ILoggersEndpoint>(provider => provider.GetRequiredService<LoggersEndpoint>());
 

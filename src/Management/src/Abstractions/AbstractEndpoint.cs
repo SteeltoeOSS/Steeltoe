@@ -8,21 +8,21 @@ namespace Steeltoe.Management;
 
 public abstract class AbstractEndpoint : IEndpoint
 {
-    protected IEndpointOptions options;
+   // protected IEndpointOptions options;
 
-    public virtual string Id => options.Id;
+    public virtual string Id { get; }//=> options.Id;
 
-    public virtual bool Enabled => options.Enabled.Value;
+    public virtual bool Enabled { get; } //=> options.Enabled.Value;
 
-    public virtual IEndpointOptions Options => options;
+    //public virtual IEndpointOptions Options => options;
 
-    public string Path => options.Path;
+    public string Path { get; } //=> options.Path;
 
-    protected AbstractEndpoint(IEndpointOptions options)
+    protected AbstractEndpoint(/*IEndpointOptions options*/)
     {
-        ArgumentGuard.NotNull(options);
+        //ArgumentGuard.NotNull(options);
 
-        this.options = options;
+        //this.options = options;
     }
 }
 
@@ -34,8 +34,8 @@ public abstract class AbstractEndpoint : IEndpoint
 /// </typeparam>
 public abstract class AbstractEndpoint<TResult> : AbstractEndpoint, IEndpoint<TResult>
 {
-    protected AbstractEndpoint(IEndpointOptions options)
-        : base(options)
+    protected AbstractEndpoint(/*IEndpointOptions options*/)
+        : base(/*options*/)
     {
     }
 
@@ -62,8 +62,8 @@ public abstract class AbstractEndpoint<TResult, TRequest> : AbstractEndpoint, IE
     /// <param name="options">
     /// Endpoint configuration options.
     /// </param>
-    protected AbstractEndpoint(IEndpointOptions options)
-        : base(options)
+    protected AbstractEndpoint(/*IEndpointOptions options*/)
+        : base(/*options*/)
     {
     }
 

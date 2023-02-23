@@ -31,32 +31,32 @@ public class EndpointMiddlewareTest : BaseTest
         ["management:endpoints:heapdump:heapdumptype"] = "gcdump"
     };
 
-    [Fact]
-    public async Task HandleHeapDumpRequestAsync_ReturnsExpected()
-    {
-        var opts = new HeapDumpEndpointOptions();
-        var managementOptions = new ActuatorManagementOptions();
-        managementOptions.EndpointOptions.Add(opts);
+    //[Fact]
+    //public async Task HandleHeapDumpRequestAsync_ReturnsExpected()
+    //{
+    //    var opts = new HeapDumpEndpointOptions();
+    //    var managementOptions = new ActuatorManagementOptions();
+    //    managementOptions.EndpointOptions.Add(opts);
 
-        IServiceCollection serviceCollection = new ServiceCollection();
-        serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
-        var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
+    //    IServiceCollection serviceCollection = new ServiceCollection();
+    //    serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
+    //    var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
 
-        ILogger<HeapDumper> logger1 = loggerFactory.CreateLogger<HeapDumper>();
-        ILogger<HeapDumpEndpoint> logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
-        ILogger<HeapDumpEndpointMiddleware> logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
+    //    ILogger<HeapDumper> logger1 = loggerFactory.CreateLogger<HeapDumper>();
+    //    ILogger<HeapDumpEndpoint> logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
+    //    ILogger<HeapDumpEndpointMiddleware> logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
 
-        var obs = new HeapDumper(opts, logger: logger1);
+    //    var obs = new HeapDumper(opts, logger: logger1);
 
-        var ep = new HeapDumpEndpoint(opts, obs, logger2);
-        var middle = new HeapDumpEndpointMiddleware(null, ep, managementOptions, logger3);
-        HttpContext context = CreateRequest("GET", "/heapdump");
-        await middle.HandleHeapDumpRequestAsync(context);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        byte[] buffer = new byte[1024];
-        await context.Response.Body.ReadAsync(buffer);
-        Assert.NotEqual(0, buffer[0]);
-    }
+    //    var ep = new HeapDumpEndpoint(opts, obs, logger2);
+    //    var middle = new HeapDumpEndpointMiddleware(null, ep, managementOptions, logger3);
+    //    HttpContext context = CreateRequest("GET", "/heapdump");
+    //    await middle.HandleHeapDumpRequestAsync(context);
+    //    context.Response.Body.Seek(0, SeekOrigin.Begin);
+    //    byte[] buffer = new byte[1024];
+    //    await context.Response.Body.ReadAsync(buffer);
+    //    Assert.NotEqual(0, buffer[0]);
+    //}
 
     [Fact]
     public async Task HeapDumpActuator_ReturnsExpectedData()

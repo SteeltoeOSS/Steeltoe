@@ -6,8 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management;
-
-public abstract class AbstractEndpointOptions : IEndpointOptions
+//Used to be abstract options
+public class EndpointSharedOptions //: IEndpointOptions 
 {
     protected bool? sensitive;
 
@@ -33,34 +33,13 @@ public abstract class AbstractEndpointOptions : IEndpointOptions
 
     public Permissions RequiredPermissions { get; set; } = Permissions.Undefined;
 
-    public IManagementOptions Global { get; set; }
+  //  public IManagementOptions Global { get; set; }
 
     public virtual bool DefaultEnabled { get; } = true;
 
-    public IEnumerable<string> AllowedVerbs { get; set; }
+    public IEnumerable<string> AllowedVerbs;  // Fields so they are not bound to configuration 
 
-    public bool ExactMatch { get; set; } = true;
-
-    protected AbstractEndpointOptions()
-    {
-    }
-
-    protected AbstractEndpointOptions(string sectionName, IConfiguration configuration)
-    {
-        ArgumentGuard.NotNull(sectionName);
-        ArgumentGuard.NotNull(configuration);
-
-        IConfigurationSection section = configuration.GetSection(sectionName);
-
-        if (section != null)
-        {
-            section.Bind(this);
-        }
-
-        // These should not be set from configuration
-        AllowedVerbs = null;
-        ExactMatch = true;
-    }
+    public bool ExactMatch = true; // Fields so they are not bound to configuration
 
     public virtual bool IsAccessAllowed(Permissions permissions)
     {

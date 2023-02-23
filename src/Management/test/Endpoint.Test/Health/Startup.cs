@@ -9,6 +9,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
+using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
@@ -53,10 +54,13 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
+        app.UseMiddleware<ActuatorsMiddleware>();
+        //app.UseEndpoints(endpoints =>
+        //{
+        //    endpoints.Map<HealthEndpointCore>();
+        //});
 
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<HealthEndpointCore>();
-        });
+        //New:
+        app.UseEndpoints(endpoints => endpoints.MapTheActuators(null));
     }
 }

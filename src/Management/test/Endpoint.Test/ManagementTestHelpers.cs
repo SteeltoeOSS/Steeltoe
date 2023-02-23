@@ -8,14 +8,14 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public static class ManagementTestHelpers
 {
-    public static IEnumerable<IManagementOptions> GetManagementOptions(params IEndpointOptions[] options)
-    {
-        var managementOptions = new CloudFoundryManagementOptions();
-        managementOptions.EndpointOptions.AddRange(options);
+    //public static IEnumerable<IManagementOptions> GetManagementOptions(params IEndpointOptions[] options)
+    //{
+    //    var managementOptions = new CloudFoundryManagementOptions();
+    //    managementOptions.EndpointOptions.AddRange(options);
 
-        return new List<IManagementOptions>
-        {
-            managementOptions
-        };
-    }
+    //    return new List<IManagementOptions>
+    //    {
+    //        managementOptions
+    //    };
+    //}
 }

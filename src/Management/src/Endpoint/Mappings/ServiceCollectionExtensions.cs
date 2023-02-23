@@ -31,9 +31,9 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
 
-        var options = new MappingsEndpointOptions(configuration);
-        services.TryAddSingleton<IMappingsOptions>(options);
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+        //var options = new MappingsEndpointOptions(configuration);
+        //services.TryAddSingleton<IMappingsOptions>(options);
+        //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
         services.TryAddSingleton<MappingsEndpoint>();
 
         return services;

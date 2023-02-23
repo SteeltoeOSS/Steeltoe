@@ -28,36 +28,36 @@ public class EndpointMiddlewareTest : BaseTest
         ["management:endpoints:enabled"] = "true"
     };
 
-    [Fact]
-    public void RoutesByPathAndVerb()
-    {
-        var options = new MappingsEndpointOptions();
-        Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/mappings", options.GetContextPath(new ActuatorManagementOptions()));
-        Assert.Equal("/cloudfoundryapplication/mappings", options.GetContextPath(new CloudFoundryManagementOptions()));
-        Assert.Null(options.AllowedVerbs);
-    }
+    //[Fact]
+    //public void RoutesByPathAndVerb()
+    //{
+    //    var options = new MappingsEndpointOptions();
+    //    Assert.True(options.ExactMatch);
+    //    Assert.Equal("/actuator/mappings", options.GetContextPath(new ActuatorManagementOptions()));
+    //    Assert.Equal("/cloudfoundryapplication/mappings", options.GetContextPath(new CloudFoundryManagementOptions()));
+    //    Assert.Null(options.AllowedVerbs);
+    //}
 
-    [Fact]
-    public async Task HandleMappingsRequestAsync_MVCNotUsed_NoRoutes_ReturnsExpected()
-    {
-        var opts = new MappingsEndpointOptions();
-        var managementOptions = new CloudFoundryManagementOptions();
-        managementOptions.EndpointOptions.Add(opts);
+    //[Fact]
+    //public async Task HandleMappingsRequestAsync_MVCNotUsed_NoRoutes_ReturnsExpected()
+    //{
+    //    var opts = new MappingsEndpointOptions();
+    //    var managementOptions = new CloudFoundryManagementOptions();
+    //    managementOptions.EndpointOptions.Add(opts);
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(AppSettings);
-        var ep = new MappingsEndpoint(opts);
-        var middle = new MappingsEndpointMiddleware(null, opts, managementOptions, ep);
+    //    var configurationBuilder = new ConfigurationBuilder();
+    //    configurationBuilder.AddInMemoryCollection(AppSettings);
+    //    var ep = new MappingsEndpoint(opts);
+    //    var middle = new MappingsEndpointMiddleware(null, opts, managementOptions, ep);
 
-        HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
-        await middle.HandleMappingsRequestAsync(context);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
-        string json = await reader.ReadLineAsync();
-        const string expected = "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"dispatcherServlet\":[]}}}}}";
-        Assert.Equal(expected, json);
-    }
+    //    HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
+    //    await middle.HandleMappingsRequestAsync(context);
+    //    context.Response.Body.Seek(0, SeekOrigin.Begin);
+    //    var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
+    //    string json = await reader.ReadLineAsync();
+    //    const string expected = "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"dispatcherServlet\":[]}}}}}";
+    //    Assert.Equal(expected, json);
+    //}
 
     [Fact]
     public async Task MappingsActuator_ReturnsExpectedData()

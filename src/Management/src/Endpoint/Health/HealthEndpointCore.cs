@@ -9,27 +9,31 @@ using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Security;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
+using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthEndpointCore : HealthEndpoint
+public class HealthEndpointCore:  AbstractEndpoint<HealthEndpointResponse, ISecurityContext>, IHealthEndpoint
 {
     private readonly IOptionsMonitor<HealthCheckServiceOptions> _serviceOptions;
     private readonly IServiceProvider _provider;
+    private readonly IOptionsMonitor<HealthEndpointOptions> _options;
     private readonly IHealthAggregator _aggregator;
     private readonly IList<IHealthContributor> _contributors;
-    private readonly ILogger<HealthEndpoint> _logger;
+    private readonly ILogger<HealthEndpointCore> _logger;
 
-    public new IHealthOptions Options => options as IHealthOptions;
+    public IOptionsMonitor<HealthEndpointOptions> Options => _options;
 
-    public HealthEndpointCore(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
-        IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpoint> logger = null)
-        : base(options, aggregator, contributors, logger)
+    //public new IHealthOptions Options { get; } // => options as IHealthOptions;
+
+    public HealthEndpointCore(IOptionsMonitor<HealthEndpointOptions> options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
+        IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpointCore> logger = null)
+    //: base(options, aggregator, contributors, logger)
     {
         ArgumentGuard.NotNull(aggregator);
         ArgumentGuard.NotNull(serviceOptions);
         ArgumentGuard.NotNull(provider);
-
+        _options = options;
         _aggregator = aggregator;
         _serviceOptions = serviceOptions;
         _provider = provider;
@@ -37,18 +41,21 @@ public class HealthEndpointCore : HealthEndpoint
         _logger = logger;
     }
 
-    public override HealthEndpointResponse Invoke(ISecurityContext securityContext)
+    public HealthEndpointResponse Invoke(ISecurityContext securityContext)
     {
         return BuildHealth(securityContext);
     }
-
-    protected override HealthEndpointResponse BuildHealth(ISecurityContext securityContext)
+    public int GetStatusCode(HealthCheckResult health)
+    {
+        return health.Status == HealthStatus.Down || health.Status == HealthStatus.OutOfService ? 503 : 200;
+    }
+    protected HealthEndpointResponse BuildHealth(ISecurityContext securityContext)
     {
         string groupName = GetRequestedHealthGroup(securityContext);
         ICollection<HealthCheckRegistration> healthCheckRegistrations;
         IList<IHealthContributor> filteredContributors;
 
-        if (!string.IsNullOrEmpty(groupName) && groupName != Options.Id)
+        if (!string.IsNullOrEmpty(groupName) && groupName != Options.CurrentValue.EndpointSharedOptions.Id)
         {
             filteredContributors = GetFilteredContributorList(groupName, _contributors);
             healthCheckRegistrations = GetFilteredHealthCheckServiceOptions(groupName, _serviceOptions);
@@ -58,33 +65,33 @@ public class HealthEndpointCore : HealthEndpoint
             filteredContributors = _contributors;
             healthCheckRegistrations = _serviceOptions.CurrentValue.Registrations;
         }
-
+        
         HealthCheckResult result = _aggregator is not IHealthRegistrationsAggregator registrationAggregator
             ? _aggregator.Aggregate(filteredContributors)
             : registrationAggregator.Aggregate(filteredContributors, healthCheckRegistrations, _provider);
 
         var response = new HealthEndpointResponse(result);
 
-        ShowDetails showDetails = Options.ShowDetails;
+        ShowDetails showDetails = Options.CurrentValue.ShowDetails;
 
-        if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !securityContext.HasClaim(Options.Claim)))
+        if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !securityContext.HasClaim(Options.CurrentValue.Claim)))
         {
             response.Details = new Dictionary<string, object>();
         }
         else
         {
-            response.Groups = Options.Groups.Select(g => g.Key);
+            response.Groups = Options.CurrentValue.Groups.Select(g => g.Key);
         }
 
         return response;
     }
-
+    
     private ICollection<HealthCheckRegistration> GetFilteredHealthCheckServiceOptions(string requestedGroup,
         IOptionsMonitor<HealthCheckServiceOptions> svcOptions)
     {
         if (!string.IsNullOrEmpty(requestedGroup))
         {
-            if (Options.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
+            if (Options.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
             {
                 List<string> includedContributors = groupOptions.Include.Split(',').ToList();
 
@@ -99,5 +106,59 @@ public class HealthEndpointCore : HealthEndpoint
         }
 
         return svcOptions.CurrentValue.Registrations;
+    }
+    /// <summary>
+    /// Returns the last value returned by <see cref="ISecurityContext.GetRequestComponents()" />, expected to be the name of a configured health group.
+    /// </summary>
+    /// <param name="securityContext">
+    /// Last value of <see cref="ISecurityContext.GetRequestComponents()" /> is used as group name.
+    /// </param>
+    private string GetRequestedHealthGroup(ISecurityContext securityContext)
+    {
+        string[] requestComponents = securityContext?.GetRequestComponents();
+
+        if (requestComponents != null && requestComponents.Length > 0)
+        {
+            return requestComponents[^1];
+        }
+
+        _logger?.LogWarning("Failed to find anything in the request from which to parse health group name.");
+
+        return string.Empty;
+    }
+    /// <summary>
+    /// Filter out health contributors that do not belong to the requested group.
+    /// </summary>
+    /// <param name="requestedGroup">
+    /// Name of group from request.
+    /// </param>
+    /// <param name="contributors">
+    /// Full list of <see cref="IHealthContributor" />s.
+    /// </param>
+    /// <returns>
+    /// If the group is configured, returns health contributors that belong to the group.
+    /// <para />
+    /// If group can't be parsed or is not configured, returns all health contributors.
+    /// </returns>
+    private IList<IHealthContributor> GetFilteredContributorList(string requestedGroup, IList<IHealthContributor> contributors)
+    {
+        if (!string.IsNullOrEmpty(requestedGroup))
+        {
+            if (Options.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
+            {
+                List<string> includedContributors = groupOptions.Include.Split(',').ToList();
+                contributors = contributors.Where(n => includedContributors.Contains(n.Id, StringComparer.OrdinalIgnoreCase)).ToList();
+            }
+            else
+            {
+                _logger?.LogInformation("Health check requested for a group that is not configured");
+            }
+        }
+        else
+        {
+            _logger?.LogTrace("Health group name not found in request");
+        }
+
+        return contributors;
     }
 }

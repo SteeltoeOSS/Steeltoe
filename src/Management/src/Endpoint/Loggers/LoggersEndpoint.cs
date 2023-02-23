@@ -4,6 +4,7 @@
 
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Logging;
 
@@ -23,13 +24,17 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
     };
 
     private readonly ILogger<LoggersEndpoint> _logger;
+    private readonly IOptionsMonitor<LoggersEndpointOptions> _options;
     private readonly IDynamicLoggerProvider _cloudFoundryLoggerProvider;
 
-    protected new ILoggersOptions Options => options as ILoggersOptions;
+    public IOptionsMonitor<LoggersEndpointOptions> Options => _options;
 
-    public LoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider cloudFoundryLoggerProvider = null, ILogger<LoggersEndpoint> logger = null)
-        : base(options)
+    //protected new ILoggersOptions Options => options as ILoggersOptions;
+
+    public LoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, IDynamicLoggerProvider cloudFoundryLoggerProvider = null, ILogger<LoggersEndpoint> logger = null)
+        //: base(options)
     {
+        _options = options;
         _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider;
         _logger = logger;
     }

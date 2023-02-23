@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Info;
 
@@ -10,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Test.Info;
 
 internal sealed class TestInfoEndpoint : InfoEndpoint
 {
-    public TestInfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
+    public TestInfoEndpoint(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
         : base(options, contributors, logger)
     {
     }

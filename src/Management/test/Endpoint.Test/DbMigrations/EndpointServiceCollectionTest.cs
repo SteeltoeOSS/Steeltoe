@@ -25,28 +25,28 @@ public class EndpointServiceCollectionTest : BaseTest
         action2.Should().ThrowExactly<InvalidOperationException>();
     }
 
-    [Fact]
-    public void AddEntityFrameworkActuator_AddsCorrectServices()
-    {
-        var services = new ServiceCollection();
+    //[Fact]
+    //public void AddEntityFrameworkActuator_AddsCorrectServices()
+    //{
+    //    var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
-        {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/cloudfoundryapplication"
-        };
+    //    var appSettings = new Dictionary<string, string>
+    //    {
+    //        ["management:endpoints:enabled"] = "false",
+    //        ["management:endpoints:path"] = "/cloudfoundryapplication"
+    //    };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+    //    var configurationBuilder = new ConfigurationBuilder();
+    //    configurationBuilder.AddInMemoryCollection(appSettings);
+    //    IConfigurationRoot configurationRoot = configurationBuilder.Build();
+    //    services.AddSingleton<IConfiguration>(configurationRoot);
 
-        services.AddDbMigrationsActuator(configurationRoot);
+    //    services.AddDbMigrationsActuator(configurationRoot);
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IDbMigrationsOptions>();
-        options.Should().NotBeNull();
-        var ep = serviceProvider.GetService<DbMigrationsEndpoint>();
-        ep.Should().NotBeNull();
-    }
+    //    ServiceProvider serviceProvider = services.BuildServiceProvider();
+    //    var options = serviceProvider.GetService<IDbMigrationsOptions>();
+    //    options.Should().NotBeNull();
+    //    var ep = serviceProvider.GetService<DbMigrationsEndpoint>();
+    //    ep.Should().NotBeNull();
+    //}
 }

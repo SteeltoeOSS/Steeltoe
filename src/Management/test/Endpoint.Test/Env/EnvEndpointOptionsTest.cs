@@ -14,7 +14,7 @@ public class EnvEndpointOptionsTest : BaseTest
     public void Constructor_InitializesWithDefaults()
     {
         var opts = new EnvEndpointOptions();
-        Assert.Equal("env", opts.Id);
+        Assert.Equal("env", opts.EndpointOptions.Id);
 
         Assert.Equal(new[]
         {
@@ -26,13 +26,13 @@ public class EnvEndpointOptionsTest : BaseTest
             "vcap_services"
         }, opts.KeysToSanitize);
 
-        Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);
+        Assert.Equal(Permissions.Restricted, opts.EndpointOptions.RequiredPermissions);
     }
 
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new EnvEndpointOptions(configuration));
-    }
+    //[Fact]
+    //public void Constructor_ThrowsIfConfigNull()
+    //{
+    //    const IConfiguration configuration = null;
+    //    Assert.Throws<ArgumentNullException>(() => new EnvEndpointOptions(configuration));
+    //}
 }

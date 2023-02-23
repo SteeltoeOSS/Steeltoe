@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 
@@ -11,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Info;
 
 public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>>
 {
-    public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, IManagementOptions managementOptions,
+    public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<InfoEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
@@ -21,7 +22,7 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
     {
         logger.LogDebug("Info middleware InvokeAsync({path})", context.Request.Path.Value);
 
-        if (Endpoint.ShouldInvoke(managementOptions, logger))
+        if (((InfoEndpoint)Endpoint).Options.CurrentValue.EndpointOptions.ShouldInvoke(managementOptions.CurrentValue, logger))
         {
             return HandleInfoRequestAsync(context);
         }

@@ -43,31 +43,31 @@ public static class EndpointServiceCollectionExtensions
         services.AddActuatorEndpointMapping<MetricsEndpoint>();
     }
 
-    public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration configuration = null)
-    {
-        ArgumentGuard.NotNull(services);
+    //public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration configuration = null)
+    //{
+    //    ArgumentGuard.NotNull(services);
 
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+    //    configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
+    //    services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
+    //    services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(configuration)));
+    //    services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(configuration)));
 
-        var metricsEndpointOptions = new MetricsEndpointOptions(configuration);
-        services.TryAddSingleton<IMetricsEndpointOptions>(metricsEndpointOptions);
+    //    var metricsEndpointOptions = new MetricsEndpointOptions(configuration);
+    //    services.TryAddSingleton<IMetricsEndpointOptions>(metricsEndpointOptions);
 
-        var observerOptions = new MetricsObserverOptions(configuration);
-        services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
-        services.TryAddSingleton<IViewRegistry, ViewRegistry>();
-        services.TryAddSingleton<PrometheusEndpointOptions>();
+    //    var observerOptions = new MetricsObserverOptions(configuration);
+    //    services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
+    //    services.TryAddSingleton<IViewRegistry, ViewRegistry>();
+    //    services.TryAddSingleton<PrometheusEndpointOptions>();
 
-        services.AddPrometheusActuatorServices(configuration);
+    //    services.AddPrometheusActuatorServices(configuration);
 
-        AddMetricsObservers(services);
+    //    AddMetricsObservers(services);
 
-        services.AddActuatorEndpointMapping<PrometheusScraperEndpoint>();
-    }
+    //    services.AddActuatorEndpointMapping<PrometheusScraperEndpoint>();
+    //}
 
     /// <summary>
     /// Adds the services used by the Wavefront exporter.

@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
-public interface IActuatorHypermediaOptions : IEndpointOptions
-{
-}
+//public interface IActuatorHypermediaOptions : IEndpointOptions
+//{
+//}

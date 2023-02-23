@@ -6,13 +6,13 @@ using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public interface IHealthOptions : IEndpointOptions
-{
-    ShowDetails ShowDetails { get; set; }
+//public interface IHealthOptions : IEndpointOptions
+//{
+//    ShowDetails ShowDetails { get; set; } 
 
-    EndpointClaim Claim { get; set; }
+//    EndpointClaim Claim { get; set; }
 
-    string Role { get; set; }
+//    string Role { get; set; }
 
-    public Dictionary<string, HealthGroupOptions> Groups { get; set; }
-}
+//    public Dictionary<string, HealthGroupOptions> Groups { get; set; }
+//}

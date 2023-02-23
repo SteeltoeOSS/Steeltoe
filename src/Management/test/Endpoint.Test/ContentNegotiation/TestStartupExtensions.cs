@@ -20,7 +20,7 @@ public static class TestStartupExtensions
             EndpointNames.Health => builder.UseStartup<HealthStartup>(),
             EndpointNames.Trace => builder.UseStartup<TraceStartup>(),
             EndpointNames.DbMigrations => builder.UseStartup<DbMigrationsStartup>(),
-            EndpointNames.Env => builder.UseStartup<EnvStartup>(),
+         //   EndpointNames.Env => builder.UseStartup<EnvStartup>(),
             EndpointNames.Mappings => builder.UseStartup<MappingsStartup>(),
             EndpointNames.Refresh => builder.UseStartup<RefreshStartup>(),
             EndpointNames.ThreadDump => builder.UseStartup<ThreadDumpStartup>(),

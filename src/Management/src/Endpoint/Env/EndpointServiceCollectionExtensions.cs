@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Extensions;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
@@ -46,6 +47,8 @@ public static class EndpointServiceCollectionExtensions
 
         services.AddActuatorManagementOptions(configuration);
         services.AddEnvActuatorServices(configuration);
-        services.AddActuatorEndpointMapping<EnvEndpoint>();
+        
+
+
     }
 }

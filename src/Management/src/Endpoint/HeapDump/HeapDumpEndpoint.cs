@@ -3,23 +3,27 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
 public class HeapDumpEndpoint : AbstractEndpoint<string>, IHeapDumpEndpoint
 {
+    private readonly IOptionsMonitor<HeapDumpEndpointOptions> _options;
     private readonly IHeapDumper _heapDumper;
 
-    public new IHeapDumpOptions Options => options as IHeapDumpOptions;
+  //  public new IHeapDumpOptions Options => options as IHeapDumpOptions;
 
-    public HeapDumpEndpoint(IHeapDumpOptions options, IHeapDumper heapDumper, ILogger<HeapDumpEndpoint> logger = null)
-        : base(options)
+    public HeapDumpEndpoint(IOptionsMonitor<HeapDumpEndpointOptions> options, IHeapDumper heapDumper, ILogger<HeapDumpEndpoint> logger = null)
+       // : base(options)
     {
         ArgumentGuard.NotNull(heapDumper);
-
+        _options = options;
         _heapDumper = heapDumper;
     }
+
+    public IOptionsMonitor<HeapDumpEndpointOptions> Options => _options;
 
     public override string Invoke()
     {

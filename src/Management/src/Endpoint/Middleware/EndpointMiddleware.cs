@@ -4,21 +4,25 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
-public class EndpointMiddleware<TResult>
+public class EndpointMiddleware<TResult> 
 {
     protected ILogger logger;
-    protected IManagementOptions managementOptions;
+    protected IOptionsMonitor<ManagementEndpointOptions> managementOptions;
+
+    //protected  managementOptions;
 
     public IEndpoint<TResult> Endpoint { get; set; }
 
-    public EndpointMiddleware(IManagementOptions managementOptions, ILogger logger = null)
+    public EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
     {
         ArgumentGuard.NotNull(managementOptions);
 
@@ -31,7 +35,7 @@ public class EndpointMiddleware<TResult>
         }
     }
 
-    public EndpointMiddleware(IEndpoint<TResult> endpoint, IManagementOptions managementOptions, ILogger logger = null)
+    public EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
         : this(managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpoint);
@@ -98,11 +102,18 @@ public class EndpointMiddleware<TResult>
     }
 }
 
+public interface IEndpointMiddleware
+{
+    //public IManagementOptions ManagementOptions { get; }
+    public IEndpointOptions EndpointOptions { get; }
+    public Task InvokeAsync(HttpContext context);
+}
+
 public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
 {
     public new IEndpoint<TResult, TRequest> Endpoint { get; set; }
 
-    public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IManagementOptions managementOptions, ILogger logger = null)
+    public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
         : base(managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpoint);
@@ -110,7 +121,7 @@ public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
         Endpoint = endpoint;
     }
 
-    public EndpointMiddleware(IManagementOptions managementOptions, ILogger logger = null)
+    public EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
         : base(managementOptions, logger)
     {
     }

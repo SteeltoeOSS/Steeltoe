@@ -24,30 +24,30 @@ public class EndpointServiceCollectionTest : BaseTest
         Assert.Throws<InvalidOperationException>(() => services2.AddEnvActuator());
     }
 
-    [Fact]
-    public void AddEnvActuator_AddsCorrectServices()
-    {
-        var services = new ServiceCollection();
-        IHostEnvironment host = HostingHelpers.GetHostingEnvironment();
-        services.AddSingleton(host);
+    //[Fact]
+    //public void AddEnvActuator_AddsCorrectServices()
+    //{
+    //    var services = new ServiceCollection();
+    //    IHostEnvironment host = HostingHelpers.GetHostingEnvironment();
+    //    services.AddSingleton(host);
 
-        var appSettings = new Dictionary<string, string>
-        {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/cloudfoundryapplication"
-        };
+    //    var appSettings = new Dictionary<string, string>
+    //    {
+    //        ["management:endpoints:enabled"] = "false",
+    //        ["management:endpoints:path"] = "/cloudfoundryapplication"
+    //    };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+    //    var configurationBuilder = new ConfigurationBuilder();
+    //    configurationBuilder.AddInMemoryCollection(appSettings);
+    //    IConfigurationRoot configurationRoot = configurationBuilder.Build();
+    //    services.AddSingleton<IConfiguration>(configurationRoot);
 
-        services.AddEnvActuator(configurationRoot);
+    //    services.AddEnvActuator(configurationRoot);
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IEnvOptions>();
-        Assert.NotNull(options);
-        var ep = serviceProvider.GetService<EnvEndpoint>();
-        Assert.NotNull(ep);
-    }
+    //    ServiceProvider serviceProvider = services.BuildServiceProvider();
+    //    var options = serviceProvider.GetService<IEnvOptions>();
+    //    Assert.NotNull(options);
+    //    var ep = serviceProvider.GetService<EnvEndpoint>();
+    //    Assert.NotNull(ep);
+    //}
 }

@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
 
@@ -22,11 +23,11 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
     internal static RegistrationResult RegistrationResult { get; set; }
 
     public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, ManagementEndpointOptions managementOptions,
-        HealthEndpointOptions healthOptions, HttpClient httpClient = null, ILogger<SpringBootAdminClientHostedService> logger = null)
+        IOptionsMonitor<HealthEndpointOptions> healthOptions, HttpClient httpClient = null, ILogger<SpringBootAdminClientHostedService> logger = null)
     {
         _options = options;
         _managementOptions = managementOptions;
-        _healthOptions = healthOptions;
+        _healthOptions = healthOptions.CurrentValue;
         _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.ConnectionTimeoutMs);
         _logger = logger ?? NullLogger<SpringBootAdminClientHostedService>.Instance;
     }
@@ -39,7 +40,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         var app = new Application
         {
             Name = _options.ApplicationName ?? "Steeltoe",
-            HealthUrl = new Uri($"{basePath}{_managementOptions.Path}/{_healthOptions.Path}"),
+            HealthUrl = new Uri($"{basePath}{_managementOptions.Path}/{_healthOptions.EndpointSharedOptions.Path}"),
             ManagementUrl = new Uri($"{basePath}{_managementOptions.Path}"),
             ServiceUrl = new Uri($"{basePath}/"),
             Metadata = new Dictionary<string, object>

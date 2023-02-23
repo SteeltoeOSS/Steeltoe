@@ -9,10 +9,15 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint;
 
-public class ManagementEndpointOptions : IManagementOptions
+public class ManagementEndpointOptions //: IManagementOptions
 {
-    private const string DefaultPath = "/actuator";
-    private const string ManagementInfoPrefix = "management:endpoints";
+    public static readonly string ActuatorOptionName = "actuator";
+    public static readonly string CFOptionName = "cloudfoundry";
+    public static readonly string[] NamedOptionNames = new string[] { ActuatorOptionName, CFOptionName };
+    public static readonly string DefaultActuatorPath = "/actuator";
+    public static readonly string DefaultCFPath = "/cloudfoundry";
+    public static readonly string ManagementInfoPrefix = "management:endpoints";
+    
 
     public bool? Enabled { get; set; }
 
@@ -22,7 +27,7 @@ public class ManagementEndpointOptions : IManagementOptions
 
     public string Port { get; set; }
 
-    public List<IEndpointOptions> EndpointOptions { get; set; }
+    //public List<IEndpointOptions> EndpointOptions { get; set; }
 
     public bool UseStatusCodeFromResponse { get; set; } = true;
 
@@ -42,31 +47,31 @@ public class ManagementEndpointOptions : IManagementOptions
 
     public ManagementEndpointOptions()
     {
-        Path = DefaultPath;
-        EndpointOptions = new List<IEndpointOptions>();
+       // Path = DefaultPath;
+        //EndpointOptions = new List<IEndpointOptions>();
     }
 
-    public ManagementEndpointOptions(IConfiguration configuration)
-        : this()
-    {
-        ArgumentGuard.NotNull(configuration);
+    //public ManagementEndpointOptions(IConfiguration configuration)
+    //    : this()
+    //{
+    //    ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = configuration.GetSection(ManagementInfoPrefix);
+    //    IConfigurationSection section = configuration.GetSection(ManagementInfoPrefix);
 
-        if (section != null)
-        {
-            section.Bind(this);
+    //    if (section != null)
+    //    {
+    //        section.Bind(this);
 
-            foreach (string converterTypeName in CustomJsonConverters ?? Array.Empty<string>())
-            {
-                var converterType = Type.GetType(converterTypeName);
+    //        foreach (string converterTypeName in CustomJsonConverters ?? Array.Empty<string>())
+    //        {
+    //            var converterType = Type.GetType(converterTypeName);
 
-                if (converterType != null)
-                {
-                    var converterInstance = (JsonConverter)Activator.CreateInstance(converterType);
-                    SerializerOptions.Converters.Add(converterInstance);
-                }
-            }
-        }
-    }
+    //            if (converterType != null)
+    //            {
+    //                var converterInstance = (JsonConverter)Activator.CreateInstance(converterType);
+    //                SerializerOptions.Converters.Add(converterInstance);
+    //            }
+    //        }
+    //    }
+    //}
 }

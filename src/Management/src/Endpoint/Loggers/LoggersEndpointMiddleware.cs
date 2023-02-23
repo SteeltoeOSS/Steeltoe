@@ -5,6 +5,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 
@@ -12,15 +13,15 @@ namespace Steeltoe.Management.Endpoint.Loggers;
 
 public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>, LoggersChangeRequest>
 {
-    public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, IManagementOptions managementOptions,
+    public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<LoggersEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
     }
-
+    
     public Task InvokeAsync(HttpContext context)
     {
-        if (Endpoint.ShouldInvoke(managementOptions, logger))
+        if (((LoggersEndpoint)Endpoint).Options.CurrentValue.EndpointOptions.ShouldInvoke(managementOptions.CurrentValue, logger))
         {
             return HandleLoggersRequestAsync(context);
         }
@@ -38,7 +39,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
             // POST - change a logger level
             var paths = new List<string>();
             logger?.LogDebug("Incoming path: {path}", request.Path.Value);
-            paths.Add(managementOptions == null ? Endpoint.Path : $"{managementOptions.Path}/{Endpoint.Path}".Replace("//", "/", StringComparison.Ordinal));
+            paths.Add(managementOptions == null ? Endpoint.Path : $"{managementOptions.CurrentValue.Path}/{Endpoint.Path}".Replace("//", "/", StringComparison.Ordinal));
 
             foreach (string path in paths.Distinct())
             {

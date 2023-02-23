@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 
@@ -10,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
 internal sealed class TestCloudFoundryEndpoint : CloudFoundryEndpoint
 {
-    public TestCloudFoundryEndpoint(ICloudFoundryOptions options, CloudFoundryManagementOptions managementOptions, ILogger<CloudFoundryEndpoint> logger = null)
+    public TestCloudFoundryEndpoint(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundryEndpoint> logger = null)
         : base(options, managementOptions, logger)
     {
     }

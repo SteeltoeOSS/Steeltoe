@@ -4,15 +4,15 @@
 
 namespace Steeltoe.Management;
 
-public interface IManagementOptions
-{
-    bool? Enabled { get; }
+//public interface IManagementOptions
+//{
+//    bool? Enabled { get; }
 
-    string Path { get; }
+//    string Path { get; }
 
-    string Port { get; }
+//    string Port { get; }
 
-    List<IEndpointOptions> EndpointOptions { get; }
+//    List<IEndpointOptions> EndpointOptions { get; }
 
-    public bool UseStatusCodeFromResponse { get; set; }
-}
+//    public bool UseStatusCodeFromResponse { get; set; }
+//}

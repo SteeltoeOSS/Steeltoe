@@ -31,9 +31,9 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
 
-        var options = new RefreshEndpointOptions(configuration);
-        services.TryAddSingleton<IRefreshOptions>(options);
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+        //var options = new RefreshEndpointOptions(configuration);
+        //services.TryAddSingleton<IRefreshOptions>(options);
+        //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
         services.TryAddSingleton<RefreshEndpoint>();
         services.TryAddSingleton<IRefreshEndpoint>(provider => provider.GetRequiredService<RefreshEndpoint>());
 

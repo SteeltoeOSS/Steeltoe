@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 
@@ -23,7 +24,7 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
     private readonly IEnumerable<IApiDescriptionProvider> _apiDescriptionProviders;
     private readonly IRouteMappings _routeMappings;
 
-    public MappingsEndpointMiddleware(RequestDelegate next, IMappingsOptions options, IManagementOptions managementOptions, MappingsEndpoint endpoint,
+    public MappingsEndpointMiddleware(RequestDelegate next, IOptionsMonitor<MappingsEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, MappingsEndpoint endpoint,
         IRouteMappings routeMappings = null, IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null,
         IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null, ILogger<MappingsEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
@@ -35,7 +36,7 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
 
     public Task InvokeAsync(HttpContext context)
     {
-        if (Endpoint.ShouldInvoke(managementOptions, logger))
+        if (((MappingsEndpoint)Endpoint).Options.CurrentValue.EndpointOptions.ShouldInvoke(managementOptions.CurrentValue, logger))
         {
             return HandleMappingsRequestAsync(context);
         }

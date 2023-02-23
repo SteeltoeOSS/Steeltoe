@@ -8,6 +8,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
@@ -21,11 +22,12 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
     private const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
     private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private readonly IOptionsMonitor<TraceEndpointOptions> _options;
     private readonly ILogger<TraceDiagnosticObserver> _logger;
-    private readonly ITraceOptions _options;
+    //private readonly ITraceOptions _options;
     internal ConcurrentQueue<HttpTrace> Queue = new();
 
-    public HttpTraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
+    public HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILogger<TraceDiagnosticObserver> logger = null)
         : base(DefaultObserverName, DiagnosticName, logger)
     {
         ArgumentGuard.NotNull(options);
@@ -64,8 +66,8 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
         {
             HttpTrace trace = MakeTrace(context, current.Duration);
             Queue.Enqueue(trace);
-
-            if (Queue.Count > _options.Capacity && !Queue.TryDequeue(out _))
+            
+            if (Queue.Count > _options.CurrentValue.Capacity && !Queue.TryDequeue(out _))
             {
                 _logger?.LogDebug("Stop - Dequeue failed");
             }

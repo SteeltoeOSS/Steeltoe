@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class TraceEndpointOptions : AbstractEndpointOptions, ITraceOptions
+public class TraceEndpointOptions //: AbstractEndpointOptions, ITraceOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:trace";
     private const int DefaultCapacity = 100;
@@ -33,23 +33,28 @@ public class TraceEndpointOptions : AbstractEndpointOptions, ITraceOptions
 
     public bool AddTimeTaken { get; set; } = true;
 
+    public EndpointSharedOptions EndpointOptions { get; set; }
     public TraceEndpointOptions()
     {
-        Id = "trace";
+        EndpointOptions = new EndpointSharedOptions
+        {
+            Id = "trace"
+        };
+        
         Capacity = DefaultCapacity;
     }
 
-    public TraceEndpointOptions(IConfiguration configuration)
-        : base(ManagementInfoPrefix, configuration)
-    {
-        if (string.IsNullOrEmpty(Id))
-        {
-            Id = "trace";
-        }
+    //public TraceEndpointOptions(IConfiguration configuration)
+    //    : base(ManagementInfoPrefix, configuration)
+    //{
+    //    if (string.IsNullOrEmpty(Id))
+    //    {
+    //        Id = "trace";
+    //    }
 
-        if (Capacity == -1)
-        {
-            Capacity = DefaultCapacity;
-        }
-    }
+    //    if (Capacity == -1)
+    //    {
+    //        Capacity = DefaultCapacity;
+    //    }
+    //}
 }

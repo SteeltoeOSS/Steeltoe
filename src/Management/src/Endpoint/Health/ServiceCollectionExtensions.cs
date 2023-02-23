@@ -31,11 +31,12 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
 
-        var options = new HealthEndpointOptions(configuration);
-        services.TryAddSingleton<IHealthOptions>(options);
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
-        services.TryAddScoped<HealthEndpoint>();
-        services.TryAddScoped<IHealthEndpoint>(provider => provider.GetRequiredService<HealthEndpoint>());
+        //var options = new HealthEndpointOptions(configuration);
+        //services.TryAddSingleton<IHealthOptions>(options);
+        services.Configure<HealthEndpointOptions>(configuration.GetSection(HealthEndpointOptions.ManagementInfoPrefix));
+        services.AddTransient<IEndpointOptions, HealthEndpointOptions>();
+        services.TryAddScoped<HealthEndpointCore>();
+        services.TryAddScoped<IHealthEndpoint>(provider => provider.GetRequiredService<HealthEndpointCore>());
 
         return services;
     }

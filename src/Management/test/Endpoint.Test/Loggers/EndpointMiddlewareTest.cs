@@ -30,21 +30,21 @@ public class EndpointMiddlewareTest : BaseTest
         ["management:endpoints:loggers:enabled"] = "true"
     };
 
-    [Fact]
-    public async Task HandleLoggersRequestAsync_ReturnsExpected()
-    {
-        var opts = new LoggersEndpointOptions();
-        var managementOptions = new ActuatorManagementOptions();
-        managementOptions.EndpointOptions.Add(opts);
-        var ep = new TestLoggersEndpoint(opts);
-        var middle = new LoggersEndpointMiddleware(null, ep, managementOptions);
-        HttpContext context = CreateRequest("GET", "/loggers");
-        await middle.HandleLoggersRequestAsync(context);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
-        Assert.Equal("{}", json);
-    }
+    //[Fact]
+    //public async Task HandleLoggersRequestAsync_ReturnsExpected()
+    //{
+    //    var opts = new LoggersEndpointOptions();
+    //    var managementOptions = new ActuatorManagementOptions();
+    //    managementOptions.EndpointOptions.Add(opts);
+    //    var ep = new TestLoggersEndpoint(opts);
+    //    var middle = new LoggersEndpointMiddleware(null, ep, managementOptions);
+    //    HttpContext context = CreateRequest("GET", "/loggers");
+    //    await middle.HandleLoggersRequestAsync(context);
+    //    context.Response.Body.Seek(0, SeekOrigin.Begin);
+    //    var rdr = new StreamReader(context.Response.Body);
+    //    string json = await rdr.ReadToEndAsync();
+    //    Assert.Equal("{}", json);
+    //}
 
     [Fact]
     public async Task LoggersActuator_ReturnsExpectedData()

@@ -31,9 +31,9 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
 
-        var options = new InfoEndpointOptions(configuration);
-        services.TryAddSingleton<IInfoOptions>(options);
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+        //var options = new InfoEndpointOptions(configuration);
+        //services.TryAddSingleton<IInfoOptions>(options);
+        //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
         services.TryAddSingleton<InfoEndpoint>();
         services.TryAddSingleton<IInfoEndpoint>(provider => provider.GetRequiredService<InfoEndpoint>());
 
