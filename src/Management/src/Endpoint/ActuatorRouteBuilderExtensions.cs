@@ -8,37 +8,40 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Internal;
-using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Loggers;
+using Steeltoe.Management.Endpoint.Mappings;
+using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.Endpoint.ThreadDump;
+using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorRouteBuilderExtensions
 {
-    //public static (Type MiddlewareType, Type OptionsType) LookupMiddleware(Type endpointType)
-    //{
-    //    return endpointType switch
-    //    {
-    //        not null when endpointType.IsAssignableFrom(typeof(ActuatorEndpoint)) => (typeof(ActuatorHypermediaEndpointMiddleware),
-    //            typeof(IActuatorHypermediaOptions)),
-    //        not null when endpointType.IsAssignableFrom(typeof(DbMigrationsEndpoint)) => (typeof(DbMigrationsEndpointMiddleware), typeof(IDbMigrationsOptions)),
-    //        not null when endpointType.IsAssignableFrom(typeof(EnvEndpoint)) => (typeof(EnvEndpointMiddleware), typeof(IEnvOptions)),
-    //     //   not null when endpointType.IsAssignableFrom(typeof(HealthEndpointCore)) => (typeof(HealthEndpointMiddleware), typeof(IHealthOptions)),
-    //        not null when endpointType.IsAssignableFrom(typeof(HeapDumpEndpoint)) => (typeof(HeapDumpEndpointMiddleware), typeof(IHeapDumpOptions)),
-    //        not null when endpointType.IsAssignableFrom(typeof(InfoEndpoint)) => (typeof(InfoEndpointMiddleware), typeof(IInfoOptions)),
-    //        not null when endpointType.IsAssignableFrom(typeof(LoggersEndpoint)) => (typeof(LoggersEndpointMiddleware), typeof(ILoggersOptions)),
-    //        not null when endpointType.IsAssignableFrom(typeof(MappingsEndpoint)) => (typeof(MappingsEndpointMiddleware), typeof(IMappingsOptions)),
-    //        not null when endpointType.IsAssignableFrom(typeof(MetricsEndpoint)) => (typeof(MetricsEndpointMiddleware), typeof(IMetricsEndpointOptions)),
-    //        not null when endpointType.IsAssignableFrom(typeof(PrometheusScraperEndpoint)) => (typeof(PrometheusScraperEndpointMiddleware),
-    //            typeof(IPrometheusEndpointOptions)),
-    //        not null when endpointType.IsAssignableFrom(typeof(RefreshEndpoint)) => (typeof(RefreshEndpointMiddleware), typeof(IRefreshOptions)),
-    //        not null when endpointType.IsAssignableFrom(typeof(ThreadDumpEndpoint)) => (typeof(ThreadDumpEndpointMiddleware), typeof(IThreadDumpOptions)),
-    //        not null when endpointType.IsAssignableFrom(typeof(ThreadDumpEndpointV2)) => (typeof(ThreadDumpEndpointMiddlewareV2), typeof(IThreadDumpOptions)),
-    //        not null when endpointType.IsAssignableFrom(typeof(TraceEndpoint)) => (typeof(TraceEndpointMiddleware), typeof(ITraceOptions)),
-    //        not null when endpointType.IsAssignableFrom(typeof(HttpTraceEndpoint)) => (typeof(HttpTraceEndpointMiddleware), typeof(ITraceOptions)),
-    //        not null when endpointType.IsAssignableFrom(typeof(CloudFoundryEndpoint)) => (typeof(CloudFoundryEndpointMiddleware), typeof(ICloudFoundryOptions)),
-    //        _ => throw new InvalidOperationException($"Could not find middleware for Type: {endpointType?.Name} ")
-    //    };
-    //}
+    public static (Type MiddlewareType, Type OptionsType) LookupMiddleware(Type endpointType)
+    {
+        return endpointType switch
+        {
+            not null when endpointType.IsAssignableFrom(typeof(ActuatorEndpoint)) => (typeof(ActuatorHypermediaEndpointMiddleware),
+                typeof(IActuatorHypermediaOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(DbMigrationsEndpoint)) => (typeof(DbMigrationsEndpointMiddleware), typeof(IDbMigrationsOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(EnvEndpoint)) => (typeof(EnvEndpointMiddleware), typeof(IEnvOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(HealthEndpointCore)) => (typeof(HealthEndpointMiddleware), typeof(IHealthOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(HeapDumpEndpoint)) => (typeof(HeapDumpEndpointMiddleware), typeof(IHeapDumpOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(InfoEndpoint)) => (typeof(InfoEndpointMiddleware), typeof(IInfoOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(LoggersEndpoint)) => (typeof(LoggersEndpointMiddleware), typeof(ILoggersOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(MappingsEndpoint)) => (typeof(MappingsEndpointMiddleware), typeof(IMappingsOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(MetricsEndpoint)) => (typeof(MetricsEndpointMiddleware), typeof(IMetricsEndpointOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(RefreshEndpoint)) => (typeof(RefreshEndpointMiddleware), typeof(IRefreshOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(ThreadDumpEndpoint)) => (typeof(ThreadDumpEndpointMiddleware), typeof(IThreadDumpOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(ThreadDumpEndpointV2)) => (typeof(ThreadDumpEndpointMiddlewareV2), typeof(IThreadDumpOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(TraceEndpoint)) => (typeof(TraceEndpointMiddleware), typeof(ITraceOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(HttpTraceEndpoint)) => (typeof(HttpTraceEndpointMiddleware), typeof(ITraceOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(CloudFoundryEndpoint)) => (typeof(CloudFoundryEndpointMiddleware), typeof(ICloudFoundryOptions)),
+            _ => throw new InvalidOperationException($"Could not find middleware for Type: {endpointType?.Name} ")
+        };
+    }
 
     /// <summary>
     /// Generic route builder extension for Actuators.

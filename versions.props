@@ -56,7 +56,7 @@
     <ConsulVersion>1.6.10.*</ConsulVersion>
     <HdrHistogramVersion>2.5.*</HdrHistogramVersion>
     <JsonNetVersion>13.0.*</JsonNetVersion>
-    <OpenTelemetryVersion>1.3.*</OpenTelemetryVersion>
+    <OpenTelemetryVersion>1.4.0-rc.3</OpenTelemetryVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
     <SerilogExtensionsLoggingVersion>3.1.*</SerilogExtensionsLoggingVersion>

@@ -54,13 +54,6 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
         Assert.NotNull(ep);
     }
 
-    [Fact]
-    public void AddWavefront_ThrowsWhenNull()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddWavefrontMetrics(null));
-        Assert.Contains("services", ex.Message, StringComparison.Ordinal);
-    }
-
     private IConfiguration GetConfiguration()
     {
         var builder = new ConfigurationBuilder();

@@ -4,22 +4,21 @@
 
 using System.Diagnostics.Metrics;
 using Microsoft.AspNetCore.Http;
-using OpenTelemetry.Metrics;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.OpenTelemetry.Exporters;
-using Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
-using Steeltoe.Management.OpenTelemetry.Metrics;
+using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Exporters;
+using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
 public class MetricsEndpointMiddlewareTest : BaseTest
 {
-    private readonly PullMetricsExporterOptions _scraperOptions = new()
+    private readonly MetricsExporterOptions _scraperOptions = new()
     {
-        ScrapeResponseCacheDurationMilliseconds = 500
+        MetricsCacheDurationMilliseconds = 500
     };
 
     //[Fact]
@@ -181,6 +180,147 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     //    await middle.HandleMetricsRequestAsync(context);
     //    Assert.Equal(404, context.Response.StatusCode);
     //}
+    [Fact]
+    public void ParseTag_ReturnsExpected()
+    {
+        var opts = new MetricsEndpointOptions();
+        var managementOptions = new ActuatorManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
+
+        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
+
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
+
+        Assert.Null(middle.ParseTag("foobar"));
+        Assert.Equal(new KeyValuePair<string, string>("foo", "bar"), middle.ParseTag("foo:bar"));
+        Assert.Equal(new KeyValuePair<string, string>("foo", "bar:bar"), middle.ParseTag("foo:bar:bar"));
+        Assert.Null(middle.ParseTag("foo,bar"));
+    }
+
+    [Fact]
+    public void ParseTags_ReturnsExpected()
+    {
+        var opts = new MetricsEndpointOptions();
+        var managementOptions = new ActuatorManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
+
+        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
+
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
+
+        HttpContext context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?foo=key:value");
+        List<KeyValuePair<string, string>> result = middle.ParseTags(context1.Request.Query);
+        Assert.NotNull(result);
+        Assert.Empty(result);
+
+        HttpContext context2 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?tag=key:value");
+        result = middle.ParseTags(context2.Request.Query);
+        Assert.NotNull(result);
+        Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
+
+        HttpContext context3 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?tag=key:value&foo=key:value&tag=key1:value1");
+        result = middle.ParseTags(context3.Request.Query);
+        Assert.NotNull(result);
+        Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
+        Assert.Contains(new KeyValuePair<string, string>("key1", "value1"), result);
+        Assert.Equal(2, result.Count);
+
+        HttpContext context4 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?tag=key:value&foo=key:value&tag=key:value");
+        result = middle.ParseTags(context4.Request.Query);
+        Assert.NotNull(result);
+        Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
+        Assert.Single(result);
+    }
+
+    [Fact]
+    public void GetMetricName_ReturnsExpected()
+    {
+        var opts = new MetricsEndpointOptions();
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
+
+        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
+
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
+
+        HttpContext context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics");
+        Assert.Null(middle.GetMetricName(context1.Request));
+
+        HttpContext context2 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class");
+        Assert.Equal("Foo.Bar.Class", middle.GetMetricName(context2.Request));
+
+        HttpContext context3 = CreateRequest("GET", "/cloudfoundryapplication/metrics", "?tag=key:value&tag=key1:value1");
+        Assert.Null(middle.GetMetricName(context3.Request));
+    }
+
+    [Fact]
+    public void GetMetricName_ReturnsExpected_When_ManagementPath_Is_Slash()
+    {
+        var opts = new MetricsEndpointOptions();
+
+        var managementOptions = new ActuatorManagementOptions
+        {
+            Path = "/"
+        };
+
+        managementOptions.EndpointOptions.Add(opts);
+
+        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
+
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
+
+        HttpContext context1 = CreateRequest("GET", "/metrics");
+        Assert.Null(middle.GetMetricName(context1.Request));
+
+        HttpContext context2 = CreateRequest("GET", "/metrics/Foo.Bar.Class");
+        Assert.Equal("Foo.Bar.Class", middle.GetMetricName(context2.Request));
+
+        HttpContext context3 = CreateRequest("GET", "/metrics", "?tag=key:value&tag=key1:value1");
+        Assert.Null(middle.GetMetricName(context3.Request));
+    }
+
+    [Fact]
+    public async Task HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
+    {
+        var opts = new MetricsEndpointOptions();
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
+        SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
+        var exporter = new SteeltoeExporter(_scraperOptions);
+
+        GetTestMetrics(exporter);
+
+        var ep = new MetricsEndpoint(opts, exporter);
+
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
+
+        HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
+
+        await middle.HandleMetricsRequestAsync(context);
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var rdr = new StreamReader(context.Response.Body);
+        string json = await rdr.ReadToEndAsync();
+        Assert.Equal("{\"names\":[]}", json);
+    }
+
+    [Fact]
+    public async Task HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
+    {
+        var opts = new MetricsEndpointOptions();
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
+        var exporter = new SteeltoeExporter(_scraperOptions);
+
+        var ep = new MetricsEndpoint(opts, exporter);
+
+        GetTestMetrics(exporter);
+        var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
+
+        HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
+
+        await middle.HandleMetricsRequestAsync(context);
+        Assert.Equal(404, context.Response.StatusCode);
+    }
 
     [Fact]
     public async Task HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
@@ -189,12 +329,9 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var managementOptions = new CloudFoundryManagementOptions();
         managementOptions.EndpointOptions.Add(opts);
         var exporter = new SteeltoeExporter(_scraperOptions);
-        using MeterProvider meterProvider = GetTestMetrics(null, exporter, null);
-
-        var ep = new MetricsEndpoint(opts, new List<MetricsExporter>
-        {
-            exporter
-        });
+        AggregationManager aggManager = GetTestMetrics(exporter);
+        aggManager.Start();
+        var ep = new MetricsEndpoint(opts, exporter);
 
         var middle = new MetricsEndpointMiddleware(null, ep, managementOptions);
 
@@ -210,7 +347,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         string json = await rdr.ReadToEndAsync();
 
         Assert.Equal(
-            "{\"name\":\"test\",\"measurements\":[{\"statistic\":\"TOTAL\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}",
+            "{\"name\":\"test\",\"measurements\":[{\"statistic\":\"RATE\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}",
             json);
     }
 
@@ -247,7 +384,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
     private void SetupTestView()
     {
-        Counter<double> counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test");
+        Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test");
 
         var labels = new Dictionary<string, object>
         {

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MySql.Data.MySqlClient;
 using Npgsql;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Oracle.ManagedDataAccess.Client;
 using RabbitMQ.Client;
@@ -36,7 +37,7 @@ using Steeltoe.Logging;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
+using Steeltoe.Management.Wavefront.Exporters;
 using Xunit;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
@@ -241,15 +242,15 @@ public class HostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeManagementEndpoint
+            SteeltoeAssemblies.SteeltoeWavefront
         });
 
         IHost host = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
             .AddSteeltoe(exclusions).Build();
 
-        var exporter = host.Services.GetService<WavefrontMetricsExporter>();
+        var meterProvider = host.Services.GetService<MeterProvider>();
 
-        Assert.NotNull(exporter);
+        Assert.NotNull(meterProvider);
     }
 
     [Fact]

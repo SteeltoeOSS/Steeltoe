@@ -8,7 +8,7 @@ using System.Diagnostics.Tracing;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using Steeltoe.Management.OpenTelemetry.Metrics;
+using Steeltoe.Management.MetricCollectors;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
@@ -183,15 +183,14 @@ public class EventCounterListener : EventListener
             _lastDoubleValue[metricName] = doubleValue.Value;
 
             _doubleMeasureMetrics.GetOrAddEx(metricName,
-                name => OpenTelemetryMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveDouble(name, labelSet), counterDisplayUnit,
-                    counterDisplayName));
+                name => SteeltoeMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveDouble(name, labelSet), counterDisplayUnit, counterDisplayName));
         }
         else if (longValue.HasValue)
         {
             _lastLongValue[metricName] = longValue.Value;
 
             _longMeasureMetrics.GetOrAddEx(metricName,
-                name => OpenTelemetryMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveLong(name, labelSet), counterDisplayUnit, counterDisplayName));
+                name => SteeltoeMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveLong(name, labelSet), counterDisplayUnit, counterDisplayName));
         }
     }
 
