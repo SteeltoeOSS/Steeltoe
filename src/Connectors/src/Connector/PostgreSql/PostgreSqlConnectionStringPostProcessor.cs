@@ -3,9 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data.Common;
-using Steeltoe.Connector.PostgreSql;
 
-namespace Steeltoe.Connector.PostgreSQL;
+namespace Steeltoe.Connector.PostgreSql;
 
 internal sealed class PostgreSqlConnectionStringPostProcessor : ConnectionStringPostProcessor
 {

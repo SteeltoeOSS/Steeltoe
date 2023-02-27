@@ -9,7 +9,7 @@ using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connector.PostgreSql;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.PostgreSQL;
+namespace Steeltoe.Connector.Test.PostgreSql;
 
 /// <summary>
 /// Tests for the extension method that adds just the health check.

@@ -7,7 +7,7 @@ using Steeltoe.Connector.PostgreSql;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.PostgreSQL;
+namespace Steeltoe.Connector.Test.PostgreSql;
 
 public class PostgreSqlProviderConnectorFactoryTest
 {

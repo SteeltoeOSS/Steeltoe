@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Connector.EntityFrameworkCore.PostgreSql;
-using Steeltoe.Connector.PostgreSQL;
+using Steeltoe.Connector.PostgreSql;
 using Xunit;
 
 namespace Steeltoe.Connector.EntityFrameworkCore.Test;

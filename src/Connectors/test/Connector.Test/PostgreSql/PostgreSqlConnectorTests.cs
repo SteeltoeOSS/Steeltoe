@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using Npgsql;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Connector.PostgreSQL;
+using Steeltoe.Connector.PostgreSql;
 using Xunit;
 
 namespace Steeltoe.Connector.Test.PostgreSql;
