@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class HttpTraceEndpointOptions //: AbstractEndpointOptions, ITraceOptions
+public class HttpTraceEndpointOptions : EndpointOptionsBase // AbstractEndpointOptions, ITraceOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:httptrace";
     private const int DefaultCapacity = 100;
@@ -33,14 +33,10 @@ public class HttpTraceEndpointOptions //: AbstractEndpointOptions, ITraceOptions
 
     public bool AddTimeTaken { get; set; } = true;
 
-    public EndpointSharedOptions EndpointOptions { get; set; }
 
     public HttpTraceEndpointOptions()
     {
-        EndpointOptions = new EndpointSharedOptions()
-        {
-            Id = "httptrace",
-        };
+        Id = "httptrace";
         Capacity = DefaultCapacity;
     }
 

@@ -36,9 +36,9 @@ public static class EndpointServiceCollectionExtensions
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
     /// management:endpoints:health).
     /// </param>
-    public static void AddHealthActuator(this IServiceCollection services, IConfiguration configuration = null)
+    public static void AddHealthActuator(this IServiceCollection services)
     {
-        services.AddHealthActuator(configuration, new HealthRegistrationsAggregator(), DefaultHealthContributors);
+        services.AddHealthActuator(new HealthRegistrationsAggregator(), DefaultHealthContributors);
     }
 
     /// <summary>
@@ -54,11 +54,11 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="contributors">
     /// Contributors to application health.
     /// </param>
-    public static void AddHealthActuator(this IServiceCollection services, IConfiguration configuration = null, params Type[] contributors)
+    public static void AddHealthActuator(this IServiceCollection services, params Type[] contributors)
     {
         ArgumentGuard.NotNull(services);
 
-        services.AddHealthActuator(configuration, new HealthRegistrationsAggregator(), contributors);
+        services.AddHealthActuator( new HealthRegistrationsAggregator(), contributors);
     }
 
     /// <summary>
@@ -77,16 +77,15 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="contributors">
     /// Contributors to application health.
     /// </param>
-    public static void AddHealthActuator(this IServiceCollection services, IConfiguration configuration, IHealthAggregator aggregator,
-        params Type[] contributors)
+    public static void AddHealthActuator(this IServiceCollection services,IHealthAggregator aggregator,params Type[] contributors)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(aggregator);
 
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+       // configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddActuatorManagementOptions(configuration);
-        services.AddHealthActuatorServices(configuration);
+        services.AddActuatorManagementOptions();
+        services.AddHealthActuatorServices();
 
         AddHealthContributors(services, contributors);
 

@@ -52,7 +52,7 @@ public static class EndpointServiceCollectionExtensions
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
-        services.AddActuatorManagementOptions(configuration);
+        services.AddActuatorManagementOptions();
         services.AddTraceActuatorServices(configuration, version);
 
         switch (version)

@@ -6,17 +6,20 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-public class InfoEndpointOptions //: AbstractEndpointOptions, IInfoOptions
+public class InfoEndpointOptions : EndpointOptionsBase//, IInfoOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:info";
-    public EndpointSharedOptions EndpointOptions { get; set;}
+   // public EndpointOptionsBase EndpointOptions { get; set;}
     public InfoEndpointOptions()
     {
-        EndpointOptions = new EndpointSharedOptions()
+        if (string.IsNullOrEmpty(Id))
         {
-            Id = "info",
-            RequiredPermissions = Permissions.Restricted
-        };
+            Id = "info";
+        }
+        if (RequiredPermissions == Permissions.Undefined)
+        {
+            RequiredPermissions = Permissions.Restricted;
+        }
     }
 
     //public InfoEndpointOptions(IConfiguration configuration)

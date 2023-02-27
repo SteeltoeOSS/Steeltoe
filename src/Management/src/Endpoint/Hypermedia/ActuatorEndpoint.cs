@@ -4,13 +4,14 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
 /// <summary>
 /// Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators.
 /// </summary>
-public class ActuatorEndpoint : AbstractEndpoint<Links, string>, IActuatorEndpoint
+public class ActuatorEndpoint : /*AbstractEndpoint<Links, string>*/ IEndpoint<Links, string>, IActuatorEndpoint
 {
     private readonly ILogger<ActuatorEndpoint> _logger;
     private IOptionsMonitor<HypermediaEndpointOptions> _options;
@@ -21,6 +22,8 @@ public class ActuatorEndpoint : AbstractEndpoint<Links, string>, IActuatorEndpoi
 
     public IOptionsMonitor<HypermediaEndpointOptions> Options => _options;
 
+    IEndpointOptions IEndpoint.Options => _options.CurrentValue;
+
     public ActuatorEndpoint(IOptionsMonitor<HypermediaEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<ActuatorEndpoint> logger = null)
         //: base(options)
     {
@@ -29,7 +32,7 @@ public class ActuatorEndpoint : AbstractEndpoint<Links, string>, IActuatorEndpoi
         _logger = logger;
     }
 
-    public override Links Invoke(string baseUrl)
+    public Links Invoke(string baseUrl)
     {
         var service = new HypermediaService(_managementOption, _options, _logger);
         return service.Invoke(baseUrl);

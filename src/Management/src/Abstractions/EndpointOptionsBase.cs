@@ -7,7 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management;
 //Used to be abstract options
-public class EndpointSharedOptions //: IEndpointOptions 
+public class EndpointOptionsBase : IEndpointOptions 
 {
     protected bool? sensitive;
 
@@ -37,12 +37,9 @@ public class EndpointSharedOptions //: IEndpointOptions
 
     public virtual bool DefaultEnabled { get; } = true;
 
-    public IEnumerable<string> AllowedVerbs;  // Fields so they are not bound to configuration 
+    public virtual IEnumerable<string> AllowedVerbs { get; }
 
-    public bool ExactMatch = true; // Fields so they are not bound to configuration
+    public virtual bool ExactMatch => true;
 
-    public virtual bool IsAccessAllowed(Permissions permissions)
-    {
-        return permissions >= RequiredPermissions;
-    }
+  
 }

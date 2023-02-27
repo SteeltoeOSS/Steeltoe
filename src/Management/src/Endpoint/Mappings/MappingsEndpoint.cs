@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-public class MappingsEndpoint : AbstractEndpoint<ApplicationMappings>
+public class MappingsEndpoint : IEndpoint<ApplicationMappings>
 {
     //public new IMappingsOptions Options => options as IMappingsOptions;
 
@@ -19,7 +19,9 @@ public class MappingsEndpoint : AbstractEndpoint<ApplicationMappings>
 
     public IOptionsMonitor<MappingsEndpointOptions> Options { get; }
 
-    public override ApplicationMappings Invoke()
+    IEndpointOptions IEndpoint.Options => Options.CurrentValue;
+
+    public ApplicationMappings Invoke()
     {
         // Note: This is not called, as all the work in
         // done in runtime specific code (i.e. Asp.NET, Asp.NET Core, etc)

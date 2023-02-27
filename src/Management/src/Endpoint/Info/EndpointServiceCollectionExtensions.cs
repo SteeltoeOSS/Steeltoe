@@ -65,7 +65,7 @@ public static class EndpointServiceCollectionExtensions
 
         configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddActuatorManagementOptions(configuration);
+        services.AddActuatorManagementOptions();
         services.AddInfoActuatorServices(configuration);
         services.AddActuatorEndpointMapping<InfoEndpoint>();
 

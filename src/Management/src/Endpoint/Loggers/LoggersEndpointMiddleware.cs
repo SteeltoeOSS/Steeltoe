@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
@@ -21,7 +23,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
     
     public Task InvokeAsync(HttpContext context)
     {
-        if (((LoggersEndpoint)Endpoint).Options.CurrentValue.EndpointOptions.ShouldInvoke(managementOptions.CurrentValue, logger))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleLoggersRequestAsync(context);
         }
@@ -34,16 +36,18 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;
 
+        var currentContext = managementOptions.GetCurrentContext(context);
+
         if (context.Request.Method == "POST")
         {
             // POST - change a logger level
             var paths = new List<string>();
             logger?.LogDebug("Incoming path: {path}", request.Path.Value);
-            paths.Add(managementOptions == null ? Endpoint.Path : $"{managementOptions.CurrentValue.Path}/{Endpoint.Path}".Replace("//", "/", StringComparison.Ordinal));
+            paths.Add(managementOptions == null ? Endpoint.Options.Path : $"{managementOptions.CurrentValue.Path}/{Endpoint.Options.Path}".Replace("//", "/", StringComparison.Ordinal)); //TODO: only one path here??!!
 
             foreach (string path in paths.Distinct())
             {
-                if (ChangeLoggerLevel(request, path))
+                if (ChangeLoggerLevel(request, path, currentContext.SerializerOptions))
                 {
                     response.StatusCode = (int)HttpStatusCode.OK;
                     return;
@@ -55,14 +59,14 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         }
 
         // GET request
-        string serialInfo = HandleRequest(null);
+        string serialInfo = HandleRequest(null, currentContext.SerializerOptions);
         logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         await context.Response.WriteAsync(serialInfo);
     }
 
-    private bool ChangeLoggerLevel(HttpRequest request, string path)
+    private bool ChangeLoggerLevel(HttpRequest request, string path, JsonSerializerOptions serializerOptions)
     {
         var epPath = new PathString(path);
 
@@ -85,7 +89,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
                 else
                 {
                     var changeReq = new LoggersChangeRequest(loggerName, level);
-                    HandleRequest(changeReq);
+                    HandleRequest(changeReq, serializerOptions);
                     return true;
                 }
             }

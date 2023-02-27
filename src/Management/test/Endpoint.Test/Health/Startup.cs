@@ -30,23 +30,23 @@ public class Startup
         switch (Configuration.GetValue<string>("HealthCheckType"))
         {
             case "down":
-                services.AddHealthActuator(Configuration, typeof(DownContributor));
+                services.AddHealthActuator(typeof(DownContributor));
                 break;
             case "out":
-                services.AddHealthActuator(Configuration, typeof(OutOfServiceContributor));
+                services.AddHealthActuator(typeof(OutOfServiceContributor));
                 break;
             case "unknown":
-                services.AddHealthActuator(Configuration, typeof(UnknownContributor));
+                services.AddHealthActuator(typeof(UnknownContributor));
                 break;
             case "defaultAggregator":
-                services.AddHealthActuator(Configuration, new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
+                services.AddHealthActuator(new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
                 break;
             case "microsoftHealthAggregator":
                 services.AddSingleton<IOptionsMonitor<HealthCheckServiceOptions>>(new TestServiceOptions());
-                services.AddHealthActuator(Configuration, new HealthRegistrationsAggregator(), typeof(DiskSpaceContributor));
+                services.AddHealthActuator(new HealthRegistrationsAggregator(), typeof(DiskSpaceContributor));
                 break;
             default:
-                services.AddHealthActuator(Configuration);
+                services.AddHealthActuator();
                 break;
         }
     }

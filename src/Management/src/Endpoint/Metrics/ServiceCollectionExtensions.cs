@@ -39,17 +39,17 @@ public static class ServiceCollectionExtensions
         //var options = new MetricsEndpointOptions(configuration);
         //services.TryAddSingleton<IMetricsEndpointOptions>(options);
         //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
-        services.TryAddSingleton<MetricsEndpoint>();
+        //services.Configure<MetricsEndpoint>();
 
         services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
 
-        var exporterOptions = new MetricsExporterOptions
-        {
-            CacheDurationMilliseconds = options.CacheDurationMilliseconds,
-            MaxTimeSeries = options.MaxTimeSeries,
-            MaxHistograms = options.MaxHistograms,
-            IncludedMetrics = options.IncludedMetrics
-        };
+        //var exporterOptions = new MetricsExporterOptions
+        //{
+        //    CacheDurationMilliseconds = options.CacheDurationMilliseconds,
+        //    MaxTimeSeries = options.MaxTimeSeries,
+        //    MaxHistograms = options.MaxHistograms,
+        //    IncludedMetrics = options.IncludedMetrics
+        //};
         //services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoeExporter>(provider =>
         //{
         //    //var options = provider.GetService<IMetricsEndpointOptions>();
@@ -59,13 +59,13 @@ public static class ServiceCollectionExtensions
         //    //    ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds
         //    //};
 
-        services.TryAddSingleton<IExporterOptions>(exporterOptions);
+       // services.TryAddSingleton<IExporterOptions>(exporterOptions);
 
         services.TryAddSingleton(provider =>
         {
             var exporterOptions = provider.GetService<IExporterOptions>();
-        //    //return new SteeltoeExporter(exporterOptions);
-        //});
+            return new SteeltoeExporter(exporterOptions);
+        });
 
         services.AddSteeltoeCollector();
 

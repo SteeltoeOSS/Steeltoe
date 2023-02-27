@@ -2,19 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Transactions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint;
 
 public static class EndPointExtensions
 {
-    public static bool IsEnabled(this EndpointSharedOptions options, ManagementEndpointOptions managementOptions)
+    public static bool IsEnabled(this IEndpointOptions options, ManagementEndpointOptions managementOptions)
     {
-        var endpointOptions = options;
+        var endpointOptions = (EndpointOptionsBase)options;
 
         if (endpointOptions.Enabled.HasValue)
         {
@@ -29,54 +31,72 @@ public static class EndPointExtensions
         return endpointOptions.DefaultEnabled;
     }
 
-    public static bool IsEnabled(this IEndpoint endpoint, ManagementEndpointOptions options, EndpointSharedOptions endpointOptions)
+    //public static bool IsEnabled(this IEndpointOptions endpoint, ManagementEndpointOptions options)
+    //{
+    //    return options == null ? endpoint.Enabled : endpoint.Options.IsEnabled(options);
+    //}
+
+    public static bool IsExposed(this IEndpointOptions options, ManagementEndpointOptions mgmtOptions)
     {
-       // return true; // TODO: fix
-        return options == null ? endpoint.Enabled : endpointOptions.IsEnabled(options);
-    }
+        if (!string.IsNullOrEmpty(options.Id) && mgmtOptions.Exposure != null)
+        {
+            List<string> exclude = mgmtOptions.Exposure.Exclude;
 
-    public static bool IsExposed(this EndpointSharedOptions options, ManagementEndpointOptions managementOptions)
-    {
-        //if (!string.IsNullOrEmpty(options.Id) && managementOptions is ActuatorManagementOptions actOptions && actOptions.Exposure != null)
-        //{
-        //    List<string> exclude = actOptions.Exposure.Exclude;
+            if (exclude != null && (exclude.Contains("*") || exclude.Contains(options.Id)))
+            {
+                return false;
+            }
 
-        //    if (exclude != null && (exclude.Contains("*") || exclude.Contains(options.Id)))
-        //    {
-        //        return false;
-        //    }
+            List<string> include = mgmtOptions.Exposure.Include;
 
-        //    List<string> include = actOptions.Exposure.Include;
+            if (include != null && (include.Contains("*") || include.Contains(options.Id)))
+            {
+                return true;
+            }
 
-        //    if (include != null && (include.Contains("*") || include.Contains(options.Id)))
-        //    {
-        //        return true;
-        //    }
-
-        //    return false;
-        //}
+            return false;
+        }
 
         return true;
     }
 
-    public static bool IsExposed(this IEndpoint endpoint, ManagementEndpointOptions options)
-    {
-        //TODO: fix
-        return true;
-        //return options == null || endpoint.Options.IsExposed(options);
-    }
+    //public static bool IsExposed(this IEndpointOptions endpoint, ManagementEndpointOptions options)
+    //{
+    //    return options == null || endpoint.IsExposed(options);
+    //}
 
-    public static bool ShouldInvoke(this EndpointSharedOptions endpointOptions, ManagementEndpointOptions options, ILogger logger = null)
+    public static bool ShouldInvoke(this IEndpointOptions endpoint, ManagementEndpointOptions options, ILogger logger = null)
     {
-        bool enabled = endpointOptions.IsEnabled(options);
-        bool exposed = endpointOptions.IsExposed(options);
-        logger?.LogDebug($"endpoint: {endpointOptions.Id}, contextPath: {options.Path}, enabled: {enabled}, exposed: {exposed}");
+        bool enabled = endpoint.IsEnabled(options);
+        bool exposed = endpoint.IsExposed(options);
+        logger?.LogDebug($"endpoint: {endpoint.Id}, contextPath: {options.Path}, enabled: {enabled}, exposed: {exposed}");
         return enabled && exposed;
     }
 
-    //public static IManagementOptions OptionsForContext(this IEnumerable<IManagementOptions> managementOptions, string requestPath, ILogger logger = null)
+    public static bool ShouldInvoke(this IEndpointOptions endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context, ILogger logger = null)
+    {
+        var mgmtOptions = managementOptions.GetCurrentContext(context);
+
+        return ShouldInvoke(endpoint, mgmtOptions, logger);
+    }
+    
+    public static ManagementEndpointOptions GetCurrentContext(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context)
+    {
+        foreach (var name in EndpointContextNames.All)
+        {
+            var mgmtOption = managementOptions.Get(name);
+            if (context.Request.Path.StartsWithSegments(new PathString(mgmtOption.Path)))
+            {
+                return mgmtOption;
+            }
+        }
+
+        throw new InvalidOperationException("Could not find ManagementEndpointOptions to match this request");
+    }
+
+    //public static ManagementEndpointOptions OptionsForContext(this IEnumerable<ManagementEndpointOptions> managementOptions, string requestPath, ILogger logger = null)
     //{
-    //    IManagementOptions match = managementOptions.FirstOrDefault(option => requestPath.StartsWith(option.Path, StringComparison.Ordinal));
+    //    ManagementEndpointOptions match = managementOptions.FirstOrDefault(option => requestPath.StartsWith(option.Path, StringComparison.Ordinal));
 
     //    if (match != null)
     //    {
@@ -95,32 +115,38 @@ public static class EndPointExtensions
     //    }
     //    catch (InvalidOperationException exception)
     //    {
-    //        logger?.LogError(exception, "Could not find IManagementOptions to match this request, returning first or default ActuatorManagementOptions");
+    //        logger?.LogError(exception, "Could not find ManagementEndpointOptions to match this request, returning first or default ActuatorManagementOptions");
     //        return managementOptions.FirstOrDefault() ?? new ActuatorManagementOptions();
     //    }
     //}
 
-    //public static string GetContextPath(this IEndpointOptions options, IManagementOptions managementOptions)
-    //{
-    //    string contextPath = managementOptions.Path;
+    public static string GetContextPath(this IEndpointOptions options, ManagementEndpointOptions managementOptions)
+    {
+        string contextPath = managementOptions.Path;
 
-    //    if (!contextPath.EndsWith('/') && !string.IsNullOrEmpty(options.Path))
-    //    {
-    //        contextPath += '/';
-    //    }
+        if (!contextPath.EndsWith('/') && !string.IsNullOrEmpty(options.Path))
+        {
+            contextPath += '/';
+        }
 
-    //    contextPath += options.Path;
+        contextPath += options.Path;
 
-    //    if (!options.ExactMatch)
-    //    {
-    //        if (!contextPath.EndsWith('/'))
-    //        {
-    //            contextPath += '/';
-    //        }
+        if (!options.ExactMatch)
+        {
+            if (!contextPath.EndsWith('/'))
+            {
+                contextPath += '/';
+            }
 
-    //        contextPath += "{**_}";
-    //    }
+            contextPath += "{**_}";
+        }
+        
+        return contextPath;
+    }
 
-    //    return contextPath;
-    //}
+    //Only used by Cloudfoundry security
+    public static bool IsAccessAllowed(this IEndpointOptions options, Permissions permissions)
+    {
+        return permissions >= options.RequiredPermissions;
+    }
 }

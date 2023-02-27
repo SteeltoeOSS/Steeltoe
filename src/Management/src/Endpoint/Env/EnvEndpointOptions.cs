@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class EnvEndpointOptions //: AbstractEndpointOptions, IEnvOptions
+public class EnvEndpointOptions : EndpointOptionsBase//, IEnvOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:env";
 
@@ -22,10 +22,10 @@ public class EnvEndpointOptions //: AbstractEndpointOptions, IEnvOptions
 
     public string[] KeysToSanitize { get; set; }
 
-    public EndpointSharedOptions EndpointOptions { get; set; }
+    public EndpointOptionsBase EndpointOptions { get; set; }
     public EnvEndpointOptions()
     {
-        EndpointOptions = new EndpointSharedOptions
+        EndpointOptions = new EndpointOptionsBase
         {
 
             Id = "env",

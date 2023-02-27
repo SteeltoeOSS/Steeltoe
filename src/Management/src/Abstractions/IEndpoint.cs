@@ -6,13 +6,13 @@ namespace Steeltoe.Management;
 
 public interface IEndpoint
 {
-    string Id { get; }
+    //string Id { get; }
 
-    bool Enabled { get; }
+    //bool Enabled { get; }
 
-  //  IEndpointOptions Options { get; }
+    IEndpointOptions Options { get; }
 
-    string Path { get; }
+    //string Path { get; }
 }
 
 public interface IEndpoint<out TResult> : IEndpoint

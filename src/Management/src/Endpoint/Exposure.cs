@@ -13,8 +13,8 @@ public class Exposure
 
     private static readonly List<string> DefaultInclude = new()
     {
-        "*"
-    }; // TODO: Change this to "Info" and "Health" only when you use "AddAllActuators"; 
+        "health", "info"
+    };
 
     public List<string> Include { get; set; }
 
@@ -24,7 +24,11 @@ public class Exposure
     {
         Include = DefaultInclude;
     }
-
+    public Exposure(bool allowAll)
+    {
+        Include = allowAll ? new List<string>() { "*" } : DefaultInclude;
+    }
+    
     public Exposure(IConfiguration configuration)
     {
         IConfigurationSection section = configuration.GetSection(ExposurePrefix);

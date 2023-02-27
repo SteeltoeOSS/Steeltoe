@@ -17,7 +17,7 @@ using MicrosoftHealth = Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-public class HealthEndpointCoreTest : BaseTest
+public class HealthEndpointCoreTest : BaseHealthTest
 {
     private readonly IOptionsMonitor<HealthEndpointOptions> _options = new TestOptionsMonitor<HealthEndpointOptions>(new HealthEndpointOptions());
     private readonly IHealthAggregator _aggregator = new DefaultHealthAggregator();
@@ -145,8 +145,10 @@ public class HealthEndpointCoreTest : BaseTest
             new UnknownContributor(),
             new UpContributor()
         };
+        var options = GetOptionsMonitorFromSettings();
 
-        var ep = new HealthEndpointCore(_options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider);
+
+        var ep = new HealthEndpointCore(options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider);
         var context = Substitute.For<ISecurityContext>();
 
         context.GetRequestComponents().Returns(new[]
@@ -171,8 +173,8 @@ public class HealthEndpointCoreTest : BaseTest
             new DiskSpaceContributor(),
             new LivenessHealthContributor(appAvailability)
         };
-
-        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider);
+        var options = GetOptionsMonitorFromSettings();
+        var ep = new HealthEndpointCore(options, _aggregator, contributors, ServiceOptions(), _provider);
         var context = Substitute.For<ISecurityContext>();
 
         context.GetRequestComponents().Returns(new[]
@@ -202,8 +204,9 @@ public class HealthEndpointCoreTest : BaseTest
             new UpContributor(),
             new ReadinessHealthContributor(appAvailability)
         };
+        var options = GetOptionsMonitorFromSettings();
 
-        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider);
+        var ep = new HealthEndpointCore(options, _aggregator, contributors, ServiceOptions(), _provider);
         var context = Substitute.For<ISecurityContext>();
 
         context.GetRequestComponents().Returns(new[]
@@ -233,8 +236,8 @@ public class HealthEndpointCoreTest : BaseTest
             new UpContributor(),
             new ReadinessHealthContributor(appAvailability)
         };
-
-        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), _provider);
+        var options = GetOptionsMonitorFromSettings();
+        var ep = new HealthEndpointCore(options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), _provider);
         var context = Substitute.For<ISecurityContext>();
 
         context.GetRequestComponents().Returns(new[]
@@ -256,7 +259,9 @@ public class HealthEndpointCoreTest : BaseTest
     [Fact]
     public void InvokeWithGroupFiltersMicrosoftResults()
     {
-        _options.CurrentValue.Groups.Add("msft", new HealthGroupOptions
+        var options = GetOptionsMonitorFromSettings();
+
+        options.CurrentValue.Groups.Add("msft", new HealthGroupOptions
         {
             Include = "up,privatememory"
         });
@@ -267,7 +272,7 @@ public class HealthEndpointCoreTest : BaseTest
             new UpContributor()
         };
 
-        var ep = new HealthEndpointCore(_options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider);
+        var ep = new HealthEndpointCore(options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider);
         var context = Substitute.For<ISecurityContext>();
 
         context.GetRequestComponents().Returns(new[]

@@ -6,18 +6,13 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-public class MappingsEndpointOptions //: AbstractEndpointOptions, IMappingsOptions
+public class MappingsEndpointOptions :  EndpointOptionsBase //AbstractEndpointOptions, IMappingsOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:mappings";
-    public EndpointSharedOptions EndpointOptions = new EndpointSharedOptions();
     public MappingsEndpointOptions()
     {
-        EndpointOptions = new EndpointSharedOptions
-        {
-
-            Id = "mappings",
-            RequiredPermissions = Permissions.Restricted
-        };
+        Id = "mappings";
+        RequiredPermissions = Permissions.Restricted;
     }
 
     //public MappingsEndpointOptions(IConfiguration configuration)

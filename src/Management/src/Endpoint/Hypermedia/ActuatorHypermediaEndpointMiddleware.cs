@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
@@ -22,12 +23,12 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
         : base(endpoint, managementOptions, logger)
     {
     }
-
+    
     public Task InvokeAsync(HttpContext context)
     {
         logger?.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
-        if (((ActuatorEndpoint)Endpoint).Options.CurrentValue.EndpointSharedOptions.ShouldInvoke(managementOptions.CurrentValue, logger))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             string serialInfo = HandleRequest(Endpoint, GetRequestUri(context.Request), logger);
             logger?.LogDebug("Returning: {info}", serialInfo);

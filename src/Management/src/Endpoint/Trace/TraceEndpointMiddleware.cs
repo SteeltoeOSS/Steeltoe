@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -20,7 +21,7 @@ public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
 
     public Task InvokeAsync(HttpContext context)
     {
-        if (((TraceEndpoint)Endpoint).Options.CurrentValue.EndpointOptions.ShouldInvoke(managementOptions.CurrentValue))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleTraceRequestAsync(context);
         }
@@ -30,7 +31,9 @@ public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
 
     protected internal Task HandleTraceRequestAsync(HttpContext context)
     {
-        string serialInfo = HandleRequest();
+        var currentOptions = managementOptions.GetCurrentContext(context);
+        string serialInfo = HandleRequest(currentOptions.SerializerOptions);
+
         logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);

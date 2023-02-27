@@ -3,12 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
@@ -22,7 +24,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
     
     public Task InvokeAsync(HttpContext context)
     {
-        if (((MetricsEndpoint)Endpoint).Options.CurrentValue.EndpointOptions.ShouldInvoke(managementOptions.CurrentValue, logger))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleMetricsRequestAsync(context);
         }
@@ -30,10 +32,10 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         return Task.CompletedTask;
     }
 
-    public override string HandleRequest(MetricsRequest arg)
+    public override string HandleRequest(MetricsRequest arg, JsonSerializerOptions serializerOptions)
     {
         IMetricsResponse result = Endpoint.Invoke(arg);
-        return result == null ? null : Serialize(result);
+        return result == null ? null : Serialize(result, serializerOptions);
     }
 
     protected internal async Task HandleMetricsRequestAsync(HttpContext context)
@@ -44,13 +46,14 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         logger?.LogDebug("Incoming path: {path}", request.Path.Value);
 
         string metricName = GetMetricName(request);
-
+        
         if (!string.IsNullOrEmpty(metricName))
         {
             // GET /metrics/{metricName}?tag=key:value&tag=key:value
             List<KeyValuePair<string, string>> tags = ParseTags(request.Query);
             var metricRequest = new MetricsRequest(metricName, tags);
-            string serialInfo = HandleRequest(metricRequest);
+            var currentContext = managementOptions.GetCurrentContext(context);
+            string serialInfo = HandleRequest(metricRequest,currentContext.SerializerOptions);
 
             if (serialInfo != null)
             {
@@ -78,10 +81,10 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
     {
         if (managementOptions == null)
         {
-            return GetMetricName(request, Endpoint.Path);
+            return GetMetricName(request, Endpoint.Options.Path);
         }
 
-        string path = $"{managementOptions.CurrentValue.Path}/{Endpoint.Id}".Replace("//", "/", StringComparison.Ordinal);
+        string path = $"{managementOptions.CurrentValue.Path}/{Endpoint.Options.Id}".Replace("//", "/", StringComparison.Ordinal);
         string metricName = GetMetricName(request, path);
 
         return metricName;

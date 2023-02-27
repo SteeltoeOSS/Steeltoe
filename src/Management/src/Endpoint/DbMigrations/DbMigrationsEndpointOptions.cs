@@ -6,22 +6,20 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-public class DbMigrationsEndpointOptions //: AbstractEndpointOptions, IDbMigrationsOptions
+public class DbMigrationsEndpointOptions : EndpointOptionsBase// AbstractEndpointOptions, IDbMigrationsOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:dbmigrations";
 
     public string[] KeysToSanitize => Array.Empty<string>();
 
-    public EndpointSharedOptions EndpointOptions { get; set; }
+    // public EndpointOptionsBase EndpointOptions { get; set; }
 
     public DbMigrationsEndpointOptions()
     {
-        EndpointOptions = new EndpointSharedOptions
-        {
-            Id = "dbmigrations",
-            RequiredPermissions = Permissions.Restricted
-        };
-    }
+
+        Id = "dbmigrations";
+        RequiredPermissions = Permissions.Restricted;
+      }
 
     //public DbMigrationsEndpointOptions(IConfiguration configuration)
     //    : base(ManagementInfoPrefix, configuration)

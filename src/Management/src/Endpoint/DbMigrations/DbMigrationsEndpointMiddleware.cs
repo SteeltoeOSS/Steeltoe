@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
@@ -17,14 +18,14 @@ public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<stri
         ILogger<DbMigrationsEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
-        DbMigrationsEndpoint = endpoint;
+      //  DbMigrationsEndpoint = endpoint;
     }
 
-    public DbMigrationsEndpoint DbMigrationsEndpoint { get; }
+ //   public DbMigrationsEndpoint DbMigrationsEndpoint { get; }
 
     public Task InvokeAsync(HttpContext context)
     {
-        if (DbMigrationsEndpoint.Options.CurrentValue.EndpointOptions.ShouldInvoke(managementOptions.CurrentValue, logger))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleEntityFrameworkRequestAsync(context);
         }
@@ -34,7 +35,8 @@ public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<stri
 
     protected internal Task HandleEntityFrameworkRequestAsync(HttpContext context)
     {
-        string serialInfo = HandleRequest();
+        var serializerOptions = managementOptions.GetCurrentContext(context).SerializerOptions;
+        string serialInfo = HandleRequest(serializerOptions);
         logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);

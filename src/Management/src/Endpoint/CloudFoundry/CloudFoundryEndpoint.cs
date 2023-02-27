@@ -6,10 +6,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>, ICloudFoundryEndpoint
+public class CloudFoundryEndpoint : IEndpoint<Links, string>, ICloudFoundryEndpoint
 {
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
@@ -28,9 +29,11 @@ public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>, ICloudFound
         _logger = logger;
     }
 
-    public IOptionsMonitor<CloudFoundryEndpointOptions> Options => _options;
+    public IEndpointOptions Options => _options.CurrentValue;
 
-    public override Links Invoke(string baseUrl)
+    // public IOptionsMonitor<CloudFoundryEndpointOptions> Options => _options;
+
+    public Links Invoke(string baseUrl)
     {
         var hypermediaService = new HypermediaService(_managementOptions, _options, _logger);
         return hypermediaService.Invoke(baseUrl);

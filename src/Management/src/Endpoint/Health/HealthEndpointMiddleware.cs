@@ -8,26 +8,25 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
 public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointResponse, ISecurityContext>, IEndpointMiddleware
 {
-    private readonly IEndpointOptions _endpointOptions;
 
-    public IEndpointOptions EndpointOptions { get => _endpointOptions; }
+    public IEndpointOptions EndpointOptions => Endpoint.Options;
 
     public HealthEndpointMiddleware(/*RequestDelegate next,*/ IOptionsMonitor<ManagementEndpointOptions> managementOptions, IEndpoint<HealthEndpointResponse, ISecurityContext> endpoint, ILogger<InfoEndpointMiddleware> logger = null)
         : base(managementOptions, logger)
     {
         Endpoint = endpoint;
-        _endpointOptions = ((HealthEndpointCore)Endpoint).Options.CurrentValue;
     }
     public Task InvokeAsync(HttpContext context )
     {
 
-        if (_endpointOptions.EndpointSharedOptions.ShouldInvoke(managementOptions.CurrentValue))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleHealthRequestAsync(context);
         }
@@ -48,11 +47,12 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
     {
         HealthEndpointResponse result = ((HealthEndpointCore)Endpoint).Invoke(new CoreSecurityContext(context));
 
-        if (managementOptions.CurrentValue.UseStatusCodeFromResponse)
+        var currentOptions = managementOptions.GetCurrentContext(context);
+        if (currentOptions.UseStatusCodeFromResponse)
         {
             context.Response.StatusCode = ((HealthEndpointCore)Endpoint).GetStatusCode(result);
         }
 
-        return Serialize(result);
+        return Serialize(result, currentOptions.SerializerOptions);
     }
 }

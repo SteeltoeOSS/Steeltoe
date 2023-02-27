@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -36,14 +37,14 @@ public class SecurityBase
     public SecurityBase(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null, HttpClient httpClient = null)
     {
         _options = options;
-        _managementOptions = managementOptions.Get(ManagementEndpointOptions.CFOptionName);
+        _managementOptions = managementOptions.Get(EndpointContextNames.CFManagemementOptionName);
         _logger = logger;
         _httpClient = httpClient;
     }
 
     public bool IsCloudFoundryRequest(string requestPath)
     {
-        var optionsPath = _options.CurrentValue.EndpointOptions.Path;
+        var optionsPath = _options.CurrentValue.Path;
 
         string contextPath = _managementOptions == null ? optionsPath : _managementOptions.Path;
         return requestPath.StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);

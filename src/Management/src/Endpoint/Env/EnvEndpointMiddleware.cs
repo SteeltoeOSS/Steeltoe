@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
@@ -20,11 +21,13 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>, 
     
     public EnvEndpoint EnvEndpoint { get; }
 
-    public IEndpointOptions EndpointOptions => throw new NotImplementedException();
-
+    public IEndpointOptions EndpointOptions => EnvEndpoint.Options.CurrentValue;
+    
     public Task InvokeAsync(HttpContext context)
     {
-        if (EnvEndpoint.Options.CurrentValue.EndpointOptions.ShouldInvoke(managementOptions.CurrentValue, logger))
+        IEndpointOptions options = EnvEndpoint.Options.CurrentValue;
+        
+        if (options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleEnvRequestAsync(context);
         }
@@ -34,7 +37,8 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>, 
 
     protected internal Task HandleEnvRequestAsync(HttpContext context)
     {
-        string serialInfo = HandleRequest();
+        var currentContext = managementOptions.GetCurrentContext(context);
+        string serialInfo = HandleRequest(currentContext.SerializerOptions);
         logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);

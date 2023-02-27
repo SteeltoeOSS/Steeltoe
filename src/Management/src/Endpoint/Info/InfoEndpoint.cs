@@ -8,7 +8,7 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-public class InfoEndpoint : AbstractEndpoint<Dictionary<string, object>>, IInfoEndpoint
+public class InfoEndpoint : IEndpoint<Dictionary<string, object>>, IInfoEndpoint
 {
     private readonly IList<IInfoContributor> _contributors;
     private readonly IOptionsMonitor<InfoEndpointOptions> _options;
@@ -26,7 +26,9 @@ public class InfoEndpoint : AbstractEndpoint<Dictionary<string, object>>, IInfoE
 
     public IOptionsMonitor<InfoEndpointOptions> Options => _options;
 
-    public override Dictionary<string, object> Invoke()
+    IEndpointOptions IEndpoint.Options => _options.CurrentValue;
+
+    public Dictionary<string, object> Invoke()
     {
         return BuildInfo(_contributors);
     }

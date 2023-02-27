@@ -45,7 +45,7 @@ public static class EndpointServiceCollectionExtensions
             };
         });
 
-        services.AddActuatorManagementOptions(configuration);
+        services.AddActuatorManagementOptions();
         services.AddEnvActuatorServices(configuration);
         
 

@@ -1,43 +1,38 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the Apache 2.0 License.
-// See the LICENSE file in the project root for more information.
+//// Licensed to the .NET Foundation under one or more agreements.
+//// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+//// See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
+//using Microsoft.Extensions.Configuration;
+//using Steeltoe.Common;
+//using Steeltoe.Management.Endpoint.Options;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia;
+//namespace Steeltoe.Management.Endpoint.Hypermedia;
 
-public class ActuatorManagementOptions //: ManagementEndpointOptions
-{
-    private const string DefaultActuatorPath = "/actuator";
+//public class ActuatorManagementOptions : ManagementEndpointOptions
+//{
+//    private const string DefaultActuatorPath = "/actuator";
 
-    public Exposure Exposure { get; set; }
+//    public Exposure Exposure { get; set; } = new Exposure();
+//    // public ManagementEndpointOptions ManagementEndpointOptions { get; set; }
 
-    public ManagementEndpointOptions ManagementEndpointOptions { get; set; }
+//    //public ActuatorManagementOptions()
+//    //{
+//    //    Path = DefaultActuatorPath;
+//    //}
 
-    public ActuatorManagementOptions()
-    {
-        ManagementEndpointOptions  = new ManagementEndpointOptions
-        {
-         
-            Path = DefaultActuatorPath,
-        };
-        
-    }
+//    //public ActuatorManagementOptions(IConfiguration configuration)
+//    //    : base(configuration)
+//    //{
+//    //    if (string.IsNullOrEmpty(Path))
+//    //    {
+//    //        Path = DefaultActuatorPath;
+//    //    }
 
-    //public ActuatorManagementOptions(IConfiguration configuration)
-    //    : base(configuration)
-    //{
-    //    if (string.IsNullOrEmpty(Path))
-    //    {
-    //        Path = DefaultActuatorPath;
-    //    }
+//    //    if (Platform.IsCloudFoundry && Path.StartsWith("/cloudfoundryapplication", StringComparison.OrdinalIgnoreCase))
+//    //    {
+//    //        Path = DefaultActuatorPath; // Override path set to /cloudfoundryapplication since it will be hidden by the cloudfoundry context actuators
+//    //    }
 
-    //    if (Platform.IsCloudFoundry && Path.StartsWith("/cloudfoundryapplication", StringComparison.OrdinalIgnoreCase))
-    //    {
-    //        Path = DefaultActuatorPath; // Override path set to /cloudfoundryapplication since it will be hidden by the cloudfoundry context actuators
-    //    }
-
-    //    Exposure = new Exposure(configuration);
-    //}
-}
+//    //    Exposure = new Exposure(configuration);
+//    //}
+//}

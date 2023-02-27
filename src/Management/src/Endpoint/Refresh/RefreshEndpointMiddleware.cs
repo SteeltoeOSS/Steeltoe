@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
@@ -20,7 +21,7 @@ public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
     
     public Task InvokeAsync(HttpContext context)
     {
-        if (((RefreshEndpoint)Endpoint).Options.CurrentValue.EndpointOptions.ShouldInvoke(managementOptions.CurrentValue, logger))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleRefreshRequestAsync(context);
         }
@@ -30,7 +31,9 @@ public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
 
     protected internal Task HandleRefreshRequestAsync(HttpContext context)
     {
-        string serialInfo = HandleRequest();
+        var currentOptions = managementOptions.GetCurrentContext(context);
+        
+        string serialInfo = HandleRequest(currentOptions.SerializerOptions);
         logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);

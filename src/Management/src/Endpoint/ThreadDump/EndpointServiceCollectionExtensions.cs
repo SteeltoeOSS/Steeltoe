@@ -33,7 +33,7 @@ public static class EndpointServiceCollectionExtensions
 
         configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddActuatorManagementOptions(configuration);
+        services.AddActuatorManagementOptions();
         services.AddThreadDumpActuatorServices(configuration, version);
 
         if (version == MediaTypeVersion.V1)

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-public class RefreshEndpointOptions //: AbstractEndpointOptions, IRefreshOptions
+public class RefreshEndpointOptions: EndpointOptionsBase //, IRefreshOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:refresh";
     private const bool DefaultReturnConfiguration = true;
@@ -18,15 +18,11 @@ public class RefreshEndpointOptions //: AbstractEndpointOptions, IRefreshOptions
         get => _returnConfiguration ?? DefaultReturnConfiguration;
         set => _returnConfiguration = value;
     }
-    public EndpointSharedOptions EndpointOptions { get; set; }
-
+  
     public RefreshEndpointOptions()
     {
-        EndpointOptions = new EndpointSharedOptions
-        {
-            Id = "refresh",
-            RequiredPermissions = Permissions.Restricted
-        };
+        Id = "refresh";
+        RequiredPermissions = Permissions.Restricted;
         _returnConfiguration = DefaultReturnConfiguration;
     }
 

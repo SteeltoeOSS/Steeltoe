@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
@@ -41,7 +42,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         var app = new Application
         {
             Name = _options.ApplicationName ?? "Steeltoe",
-            HealthUrl = new Uri($"{basePath}{_managementOptions.Path}/{_healthOptions.EndpointSharedOptions.Path}"),
+            HealthUrl = new Uri($"{basePath}{_managementOptions.Path}/{_healthOptions.Path}"),
             ManagementUrl = new Uri($"{basePath}{_managementOptions.Path}"),
             ServiceUrl = new Uri($"{basePath}/"),
             Metadata = new Dictionary<string, object>

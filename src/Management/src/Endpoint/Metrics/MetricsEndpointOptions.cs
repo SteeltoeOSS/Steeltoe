@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsEndpointOptions //: AbstractEndpointOptions, IMetricsEndpointOptions
+public class MetricsEndpointOptions : EndpointOptionsBase//, IMetricsEndpointOptions
 {
     internal const string ManagementInfoPrefix = "management:endpoints:metrics";
 
@@ -24,17 +24,14 @@ public class MetricsEndpointOptions //: AbstractEndpointOptions, IMetricsEndpoin
     public int MaxHistograms { get; set; } = 100;
     public List<string> IncludedMetrics { get; set; }
 
-    public EndpointSharedOptions EndpointOptions { get; set; }
+    public EndpointOptionsBase EndpointOptions { get; set; }
+    public override bool ExactMatch => false;
 
     public MetricsEndpointOptions()
     {
-        EndpointOptions = new EndpointSharedOptions
-        {
-            Id = "metrics",
+        Id = "metrics";
 
-            ExactMatch = false
-        };
-           IngressIgnorePattern = DefaultIngressIgnorePattern;
+        IngressIgnorePattern = DefaultIngressIgnorePattern;
         EgressIgnorePattern = DefaultEgressIgnorePattern;
     }
 

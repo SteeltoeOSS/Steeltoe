@@ -28,7 +28,7 @@ public static class EndpointServiceCollectionExtensions
 
         configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddActuatorManagementOptions(configuration);
+        services.AddActuatorManagementOptions();
         services.AddRefreshActuatorServices(configuration);
         services.AddActuatorEndpointMapping<RefreshEndpoint>();
     }

@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.MetricCollectors;
 
 namespace Steeltoe.Management.Prometheus;
@@ -48,11 +50,10 @@ public static class PrometheusExtensions
 
     public static IApplicationBuilder MapPrometheusActuator(this IApplicationBuilder app)
     {
-        ActuatorManagementOptions? managementOptions =
-            app.ApplicationServices.GetService<IEnumerable<IManagementOptions>>()?.OfType<ActuatorManagementOptions>().FirstOrDefault();
 
-        PrometheusEndpointOptions? prometheusOptions =
-            app.ApplicationServices.GetService<IEnumerable<IEndpointOptions>>()?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
+        var managementOptions = app.ApplicationServices.GetService<IOptionsMonitor<ManagementEndpointOptions>>()?.CurrentValue;
+        PrometheusEndpointOptions? prometheusOptions = null;
+        //    app.ApplicationServices.GetService<IEnumerable<IEndpointOptions>>()?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
 
         string root = managementOptions?.Path ?? "/actuator";
         string id = prometheusOptions?.Id ?? "prometheus";

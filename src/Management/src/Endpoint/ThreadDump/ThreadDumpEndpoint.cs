@@ -8,7 +8,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class ThreadDumpEndpoint : AbstractEndpoint<List<ThreadInfo>>, IThreadDumpEndpoint
+public class ThreadDumpEndpoint : IEndpoint<List<ThreadInfo>>, IThreadDumpEndpoint
 {
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
     private readonly IThreadDumper _threadDumper;
@@ -25,7 +25,9 @@ public class ThreadDumpEndpoint : AbstractEndpoint<List<ThreadInfo>>, IThreadDum
 
     public IOptionsMonitor<ThreadDumpEndpointOptions> Options => _options;
 
-    public override List<ThreadInfo> Invoke()
+    IEndpointOptions IEndpoint.Options => _options.CurrentValue;
+
+    public  List<ThreadInfo> Invoke()
     {
         return _threadDumper.DumpThreads();
     }

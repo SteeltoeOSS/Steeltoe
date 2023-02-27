@@ -18,10 +18,8 @@ public class ServiceCollectionTests
         IServiceCollection services2 = new ServiceCollection();
         const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuatorServices(configuration));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuatorServices());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddHealthActuatorServices(configuration));
-        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
+        
     }
 }

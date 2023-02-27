@@ -4,104 +4,83 @@
 
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using NSubstitute.Extensions;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-public class HealthEndpointOptionsTest : BaseTest
+public class HealthEndpointOptionsTest : BaseHealthTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new HealthEndpointOptions();
-        Assert.Null(opts.EndpointSharedOptions.Enabled);
-        Assert.Equal("health", opts.EndpointSharedOptions.Id);
+        HealthEndpointOptions opts = GetOptionsFromSettings();
+        
+        Assert.Null(opts.Enabled);
+        Assert.Equal("health", opts.Id);
         Assert.Equal(ShowDetails.Always, opts.ShowDetails);
-        Assert.Equal(Permissions.Restricted, opts.EndpointSharedOptions.RequiredPermissions);
+        Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);
     }
 
-    //[Fact]
-    //public void Constructor_ThrowsIfConfigNull()
-    //{
-    //    const IConfiguration configuration = null;
-    //    Assert.Throws<ArgumentNullException>(() => new HealthEndpointOptions(configuration));
-    //}
 
-    //[Fact]
-    //public void Constructor_BindsConfigurationCorrectly()
-    //{
-    //    var appsettings = new Dictionary<string, string>
-    //    {
-    //        ["management:endpoints:enabled"] = "false",
-    //        ["management:endpoints:path"] = "/cloudfoundryapplication",
-    //        ["management:endpoints:health:enabled"] = "true",
-    //        ["management:endpoints:health:requiredPermissions"] = "NONE",
-    //        ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
-    //        ["management:endpoints:cloudfoundry:enabled"] = "true",
-    //        ["management:endpoints:health:groups:custom:include"] = "diskSpace",
-    //        ["management:endpoints:health:groups:lIveness:include"] = "diskSpace",
-    //        ["management:endpoints:health:groups:rEadinEss:include"] = "diskSpace"
-    //    };
+    [Fact]
+    public void Constructor_BindsConfigurationCorrectly()
+    {
+        var appsettings = new Dictionary<string, string>
+        {
 
-    //    var configurationBuilder = new ConfigurationBuilder();
-    //    configurationBuilder.AddInMemoryCollection(appsettings);
-    //    IConfigurationRoot configurationRoot = configurationBuilder.Build();
+            ["management:endpoints:health:enabled"] = "true",
+            ["management:endpoints:health:requiredPermissions"] = "NONE",
+            ["management:endpoints:health:groups:custom:include"] = "diskSpace",
+            ["management:endpoints:health:groups:lIveness:include"] = "diskSpace",
+            ["management:endpoints:health:groups:rEadinEss:include"] = "diskSpace"
+        };
 
-    //    var opts = new HealthEndpointOptions(configurationRoot);
-    //    var cloudOpts = new CloudFoundryEndpointOptions(configurationRoot);
+        HealthEndpointOptions opts = GetOptionsFromSettings(appsettings);
 
-    //    Assert.True(cloudOpts.Enabled);
-    //    Assert.Equal(string.Empty, cloudOpts.Id);
-    //    Assert.Equal(string.Empty, cloudOpts.Path);
-    //    Assert.True(cloudOpts.ValidateCertificates);
+        Assert.True(opts.Enabled);
+        Assert.Equal("health", opts.Id);
+        Assert.Equal("health", opts.Path);
+        Assert.Equal(Permissions.None, opts.RequiredPermissions);
+        Assert.Equal(3, opts.Groups.Count);
+        Assert.True(opts.Groups.ContainsKey("custom"));
+        Assert.True(opts.Groups.ContainsKey("liveness"));
+        Assert.True(opts.Groups.ContainsKey("READINESS"));
+    }
 
-    //    Assert.True(opts.Enabled);
-    //    Assert.Equal("health", opts.Id);
-    //    Assert.Equal("health", opts.Path);
-    //    Assert.Equal(Permissions.None, opts.RequiredPermissions);
-    //    Assert.Equal(3, opts.Groups.Count);
-    //    Assert.True(opts.Groups.ContainsKey("custom"));
-    //    Assert.True(opts.Groups.ContainsKey("liveness"));
-    //    Assert.True(opts.Groups.ContainsKey("READINESS"));
-    //}
+   
 
-    //[Fact]
-    //public void Constructor_BindsClaimCorrectly()
-    //{
-    //    var appsettings = new Dictionary<string, string>
-    //    {
-    //        ["management:endpoints:health:claim:type"] = "claimtype",
-    //        ["management:endpoints:health:claim:value"] = "claimvalue",
-    //        ["management:endpoints:health:role"] = "roleclaimvalue"
-    //    };
+    [Fact]
+    public void Constructor_BindsClaimCorrectly()
+    {
+        var appsettings = new Dictionary<string, string>
+        {
+            ["management:endpoints:health:claim:type"] = "claimtype",
+            ["management:endpoints:health:claim:value"] = "claimvalue",
+            ["management:endpoints:health:role"] = "roleclaimvalue"
+        };
 
-    //    var configurationBuilder = new ConfigurationBuilder();
-    //    configurationBuilder.AddInMemoryCollection(appsettings);
-    //    IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        HealthEndpointOptions opts = GetOptionsFromSettings(appsettings);
+        Assert.NotNull(opts.Claim);
+        Assert.Equal("claimtype", opts.Claim.Type);
+        Assert.Equal("claimvalue", opts.Claim.Value);
+    }
 
-    //    var opts = new HealthEndpointOptions(configurationRoot);
-    //    Assert.NotNull(opts.Claim);
-    //    Assert.Equal("claimtype", opts.Claim.Type);
-    //    Assert.Equal("claimvalue", opts.Claim.Value);
-    //}
+    [Fact]
+    public void Constructor_BindsRoleCorrectly()
+    {
+        var appsettings = new Dictionary<string, string>
+        {
+            ["management:endpoints:health:role"] = "roleclaimvalue"
+        };
 
-    //[Fact]
-    //public void Constructor_BindsRoleCorrectly()
-    //{
-    //    var appsettings = new Dictionary<string, string>
-    //    {
-    //        ["management:endpoints:health:role"] = "roleclaimvalue"
-    //    };
-
-    //    var configurationBuilder = new ConfigurationBuilder();
-    //    configurationBuilder.AddInMemoryCollection(appsettings);
-    //    IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-    //    var opts = new HealthEndpointOptions(configurationRoot);
-    //    Assert.NotNull(opts.Claim);
-    //    Assert.Equal(ClaimTypes.Role, opts.Claim.Type);
-    //    Assert.Equal("roleclaimvalue", opts.Claim.Value);
-    //}
+        HealthEndpointOptions opts = GetOptionsFromSettings(appsettings);
+        Assert.NotNull(opts.Claim);
+        Assert.Equal(ClaimTypes.Role, opts.Claim.Type);
+        Assert.Equal("roleclaimvalue", opts.Claim.Value);
+    }
 }

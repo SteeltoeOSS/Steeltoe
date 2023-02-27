@@ -13,7 +13,7 @@ using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthEndpointCore:  AbstractEndpoint<HealthEndpointResponse, ISecurityContext>, IHealthEndpoint
+public class HealthEndpointCore:  /*bstractEndpoint<HealthEndpointResponse, ISecurityContext>*/ IEndpoint<HealthEndpointResponse, ISecurityContext>, IHealthEndpoint
 {
     private readonly IOptionsMonitor<HealthCheckServiceOptions> _serviceOptions;
     private readonly IServiceProvider _provider;
@@ -22,15 +22,19 @@ public class HealthEndpointCore:  AbstractEndpoint<HealthEndpointResponse, ISecu
     private readonly IList<IHealthContributor> _contributors;
     private readonly ILogger<HealthEndpointCore> _logger;
 
-    public IOptionsMonitor<HealthEndpointOptions> Options => _options;
+    //public IOptionsMonitor<HealthEndpointOptions> Options => _options;
 
-    //public new IHealthOptions Options { get; } // => options as IHealthOptions;
+    //public new IHealthOptions Options { get; }  => _options as IHealthOptions;
+    public IEndpointOptions Options => _options.CurrentValue;
 
     public HealthEndpointCore(IOptionsMonitor<HealthEndpointOptions> options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
         IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpointCore> logger = null)
-    //: base(options, aggregator, contributors, logger)
+ //   : base(options, aggregator, contributors, logger)
+ 
     {
+        ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(aggregator);
+        ArgumentGuard.NotNull(contributors);
         ArgumentGuard.NotNull(serviceOptions);
         ArgumentGuard.NotNull(provider);
         _options = options;
@@ -54,8 +58,9 @@ public class HealthEndpointCore:  AbstractEndpoint<HealthEndpointResponse, ISecu
         string groupName = GetRequestedHealthGroup(securityContext);
         ICollection<HealthCheckRegistration> healthCheckRegistrations;
         IList<IHealthContributor> filteredContributors;
+        var options = Options as HealthEndpointOptions;
 
-        if (!string.IsNullOrEmpty(groupName) && groupName != Options.CurrentValue.EndpointSharedOptions.Id)
+        if (!string.IsNullOrEmpty(groupName) && groupName != options.Id)
         {
             filteredContributors = GetFilteredContributorList(groupName, _contributors);
             healthCheckRegistrations = GetFilteredHealthCheckServiceOptions(groupName, _serviceOptions);
@@ -72,15 +77,15 @@ public class HealthEndpointCore:  AbstractEndpoint<HealthEndpointResponse, ISecu
 
         var response = new HealthEndpointResponse(result);
 
-        ShowDetails showDetails = Options.CurrentValue.ShowDetails;
+        ShowDetails showDetails = options.ShowDetails;
 
-        if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !securityContext.HasClaim(Options.CurrentValue.Claim)))
+        if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !securityContext.HasClaim(options.Claim)))
         {
             response.Details = new Dictionary<string, object>();
         }
         else
         {
-            response.Groups = Options.CurrentValue.Groups.Select(g => g.Key);
+            response.Groups = options.Groups.Select(g => g.Key);
         }
 
         return response;
@@ -89,9 +94,10 @@ public class HealthEndpointCore:  AbstractEndpoint<HealthEndpointResponse, ISecu
     private ICollection<HealthCheckRegistration> GetFilteredHealthCheckServiceOptions(string requestedGroup,
         IOptionsMonitor<HealthCheckServiceOptions> svcOptions)
     {
+        var options = Options as HealthEndpointOptions;
         if (!string.IsNullOrEmpty(requestedGroup))
         {
-            if (Options.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
+            if (options.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
             {
                 List<string> includedContributors = groupOptions.Include.Split(',').ToList();
 
@@ -142,9 +148,10 @@ public class HealthEndpointCore:  AbstractEndpoint<HealthEndpointResponse, ISecu
     /// </returns>
     private IList<IHealthContributor> GetFilteredContributorList(string requestedGroup, IList<IHealthContributor> contributors)
     {
+        var options = Options as HealthEndpointOptions;
         if (!string.IsNullOrEmpty(requestedGroup))
         {
-            if (Options.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
+            if (options.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
             {
                 List<string> includedContributors = groupOptions.Include.Split(',').ToList();
                 contributors = contributors.Where(n => includedContributors.Contains(n.Id, StringComparer.OrdinalIgnoreCase)).ToList();

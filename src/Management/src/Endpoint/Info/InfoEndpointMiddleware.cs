@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
@@ -22,7 +23,7 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
     {
         logger.LogDebug("Info middleware InvokeAsync({path})", context.Request.Path.Value);
 
-        if (((InfoEndpoint)Endpoint).Options.CurrentValue.EndpointOptions.ShouldInvoke(managementOptions.CurrentValue, logger))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleInfoRequestAsync(context);
         }
@@ -32,7 +33,8 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
 
     protected internal Task HandleInfoRequestAsync(HttpContext context)
     {
-        string serialInfo = HandleRequest();
+        var currentOptions = managementOptions.GetCurrentContext(context);
+        string serialInfo = HandleRequest(currentOptions.SerializerOptions);
         logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);

@@ -70,7 +70,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddHealthActuator(context.Configuration);
+            collection.AddHealthActuator();
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -88,7 +88,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddHealthActuator(context.Configuration, contributors);
+            collection.AddHealthActuator( contributors);
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -109,7 +109,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddHealthActuator(context.Configuration, aggregator, contributors);
+            collection.AddHealthActuator( aggregator, contributors);
             collection.ActivateActuatorEndpoints();
         });
     }

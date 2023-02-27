@@ -26,14 +26,11 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddHealthActuatorServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddHealthActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
-
-        //var options = new HealthEndpointOptions(configuration);
-        //services.TryAddSingleton<IHealthOptions>(options);
-        services.Configure<HealthEndpointOptions>(configuration.GetSection(HealthEndpointOptions.ManagementInfoPrefix));
+        
+        services.ConfigureOptions<ConfigureHealthEndpointOptions>();
         services.AddTransient<IEndpointOptions, HealthEndpointOptions>();
         services.TryAddScoped<HealthEndpointCore>();
         services.TryAddScoped<IHealthEndpoint>(provider => provider.GetRequiredService<HealthEndpointCore>());

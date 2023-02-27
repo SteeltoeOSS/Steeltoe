@@ -8,9 +8,9 @@ using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthEndpointOptions: IEndpointOptions /* AbstractEndpointOptions IHealthOptions */
+public class HealthEndpointOptions:  EndpointOptionsBase//, IHealthOptions 
 {
-    public const string ManagementInfoPrefix = "management:endpoints:health";
+    public const string HealthOptionsPrefix = "management:endpoints:health";
 
     public ShowDetails ShowDetails { get; set; }
 
@@ -19,82 +19,12 @@ public class HealthEndpointOptions: IEndpointOptions /* AbstractEndpointOptions 
     public string Role { get; set; }
 
     public Dictionary<string, HealthGroupOptions> Groups { get; set; } = new(StringComparer.OrdinalIgnoreCase);
-
-    public EndpointSharedOptions EndpointSharedOptions { get; set; }
+    
+    public override bool ExactMatch => false;
 
     public HealthEndpointOptions()
     {
-        //    Id = "health";
-        //    RequiredPermissions = Permissions.Restricted;
-
-        EndpointSharedOptions = new EndpointSharedOptions
-        {
-            Id = "health",
-            RequiredPermissions = Permissions.Restricted,
-            ExactMatch = false,
-            
-
-        };
-
-        //if (RequiredPermissions == Permissions.Undefined)
-        //{
-        //    RequiredPermissions = Permissions.Restricted;
-        //}
-
-        if (Claim == null && !string.IsNullOrEmpty(Role))
-        {
-            Claim = new EndpointClaim
-            {
-                Type = ClaimTypes.Role,
-                Value = Role
-            };
-        }
-
-        AddDefaultGroups();
     }
-    //public HealthEndpointOptions(IConfiguration configuration)
-    //    : base(ManagementInfoPrefix, configuration)
-    //{
-    //    if (string.IsNullOrEmpty(Id))
-    //    {
-    //        Id = "health";
-    //    }
-
-    //    if (RequiredPermissions == Permissions.Undefined)
-    //    {
-    //        RequiredPermissions = Permissions.Restricted;
-    //    }
-
-    //    if (Claim == null && !string.IsNullOrEmpty(Role))
-    //    {
-    //        Claim = new EndpointClaim
-    //        {
-    //            Type = ClaimTypes.Role,
-    //            Value = Role
-    //        };
-    //    }
-
-    //    ExactMatch = false;
-
-    //    AddDefaultGroups();
-    //}
-
-    private void AddDefaultGroups()
-    {
-        if (!Groups.ContainsKey("liveness"))
-        {
-            Groups.Add("liveness", new HealthGroupOptions
-            {
-                Include = "liveness"
-            });
-        }
-
-        if (!Groups.ContainsKey("readiness"))
-        {
-            Groups.Add("readiness", new HealthGroupOptions
-            {
-                Include = "readiness"
-            });
-        }
-    }
+   
+   
 }

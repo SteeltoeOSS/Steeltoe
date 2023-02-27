@@ -52,7 +52,7 @@ public static class ActuatorServiceCollectionExtensions
         services.AddDbMigrationsActuator(configuration);
         services.AddEnvActuator(configuration);
         services.AddInfoActuator(configuration);
-        services.AddHealthActuator(configuration);
+        services.AddHealthActuator();
         services.AddLoggersActuator(configuration);
         services.AddTraceActuator(configuration, version);
         services.AddMappingsActuator(configuration);

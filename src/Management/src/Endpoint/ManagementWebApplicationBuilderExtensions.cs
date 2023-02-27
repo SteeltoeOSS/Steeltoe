@@ -59,7 +59,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddHealthActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -75,7 +75,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, Type[] contributors)
     {
-        applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration, contributors);
+        applicationBuilder.Services.AddHealthActuator( contributors);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -94,7 +94,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, IHealthAggregator aggregator, Type[] contributors)
     {
-        applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration, aggregator, contributors);
+        applicationBuilder.Services.AddHealthActuator(aggregator, contributors);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }

@@ -6,20 +6,18 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class ThreadDumpEndpointOptions //: AbstractEndpointOptions, IThreadDumpOptions
+public class ThreadDumpEndpointOptions : EndpointOptionsBase //, IThreadDumpOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:dump";
 
     public int Duration { get; set; } = 10; // 10 ms
 
-    public EndpointSharedOptions EndpointOptions { get; set; }
-    
+    public IEndpointOptions Options => throw new NotImplementedException();
+
     public ThreadDumpEndpointOptions()
     {
-        EndpointOptions = new EndpointSharedOptions
-        {
-            Id = "dump"
-        };
+
+        Id = "dump";
     }
 
     //public ThreadDumpEndpointOptions(IConfiguration configuration)

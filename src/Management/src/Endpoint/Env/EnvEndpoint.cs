@@ -11,7 +11,7 @@ using Steeltoe.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
+public class EnvEndpoint : /*AbstractEndpoint<EnvironmentDescriptor>*/ IEndpoint<EnvironmentDescriptor>, IEnvEndpoint
 {
     private readonly IOptionsMonitor<EnvEndpointOptions> _options;
     private readonly IConfiguration _configuration;
@@ -20,6 +20,8 @@ public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
     private readonly IHostEnvironment _env;
 
     public IOptionsMonitor<EnvEndpointOptions> Options => _options;
+
+    IEndpointOptions IEndpoint.Options => _options.CurrentValue;
 
     //  public new IEnvOptions Options => options as IEnvOptions;
 
@@ -34,7 +36,7 @@ public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
         _sanitizer = new Sanitizer(options.CurrentValue.KeysToSanitize);
     }
 
-    public override EnvironmentDescriptor Invoke()
+    public EnvironmentDescriptor Invoke()
     {
         return DoInvoke(_configuration);
     }

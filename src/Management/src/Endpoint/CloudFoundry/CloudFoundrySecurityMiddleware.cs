@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -16,6 +18,7 @@ public class CloudFoundrySecurityMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
+    private readonly ActuatorRouter _router;
 
     //private readonly ICloudFoundryOptions _options;
     private readonly ManagementEndpointOptions _managementOptions;
@@ -23,13 +26,14 @@ public class CloudFoundrySecurityMiddleware
     // private readonly IManagementOptions _managementOptions;
     private readonly SecurityBase _base;
 
-    public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ActuatorRouter router,
         ILogger<CloudFoundrySecurityMiddleware> logger = null)
     {
         _next = next;
         _logger = logger;
         _options = options;
-        _managementOptions = managementOptions.Get(ManagementEndpointOptions.CFOptionName);
+        _router = router;
+        _managementOptions = managementOptions.Get(EndpointContextNames.CFManagemementOptionName);
 
         _base = new SecurityBase(options, managementOptions, logger);
     }
@@ -37,12 +41,13 @@ public class CloudFoundrySecurityMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         var cfOptions = _options.CurrentValue;
-        var endpointOptions = _options.CurrentValue.EndpointOptions;
+        var endpointOptions = _options.CurrentValue;
         _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);
 
-        bool isEndpointExposed = _managementOptions == null || endpointOptions.IsExposed(_managementOptions);
+    //    bool isEndpointExposed = _managementOptions == null || endpointOptions.IsExposed(_managementOptions); I think this is a bug
+    // Should not be checking Exposure settings 
 
-        if (Platform.IsCloudFoundry && isEndpointExposed && _base.IsCloudFoundryRequest(context.Request.Path))
+        if (Platform.IsCloudFoundry && /*isEndpointExposed &&*/ _base.IsCloudFoundryRequest(context.Request.Path))
         {
             if (string.IsNullOrEmpty(cfOptions.ApplicationId))
             {
@@ -63,13 +68,13 @@ public class CloudFoundrySecurityMiddleware
 
             //TODO: Figure out how to find list of configured endpoints
             //IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
+            IEndpointOptions target = _router.GetTargetOptions(context);
+            if (target == null)
+            {
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.EndpointNotConfiguredMessage));
 
-            //if (target == null)
-            //{
-            //    await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.EndpointNotConfiguredMessage));
-
-            //    return;
-            //}
+                return;
+            }
 
             SecurityResult sr = await GetPermissionsAsync(context);
 
@@ -81,11 +86,11 @@ public class CloudFoundrySecurityMiddleware
 
             Permissions permissions = sr.Permissions;
 
-            //if (!target.IsAccessAllowed(permissions))
-            //{
-            //    await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, SecurityBase.AccessDeniedMessage));
-            //    return;
-            //}
+            if (!target.IsAccessAllowed(permissions))
+            {
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, SecurityBase.AccessDeniedMessage));
+                return;
+            }
         }
 
         await _next(context);

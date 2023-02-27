@@ -9,7 +9,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-public class RefreshEndpoint : AbstractEndpoint<IList<string>>, IRefreshEndpoint
+public class RefreshEndpoint : IEndpoint<IList<string>>, IRefreshEndpoint
 {
     private readonly IOptionsMonitor<RefreshEndpointOptions> _options;
 
@@ -17,6 +17,8 @@ public class RefreshEndpoint : AbstractEndpoint<IList<string>>, IRefreshEndpoint
     private readonly IConfiguration _configuration;
 
     public IOptionsMonitor<RefreshEndpointOptions> Options => _options;
+
+    IEndpointOptions IEndpoint.Options => _options.CurrentValue;
 
     // public new IRefreshOptions Options => options as IRefreshOptions;
 
@@ -28,7 +30,7 @@ public class RefreshEndpoint : AbstractEndpoint<IList<string>>, IRefreshEndpoint
         _configuration = configuration;
     }
 
-    public override IList<string> Invoke()
+    public IList<string> Invoke()
     {
         return DoInvoke(_configuration);
     }

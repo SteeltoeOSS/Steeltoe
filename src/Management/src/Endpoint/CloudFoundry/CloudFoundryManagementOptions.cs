@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -16,7 +17,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 //    }
 
 //    public CloudFoundryManagementOptions(IConfiguration configuration)
-//       // : base(configuration)
+//    // : base(configuration)
 //    {
 //        Path = DefaultActuatorPath;
 //    }

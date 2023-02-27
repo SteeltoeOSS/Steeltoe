@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
@@ -29,10 +30,10 @@ public class EndpointMiddleware<TResult>
         this.logger = logger;
         this.managementOptions = managementOptions;
 
-        if (this.managementOptions is ManagementEndpointOptions options)
-        {
-            options.SerializerOptions = GetSerializerOptions(options.SerializerOptions);
-        }
+        //if (this.managementOptions.CurrentValue is ManagementEndpointOptions options)
+        //{
+        //    options.SerializerOptions = GetSerializerOptions(options.SerializerOptions);
+        //}
     }
 
     public EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
@@ -43,26 +44,17 @@ public class EndpointMiddleware<TResult>
         Endpoint = endpoint;
     }
 
-    public virtual string HandleRequest()
+    public virtual string HandleRequest(JsonSerializerOptions serializerOptions)
     {
         TResult result = Endpoint.Invoke();
-        return Serialize(result);
+        return Serialize(result, serializerOptions);
     }
 
-    public virtual string Serialize(TResult result)
+    public virtual string Serialize(TResult result, JsonSerializerOptions serializerOptions)
     {
         try
         {
-            JsonSerializerOptions options;
-
-            if (managementOptions is ManagementEndpointOptions endpointOptions)
-            {
-                options = endpointOptions.SerializerOptions;
-            }
-            else
-            {
-                options = GetSerializerOptions(null);
-            }
+            JsonSerializerOptions options = serializerOptions ?? GetSerializerOptions(null);
 
             return JsonSerializer.Serialize(result, options);
         }
@@ -126,9 +118,9 @@ public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
     {
     }
 
-    public virtual string HandleRequest(TRequest arg)
+    public virtual string HandleRequest(TRequest arg, JsonSerializerOptions serializerOptions)
     {
         TResult result = Endpoint.Invoke(arg);
-        return Serialize(result);
+        return Serialize(result, serializerOptions);
     }
 }

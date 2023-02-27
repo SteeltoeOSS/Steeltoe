@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
@@ -13,7 +14,7 @@ public class HypermediaService
 {
     private readonly ILogger _logger;
     private readonly ManagementEndpointOptions _managementOptions;
-    private readonly EndpointSharedOptions _options;
+   // private readonly EndpointOptionsBase _options;
 
     public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HypermediaEndpointOptions> options, ILogger logger = null)
     {
@@ -22,7 +23,7 @@ public class HypermediaService
 
         _logger = logger;
         _managementOptions = managementOptions.CurrentValue;
-        _options = options.CurrentValue.EndpointSharedOptions;
+       // _options = options.CurrentValue.EndpointSharedOptions;
     }
     public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options, ILogger logger = null)
     {
@@ -31,7 +32,7 @@ public class HypermediaService
 
         _logger = logger;
         _managementOptions = managementOptions.CurrentValue;
-        _options = options.CurrentValue.EndpointOptions;
+      //  _options = options.CurrentValue.EndpointOptions;
     }
     
     public Links Invoke(string baseUrl)

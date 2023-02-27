@@ -9,6 +9,7 @@ using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -31,9 +32,8 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
     public Task InvokeAsync(HttpContext context)
     {
         logger?.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
-        var mgmtOption = managementOptions.Get(ManagementEndpointOptions.CFOptionName);
-        var cfOptions = CloudFoundryEndpoint.Options.CurrentValue;
-        if (cfOptions.EndpointOptions.ShouldInvoke(mgmtOption, logger))
+        var cfOptions = CloudFoundryEndpoint.Options;
+        if (cfOptions.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleCloudFoundryRequestAsync(context);
         }
@@ -43,7 +43,7 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 
     protected internal Task HandleCloudFoundryRequestAsync(HttpContext context)
     {
-        string serialInfo = HandleRequest(GetRequestUri(context.Request));
+        string serialInfo = HandleRequest(GetRequestUri(context.Request), managementOptions.GetCurrentContext(context).SerializerOptions);
         logger?.LogDebug("Returning: {info}", serialInfo);
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);

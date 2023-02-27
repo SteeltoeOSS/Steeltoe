@@ -78,7 +78,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string>(_appSettings)
         {
-            { "management:endpoints:health:showdetails", "whenauthorized" }
+            { "management:endpoints:health:showdetails", "whenauthorized" },
         };
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<AuthStartup>()
@@ -87,7 +87,7 @@ public class EndpointMiddlewareTest : BaseTest
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
 
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/health"));
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
         Assert.NotNull(json);
