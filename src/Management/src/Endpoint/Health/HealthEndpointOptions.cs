@@ -10,8 +10,6 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 public class HealthEndpointOptions:  EndpointOptionsBase//, IHealthOptions 
 {
-    public const string HealthOptionsPrefix = "management:endpoints:health";
-
     public ShowDetails ShowDetails { get; set; }
 
     public EndpointClaim Claim { get; set; }
@@ -21,10 +19,5 @@ public class HealthEndpointOptions:  EndpointOptionsBase//, IHealthOptions
     public Dictionary<string, HealthGroupOptions> Groups { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     
     public override bool ExactMatch => false;
-
-    public HealthEndpointOptions()
-    {
-    }
-   
    
 }

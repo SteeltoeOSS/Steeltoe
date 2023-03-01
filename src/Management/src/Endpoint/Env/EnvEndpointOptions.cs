@@ -8,46 +8,5 @@ namespace Steeltoe.Management.Endpoint.Env;
 
 public class EnvEndpointOptions : EndpointOptionsBase//, IEnvOptions
 {
-    private const string ManagementInfoPrefix = "management:endpoints:env";
-
-    private static readonly string[] DefaultKeysToSanitize =
-    {
-        "password",
-        "secret",
-        "key",
-        "token",
-        ".*credentials.*",
-        "vcap_services"
-    };
-
     public string[] KeysToSanitize { get; set; }
-
-    public EndpointOptionsBase EndpointOptions { get; set; }
-    public EnvEndpointOptions()
-    {
-        EndpointOptions = new EndpointOptionsBase
-        {
-
-            Id = "env",
-            RequiredPermissions = Permissions.Restricted
-        };
-        
-        KeysToSanitize = DefaultKeysToSanitize;
-    }
-
-    //public EnvEndpointOptions(IConfiguration configuration)
-    //    : base(ManagementInfoPrefix, configuration)
-    //{
-    //    if (string.IsNullOrEmpty(Id))
-    //    {
-    //        Id = "env";
-    //    }
-
-    //    if (RequiredPermissions == Permissions.Undefined)
-    //    {
-    //        RequiredPermissions = Permissions.Restricted;
-    //    }
-
-    //    KeysToSanitize ??= DefaultKeysToSanitize;
-    //}
 }

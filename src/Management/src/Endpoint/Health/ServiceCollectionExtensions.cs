@@ -31,7 +31,7 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         
         services.ConfigureOptions<ConfigureHealthEndpointOptions>();
-        services.AddTransient<IEndpointOptions, HealthEndpointOptions>();
+        services.AddScoped<IEndpointOptions, HealthEndpointOptions>(); // TOdO : this needed?
         services.TryAddScoped<HealthEndpointCore>();
         services.TryAddScoped<IHealthEndpoint>(provider => provider.GetRequiredService<HealthEndpointCore>());
 

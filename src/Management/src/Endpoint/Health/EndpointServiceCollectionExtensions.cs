@@ -97,7 +97,7 @@ public static class EndpointServiceCollectionExtensions
 
         //New:
 
-        services.TryAddScoped<ActuatorRouter>();
+        services.TryAddSingleton<ActuatorRouter>();
         services.TryAddScoped<ActuatorsMiddleware>();
         services.TryAddScoped<IEndpointMiddleware, HealthEndpointMiddleware>();
     }

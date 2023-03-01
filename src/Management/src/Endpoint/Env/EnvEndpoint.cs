@@ -18,9 +18,7 @@ public class EnvEndpoint : /*AbstractEndpoint<EnvironmentDescriptor>*/ IEndpoint
     private readonly Sanitizer _sanitizer;
 
     private readonly IHostEnvironment _env;
-
-    public IOptionsMonitor<EnvEndpointOptions> Options => _options;
-
+    
     IEndpointOptions IEndpoint.Options => _options.CurrentValue;
 
     //  public new IEnvOptions Options => options as IEnvOptions;

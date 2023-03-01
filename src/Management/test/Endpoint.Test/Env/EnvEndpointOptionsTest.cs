@@ -10,29 +10,23 @@ namespace Steeltoe.Management.Endpoint.Test.Env;
 
 public class EnvEndpointOptionsTest : BaseTest
 {
-//    [Fact]
-//    public void Constructor_InitializesWithDefaults()
-//    {
-//        var opts = new EnvEndpointOptions();
-//        Assert.Equal("env", opts.EndpointOptions.Id);
+    [Fact]
+    public void Constructor_InitializesWithDefaults()
+    {
+        var opts = GetOptionsFromSettings<EnvEndpointOptions, ConfigureEnvEndpointOptions>();
+        Assert.Equal("env", opts.Id);
 
-//        Assert.Equal(new[]
-//        {
-//            "password",
-//            "secret",
-//            "key",
-//            "token",
-//            ".*credentials.*",
-//            "vcap_services"
-//        }, opts.KeysToSanitize);
+        Assert.Equal(new[]
+        {
+            "password",
+            "secret",
+            "key",
+            "token",
+            ".*credentials.*",
+            "vcap_services"
+        }, opts.KeysToSanitize);
 
-//        Assert.Equal(Permissions.Restricted, opts.EndpointOptions.RequiredPermissions);
-//    }
+        Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);
+    }
 
-    //[Fact]
-    //public void Constructor_ThrowsIfConfigNull()
-    //{
-    //    const IConfiguration configuration = null;
-    //    Assert.Throws<ArgumentNullException>(() => new EnvEndpointOptions(configuration));
-    //}
 }

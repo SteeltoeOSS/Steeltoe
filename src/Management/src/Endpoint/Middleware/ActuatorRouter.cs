@@ -14,6 +14,16 @@ public class ActuatorRouter
 
     public ActuatorRouter(IOptionsMonitor<ManagementEndpointOptions> mgmtOptions, IEnumerable<IEndpointMiddleware> middlewares)
     {
+        AddRoutes(mgmtOptions, middlewares);
+        mgmtOptions.OnChange(options =>
+        {
+            _routes.Clear();
+            AddRoutes(mgmtOptions, middlewares);
+        });
+    }
+
+    private void AddRoutes(IOptionsMonitor<ManagementEndpointOptions> mgmtOptions, IEnumerable<IEndpointMiddleware> middlewares)
+    {
         foreach (var mgmtOptionName in EndpointContextNames.All)
         {
             var mgmtOption = mgmtOptions.Get(mgmtOptionName);

@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Health;
 internal class ConfigureHealthEndpointOptions : IConfigureOptions<HealthEndpointOptions>
 {
     private readonly IConfiguration configuration;
-
+    private const string HealthOptionsPrefix = "management:endpoints:health";
     public ConfigureHealthEndpointOptions(IConfiguration configuration)
     {
         this.configuration = configuration;
@@ -22,7 +22,7 @@ internal class ConfigureHealthEndpointOptions : IConfigureOptions<HealthEndpoint
 
     public void Configure(HealthEndpointOptions options)
     {
-        configuration.GetSection(HealthEndpointOptions.HealthOptionsPrefix).Bind(options);
+        configuration.GetSection(HealthOptionsPrefix).Bind(options);
         
         options.Id ??= "health";
 

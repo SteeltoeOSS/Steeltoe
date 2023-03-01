@@ -13,12 +13,12 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-public class HealthEndpointOptionsTest : BaseHealthTest
+public class HealthEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        HealthEndpointOptions opts = GetOptionsFromSettings();
+        HealthEndpointOptions opts = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
         
         Assert.Null(opts.Enabled);
         Assert.Equal("health", opts.Id);
@@ -40,7 +40,7 @@ public class HealthEndpointOptionsTest : BaseHealthTest
             ["management:endpoints:health:groups:rEadinEss:include"] = "diskSpace"
         };
 
-        HealthEndpointOptions opts = GetOptionsFromSettings(appsettings);
+        HealthEndpointOptions opts = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>( appsettings);
 
         Assert.True(opts.Enabled);
         Assert.Equal("health", opts.Id);
@@ -64,7 +64,7 @@ public class HealthEndpointOptionsTest : BaseHealthTest
             ["management:endpoints:health:role"] = "roleclaimvalue"
         };
 
-        HealthEndpointOptions opts = GetOptionsFromSettings(appsettings);
+        HealthEndpointOptions opts = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions> (appsettings);
         Assert.NotNull(opts.Claim);
         Assert.Equal("claimtype", opts.Claim.Type);
         Assert.Equal("claimvalue", opts.Claim.Value);
@@ -78,7 +78,7 @@ public class HealthEndpointOptionsTest : BaseHealthTest
             ["management:endpoints:health:role"] = "roleclaimvalue"
         };
 
-        HealthEndpointOptions opts = GetOptionsFromSettings(appsettings);
+        HealthEndpointOptions opts = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appsettings);
         Assert.NotNull(opts.Claim);
         Assert.Equal(ClaimTypes.Role, opts.Claim.Type);
         Assert.Equal("roleclaimvalue", opts.Claim.Value);

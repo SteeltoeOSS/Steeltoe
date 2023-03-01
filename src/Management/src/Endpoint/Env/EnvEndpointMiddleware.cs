@@ -19,15 +19,12 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>, 
         Endpoint = endpoint;
     }
     
-    public EnvEndpoint EnvEndpoint { get; }
-
-    public IEndpointOptions EndpointOptions => EnvEndpoint.Options.CurrentValue;
+    public IEndpointOptions EndpointOptions => Endpoint.Options;
     
     public Task InvokeAsync(HttpContext context)
     {
-        IEndpointOptions options = EnvEndpoint.Options.CurrentValue;
         
-        if (options.ShouldInvoke(managementOptions, context, logger))
+        if (EndpointOptions.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleEnvRequestAsync(context);
         }

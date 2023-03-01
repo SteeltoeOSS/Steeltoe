@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Extensions;
+using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Middleware;
 
@@ -46,9 +47,7 @@ public static class EndpointServiceCollectionExtensions
         });
 
         services.AddActuatorManagementOptions();
-        services.AddEnvActuatorServices(configuration);
-        
-
+        services.AddEnvActuatorServices();
 
     }
 }

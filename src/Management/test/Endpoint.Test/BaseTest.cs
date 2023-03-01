@@ -5,7 +5,10 @@
 using System.Diagnostics.Metrics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
@@ -79,4 +82,23 @@ public abstract class BaseTest : IDisposable
 
         return aggregator;
     }
+    protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>() => GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(new Dictionary<string, string>());
+    protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string> appsettings)
+    {
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appsettings);
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.ConfigureOptions(typeof(TConfigureOptions));
+
+        var provider = services.BuildServiceProvider();
+        var opts = provider.GetService<IOptionsMonitor<TOptions>>();
+        return opts;
+    }
+
+    protected static TOptions GetOptionsFromSettings<TOptions, TConfigureOptions>() => GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>().CurrentValue;
+
+    protected static TOptions GetOptionsFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string> appSettings) => GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(appSettings).CurrentValue;
 }

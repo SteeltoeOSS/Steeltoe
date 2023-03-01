@@ -4,17 +4,20 @@
 
 using System.Net;
 using System.Text;
+using FluentAssertions.Common;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Env;
@@ -29,33 +32,35 @@ public class EndpointMiddlewareTest : BaseTest
         ["Logging:LogLevel:Steeltoe"] = "Information",
         ["management:endpoints:enabled"] = "true"
     };
-
+    
     private readonly IHostEnvironment _host = HostingHelpers.GetHostingEnvironment();
 
-    //[Fact]
-    //public async Task HandleEnvRequestAsync_ReturnsExpected()
-    //{
-    //    var opts = new EnvEndpointOptions();
+    [Fact]
+    public async Task HandleEnvRequestAsync_ReturnsExpected()
+    {
+        
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(AppSettings);
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-    //    var configurationBuilder = new ConfigurationBuilder();
-    //    configurationBuilder.AddInMemoryCollection(AppSettings);
-    //    IConfigurationRoot configurationRoot = configurationBuilder.Build();
-    //    var options = new ActuatorManagementOptions();
-    //    options.EndpointOptions.Add(opts);
-    //    var ep = new EnvEndpoint(opts, configurationRoot, _host);
-    //    var middle = new EnvEndpointMiddleware( ep, options);
+        var optionsMonitor = GetOptionsMonitorFromSettings<EnvEndpointOptions, ConfigureEnvEndpointOptions>();
+        var managementOptions = new TestOptionsMonitor<ManagementEndpointOptions>(new ManagementEndpointOptions());
+       // new TestNamedOptionsMonitor<>("", new ManagementOptions());
 
-    //    HttpContext context = CreateRequest("GET", "/env");
-    //    await middle.HandleEnvRequestAsync(context);
-    //    context.Response.Body.Seek(0, SeekOrigin.Begin);
-    //    var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
-    //    string json = await reader.ReadLineAsync();
+        var ep = new EnvEndpoint(optionsMonitor, configurationRoot, _host);
+        var middle = new EnvEndpointMiddleware(ep, managementOptions);
 
-    //    const string expected =
-    //        "{\"activeProfiles\":[\"EnvironmentName\"],\"propertySources\":[{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:Console:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
+        HttpContext context = CreateRequest("GET", "/env");
+        await middle.HandleEnvRequestAsync(context);
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
+        string json = await reader.ReadLineAsync();
 
-    //    Assert.Equal(expected, json);
-    //}
+        const string expected =
+            "{\"activeProfiles\":[\"EnvironmentName\"],\"propertySources\":[{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:Console:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
+
+        Assert.Equal(expected, json);
+    }
 
     [Fact]
     public async Task EnvActuator_ReturnsExpectedData()
@@ -75,7 +80,7 @@ public class EndpointMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/env"));
+            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/env"));
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             string json = await result.Content.ReadAsStringAsync();
 

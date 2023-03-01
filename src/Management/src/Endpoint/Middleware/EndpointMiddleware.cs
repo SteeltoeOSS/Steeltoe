@@ -30,10 +30,6 @@ public class EndpointMiddleware<TResult>
         this.logger = logger;
         this.managementOptions = managementOptions;
 
-        //if (this.managementOptions.CurrentValue is ManagementEndpointOptions options)
-        //{
-        //    options.SerializerOptions = GetSerializerOptions(options.SerializerOptions);
-        //}
     }
 
     public EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
@@ -54,7 +50,7 @@ public class EndpointMiddleware<TResult>
     {
         try
         {
-            JsonSerializerOptions options = serializerOptions ?? GetSerializerOptions(null);
+            JsonSerializerOptions options = GetSerializerOptions(serializerOptions);
 
             return JsonSerializer.Serialize(result, options);
         }

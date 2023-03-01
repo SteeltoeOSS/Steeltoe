@@ -47,7 +47,7 @@ public class EnvEndpointTest : BaseTest
             tc.AdditionalServices = (services, configuration) =>
             {
                 services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-                services.AddEnvActuatorServices(configuration);
+                services.AddEnvActuatorServices();
             };
 
             tc.AdditionalConfiguration = configuration =>
@@ -67,7 +67,7 @@ public class EnvEndpointTest : BaseTest
             tc.AdditionalServices = (services, configuration) =>
             {
                 services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-                services.AddEnvActuatorServices(configuration);
+                services.AddEnvActuatorServices();
             };
 
             tc.AdditionalConfiguration = configuration =>
@@ -110,7 +110,7 @@ public class EnvEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvActuatorServices(configuration);
+            services.AddEnvActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>
@@ -162,7 +162,7 @@ public class EnvEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvActuatorServices(configuration);
+            services.AddEnvActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>
@@ -202,7 +202,7 @@ public class EnvEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvActuatorServices(configuration);
+            services.AddEnvActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>
@@ -240,7 +240,7 @@ public class EnvEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvActuatorServices(configuration);
+            services.AddEnvActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>
@@ -288,7 +288,7 @@ public class EnvEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvActuatorServices(configuration);
+            services.AddEnvActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>
@@ -329,7 +329,7 @@ public class EnvEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvActuatorServices(configuration);
+            services.AddEnvActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>

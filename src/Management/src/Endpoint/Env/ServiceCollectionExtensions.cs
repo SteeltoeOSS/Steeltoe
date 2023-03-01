@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Env;
@@ -27,21 +28,18 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddEnvActuatorServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddEnvActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
-
-        //var options = new EnvEndpointOptions(configuration);
-        //services.TryAddSingleton<IEnvOptions>(options);
-        //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+        services.ConfigureOptions<ConfigureEnvEndpointOptions>();
         services.TryAddSingleton<EnvEndpoint>();
         services.TryAddSingleton<IEnvEndpoint>(provider => provider.GetRequiredService<EnvEndpoint>());
 
 
         // New: 
-        services.AddSingleton<IEndpointMiddleware, EnvEndpointMiddleware>();
+        services.TryAddSingleton<ActuatorRouter>();
         services.TryAddScoped<ActuatorsMiddleware>();
+        services.AddSingleton<IEndpointMiddleware, EnvEndpointMiddleware>();
         return services;
     }
 }
