@@ -23,15 +23,15 @@ public sealed class PostgreSqlConnectorTests
       ""binding_guid"": ""5457fd42-c36f-42e0-afef-eef4a44aa6b7"",
       ""binding_name"": null,
       ""credentials"": {
-        ""hostname"": ""csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com"",
-        ""jdbcUrl"": ""jdbc:postgresql://csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com:5432/vsbdb?user=leJdXEfOyoNsniyO%40csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com&password=T3Cg.DpMm7TPozIxb~1nEkU6S-mOBIAuuZI_RtEhqoU1IKib.SE~.__7UmsGo.dS&verifyServerCertificate=true&useSSL=true&requireSSL=false&serverTimezone=GMT"",
+        ""hostname"": ""csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com"",
+        ""jdbcUrl"": ""jdbc:postgresql://csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com:5432/vsbdb?user=leJdXEfOyoNsniyO%40csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com&password=T3Cg.DpMm7TPozIxb~1nEkU6S-mOBIAuuZI_RtEhqoU1IKib.SE~.__7UmsGo.dS&verifyServerCertificate=true&useSSL=true&requireSSL=false&serverTimezone=GMT"",
         ""name"": ""vsbdb"",
         ""password"": ""T3Cg.DpMm7TPozIxb~1nEkU6S-mOBIAuuZI_RtEhqoU1IKib.SE~.__7UmsGo.dS"",
         ""port"": 5432,
-        ""status"": ""created db vsbdb (id: /subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc/databases/vsbdb) on server csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc (id: /subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc) URL: https://portal.azure.com/#@b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0/resource/subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc"",
-        ""uri"": ""postgresql://leJdXEfOyoNsniyO%40csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com:T3Cg.DpMm7TPozIxb~1nEkU6S-mOBIAuuZI_RtEhqoU1IKib.SE~.__7UmsGo.dS@csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com:5432/vsbdb"",
+        ""status"": ""created db vsbdb (id: /subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc/databases/vsbdb) on server csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc (id: /subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc) URL: https://portal.cloud-hostname.com/#@b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0/resource/subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc"",
+        ""uri"": ""postgresql://leJdXEfOyoNsniyO%40csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com:T3Cg.DpMm7TPozIxb~1nEkU6S-mOBIAuuZI_RtEhqoU1IKib.SE~.__7UmsGo.dS@csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com:5432/vsbdb"",
         ""use_tls"": true,
-        ""username"": ""leJdXEfOyoNsniyO@csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com""
+        ""username"": ""leJdXEfOyoNsniyO@csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com""
       },
       ""instance_guid"": ""37502b38-167a-4a68-833d-dd2662d7eafc"",
       ""instance_name"": ""myPostgreSqlServiceAzureOne"",
@@ -52,15 +52,15 @@ public sealed class PostgreSqlConnectorTests
       ""binding_guid"": ""6a302359-5d5e-400d-bad5-daf9fbd58d49"",
       ""binding_name"": null,
       ""credentials"": {
-        ""hostname"": ""csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.azure.com"",
-        ""jdbcUrl"": ""jdbc:postgresql://csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.azure.com:5432/vsbdb?user=TAwlYVWerRtnHKWI%40csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.azure.com&password=r7sxQ~1Jcfhl2s8jh7WyXPjzg9Qwec~J47L0VHta.8NSW8JKMM3k88CJ.BZwkx1X&verifyServerCertificate=true&useSSL=true&requireSSL=false&serverTimezone=GMT"",
+        ""hostname"": ""csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.cloud-hostname.com"",
+        ""jdbcUrl"": ""jdbc:postgresql://csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.cloud-hostname.com:5432/vsbdb?user=TAwlYVWerRtnHKWI%40csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.cloud-hostname.com&password=r7sxQ~1Jcfhl2s8jh7WyXPjzg9Qwec~J47L0VHta.8NSW8JKMM3k88CJ.BZwkx1X&verifyServerCertificate=true&useSSL=true&requireSSL=false&serverTimezone=GMT"",
         ""name"": ""vsbdb"",
         ""password"": ""r7sxQ~1Jcfhl2s8jh7WyXPjzg9Qwec~J47L0VHta.8NSW8JKMM3k88CJ.BZwkx1X"",
         ""port"": 5432,
-        ""status"": ""created db vsbdb (id: /subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952/databases/vsbdb) on server csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952 (id: /subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952) URL: https://portal.azure.com/#@b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0/resource/subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952"",
-        ""uri"": ""postgresql://TAwlYVWerRtnHKWI%40csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.azure.com:r7sxQ~1Jcfhl2s8jh7WyXPjzg9Qwec~J47L0VHta.8NSW8JKMM3k88CJ.BZwkx1X@csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.azure.com:5432/vsbdb"",
+        ""status"": ""created db vsbdb (id: /subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952/databases/vsbdb) on server csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952 (id: /subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952) URL: https://portal.cloud-hostname.com/#@b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0/resource/subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952"",
+        ""uri"": ""postgresql://TAwlYVWerRtnHKWI%40csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.cloud-hostname.com:r7sxQ~1Jcfhl2s8jh7WyXPjzg9Qwec~J47L0VHta.8NSW8JKMM3k88CJ.BZwkx1X@csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.cloud-hostname.com:5432/vsbdb"",
         ""use_tls"": true,
-        ""username"": ""TAwlYVWerRtnHKWI@csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.azure.com""
+        ""username"": ""TAwlYVWerRtnHKWI@csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.cloud-hostname.com""
       },
       ""instance_guid"": ""80597418-b6c4-481a-a3dd-eb3efe296952"",
       ""instance_name"": ""myPostgreSqlServiceAzureTwo"",
@@ -144,15 +144,15 @@ public sealed class PostgreSqlConnectorTests
       ""binding_guid"": ""5457fd42-c36f-42e0-afef-eef4a44aa6b7"",
       ""binding_name"": null,
       ""credentials"": {
-        ""hostname"": ""csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com"",
-        ""jdbcUrl"": ""jdbc:postgresql://csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com:5432/vsbdb?user=leJdXEfOyoNsniyO%40csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com&password=T3Cg.DpMm7TPozIxb~1nEkU6S-mOBIAuuZI_RtEhqoU1IKib.SE~.__7UmsGo.dS&verifyServerCertificate=true&useSSL=true&requireSSL=false&serverTimezone=GMT"",
+        ""hostname"": ""csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com"",
+        ""jdbcUrl"": ""jdbc:postgresql://csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com:5432/vsbdb?user=leJdXEfOyoNsniyO%40csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com&password=T3Cg.DpMm7TPozIxb~1nEkU6S-mOBIAuuZI_RtEhqoU1IKib.SE~.__7UmsGo.dS&verifyServerCertificate=true&useSSL=true&requireSSL=false&serverTimezone=GMT"",
         ""name"": ""vsbdb"",
         ""password"": ""T3Cg.DpMm7TPozIxb~1nEkU6S-mOBIAuuZI_RtEhqoU1IKib.SE~.__7UmsGo.dS"",
         ""port"": 5432,
-        ""status"": ""created db vsbdb (id: /subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc/databases/vsbdb) on server csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc (id: /subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc) URL: https://portal.azure.com/#@b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0/resource/subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc"",
-        ""uri"": ""postgresql://leJdXEfOyoNsniyO%40csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com:T3Cg.DpMm7TPozIxb~1nEkU6S-mOBIAuuZI_RtEhqoU1IKib.SE~.__7UmsGo.dS@csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com:5432/vsbdb"",
+        ""status"": ""created db vsbdb (id: /subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc/databases/vsbdb) on server csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc (id: /subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc) URL: https://portal.cloud-hostname.com/#@b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0/resource/subscriptions/86fb0197-be70-4ceb-88e3-855615bc1b34/resourceGroups/cotati/providers/Microsoft.DBforPostgreSQL/servers/csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc"",
+        ""uri"": ""postgresql://leJdXEfOyoNsniyO%40csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com:T3Cg.DpMm7TPozIxb~1nEkU6S-mOBIAuuZI_RtEhqoU1IKib.SE~.__7UmsGo.dS@csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com:5432/vsbdb"",
         ""use_tls"": true,
-        ""username"": ""leJdXEfOyoNsniyO@csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com""
+        ""username"": ""leJdXEfOyoNsniyO@csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com""
       },
       ""instance_guid"": ""37502b38-167a-4a68-833d-dd2662d7eafc"",
       ""instance_name"": ""myPostgreSqlServiceAzureOne"",
@@ -243,10 +243,10 @@ public sealed class PostgreSqlConnectorTests
         {
             "Include Error Detail=True",
             "Log Parameters=True",
-            "Host=csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com",
+            "Host=csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com",
             "Port=5432",
             "Database=vsbdb",
-            "Username=leJdXEfOyoNsniyO@csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com",
+            "Username=leJdXEfOyoNsniyO@csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com",
             "Password=T3Cg.DpMm7TPozIxb~1nEkU6S-mOBIAuuZI_RtEhqoU1IKib.SE~.__7UmsGo.dS"
         }, options => options.WithoutStrictOrdering());
 
@@ -255,10 +255,10 @@ public sealed class PostgreSqlConnectorTests
 
         ExtractConnectionStringParameters(optionsAzureTwo.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
-            "Host=csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.azure.com",
+            "Host=csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.cloud-hostname.com",
             "Port=5432",
             "Database=vsbdb",
-            "Username=TAwlYVWerRtnHKWI@csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.azure.com",
+            "Username=TAwlYVWerRtnHKWI@csb-postgresql-80597418-b6c4-481a-a3dd-eb3efe296952.postgres.database.cloud-hostname.com",
             "Password=r7sxQ~1Jcfhl2s8jh7WyXPjzg9Qwec~J47L0VHta.8NSW8JKMM3k88CJ.BZwkx1X"
         }, options => options.WithoutStrictOrdering());
 
@@ -465,9 +465,9 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         ExtractConnectionStringParameters(defaultConnectionString).Should().BeEquivalentTo(new List<string>
         {
-            "Host=csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com",
+            "Host=csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com",
             "Database=vsbdb",
-            "Username=leJdXEfOyoNsniyO@csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.azure.com",
+            "Username=leJdXEfOyoNsniyO@csb-postgresql-37502b38-167a-4a68-833d-dd2662d7eafc.postgres.database.cloud-hostname.com",
             "Password=T3Cg.DpMm7TPozIxb~1nEkU6S-mOBIAuuZI_RtEhqoU1IKib.SE~.__7UmsGo.dS",
             "Log Parameters=True",
             "Port=5432"
