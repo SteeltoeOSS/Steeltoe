@@ -15,53 +15,77 @@ public class ManagementEndpointOptionsTest : BaseTest
     [Fact]
     public void InitializedWithDefaults()
     {
-        var opts = new ManagementEndpointOptions();
+        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>().Get(EndpointContextNames.ActuatorManagementOptionName);
         Assert.False(opts.Enabled.HasValue);
         Assert.Equal("/actuator", opts.Path);
+        Assert.NotNull(opts.Exposure);
+        Assert.Contains("health", opts.Exposure.Include);
+        Assert.Contains("info", opts.Exposure.Include);
+    }
+    [Fact]
+    public void InitializedWithDefaultsCF()
+    {
+        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>().Get(EndpointContextNames.CFManagemementOptionName);
+        Assert.True(opts.Enabled);
+        Assert.Equal("/cloudfoundryapplication", opts.Path);
+        Assert.NotNull(opts.Exposure);
+        Assert.Contains("*", opts.Exposure.Include);
     }
 
-    //[Fact]
-    //public void ThrowsIfConfigNull()
-    //{
-    //    const IConfiguration configuration = null;
-    //    Assert.Throws<ArgumentNullException>(() => new ManagementEndpointOptions(configuration));
-    //}
 
-    //[Fact]
-    //public void BindsConfigurationCorrectly()
-    //{
-    //    var appsettings = new Dictionary<string, string>
-    //    {
-    //        ["management:endpoints:enabled"] = "false",
-    //        ["management:endpoints:path"] = "/management",
-    //        ["management:endpoints:info:enabled"] = "true",
-    //        ["management:endpoints:info:id"] = "/infomanagement"
-    //    };
+    [Fact]
+    public void BindsConfigurationCorrectly()
+    {
+        var appsettings = new Dictionary<string, string>
+        {
+            ["management:endpoints:enabled"] = "false",
+            ["management:endpoints:path"] = "/management",
+            ["management:endpoints:info:enabled"] = "true",
+            ["management:endpoints:info:id"] = "/infomanagement"
+        };
 
-    //    var configurationBuilder = new ConfigurationBuilder();
-    //    configurationBuilder.AddInMemoryCollection(appsettings);
-    //    IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>(appsettings).Get(EndpointContextNames.ActuatorManagementOptionName);
+        Assert.False(opts.Enabled);
+        Assert.Equal("/management", opts.Path);
+        var cfopts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>(appsettings).Get(EndpointContextNames.CFManagemementOptionName);
+        Assert.True(cfopts.Enabled);
+        Assert.Equal("/cloudfoundryapplication", cfopts.Path);
+    }
+    [Fact]
+    public void BindsCFConfigurationCorrectly()
+    {
+        var appsettings = new Dictionary<string, string>
+        {
+            ["management:endpoints:enabled"] = "true",
+            ["management:endpoints:path"] = "/management",
+            ["management:endpoints:info:enabled"] = "true",
+            ["management:endpoints:info:id"] = "/infomanagement",
+            ["management:cloudfoundry:enabled"] = "false"
+        };
 
-    //    var opts = new ManagementEndpointOptions(configurationRoot);
-    //    Assert.False(opts.Enabled);
-    //    Assert.Equal("/management", opts.Path);
-    //}
+        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>(appsettings).Get(EndpointContextNames.ActuatorManagementOptionName);
+        Assert.True(opts.Enabled);
+        Assert.Equal("/management", opts.Path);
+        var cfopts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>(appsettings).Get(EndpointContextNames.CFManagemementOptionName);
+        Assert.False(cfopts.Enabled);
+        Assert.Equal("/cloudfoundryapplication", cfopts.Path);
+    }
 
-    //[Fact]
-    //public void IsExposedCorrectly()
-    //{
-    //    var managementOptions = new ActuatorManagementOptions
-    //    {
-    //        Exposure =
-    //        {
-    //            Exclude = new[]
-    //            {
-    //                "*"
-    //            }.ToList()
-    //        }
-    //    };
+    [Fact]
+    public void IsExposedCorrectly()
+    {
+        var managementOptions = new ManagementEndpointOptions
+        {
+            Exposure =
+            {
+                Exclude = new[]
+                {
+                    "*"
+                }.ToList()
+            }
+        };
 
-    //    var options = new InfoEndpointOptions();
-    //    Assert.False(options.EndpointOptions.IsExposed(managementOptions));
-    //}
+        var options = new InfoEndpointOptions();
+        Assert.False(options.IsExposed(managementOptions));
+    }
 }

@@ -13,6 +13,7 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
 {
 
     private static readonly string ManagementInfoPrefix = "management:endpoints";
+    private static readonly string CloudFoundryEnabledPrefix = "management:cloudfoundry:enabled";
     private readonly IConfiguration configuration;
 
     public ConfigureManagementEndpointOptions(IConfiguration configuration)
@@ -40,7 +41,8 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
         }
         else if (name == EndpointContextNames.CFManagemementOptionName)
         {
-            options.Path ??= "/cloudfoundryapplication";
+            options.Path = "/cloudfoundryapplication";
+            options.Enabled = configuration.GetSection(CloudFoundryEnabledPrefix).Value != "false";
             options.Exposure = new Exposure(allowAll: true);
         }
 
