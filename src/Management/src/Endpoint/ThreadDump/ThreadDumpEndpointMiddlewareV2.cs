@@ -10,9 +10,9 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResult>
+public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResult>, IEndpointMiddleware
 {
-    public ThreadDumpEndpointMiddlewareV2(RequestDelegate next, ThreadDumpEndpointV2 endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public ThreadDumpEndpointMiddlewareV2(/*RequestDelegate next,*/ ThreadDumpEndpointV2 endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<ThreadDumpEndpointMiddlewareV2> logger = null)
         : base(endpoint, managementOptions, logger)
     {

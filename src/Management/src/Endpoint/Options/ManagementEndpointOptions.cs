@@ -27,10 +27,17 @@ public class ManagementEndpointOptions //: IManagementOptions
 
     public bool UseStatusCodeFromResponse { get; set; } = true;
 
-    public JsonSerializerOptions SerializerOptions { get; set; } = new()
+    private JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
+    public JsonSerializerOptions SerializerOptions { get {
+            return _jsonOptions;
+        } set
+        {
+            _jsonOptions = value;
+        }
+    } 
     
     public Exposure Exposure { get; set; } = new();
     

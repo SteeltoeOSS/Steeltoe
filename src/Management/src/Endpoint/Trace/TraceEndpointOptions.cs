@@ -8,9 +8,6 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 public class TraceEndpointOptions: EndpointOptionsBase//, ITraceOptions
 {
-    private const string ManagementInfoPrefix = "management:endpoints:trace";
-    private const int DefaultCapacity = 100;
-
     public int Capacity { get; set; } = -1;
 
     public bool AddRequestHeaders { get; set; } = true;
@@ -33,23 +30,4 @@ public class TraceEndpointOptions: EndpointOptionsBase//, ITraceOptions
 
     public bool AddTimeTaken { get; set; } = true;
 
-     public TraceEndpointOptions()
-    {
-        Id = "trace";
-        Capacity = DefaultCapacity;
-    }
-
-    //public TraceEndpointOptions(IConfiguration configuration)
-    //    : base(ManagementInfoPrefix, configuration)
-    //{
-    //    if (string.IsNullOrEmpty(Id))
-    //    {
-    //        Id = "trace";
-    //    }
-
-    //    if (Capacity == -1)
-    //    {
-    //        Capacity = DefaultCapacity;
-    //    }
-    //}
 }

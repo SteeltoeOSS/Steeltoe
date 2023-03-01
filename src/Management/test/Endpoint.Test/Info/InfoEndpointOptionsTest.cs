@@ -19,13 +19,6 @@ public class InfoEndpointOptionsTest : BaseTest
     }
 
     [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new InfoEndpointOptions(configuration));
-    }
-
-    [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
         var appsettings = new Dictionary<string, string>
@@ -36,11 +29,7 @@ public class InfoEndpointOptionsTest : BaseTest
             ["management:endpoints:info:id"] = "infomanagement"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var opts = new InfoEndpointOptions(configurationRoot);
+        var opts = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appsettings);
         Assert.False(opts.Enabled);
         Assert.Equal("infomanagement", opts.Id);
     }

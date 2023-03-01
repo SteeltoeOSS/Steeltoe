@@ -8,8 +8,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 
 public class ThreadDumpEndpointOptions : EndpointOptionsBase //, IThreadDumpOptions
 {
-    private const string ManagementInfoPrefix = "management:endpoints:dump";
-
+    
     public int Duration { get; set; } = 10; // 10 ms
 
     public IEndpointOptions Options => throw new NotImplementedException();

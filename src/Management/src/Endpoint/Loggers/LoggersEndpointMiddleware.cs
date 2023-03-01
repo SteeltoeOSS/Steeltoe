@@ -13,9 +13,9 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>, LoggersChangeRequest>
+public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>, LoggersChangeRequest>, IEndpointMiddleware
 {
-    public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public LoggersEndpointMiddleware(/*RequestDelegate next,*/ LoggersEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<LoggersEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {

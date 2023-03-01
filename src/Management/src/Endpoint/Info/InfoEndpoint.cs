@@ -24,7 +24,7 @@ public class InfoEndpoint : IEndpoint<Dictionary<string, object>>, IInfoEndpoint
         _contributors = contributors.ToList();
     }
 
-    public IOptionsMonitor<InfoEndpointOptions> Options => _options;
+   // public IOptionsMonitor<InfoEndpointOptions> Options => _options;
 
     IEndpointOptions IEndpoint.Options => _options.CurrentValue;
 

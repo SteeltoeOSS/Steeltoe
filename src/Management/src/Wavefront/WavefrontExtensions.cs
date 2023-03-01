@@ -38,11 +38,11 @@ public static class WavefrontExtensions
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
 
-        services.TryAddSingleton<IMetricsObserverOptions>(provider =>
-        {
-            var configuration = provider.GetService<IConfiguration>();
-            return new MetricsObserverOptions(configuration);
-        });
+        //services.TryAddSingleton<IMetricsObserverOptions>(provider =>
+        //{
+        //    var configuration = provider.GetService<IConfiguration>();
+        //    return new MetricsObserverOptions(configuration);
+        //});
 
         services.AddMetricsObservers();
 

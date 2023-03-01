@@ -16,7 +16,6 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 
 public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>, IEndpointMiddleware
 {
-    public IEndpointOptions EndpointOptions => ((ActuatorEndpoint)Endpoint).Options.CurrentValue;
 
     public ActuatorHypermediaEndpointMiddleware(/*RequestDelegate next,*/ ActuatorEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<ActuatorHypermediaEndpointMiddleware> logger = null)

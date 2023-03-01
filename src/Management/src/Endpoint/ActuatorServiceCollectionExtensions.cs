@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
@@ -16,6 +17,8 @@ using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
@@ -28,7 +31,12 @@ public static class ActuatorServiceCollectionExtensions
     {
         services.AddAllActuators(configuration, MediaTypeVersion.V2, buildCorsPolicy);
     }
-
+    public static void AddCommonActuatorServices(this IServiceCollection services)
+    {
+        services.ConfigureOptions<ConfigureManagementEndpointOptions>();
+        services.TryAddSingleton<ActuatorRouter>();
+        services.TryAddScoped<ActuatorsMiddleware>();
+    }
     public static IServiceCollection AddAllActuators(this IServiceCollection services, IConfiguration configuration = null,
         MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
     {
@@ -43,20 +51,20 @@ public static class ActuatorServiceCollectionExtensions
             services.AddCloudFoundryActuator(configuration);
         }
 
-        services.AddHypermediaActuator(configuration);
+        services.AddHypermediaActuator();
 
         services.AddThreadDumpActuator(configuration, version);
 
         services.AddHeapDumpActuator(configuration);
 
         services.AddDbMigrationsActuator(configuration);
-        services.AddEnvActuator(configuration);
-        services.AddInfoActuator(configuration);
+        services.AddEnvActuator();
+        services.AddInfoActuator();
         services.AddHealthActuator();
         services.AddLoggersActuator(configuration);
         services.AddTraceActuator(configuration, version);
         services.AddMappingsActuator(configuration);
-        services.AddMetricsActuator(configuration);
+        services.AddMetricsActuator();
         services.AddRefreshActuator(configuration);
         return services;
     }

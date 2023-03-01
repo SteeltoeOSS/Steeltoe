@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Hosting;
@@ -54,7 +55,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddEnvActuator(context.Configuration);
+            collection.AddEnvActuator();
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -138,7 +139,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddHypermediaActuator(context.Configuration);
+            collection.AddHypermediaActuator();
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -153,7 +154,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddInfoActuator(context.Configuration);
+            collection.AddInfoActuator();
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -171,7 +172,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddInfoActuator(context.Configuration, contributors);
+            collection.AddInfoActuator(contributors);
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -216,7 +217,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddMetricsActuator(context.Configuration);
+            collection.AddMetricsActuator();
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -327,28 +328,35 @@ public static class ManagementHostBuilderExtensions
     public static void ActivateActuatorEndpoints(this IServiceCollection collection, Action<IEndpointConventionBuilder> configureEndpoints = null)
     {
         // check for existing AllActuatorsStartupFilter
-        IEnumerable<ServiceDescriptor> existingStartupFilters = collection.Where(t =>
-            t.ImplementationType == typeof(AllActuatorsStartupFilter) || t.ImplementationFactory?.Method?.ReturnType == typeof(AllActuatorsStartupFilter));
+        //IEnumerable<ServiceDescriptor> existingStartupFilters = collection.Where(t =>
+        //    t.ImplementationType == typeof(AllActuatorsStartupFilter) || t.ImplementationFactory?.Method?.ReturnType == typeof(AllActuatorsStartupFilter));
 
-        // if we have an Action<IEndpointConventionBuilder> and there isn't one, add a new one
-        if (configureEndpoints != null)
+        //// if we have an Action<IEndpointConventionBuilder> and there isn't one, add a new one
+        //if (configureEndpoints != null)
+        //{
+        //    // remove any existing AllActuatorsStartupFilter registration
+        //    foreach (ServiceDescriptor f in existingStartupFilters.ToList())
+        //    {
+        //        collection.Remove(f);
+        //    }
+
+        //    // add a registration that includes this endpoint configuration
+        //    collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(provider => new AllActuatorsStartupFilter(configureEndpoints));
+        //}
+        //else
+        //{
+        //    // make sure there is (only) one AllActuatorsStartupFilter
+        //    if (!existingStartupFilters.Any())
+        //    {
+        //        collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>();
+        //    }
+        //}
+        
+        IEnumerable<ServiceDescriptor> existingStartupFilters = collection.Where(t => t.ImplementationFactory?.Method?.ReturnType == typeof(AllActuatorsStartupFilter));
+        
+        if (!existingStartupFilters.Any())
         {
-            // remove any existing AllActuatorsStartupFilter registration
-            foreach (ServiceDescriptor f in existingStartupFilters.ToList())
-            {
-                collection.Remove(f);
-            }
-
-            // add a registration that includes this endpoint configuration
             collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(provider => new AllActuatorsStartupFilter(configureEndpoints));
-        }
-        else
-        {
-            // make sure there is (only) one AllActuatorsStartupFilter
-            if (!existingStartupFilters.Any())
-            {
-                collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>();
-            }
         }
     }
 

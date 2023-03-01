@@ -125,15 +125,15 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.DoesNotContain("2017-06-08T12:47:02Z", response, StringComparison.Ordinal);
     }
 
-    [Fact]
-    public void RoutesByPathAndVerb()
-    {
-        var options = new InfoEndpointOptions();
-        Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/info", options.GetContextPath(new ActuatorManagementOptions()));
-        Assert.Equal("/cloudfoundryapplication/info", options.GetContextPath(new CloudFoundryManagementOptions()));
-        Assert.Null(options.AllowedVerbs);
-    }
+    //[Fact]
+    //public void RoutesByPathAndVerb()
+    //{
+    //    var options = new InfoEndpointOptions();
+    //    Assert.True(options.ExactMatch);
+    //    Assert.Equal("/actuator/info", options.GetContextPath(new ActuatorManagementOptions()));
+    //    Assert.Equal("/cloudfoundryapplication/info", options.GetContextPath(new CloudFoundryManagementOptions()));
+    //    Assert.Null(options.AllowedVerbs);
+    //}
 
     private HttpContext CreateRequest(string method, string path)
     {

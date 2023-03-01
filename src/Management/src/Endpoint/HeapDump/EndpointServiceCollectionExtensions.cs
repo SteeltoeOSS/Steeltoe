@@ -28,12 +28,11 @@ public static class EndpointServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-
-        services.AddActuatorManagementOptions();
+        
         services.AddHeapDumpActuatorServices(configuration);
 
         services.TryAddSingleton<IHeapDumper, HeapDumper>();
-
-        services.AddActuatorEndpointMapping<HeapDumpEndpoint>();
+        services.AddCommonActuatorServices();
+       // services.AddActuatorEndpointMapping<HeapDumpEndpoint>();
     }
 }

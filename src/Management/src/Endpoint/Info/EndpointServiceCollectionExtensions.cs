@@ -7,8 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Extensions;
+using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info.Contributor;
+using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info;
@@ -21,29 +23,38 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add info to.
     /// </param>
-    /// <param name="configuration">
-    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
-    /// management:endpoints:info).
-    /// </param>
-    public static void AddInfoActuator(this IServiceCollection services, IConfiguration configuration = null)
+    /// 
+    public static void AddInfoActuator(this IServiceCollection services)
     {
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        configuration ??= serviceProvider.GetRequiredService<IConfiguration>();
-        IEnumerable<IInfoContributor> otherInfoContributors = serviceProvider.GetServices<IInfoContributor>();
 
-        var allContributors = new List<IInfoContributor>
-        {
-            new GitInfoContributor(),
-            new AppSettingsInfoContributor(configuration),
-            new BuildInfoContributor()
-        };
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IInfoContributor, GitInfoContributor>());
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IInfoContributor, AppSettingsInfoContributor>());
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IInfoContributor, BuildInfoContributor>());
 
-        foreach (IInfoContributor o in otherInfoContributors)
-        {
-            allContributors.Add(o);
-        }
+        services.AddCommonActuatorServices();
+        services.AddInfoActuatorServices();
+        services.TryAddSingleton<ActuatorRouter>();
+        services.TryAddScoped<ActuatorsMiddleware>();
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IEndpointMiddleware, InfoEndpointMiddleware>());
 
-        services.AddInfoActuator(configuration, allContributors.ToArray());
+        
+        
+        //IEnumerable<IInfoContributor> otherInfoContributors = serviceProvider.GetServices<IInfoContributor>();
+
+        //var allContributors = new List<IInfoContributor>
+        //{
+        //    new GitInfoContributor(),
+        //  //  new AppSettingsInfoContributor(configuration),
+        //    new BuildInfoContributor()
+        //};
+
+        //foreach (IInfoContributor o in otherInfoContributors)
+        //{
+        //    allContributors.Add(o);
+        //}
+
+        // services.AddInfoActuator(allContributors.ToArray());
     }
 
     /// <summary>
@@ -59,17 +70,13 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="contributors">
     /// Contributors to application information.
     /// </param>
-    public static void AddInfoActuator(this IServiceCollection services, IConfiguration configuration = null, params IInfoContributor[] contributors)
+    public static void AddInfoActuator(this IServiceCollection services, params IInfoContributor[] contributors)
     {
         ArgumentGuard.NotNull(services);
 
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-
-        services.AddActuatorManagementOptions();
-        services.AddInfoActuatorServices(configuration);
-        services.AddActuatorEndpointMapping<InfoEndpoint>();
-
         AddContributors(services, contributors);
+        services.AddInfoActuator();
+     
     }
 
     private static void AddContributors(IServiceCollection services, params IInfoContributor[] contributors)

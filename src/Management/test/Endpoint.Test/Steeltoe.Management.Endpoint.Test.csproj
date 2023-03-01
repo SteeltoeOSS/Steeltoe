@@ -11,7 +11,6 @@
     <Compile Remove="DbMigrations\**" />
     <Compile Remove="HeapDump\**" />
     <Compile Remove="Hypermedia\**" />
-    <Compile Remove="Info\**" />
     <Compile Remove="Loggers\**" />
     <Compile Remove="Mappings\**" />
     <Compile Remove="Metrics\**" />
@@ -39,7 +38,6 @@
     <None Remove="DbMigrations\**" />
     <None Remove="HeapDump\**" />
     <None Remove="Hypermedia\**" />
-    <None Remove="Info\**" />
     <None Remove="Loggers\**" />
     <None Remove="Mappings\**" />
     <None Remove="Metrics\**" />

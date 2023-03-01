@@ -20,6 +20,7 @@ public class ThreadDumpEndpoint : IEndpoint<List<ThreadInfo>>, IThreadDumpEndpoi
     {
         ArgumentGuard.NotNull(threadDumper);
         _options = options;
+        
         _threadDumper = threadDumper;
     }
 

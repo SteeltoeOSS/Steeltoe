@@ -14,6 +14,8 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
 
     private static readonly string ManagementInfoPrefix = "management:endpoints";
     private static readonly string CloudFoundryEnabledPrefix = "management:cloudfoundry:enabled";
+    private const string DefaultPath = "/actuator";
+    private const string DefaultCFPath = "/cloudfoundryapplication";
     private readonly IConfiguration configuration;
 
     public ConfigureManagementEndpointOptions(IConfiguration configuration)
@@ -36,12 +38,16 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
         }
         if (name == EndpointContextNames.ActuatorManagementOptionName)
         {
-            options.Path ??= "/actuator";
+            options.Path ??= DefaultPath;
+            if (options.Path == null || options.Path == DefaultCFPath)
+            {
+                options.Path = DefaultPath;
+            }
             options.Exposure = new Exposure(configuration);
         }
         else if (name == EndpointContextNames.CFManagemementOptionName)
         {
-            options.Path = "/cloudfoundryapplication";
+            options.Path = DefaultCFPath; 
             options.Enabled = configuration.GetSection(CloudFoundryEnabledPrefix).Value != "false";
             options.Exposure = new Exposure(allowAll: true);
         }

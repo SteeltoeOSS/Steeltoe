@@ -109,7 +109,7 @@ public class ManagementHostBuilderExtensionsTest
         var hostBuilder = new HostBuilder();
 
         IHost host = hostBuilder.AddHealthActuator().Build();
-        IEnumerable<HealthEndpointCore> managementEndpoint = host.Services.GetServices<HealthEndpointCore>();
+        IEnumerable<IHealthEndpoint> managementEndpoint = host.Services.GetServices<IHealthEndpoint>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(managementEndpoint);
@@ -127,7 +127,7 @@ public class ManagementHostBuilderExtensionsTest
             typeof(DownContributor)
         }).Build();
 
-        IEnumerable<HealthEndpointCore> managementEndpoint = host.Services.GetServices<HealthEndpointCore>();
+        IEnumerable<IHealthEndpoint> managementEndpoint = host.Services.GetServices<IHealthEndpoint>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(managementEndpoint);
@@ -145,7 +145,7 @@ public class ManagementHostBuilderExtensionsTest
             typeof(DownContributor)
         }).Build();
 
-        IEnumerable<HealthEndpointCore> managementEndpoint = host.Services.GetServices<HealthEndpointCore>();
+        IEnumerable<IHealthEndpoint> managementEndpoint = host.Services.GetServices<IHealthEndpoint>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(managementEndpoint);

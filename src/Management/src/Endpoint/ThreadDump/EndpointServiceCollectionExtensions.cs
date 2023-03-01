@@ -33,16 +33,16 @@ public static class EndpointServiceCollectionExtensions
 
         configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddActuatorManagementOptions();
+        services.AddCommonActuatorServices();
         services.AddThreadDumpActuatorServices(configuration, version);
 
-        if (version == MediaTypeVersion.V1)
-        {
-            services.AddActuatorEndpointMapping<ThreadDumpEndpoint>();
-        }
-        else
-        {
-            services.AddActuatorEndpointMapping<ThreadDumpEndpointV2>();
-        }
+        //if (version == MediaTypeVersion.V1)
+        //{
+        //    services.AddActuatorEndpointMapping<ThreadDumpEndpoint>();
+        //}
+        //else
+        //{
+        //    services.AddActuatorEndpointMapping<ThreadDumpEndpointV2>();
+        //}
     }
 }

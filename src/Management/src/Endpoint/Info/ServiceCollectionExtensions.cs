@@ -26,14 +26,14 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddInfoActuatorServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfoActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
 
         //var options = new InfoEndpointOptions(configuration);
         //services.TryAddSingleton<IInfoOptions>(options);
         //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+        services.ConfigureOptions<ConfigureInfoEndpointOptions>();
         services.TryAddSingleton<InfoEndpoint>();
         services.TryAddSingleton<IInfoEndpoint>(provider => provider.GetRequiredService<InfoEndpoint>());
 

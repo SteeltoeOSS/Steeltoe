@@ -7,7 +7,9 @@ using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.MetricCollectors;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
@@ -16,6 +18,7 @@ public class EventCounterListener : EventListener
 {
     private const string EventSourceName = "System.Runtime";
     private const string EventName = "EventCounters";
+    private readonly IOptionsMonitor<MetricsObserverOptions> _options;
     private readonly ILogger<EventCounterListener> _logger;
     private readonly bool _isInitialized;
 
@@ -23,8 +26,7 @@ public class EventCounterListener : EventListener
     {
         { "EventCounterIntervalSec", "1" }
     };
-
-    private readonly IMetricsObserverOptions _options;
+    
 
     private readonly ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new();
     private readonly ConcurrentDictionary<string, ObservableGauge<long>> _longMeasureMetrics = new();
@@ -34,15 +36,17 @@ public class EventCounterListener : EventListener
 
     private readonly ConcurrentBag<EventSource> _eventSources = new();
 
-    public EventCounterListener(IMetricsObserverOptions options, ILogger<EventCounterListener> logger = null)
+    public EventCounterListener(IOptionsMonitor<MetricsObserverOptions> options, ILogger<EventCounterListener> logger = null)
     {
         ArgumentGuard.NotNull(options);
 
         _options = options;
         _logger = logger;
-        _isInitialized = true;
-
-        ProcessPreInitEventSources();
+        if (options.CurrentValue.EventCounterEvents)
+        {
+            _isInitialized = true;
+            ProcessPreInitEventSources();
+        }
     }
 
     /// <summary>
@@ -75,11 +79,16 @@ public class EventCounterListener : EventListener
             _logger?.LogError(ex.Message);
         }
     }
-
+    
     protected override void OnEventSourceCreated(EventSource eventSource)
     {
         ArgumentGuard.NotNull(eventSource);
-
+        
+        if (_options?.CurrentValue?.EventCounterEvents != true)
+        {
+            return;
+        }
+        
         if (EventSourceName.Equals(eventSource.Name, StringComparison.OrdinalIgnoreCase))
         {
             if (!_isInitialized)
@@ -131,8 +140,9 @@ public class EventCounterListener : EventListener
             {
                 case var _ when key.Equals("Name", StringComparison.OrdinalIgnoreCase):
                     counterName = payload.Value.ToString();
-
-                    if ((_options.IncludedMetrics.Any() && !_options.IncludedMetrics.Contains(counterName)) || _options.ExcludedMetrics.Contains(counterName))
+                    var includedMetrics = _options.CurrentValue.IncludedMetrics;
+                    var excludedMetrics = _options.CurrentValue.ExcludedMetrics;
+                    if ((includedMetrics.Any() && !includedMetrics.Contains(counterName)) || excludedMetrics.Contains(counterName))
                     {
                         return;
                     }

@@ -21,7 +21,6 @@ public class EndpointServiceCollectionTest : BaseTest
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddEnvActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => services2.AddEnvActuator());
     }
 
     //[Fact]

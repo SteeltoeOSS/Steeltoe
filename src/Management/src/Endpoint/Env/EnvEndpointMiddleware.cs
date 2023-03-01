@@ -19,8 +19,6 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>, 
         Endpoint = endpoint;
     }
     
-    public IEndpointOptions EndpointOptions => Endpoint.Options;
-    
     public Task InvokeAsync(HttpContext context)
     {
         

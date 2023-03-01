@@ -30,7 +30,11 @@ public class ActuatorRouter
             foreach (var middleware in middlewares)
             {
                 var endpointOptions = middleware.EndpointOptions;
-                var key = mgmtOption.Path + "/" + endpointOptions.Path;
+                var key = mgmtOption.Path;
+                if(!string.IsNullOrEmpty(endpointOptions.Path))
+                {
+                    key += "/" + endpointOptions.Path;
+                }
                 if (!_routes.ContainsKey(key))
                 {
                     _routes.Add(key, middleware);
@@ -41,14 +45,15 @@ public class ActuatorRouter
 
     public Task RouteAsync(HttpContext context, RequestDelegate next)
     {
-        var matchedPath = _routes.Keys.FirstOrDefault(k => Regex.IsMatch(context.Request.Path, k));
+        var matchedPath = _routes.Keys.OrderByDescending(key=> key.Length).FirstOrDefault(k => Regex.IsMatch(context.Request.Path, k));
 
         if (matchedPath != null)
         {
             return _routes[matchedPath].InvokeAsync(context);
         }
         // Need to 404?
-        return next(context);
+        // return next(context);
+        return Task.CompletedTask;
 
     }
     public IEndpointOptions GetTargetOptions(HttpContext context)

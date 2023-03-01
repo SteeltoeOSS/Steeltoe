@@ -11,16 +11,18 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 public class MetricsEndpoint : IEndpoint<IMetricsResponse, MetricsRequest>, IMetricsEndpoint
 {
+    private readonly IOptionsMonitor<MetricsEndpointOptions> options;
     private readonly SteeltoeExporter _exporter;
     private readonly ILogger<MetricsEndpoint> _logger;
+    
+   // public IOptionsMonitor<MetricsEndpointOptions> Options { get; }
 
-    public IOptionsMonitor<MetricsEndpointOptions> Options { get; }
+    IEndpointOptions IEndpoint.Options => options.CurrentValue;
 
-    IEndpointOptions IEndpoint.Options => Options.CurrentValue;
-
-    public MetricsEndpoint(IMetricsEndpointOptions options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
+    public MetricsEndpoint(IOptionsMonitor<MetricsEndpointOptions> options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
        // : base(options)
     {
+        this.options = options;
         _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter), $"Exporters must contain a single {nameof(SteeltoeExporter)}.");
         _logger = logger;
     }

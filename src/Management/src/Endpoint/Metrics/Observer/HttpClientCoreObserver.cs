@@ -7,6 +7,7 @@ using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.MetricCollectors;
@@ -28,10 +29,10 @@ public class HttpClientCoreObserver : MetricsObserver
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
 
-    public HttpClientCoreObserver(IMetricsObserverOptions options, ILogger<HttpClientCoreObserver> logger /*, IViewRegistry viewRegistry*/)
-        : base(DefaultObserverName, DiagnosticName, options, logger)
+    public HttpClientCoreObserver(IOptionsMonitor<MetricsObserverOptions> options, ILogger<HttpClientCoreObserver> logger /*, IViewRegistry viewRegistry*/)
+        : base(DefaultObserverName, DiagnosticName, logger)
     {
-        SetPathMatcher(new Regex(options.EgressIgnorePattern));
+        SetPathMatcher(new Regex(options.CurrentValue.EgressIgnorePattern));
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.time");
         _clientCountMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.count");
     }

@@ -40,10 +40,12 @@ public static class ServiceCollectionExtensions
                 //var options = new TraceEndpointOptions(configuration);
                 //services.TryAddSingleton<ITraceOptions>(options);
                 services.TryAddSingleton<TraceEndpoint>();
-                services.TryAddSingleton<ITraceEndpoint>(provider => provider.GetRequiredService<TraceEndpoint>());
+              //  services.TryAddSingleton<ITraceEndpoint>(provider => provider.GetRequiredService<TraceEndpoint>());
               //  services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
                 break;
             default:
+
+                services.TryAddSingleton<HttpTraceEndpoint>();
                 //var options2 = new HttpTraceEndpointOptions(configuration);
                 //services.TryAddSingleton<ITraceOptions>(options2);
                 //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options2));

@@ -61,11 +61,11 @@ public static class ActuatorRouteBuilderExtensions
     /// <exception cref="InvalidOperationException">
     /// When T is not found in service container.
     /// </exception>
-    public static void Map<TEndpoint>(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention = null)
-        where TEndpoint : IEndpoint
-    {
-        //MapActuatorEndpoint(endpoints, typeof(TEndpoint), convention);
-    }
+    //public static void Map<TEndpoint>(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention = null)
+    //    where TEndpoint : IEndpoint
+    //{
+    //    //MapActuatorEndpoint(endpoints, typeof(TEndpoint), convention);
+    //}
 
     /// <summary>
     /// Maps all actuators that have been registered in <see cref="IServiceCollection" />.
@@ -103,10 +103,12 @@ public static class ActuatorRouteBuilderExtensions
                 };
         var managementOptions = endpoints.ServiceProvider.GetService<IOptionsMonitor<ManagementEndpointOptions>>();
 
-        foreach (var name in EndpointContextNames.All)
+        foreach (var name in EndpointContextNames.All) // TODO: Only map Cf on Cloudfoundry
         {
             var mgmtOption = managementOptions.Get(name);
-            IEndpointConventionBuilder conventionBuilder = endpoints.MapMethods(mgmtOption.Path, allowedVerbs, pipeline);
+            IEndpointConventionBuilder conventionBuilder = endpoints.MapMethods(mgmtOption.Path+"/{**_}", allowedVerbs, pipeline);
+
+
             convention?.Invoke(conventionBuilder);
         }
         

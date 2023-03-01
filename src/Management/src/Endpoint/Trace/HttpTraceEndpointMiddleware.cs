@@ -11,9 +11,9 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class HttpTraceEndpointMiddleware : EndpointMiddleware<HttpTraceResult>
+public class HttpTraceEndpointMiddleware : EndpointMiddleware<HttpTraceResult>, IEndpointMiddleware
 {
-    public HttpTraceEndpointMiddleware(RequestDelegate next, HttpTraceEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public HttpTraceEndpointMiddleware(/*RequestDelegate next,*/ HttpTraceEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<HttpTraceEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {

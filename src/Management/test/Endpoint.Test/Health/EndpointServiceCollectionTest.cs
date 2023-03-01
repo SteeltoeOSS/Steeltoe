@@ -89,7 +89,7 @@ public class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         //var options = serviceProvider.GetService<IHealthOptions>();
         //Assert.NotNull(options);
-        var ep = serviceProvider.GetService<HealthEndpointCore>();
+        var ep = serviceProvider.GetService<IHealthEndpoint>();
         Assert.NotNull(ep);
         var agg = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(agg);

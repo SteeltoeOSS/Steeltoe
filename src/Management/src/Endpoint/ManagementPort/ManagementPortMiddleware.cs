@@ -26,7 +26,7 @@ public class ManagementPortMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var mgmtOptions = _managementOptions.CurrentValue;
+        var mgmtOptions = _managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName); 
         _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, mgmtOptions.Path);
 
         string contextPath = mgmtOptions.Path;

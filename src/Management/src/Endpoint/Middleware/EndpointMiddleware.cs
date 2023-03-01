@@ -14,7 +14,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
-public class EndpointMiddleware<TResult> 
+public class EndpointMiddleware<TResult>: IEndpointMiddleware
 {
     protected ILogger logger;
     protected IOptionsMonitor<ManagementEndpointOptions> managementOptions;
@@ -22,6 +22,8 @@ public class EndpointMiddleware<TResult>
     //protected  managementOptions;
 
     public IEndpoint<TResult> Endpoint { get; set; }
+
+    public virtual IEndpointOptions EndpointOptions => Endpoint.Options;
 
     public EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
     {
@@ -68,8 +70,11 @@ public class EndpointMiddleware<TResult>
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
-
-        serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        
+        if (serializerOptions.DefaultIgnoreCondition != JsonIgnoreCondition.WhenWritingNull)
+        {
+            serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        }
 
         if (serializerOptions.Converters?.Any(c => c is JsonStringEnumConverter) != true)
         {
@@ -88,6 +93,11 @@ public class EndpointMiddleware<TResult>
 
         return serializerOptions;
     }
+
+    public virtual Task InvokeAsync(HttpContext context)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public interface IEndpointMiddleware
@@ -100,6 +110,8 @@ public interface IEndpointMiddleware
 public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
 {
     public new IEndpoint<TResult, TRequest> Endpoint { get; set; }
+
+    public override IEndpointOptions EndpointOptions => Endpoint.Options;
 
     public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
         : base(managementOptions, logger)
@@ -118,5 +130,9 @@ public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
     {
         TResult result = Endpoint.Invoke(arg);
         return Serialize(result, serializerOptions);
+    }
+    public override Task InvokeAsync(HttpContext context)
+    {
+        return base.InvokeAsync(context);
     }
 }

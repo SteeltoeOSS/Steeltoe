@@ -8,13 +8,12 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 
 public class HypermediaEndpointOptions: EndpointOptionsBase//, IActuatorHypermediaOptions
 {
-    private const string ManagementInfoPrefix = "management:endpoints:actuator";
-    public EndpointOptionsBase EndpointSharedOptions { get; set; }
+    //public EndpointOptionsBase EndpointSharedOptions { get; set; }
 
-    public HypermediaEndpointOptions()
-    {
-        Id = string.Empty;
-    }
+    //public HypermediaEndpointOptions()
+    //{
+    //    Id = string.Empty;
+    //}
 
     //public HypermediaEndpointOptions(IConfiguration configuration)
     //    : base(ManagementInfoPrefix, configuration)

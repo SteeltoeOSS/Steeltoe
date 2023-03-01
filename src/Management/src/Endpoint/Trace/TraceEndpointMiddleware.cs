@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
+public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>, IEndpointMiddleware
 {
     public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<TraceEndpointMiddleware> logger = null)

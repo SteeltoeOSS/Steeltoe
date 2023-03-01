@@ -82,9 +82,9 @@ public static class EndpointServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(aggregator);
 
-       // configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        // configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddActuatorManagementOptions();
+        services.AddCommonActuatorServices();
         services.AddHealthActuatorServices();
 
         AddHealthContributors(services, contributors);
@@ -97,9 +97,8 @@ public static class EndpointServiceCollectionExtensions
 
         //New:
 
-        services.TryAddSingleton<ActuatorRouter>();
-        services.TryAddScoped<ActuatorsMiddleware>();
-        services.TryAddScoped<IEndpointMiddleware, HealthEndpointMiddleware>();
+
+        services.AddCommonActuatorServices();
     }
 
     public static void AddHealthContributors(this IServiceCollection services, params Type[] contributors)

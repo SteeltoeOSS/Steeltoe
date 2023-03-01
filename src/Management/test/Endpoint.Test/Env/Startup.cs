@@ -32,7 +32,7 @@ public class Startup
 
         // New:
         
-        services.AddEnvActuator(Configuration);
+        services.AddEnvActuator();
         services.AddRouting();
         
     }

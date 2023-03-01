@@ -4,6 +4,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Metrics;
@@ -37,17 +38,23 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
 
     private readonly ClrRuntimeSource.HeapMetrics _previous = default;
 
-    public ClrRuntimeObserver()
+    public ClrRuntimeObserver(IOptionsMonitor<MetricsObserverOptions> options)
     {
         Meter meter = SteeltoeMetrics.Meter;
-        meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");
-        meter.CreateObservableGauge("clr.gc.collections", GetCollectionCount, "Garbage collection count", "count");
 
-        meter.CreateObservableGauge("clr.threadpool.active", GetActiveThreadPoolWorkers, "Active thread count", "count");
-        meter.CreateObservableGauge("clr.threadpool.avail", GetAvailableThreadPoolWorkers, "Available thread count", "count");
+        if (options.CurrentValue.GCEvents)
+        {
 
-        meter.CreateObservableGauge("clr.process.uptime", GetUpTime, "Process uptime in seconds", "count");
-        meter.CreateObservableGauge("clr.cpu.count", () => Environment.ProcessorCount, "Total processor count", "count");
+            meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");
+            meter.CreateObservableGauge("clr.gc.collections", GetCollectionCount, "Garbage collection count", "count");
+            meter.CreateObservableGauge("clr.process.uptime", GetUpTime, "Process uptime in seconds", "count");
+            meter.CreateObservableGauge("clr.cpu.count", () => Environment.ProcessorCount, "Total processor count", "count");
+        }
+        if (options.CurrentValue.ThreadPoolEvents)
+        {
+            meter.CreateObservableGauge("clr.threadpool.active", GetActiveThreadPoolWorkers, "Active thread count", "count");
+            meter.CreateObservableGauge("clr.threadpool.avail", GetAvailableThreadPoolWorkers, "Available thread count", "count");
+        }
     }
 
     private IEnumerable<Measurement<long>> GetCollectionCount()

@@ -24,15 +24,15 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddActuatorEndpointMapping<TEndpoint>(this IServiceCollection services)
-        where TEndpoint : class, IEndpoint
-    {
-        services.AddSingleton(new EndpointMappingEntry
-        {
-            // new way compatible with .NET 6
-            SetupConvention = (endpoints, conventionBuilder) => endpoints.Map<TEndpoint>(conventionBuilder)
-        });
+    //public static IServiceCollection AddActuatorEndpointMapping<TEndpoint>(this IServiceCollection services)
+    //    where TEndpoint : class, IEndpoint
+    //{
+    //    services.AddSingleton(new EndpointMappingEntry
+    //    {
+    //        // new way compatible with .NET 6
+    //        SetupConvention = (endpoints, conventionBuilder) => endpoints.Map<TEndpoint>(conventionBuilder)
+    //    });
 
-        return services;
-    }
+    //    return services;
+    //}
 }

@@ -14,9 +14,9 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>
+public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>, IEndpointMiddleware
 {
-    public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public MetricsEndpointMiddleware(/*RequestDelegate next,*/ MetricsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<MetricsEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {

@@ -11,10 +11,10 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
+public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>, IEndpointMiddleware
 {
     
-    public DbMigrationsEndpointMiddleware(RequestDelegate next, DbMigrationsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public DbMigrationsEndpointMiddleware(/*RequestDelegate next,*/ DbMigrationsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<DbMigrationsEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {

@@ -46,7 +46,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddEnvActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddEnvActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddEnvActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -120,7 +120,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHypermediaActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddHypermediaActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddHypermediaActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -133,7 +133,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddInfoActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddInfoActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -149,7 +149,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder, IInfoContributor[] contributors)
     {
-        applicationBuilder.Services.AddInfoActuator(applicationBuilder.Configuration, contributors);
+        applicationBuilder.Services.AddInfoActuator(contributors);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -189,7 +189,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddMetricsActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddMetricsActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddMetricsActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }

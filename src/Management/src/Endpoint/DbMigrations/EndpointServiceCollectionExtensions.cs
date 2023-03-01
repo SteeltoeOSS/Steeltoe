@@ -28,8 +28,8 @@ public static class EndpointServiceCollectionExtensions
 
         configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddActuatorManagementOptions();
+        services.AddCommonActuatorServices();
         services.AddDbMigrationsActuatorServices(configuration);
-        services.AddActuatorEndpointMapping<DbMigrationsEndpoint>();
+      //  services.AddActuatorEndpointMapping<DbMigrationsEndpoint>();
     }
 }

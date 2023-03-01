@@ -36,21 +36,19 @@ public static class ServiceCollectionExtensions
 
         //var options = new ThreadDumpEndpointOptions(configuration);
 
-        //if (version == MediaTypeVersion.V1)
-        //{
-        //    services.TryAddSingleton<ThreadDumpEndpoint>();
-        //    services.TryAddSingleton<IThreadDumpEndpoint>(provider => provider.GetRequiredService<ThreadDumpEndpoint>());
-        //}
-        //else
-        //{
-        //    if (options.Id == "dump")
-        //    {
-        //        options.Id = "threaddump";
-        //    }
+        if (version == MediaTypeVersion.V1) // TODO: Fix media type version as part of IOptions
+        {
 
-        //    services.TryAddSingleton<ThreadDumpEndpointV2>();
-        //    services.TryAddSingleton<IThreadDumpEndpointV2>(provider => provider.GetRequiredService<ThreadDumpEndpointV2>());
-        //}
+            services.ConfigureOptions<ConfigureThreadDumpEndpointOptionsV1>();
+            services.TryAddSingleton<ThreadDumpEndpoint>();
+            services.TryAddSingleton<IThreadDumpEndpoint>(provider => provider.GetRequiredService<ThreadDumpEndpoint>());
+        }
+        else
+        {
+            services.ConfigureOptions<ConfigureThreadDumpEndpointOptions>();
+            services.TryAddSingleton<ThreadDumpEndpointV2>();
+            services.TryAddSingleton<IThreadDumpEndpointV2>(provider => provider.GetRequiredService<ThreadDumpEndpointV2>());
+        }
 
         //services.TryAddSingleton<IThreadDumpOptions>(options);
         services.TryAddSingleton<IThreadDumper, ThreadDumperEp>();

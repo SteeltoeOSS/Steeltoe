@@ -19,13 +19,13 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings>
+public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings>, IEndpointMiddleware
 {
     private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
     private readonly IEnumerable<IApiDescriptionProvider> _apiDescriptionProviders;
     private readonly IRouteMappings _routeMappings;
 
-    public MappingsEndpointMiddleware(RequestDelegate next, IOptionsMonitor<MappingsEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, MappingsEndpoint endpoint,
+    public MappingsEndpointMiddleware(/*RequestDelegate next,*/ IOptionsMonitor<MappingsEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, MappingsEndpoint endpoint,
         IRouteMappings routeMappings = null, IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null,
         IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null, ILogger<MappingsEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)

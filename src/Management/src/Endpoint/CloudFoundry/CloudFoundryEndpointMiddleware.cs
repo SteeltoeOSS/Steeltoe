@@ -17,11 +17,12 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 /// CloudFoundry endpoint provides hypermedia: a page is added with links to all the endpoints that are enabled. When deployed to CloudFoundry this
 /// endpoint is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware" /> is added.
 /// </summary>
-public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
+public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>, IEndpointMiddleware
 {
     public CloudFoundryEndpoint CloudFoundryEndpoint { get; }
 
-    public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+
+    public CloudFoundryEndpointMiddleware(/*RequestDelegate next,*/ CloudFoundryEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<CloudFoundryEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {

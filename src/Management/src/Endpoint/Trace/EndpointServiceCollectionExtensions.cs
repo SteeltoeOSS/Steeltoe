@@ -52,23 +52,24 @@ public static class EndpointServiceCollectionExtensions
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
-        services.AddActuatorManagementOptions();
+        services.AddCommonActuatorServices();
         services.AddTraceActuatorServices(configuration, version);
 
         switch (version)
         {
             case MediaTypeVersion.V1:
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, TraceDiagnosticObserver>());
-                services.TryAddSingleton<ITraceRepository>(p => p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
-                services.AddActuatorEndpointMapping<TraceEndpoint>();
+                //services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, TraceDiagnosticObserver>());
+                services.TryAddSingleton<ITraceRepository, TraceDiagnosticObserver>();
+                //services.TryAddSingleton<ITraceRepository>(p => p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
+                //   services.AddActuatorEndpointMapping<TraceEndpoint>();
                 break;
             default:
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpTraceDiagnosticObserver>());
-
+                services.TryAddSingleton<IHttpTraceRepository, HttpTraceDiagnosticObserver>();
             //    services.TryAddSingleton(p =>
            //         new HttpTraceEndpoint(p.GetService<ITraceOptions>(), p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
 
-                services.AddActuatorEndpointMapping<HttpTraceEndpoint>();
+              //  services.AddActuatorEndpointMapping<HttpTraceEndpoint>();
                 break;
         }
     }

@@ -72,7 +72,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
 
         WebApplication host = hostBuilder.AddHealthActuator().Build();
 
-        Assert.Single(host.Services.GetServices<HealthEndpointCore>());
+        Assert.Single(host.Services.GetServices<IHealthEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
     }
 
@@ -86,7 +86,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
             typeof(DownContributor)
         }).Build();
 
-        Assert.Single(host.Services.GetServices<HealthEndpointCore>());
+        Assert.Single(host.Services.GetServices<IHealthEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
     }
 
@@ -100,7 +100,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
             typeof(DownContributor)
         }).Build();
 
-        Assert.Single(host.Services.GetServices<HealthEndpointCore>());
+        Assert.Single(host.Services.GetServices<IHealthEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
     }
 

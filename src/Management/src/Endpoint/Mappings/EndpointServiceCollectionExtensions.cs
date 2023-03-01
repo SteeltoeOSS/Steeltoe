@@ -29,9 +29,9 @@ public static class EndpointServiceCollectionExtensions
 
         configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddActuatorManagementOptions();
+        services.AddCommonActuatorServices();
         services.AddMappingsActuatorServices(configuration);
-        services.AddActuatorEndpointMapping<MappingsEndpoint>();
+       // services.AddActuatorEndpointMapping<MappingsEndpoint>();
 
         services.TryAddSingleton<IRouteMappings, RouteMappings>();
     }

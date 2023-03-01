@@ -11,9 +11,9 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
+public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>, IEndpointMiddleware
 {
-    public RefreshEndpointMiddleware(RequestDelegate next, RefreshEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public RefreshEndpointMiddleware(/*RequestDelegate next, */RefreshEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<RefreshEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {

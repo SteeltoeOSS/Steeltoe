@@ -10,16 +10,16 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 public class HttpTraceEndpoint : IEndpoint<HttpTraceResult>, IHttpTraceEndpoint
 {
-    private readonly IOptionsMonitor<HttpTraceEndpointOptions> _options;
+    private readonly IOptionsMonitor<TraceEndpointOptions> _options;
     private readonly IHttpTraceRepository _traceRepo;
 
-    public IOptionsMonitor<HttpTraceEndpointOptions> Options => _options;
+    public IOptionsMonitor<TraceEndpointOptions> Options => _options;
 
     IEndpointOptions IEndpoint.Options => _options.CurrentValue;
 
     // public new ITraceOptions Options => options as ITraceOptions;
 
-    public HttpTraceEndpoint(IOptionsMonitor<HttpTraceEndpointOptions> options, IHttpTraceRepository traceRepository, ILogger<HttpTraceEndpoint> logger = null)
+    public HttpTraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, IHttpTraceRepository traceRepository, ILogger<HttpTraceEndpoint> logger = null)
        // : base(options)
     {
         ArgumentGuard.NotNull(traceRepository);

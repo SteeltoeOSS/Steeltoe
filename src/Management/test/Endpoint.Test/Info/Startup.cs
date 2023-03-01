@@ -23,7 +23,7 @@ public class Startup
     {
         services.AddRouting();
         services.AddCloudFoundryActuator(Configuration);
-        services.AddInfoActuator(Configuration);
+        services.AddInfoActuator();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -32,7 +32,9 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.Map<InfoEndpoint>();
+            //endpoints.Map<InfoEndpoint>();
+
+            app.UseEndpoints(endpoints => endpoints.MapTheActuators(null));
         });
     }
 }

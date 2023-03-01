@@ -7,7 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Exporters;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
@@ -31,25 +33,25 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddMetricsActuatorServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddMetricsActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
 
-        //var options = new MetricsEndpointOptions(configuration);
+        var options = new MetricsEndpointOptions();
         //services.TryAddSingleton<IMetricsEndpointOptions>(options);
         //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
-        //services.Configure<MetricsEndpoint>();
+        services.ConfigureOptions<ConfigureMetricsEndpointOptions>();
+        services.TryAddSingleton<MetricsEndpoint>();
 
-        services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
+       // services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
 
-        //var exporterOptions = new MetricsExporterOptions
-        //{
-        //    CacheDurationMilliseconds = options.CacheDurationMilliseconds,
-        //    MaxTimeSeries = options.MaxTimeSeries,
-        //    MaxHistograms = options.MaxHistograms,
-        //    IncludedMetrics = options.IncludedMetrics
-        //};
+        var exporterOptions = new MetricsExporterOptions
+        {
+            CacheDurationMilliseconds = options.CacheDurationMilliseconds,
+            MaxTimeSeries = options.MaxTimeSeries,
+            MaxHistograms = options.MaxHistograms,
+            IncludedMetrics = options.IncludedMetrics
+        };
         //services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoeExporter>(provider =>
         //{
         //    //var options = provider.GetService<IMetricsEndpointOptions>();
@@ -59,7 +61,7 @@ public static class ServiceCollectionExtensions
         //    //    ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds
         //    //};
 
-       // services.TryAddSingleton<IExporterOptions>(exporterOptions);
+        services.TryAddSingleton<IExporterOptions>(exporterOptions);
 
         services.TryAddSingleton(provider =>
         {
@@ -110,4 +112,5 @@ public static class ServiceCollectionExtensions
             return aggregationManager;
         }).AddHostedService<MetricCollectionHostedService>();
     }
+    
 }

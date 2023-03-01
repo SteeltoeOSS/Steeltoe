@@ -12,9 +12,9 @@ public class TraceEndpoint : IEndpoint<List<TraceResult>>, ITraceEndpoint
 {
     private readonly ITraceRepository _traceRepo;
 
-    public IOptionsMonitor<TraceEndpointOptions> Options { get; }
+    private IOptionsMonitor<TraceEndpointOptions> _options { get; }
 
-    IEndpointOptions IEndpoint.Options => Options.CurrentValue;
+    IEndpointOptions IEndpoint.Options => _options.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
 
     // public new ITraceOptions Options => options as ITraceOptions;
 
@@ -22,7 +22,7 @@ public class TraceEndpoint : IEndpoint<List<TraceResult>>, ITraceEndpoint
        // : base(options)
     {
         ArgumentGuard.NotNull(traceRepository);
-        Options = options;
+        _options = options;
         _traceRepo = traceRepository;
     }
 

@@ -15,13 +15,12 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointResponse, ISecurityContext>, IEndpointMiddleware
 {
+    
 
-    public IEndpointOptions EndpointOptions => Endpoint.Options;
-
-    public HealthEndpointMiddleware(/*RequestDelegate next,*/ IOptionsMonitor<ManagementEndpointOptions> managementOptions, IEndpoint<HealthEndpointResponse, ISecurityContext> endpoint, ILogger<InfoEndpointMiddleware> logger = null)
+    public HealthEndpointMiddleware(/*RequestDelegate next,*/ IOptionsMonitor<ManagementEndpointOptions> managementOptions,IHealthEndpoint endpoint, ILogger<InfoEndpointMiddleware> logger = null)
         : base(managementOptions, logger)
     {
-        Endpoint = endpoint;
+        Endpoint = (IEndpoint<HealthEndpointResponse, ISecurityContext>)endpoint;
     }
     public Task InvokeAsync(HttpContext context )
     {

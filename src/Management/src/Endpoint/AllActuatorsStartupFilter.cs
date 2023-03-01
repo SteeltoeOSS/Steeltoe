@@ -10,6 +10,7 @@ using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.ManagementPort;
+using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -37,12 +38,11 @@ public class AllActuatorsStartupFilter : IStartupFilter
             }
 
             app.UseMiddleware<ManagementPortMiddleware>();
-
             next(app);
 
-            app.UseEndpoints(endpoints =>
+            app.UseEndpoints(endpoints => 
             {
-                endpoints.MapAllActuators(_configureConventions);
+                endpoints.MapTheActuators(_configureConventions);
             });
 
             app.ApplicationServices.InitializeAvailability();

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
@@ -31,9 +32,11 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         
         services.ConfigureOptions<ConfigureHealthEndpointOptions>();
-        services.AddScoped<IEndpointOptions, HealthEndpointOptions>(); // TOdO : this needed?
-        services.TryAddScoped<HealthEndpointCore>();
-        services.TryAddScoped<IHealthEndpoint>(provider => provider.GetRequiredService<HealthEndpointCore>());
+       // services.AddScoped<IEndpointOptions, HealthEndpointOptions>(); // TOdO : this needed?
+        services.TryAddScoped<IHealthEndpoint,HealthEndpointCore>();
+      //  services.TryAddScoped<IHealthEndpoint>(provider => provider.GetRequiredService<HealthEndpointCore>());
+
+        services.TryAddScoped<IEndpointMiddleware, HealthEndpointMiddleware>();
 
         return services;
     }

@@ -28,8 +28,8 @@ public static class EndpointServiceCollectionExtensions
 
         configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-        services.AddActuatorManagementOptions();
+        services.AddCommonActuatorServices();
         services.AddLoggersActuatorServices(configuration);
-        services.AddActuatorEndpointMapping<LoggersEndpoint>();
+       // services.AddActuatorEndpointMapping<LoggersEndpoint>();
     }
 }

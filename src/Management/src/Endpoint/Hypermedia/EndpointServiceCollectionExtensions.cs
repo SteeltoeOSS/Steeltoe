@@ -14,41 +14,14 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 
 public static class EndpointServiceCollectionExtensions
 {
-    public static void AddHypermediaActuator(this IServiceCollection services, IConfiguration configuration = null)
+    public static void AddHypermediaActuator(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
 
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-
-        services.AddActuatorManagementOptions();
-        services.AddHypermediaActuatorServices(configuration);
-        services.AddActuatorEndpointMapping<ActuatorEndpoint>();
+        services.AddCommonActuatorServices();
+        services.AddHypermediaActuatorServices();
+       // services.AddActuatorEndpointMapping<ActuatorEndpoint>();
 
     }
-    
-    public static void AddActuatorManagementOptions(this IServiceCollection services)
-    {
-        ArgumentGuard.NotNull(services);
 
-        // configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-        //services.Configure<ManagementEndpointOptions>(ManagementEndpointOptions.ActuatorOptionName, configuration.GetSection(ManagementEndpointOptions.ManagementInfoPrefix)).c;
-      //  services.Configure<ManagementEndpointOptions>(configuration.GetSection(ManagementEndpointOptions.ManagementInfoPrefix));
-        //services.AddOptions<ManagementEndpointOptions>(EndpointContextNames.ActuatorManagementOptionName)
-        //    .Configure(managementOptions =>
-        //    {
-        //        configuration.GetSection(ManagementEndpointOptions.ManagementInfoPrefix).Bind(managementOptions);
-        //        managementOptions.Path ??= ManagementEndpointOptions.DefaultActuatorPath;
-        //    });
-        //services.AddOptions<ManagementEndpointOptions>(EndpointContextNames.CFManagemementOptionName)
-        //   .Configure(managementOptions =>
-        //   {
-        //       configuration.GetSection(ManagementEndpointOptions.ManagementInfoPrefix).Bind(managementOptions);
-        //       managementOptions.Path ??= ManagementEndpointOptions.DefaultCFPath;
-        //   });
-        // services.Configure<ManagementEndpointOptions>(configuration.GetSection(ManagementEndpointOptions.ManagementInfoPrefix));
-
-          services.ConfigureOptions<ConfigureManagementEndpointOptions>();
-        // services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(configuration)));
-        //   services.TryAddSingleton(provider => provider.GetServices<IManagementOptions>().OfType<ActuatorManagementOptions>().First());
-    }
 }

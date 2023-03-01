@@ -37,9 +37,7 @@ public static class ServiceCollectionExtensions
 
 
         // New: 
-        services.TryAddSingleton<ActuatorRouter>();
-        services.TryAddScoped<ActuatorsMiddleware>();
-        services.AddSingleton<IEndpointMiddleware, EnvEndpointMiddleware>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, EnvEndpointMiddleware>());
         return services;
     }
 }
