@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
 
@@ -44,7 +45,7 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddTraceActuator(configurationRoot);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<ITraceOptions>();
+        var options = serviceProvider.GetService<IOptionsMonitor<TraceEndpointOptions>>();
         Assert.NotNull(options);
         var ep = serviceProvider.GetService<HttpTraceEndpoint>();
         Assert.NotNull(ep);

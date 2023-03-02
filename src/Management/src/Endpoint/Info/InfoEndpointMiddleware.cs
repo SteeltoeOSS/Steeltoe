@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>>, IEndpointMiddleware
+public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>>, IMiddleware
 {
     public InfoEndpointMiddleware(InfoEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<InfoEndpointMiddleware> logger = null)
@@ -20,7 +20,7 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
     }
     
 
-    public override Task InvokeAsync(HttpContext context)
+    public  Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         logger.LogDebug("Info middleware InvokeAsync({path})", context.Request.Path.Value);
 

@@ -14,18 +14,20 @@ public class CloudFoundryEndpoint : IEndpoint<Links, string>, ICloudFoundryEndpo
 {
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
+    private readonly IEnumerable<IEndpointOptions> endpointOptions;
     private readonly ILogger<CloudFoundryEndpoint> _logger;
-  //  private readonly IManagementOptions _managementOptions;
+    //  private readonly IManagementOptions _managementOptions;
 
     //protected new ICloudFoundryOptions Options => options as ICloudFoundryOptions;
 
-    public CloudFoundryEndpoint(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundryEndpoint> logger = null)
+    public CloudFoundryEndpoint(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IEnumerable<IEndpointOptions> endpointOptions, ILogger<CloudFoundryEndpoint> logger = null)
        // : base(options)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(managementOptions);
         _options = options;
         _managementOptions = managementOptions;
+        this.endpointOptions = endpointOptions;
         _logger = logger;
     }
 
@@ -33,9 +35,9 @@ public class CloudFoundryEndpoint : IEndpoint<Links, string>, ICloudFoundryEndpo
 
     // public IOptionsMonitor<CloudFoundryEndpointOptions> Options => _options;
 
-    public Links Invoke(string baseUrl)
+    public virtual Links Invoke(string baseUrl)
     {
-        var hypermediaService = new HypermediaService(_managementOptions, _options, _logger);
+        var hypermediaService = new HypermediaService(_managementOptions, _options, endpointOptions, _logger);
         return hypermediaService.Invoke(baseUrl);
     }
 }

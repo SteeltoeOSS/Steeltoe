@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Middleware;
 
@@ -38,6 +39,8 @@ public static class ServiceCollectionExtensions
 
         // New: 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, EnvEndpointMiddleware>());
+        services.AddSingleton<EnvEndpointMiddleware>();
+
         return services;
     }
 }

@@ -22,18 +22,12 @@ public class MappingsStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddHypermediaActuator(Configuration);
-        services.AddMappingsActuator(Configuration);
+        services.AddHypermediaActuator();
+        services.AddMappingsActuator();
     }
 
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<ActuatorEndpoint>();
-            endpoints.Map<MappingsEndpoint>();
-        });
     }
 }

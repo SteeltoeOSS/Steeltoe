@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
+using Steeltoe.Management.Endpoint.DbMigrations;
+using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Exporters;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
@@ -42,8 +44,10 @@ public static class ServiceCollectionExtensions
         //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
         services.ConfigureOptions<ConfigureMetricsEndpointOptions>();
         services.TryAddSingleton<MetricsEndpoint>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MetricsEndpointMiddleware>());
+        services.AddSingleton<MetricsEndpointMiddleware>();
 
-       // services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
+        // services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
 
         var exporterOptions = new MetricsExporterOptions
         {

@@ -6,13 +6,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
 internal sealed class TestCloudFoundryEndpoint : CloudFoundryEndpoint
 {
     public TestCloudFoundryEndpoint(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundryEndpoint> logger = null)
-        : base(options, managementOptions, logger)
+        : base(options, managementOptions,null, logger)
     {
     }
 

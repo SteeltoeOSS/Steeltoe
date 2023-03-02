@@ -18,11 +18,4 @@ public class MappingsEndpointOptionsTest : BaseTest
         Assert.Equal("mappings", opts.Id);
         Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);
     }
-
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new MappingsEndpointOptions(configuration));
-    }
 }

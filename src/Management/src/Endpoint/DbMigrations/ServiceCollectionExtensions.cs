@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
@@ -36,6 +38,8 @@ public static class ServiceCollectionExtensions
         //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
         services.TryAddSingleton<DbMigrationsEndpoint>();
         services.TryAddSingleton<IDbMigrationsEndpoint>(provider => provider.GetRequiredService<DbMigrationsEndpoint>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, DbMigrationsEndpointMiddleware>());
+        services.AddSingleton<DbMigrationsEndpointMiddleware>();
 
         return services;
     }

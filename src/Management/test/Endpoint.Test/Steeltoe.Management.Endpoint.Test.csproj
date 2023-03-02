@@ -6,49 +6,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <Compile Remove="CloudFoundry\**" />
-    <Compile Remove="ContentNegotiation\**" />
-    <Compile Remove="DbMigrations\**" />
-    <Compile Remove="HeapDump\**" />
-    <Compile Remove="Hypermedia\**" />
-    <Compile Remove="Loggers\**" />
-    <Compile Remove="Mappings\**" />
-    <Compile Remove="Metrics\**" />
-    <Compile Remove="Refresh\**" />
-    <Compile Remove="Security\**" />
-    <Compile Remove="SpringBootAdminClient\**" />
-    <Compile Remove="ThreadDump\**" />
-    <Compile Remove="Trace\**" />
-    <EmbeddedResource Remove="CloudFoundry\**" />
-    <EmbeddedResource Remove="ContentNegotiation\**" />
-    <EmbeddedResource Remove="DbMigrations\**" />
-    <EmbeddedResource Remove="HeapDump\**" />
-    <EmbeddedResource Remove="Hypermedia\**" />
-    <EmbeddedResource Remove="Info\**" />
-    <EmbeddedResource Remove="Loggers\**" />
-    <EmbeddedResource Remove="Mappings\**" />
-    <EmbeddedResource Remove="Metrics\**" />
-    <EmbeddedResource Remove="Refresh\**" />
-    <EmbeddedResource Remove="Security\**" />
-    <EmbeddedResource Remove="SpringBootAdminClient\**" />
-    <EmbeddedResource Remove="ThreadDump\**" />
-    <EmbeddedResource Remove="Trace\**" />
-    <None Remove="CloudFoundry\**" />
-    <None Remove="ContentNegotiation\**" />
-    <None Remove="DbMigrations\**" />
-    <None Remove="HeapDump\**" />
-    <None Remove="Hypermedia\**" />
-    <None Remove="Loggers\**" />
-    <None Remove="Mappings\**" />
-    <None Remove="Metrics\**" />
-    <None Remove="Refresh\**" />
-    <None Remove="Security\**" />
-    <None Remove="SpringBootAdminClient\**" />
-    <None Remove="ThreadDump\**" />
-    <None Remove="Trace\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="empty.git.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

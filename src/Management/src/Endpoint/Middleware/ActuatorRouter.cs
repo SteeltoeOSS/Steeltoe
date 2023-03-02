@@ -31,6 +31,10 @@ public class ActuatorRouter
             {
                 var endpointOptions = middleware.EndpointOptions;
                 var key = mgmtOption.Path;
+                if (key.EndsWith("/"))
+                {
+                    key = key.Substring(0, key.Length - 1);
+                }
                 if(!string.IsNullOrEmpty(endpointOptions.Path))
                 {
                     key += "/" + endpointOptions.Path;

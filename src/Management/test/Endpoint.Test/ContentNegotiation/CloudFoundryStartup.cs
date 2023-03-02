@@ -28,9 +28,9 @@ public class CloudFoundryStartup
     {
         app.UseRouting();
 
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<CloudFoundryEndpoint>();
-        });
+        //app.UseEndpoints(endpoints =>
+        //{
+        //    endpoints.Map<CloudFoundryEndpoint>();
+        //});
     }
 }

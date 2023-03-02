@@ -35,7 +35,7 @@ public class CloudFoundrySecurityMiddleware
         _router = router;
         _managementOptions = managementOptions.Get(EndpointContextNames.CFManagemementOptionName);
 
-        _base = new SecurityBase(options, managementOptions, logger);
+        _base = new SecurityBase(options.CurrentValue, managementOptions.Get(EndpointContextNames.CFManagemementOptionName), logger);
     }
     
     public async Task InvokeAsync(HttpContext context)

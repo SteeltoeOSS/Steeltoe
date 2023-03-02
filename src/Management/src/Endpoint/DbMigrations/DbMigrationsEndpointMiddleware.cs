@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>, IEndpointMiddleware
+public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>, IMiddleware
 {
     
     public DbMigrationsEndpointMiddleware(/*RequestDelegate next,*/ DbMigrationsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
@@ -23,7 +23,7 @@ public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<stri
 
  //   public DbMigrationsEndpoint DbMigrationsEndpoint { get; }
 
-    public Task InvokeAsync(HttpContext context)
+    public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {

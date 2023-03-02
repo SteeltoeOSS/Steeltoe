@@ -13,7 +13,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>, LoggersChangeRequest>, IEndpointMiddleware
+public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>, LoggersChangeRequest>, IMiddleware
 {
     public LoggersEndpointMiddleware(/*RequestDelegate next,*/ LoggersEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<LoggersEndpointMiddleware> logger = null)
@@ -21,7 +21,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
     {
     }
     
-    public Task InvokeAsync(HttpContext context)
+    public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {

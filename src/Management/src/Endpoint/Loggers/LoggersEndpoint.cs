@@ -41,7 +41,7 @@ public class LoggersEndpoint : IEndpoint<Dictionary<string, object>, LoggersChan
         _logger = logger;
     }
 
-    public Dictionary<string, object> Invoke(LoggersChangeRequest request)
+    public virtual Dictionary<string, object> Invoke(LoggersChangeRequest request)
     {
         _logger?.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
 

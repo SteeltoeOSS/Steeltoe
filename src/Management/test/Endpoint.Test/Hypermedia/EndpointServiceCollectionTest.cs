@@ -36,7 +36,7 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        services.AddHypermediaActuator(configurationRoot);
+        services.AddHypermediaActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         //var options = serviceProvider.GetService<IActuatorHypermediaOptions>();

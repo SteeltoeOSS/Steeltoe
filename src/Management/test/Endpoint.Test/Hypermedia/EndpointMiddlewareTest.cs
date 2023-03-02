@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
@@ -31,8 +32,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
     {
-        var opts = new HypermediaEndpointOptions();
-        var managementOptions = new ActuatorManagementOptions();
+        var opts = GetOptionsMonitorFromSettings<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>();
         var ep = new TestHypermediaEndpoint(opts, managementOptions);
         var middle = new ActuatorHypermediaEndpointMiddleware(ep, managementOptions);
         HttpContext context = CreateRequest("GET", "/");
@@ -107,9 +108,10 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = new HypermediaEndpointOptions();
+        var options = GetOptionsFromSettings<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
+        var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator", options.GetContextPath(new ActuatorManagementOptions()));
+        Assert.Equal("/actuator", options.GetContextPath(mgmtOptions.Get(EndpointContextNames.ActuatorManagementOptionName)));
         Assert.Null(options.AllowedVerbs);
     }
 

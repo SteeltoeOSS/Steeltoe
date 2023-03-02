@@ -22,18 +22,12 @@ public class MetricsStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddHypermediaActuator(Configuration);
-        services.AddMetricsActuator(Configuration);
+        services.AddHypermediaActuator();
+        services.AddMetricsActuator();
     }
 
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<ActuatorEndpoint>();
-            endpoints.Map<MetricsEndpoint>();
-        });
     }
 }

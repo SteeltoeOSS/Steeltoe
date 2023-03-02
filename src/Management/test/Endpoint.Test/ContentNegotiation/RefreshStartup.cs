@@ -22,18 +22,12 @@ public class RefreshStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddHypermediaActuator(Configuration);
+        services.AddHypermediaActuator();
         services.AddRefreshActuator(Configuration);
     }
 
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<ActuatorEndpoint>();
-            endpoints.Map<RefreshEndpoint>();
-        });
     }
 }

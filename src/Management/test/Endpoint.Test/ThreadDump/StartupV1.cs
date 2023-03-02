@@ -29,10 +29,5 @@ public class StartupV1
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<ThreadDumpEndpoint>();
-        });
     }
 }

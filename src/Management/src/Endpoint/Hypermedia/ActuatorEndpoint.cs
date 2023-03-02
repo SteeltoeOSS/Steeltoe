@@ -16,6 +16,7 @@ public class ActuatorEndpoint : /*AbstractEndpoint<Links, string>*/ IEndpoint<Li
     private readonly ILogger<ActuatorEndpoint> _logger;
     private IOptionsMonitor<HypermediaEndpointOptions> _options;
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOption;
+    private readonly IEnumerable<IEndpointOptions> endpointOptions;
 
     //private readonly IActuatorHypermediaOptions _options;
     // private readonly ActuatorManagementOptions _managementOption;
@@ -24,17 +25,18 @@ public class ActuatorEndpoint : /*AbstractEndpoint<Links, string>*/ IEndpoint<Li
 
     IEndpointOptions IEndpoint.Options => _options.CurrentValue;
 
-    public ActuatorEndpoint(IOptionsMonitor<HypermediaEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<ActuatorEndpoint> logger = null)
+    public ActuatorEndpoint(IOptionsMonitor<HypermediaEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,IEnumerable<IEndpointOptions> endpointOptions, ILogger<ActuatorEndpoint> logger = null)
         //: base(options)
     {
         _options = options;
         _managementOption = managementOptions;
+        this.endpointOptions = endpointOptions;
         _logger = logger;
     }
 
-    public Links Invoke(string baseUrl)
+    public virtual Links Invoke(string baseUrl)
     {
-        var service = new HypermediaService(_managementOption, _options, _logger);
+        var service = new HypermediaService(_managementOption, _options, endpointOptions, _logger);
         return service.Invoke(baseUrl);
     }
 }

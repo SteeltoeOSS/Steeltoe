@@ -21,9 +21,6 @@ public class CloudFoundryEndpointOptions : EndpointOptionsBase//, ICloudFoundryO
 
    // public EndpointOptionsBase EndpointOptions { get; set; }
 
-    public CloudFoundryEndpointOptions()
-    {
-    }
 
     //public CloudFoundryEndpointOptions(IConfiguration configuration)
     //    : base(ManagementInfoPrefix, configuration)

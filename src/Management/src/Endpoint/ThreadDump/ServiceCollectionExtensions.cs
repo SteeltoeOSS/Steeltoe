@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.DbMigrations;
+using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
@@ -42,17 +44,24 @@ public static class ServiceCollectionExtensions
             services.ConfigureOptions<ConfigureThreadDumpEndpointOptionsV1>();
             services.TryAddSingleton<ThreadDumpEndpoint>();
             services.TryAddSingleton<IThreadDumpEndpoint>(provider => provider.GetRequiredService<ThreadDumpEndpoint>());
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ThreadDumpEndpointMiddleware>());
+            services.AddSingleton<ThreadDumpEndpointMiddleware>();
         }
         else
         {
             services.ConfigureOptions<ConfigureThreadDumpEndpointOptions>();
             services.TryAddSingleton<ThreadDumpEndpointV2>();
             services.TryAddSingleton<IThreadDumpEndpointV2>(provider => provider.GetRequiredService<ThreadDumpEndpointV2>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ThreadDumpEndpointMiddlewareV2>());
+            services.AddSingleton<ThreadDumpEndpointMiddlewareV2>();
+
         }
 
         //services.TryAddSingleton<IThreadDumpOptions>(options);
         services.TryAddSingleton<IThreadDumper, ThreadDumperEp>();
-       // services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+        // services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+
 
         return services;
     }

@@ -50,8 +50,5 @@ public class ManagementEndpointOptions //: IManagementOptions
     /// </summary>
     public string[] CustomJsonConverters { get; set; }
 
-    public ManagementEndpointOptions()
-    {
-    }
 
 }

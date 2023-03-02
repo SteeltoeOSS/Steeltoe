@@ -10,18 +10,16 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>, IEndpointMiddleware
+public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>, IMiddleware
 {
     public HeapDumpEndpointMiddleware(/*RequestDelegate next,*/ HeapDumpEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<HeapDumpEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
-        HeapDumpEndpoint = endpoint;
+        Endpoint = endpoint;
     }
-    
-    public HeapDumpEndpoint HeapDumpEndpoint { get; }
-
-    public Task InvokeAsync(HttpContext context)
+ 
+    public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {

@@ -13,11 +13,6 @@ public class ThreadDumpEndpointOptions : EndpointOptionsBase //, IThreadDumpOpti
 
     public IEndpointOptions Options => throw new NotImplementedException();
 
-    public ThreadDumpEndpointOptions()
-    {
-
-        Id = "dump";
-    }
 
     //public ThreadDumpEndpointOptions(IConfiguration configuration)
     //    : base(ManagementInfoPrefix, configuration)

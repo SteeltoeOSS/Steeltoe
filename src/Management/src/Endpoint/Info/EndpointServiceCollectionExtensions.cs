@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Extensions;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -35,11 +36,10 @@ public static class EndpointServiceCollectionExtensions
         services.AddCommonActuatorServices();
         services.AddInfoActuatorServices();
         services.TryAddSingleton<ActuatorRouter>();
-        services.TryAddScoped<ActuatorsMiddleware>();
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IEndpointMiddleware, InfoEndpointMiddleware>());
+       // services.TryAddScoped<ActuatorsMiddleware>();
 
-        
-        
+
+
         //IEnumerable<IInfoContributor> otherInfoContributors = serviceProvider.GetServices<IInfoContributor>();
 
         //var allContributors = new List<IInfoContributor>

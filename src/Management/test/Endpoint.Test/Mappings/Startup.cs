@@ -33,8 +33,6 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-            endpoints.Map<CloudFoundryEndpoint>();
-            endpoints.Map<MappingsEndpoint>();
         });
     }
 }

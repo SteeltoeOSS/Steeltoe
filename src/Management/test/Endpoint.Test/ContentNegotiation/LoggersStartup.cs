@@ -22,18 +22,12 @@ public class LoggersStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddHypermediaActuator(Configuration);
-        services.AddLoggersActuator(Configuration);
+        services.AddHypermediaActuator();
+        services.AddLoggersActuator();
     }
 
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<ActuatorEndpoint>();
-            endpoints.Map<LoggersEndpoint>();
-        });
     }
 }

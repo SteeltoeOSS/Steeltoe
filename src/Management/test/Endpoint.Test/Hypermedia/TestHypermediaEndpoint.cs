@@ -5,13 +5,14 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 
 internal sealed class TestHypermediaEndpoint : ActuatorEndpoint
 {
     public TestHypermediaEndpoint(IOptionsMonitor<HypermediaEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<ActuatorEndpoint> logger = null)
-        : base(options, managementOptions, logger)
+        : base(options, managementOptions,null, logger)
     {
     }
 

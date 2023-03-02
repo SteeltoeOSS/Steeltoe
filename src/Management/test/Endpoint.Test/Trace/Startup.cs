@@ -30,10 +30,6 @@ public class Startup
     {
         app.UseRouting();
 
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<CloudFoundryEndpoint>();
-            endpoints.Map<HttpTraceEndpoint>();
-        });
+  
     }
 }

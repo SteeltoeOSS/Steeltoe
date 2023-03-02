@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.DbMigrations;
+using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
@@ -35,6 +37,9 @@ public static class ServiceCollectionExtensions
         //services.TryAddSingleton<IMappingsOptions>(options);
         //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
         services.TryAddSingleton<MappingsEndpoint>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MappingsEndpointMiddleware>());
+        services.AddSingleton<MappingsEndpointMiddleware>();
+
 
         return services;
     }

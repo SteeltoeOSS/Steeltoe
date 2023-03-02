@@ -22,7 +22,8 @@ public class ThreadDumpEndpointTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfNullRepo()
     {
-        Assert.Throws<ArgumentNullException>(() => new ThreadDumpEndpoint(new ThreadDumpEndpointOptions(), null));
+        var options = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions>();
+        Assert.Throws<ArgumentNullException>(() => new ThreadDumpEndpoint(options, null));
     }
 
     [Fact]

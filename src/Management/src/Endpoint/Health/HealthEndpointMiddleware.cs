@@ -13,7 +13,7 @@ using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointResponse, ISecurityContext>, IEndpointMiddleware
+public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointResponse, ISecurityContext>, IMiddleware
 {
     
 
@@ -22,7 +22,7 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
     {
         Endpoint = (IEndpoint<HealthEndpointResponse, ISecurityContext>)endpoint;
     }
-    public Task InvokeAsync(HttpContext context )
+    public Task InvokeAsync(HttpContext context , RequestDelegate next)
     {
 
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))

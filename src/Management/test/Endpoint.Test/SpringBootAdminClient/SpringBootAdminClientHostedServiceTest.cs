@@ -6,13 +6,15 @@ using System.Net;
 using Microsoft.Extensions.Configuration;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
-public class SpringBootAdminClientHostedServiceTest
+public class SpringBootAdminClientHostedServiceTest:BaseTest
 {
     [Fact]
     public async Task SpringBootAdminClient_RegistersAndDeletes()
@@ -28,11 +30,11 @@ public class SpringBootAdminClientHostedServiceTest
                 ["spring:application:name"] = "MySteeltoeApplication"
             };
 
-            IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var appInfo = new ApplicationInstanceInfo(configurationRoot);
+            IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection().Build();
+            var appInfo = new ApplicationInstanceInfo();
             var sbaOptions = new SpringBootAdminClientOptions(configurationRoot, appInfo);
-            var managementOptions = new ManagementEndpointOptions(configurationRoot);
-            var healthOptions = new HealthEndpointOptions(configurationRoot);
+            var managementOptions = new ManagementEndpointOptions();
+            var healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
             var httpMessageHandler = new MockHttpMessageHandler();
             httpMessageHandler.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances").Respond("application/json", "{\"Id\":\"1234567\"}");
 
@@ -65,11 +67,11 @@ public class SpringBootAdminClientHostedServiceTest
             ["spring:application:name"] = "MySteeltoeApplication"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var appInfo = new ApplicationInstanceInfo(configurationRoot);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection().Build();
+        var appInfo = new ApplicationInstanceInfo();
         var sbaOptions = new SpringBootAdminClientOptions(configurationRoot, appInfo);
-        var managementOptions = new ManagementEndpointOptions(configurationRoot);
-        var healthOptions = new HealthEndpointOptions(configurationRoot);
+        var managementOptions = new ManagementEndpointOptions();
+        var healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions>(appSettings);
         var httpMessageHandler = new MockHttpMessageHandler();
 
         httpMessageHandler.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances")

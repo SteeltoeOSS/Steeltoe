@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class ThreadDumpEndpointMiddleware : EndpointMiddleware<List<ThreadInfo>>, IEndpointMiddleware
+public class ThreadDumpEndpointMiddleware : EndpointMiddleware<List<ThreadInfo>>, IMiddleware
 {
     public ThreadDumpEndpointMiddleware(/*RequestDelegate next,*/ ThreadDumpEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<ThreadDumpEndpointMiddleware> logger = null)
@@ -19,7 +19,7 @@ public class ThreadDumpEndpointMiddleware : EndpointMiddleware<List<ThreadInfo>>
     {
     }
 
-    public Task InvokeAsync(HttpContext context)
+    public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {

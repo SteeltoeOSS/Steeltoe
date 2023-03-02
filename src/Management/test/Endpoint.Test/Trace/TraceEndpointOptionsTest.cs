@@ -29,14 +29,7 @@ public class TraceEndpointOptionsTest : BaseTest
         Assert.False(opts.AddRemoteAddress);
         Assert.False(opts.AddSessionId);
     }
-
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new TraceEndpointOptions(configuration));
-    }
-
+    
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
@@ -61,12 +54,8 @@ public class TraceEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var opts = new TraceEndpointOptions(configurationRoot);
-        var cloudOpts = new CloudFoundryEndpointOptions(configurationRoot);
+        var opts = GetOptionsFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>(appsettings);
+        var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
 
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);

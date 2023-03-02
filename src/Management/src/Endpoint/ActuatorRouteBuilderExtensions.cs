@@ -16,6 +16,8 @@ using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -93,23 +95,52 @@ public static class ActuatorRouteBuilderExtensions
     }
 
     // New:
-    public static void MapTheActuators(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention)
+    public static void MapTheActuators(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention = null)
     {
-        RequestDelegate pipeline = endpoints.CreateApplicationBuilder().UseMiddleware(typeof(ActuatorsMiddleware)).Build();
-
+       
         IEnumerable<string> allowedVerbs = new List<string>  // Get all common verbs here , but add a filter later
                 {
                     "Get"
                 };
         var managementOptions = endpoints.ServiceProvider.GetService<IOptionsMonitor<ManagementEndpointOptions>>();
+        var middlewares = endpoints.ServiceProvider.GetServices<IEndpointMiddleware>();
 
+        var dict = new Dictionary<string,object>();
         foreach (var name in EndpointContextNames.All) // TODO: Only map Cf on Cloudfoundry
         {
             var mgmtOption = managementOptions.Get(name);
-            IEndpointConventionBuilder conventionBuilder = endpoints.MapMethods(mgmtOption.Path+"/{**_}", allowedVerbs, pipeline);
+            var path = mgmtOption.Path;
+            //if (path.EndsWith("/"))
+            //{
+            //    path = path.Substring(0, path.Length - 1);
+            //}
+            //RequestDelegate pipeline = endpoints.CreateApplicationBuilder().UseMiddleware(typeof(ActuatorsMiddleware)).Build();
+            //IEndpointConventionBuilder conventionBuilder = endpoints.MapMethods(path, allowedVerbs, pipeline);
+            //convention?.Invoke(conventionBuilder);
 
+            foreach (var middleware in middlewares)
+            {
+                if (name == EndpointContextNames.ActuatorManagementOptionName && middleware.GetType() == typeof(CloudFoundryEndpointMiddleware)
+                     || name == EndpointContextNames.CFManagemementOptionName && middleware.GetType() == typeof(ActuatorHypermediaEndpointMiddleware))
+                {
+                    continue;
+                }
+                var type = middleware.GetType();
+                RequestDelegate pipeline = endpoints.CreateApplicationBuilder().UseMiddleware(middleware.GetType()).Build();
+                var epPath = middleware.EndpointOptions.GetContextPath(mgmtOption);
+                if(dict.Keys.Contains(epPath))
+                {
+                    throw new InvalidOperationException();
+                    //epPath = middleware.GetType().Name;
+                }
+                else
+                {
+                   dict.Add(epPath, type);
+                }
+                IEndpointConventionBuilder conventionBuilder = endpoints.MapMethods(epPath, allowedVerbs, pipeline);
+                convention?.Invoke(conventionBuilder);
 
-            convention?.Invoke(conventionBuilder);
+            }
         }
         
     }

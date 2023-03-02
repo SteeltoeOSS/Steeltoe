@@ -5,25 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
-internal class ConfigureThreadDumpEndpointOptionsV1 : IConfigureOptions<ThreadDumpEndpointOptions>
+internal class ConfigureThreadDumpEndpointOptionsV1 : ConfigureEndpointOptions<ThreadDumpEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:dump";
 
-    private readonly IConfiguration configuration;
-
     public ConfigureThreadDumpEndpointOptionsV1(IConfiguration configuration)
+        :base(configuration, ManagementInfoPrefix, "dump")
     {
-        this.configuration = configuration;
-    }
-
-    public void Configure(ThreadDumpEndpointOptions options)
-    {
-        configuration.GetSection(ManagementInfoPrefix).Bind(options);
-        if (string.IsNullOrEmpty(options.Id))
-        {
-            options.Id = "dump";
-        }
     }
 }

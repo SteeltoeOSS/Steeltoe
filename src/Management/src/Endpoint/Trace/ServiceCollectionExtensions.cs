@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.ThreadDump;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -33,15 +35,18 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
-
+        services.ConfigureOptions<ConfigureTraceEndpointOptions>();
         switch (version)
         {
             case MediaTypeVersion.V1:
                 //var options = new TraceEndpointOptions(configuration);
                 //services.TryAddSingleton<ITraceOptions>(options);
                 services.TryAddSingleton<TraceEndpoint>();
-              //  services.TryAddSingleton<ITraceEndpoint>(provider => provider.GetRequiredService<TraceEndpoint>());
-              //  services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+                //  services.TryAddSingleton<ITraceEndpoint>(provider => provider.GetRequiredService<TraceEndpoint>());
+                //  services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, TraceEndpointMiddleware>());
+                services.AddSingleton<TraceEndpointMiddleware>();
                 break;
             default:
 
@@ -49,8 +54,12 @@ public static class ServiceCollectionExtensions
                 //var options2 = new HttpTraceEndpointOptions(configuration);
                 //services.TryAddSingleton<ITraceOptions>(options2);
                 //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options2));
+
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, HttpTraceEndpointMiddleware>());
+                services.AddSingleton<HttpTraceEndpointMiddleware>();
                 break;
         }
+
 
         return services;
     }

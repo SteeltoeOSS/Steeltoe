@@ -46,6 +46,7 @@ public static class ServiceCollectionExtensions
         //services.AddSingleton<IEndpointMiddleware, ActuatorHypermediaEndpointMiddleware>();
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ActuatorHypermediaEndpointMiddleware>());
+        services.AddSingleton<ActuatorHypermediaEndpointMiddleware>();
 
         return services;
     }

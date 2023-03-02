@@ -14,7 +14,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>, IEndpointMiddleware
+public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>, IMiddleware
 {
     public MetricsEndpointMiddleware(/*RequestDelegate next,*/ MetricsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<MetricsEndpointMiddleware> logger = null)
@@ -22,7 +22,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
     {
     }
     
-    public Task InvokeAsync(HttpContext context)
+    public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Reflection;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
@@ -82,23 +83,39 @@ public abstract class BaseTest : IDisposable
 
         return aggregator;
     }
+    
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>() => GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(new Dictionary<string, string>());
-    protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string> appsettings)
+    protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string> settings)
+    {
+        return GetOptionsMonitorFromSettings<TOptions>(typeof(TConfigureOptions), settings);
+    }
+    protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>(Dictionary<string, string> settings)
+    {
+        var type = ReflectionHelpers.FindType(new[] { typeof(TOptions).Assembly.FullName }, new[] { "Configure" + typeof(TOptions).Name });
+        return GetOptionsMonitorFromSettings<TOptions>(type, settings);
+    }
+
+    private static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>(Type tConfigureOptions, Dictionary<string, string> settings)
     {
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
+        configurationBuilder.AddInMemoryCollection(settings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configurationRoot);
-        services.ConfigureOptions(typeof(TConfigureOptions));
+        services.ConfigureOptions(tConfigureOptions);
 
         var provider = services.BuildServiceProvider();
         var opts = provider.GetService<IOptionsMonitor<TOptions>>();
         return opts;
     }
+    protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>() => GetOptionsMonitorFromSettings<TOptions>(new Dictionary<string, string>());
 
     protected static TOptions GetOptionsFromSettings<TOptions, TConfigureOptions>() => GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>().CurrentValue;
 
-    protected static TOptions GetOptionsFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string> appSettings) => GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(appSettings).CurrentValue;
+    protected static TOptions GetOptionsFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string> settings) => GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(settings).CurrentValue;
+
+    protected static TOptions GetOptionsFromSettings<TOptions>() => GetOptionsMonitorFromSettings<TOptions>().CurrentValue;
+    protected static TOptions GetOptionsFromSettings<TOptions>(Dictionary<string, string> settings) => GetOptionsMonitorFromSettings<TOptions>(settings).CurrentValue;
+    
 }

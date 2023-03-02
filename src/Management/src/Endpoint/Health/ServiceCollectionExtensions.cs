@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Health;
@@ -36,7 +37,9 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IHealthEndpoint,HealthEndpointCore>();
       //  services.TryAddScoped<IHealthEndpoint>(provider => provider.GetRequiredService<HealthEndpointCore>());
 
-        services.TryAddScoped<IEndpointMiddleware, HealthEndpointMiddleware>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, HealthEndpointMiddleware>());
+        services.AddSingleton<HealthEndpointMiddleware>();
+
 
         return services;
     }

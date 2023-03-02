@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
@@ -13,7 +14,7 @@ public class ActuatorManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new ActuatorManagementOptions();
+        var opts = GetOptionsFromSettings<ManagementEndpointOptions>();
         Assert.Equal("/actuator", opts.Path);
         Assert.Contains("health", opts.Exposure.Include);
         Assert.Contains("info", opts.Exposure.Include);
@@ -24,8 +25,8 @@ public class ActuatorManagementOptionsTest : BaseTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
-
-        var opts = new ActuatorManagementOptions(configurationRoot);
+        
+        var opts = GetOptionsFromSettings<ManagementEndpointOptions>();
         Assert.Equal("/actuator", opts.Path);
         Assert.Contains("health", opts.Exposure.Include);
         Assert.Contains("info", opts.Exposure.Include);
@@ -33,13 +34,7 @@ public class ActuatorManagementOptionsTest : BaseTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
     }
 
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new ActuatorManagementOptions(configuration));
-    }
-
+   
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
@@ -49,11 +44,9 @@ public class ActuatorManagementOptionsTest : BaseTest
             ["management:endpoints:path"] = "/management"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new ActuatorManagementOptions(configurationRoot);
+
+        var opts = GetOptionsFromSettings<ManagementEndpointOptions>(appsettings);
 
         Assert.Equal("/management", opts.Path);
         Assert.False(opts.Enabled);
@@ -73,11 +66,11 @@ public class ActuatorManagementOptionsTest : BaseTest
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        //var configurationBuilder = new ConfigurationBuilder();
+        //configurationBuilder.AddInMemoryCollection(appsettings);
+        //IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new ActuatorManagementOptions(configurationRoot);
+        var opts = GetOptionsFromSettings<ManagementEndpointOptions>(appsettings);
 
         Assert.Equal("/management", opts.Path);
         Assert.False(opts.Enabled);
@@ -96,12 +89,14 @@ public class ActuatorManagementOptionsTest : BaseTest
             ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+      Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
 
-        var opts = new ActuatorManagementOptions(configurationRoot);
+        //var configurationBuilder = new ConfigurationBuilder();
+        //configurationBuilder.AddInMemoryCollection(appsettings);
+        //IConfigurationRoot configurationRoot = configurationBuilder.Build();
+
+        var opts = GetOptionsFromSettings<ManagementEndpointOptions>(appsettings);
+
 
         Assert.Equal("/actuator", opts.Path);
 

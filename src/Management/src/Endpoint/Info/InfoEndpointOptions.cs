@@ -6,33 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-public class InfoEndpointOptions : EndpointOptionsBase//, IInfoOptions
+public class InfoEndpointOptions : EndpointOptionsBase
 {
-    private const string ManagementInfoPrefix = "management:endpoints:info";
-   // public EndpointOptionsBase EndpointOptions { get; set;}
-    public InfoEndpointOptions()
-    {
-        if (string.IsNullOrEmpty(Id))
-        {
-            Id = "info";
-        }
-        if (RequiredPermissions == Permissions.Undefined)
-        {
-            RequiredPermissions = Permissions.Restricted;
-        }
-    }
-
-    //public InfoEndpointOptions(IConfiguration configuration)
-    //    : base(ManagementInfoPrefix, configuration)
-    //{
-    //    if (string.IsNullOrEmpty(Id))
-    //    {
-    //        Id = "info";
-    //    }
-
-    //    if (RequiredPermissions == Permissions.Undefined)
-    //    {
-    //        RequiredPermissions = Permissions.Restricted;
-    //    }
-    //}
+   
 }

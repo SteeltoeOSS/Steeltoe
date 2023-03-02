@@ -19,7 +19,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings>, IEndpointMiddleware
+public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings>, IMiddleware
 {
     private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
     private readonly IEnumerable<IApiDescriptionProvider> _apiDescriptionProviders;
@@ -35,7 +35,7 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
         _apiDescriptionProviders = apiDescriptionProviders;
     }
 
-    public Task InvokeAsync(HttpContext context)
+    public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {

@@ -22,18 +22,18 @@ public class DbMigrationsStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddHypermediaActuator(Configuration);
-        services.AddDbMigrationsActuator(Configuration);
+        services.AddHypermediaActuator();
+        services.AddDbMigrationsActuator();
     }
 
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
 
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<ActuatorEndpoint>();
-            endpoints.Map<DbMigrationsEndpoint>();
-        });
+        //app.UseEndpoints(endpoints =>
+        //{
+        //  //  endpoints.Map<ActuatorEndpoint>();
+        //    endpoints.Map<DbMigrationsEndpoint>();
+        //});
     }
 }

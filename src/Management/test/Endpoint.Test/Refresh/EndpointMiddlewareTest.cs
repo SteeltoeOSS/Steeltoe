@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Xunit;
 
@@ -31,16 +32,15 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleRefreshRequestAsync_ReturnsExpected()
     {
-        var opts = new RefreshEndpointOptions();
-        var managementOptions = new ActuatorManagementOptions();
-        managementOptions.EndpointOptions.Add(opts);
+        var opts = GetOptionsMonitorFromSettings<RefreshEndpointOptions>();
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var ep = new RefreshEndpoint(opts, configurationRoot);
-        var middle = new RefreshEndpointMiddleware(null, ep, managementOptions);
+        var middle = new RefreshEndpointMiddleware(ep, managementOptions);
 
         HttpContext context = CreateRequest("GET", "/refresh");
         await middle.HandleRefreshRequestAsync(context);
@@ -87,10 +87,11 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = new RefreshEndpointOptions();
+        var options = GetOptionsFromSettings<RefreshEndpointOptions>();
+        var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/refresh", options.GetContextPath(new ActuatorManagementOptions()));
-        Assert.Equal("/cloudfoundryapplication/refresh", options.GetContextPath(new CloudFoundryManagementOptions()));
+        Assert.Equal("/actuator/refresh", options.GetContextPath(mgmtOptions.Get(EndpointContextNames.ActuatorManagementOptionName)));
+        Assert.Equal("/cloudfoundryapplication/refresh", options.GetContextPath(mgmtOptions.Get(EndpointContextNames.ActuatorManagementOptionName)));
         Assert.Null(options.AllowedVerbs);
     }
 

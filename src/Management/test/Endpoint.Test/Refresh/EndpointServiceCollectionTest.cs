@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Xunit;
 
@@ -41,7 +42,7 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddRefreshActuator(configurationRoot);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IRefreshOptions>();
+        var options = serviceProvider.GetService<IOptionsMonitor<RefreshEndpointOptions>>();
         Assert.NotNull(options);
         var ep = serviceProvider.GetService<RefreshEndpoint>();
         Assert.NotNull(ep);

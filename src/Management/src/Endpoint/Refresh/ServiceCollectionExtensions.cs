@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.DbMigrations;
+using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
@@ -34,8 +36,12 @@ public static class ServiceCollectionExtensions
         //var options = new RefreshEndpointOptions(configuration);
         //services.TryAddSingleton<IRefreshOptions>(options);
         //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+        services.ConfigureOptions<ConfigureRefreshEndpointOptions>();
         services.TryAddSingleton<RefreshEndpoint>();
         services.TryAddSingleton<IRefreshEndpoint>(provider => provider.GetRequiredService<RefreshEndpoint>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, RefreshEndpointMiddleware>());
+        services.AddSingleton<RefreshEndpointMiddleware>();
+
 
         return services;
     }

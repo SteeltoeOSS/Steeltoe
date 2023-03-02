@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
@@ -33,9 +34,10 @@ public static class ActuatorServiceCollectionExtensions
     }
     public static void AddCommonActuatorServices(this IServiceCollection services)
     {
+        //services.ConfigureOptions<ConfigureManagementEndpointOptions>();
         services.ConfigureOptions<ConfigureManagementEndpointOptions>();
         services.TryAddSingleton<ActuatorRouter>();
-        services.TryAddScoped<ActuatorsMiddleware>();
+       // services.TryAddScoped<ActuatorsMiddleware>();
     }
     public static IServiceCollection AddAllActuators(this IServiceCollection services, IConfiguration configuration = null,
         MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)

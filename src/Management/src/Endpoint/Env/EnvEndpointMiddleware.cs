@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>, IEndpointMiddleware
+public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>, IMiddleware
 {
     public EnvEndpointMiddleware(/*RequestDelegate next, */EnvEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<EnvEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
@@ -19,7 +19,7 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>, 
         Endpoint = endpoint;
     }
     
-    public Task InvokeAsync(HttpContext context)
+    public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         
         if (EndpointOptions.ShouldInvoke(managementOptions, context, logger))

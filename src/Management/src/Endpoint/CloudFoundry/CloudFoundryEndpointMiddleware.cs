@@ -17,7 +17,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 /// CloudFoundry endpoint provides hypermedia: a page is added with links to all the endpoints that are enabled. When deployed to CloudFoundry this
 /// endpoint is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware" /> is added.
 /// </summary>
-public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>, IEndpointMiddleware
+public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>, IMiddleware
 {
     public CloudFoundryEndpoint CloudFoundryEndpoint { get; }
 
@@ -30,7 +30,7 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>,
         CloudFoundryEndpoint = endpoint;
     }
 
-    public Task InvokeAsync(HttpContext context)
+    public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         logger?.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
         var cfOptions = CloudFoundryEndpoint.Options;
@@ -61,4 +61,6 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>,
 
         return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
     }
+
+   
 }

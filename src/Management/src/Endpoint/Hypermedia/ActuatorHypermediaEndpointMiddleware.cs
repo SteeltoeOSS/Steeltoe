@@ -9,12 +9,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
+using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
-public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>, IEndpointMiddleware
+public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>, IMiddleware
 {
 
     public ActuatorHypermediaEndpointMiddleware(/*RequestDelegate next,*/ ActuatorEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
@@ -23,7 +24,7 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
     {
     }
     
-    public Task InvokeAsync(HttpContext context)
+    public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         logger?.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 

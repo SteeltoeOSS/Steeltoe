@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Xunit;
 
@@ -41,7 +42,7 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddThreadDumpActuator(configurationRoot);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IThreadDumpOptions>();
+        var options = serviceProvider.GetService<IOptionsMonitor<ThreadDumpEndpointOptions>>();
         Assert.NotNull(options);
         var repo = serviceProvider.GetService<IThreadDumper>();
         Assert.NotNull(repo);

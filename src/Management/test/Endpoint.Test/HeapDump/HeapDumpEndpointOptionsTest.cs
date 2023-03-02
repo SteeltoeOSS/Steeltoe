@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Xunit;
 
@@ -17,13 +18,6 @@ public class HeapDumpEndpointOptionsTest : BaseTest
         var opts = new HeapDumpEndpointOptions();
         Assert.Null(opts.Enabled);
         Assert.Equal("heapdump", opts.Id);
-    }
-
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpointOptions(configuration));
     }
 
     [Fact]
@@ -44,8 +38,8 @@ public class HeapDumpEndpointOptionsTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new HeapDumpEndpointOptions(configurationRoot);
-        var cloudOpts = new CloudFoundryEndpointOptions(configurationRoot);
+        var opts = GetOptionsFromSettings<HeapDumpEndpointOptions, ConfigureHealthEndpointOptions>(); // TODO: Fix
+        var cloudOpts = new CloudFoundryEndpointOptions();
 
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);

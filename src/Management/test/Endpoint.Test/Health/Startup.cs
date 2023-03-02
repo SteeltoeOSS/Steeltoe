@@ -54,7 +54,7 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-        app.UseMiddleware<ActuatorsMiddleware>();
+      //  app.UseMiddleware<ActuatorsMiddleware>();
         //app.UseEndpoints(endpoints =>
         //{
         //    endpoints.Map<HealthEndpointCore>();

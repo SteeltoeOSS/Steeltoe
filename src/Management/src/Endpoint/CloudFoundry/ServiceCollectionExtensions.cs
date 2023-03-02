@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
@@ -50,7 +51,10 @@ public static class ServiceCollectionExtensions
 
         //    return new CloudFoundryEndpoint(options, managementOptions);
         //});
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IEndpointMiddleware, CloudFoundryEndpointMiddleware>());
+        services.ConfigureOptions<ConfigureCloudFoundryEndpointOptions>();
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IEndpointOptions, CloudFoundryEndpointOptions>(provider => provider.GetRequiredService<IOptionsMonitor<CloudFoundryEndpointOptions>>().CurrentValue));
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, CloudFoundryEndpointMiddleware>());
+        services.AddSingleton<CloudFoundryEndpointMiddleware>();
         services.TryAddScoped<CloudFoundryEndpoint>();
 
         // services.TryAddSingleton<ICloudFoundryEndpoint>(provider => provider.GetRequiredService<CloudFoundryEndpoint>());

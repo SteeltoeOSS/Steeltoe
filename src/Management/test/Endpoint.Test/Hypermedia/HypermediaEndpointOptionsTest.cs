@@ -23,7 +23,7 @@ public class HypermediaEndpointOptionsTest : BaseTest
     public void Constructor_ThrowsIfConfigNull()
     {
         const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new HypermediaEndpointOptions(configuration));
+        Assert.Throws<ArgumentNullException>(() => new HypermediaEndpointOptions());
     }
 
     [Fact]
@@ -41,11 +41,8 @@ public class HypermediaEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var opts = new InfoEndpointOptions(configurationRoot);
+     
+        var opts = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appsettings);
 
         Assert.Equal("info", opts.Id);
         Assert.Equal("infopath", opts.Path);

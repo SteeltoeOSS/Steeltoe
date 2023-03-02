@@ -26,7 +26,7 @@ public class TraceEndpoint : IEndpoint<List<TraceResult>>, ITraceEndpoint
         _traceRepo = traceRepository;
     }
 
-    public List<TraceResult> Invoke()
+    public virtual List<TraceResult> Invoke()
     {
         return DoInvoke(_traceRepo);
     }

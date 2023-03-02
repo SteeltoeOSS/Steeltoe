@@ -19,11 +19,4 @@ public class RefreshEndpointOptionsTest : BaseTest
         Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);
         Assert.True(opts.ReturnConfiguration);
     }
-
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new RefreshEndpointOptions(configuration));
-    }
 }

@@ -25,7 +25,7 @@ public class SecurityBase
     public const string AuthorizationHeader = "Authorization";
     public const string Bearer = "bearer";
     public const string ReadSensitiveData = "read_sensitive_data";
-    private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
+    private readonly CloudFoundryEndpointOptions _options;
 
     //private readonly ICloudFoundryOptions _options;
     private readonly ManagementEndpointOptions _managementOptions;
@@ -34,17 +34,17 @@ public class SecurityBase
     private readonly ILogger _logger;
     private HttpClient _httpClient;
 
-    public SecurityBase(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null, HttpClient httpClient = null)
+    public SecurityBase(CloudFoundryEndpointOptions options, ManagementEndpointOptions managementOptions, ILogger logger = null, HttpClient httpClient = null)
     {
         _options = options;
-        _managementOptions = managementOptions.Get(EndpointContextNames.CFManagemementOptionName);
+        _managementOptions = managementOptions;
         _logger = logger;
         _httpClient = httpClient;
     }
 
     public bool IsCloudFoundryRequest(string requestPath)
     {
-        var optionsPath = _options.CurrentValue.Path;
+        var optionsPath = _options.Path;
 
         string contextPath = _managementOptions == null ? optionsPath : _managementOptions.Path;
         return requestPath.StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
@@ -71,7 +71,7 @@ public class SecurityBase
             return new SecurityResult(HttpStatusCode.Unauthorized, AuthorizationHeaderInvalid);
         }
 
-        string checkPermissionsUri = $"{_options.CurrentValue.CloudFoundryApi}/v2/apps/{_options.CurrentValue.ApplicationId}/permissions";
+        string checkPermissionsUri = $"{_options.CloudFoundryApi}/v2/apps/{_options.ApplicationId}/permissions";
         var request = new HttpRequestMessage(HttpMethod.Get, new Uri(checkPermissionsUri, UriKind.RelativeOrAbsolute));
         var auth = new AuthenticationHeaderValue("bearer", token);
         request.Headers.Authorization = auth;
@@ -79,7 +79,7 @@ public class SecurityBase
         try
         {
             _logger?.LogDebug("GetPermissionsAsync({uri}, {token})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
-            _httpClient ??= HttpClientHelper.GetHttpClient(_options.CurrentValue.ValidateCertificates, DefaultGetPermissionsTimeout);
+            _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DefaultGetPermissionsTimeout);
             using HttpResponseMessage response = await _httpClient.SendAsync(request);
 
             if (response.StatusCode != HttpStatusCode.OK)
