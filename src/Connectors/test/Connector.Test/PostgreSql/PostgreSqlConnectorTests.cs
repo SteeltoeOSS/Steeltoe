@@ -480,6 +480,27 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     }
 
     [Fact]
+    public async Task Registers_default_connection_string_when_only_single_server_binding_found()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
+
+        builder.AddPostgreSql();
+
+        await using WebApplication app = builder.Build();
+
+        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
+
+        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        defaultConnectionString.Should().NotBeNull();
+
+        string namedConnectionString = connectionFactory.GetConnectionString("myPostgreSqlServiceAzureOne");
+        namedConnectionString.Should().Be(defaultConnectionString);
+
+        app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
+    }
+
+    [Fact]
     public async Task Registers_default_connection_string_when_only_default_client_binding_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -494,9 +515,34 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         await using WebApplication app = builder.Build();
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
 
+        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
         defaultConnectionString.Should().NotBeNull();
+
+        app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task Registers_no_default_connection_string_when_only_single_named_client_binding_found()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        {
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne"] = "host=localhost"
+        });
+
+        builder.AddPostgreSql();
+
+        await using WebApplication app = builder.Build();
+
+        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
+
+        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        defaultConnectionString.Should().BeNull();
+
+        string namedConnectionString = connectionFactory.GetConnectionString("myPostgreSqlServiceAzureOne");
+        namedConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
@@ -614,23 +660,26 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     {
         List<string> entries = new();
 
-        foreach (string parameter in connectionString.Split(';'))
+        if (connectionString != null)
         {
-            string[] nameValuePair = parameter.Split('=', 2);
-
-            if (nameValuePair.Length == 2)
+            foreach (string parameter in connectionString.Split(';'))
             {
-                string name = nameValuePair[0];
-                string value = nameValuePair[1];
+                string[] nameValuePair = parameter.Split('=', 2);
 
-                if (TempFileKeys.Contains(name))
+                if (nameValuePair.Length == 2)
                 {
-                    value = File.ReadAllText(value);
+                    string name = nameValuePair[0];
+                    string value = nameValuePair[1];
+
+                    if (TempFileKeys.Contains(name))
+                    {
+                        value = File.ReadAllText(value);
+                    }
+
+                    value = value.Replace("\n", Environment.NewLine, StringComparison.Ordinal);
+
+                    entries.Add($"{name}={value}");
                 }
-
-                value = value.Replace("\n", Environment.NewLine, StringComparison.Ordinal);
-
-                entries.Add($"{name}={value}");
             }
         }
 

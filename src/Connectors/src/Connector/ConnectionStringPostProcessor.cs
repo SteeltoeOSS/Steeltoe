@@ -28,14 +28,15 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
         if (ShouldSetDefault(bindingsByName))
         {
-            BindingInfo defaultBinding = bindingsByName[DefaultBindingName];
-            string alternateBindingName = bindingsByName.Count == 1 ? null : bindingsByName.Keys.Single(bindingName => bindingName != DefaultBindingName);
+            bindingsByName.TryGetValue(DefaultBindingName, out BindingInfo defaultBinding);
+
+            string alternateBindingName = bindingsByName.Keys.SingleOrDefault(bindingName => bindingName != DefaultBindingName);
             BindingInfo alternateBinding = alternateBindingName == null ? null : bindingsByName[alternateBindingName];
 
             var bindingInfo = new BindingInfo
             {
                 ServerBindingSection = alternateBinding?.ServerBindingSection,
-                ClientBindingSection = defaultBinding.ClientBindingSection
+                ClientBindingSection = defaultBinding?.ClientBindingSection
             };
 
             SetConnectionString(configurationData, DefaultBindingName, bindingInfo);
@@ -56,13 +57,20 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
     private static bool ShouldSetDefault(IDictionary<string, BindingInfo> bindingsByName)
     {
-        if (bindingsByName.Count <= 2 && bindingsByName.TryGetValue(DefaultBindingName, out BindingInfo defaultBinding) && defaultBinding.IsClientOnly)
+        if (bindingsByName.Count == 1)
         {
-            if (bindingsByName.Count == 1)
+            (string bindingName, BindingInfo binding) = bindingsByName.Single();
+
+            if (bindingName == DefaultBindingName && binding.IsClientOnly)
             {
                 return true;
             }
 
+            return binding.IsServerOnly;
+        }
+
+        if (bindingsByName.Count == 2 && bindingsByName.TryGetValue(DefaultBindingName, out BindingInfo defaultBinding) && defaultBinding.IsClientOnly)
+        {
             BindingInfo alternateBinding = bindingsByName.Single(binding => binding.Key != DefaultBindingName).Value;
 
             if (alternateBinding.IsServerOnly)
