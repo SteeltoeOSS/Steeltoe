@@ -79,7 +79,18 @@ public static class PostgreSqlWebApplicationBuilderExtensions
 
     private static object CreateConnectionFactory(IServiceProvider serviceProvider, Type connectionFactoryType)
     {
-        Func<string, object> createConnection = connectionString => Activator.CreateInstance(PostgreSqlTypeLocator.NpgsqlConnection, connectionString);
+        Func<string, object> createConnection = connectionString =>
+        {
+            try
+            {
+                return Activator.CreateInstance(PostgreSqlTypeLocator.NpgsqlConnection, connectionString);
+            }
+            catch (TargetInvocationException exception)
+            {
+                throw exception.InnerException ?? exception;
+            }
+        };
+
         return Activator.CreateInstance(connectionFactoryType, serviceProvider, createConnection);
     }
 
