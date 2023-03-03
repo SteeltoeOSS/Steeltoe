@@ -31,7 +31,6 @@ public class EndpointMiddleware<TResult>: IEndpointMiddleware
 
         this.logger = logger;
         this.managementOptions = managementOptions;
-
     }
 
     public EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
@@ -42,16 +41,17 @@ public class EndpointMiddleware<TResult>: IEndpointMiddleware
         Endpoint = endpoint;
     }
 
-    public virtual string HandleRequest(JsonSerializerOptions serializerOptions)
+    public virtual string HandleRequest()
     {
         TResult result = Endpoint.Invoke();
-        return Serialize(result, serializerOptions);
+        return Serialize(result);
     }
 
-    public virtual string Serialize(TResult result, JsonSerializerOptions serializerOptions)
+    public virtual string Serialize(TResult result)
     {
         try
         {
+            var serializerOptions = managementOptions.CurrentValue.SerializerOptions;
             JsonSerializerOptions options = GetSerializerOptions(serializerOptions);
 
             return JsonSerializer.Serialize(result, options);
@@ -94,17 +94,17 @@ public class EndpointMiddleware<TResult>: IEndpointMiddleware
         return serializerOptions;
     }
 
-    public virtual Task InvokeAsync(HttpContext context)
-    {
-        throw new NotImplementedException();
-    }
+    //public virtual Task InvokeAsync(HttpContext context)
+    //{
+    //    throw new NotImplementedException();
+    //}
 }
 
 public interface IEndpointMiddleware
 {
     //public IManagementOptions ManagementOptions { get; }
     public IEndpointOptions EndpointOptions { get; }
-    public Task InvokeAsync(HttpContext context);
+  //  public Task InvokeAsync(HttpContext context);
 }
 
 public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
@@ -126,13 +126,13 @@ public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
     {
     }
 
-    public virtual string HandleRequest(TRequest arg, JsonSerializerOptions serializerOptions)
+    public virtual string HandleRequest(TRequest arg)
     {
         TResult result = Endpoint.Invoke(arg);
-        return Serialize(result, serializerOptions);
+        return Serialize(result);
     }
-    public override Task InvokeAsync(HttpContext context)
-    {
-        return base.InvokeAsync(context);
-    }
+    //public override Task InvokeAsync(HttpContext context)
+    //{
+    //    return base.InvokeAsync(context);
+    //}
 }

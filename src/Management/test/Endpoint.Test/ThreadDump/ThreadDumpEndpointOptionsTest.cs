@@ -14,9 +14,9 @@ public class ThreadDumpEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new ThreadDumpEndpointOptions();
+        var opts = GetOptionsFromSettings<ThreadDumpEndpointOptions>();
         Assert.Null(opts.Enabled);
-        Assert.Equal("dump", opts.Id);
+        Assert.Equal("threaddump", opts.Id);
     }
 
     [Fact]
@@ -43,9 +43,9 @@ public class ThreadDumpEndpointOptionsTest : BaseTest
         Assert.True(cloudOpts.ValidateCertificates);
 
         Assert.True(opts.Enabled);
-        Assert.Equal("dump", opts.Id);
-        Assert.Equal("dump", opts.Path);
+        Assert.Equal("threaddump", opts.Id);
+        Assert.Equal("threaddump", opts.Path); //Todo: ASsert for "dump" as well
 
-       // Assert.True(ep.Enabled);
+      //  Assert.True(ep.Enabled);
     }
 }

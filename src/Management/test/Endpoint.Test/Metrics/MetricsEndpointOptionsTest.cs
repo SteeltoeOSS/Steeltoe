@@ -13,7 +13,7 @@ public class MetricsEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new MetricsEndpointOptions();
+        var opts = GetOptionsFromSettings<MetricsEndpointOptions>();
         Assert.Null(opts.Enabled);
         Assert.Equal("metrics", opts.Id);
     }

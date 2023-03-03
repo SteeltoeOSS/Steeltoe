@@ -14,16 +14,9 @@ public class LoggersEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new LoggersEndpointOptions();
+        var opts = GetOptionsFromSettings<LoggersEndpointOptions>();
         Assert.Null(opts.Enabled);
         Assert.Equal("loggers", opts.Id);
-    }
-
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new LoggersEndpointOptions());
     }
 
     [Fact]
@@ -34,15 +27,15 @@ public class LoggersEndpointOptionsTest : BaseTest
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:loggers:enabled"] = "false",
             ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
-            ["management:endpoints:cloudfoundry:enabled"] = "true"
+            ["management:endpoints:cloudfoundry:enabled"] = "true",
         };
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new LoggersEndpointOptions();
-        var cloudOpts = new CloudFoundryEndpointOptions();
+        var opts = GetOptionsFromSettings<LoggersEndpointOptions>(appsettings);
+        var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);
 
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);

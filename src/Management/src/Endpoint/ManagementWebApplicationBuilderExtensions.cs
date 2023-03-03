@@ -107,7 +107,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHeapDumpActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddHeapDumpActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddHeapDumpActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -219,7 +219,7 @@ public static class ManagementWebApplicationBuilderExtensions
     public static WebApplicationBuilder AddThreadDumpActuator(this WebApplicationBuilder applicationBuilder,
         MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
-        applicationBuilder.Services.AddThreadDumpActuator(applicationBuilder.Configuration, mediaTypeVersion);
+        applicationBuilder.Services.AddThreadDumpActuator( mediaTypeVersion);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -235,7 +235,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder applicationBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
-        applicationBuilder.Services.AddTraceActuator(applicationBuilder.Configuration, mediaTypeVersion);
+        applicationBuilder.Services.AddTraceActuator(mediaTypeVersion);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }

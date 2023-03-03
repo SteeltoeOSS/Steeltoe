@@ -31,11 +31,10 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddTraceActuatorServices(this IServiceCollection services, IConfiguration configuration, MediaTypeVersion version)
+    public static IServiceCollection AddTraceActuatorServices(this IServiceCollection services, MediaTypeVersion version)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
-        services.ConfigureOptions<ConfigureTraceEndpointOptions>();
+        services.ConfigureEndpointOptions<TraceEndpointOptions,ConfigureTraceEndpointOptions>();
         switch (version)
         {
             case MediaTypeVersion.V1:

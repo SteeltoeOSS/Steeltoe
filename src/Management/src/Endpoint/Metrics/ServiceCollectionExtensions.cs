@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.DbMigrations;
+using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Exporters;
@@ -42,7 +43,10 @@ public static class ServiceCollectionExtensions
         var options = new MetricsEndpointOptions();
         //services.TryAddSingleton<IMetricsEndpointOptions>(options);
         //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
-        services.ConfigureOptions<ConfigureMetricsEndpointOptions>();
+        // services.ConfigureOptions<ConfigureMetricsEndpointOptions>();
+
+
+        services.ConfigureEndpointOptions<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>();
         services.TryAddSingleton<MetricsEndpoint>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MetricsEndpointMiddleware>());
         services.AddSingleton<MetricsEndpointMiddleware>();

@@ -37,7 +37,7 @@ public class EndpointMiddlewareTest : BaseTest
         var ep = new TestHypermediaEndpoint(opts, managementOptions);
         var middle = new ActuatorHypermediaEndpointMiddleware(ep, managementOptions);
         HttpContext context = CreateRequest("GET", "/");
-        await middle.InvokeAsync(context);
+        await middle.InvokeAsync(context,null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var rdr = new StreamReader(context.Response.Body);
         string json = await rdr.ReadToEndAsync();
@@ -80,7 +80,7 @@ public class EndpointMiddlewareTest : BaseTest
         string json = await result.Content.ReadAsStringAsync();
 
         Assert.Equal(
-            "{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/actuator\",\"templated\":false},\"info\":{\"href\":\"http://localhost/actuator/info\",\"templated\":false}}}",
+            "{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/actuator/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/actuator\",\"templated\":false}}}",
             json);
     }
 
@@ -101,7 +101,7 @@ public class EndpointMiddlewareTest : BaseTest
         string json = await result.Content.ReadAsStringAsync();
 
         Assert.Equal(
-            "{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/\",\"templated\":false},\"info\":{\"href\":\"http://localhost/info\",\"templated\":false}}}",
+            "{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/\",\"templated\":false}}}",
             json);
     }
 

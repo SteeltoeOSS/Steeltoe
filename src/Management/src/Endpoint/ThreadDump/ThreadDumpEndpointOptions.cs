@@ -11,8 +11,6 @@ public class ThreadDumpEndpointOptions : EndpointOptionsBase //, IThreadDumpOpti
     
     public int Duration { get; set; } = 10; // 10 ms
 
-    public IEndpointOptions Options => throw new NotImplementedException();
-
 
     //public ThreadDumpEndpointOptions(IConfiguration configuration)
     //    : base(ManagementInfoPrefix, configuration)

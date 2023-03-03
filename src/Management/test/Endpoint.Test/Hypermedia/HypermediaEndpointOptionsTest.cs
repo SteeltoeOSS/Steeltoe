@@ -14,16 +14,9 @@ public class HypermediaEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new HypermediaEndpointOptions();
+        var opts = GetOptionsFromSettings<HypermediaEndpointOptions>();
         Assert.Equal(string.Empty, opts.Id);
         Assert.Equal(string.Empty, opts.Path);
-    }
-
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new HypermediaEndpointOptions());
     }
 
     [Fact]

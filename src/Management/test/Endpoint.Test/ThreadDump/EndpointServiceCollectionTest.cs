@@ -18,9 +18,8 @@ public class EndpointServiceCollectionTest : BaseTest
         const IServiceCollection services = null;
         IServiceCollection services2 = new ServiceCollection();
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddThreadDumpActuator());
+        var ex = Assert.Throws<ArgumentNullException>(services.AddThreadDumpActuator);
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => services2.AddThreadDumpActuator());
     }
 
     [Fact]
@@ -39,8 +38,9 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        services.AddThreadDumpActuator(configurationRoot);
+        services.AddThreadDumpActuator();
 
+        services.AddSingleton<IConfiguration>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<ThreadDumpEndpointOptions>>();
         Assert.NotNull(options);

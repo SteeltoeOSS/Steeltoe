@@ -35,7 +35,7 @@ public static class EndpointServiceCollectionExtensions
 
         services.AddCommonActuatorServices();
         services.AddInfoActuatorServices();
-        services.TryAddSingleton<ActuatorRouter>();
+     //   services.TryAddSingleton<ActuatorRouter>();
        // services.TryAddScoped<ActuatorsMiddleware>();
 
 

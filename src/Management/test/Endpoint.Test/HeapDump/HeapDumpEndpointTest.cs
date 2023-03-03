@@ -41,7 +41,7 @@ public class HeapDumpEndpointTest : BaseTest
 
             tc.AdditionalServices = (services, configuration) =>
             {
-                services.AddHeapDumpActuatorServices(configuration);
+                services.AddHeapDumpActuatorServices();
 
                 services.AddSingleton<IHeapDumper>(sp => new HeapDumper(options, logger: sp.GetRequiredService<ILogger<HeapDumper>>()));
             };
@@ -61,7 +61,7 @@ public class HeapDumpEndpointTest : BaseTest
 
                 tc.AdditionalServices = (services, configuration) =>
                 {
-                    services.AddHeapDumpActuatorServices(configuration);
+                    services.AddHeapDumpActuatorServices();
 
                     services.AddSingleton<IHeapDumper>(sp =>
                         new HeapDumper(options, logger: sp.GetRequiredService<ILogger<HeapDumper>>()));

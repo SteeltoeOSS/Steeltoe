@@ -29,14 +29,14 @@ internal class ConfigureTraceEndpointOptions : IConfigureNamedOptions<TraceEndpo
     
     public void Configure(string name, TraceEndpointOptions options)
     {
-        if (name == TraceEndpointOptionNames.V1.ToString()
+        if (name == TraceEndpointOptionNames.V2.ToString()
             || name == string.Empty)
         {
             Configure(options);
         }
         else
         {
-            configuration.GetSection(ManagementInfoPrefix).Bind(options);
+            configuration.GetSection(ManagementInfoPrefixV1).Bind(options);
             if (string.IsNullOrEmpty(options.Id))
             {
                 options.Id = "trace";

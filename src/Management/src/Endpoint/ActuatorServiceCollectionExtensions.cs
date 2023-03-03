@@ -36,8 +36,15 @@ public static class ActuatorServiceCollectionExtensions
     {
         //services.ConfigureOptions<ConfigureManagementEndpointOptions>();
         services.ConfigureOptions<ConfigureManagementEndpointOptions>();
-        services.TryAddSingleton<ActuatorRouter>();
+     //   services.TryAddSingleton<ActuatorRouter>();
        // services.TryAddScoped<ActuatorsMiddleware>();
+    }
+    public static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
+        where TOptions : class, IEndpointOptions
+        where TConfigureOptions: class
+    {
+        services.ConfigureOptions<TConfigureOptions>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
     }
     public static IServiceCollection AddAllActuators(this IServiceCollection services, IConfiguration configuration = null,
         MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
@@ -55,16 +62,16 @@ public static class ActuatorServiceCollectionExtensions
 
         services.AddHypermediaActuator();
 
-        services.AddThreadDumpActuator(configuration, version);
+        services.AddThreadDumpActuator( version);
 
-        services.AddHeapDumpActuator(configuration);
+        services.AddHeapDumpActuator();
 
         services.AddDbMigrationsActuator(configuration);
         services.AddEnvActuator();
         services.AddInfoActuator();
         services.AddHealthActuator();
         services.AddLoggersActuator(configuration);
-        services.AddTraceActuator(configuration, version);
+        services.AddTraceActuator(version);
         services.AddMappingsActuator(configuration);
         services.AddMetricsActuator();
         services.AddRefreshActuator(configuration);

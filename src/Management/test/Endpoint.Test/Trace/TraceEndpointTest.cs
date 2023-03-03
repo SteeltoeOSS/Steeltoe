@@ -35,10 +35,10 @@ public class TraceEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton<ITraceRepository>(repo);
-            services.AddTraceActuatorServices(configuration, MediaTypeVersion.V1);
+            services.AddTraceActuatorServices(MediaTypeVersion.V1);
         };
 
-        var ep = tc.GetService<ITraceEndpoint>();
+        var ep = tc.GetService<TraceEndpoint>();
         List<TraceResult> result = ep.Invoke();
         Assert.NotNull(result);
         Assert.True(repo.GetTracesCalled);

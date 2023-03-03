@@ -31,8 +31,7 @@ public class ThreadDumpEndpointMiddleware : EndpointMiddleware<List<ThreadInfo>>
 
     protected internal Task HandleThreadDumpRequestAsync(HttpContext context)
     {
-        var currentOptions = managementOptions.GetCurrentContext(context);
-        string serialInfo = HandleRequest(currentOptions.SerializerOptions);
+        string serialInfo = HandleRequest();
         logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);

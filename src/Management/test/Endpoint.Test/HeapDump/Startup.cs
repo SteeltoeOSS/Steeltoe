@@ -23,7 +23,7 @@ public class Startup
     {
         services.AddRouting();
         services.AddCloudFoundryActuator(Configuration);
-        services.AddHeapDumpActuator(Configuration);
+        services.AddHeapDumpActuator();
     }
 
     public void Configure(IApplicationBuilder app)

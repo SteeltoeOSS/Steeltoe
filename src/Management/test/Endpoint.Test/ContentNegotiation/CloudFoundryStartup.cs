@@ -32,5 +32,9 @@ public class CloudFoundryStartup
         //{
         //    endpoints.Map<CloudFoundryEndpoint>();
         //});
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapTheActuators();
+        });
     }
 }

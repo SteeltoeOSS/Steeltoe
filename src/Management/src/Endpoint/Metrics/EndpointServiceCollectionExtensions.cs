@@ -11,6 +11,7 @@ using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Extensions;
+using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 

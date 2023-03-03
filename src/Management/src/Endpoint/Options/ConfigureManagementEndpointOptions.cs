@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Options;
@@ -17,10 +18,12 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
     private const string DefaultPath = "/actuator";
     private const string DefaultCFPath = "/cloudfoundryapplication";
     private readonly IConfiguration configuration;
+    private readonly IEnumerable<IEndpointOptions> endpointsCollection;
 
-    public ConfigureManagementEndpointOptions(IConfiguration configuration)
+    public ConfigureManagementEndpointOptions(IConfiguration configuration, IEnumerable<IEndpointOptions> endpointsCollection)
     {
         this.configuration = configuration;
+        this.endpointsCollection = endpointsCollection;
     }
 
     public void Configure(string name, ManagementEndpointOptions options)
@@ -44,12 +47,15 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
                 options.Path = DefaultPath;
             }
             options.Exposure = new Exposure(configuration);
+
+            options.EndpointOptions = new List<IEndpointOptions>( endpointsCollection.Where(e=> e.GetType() != typeof(CloudFoundryEndpointOptions)));
         }
         else if (name == EndpointContextNames.CFManagemementOptionName)
         {
             options.Path = DefaultCFPath; 
             options.Enabled = configuration.GetSection(CloudFoundryEnabledPrefix).Value != "false";
             options.Exposure = new Exposure(allowAll: true);
+            options.EndpointOptions = new List<IEndpointOptions>(endpointsCollection.Where(e => e.GetType() != typeof(HypermediaEndpointOptions)));
         }
 
     }

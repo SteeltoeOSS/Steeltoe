@@ -79,19 +79,23 @@ public static class EndPointExtensions
 
         return ShouldInvoke(endpoint, mgmtOptions, logger);
     }
-    
+
     public static ManagementEndpointOptions GetCurrentContext(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context)
     {
+        List<ManagementEndpointOptions> options = new();
         foreach (var name in EndpointContextNames.All)
         {
-            var mgmtOption = managementOptions.Get(name);
-            if (context.Request.Path.StartsWithSegments(new PathString(mgmtOption.Path)))
+            options.Add(managementOptions.Get(name));
+        }
+        options = options.OrderByDescending(option => option.Path.Length).ToList();
+        foreach (var opt in options)
+        {
+            if (context.Request.Path.StartsWithSegments(new PathString(opt.Path)))
             {
-                return mgmtOption;
+                return opt;
             }
         }
-
-        throw new InvalidOperationException("Could not find ManagementEndpointOptions to match this request");
+        return managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName);
     }
 
     //public static ManagementEndpointOptions OptionsForContext(this IEnumerable<ManagementEndpointOptions> managementOptions, string requestPath, ILogger logger = null)

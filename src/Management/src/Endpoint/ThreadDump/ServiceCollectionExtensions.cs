@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.DbMigrations;
+using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
@@ -31,17 +32,19 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddThreadDumpActuatorServices(this IServiceCollection services, IConfiguration configuration, MediaTypeVersion version)
+    public static IServiceCollection AddThreadDumpActuatorServices(this IServiceCollection services,MediaTypeVersion version)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
 
         //var options = new ThreadDumpEndpointOptions(configuration);
 
         if (version == MediaTypeVersion.V1) // TODO: Fix media type version as part of IOptions
         {
 
-            services.ConfigureOptions<ConfigureThreadDumpEndpointOptionsV1>();
+            // services.ConfigureOptions<ConfigureThreadDumpEndpointOptionsV1>();
+
+
+            services.ConfigureEndpointOptions<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
             services.TryAddSingleton<ThreadDumpEndpoint>();
             services.TryAddSingleton<IThreadDumpEndpoint>(provider => provider.GetRequiredService<ThreadDumpEndpoint>());
 
@@ -50,7 +53,9 @@ public static class ServiceCollectionExtensions
         }
         else
         {
-            services.ConfigureOptions<ConfigureThreadDumpEndpointOptions>();
+            // services.ConfigureOptions<ConfigureThreadDumpEndpointOptions>();
+            services.ConfigureEndpointOptions<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions>();
+
             services.TryAddSingleton<ThreadDumpEndpointV2>();
             services.TryAddSingleton<IThreadDumpEndpointV2>(provider => provider.GetRequiredService<ThreadDumpEndpointV2>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ThreadDumpEndpointMiddlewareV2>());

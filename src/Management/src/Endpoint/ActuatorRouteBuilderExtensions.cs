@@ -110,14 +110,11 @@ public static class ActuatorRouteBuilderExtensions
         {
             var mgmtOption = managementOptions.Get(name);
             var path = mgmtOption.Path;
-            //if (path.EndsWith("/"))
+            //TODO: Check if enabled here ...
+            //if (!mgmtOption.Enabled.HasValue || mgmtOption.Enabled.Value != true )
             //{
-            //    path = path.Substring(0, path.Length - 1);
+            //    continue;
             //}
-            //RequestDelegate pipeline = endpoints.CreateApplicationBuilder().UseMiddleware(typeof(ActuatorsMiddleware)).Build();
-            //IEndpointConventionBuilder conventionBuilder = endpoints.MapMethods(path, allowedVerbs, pipeline);
-            //convention?.Invoke(conventionBuilder);
-
             foreach (var middleware in middlewares)
             {
                 if (name == EndpointContextNames.ActuatorManagementOptionName && middleware.GetType() == typeof(CloudFoundryEndpointMiddleware)

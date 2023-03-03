@@ -24,7 +24,7 @@ public class HypermediaService
         ArgumentGuard.NotNull(options);
 
         _logger = logger;
-        _managementOptions = managementOptions.Get(EndpointContextNames.CFManagemementOptionName);
+        _managementOptions = managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName);
         this.endpointOptions = endpointOptions;
          _options = options.CurrentValue;
     }

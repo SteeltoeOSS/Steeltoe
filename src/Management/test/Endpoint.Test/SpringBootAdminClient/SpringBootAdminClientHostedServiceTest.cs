@@ -30,10 +30,10 @@ public class SpringBootAdminClientHostedServiceTest:BaseTest
                 ["spring:application:name"] = "MySteeltoeApplication"
             };
 
-            IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            var appInfo = new ApplicationInstanceInfo();
-            var sbaOptions = new SpringBootAdminClientOptions(configurationRoot, appInfo);
-            var managementOptions = new ManagementEndpointOptions();
+            IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+            var appInfo = new ApplicationInstanceInfo(configurationRoot);
+            var sbaOptions = new SpringBootAdminClientOptions(configurationRoot, appInfo); //TODO: change to IOptions Monitor
+            var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appSettings);
             var healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
             var httpMessageHandler = new MockHttpMessageHandler();
             httpMessageHandler.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances").Respond("application/json", "{\"Id\":\"1234567\"}");
@@ -67,10 +67,10 @@ public class SpringBootAdminClientHostedServiceTest:BaseTest
             ["spring:application:name"] = "MySteeltoeApplication"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        var appInfo = new ApplicationInstanceInfo();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var appInfo = new ApplicationInstanceInfo(configurationRoot);
         var sbaOptions = new SpringBootAdminClientOptions(configurationRoot, appInfo);
-        var managementOptions = new ManagementEndpointOptions();
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appSettings);
         var healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions>(appSettings);
         var httpMessageHandler = new MockHttpMessageHandler();
 

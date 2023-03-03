@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
@@ -37,8 +38,10 @@ public static class ServiceCollectionExtensions
         //var options = new HypermediaEndpointOptions(configuration);
         //services.TryAddSingleton<IActuatorHypermediaOptions>(options);
         //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
-        
-        services.ConfigureOptions<ConfigureHypermediaEndpointOptions>();
+
+        // services.ConfigureOptions<ConfigureHypermediaEndpointOptions>();
+
+        services.ConfigureEndpointOptions<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
         services.TryAddSingleton<ActuatorEndpoint>();
         services.TryAddSingleton<IActuatorEndpoint>(provider => provider.GetRequiredService<ActuatorEndpoint>());
 

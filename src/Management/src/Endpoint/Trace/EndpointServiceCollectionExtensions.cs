@@ -28,7 +28,7 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddTraceActuator(this IServiceCollection services, IConfiguration configuration = null)
     {
-        services.AddTraceActuator(configuration, MediaTypeVersion.V2);
+        services.AddTraceActuator(MediaTypeVersion.V2);
     }
 
     /// <summary>
@@ -44,16 +44,14 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="version">
     /// <see cref="MediaTypeVersion" /> to use in responses.
     /// </param>
-    public static void AddTraceActuator(this IServiceCollection services, IConfiguration configuration, MediaTypeVersion version)
+    public static void AddTraceActuator(this IServiceCollection services, MediaTypeVersion version)
     {
         ArgumentGuard.NotNull(services);
-
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
         services.AddCommonActuatorServices();
-        services.AddTraceActuatorServices(configuration, version);
+        services.AddTraceActuatorServices(version);
 
         switch (version)
         {

@@ -36,8 +36,6 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;
 
-        var currentContext = managementOptions.GetCurrentContext(context);
-
         if (context.Request.Method == "POST")
         {
             // POST - change a logger level
@@ -47,7 +45,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
 
             foreach (string path in paths.Distinct())
             {
-                if (ChangeLoggerLevel(request, path, currentContext.SerializerOptions))
+                if (ChangeLoggerLevel(request, path))
                 {
                     response.StatusCode = (int)HttpStatusCode.OK;
                     return;
@@ -59,14 +57,14 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         }
 
         // GET request
-        string serialInfo = HandleRequest(null, currentContext.SerializerOptions);
+        string serialInfo = HandleRequest(null);
         logger?.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         await context.Response.WriteAsync(serialInfo);
     }
 
-    private bool ChangeLoggerLevel(HttpRequest request, string path, JsonSerializerOptions serializerOptions)
+    private bool ChangeLoggerLevel(HttpRequest request, string path)
     {
         var epPath = new PathString(path);
 
@@ -89,7 +87,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
                 else
                 {
                     var changeReq = new LoggersChangeRequest(loggerName, level);
-                    HandleRequest(changeReq, serializerOptions);
+                    HandleRequest(changeReq);
                     return true;
                 }
             }

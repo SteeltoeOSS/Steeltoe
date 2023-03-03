@@ -23,11 +23,15 @@ public class ThreadDumpStartup
     {
         services.AddRouting();
         services.AddHypermediaActuator();
-        services.AddThreadDumpActuator(Configuration);
+        services.AddThreadDumpActuator();
     }
 
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapTheActuators();
+        });
     }
 }

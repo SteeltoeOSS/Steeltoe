@@ -15,7 +15,7 @@ public class HeapDumpEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new HeapDumpEndpointOptions();
+        var opts = GetOptionsFromSettings<HeapDumpEndpointOptions>();
         Assert.Null(opts.Enabled);
         Assert.Equal("heapdump", opts.Id);
     }
@@ -34,12 +34,8 @@ public class HeapDumpEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var opts = GetOptionsFromSettings<HeapDumpEndpointOptions, ConfigureHealthEndpointOptions>(); // TODO: Fix
-        var cloudOpts = new CloudFoundryEndpointOptions();
+        var opts = GetOptionsFromSettings<HeapDumpEndpointOptions>(appsettings); 
+        var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);
 
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);

@@ -22,19 +22,18 @@ public static class EndpointServiceCollectionExtensions
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
     /// management:endpoints:dump).
     /// </param>
-    public static void AddThreadDumpActuator(this IServiceCollection services, IConfiguration configuration = null)
+    public static void AddThreadDumpActuator(this IServiceCollection services)
     {
-        services.AddThreadDumpActuator(configuration, MediaTypeVersion.V2);
+        services.AddThreadDumpActuator(MediaTypeVersion.V2);
     }
 
-    public static void AddThreadDumpActuator(this IServiceCollection services, IConfiguration configuration, MediaTypeVersion version)
+    public static void AddThreadDumpActuator(this IServiceCollection services, MediaTypeVersion version)
     {
         ArgumentGuard.NotNull(services);
 
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-
+      
         services.AddCommonActuatorServices();
-        services.AddThreadDumpActuatorServices(configuration, version);
+        services.AddThreadDumpActuatorServices(version);
 
         //if (version == MediaTypeVersion.V1)
         //{

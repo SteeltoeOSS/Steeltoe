@@ -13,7 +13,7 @@ public class RefreshEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new RefreshEndpointOptions();
+        var opts = GetOptionsFromSettings<RefreshEndpointOptions>();
         Assert.Null(opts.Enabled);
         Assert.Equal("refresh", opts.Id);
         Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);

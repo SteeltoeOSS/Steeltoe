@@ -32,10 +32,10 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         return Task.CompletedTask;
     }
 
-    public override string HandleRequest(MetricsRequest arg, JsonSerializerOptions serializerOptions)
+    public override string HandleRequest(MetricsRequest arg)
     {
         IMetricsResponse result = Endpoint.Invoke(arg);
-        return result == null ? null : Serialize(result, serializerOptions);
+        return result == null ? null : Serialize(result);
     }
 
     protected internal async Task HandleMetricsRequestAsync(HttpContext context)
@@ -52,8 +52,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
             // GET /metrics/{metricName}?tag=key:value&tag=key:value
             List<KeyValuePair<string, string>> tags = ParseTags(request.Query);
             var metricRequest = new MetricsRequest(metricName, tags);
-            var currentContext = managementOptions.GetCurrentContext(context);
-            string serialInfo = HandleRequest(metricRequest,currentContext.SerializerOptions);
+            string serialInfo = HandleRequest(metricRequest);
 
             if (serialInfo != null)
             {

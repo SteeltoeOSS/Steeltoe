@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Info;
@@ -33,8 +34,10 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services.ConfigureOptions<ConfigureInfoEndpointOptions>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointOptions, InfoEndpointOptions>(provider => provider.GetRequiredService<IOptionsMonitor<InfoEndpointOptions>>().CurrentValue));
+        //services.ConfigureOptions<ConfigureInfoEndpointOptions>();
+        //services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointOptions, InfoEndpointOptions>(provider => provider.GetRequiredService<IOptionsMonitor<InfoEndpointOptions>>().CurrentValue));
+
+        services.ConfigureEndpointOptions<InfoEndpointOptions, ConfigureInfoEndpointOptions>();
         services.TryAddSingleton<InfoEndpoint>();
         services.TryAddSingleton<IInfoEndpoint>(provider => provider.GetRequiredService<InfoEndpoint>()); //TOdo: remove?
 

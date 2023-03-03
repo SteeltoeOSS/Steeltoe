@@ -48,8 +48,7 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
     protected internal Task HandleMappingsRequestAsync(HttpContext context)
     {
         ApplicationMappings result = GetApplicationMappings(context);
-        var currentOptions = managementOptions.GetCurrentContext(context);
-        string serialInfo = Serialize(result, currentOptions.SerializerOptions);
+        string serialInfo = Serialize(result);
 
         logger?.LogDebug("Returning: {info}", serialInfo);
 

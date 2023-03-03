@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
-
 namespace Steeltoe.Management.Endpoint.Test.Trace;
 
 public class TraceEndpointOptionsTest : BaseTest
@@ -14,9 +13,9 @@ public class TraceEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new TraceEndpointOptions();
+        var opts = GetOptionsFromSettings<TraceEndpointOptions>();
         Assert.Null(opts.Enabled);
-        Assert.Equal("trace", opts.Id);
+        Assert.Equal("httptrace", opts.Id);
         Assert.Equal(100, opts.Capacity);
         Assert.True(opts.AddTimeTaken);
         Assert.True(opts.AddRequestHeaders);
@@ -29,7 +28,8 @@ public class TraceEndpointOptionsTest : BaseTest
         Assert.False(opts.AddRemoteAddress);
         Assert.False(opts.AddSessionId);
     }
-    
+
+    //TODO: Add equivalent for trace
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
@@ -38,23 +38,23 @@ public class TraceEndpointOptionsTest : BaseTest
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:loggers:enabled"] = "false",
-            ["management:endpoints:trace:enabled"] = "true",
-            ["management:endpoints:trace:capacity"] = "1000",
-            ["management:endpoints:trace:addTimeTaken"] = "false",
-            ["management:endpoints:trace:addRequestHeaders"] = "false",
-            ["management:endpoints:trace:addResponseHeaders"] = "false",
-            ["management:endpoints:trace:addPathInfo"] = "true",
-            ["management:endpoints:trace:addUserPrincipal"] = "true",
-            ["management:endpoints:trace:addParameters"] = "true",
-            ["management:endpoints:trace:addQueryString"] = "true",
-            ["management:endpoints:trace:addAuthType"] = "true",
-            ["management:endpoints:trace:addRemoteAddress"] = "true",
-            ["management:endpoints:trace:addSessionId"] = "true",
+            ["management:endpoints:httptrace:enabled"] = "true",
+            ["management:endpoints:httptrace:capacity"] = "1000",
+            ["management:endpoints:httptrace:addTimeTaken"] = "false",
+            ["management:endpoints:httptrace:addRequestHeaders"] = "false",
+            ["management:endpoints:httptrace:addResponseHeaders"] = "false",
+            ["management:endpoints:httptrace:addPathInfo"] = "true",
+            ["management:endpoints:httptrace:addUserPrincipal"] = "true",
+            ["management:endpoints:httptrace:addParameters"] = "true",
+            ["management:endpoints:httptrace:addQueryString"] = "true",
+            ["management:endpoints:httptrace:addAuthType"] = "true",
+            ["management:endpoints:httptrace:addRemoteAddress"] = "true",
+            ["management:endpoints:httptrace:addSessionId"] = "true",
             ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        var opts = GetOptionsFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>(appsettings);
+        var opts = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>(appsettings).Get(string.Empty);
         var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
 
         Assert.True(cloudOpts.Enabled);
@@ -63,8 +63,8 @@ public class TraceEndpointOptionsTest : BaseTest
         Assert.True(cloudOpts.ValidateCertificates);
 
         Assert.True(opts.Enabled);
-        Assert.Equal("trace", opts.Id);
-        Assert.Equal("trace", opts.Path);
+        Assert.Equal("httptrace", opts.Id);
+        Assert.Equal("httptrace", opts.Path);
         Assert.Equal(1000, opts.Capacity);
         Assert.False(opts.AddTimeTaken);
         Assert.False(opts.AddRequestHeaders);

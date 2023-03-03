@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.DbMigrations;
+using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Health;
@@ -31,9 +32,10 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddHealthActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        
-        services.ConfigureOptions<ConfigureHealthEndpointOptions>();
-       // services.AddScoped<IEndpointOptions, HealthEndpointOptions>(); // TOdO : this needed?
+
+        // services.ConfigureOptions<ConfigureHealthEndpointOptions>();
+
+        services.ConfigureEndpointOptions<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
         services.TryAddScoped<IHealthEndpoint,HealthEndpointCore>();
       //  services.TryAddScoped<IHealthEndpoint>(provider => provider.GetRequiredService<HealthEndpointCore>());
 

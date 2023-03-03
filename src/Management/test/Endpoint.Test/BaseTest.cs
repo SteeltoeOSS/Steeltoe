@@ -5,10 +5,12 @@
 using System.Diagnostics.Metrics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Health;
@@ -91,7 +93,14 @@ public abstract class BaseTest : IDisposable
     }
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>(Dictionary<string, string> settings)
     {
-        var type = ReflectionHelpers.FindType(new[] { typeof(TOptions).Assembly.FullName }, new[] { "Configure" + typeof(TOptions).Name });
+        var tOptions = typeof(TOptions);
+        var type = ReflectionHelpers.FindType(new[] { tOptions.Assembly.FullName }, new[] { $"{tOptions.Namespace}.Configure{tOptions.Name}"});
+
+        if (type == null )
+        {
+            throw new InvalidOperationException($"Could not find Type Configure{typeof(TOptions).Name} in assembly {tOptions.Assembly.FullName}");
+        }
+
         return GetOptionsMonitorFromSettings<TOptions>(type, settings);
     }
 

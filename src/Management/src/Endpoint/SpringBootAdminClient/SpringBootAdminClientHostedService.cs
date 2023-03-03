@@ -23,11 +23,11 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
 
     internal static RegistrationResult RegistrationResult { get; set; }
 
-    public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, ManagementEndpointOptions managementOptions,
+    public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         IOptionsMonitor<HealthEndpointOptions> healthOptions, HttpClient httpClient = null, ILogger<SpringBootAdminClientHostedService> logger = null)
     {
         _options = options;
-        _managementOptions = managementOptions;
+        _managementOptions = managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName);
         _healthOptions = healthOptions.CurrentValue;
         _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.ConnectionTimeoutMs);
         _logger = logger ?? NullLogger<SpringBootAdminClientHostedService>.Instance;

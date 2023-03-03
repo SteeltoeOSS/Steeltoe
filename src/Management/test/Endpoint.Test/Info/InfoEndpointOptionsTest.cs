@@ -13,7 +13,7 @@ public class InfoEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new InfoEndpointOptions();
+        var opts = GetOptionsFromSettings<InfoEndpointOptions>();
         Assert.Null(opts.Enabled);
         Assert.Equal("info", opts.Id);
     }

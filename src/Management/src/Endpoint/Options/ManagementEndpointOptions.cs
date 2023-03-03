@@ -23,7 +23,7 @@ public class ManagementEndpointOptions //: IManagementOptions
 
     public string Port { get; set; }
 
-    //public List<IEndpointOptions> EndpointOptions { get; set; }
+    public List<IEndpointOptions> EndpointOptions { get; set; }
 
     public bool UseStatusCodeFromResponse { get; set; } = true;
 

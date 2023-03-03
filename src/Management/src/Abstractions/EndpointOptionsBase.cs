@@ -30,8 +30,6 @@ public class EndpointOptionsBase : IEndpointOptions
 
     public Permissions RequiredPermissions { get; set; } = Permissions.Undefined;
 
-  //  public IManagementOptions Global { get; set; }
-
     public virtual bool DefaultEnabled { get; } = true;
 
     public virtual IEnumerable<string> AllowedVerbs { get; }

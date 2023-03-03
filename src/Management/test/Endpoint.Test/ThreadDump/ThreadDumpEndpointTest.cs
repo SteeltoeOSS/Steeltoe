@@ -35,7 +35,7 @@ public class ThreadDumpEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton<IThreadDumper>(dumper);
-            services.AddThreadDumpActuatorServices(configuration, MediaTypeVersion.V1);
+            services.AddThreadDumpActuatorServices(MediaTypeVersion.V1);
         };
 
         var ep = tc.GetService<IThreadDumpEndpoint>();

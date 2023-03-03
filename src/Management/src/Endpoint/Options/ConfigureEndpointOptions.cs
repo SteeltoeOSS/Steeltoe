@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint.Options;
 public class ConfigureEndpointOptions<T>:IConfigureOptions<T>

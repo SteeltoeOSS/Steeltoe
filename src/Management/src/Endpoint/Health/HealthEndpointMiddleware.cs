@@ -46,12 +46,12 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
     {
         HealthEndpointResponse result = ((HealthEndpointCore)Endpoint).Invoke(new CoreSecurityContext(context));
 
-        var currentOptions = managementOptions.GetCurrentContext(context);
+        var currentOptions = managementOptions.CurrentValue;
         if (currentOptions.UseStatusCodeFromResponse)
         {
             context.Response.StatusCode = ((HealthEndpointCore)Endpoint).GetStatusCode(result);
         }
 
-        return Serialize(result, currentOptions.SerializerOptions);
+        return Serialize(result);
     }
 }

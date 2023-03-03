@@ -2,12 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Env;
@@ -32,7 +29,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddEnvActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        services.ConfigureOptions<ConfigureEnvEndpointOptions>();
+        services.ConfigureEndpointOptions<EnvEndpointOptions,ConfigureEnvEndpointOptions>();
         services.TryAddSingleton<EnvEndpoint>();
         services.TryAddSingleton<IEnvEndpoint>(provider => provider.GetRequiredService<EnvEndpoint>());
 

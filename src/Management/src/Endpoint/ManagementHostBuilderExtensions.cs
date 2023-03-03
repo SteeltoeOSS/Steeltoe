@@ -124,7 +124,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddHeapDumpActuator(context.Configuration);
+            collection.AddHeapDumpActuator();
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -250,7 +250,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddThreadDumpActuator(context.Configuration, mediaTypeVersion);
+            collection.AddThreadDumpActuator(mediaTypeVersion);
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -268,7 +268,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddTraceActuator(context.Configuration, mediaTypeVersion);
+            collection.AddTraceActuator(mediaTypeVersion);
             ActivateActuatorEndpoints(collection);
         });
     }

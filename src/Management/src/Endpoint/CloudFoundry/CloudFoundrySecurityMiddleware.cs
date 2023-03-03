@@ -18,7 +18,6 @@ public class CloudFoundrySecurityMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
-    private readonly ActuatorRouter _router;
 
     //private readonly ICloudFoundryOptions _options;
     private readonly ManagementEndpointOptions _managementOptions;
@@ -26,13 +25,11 @@ public class CloudFoundrySecurityMiddleware
     // private readonly IManagementOptions _managementOptions;
     private readonly SecurityBase _base;
 
-    public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ActuatorRouter router,
-        ILogger<CloudFoundrySecurityMiddleware> logger = null)
+    public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
     {
         _next = next;
         _logger = logger;
         _options = options;
-        _router = router;
         _managementOptions = managementOptions.Get(EndpointContextNames.CFManagemementOptionName);
 
         _base = new SecurityBase(options.CurrentValue, managementOptions.Get(EndpointContextNames.CFManagemementOptionName), logger);
@@ -66,9 +63,8 @@ public class CloudFoundrySecurityMiddleware
                 return;
             }
 
-            //TODO: Figure out how to find list of configured endpoints
-            //IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
-            IEndpointOptions target = _router.GetTargetOptions(context);
+            IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
+
             if (target == null)
             {
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.EndpointNotConfiguredMessage));
@@ -117,39 +113,39 @@ public class CloudFoundrySecurityMiddleware
         return _base.GetPermissionsAsync(token);
     }
 
-    //private IEndpointOptions FindTargetEndpoint(PathString path)
-    //{
-    //    List<IEndpointOptions> configEndpoints;
+    private IEndpointOptions FindTargetEndpoint(PathString path)
+    {
+        List<IEndpointOptions> configEndpoints;
 
-    //    configEndpoints = _managementOptions.EndpointOptions;
+        configEndpoints = _managementOptions.EndpointOptions;
 
-    //    foreach (IEndpointOptions ep in configEndpoints)
-    //    {
-    //        string contextPath = _managementOptions.Path;
+        foreach (IEndpointOptions ep in configEndpoints)
+        {
+            string contextPath = _managementOptions.Path;
 
-    //        if (!contextPath.EndsWith('/') && !string.IsNullOrEmpty(ep.Path))
-    //        {
-    //            contextPath += '/';
-    //        }
+            if (!contextPath.EndsWith('/') && !string.IsNullOrEmpty(ep.Path))
+            {
+                contextPath += '/';
+            }
 
-    //        string fullPath = contextPath + ep.Path;
+            string fullPath = contextPath + ep.Path;
 
-    //        if (ep is CloudFoundryEndpointOptions)
-    //        {
-    //            if (path.Value.Equals(contextPath, StringComparison.OrdinalIgnoreCase))
-    //            {
-    //                return ep;
-    //            }
-    //        }
-    //        else if (path.StartsWithSegments(new PathString(fullPath)))
-    //        {
-    //            return ep;
-    //        }
-    //    }
+            if (ep is CloudFoundryEndpointOptions)
+            {
+                if (path.Value.Equals(contextPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    return ep;
+                }
+            }
+            else if (path.StartsWithSegments(new PathString(fullPath)))
+            {
+                return ep;
+            }
+        }
 
-    //    return null;
-    //}
-    
+        return null;
+    }
+
     private Task ReturnErrorAsync(HttpContext context, SecurityResult error)
     {
         LogError(context, error);

@@ -21,7 +21,6 @@ public class EndpointServiceCollectionTest : BaseTest
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddTraceActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => services2.AddTraceActuator());
     }
 
     [Fact]
@@ -40,6 +39,7 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         var listener = new DiagnosticListener("Test");
+        services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddSingleton(listener);
 
         services.AddTraceActuator(configurationRoot);

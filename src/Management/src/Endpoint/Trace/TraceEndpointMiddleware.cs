@@ -31,8 +31,7 @@ public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>, IM
 
     protected internal Task HandleTraceRequestAsync(HttpContext context)
     {
-        var currentOptions = managementOptions.GetCurrentContext(context);
-        string serialInfo = HandleRequest(currentOptions.SerializerOptions);
+        string serialInfo = HandleRequest();
 
         logger?.LogDebug("Returning: {info}", serialInfo);
 

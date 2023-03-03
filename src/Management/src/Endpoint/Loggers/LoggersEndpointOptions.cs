@@ -9,38 +9,11 @@ public class LoggersEndpointOptions : EndpointOptionsBase//, ILoggersOptions
     private const string ManagementInfoPrefix = "management:endpoints:loggers";
 
     // public EndpointOptionsBase EndpointOptions { get; set; }
-    public override IEnumerable<string> AllowedVerbs  { get; }
-    public override bool ExactMatch { get; }
-    public LoggersEndpointOptions()
-    {
-        if (string.IsNullOrEmpty(Id))
-        {
-            Id = "loggers";
-        }
-        
-        AllowedVerbs = new List<string>
+    public override IEnumerable<string> AllowedVerbs  { get; } = new List<string>
         {
             "Get",
             "Post"
         };
-
-        ExactMatch = false;
-    }
-
-    //public LoggersEndpointOptions(IConfiguration configuration)
-    //    : base(ManagementInfoPrefix, configuration)
-    //{
-    //    if (string.IsNullOrEmpty(Id))
-    //    {
-    //        Id = "loggers";
-    //    }
-
-    //    AllowedVerbs = new List<string>
-    //    {
-    //        "Get",
-    //        "Post"
-    //    };
-
-    //    ExactMatch = false;
-    //}
+    public override bool ExactMatch { get; } // defaults false;
+ 
 }

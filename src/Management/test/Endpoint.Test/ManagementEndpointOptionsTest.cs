@@ -15,7 +15,7 @@ public class ManagementEndpointOptionsTest : BaseTest
     [Fact]
     public void InitializedWithDefaults()
     {
-        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>().Get(EndpointContextNames.ActuatorManagementOptionName);
+        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(EndpointContextNames.ActuatorManagementOptionName);
         Assert.False(opts.Enabled.HasValue);
         Assert.Equal("/actuator", opts.Path);
         Assert.NotNull(opts.Exposure);
@@ -44,10 +44,10 @@ public class ManagementEndpointOptionsTest : BaseTest
             ["management:endpoints:info:id"] = "/infomanagement"
         };
 
-        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>(appsettings).Get(EndpointContextNames.ActuatorManagementOptionName);
+        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(EndpointContextNames.ActuatorManagementOptionName);
         Assert.False(opts.Enabled);
         Assert.Equal("/management", opts.Path);
-        var cfopts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>(appsettings).Get(EndpointContextNames.CFManagemementOptionName);
+        var cfopts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(EndpointContextNames.CFManagemementOptionName);
         Assert.True(cfopts.Enabled);
         Assert.Equal("/cloudfoundryapplication", cfopts.Path);
     }
@@ -85,7 +85,7 @@ public class ManagementEndpointOptionsTest : BaseTest
             }
         };
 
-        var options = new InfoEndpointOptions();
+        var options = GetOptionsFromSettings<InfoEndpointOptions>();
         Assert.False(options.IsExposed(managementOptions));
     }
 }

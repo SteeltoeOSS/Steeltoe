@@ -32,5 +32,9 @@ public class HyperMediaStartup
         //{
         //    endpoints.Map<ActuatorEndpoint>();
         //});
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapTheActuators();
+        });
     }
 }
