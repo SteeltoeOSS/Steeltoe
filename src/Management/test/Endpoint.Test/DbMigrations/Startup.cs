@@ -26,7 +26,7 @@ public class Startup
         services.AddDbContext<MockDbContext>();
         services.AddCloudFoundryActuator(Configuration);
         services.AddEntityFrameworkInMemoryDatabase().AddDbContext<MockDbContext>();
-        services.AddDbMigrationsActuator(Configuration);
+        services.AddDbMigrationsActuator();
         var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
 
         helper.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[]

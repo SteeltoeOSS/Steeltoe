@@ -31,11 +31,9 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddCloudFoundryActuatorServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCloudFoundryActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
-
 
         //services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(configuration)));
         //services.TryAddSingleton(provider => provider.GetServices<IManagementOptions>().OfType<CloudFoundryManagementOptions>().First());
@@ -54,6 +52,7 @@ public static class ServiceCollectionExtensions
         //});
         //  services.ConfigureOptions<ConfigureCloudFoundryEndpointOptions>();
         // services.TryAddEnumerable(ServiceDescriptor.Scoped<IEndpointOptions, CloudFoundryEndpointOptions>(provider => provider.GetRequiredService<IOptionsMonitor<CloudFoundryEndpointOptions>>().CurrentValue));
+        services.AddCommonActuatorServices();
         services.ConfigureEndpointOptions<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, CloudFoundryEndpointMiddleware>());
         services.AddSingleton<CloudFoundryEndpointMiddleware>();

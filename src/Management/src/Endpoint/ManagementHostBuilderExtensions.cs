@@ -40,7 +40,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddDbMigrationsActuator(context.Configuration);
+            collection.AddDbMigrationsActuator();
             ActivateActuatorEndpoints(collection);
         });
     }

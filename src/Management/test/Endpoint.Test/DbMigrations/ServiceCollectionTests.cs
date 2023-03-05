@@ -16,12 +16,9 @@ public class ServiceCollectionTests
     {
         const IServiceCollection services = null;
         IServiceCollection services2 = new ServiceCollection();
-        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbMigrationsActuatorServices(configuration));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbMigrationsActuatorServices());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddDbMigrationsActuatorServices(configuration));
-        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
     }
 }

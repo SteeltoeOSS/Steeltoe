@@ -66,7 +66,7 @@ public static class ActuatorServiceCollectionExtensions
 
         services.AddHeapDumpActuator();
 
-        services.AddDbMigrationsActuator(configuration);
+        services.AddDbMigrationsActuator();
         services.AddEnvActuator();
         services.AddInfoActuator();
         services.AddHealthActuator();

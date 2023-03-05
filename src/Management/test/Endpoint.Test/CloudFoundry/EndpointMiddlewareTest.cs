@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
@@ -31,32 +32,36 @@ public class EndpointMiddlewareTest : BaseTest
         ["info:NET:ASPNET:version"] = "2.0.0"
     };
 
-    //[Fact]
-    //public void RoutesByPathAndVerb()
-    //{
-    //    var options = new HypermediaEndpointOptions();
-    //    Assert.True(options.ExactMatch);
-    //    Assert.Equal("/cloudfoundryapplication", options.GetContextPath(new CloudFoundryManagementOptions()));
-    //    Assert.Null(options.AllowedVerbs);
-    //}
+    public EndpointMiddlewareTest()
+    {
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue");// Allow routing to /cloudfoundryapplication
+    }
 
-    //[Fact]
-    //public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
-    //{
-    //    var opts = new CloudFoundryEndpointOptions();
-    //    var managementOptions = new CloudFoundryManagementOptions();
-    //    managementOptions.EndpointOptions.Add(opts);
-    //    var ep = new TestCloudFoundryEndpoint(opts, managementOptions);
+    [Fact]
+    public void RoutesByPathAndVerb()
+    {
+        var options = new HypermediaEndpointOptions();
+        Assert.True(options.ExactMatch);
+        Assert.Equal("/cloudfoundryapplication", options.GetContextPath(GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(EndpointContextNames.CFManagemementOptionName)));
+        Assert.Null(options.AllowedVerbs);
+    }
 
-    //    var middle = new CloudFoundryEndpointMiddleware(null, ep, managementOptions);
+    [Fact]
+    public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
+    {
+        var opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-    //    HttpContext context = CreateRequest("GET", "/");
-    //    await middle.HandleCloudFoundryRequestAsync(context);
-    //    context.Response.Body.Seek(0, SeekOrigin.Begin);
-    //    var rdr = new StreamReader(context.Response.Body);
-    //    string json = await rdr.ReadToEndAsync();
-    //    Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
-    //}
+        var ep = new TestCloudFoundryEndpoint(opts, managementOptions);
+        var middle = new CloudFoundryEndpointMiddleware(ep, managementOptions);
+
+        HttpContext context = CreateRequest("GET", "/");
+        await middle.HandleCloudFoundryRequestAsync(context);
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var rdr = new StreamReader(context.Response.Body);
+        string json = await rdr.ReadToEndAsync();
+        Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
+    }
 
     [Fact]
     public async Task CloudFoundryEndpointMiddleware_ReturnsExpectedData()
@@ -144,4 +149,13 @@ public class EndpointMiddlewareTest : BaseTest
         context.Request.Host = new HostString("localhost");
         return context;
     }
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+        }
+        base.Dispose(disposing);
+    }
+
 }

@@ -5,6 +5,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Xunit;
 
@@ -19,34 +20,32 @@ public class EndpointServiceCollectionTest : BaseTest
         var services = new ServiceCollection();
 
         Action action1 = () => nullServices.AddDbMigrationsActuator();
-        Action action2 = () => services.AddDbMigrationsActuator();
 
         action1.Should().ThrowExactly<ArgumentNullException>().Where(exception => exception.ParamName == "services");
-        action2.Should().ThrowExactly<InvalidOperationException>();
     }
 
-    //[Fact]
-    //public void AddEntityFrameworkActuator_AddsCorrectServices()
-    //{
-    //    var services = new ServiceCollection();
+    [Fact]
+    public void AddEntityFrameworkActuator_AddsCorrectServices()
+    {
+        var services = new ServiceCollection();
 
-    //    var appSettings = new Dictionary<string, string>
-    //    {
-    //        ["management:endpoints:enabled"] = "false",
-    //        ["management:endpoints:path"] = "/cloudfoundryapplication"
-    //    };
+        var appSettings = new Dictionary<string, string>
+        {
+            ["management:endpoints:enabled"] = "false",
+            ["management:endpoints:path"] = "/cloudfoundryapplication"
+        };
 
-    //    var configurationBuilder = new ConfigurationBuilder();
-    //    configurationBuilder.AddInMemoryCollection(appSettings);
-    //    IConfigurationRoot configurationRoot = configurationBuilder.Build();
-    //    services.AddSingleton<IConfiguration>(configurationRoot);
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appSettings);
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        services.AddSingleton<IConfiguration>(configurationRoot);
 
-    //    services.AddDbMigrationsActuator(configurationRoot);
+        services.AddDbMigrationsActuator();
 
-    //    ServiceProvider serviceProvider = services.BuildServiceProvider();
-    //    var options = serviceProvider.GetService<IDbMigrationsOptions>();
-    //    options.Should().NotBeNull();
-    //    var ep = serviceProvider.GetService<DbMigrationsEndpoint>();
-    //    ep.Should().NotBeNull();
-    //}
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        var options = serviceProvider.GetService<IOptionsMonitor<DbMigrationsEndpointOptions>>();
+        options.CurrentValue.Should().Be("dbmigrations");
+        var ep = serviceProvider.GetService<DbMigrationsEndpoint>();
+        ep.Should().NotBeNull();
+    }
 }

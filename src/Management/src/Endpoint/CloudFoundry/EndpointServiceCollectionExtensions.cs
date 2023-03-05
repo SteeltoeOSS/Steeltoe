@@ -18,7 +18,7 @@ public static class EndpointServiceCollectionExtensions
         configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.AddCommonActuatorServices();
-        services.AddCloudFoundryActuatorServices(configuration);
+        services.AddCloudFoundryActuatorServices();
        // services.AddActuatorEndpointMapping<CloudFoundryEndpoint>();
     }
 }

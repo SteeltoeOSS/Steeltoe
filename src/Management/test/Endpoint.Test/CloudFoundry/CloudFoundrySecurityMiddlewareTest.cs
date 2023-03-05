@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
@@ -283,40 +284,40 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/info"));
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
     }
 
-    //[Fact]
-    //public void GetAccessToken_ReturnsExpected()
-    //{
-    //    var opts = new CloudFoundryEndpointOptions();
-    //    var managementOptions = new CloudFoundryManagementOptions();
-    //    managementOptions.EndpointOptions.Add(opts);
-    //    var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions);
-    //    HttpContext context = CreateRequest("GET", "/");
-    //    string token = middle.GetAccessToken(context.Request);
-    //    Assert.Null(token);
+    [Fact]
+    public void GetAccessToken_ReturnsExpected()
+    {
+        var opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-    //    HttpContext context2 = CreateRequest("GET", "/");
-    //    context2.Request.Headers.Add("Authorization", new StringValues("Bearer foobar"));
-    //    string token2 = middle.GetAccessToken(context2.Request);
-    //    Assert.Equal("foobar", token2);
-    //}
+        var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions);
+        HttpContext context = CreateRequest("GET", "/");
+        string token = middle.GetAccessToken(context.Request);
+        Assert.Null(token);
 
-    //[Fact]
-    //public async Task GetPermissions_ReturnsExpected()
-    //{
-    //    var opts = new CloudFoundryEndpointOptions();
-    //    var managementOptions = new CloudFoundryManagementOptions();
-    //    managementOptions.EndpointOptions.Add(opts);
-    //    var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions);
-    //    HttpContext context = CreateRequest("GET", "/");
-    //    SecurityResult result = await middle.GetPermissionsAsync(context);
-    //    Assert.NotNull(result);
-    //    Assert.Equal(Permissions.None, result.Permissions);
-    //    Assert.Equal(HttpStatusCode.Unauthorized, result.Code);
-    //}
+        HttpContext context2 = CreateRequest("GET", "/");
+        context2.Request.Headers.Add("Authorization", new StringValues("Bearer foobar"));
+        string token2 = middle.GetAccessToken(context2.Request);
+        Assert.Equal("foobar", token2);
+    }
+
+    [Fact]
+    public async Task GetPermissions_ReturnsExpected()
+    {
+        var opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+
+        var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions);
+        HttpContext context = CreateRequest("GET", "/");
+        SecurityResult result = await middle.GetPermissionsAsync(context);
+        Assert.NotNull(result);
+        Assert.Equal(Permissions.None, result.Permissions);
+        Assert.Equal(HttpStatusCode.Unauthorized, result.Code);
+    }
 
     protected override void Dispose(bool disposing)
     {

@@ -33,7 +33,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddDbMigrationsActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddDbMigrationsActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddDbMigrationsActuator();
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
     }

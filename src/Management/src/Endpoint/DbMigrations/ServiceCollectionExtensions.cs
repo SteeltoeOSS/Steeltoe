@@ -28,10 +28,9 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddDbMigrationsActuatorServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddDbMigrationsActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
 
         //var options = new DbMigrationsEndpointOptions(configuration);
         //services.TryAddSingleton<IDbMigrationsOptions>(options);

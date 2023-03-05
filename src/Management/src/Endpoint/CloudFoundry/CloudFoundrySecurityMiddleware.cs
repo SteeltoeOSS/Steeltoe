@@ -37,6 +37,7 @@ public class CloudFoundrySecurityMiddleware
     
     public async Task InvokeAsync(HttpContext context)
     {
+
         var cfOptions = _options.CurrentValue;
         var endpointOptions = _options.CurrentValue;
         _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);
@@ -44,7 +45,7 @@ public class CloudFoundrySecurityMiddleware
     //    bool isEndpointExposed = _managementOptions == null || endpointOptions.IsExposed(_managementOptions); I think this is a bug
     // Should not be checking Exposure settings 
 
-        if (Platform.IsCloudFoundry && /*isEndpointExposed &&*/ _base.IsCloudFoundryRequest(context.Request.Path))
+        if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptions) && _base.IsCloudFoundryRequest(context.Request.Path))
         {
             if (string.IsNullOrEmpty(cfOptions.ApplicationId))
             {

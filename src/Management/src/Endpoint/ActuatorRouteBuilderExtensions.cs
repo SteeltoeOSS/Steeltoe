@@ -18,6 +18,7 @@ using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -115,6 +116,10 @@ public static class ActuatorRouteBuilderExtensions
             //{
             //    continue;
             //}
+            if(name == EndpointContextNames.CFManagemementOptionName && !Platform.IsCloudFoundry)
+            {
+                continue;
+            }
             foreach (var middleware in middlewares)
             {
                 if (name == EndpointContextNames.ActuatorManagementOptionName && middleware.GetType() == typeof(CloudFoundryEndpointMiddleware)
@@ -127,15 +132,16 @@ public static class ActuatorRouteBuilderExtensions
                 var epPath = middleware.EndpointOptions.GetContextPath(mgmtOption);
                 if(dict.Keys.Contains(epPath))
                 {
-                    throw new InvalidOperationException();
+                  //  throw new InvalidOperationException("Found duplicate path for "+ epPath+"context name:"+name );
                     //epPath = middleware.GetType().Name;
                 }
                 else
                 {
                    dict.Add(epPath, type);
+
+                    IEndpointConventionBuilder conventionBuilder = endpoints.MapMethods(epPath, allowedVerbs, pipeline);
+                    convention?.Invoke(conventionBuilder);
                 }
-                IEndpointConventionBuilder conventionBuilder = endpoints.MapMethods(epPath, allowedVerbs, pipeline);
-                convention?.Invoke(conventionBuilder);
 
             }
         }

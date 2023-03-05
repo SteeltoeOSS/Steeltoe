@@ -48,7 +48,7 @@ public class ManagementEndpointOptionsTest : BaseTest
         Assert.False(opts.Enabled);
         Assert.Equal("/management", opts.Path);
         var cfopts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(EndpointContextNames.CFManagemementOptionName);
-        Assert.True(cfopts.Enabled);
+        Assert.False(cfopts.Enabled);
         Assert.Equal("/cloudfoundryapplication", cfopts.Path);
     }
     [Fact]

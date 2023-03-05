@@ -62,8 +62,11 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task MappingsActuator_ReturnsExpectedData()
     {
+        var appSettings = new Dictionary<string, string>(AppSettings);
+
+        appSettings.Add("management:endpoints:actuator:exposure:include:0", "*");
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
                 {
                     loggingBuilder.AddConfiguration(webHostContext.Configuration);
@@ -72,7 +75,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/mappings"));
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/mappings"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
 

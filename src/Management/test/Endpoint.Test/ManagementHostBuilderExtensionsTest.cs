@@ -536,13 +536,28 @@ public class ManagementHostBuilderExtensionsTest
     [Fact]
     public async Task AddCloudFoundryActuator_IHostBuilder_IStartupFilterFires()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
+        try
+        {
+            var appSettings = new Dictionary<string, string>
+            {
+                ["management:endpoints:enabled"] = "false", // Turn off security middleware
+            };
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue");// Allow routing to /cloudfoundryapplication
+            IHostBuilder hostBuilder = new HostBuilder()
+                .ConfigureAppConfiguration(configBuilder => configBuilder.AddInMemoryCollection(appSettings))
+                .ConfigureWebHost(_testServerWithRouting);
 
-        using IHost host = await hostBuilder.AddCloudFoundryActuator().StartAsync();
+            using IHost host = await hostBuilder.AddCloudFoundryActuator().StartAsync();
 
-        var requestUri = new Uri("/cloudfoundryapplication", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var requestUri = new Uri("/cloudfoundryapplication", UriKind.Relative);
+            HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        }
     }
 
     [Fact]

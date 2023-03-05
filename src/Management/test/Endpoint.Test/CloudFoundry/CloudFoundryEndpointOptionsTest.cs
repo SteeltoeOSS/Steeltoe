@@ -11,48 +11,38 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
 public class CloudFoundryEndpointOptionsTest : BaseTest
 {
-    //[Fact]
-    //public void Constructor_InitializesWithDefaults()
-    //{
-    //    var opts = new CloudFoundryEndpointOptions();
-    //    Assert.Null(opts.Enabled);
-    //    Assert.True(opts.ValidateCertificates);
-    //    Assert.Equal(string.Empty, opts.Id);
-    //}
+    [Fact]
+    public void Constructor_InitializesWithDefaults()
+    {
+        var opts = GetOptionsFromSettings<CloudFoundryEndpointOptions>();
+        Assert.Null(opts.Enabled);
+        Assert.True(opts.ValidateCertificates);
+        Assert.Equal(string.Empty, opts.Id);
+    }
 
-    //[Fact]
-    //public void Constructor_ThrowsIfConfigNull()
-    //{
-    //    const IConfiguration configuration = null;
-    //    Assert.Throws<ArgumentNullException>(() => new CloudFoundryEndpointOptions(configuration));
-    //}
+    [Fact]
+    public void Constructor_BindsConfigurationCorrectly()
+    {
+        var appsettings = new Dictionary<string, string>
+        {
+            ["management:endpoints:enabled"] = "false",
+            ["management:endpoints:path"] = "/cloudfoundryapplication",
+            ["management:endpoints:info:enabled"] = "true",
+            ["management:endpoints:cloudfoundry:validatecertificates"] = "false",
+            ["management:endpoints:cloudfoundry:enabled"] = "true"
+        };
 
-    //[Fact]
-    //public void Constructor_BindsConfigurationCorrectly()
-    //{
-    //    var appsettings = new Dictionary<string, string>
-    //    {
-    //        ["management:endpoints:enabled"] = "false",
-    //        ["management:endpoints:path"] = "/cloudfoundryapplication",
-    //        ["management:endpoints:info:enabled"] = "true",
-    //        ["management:endpoints:cloudfoundry:validatecertificates"] = "false",
-    //        ["management:endpoints:cloudfoundry:enabled"] = "true"
-    //    };
 
-    //    var configurationBuilder = new ConfigurationBuilder();
-    //    configurationBuilder.AddInMemoryCollection(appsettings);
-    //    IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        var opts = GetOptionsFromSettings<InfoEndpointOptions>(appsettings);
+        var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);
 
-    //    var opts = new InfoEndpointOptions(configurationRoot);
-    //    var cloudOpts = new CloudFoundryEndpointOptions(configurationRoot);
+        Assert.True(cloudOpts.Enabled);
+        Assert.Equal(string.Empty, cloudOpts.Id);
+        Assert.Equal(string.Empty, cloudOpts.Path);
+        Assert.False(cloudOpts.ValidateCertificates);
 
-    //    Assert.True(cloudOpts.Enabled);
-    //    Assert.Equal(string.Empty, cloudOpts.Id);
-    //    Assert.Equal(string.Empty, cloudOpts.Path);
-    //    Assert.False(cloudOpts.ValidateCertificates);
-
-    //    Assert.True(opts.Enabled);
-    //    Assert.Equal("info", opts.Id);
-    //    Assert.Equal("info", opts.Path);
-    //}
+        Assert.True(opts.Enabled);
+        Assert.Equal("info", opts.Id);
+        Assert.Equal("info", opts.Path);
+    }
 }

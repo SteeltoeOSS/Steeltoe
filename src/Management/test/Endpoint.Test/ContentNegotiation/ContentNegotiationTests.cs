@@ -175,27 +175,38 @@ public class ContentNegotiationTests
     [MemberData(nameof(EndpointMiddlewareContentNegotiationTestCases))]
     public async Task EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, string[] accepts, string contentType)
     {
-        // arrange a server and client
-        IWebHostBuilder builder = new WebHostBuilder().StartupByEpName(epName)
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
-                (webHostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
-
-        using var server = new TestServer(builder);
-        HttpClient client = server.CreateClient();
-
-        foreach (string accept in accepts)
+        try
         {
-            client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", accept);
+            if(epName == EndpointNames.Cloudfoundry)
+            {
+                Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue");// Allow routing to /cloudfoundryapplication
+            }
+            // arrange a server and client
+            IWebHostBuilder builder = new WebHostBuilder().StartupByEpName(epName)
+                .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
+                    (webHostContext, loggingBuilder) =>
+                    {
+                        loggingBuilder.AddConfiguration(webHostContext.Configuration);
+                        loggingBuilder.AddDynamicConsole();
+                    });
+
+            using var server = new TestServer(builder);
+            HttpClient client = server.CreateClient();
+
+            foreach (string accept in accepts)
+            {
+                client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", accept);
+            }
+
+            // send the request
+            HttpResponseMessage result = await client.GetAsync(new Uri(epPath));
+
+            IEnumerable<string> contentHeaders = result.Content.Headers.GetValues("Content-Type");
+            Assert.Contains(contentHeaders, header => header.StartsWith(contentType, StringComparison.Ordinal));
         }
-
-        // send the request
-        HttpResponseMessage result = await client.GetAsync(new Uri(epPath));
-
-        IEnumerable<string> contentHeaders = result.Content.Headers.GetValues("Content-Type");
-        Assert.Contains(contentHeaders, header => header.StartsWith(contentType, StringComparison.Ordinal));
+        finally
+        {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        }
     }
 }

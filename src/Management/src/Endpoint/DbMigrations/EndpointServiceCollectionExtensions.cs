@@ -22,14 +22,12 @@ public static class EndpointServiceCollectionExtensions
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided. (this actuator looks for settings starting with
     /// management:endpoints:dbmigrations).
     /// </param>
-    public static void AddDbMigrationsActuator(this IServiceCollection services, IConfiguration configuration = null)
+    public static void AddDbMigrationsActuator(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
 
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-
         services.AddCommonActuatorServices();
-        services.AddDbMigrationsActuatorServices(configuration);
+        services.AddDbMigrationsActuatorServices();
       //  services.AddActuatorEndpointMapping<DbMigrationsEndpoint>();
     }
 }
