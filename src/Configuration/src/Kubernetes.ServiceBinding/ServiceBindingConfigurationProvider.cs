@@ -143,14 +143,11 @@ internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigu
     internal sealed class ServiceBinding
     {
         private readonly Dictionary<string, string> _secrets;
+
         public string Name { get; }
-
         public string Path { get; }
-
         public string Provider { get; }
-
         public IDictionary<string, string> Secrets => new ReadOnlyDictionary<string, string>(_secrets);
-
         public string Type { get; }
 
         // Creates a new Binding instance using the specified file system directory
@@ -160,7 +157,7 @@ internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigu
         }
 
         // Creates a new Binding instance using the specified content
-        public ServiceBinding(string name, string path, IDictionary<string, string> secret)
+        private ServiceBinding(string name, string path, IDictionary<string, string> secrets)
         {
             Name = name ?? throw new ArgumentException("Binding has no name and is not a valid binding");
             Path = path ?? throw new ArgumentException("Binding has no path and is not a valid binding");
@@ -170,18 +167,18 @@ internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigu
             string type = null;
             string provider = null;
 
-            foreach (KeyValuePair<string, string> entry in secret)
+            foreach ((string secretName, string secretValue) in secrets)
             {
-                switch (entry.Key)
+                switch (secretName)
                 {
                     case TypeKey:
-                        type = entry.Value;
+                        type = secretValue;
                         break;
                     case ProviderKey:
-                        provider = entry.Value;
+                        provider = secretValue;
                         break;
                     default:
-                        _secrets.Add(entry.Key, entry.Value);
+                        _secrets.Add(secretName, secretValue);
                         break;
                 }
             }

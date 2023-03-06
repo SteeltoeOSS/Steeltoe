@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Data;
+using System.Data.Common;
 using Steeltoe.Common.Reflection;
 
 // ReSharper disable once CheckNamespace
@@ -21,7 +23,7 @@ public static class PostgreSqlTypeLocator
     };
 
     /// <summary>
-    /// Gets a list of PostgreSQL types that implement IDbConnection.
+    /// Gets a list of PostgreSQL types that implement <see cref="IDbConnection" />.
     /// </summary>
     public static string[] ConnectionTypeNames { get; internal set; } =
     {
@@ -29,11 +31,22 @@ public static class PostgreSqlTypeLocator
     };
 
     /// <summary>
-    /// Gets NpgsqlConnection from a PostgreSQL Library.
+    /// Gets a list of PostgreSQL types that implement <see cref="DbConnectionStringBuilder" />.
     /// </summary>
-    /// <exception cref="ConnectorException">
-    /// When type is not found.
-    /// </exception>
+    public static string[] ConnectionStringBuilderTypeNames { get; internal set; } =
+    {
+        "Npgsql.NpgsqlConnectionStringBuilder"
+    };
+
+    /// <summary>
+    /// Gets NpgsqlConnection type from a PostgreSQL Library.
+    /// </summary>
     public static Type NpgsqlConnection =>
         ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "NpgsqlConnection", "a PostgreSQL ADO.NET assembly");
+
+    /// <summary>
+    /// Gets NpgsqlConnectionStringBuilder type from a PostgreSQL Library.
+    /// </summary>
+    public static Type NpgsqlConnectionStringBuilderType =>
+        ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionStringBuilderTypeNames, "NpgsqlConnectionStringBuilder", "a PostgreSQL ADO.NET assembly");
 }

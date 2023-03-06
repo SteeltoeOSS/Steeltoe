@@ -57,6 +57,28 @@ internal abstract class ConfigurationDictionaryMapper
         }
     }
 
+    public void MapFromToFile(string existingKey, string newKey)
+    {
+        if (ConfigurationData.TryGetValue(BindingKey + existingKey, out string value))
+        {
+            string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            using (StreamWriter writer = File.CreateText(tempPath))
+            {
+                writer.Write(value);
+            }
+
+            if (ToPrefix != null)
+            {
+                ConfigurationData[ToPrefix + newKey] = tempPath;
+            }
+            else
+            {
+                ConfigurationData[newKey] = tempPath;
+            }
+        }
+    }
+
     public void AddKeyValue(string newKey, string value)
     {
         ConfigurationData.Add(ToPrefix + newKey, value);
