@@ -49,27 +49,19 @@ public static class ServiceCollectionExtensions
         services.ConfigureEndpointOptions<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>();
         services.TryAddSingleton<MetricsEndpoint>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MetricsEndpointMiddleware>());
-        services.AddSingleton<MetricsEndpointMiddleware>();
+        services.TryAddSingleton<MetricsEndpointMiddleware>();
 
-        // services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
+        services.TryAddSingleton<IExporterOptions>(provider => {
+            var options = provider.GetService<IOptionsMonitor<MetricsEndpointOptions>>().CurrentValue;
+            return new MetricsExporterOptions
+            {
+                CacheDurationMilliseconds = options.CacheDurationMilliseconds,
+                MaxTimeSeries = options.MaxTimeSeries,
+                MaxHistograms = options.MaxHistograms,
+                IncludedMetrics = options.IncludedMetrics
+            };
 
-        var exporterOptions = new MetricsExporterOptions
-        {
-            CacheDurationMilliseconds = options.CacheDurationMilliseconds,
-            MaxTimeSeries = options.MaxTimeSeries,
-            MaxHistograms = options.MaxHistograms,
-            IncludedMetrics = options.IncludedMetrics
-        };
-        //services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoeExporter>(provider =>
-        //{
-        //    //var options = provider.GetService<IMetricsEndpointOptions>();
-
-        //    //var exporterOptions = new PullMetricsExporterOptions
-        //    //{
-        //    //    ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds
-        //    //};
-
-        services.TryAddSingleton<IExporterOptions>(exporterOptions);
+        });
 
         services.TryAddSingleton(provider =>
         {

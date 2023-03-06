@@ -28,14 +28,14 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddLoggersActuatorServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddLoggersActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
 
         //var options = new LoggersEndpointOptions(configuration);
         //services.TryAddSingleton<ILoggersOptions>(options);
         //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+        services.ConfigureOptions<ConfigureLoggersEndpointOptions>();
         services.TryAddSingleton<LoggersEndpoint>();
         services.TryAddSingleton<ILoggersEndpoint>(provider => provider.GetRequiredService<LoggersEndpoint>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, LoggersEndpointMiddleware>());

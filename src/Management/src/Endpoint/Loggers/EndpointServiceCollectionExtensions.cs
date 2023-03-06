@@ -22,14 +22,12 @@ public static class EndpointServiceCollectionExtensions
     /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
     /// management:endpoints:loggers).
     /// </param>
-    public static void AddLoggersActuator(this IServiceCollection services, IConfiguration configuration = null)
+    public static void AddLoggersActuator(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
 
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-
         services.AddCommonActuatorServices();
-        services.AddLoggersActuatorServices(configuration);
+        services.AddLoggersActuatorServices();
        // services.AddActuatorEndpointMapping<LoggersEndpoint>();
     }
 }

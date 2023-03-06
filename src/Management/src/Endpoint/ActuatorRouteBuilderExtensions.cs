@@ -99,15 +99,12 @@ public static class ActuatorRouteBuilderExtensions
     public static void MapTheActuators(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention = null)
     {
        
-        IEnumerable<string> allowedVerbs = new List<string>  // Get all common verbs here , but add a filter later
-                {
-                    "Get"
-                };
+    
         var managementOptions = endpoints.ServiceProvider.GetService<IOptionsMonitor<ManagementEndpointOptions>>();
         var middlewares = endpoints.ServiceProvider.GetServices<IEndpointMiddleware>();
 
         var dict = new Dictionary<string,object>();
-        foreach (var name in EndpointContextNames.All) // TODO: Only map Cf on Cloudfoundry
+        foreach (var name in EndpointContextNames.All) 
         {
             var mgmtOption = managementOptions.Get(name);
             var path = mgmtOption.Path;
@@ -139,7 +136,7 @@ public static class ActuatorRouteBuilderExtensions
                 {
                    dict.Add(epPath, type);
 
-                    IEndpointConventionBuilder conventionBuilder = endpoints.MapMethods(epPath, allowedVerbs, pipeline);
+                    IEndpointConventionBuilder conventionBuilder = endpoints.MapMethods(epPath, middleware.EndpointOptions.AllowedVerbs, pipeline);
                     convention?.Invoke(conventionBuilder);
                 }
 

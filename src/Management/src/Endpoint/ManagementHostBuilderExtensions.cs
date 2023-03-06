@@ -187,7 +187,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().AddDynamicLogging().ConfigureServices((context, collection) =>
         {
-            collection.AddLoggersActuator(context.Configuration);
+            collection.AddLoggersActuator();
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -202,7 +202,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddMappingsActuator(context.Configuration);
+            collection.AddMappingsActuator();
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -283,7 +283,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddCloudFoundryActuator(context.Configuration);
+            collection.AddCloudFoundryActuator();
             ActivateActuatorEndpoints(collection);
         });
     }

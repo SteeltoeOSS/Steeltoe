@@ -13,7 +13,7 @@ public class MappingsEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new MappingsEndpointOptions();
+        var opts = GetOptionsFromSettings<MappingsEndpointOptions>();
         Assert.Null(opts.Enabled);
         Assert.Equal("mappings", opts.Id);
         Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);

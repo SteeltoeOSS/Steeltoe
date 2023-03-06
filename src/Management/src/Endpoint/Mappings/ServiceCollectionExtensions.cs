@@ -28,14 +28,14 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddMappingsActuatorServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddMappingsActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
 
         //var options = new MappingsEndpointOptions(configuration);
         //services.TryAddSingleton<IMappingsOptions>(options);
         //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+        services.ConfigureOptions<ConfigureMappingsEndpointOptions>();
         services.TryAddSingleton<MappingsEndpoint>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MappingsEndpointMiddleware>());
         services.AddSingleton<MappingsEndpointMiddleware>();

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 internal class ConfigureTraceEndpointOptions : IConfigureNamedOptions<TraceEndpointOptions>
@@ -12,7 +13,7 @@ internal class ConfigureTraceEndpointOptions : IConfigureNamedOptions<TraceEndpo
 
     private const string ManagementInfoPrefixV1 = "management:endpoints:trace";
     private const string ManagementInfoPrefix = "management:endpoints:httptrace";
-    private readonly IConfiguration configuration;
+    private readonly IConfiguration _configuration;
     private const int DefaultCapacity = 100;
 
     public enum TraceEndpointOptionNames
@@ -24,7 +25,7 @@ internal class ConfigureTraceEndpointOptions : IConfigureNamedOptions<TraceEndpo
 
     public ConfigureTraceEndpointOptions(IConfiguration configuration)
     {
-        this.configuration = configuration;
+        this._configuration = configuration;
     }
     
     public void Configure(string name, TraceEndpointOptions options)
@@ -36,7 +37,7 @@ internal class ConfigureTraceEndpointOptions : IConfigureNamedOptions<TraceEndpo
         }
         else
         {
-            configuration.GetSection(ManagementInfoPrefixV1).Bind(options);
+            _configuration.GetSection(ManagementInfoPrefixV1).Bind(options);
             if (string.IsNullOrEmpty(options.Id))
             {
                 options.Id = "trace";
@@ -51,7 +52,7 @@ internal class ConfigureTraceEndpointOptions : IConfigureNamedOptions<TraceEndpo
 
     public void Configure(TraceEndpointOptions options)
     {
-        configuration.GetSection(ManagementInfoPrefix).Bind(options);
+        _configuration.GetSection(ManagementInfoPrefix).Bind(options);
 
         if (string.IsNullOrEmpty(options.Id))
         {

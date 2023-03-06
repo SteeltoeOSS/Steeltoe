@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Xunit;
 
@@ -19,31 +20,31 @@ public class EndpointServiceCollectionTest : BaseTest
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddCloudFoundryActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => services2.AddCloudFoundryActuator());
     }
 
-    //[Fact]
-    //public void AddCloudFoundryActuator_AddsCorrectServices()
-    //{
-    //    var services = new ServiceCollection();
+    [Fact]
+    public void AddCloudFoundryActuator_AddsCorrectServices()
+    {
+        var services = new ServiceCollection();
 
-    //    var appSettings = new Dictionary<string, string>
-    //    {
-    //        ["management:endpoints:enabled"] = "false",
-    //        ["management:endpoints:path"] = "/cloudfoundryapplication",
-    //        ["management:endpoints:info:enabled"] = "true"
-    //    };
+        var appSettings = new Dictionary<string, string>
+        {
+            ["management:endpoints:enabled"] = "false",
+            ["management:endpoints:path"] = "/cloudfoundryapplication",
+            ["management:endpoints:info:enabled"] = "true"
+        };
 
-    //    var configurationBuilder = new ConfigurationBuilder();
-    //    configurationBuilder.AddInMemoryCollection(appSettings);
-    //    IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appSettings);
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-    //    services.AddCloudFoundryActuator(configurationRoot);
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddCloudFoundryActuator();
 
-    //    ServiceProvider serviceProvider = services.BuildServiceProvider();
-    //    var options = serviceProvider.GetService<ICloudFoundryOptions>();
-    //    Assert.NotNull(options);
-    //    var ep = serviceProvider.GetService<CloudFoundryEndpoint>();
-    //    Assert.NotNull(ep);
-    //}
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        var options = serviceProvider.GetService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
+        Assert.Equal(string.Empty,options.CurrentValue.Id);
+        var ep = serviceProvider.GetService<CloudFoundryEndpoint>();
+        Assert.NotNull(ep);
+    }
 }

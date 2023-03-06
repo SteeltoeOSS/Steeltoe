@@ -41,7 +41,9 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
             // POST - change a logger level
             var paths = new List<string>();
             logger?.LogDebug("Incoming path: {path}", request.Path.Value);
-            paths.Add(managementOptions == null ? Endpoint.Options.Path : $"{managementOptions.CurrentValue.Path}/{Endpoint.Options.Path}".Replace("//", "/", StringComparison.Ordinal)); //TODO: only one path here??!!
+            var mgmtOptions = managementOptions.GetCurrentContext(request.Path);
+
+            paths.Add(managementOptions == null ? Endpoint.Options.Path : $"{mgmtOptions.Path}/{Endpoint.Options.Path}".Replace("//", "/", StringComparison.Ordinal)); //TODO: only one path here??!!
 
             foreach (string path in paths.Distinct())
             {

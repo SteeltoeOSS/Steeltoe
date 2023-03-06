@@ -32,7 +32,7 @@ public class EndpointOptionsBase : IEndpointOptions
 
     public virtual bool DefaultEnabled { get; } = true;
 
-    public virtual IEnumerable<string> AllowedVerbs { get; }
+    public virtual IEnumerable<string> AllowedVerbs { get; } = new List<string>() { "Get" };
 
     public virtual bool ExactMatch => true;
 

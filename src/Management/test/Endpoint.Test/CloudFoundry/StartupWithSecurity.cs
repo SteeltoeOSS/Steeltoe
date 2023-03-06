@@ -23,7 +23,7 @@ public class StartupWithSecurity
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddCloudFoundryActuator(Configuration);
+        services.AddCloudFoundryActuator();
         services.AddHypermediaActuator();
         services.AddInfoActuator();
     }

@@ -22,7 +22,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddCloudFoundryActuator(Configuration);
+        services.AddCloudFoundryActuator();
         services.AddInfoActuator();
     }
 

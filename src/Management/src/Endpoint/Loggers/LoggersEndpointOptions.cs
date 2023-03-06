@@ -8,7 +8,6 @@ public class LoggersEndpointOptions : EndpointOptionsBase//, ILoggersOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:loggers";
 
-    // public EndpointOptionsBase EndpointOptions { get; set; }
     public override IEnumerable<string> AllowedVerbs  { get; } = new List<string>
         {
             "Get",

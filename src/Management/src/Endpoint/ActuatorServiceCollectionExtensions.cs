@@ -57,7 +57,7 @@ public static class ActuatorServiceCollectionExtensions
 
         if (Platform.IsCloudFoundry)
         {
-            services.AddCloudFoundryActuator(configuration);
+            services.AddCloudFoundryActuator();
         }
 
         services.AddHypermediaActuator();
@@ -70,9 +70,9 @@ public static class ActuatorServiceCollectionExtensions
         services.AddEnvActuator();
         services.AddInfoActuator();
         services.AddHealthActuator();
-        services.AddLoggersActuator(configuration);
+        services.AddLoggersActuator();
         services.AddTraceActuator(version);
-        services.AddMappingsActuator(configuration);
+        services.AddMappingsActuator();
         services.AddMetricsActuator();
         services.AddRefreshActuator(configuration);
         return services;

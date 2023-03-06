@@ -45,7 +45,7 @@ public class HealthEndpointCore:  /*bstractEndpoint<HealthEndpointResponse, ISec
         _logger = logger;
     }
 
-    public HealthEndpointResponse Invoke(ISecurityContext securityContext)
+    public virtual HealthEndpointResponse Invoke(ISecurityContext securityContext)
     {
         return BuildHealth(securityContext);
     }

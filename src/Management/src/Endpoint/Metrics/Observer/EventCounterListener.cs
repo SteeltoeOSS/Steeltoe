@@ -84,11 +84,6 @@ public class EventCounterListener : EventListener
     {
         ArgumentGuard.NotNull(eventSource);
         
-        if (_options?.CurrentValue?.EventCounterEvents != true)
-        {
-            return;
-        }
-        
         if (EventSourceName.Equals(eventSource.Name, StringComparison.OrdinalIgnoreCase))
         {
             if (!_isInitialized)
@@ -114,6 +109,15 @@ public class EventCounterListener : EventListener
     {
         try
         {
+            if (!_isInitialized)
+            {
+                throw new InvalidOperationException("Should not call enable events before initialization");
+            }
+            if (_options?.CurrentValue?.EventCounterEvents != true)
+            {
+                return;
+            }
+
             EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All, _refreshInterval);
         }
         catch (Exception ex)

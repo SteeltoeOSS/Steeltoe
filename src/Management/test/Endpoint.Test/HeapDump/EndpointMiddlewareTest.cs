@@ -1,117 +1,120 @@
-//// Licensed to the .NET Foundation under one or more agreements.
-//// The .NET Foundation licenses this file to you under the Apache 2.0 License.
-//// See the LICENSE file in the project root for more information.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
-//using System.Net;
-//using Microsoft.AspNetCore.Hosting;
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.TestHost;
-//using Microsoft.Extensions.Configuration;
-//using Microsoft.Extensions.DependencyInjection;
-//using Microsoft.Extensions.Logging;
-//using Steeltoe.Common.Utils.IO;
-//using Steeltoe.Logging.DynamicLogger;
-//using Steeltoe.Management.Endpoint.CloudFoundry;
-//using Steeltoe.Management.Endpoint.HeapDump;
-//using Steeltoe.Management.Endpoint.Hypermedia;
-//using Xunit;
+using System.Net;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Utils.IO;
+using Steeltoe.Logging.DynamicLogger;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.HeapDump;
+using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
+using Xunit;
 
-//namespace Steeltoe.Management.Endpoint.Test.HeapDump;
+namespace Steeltoe.Management.Endpoint.Test.HeapDump;
 
-//public class EndpointMiddlewareTest : BaseTest
-//{
-//    private static readonly Dictionary<string, string> AppSettings = new()
-//    {
-//        ["Logging:Console:IncludeScopes"] = "false",
-//        ["Logging:LogLevel:Default"] = "Warning",
-//        ["Logging:LogLevel:Pivotal"] = "Information",
-//        ["Logging:LogLevel:Steeltoe"] = "Information",
-//        ["management:endpoints:enabled"] = "true",
-//        ["management:endpoints:heapdump:enabled"] = "true",
-//        ["management:endpoints:heapdump:heapdumptype"] = "gcdump"
-//    };
+public class EndpointMiddlewareTest : BaseTest
+{
+    private static readonly Dictionary<string, string> AppSettings = new()
+    {
+        ["Logging:Console:IncludeScopes"] = "false",
+        ["Logging:LogLevel:Default"] = "Warning",
+        ["Logging:LogLevel:Pivotal"] = "Information",
+        ["Logging:LogLevel:Steeltoe"] = "Information",
+        ["management:endpoints:enabled"] = "true",
+        ["management:endpoints:heapdump:enabled"] = "true",
+        ["management:endpoints:heapdump:heapdumptype"] = "gcdump",
+        ["management:endpoints:actuator:exposure:include:0"] = "heapdump"
+    };
 
-//    //[Fact]
-//    //public async Task HandleHeapDumpRequestAsync_ReturnsExpected()
-//    //{
-//    //    var opts = new HeapDumpEndpointOptions();
-//    //    var managementOptions = new ActuatorManagementOptions();
-//    //    managementOptions.EndpointOptions.Add(opts);
+    [Fact]
+    public async Task HandleHeapDumpRequestAsync_ReturnsExpected()
+    {
+        var opts = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions>();
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-//    //    IServiceCollection serviceCollection = new ServiceCollection();
-//    //    serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
-//    //    var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
 
-//    //    ILogger<HeapDumper> logger1 = loggerFactory.CreateLogger<HeapDumper>();
-//    //    ILogger<HeapDumpEndpoint> logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
-//    //    ILogger<HeapDumpEndpointMiddleware> logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
+        IServiceCollection serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
+        var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
 
-//    //    var obs = new HeapDumper(opts, logger: logger1);
+        ILogger<HeapDumper> logger1 = loggerFactory.CreateLogger<HeapDumper>();
+        ILogger<HeapDumpEndpoint> logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
+        ILogger<HeapDumpEndpointMiddleware> logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
 
-//    //    var ep = new HeapDumpEndpoint(opts, obs, logger2);
-//    //    var middle = new HeapDumpEndpointMiddleware(null, ep, managementOptions, logger3);
-//    //    HttpContext context = CreateRequest("GET", "/heapdump");
-//    //    await middle.HandleHeapDumpRequestAsync(context);
-//    //    context.Response.Body.Seek(0, SeekOrigin.Begin);
-//    //    byte[] buffer = new byte[1024];
-//    //    await context.Response.Body.ReadAsync(buffer);
-//    //    Assert.NotEqual(0, buffer[0]);
-//    //}
+        var obs = new HeapDumper(opts, logger: logger1);
 
-//    [Fact]
-//    public async Task HeapDumpActuator_ReturnsExpectedData()
-//    {
-//        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
-//            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
-//                (webHostContext, loggingBuilder) =>
-//                {
-//                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
-//                    loggingBuilder.AddDynamicConsole();
-//                });
+        var ep = new HeapDumpEndpoint(opts, obs, logger2);
+        var middle = new HeapDumpEndpointMiddleware(ep, managementOptions, logger3);
+        HttpContext context = CreateRequest("GET", "/heapdump");
+        await middle.HandleHeapDumpRequestAsync(context);
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+        byte[] buffer = new byte[1024];
+        await context.Response.Body.ReadAsync(buffer);
+        Assert.NotEqual(0, buffer[0]);
+    }
 
-//        using var server = new TestServer(builder);
-//        HttpClient client = server.CreateClient();
-//        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/heapdump"));
-//        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+    [Fact]
+    public async Task HeapDumpActuator_ReturnsExpectedData()
+    {
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
+                (webHostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
+                });
 
-//        Assert.True(result.Content.Headers.Contains("Content-Type"));
-//        IEnumerable<string> contentType = result.Content.Headers.GetValues("Content-Type");
-//        Assert.Equal("application/octet-stream", contentType.Single());
-//        Assert.True(result.Content.Headers.Contains("Content-Disposition"));
+        using var server = new TestServer(builder);
+        HttpClient client = server.CreateClient();
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/heapdump"));
+        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-//        var tempFile = new TempFile();
-//        var fs = new FileStream(tempFile.FullPath, FileMode.Create);
-//        Stream input = await result.Content.ReadAsStreamAsync();
-//        await input.CopyToAsync(fs);
-//        fs.Close();
+        Assert.True(result.Content.Headers.Contains("Content-Type"));
+        IEnumerable<string> contentType = result.Content.Headers.GetValues("Content-Type");
+        Assert.Equal("application/octet-stream", contentType.Single());
+        Assert.True(result.Content.Headers.Contains("Content-Disposition"));
 
-//        FileStream fs2 = File.Open(tempFile.FullPath, FileMode.Open);
-//        Assert.NotEqual(0, fs2.Length);
-//        fs2.Close();
-//    }
+        var tempFile = new TempFile();
+        var fs = new FileStream(tempFile.FullPath, FileMode.Create);
+        Stream input = await result.Content.ReadAsStreamAsync();
+        await input.CopyToAsync(fs);
+        fs.Close();
 
-//    [Fact]
-//    public void RoutesByPathAndVerb()
-//    {
-//        var options = new HeapDumpEndpointOptions();
-//        Assert.True(options.ExactMatch);
-//        Assert.Equal("/actuator/heapdump", options.GetContextPath(new ActuatorManagementOptions()));
-//        Assert.Equal("/cloudfoundryapplication/heapdump", options.GetContextPath(new CloudFoundryManagementOptions()));
-//        Assert.Null(options.AllowedVerbs);
-//    }
+        FileStream fs2 = File.Open(tempFile.FullPath, FileMode.Open);
+        Assert.NotEqual(0, fs2.Length);
+        fs2.Close();
+    }
 
-//    private HttpContext CreateRequest(string method, string path)
-//    {
-//        HttpContext context = new DefaultHttpContext
-//        {
-//            TraceIdentifier = Guid.NewGuid().ToString()
-//        };
+    [Fact]
+    public void RoutesByPathAndVerb()
+    {
+        var options = GetOptionsFromSettings<HeapDumpEndpointOptions>();
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        Assert.True(options.ExactMatch);
+        Assert.Equal("/actuator/heapdump", options.GetContextPath(managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName)));
+        Assert.Equal("/cloudfoundryapplication/heapdump", options.GetContextPath(managementOptions.Get(EndpointContextNames.CFManagemementOptionName)));
+        Assert.Contains("Get", options.AllowedVerbs);
+    }
 
-//        context.Response.Body = new MemoryStream();
-//        context.Request.Method = method;
-//        context.Request.Path = new PathString(path);
-//        context.Request.Scheme = "http";
-//        context.Request.Host = new HostString("localhost");
-//        return context;
-//    }
-//}
+    private HttpContext CreateRequest(string method, string path)
+    {
+        HttpContext context = new DefaultHttpContext
+        {
+            TraceIdentifier = Guid.NewGuid().ToString()
+        };
+
+        context.Response.Body = new MemoryStream();
+        context.Request.Method = method;
+        context.Request.Path = new PathString(path);
+        context.Request.Scheme = "http";
+        context.Request.Host = new HostString("localhost");
+        return context;
+    }
+}

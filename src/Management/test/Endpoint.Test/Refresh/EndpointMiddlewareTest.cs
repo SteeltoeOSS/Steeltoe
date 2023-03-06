@@ -94,7 +94,7 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator/refresh", options.GetContextPath(mgmtOptions.Get(EndpointContextNames.ActuatorManagementOptionName)));
         Assert.Equal("/cloudfoundryapplication/refresh", options.GetContextPath(mgmtOptions.Get(EndpointContextNames.CFManagemementOptionName)));
-        Assert.Null(options.AllowedVerbs);
+        Assert.Contains("Get", options.AllowedVerbs);
     }
 
     private HttpContext CreateRequest(string method, string path)

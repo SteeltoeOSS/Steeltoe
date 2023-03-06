@@ -163,7 +163,7 @@ public static class ManagementWebApplicationBuilderExtensions
     public static WebApplicationBuilder AddLoggersActuator(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.Logging.AddDynamicConsole();
-        applicationBuilder.Services.AddLoggersActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddLoggersActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -176,7 +176,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddMappingsActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddMappingsActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddMappingsActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -248,7 +248,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddCloudFoundryActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddCloudFoundryActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddCloudFoundryActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }

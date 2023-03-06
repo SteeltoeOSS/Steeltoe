@@ -27,7 +27,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddLoggersActuatorServices(configuration);
+            services.AddLoggersActuatorServices();
         };
 
         var ep = tc.GetService<ILoggersEndpoint>();
@@ -57,7 +57,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddLoggersActuatorServices(configuration);
+            services.AddLoggersActuatorServices();
         };
 
         var ep = tc.GetService<ILoggersEndpoint>();
@@ -72,7 +72,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddLoggersActuatorServices(configuration);
+            services.AddLoggersActuatorServices();
         };
 
         var ep = tc.GetService<ILoggersEndpoint>();
@@ -90,7 +90,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddLoggersActuatorServices(configuration);
+            services.AddLoggersActuatorServices();
         };
 
         var ep = tc.GetService<ILoggersEndpoint>();
@@ -105,7 +105,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddLoggersActuatorServices(configuration);
+            services.AddLoggersActuatorServices();
         };
 
         var ep = tc.GetService<ILoggersEndpoint>();
@@ -122,7 +122,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddLoggersActuatorServices(configuration);
+            services.AddLoggersActuatorServices();
         };
 
         var ep = tc.GetService<ILoggersEndpoint>();

@@ -21,8 +21,8 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddCloudFoundryActuator(Configuration);
-        services.AddMappingsActuator(Configuration);
+        services.AddCloudFoundryActuator();
+        services.AddMappingsActuator();
         services.AddMvc();
     }
 

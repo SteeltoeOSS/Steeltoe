@@ -32,8 +32,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>();
+        var opts = GetOptionsMonitorFromSettings<HypermediaEndpointOptions>();
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         var ep = new TestHypermediaEndpoint(opts, managementOptions);
         var middle = new ActuatorHypermediaEndpointMiddleware(ep, managementOptions);
         HttpContext context = CreateRequest("GET", "/");
@@ -112,7 +112,7 @@ public class EndpointMiddlewareTest : BaseTest
         var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator", options.GetContextPath(mgmtOptions.Get(EndpointContextNames.ActuatorManagementOptionName)));
-        Assert.Null(options.AllowedVerbs);
+        Assert.Contains("Get", options.AllowedVerbs);
     }
 
     private HttpContext CreateRequest(string method, string path)

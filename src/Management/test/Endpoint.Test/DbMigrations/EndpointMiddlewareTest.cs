@@ -29,7 +29,8 @@ public class EndpointMiddlewareTest : BaseTest
         ["Logging:LogLevel:Default"] = "Warning",
         ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
-        ["management:endpoints:enabled"] = "true"
+        ["management:endpoints:enabled"] = "true",
+        ["management:endpoints:actuator:exposure:include:0"] = "dbmigrations"
     };
 
     [Fact]
@@ -98,7 +99,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/dbmigrations"));
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/dbmigrations"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
 
@@ -133,7 +134,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         var cfMgmtOptions = mgmtOptions.Get(EndpointContextNames.CFManagemementOptionName);
         Assert.Equal("/cloudfoundryapplication/dbmigrations", options.GetContextPath(cfMgmtOptions));
-        Assert.Null(options.AllowedVerbs);
+        Assert.Contains("Get", options.AllowedVerbs);
     }
 
     private HttpContext CreateRequest(string method, string path)

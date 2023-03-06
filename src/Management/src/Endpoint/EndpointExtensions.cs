@@ -75,12 +75,12 @@ public static class EndPointExtensions
 
     public static bool ShouldInvoke(this IEndpointOptions endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context, ILogger logger = null)
     {
-        var mgmtOptions = managementOptions.GetCurrentContext(context);
+        var mgmtOptions = managementOptions.GetCurrentContext(context.Request.Path);
 
         return ShouldInvoke(endpoint, mgmtOptions, logger);
     }
 
-    public static ManagementEndpointOptions GetCurrentContext(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context)
+    public static ManagementEndpointOptions GetCurrentContext(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path)
     {
         List<ManagementEndpointOptions> options = new();
         foreach (var name in EndpointContextNames.All)
@@ -90,7 +90,7 @@ public static class EndPointExtensions
         options = options.OrderByDescending(option => option.Path.Length).ToList();
         foreach (var opt in options)
         {
-            if (context.Request.Path.StartsWithSegments(new PathString(opt.Path)))
+            if (path.StartsWithSegments(new PathString(opt.Path)))
             {
                 return opt;
             }

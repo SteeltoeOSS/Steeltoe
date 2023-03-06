@@ -24,7 +24,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddDbContext<MockDbContext>();
-        services.AddCloudFoundryActuator(Configuration);
+        services.AddCloudFoundryActuator();
         services.AddEntityFrameworkInMemoryDatabase().AddDbContext<MockDbContext>();
         services.AddDbMigrationsActuator();
         var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
