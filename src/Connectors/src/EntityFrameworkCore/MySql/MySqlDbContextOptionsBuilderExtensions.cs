@@ -5,17 +5,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Connector.PostgreSql;
+using Steeltoe.Connector.MySql;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.PostgreSql;
+namespace Steeltoe.Connector.EntityFrameworkCore.MySql;
 
-public static class PostgreSqlDbContextOptionsBuilderExtensions
+public static class MySqlDbContextOptionsBuilderExtensions
 {
-    private const string BindingType = "postgresql";
+    private const string BindingType = "mysql";
     private static readonly string ServiceBindingsConfigurationKey = ConfigurationPath.Combine("steeltoe", "service-bindings");
 
-    public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IConfigurationBuilder configurationBuilder,
-        string serviceBindingName = null, Action<object> npgsqlOptionsAction = null)
+    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfigurationBuilder configurationBuilder,
+        string serviceBindingName = null, Action<object> mySqlOptionsAction = null)
     {
         ArgumentGuard.NotNull(optionsBuilder);
         ArgumentGuard.NotNull(configurationBuilder);
@@ -27,10 +27,10 @@ public static class PostgreSqlDbContextOptionsBuilderExtensions
         if (connectionString == null)
         {
             throw new InvalidOperationException($"Connection string for service binding '{serviceBindingName}' not found. " +
-                $"Please verify that you have called {nameof(PostgreSqlWebApplicationBuilderExtensions.AddPostgreSql)}() first.");
+                $"Please verify that you have called {nameof(MySqlWebApplicationBuilderExtensions.AddMySql)}() first.");
         }
 
-        PostgreSqlDbContextOptionsExtensions.DoUseNpgsql(optionsBuilder, connectionString, npgsqlOptionsAction);
+        MySqlDbContextOptionsExtensions.DoUseMySql(optionsBuilder, connectionString, mySqlOptionsAction);
 
         return optionsBuilder;
     }
