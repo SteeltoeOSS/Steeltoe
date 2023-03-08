@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 namespace Steeltoe.Management;
-//Used to be abstract options
 public class EndpointOptionsBase : IEndpointOptions 
 {
     protected bool? sensitive;
@@ -36,5 +35,4 @@ public class EndpointOptionsBase : IEndpointOptions
 
     public virtual bool ExactMatch => true;
 
-  
 }

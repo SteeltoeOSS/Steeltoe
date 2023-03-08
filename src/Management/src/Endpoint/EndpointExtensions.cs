@@ -98,32 +98,6 @@ public static class EndPointExtensions
         return managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName);
     }
 
-    //public static ManagementEndpointOptions OptionsForContext(this IEnumerable<ManagementEndpointOptions> managementOptions, string requestPath, ILogger logger = null)
-    //{
-    //    ManagementEndpointOptions match = managementOptions.FirstOrDefault(option => requestPath.StartsWith(option.Path, StringComparison.Ordinal));
-
-    //    if (match != null)
-    //    {
-    //        logger?.LogTrace("Request path matched base path owned by {optionsType}", match.GetType().Name);
-    //        return match;
-    //    }
-
-    //    try
-    //    {
-    //        if (Platform.IsCloudFoundry)
-    //        {
-    //            return managementOptions.First(option => option is CloudFoundryManagementOptions);
-    //        }
-
-    //        return managementOptions.First(option => option is ActuatorManagementOptions);
-    //    }
-    //    catch (InvalidOperationException exception)
-    //    {
-    //        logger?.LogError(exception, "Could not find ManagementEndpointOptions to match this request, returning first or default ActuatorManagementOptions");
-    //        return managementOptions.FirstOrDefault() ?? new ActuatorManagementOptions();
-    //    }
-    //}
-
     public static string GetContextPath(this IEndpointOptions options, ManagementEndpointOptions managementOptions)
     {
         string contextPath = managementOptions.Path;

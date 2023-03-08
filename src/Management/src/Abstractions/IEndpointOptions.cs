@@ -18,5 +18,4 @@ public interface IEndpointOptions
 
     bool ExactMatch { get; }
 
-   // bool IsAccessAllowed(Permissions permissions);
 }
