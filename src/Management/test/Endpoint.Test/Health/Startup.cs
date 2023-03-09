@@ -61,6 +61,6 @@ public class Startup
         //});
 
         //New:
-        app.UseEndpoints(endpoints => endpoints.MapTheActuators(null));
+        app.UseEndpoints(endpoints => endpoints.MapTheActuators());
     }
 }

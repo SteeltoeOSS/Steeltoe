@@ -4,7 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public interface IMetricsEndpoint
+public interface IMetricsEndpoint: IEndpoint<IMetricsResponse, MetricsRequest>
 {
-    IMetricsResponse Invoke(MetricsRequest request);
 }

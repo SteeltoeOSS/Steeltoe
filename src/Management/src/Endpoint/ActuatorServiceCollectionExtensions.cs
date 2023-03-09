@@ -28,16 +28,18 @@ namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorServiceCollectionExtensions
 {
-    public static void AddAllActuators(this IServiceCollection services, IConfiguration configuration, Action<CorsPolicyBuilder> buildCorsPolicy)
-    {
-        services.AddAllActuators(configuration, MediaTypeVersion.V2, buildCorsPolicy);
-    }
+   
     public static void AddCommonActuatorServices(this IServiceCollection services)
     {
-        //services.ConfigureOptions<ConfigureManagementEndpointOptions>();
+        if (Platform.IsCloudFoundry)
+        {
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IContextName, CFContext>());
+        }
+
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IContextName, ActuatorContext>());
+        services.TryAddSingleton<ActuatorEndpointMapper>();
+
         services.ConfigureOptions<ConfigureManagementEndpointOptions>();
-     //   services.TryAddSingleton<ActuatorRouter>();
-       // services.TryAddScoped<ActuatorsMiddleware>();
     }
     public static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
         where TOptions : class, IEndpointOptions
@@ -45,6 +47,10 @@ public static class ActuatorServiceCollectionExtensions
     {
         services.ConfigureOptions<TConfigureOptions>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
+    }
+    public static void AddAllActuators(this IServiceCollection services, IConfiguration configuration, Action<CorsPolicyBuilder> buildCorsPolicy)
+    {
+        services.AddAllActuators(configuration, MediaTypeVersion.V2, buildCorsPolicy);
     }
     public static IServiceCollection AddAllActuators(this IServiceCollection services, IConfiguration configuration = null,
         MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
@@ -77,7 +83,7 @@ public static class ActuatorServiceCollectionExtensions
         services.AddRefreshActuator(configuration);
         return services;
     }
-
+   
     private static IServiceCollection AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy = null)
     {
         return services.AddCors(setup =>

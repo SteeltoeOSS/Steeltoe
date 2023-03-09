@@ -18,18 +18,20 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
     private static readonly string CloudFoundryEnabledPrefix = "management:cloudfoundry:enabled";
     private const string DefaultPath = "/actuator";
     private const string DefaultCFPath = "/cloudfoundryapplication";
-    private readonly IConfiguration configuration;
-    private readonly IEnumerable<IEndpointOptions> endpointsCollection;
+    private readonly IConfiguration _configuration;
+    private readonly IEnumerable<IContextName> _contextNames;
+    private readonly IEnumerable<IEndpointOptions> _endpoints;
 
-    public ConfigureManagementEndpointOptions(IConfiguration configuration, IEnumerable<IEndpointOptions> endpointsCollection)
+    public ConfigureManagementEndpointOptions(IConfiguration configuration, IEnumerable<IContextName> contextNames, IEnumerable<IEndpointOptions> endpointsCollection)
     {
-        this.configuration = configuration;
-        this.endpointsCollection = endpointsCollection;
+        _configuration = configuration;
+        _contextNames = contextNames;
+        _endpoints = endpointsCollection;
     }
 
-    public void Configure(string name, ManagementEndpointOptions options)
+    public virtual void Configure(string name, ManagementEndpointOptions options)
     {
-        configuration.GetSection(ManagementInfoPrefix).Bind(options);
+        _configuration.GetSection(ManagementInfoPrefix).Bind(options);
         foreach (string converterTypeName in options.CustomJsonConverters ?? Array.Empty<string>())
         {
             var converterType = Type.GetType(converterTypeName);
@@ -40,28 +42,34 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
                 options.SerializerOptions.Converters.Add(converterInstance);
             }
         }
-        if (name == EndpointContextNames.ActuatorManagementOptionName)
+        foreach (var context in _contextNames)
+        {
+            options.ContextNames.Add(context.Name);
+        }
+
+        if (name == ActuatorContext.Name)
         {
             options.Path ??= DefaultPath;
 
-            options.Exposure = new Exposure(configuration);
+            options.Exposure = new Exposure(_configuration);
 
-            options.EndpointOptions = new List<IEndpointOptions>( endpointsCollection.Where(e=> e.GetType() != typeof(CloudFoundryEndpointOptions)));
+            options.EndpointOptions = new List<IEndpointOptions>( _endpoints.Where(e=> e.GetType() != typeof(CloudFoundryEndpointOptions)));
+
         }
-        else if (name == EndpointContextNames.CFManagemementOptionName)
+        else if (name == CFContext.Name)
         {
             options.Path = DefaultCFPath;
-            var cfEnabledConfig = configuration.GetSection(CloudFoundryEnabledPrefix).Value;
+            var cfEnabledConfig = _configuration.GetSection(CloudFoundryEnabledPrefix).Value;
             if (cfEnabledConfig != null)
             {
-                options.Enabled = !string.Equals(configuration.GetSection(CloudFoundryEnabledPrefix).Value, "false", StringComparison.OrdinalIgnoreCase);
+                options.Enabled = !string.Equals(_configuration.GetSection(CloudFoundryEnabledPrefix).Value, "false", StringComparison.OrdinalIgnoreCase);
             }
             else
             {
                 options.Enabled ??= true;
             }
             options.Exposure = new Exposure(allowAll: true);
-            options.EndpointOptions = new List<IEndpointOptions>(endpointsCollection.Where(e => e.GetType() != typeof(HypermediaEndpointOptions)));
+            options.EndpointOptions = new List<IEndpointOptions>(_endpoints.Where(e => e.GetType() != typeof(HypermediaEndpointOptions)));
         }
 
     }

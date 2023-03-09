@@ -32,13 +32,10 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        //var options = new DbMigrationsEndpointOptions(configuration);
-        //services.TryAddSingleton<IDbMigrationsOptions>(options);
-        //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
-        services.TryAddSingleton<DbMigrationsEndpoint>();
-        services.TryAddSingleton<IDbMigrationsEndpoint>(provider => provider.GetRequiredService<DbMigrationsEndpoint>());
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, DbMigrationsEndpointMiddleware>());
+        services.ConfigureOptions<ConfigureDbMigrationsEndpointOptions>();
+        services.TryAddSingleton<IDbMigrationsEndpoint, DbMigrationsEndpoint>();
         services.AddSingleton<DbMigrationsEndpointMiddleware>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, DbMigrationsEndpointMiddleware>());
 
         return services;
     }

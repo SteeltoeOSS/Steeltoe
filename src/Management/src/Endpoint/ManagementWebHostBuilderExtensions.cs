@@ -306,7 +306,8 @@ public static class ManagementWebHostBuilderExtensions
         return hostBuilder.AddManagementPort().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((context, collection) =>
         {
             collection.AddAllActuators(context.Configuration, mediaTypeVersion);
-            collection.ActivateActuatorEndpoints(configureEndpoints);
+            var conventionBuilder = collection.ActivateActuatorEndpoints();
+            configureEndpoints?.Invoke(conventionBuilder);
         });
     }
 

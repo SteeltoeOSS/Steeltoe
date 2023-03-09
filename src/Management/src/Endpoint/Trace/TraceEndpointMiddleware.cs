@@ -11,15 +11,15 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>, IMiddleware
+public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
 {
-    public TraceEndpointMiddleware(/*RequestDelegate next,*/ TraceEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public TraceEndpointMiddleware(TraceEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<TraceEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
     }
 
-    public Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {

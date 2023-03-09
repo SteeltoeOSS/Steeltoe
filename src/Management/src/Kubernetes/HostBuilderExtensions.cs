@@ -58,7 +58,8 @@ public static class HostBuilderExtensions
         return hostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole()).ConfigureServices((context, collection) =>
         {
             collection.AddKubernetesActuators(context.Configuration, version: mediaTypeVersion);
-            collection.ActivateActuatorEndpoints(configureEndpoints);
+            var epBuilder = collection.ActivateActuatorEndpoints();
+            configureEndpoints?.Invoke(epBuilder);
         });
     }
 
@@ -80,7 +81,9 @@ public static class HostBuilderExtensions
         return webHostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole()).ConfigureServices((context, collection) =>
         {
             collection.AddKubernetesActuators(context.Configuration, version: mediaTypeVersion);
-            collection.ActivateActuatorEndpoints(configureEndpoints);
+            var epBuilder = collection.ActivateActuatorEndpoints();
+            configureEndpoints?.Invoke(epBuilder);
+
         });
     }
 
@@ -115,8 +118,9 @@ public static class HostBuilderExtensions
     {
         webApplicationBuilder.Logging.AddDynamicConsole();
 
-        webApplicationBuilder.Services.AddKubernetesActuators(webApplicationBuilder.Configuration, version: mediaTypeVersion)
-            .ActivateActuatorEndpoints(configureEndpoints);
+        var services = webApplicationBuilder.Services.AddKubernetesActuators(webApplicationBuilder.Configuration, version: mediaTypeVersion);
+        var epBuilder = services.ActivateActuatorEndpoints();
+        configureEndpoints?.Invoke(epBuilder);
 
         return webApplicationBuilder;
     }

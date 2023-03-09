@@ -8,15 +8,13 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-public class HeapDumpEndpoint : /*AbstractEndpoint<string>*/ IEndpoint<string>, IHeapDumpEndpoint
+public class HeapDumpEndpoint : IHeapDumpEndpoint
 {
     private readonly IOptionsMonitor<HeapDumpEndpointOptions> _options;
     private readonly IHeapDumper _heapDumper;
 
-  //  public new IHeapDumpOptions Options => options as IHeapDumpOptions;
 
     public HeapDumpEndpoint(IOptionsMonitor<HeapDumpEndpointOptions> options, IHeapDumper heapDumper, ILogger<HeapDumpEndpoint> logger = null)
-       // : base(options)
     {
         ArgumentGuard.NotNull(heapDumper);
         _options = options;

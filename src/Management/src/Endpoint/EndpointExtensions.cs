@@ -83,7 +83,7 @@ public static class EndPointExtensions
     public static ManagementEndpointOptions GetCurrentContext(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path)
     {
         List<ManagementEndpointOptions> options = new();
-        foreach (var name in EndpointContextNames.All)
+        foreach (var name in managementOptions.CurrentValue.ContextNames)
         {
             options.Add(managementOptions.Get(name));
         }
@@ -95,7 +95,7 @@ public static class EndPointExtensions
                 return opt;
             }
         }
-        return managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName);
+        return managementOptions.Get(ActuatorContext.Name);
     }
 
     public static string GetContextPath(this IEndpointOptions options, ManagementEndpointOptions managementOptions)

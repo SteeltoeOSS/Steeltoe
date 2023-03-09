@@ -25,7 +25,7 @@ public class SecurityBaseTest : BaseTest
     private static SecurityBase GetSecurityBase(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions)
     {
         cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>();
-        managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(EndpointContextNames.CFManagemementOptionName);
+        managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(CFContext.Name);
         var securityBase = new SecurityBase(cloudOpts, managementOptions);
         return securityBase;
     }

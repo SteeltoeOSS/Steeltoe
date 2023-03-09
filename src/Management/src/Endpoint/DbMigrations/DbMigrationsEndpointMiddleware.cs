@@ -11,21 +11,18 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>, IMiddleware
+public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
 {
     
     public DbMigrationsEndpointMiddleware(
-        DbMigrationsEndpoint endpoint,
+        IDbMigrationsEndpoint endpoint,
         IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<DbMigrationsEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
-      //  DbMigrationsEndpoint = endpoint;
     }
 
- //   public DbMigrationsEndpoint DbMigrationsEndpoint { get; }
-
-    public Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {

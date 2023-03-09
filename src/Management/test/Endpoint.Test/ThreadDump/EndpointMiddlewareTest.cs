@@ -107,8 +107,8 @@ public class EndpointMiddlewareTest : BaseTest
         var options = GetOptionsFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
         var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/dump", options.GetContextPath(managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName)));
-        Assert.Equal("/cloudfoundryapplication/dump", options.GetContextPath(managementOptions.Get(EndpointContextNames.CFManagemementOptionName)));
+        Assert.Equal("/actuator/dump", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/dump", options.GetContextPath(managementOptions.Get(CFContext.Name)));
         Assert.Contains("Get", options.AllowedVerbs);
     }
     [Fact]
@@ -117,8 +117,8 @@ public class EndpointMiddlewareTest : BaseTest
         var options = GetOptionsFromSettings<ThreadDumpEndpointOptions>();
         var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/threaddump", options.GetContextPath(managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName)));
-        Assert.Equal("/cloudfoundryapplication/threaddump", options.GetContextPath(managementOptions.Get(EndpointContextNames.CFManagemementOptionName)));
+        Assert.Equal("/actuator/threaddump", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/threaddump", options.GetContextPath(managementOptions.Get(CFContext.Name)));
         Assert.Contains("Get", options.AllowedVerbs);
     }
     private HttpContext CreateRequest(string method, string path)

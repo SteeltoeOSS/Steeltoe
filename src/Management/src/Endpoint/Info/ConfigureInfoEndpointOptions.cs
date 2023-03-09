@@ -4,32 +4,14 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-public class ConfigureInfoEndpointOptions : IConfigureOptions<InfoEndpointOptions>
+public class ConfigureInfoEndpointOptions : ConfigureEndpointOptions<InfoEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:info";
-    public ConfigureInfoEndpointOptions(IConfiguration configuration)
+    public ConfigureInfoEndpointOptions(IConfiguration configuration): base(configuration, ManagementInfoPrefix, "info")
     {
-        this.configuration = configuration;
     }
-
-    private IConfiguration configuration;
-
-    public void Configure(InfoEndpointOptions options)
-    {
-        configuration.GetSection(ManagementInfoPrefix).Bind(options);
-
-        if (string.IsNullOrEmpty(options.Id))
-        {
-            options.Id = "info";
-        }
-
-        if (options.RequiredPermissions == Permissions.Undefined)
-        {
-            options.RequiredPermissions = Permissions.Restricted;
-        }
-    }
-
 }

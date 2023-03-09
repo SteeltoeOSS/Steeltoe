@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
@@ -24,6 +25,8 @@ public class ManagementEndpointOptions //: IManagementOptions
     public string Port { get; set; }
 
     public List<IEndpointOptions> EndpointOptions { get; set; }
+
+    public HashSet<string> ContextNames { get; set; } = new HashSet<string>{ ActuatorContext.Name};
 
     public bool UseStatusCodeFromResponse { get; set; } = true;
 

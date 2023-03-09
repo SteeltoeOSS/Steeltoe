@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ManagementPort;
@@ -14,19 +15,17 @@ public class ManagementPortMiddleware
     private readonly RequestDelegate _next;
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
     private readonly ILogger<ManagementPortMiddleware> _logger;
-    //private readonly IManagementOptions _managementOptions;
     
     public ManagementPortMiddleware(RequestDelegate next, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<ManagementPortMiddleware> logger = null)
     {
         _next = next;
         _managementOptions = managementOptions;
         _logger = logger;
-       // _managementOptions = managementOptions.OfType<ManagementEndpointOptions>().First();
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var mgmtOptions = _managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName); 
+        var mgmtOptions = _managementOptions.Get(ActuatorContext.Name);  // TODO: How does this work in cloudfoundry? 
         _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, mgmtOptions.Path);
 
         string contextPath = mgmtOptions.Path;

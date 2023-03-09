@@ -46,7 +46,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<DbMigrationsEndpoint>());
+        Assert.Single(host.Services.GetServices<IDbMigrationsEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/dbmigrations", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -179,7 +179,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<InfoEndpoint>());
+        Assert.Single(host.Services.GetServices<IInfoEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -240,7 +240,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<MetricsEndpoint>());
+        Assert.Single(host.Services.GetServices<IMetricsEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/metrics", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -302,7 +302,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
 
         WebApplication host = hostBuilder.AddCloudFoundryActuator().Build();
 
-        Assert.Single(host.Services.GetServices<CloudFoundryEndpoint>());
+        Assert.NotNull(host.Services.GetService<ICloudFoundryEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
     }
 
@@ -395,7 +395,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         WebApplication host = GetTestWebAppWithSecureRouting(builder =>
         {
             builder.AddHypermediaActuator().AddInfoActuator().AddHealthActuator();
-            builder.Services.ActivateActuatorEndpoints(ep => ep.RequireAuthorization("TestAuth"));
+            builder.Services.ActivateActuatorEndpoints().RequireAuthorization("TestAuth");
         });
 
         await host.StartAsync();

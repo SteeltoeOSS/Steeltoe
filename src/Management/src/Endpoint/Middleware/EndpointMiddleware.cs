@@ -14,18 +14,16 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
-public class EndpointMiddleware<TResult>: IEndpointMiddleware
+public abstract class EndpointMiddleware<TResult>: IEndpointMiddleware
 {
     protected ILogger logger;
     protected IOptionsMonitor<ManagementEndpointOptions> managementOptions;
-
-    //protected  managementOptions;
 
     public IEndpoint<TResult> Endpoint { get; set; }
 
     public virtual IEndpointOptions EndpointOptions => Endpoint.Options;
 
-    public EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
+    protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
     {
         ArgumentGuard.NotNull(managementOptions);
 
@@ -33,7 +31,7 @@ public class EndpointMiddleware<TResult>: IEndpointMiddleware
         this.managementOptions = managementOptions;
     }
 
-    public EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
+    protected EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
         : this(managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpoint);
@@ -94,26 +92,22 @@ public class EndpointMiddleware<TResult>: IEndpointMiddleware
         return serializerOptions;
     }
 
-    //public virtual Task InvokeAsync(HttpContext context)
-    //{
-    //    throw new NotImplementedException();
-    //}
+    public abstract Task InvokeAsync(HttpContext context, RequestDelegate next);
+
 }
 
-public interface IEndpointMiddleware
+public interface IEndpointMiddleware:IMiddleware
 {
-    //public IManagementOptions ManagementOptions { get; }
     public IEndpointOptions EndpointOptions { get; }
-  //  public Task InvokeAsync(HttpContext context);
 }
 
-public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
+public abstract class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
 {
     public new IEndpoint<TResult, TRequest> Endpoint { get; set; }
 
     public override IEndpointOptions EndpointOptions => Endpoint.Options;
 
-    public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
+    protected EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
         : base(managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpoint);
@@ -121,7 +115,7 @@ public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
         Endpoint = endpoint;
     }
 
-    public EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
+    protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
         : base(managementOptions, logger)
     {
     }
@@ -131,8 +125,6 @@ public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
         TResult result = Endpoint.Invoke(arg);
         return Serialize(result);
     }
-    //public override Task InvokeAsync(HttpContext context)
-    //{
-    //    return base.InvokeAsync(context);
-    //}
+
+    public abstract override Task InvokeAsync(HttpContext context, RequestDelegate next);
 }

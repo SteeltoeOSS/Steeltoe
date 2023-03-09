@@ -22,9 +22,6 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// Reference to the service collection.
     /// </param>
-    /// <param name="configuration">
-    /// Reference to the configuration system.
-    /// </param>
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
@@ -32,13 +29,10 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        //var options = new MappingsEndpointOptions(configuration);
-        //services.TryAddSingleton<IMappingsOptions>(options);
-        //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
         services.ConfigureOptions<ConfigureMappingsEndpointOptions>();
-        services.TryAddSingleton<MappingsEndpoint>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MappingsEndpointMiddleware>());
+        services.TryAddSingleton<IMappingsEndpoint,MappingsEndpoint>();
         services.AddSingleton<MappingsEndpointMiddleware>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MappingsEndpointMiddleware>());
 
 
         return services;

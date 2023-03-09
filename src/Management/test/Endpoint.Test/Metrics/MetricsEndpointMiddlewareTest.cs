@@ -77,7 +77,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     public void GetMetricName_ReturnsExpected()
     {
         var opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureTestManagementOptions>();
 
         var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
 
@@ -142,7 +142,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     public async Task HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
     {
         var opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureTestManagementOptions>();
         var exporter = new SteeltoeExporter(_scraperOptions);
 
         var ep = new MetricsEndpoint(opts, exporter);
@@ -160,7 +160,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     public async Task HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
     {
         var opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureTestManagementOptions>();
 
         var exporter = new SteeltoeExporter(_scraperOptions);
         AggregationManager aggManager = GetTestMetrics(exporter);
@@ -191,8 +191,8 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var options = GetOptionsFromSettings<MetricsEndpointOptions>();
         var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.False(options.ExactMatch);
-        Assert.Equal("/actuator/metrics/{**_}", options.GetContextPath(managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName)));
-        Assert.Equal("/cloudfoundryapplication/metrics/{**_}", options.GetContextPath(managementOptions.Get(EndpointContextNames.CFManagemementOptionName)));
+        Assert.Equal("/actuator/metrics/{**_}", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/metrics/{**_}", options.GetContextPath(managementOptions.Get(CFContext.Name)));
         Assert.Contains("Get", options.AllowedVerbs);
     }
 

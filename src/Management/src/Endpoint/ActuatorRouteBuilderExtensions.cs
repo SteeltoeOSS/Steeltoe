@@ -7,13 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.Internal;
-using Steeltoe.Management.Endpoint.Loggers;
-using Steeltoe.Management.Endpoint.Mappings;
-using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.Endpoint.Refresh;
-using Steeltoe.Management.Endpoint.ThreadDump;
-using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -24,31 +17,6 @@ namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorRouteBuilderExtensions
 {
-    public static (Type MiddlewareType, Type OptionsType) LookupMiddleware(Type endpointType)
-    {
-        //return endpointType switch
-        //{
-        //    not null when endpointType.IsAssignableFrom(typeof(ActuatorEndpoint)) => (typeof(ActuatorHypermediaEndpointMiddleware),
-        //        typeof(IActuatorHypermediaOptions)),
-        //    not null when endpointType.IsAssignableFrom(typeof(DbMigrationsEndpoint)) => (typeof(DbMigrationsEndpointMiddleware), typeof(IDbMigrationsOptions)),
-        //    not null when endpointType.IsAssignableFrom(typeof(EnvEndpoint)) => (typeof(EnvEndpointMiddleware), typeof(IEnvOptions)),
-        //    not null when endpointType.IsAssignableFrom(typeof(HealthEndpointCore)) => (typeof(HealthEndpointMiddleware), typeof(IHealthOptions)),
-        //    not null when endpointType.IsAssignableFrom(typeof(HeapDumpEndpoint)) => (typeof(HeapDumpEndpointMiddleware), typeof(IHeapDumpOptions)),
-        //    not null when endpointType.IsAssignableFrom(typeof(InfoEndpoint)) => (typeof(InfoEndpointMiddleware), typeof(IInfoOptions)),
-        //    not null when endpointType.IsAssignableFrom(typeof(LoggersEndpoint)) => (typeof(LoggersEndpointMiddleware), typeof(ILoggersOptions)),
-        //    not null when endpointType.IsAssignableFrom(typeof(MappingsEndpoint)) => (typeof(MappingsEndpointMiddleware), typeof(IMappingsOptions)),
-        //    not null when endpointType.IsAssignableFrom(typeof(MetricsEndpoint)) => (typeof(MetricsEndpointMiddleware), typeof(IMetricsEndpointOptions)),
-        //    not null when endpointType.IsAssignableFrom(typeof(RefreshEndpoint)) => (typeof(RefreshEndpointMiddleware), typeof(IRefreshOptions)),
-        //    not null when endpointType.IsAssignableFrom(typeof(ThreadDumpEndpoint)) => (typeof(ThreadDumpEndpointMiddleware), typeof(IThreadDumpOptions)),
-        //    not null when endpointType.IsAssignableFrom(typeof(ThreadDumpEndpointV2)) => (typeof(ThreadDumpEndpointMiddlewareV2), typeof(IThreadDumpOptions)),
-        //    not null when endpointType.IsAssignableFrom(typeof(TraceEndpoint)) => (typeof(TraceEndpointMiddleware), typeof(ITraceOptions)),
-        //    not null when endpointType.IsAssignableFrom(typeof(HttpTraceEndpoint)) => (typeof(HttpTraceEndpointMiddleware), typeof(ITraceOptions)),
-        //    not null when endpointType.IsAssignableFrom(typeof(CloudFoundryEndpoint)) => (typeof(CloudFoundryEndpointMiddleware), typeof(ICloudFoundryOptions)),
-        //    _ => throw new InvalidOperationException($"Could not find middleware for Type: {endpointType?.Name} ")
-        //};
-        return (null, null);
-    }
-
     /// <summary>
     /// Generic route builder extension for Actuators.
     /// </summary>
@@ -69,82 +37,14 @@ public static class ActuatorRouteBuilderExtensions
     //{
     //    //MapActuatorEndpoint(endpoints, typeof(TEndpoint), convention);
     //}
-
-    /// <summary>
-    /// Maps all actuators that have been registered in <see cref="IServiceCollection" />.
-    /// </summary>
-    /// <param name="endpoints">
-    /// The endpoint builder.
-    /// </param>
-    /// <param name="convention">
-    /// The convention action to apply.
-    /// </param>
-    public static void MapAllActuators(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention)
+    public static IEndpointConventionBuilder MapTheActuators(this IEndpointRouteBuilder endpoints, ActuatorConventionBuilder conventionBuilder = null)
     {
-        foreach (EndpointMappingEntry endpointEntry in endpoints.ServiceProvider.GetServices<EndpointMappingEntry>())
-        {
-            // Some actuators only work on some platforms. i.e. Windows and Linux
-            // Some actuators have different implementation depending on the MediaTypeVersion
-
-            // Previously those checks where performed here and when adding things to the IServiceCollection
-            // Now all that logic is handled in the IServiceCollection setup; no need to keep code in two different places in sync
-
-            // This function just takes what has been registered, and sets up the endpoints
-            // This keeps this method flexible; new actuators that are added later should automatically become available
-            endpointEntry.SetupConvention(endpoints, convention);
-        }
+        var mapper = endpoints.ServiceProvider.GetService<ActuatorEndpointMapper>();
+        mapper.Map(endpoints, conventionBuilder);
+        return conventionBuilder;
+      
     }
 
-    // New:
-    public static void MapTheActuators(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention = null)
-    {
-       
-    
-        var managementOptions = endpoints.ServiceProvider.GetService<IOptionsMonitor<ManagementEndpointOptions>>();
-        var middlewares = endpoints.ServiceProvider.GetServices<IEndpointMiddleware>();
-
-        var dict = new Dictionary<string,object>();
-        foreach (var name in EndpointContextNames.All) 
-        {
-            var mgmtOption = managementOptions.Get(name);
-            var path = mgmtOption.Path;
-            //TODO: Check if enabled here ...
-            //if (!mgmtOption.Enabled.HasValue || mgmtOption.Enabled.Value != true )
-            //{
-            //    continue;
-            //}
-            if(name == EndpointContextNames.CFManagemementOptionName && !Platform.IsCloudFoundry)
-            {
-                continue;
-            }
-            foreach (var middleware in middlewares)
-            {
-                if (name == EndpointContextNames.ActuatorManagementOptionName && middleware.GetType() == typeof(CloudFoundryEndpointMiddleware)
-                     || name == EndpointContextNames.CFManagemementOptionName && middleware.GetType() == typeof(ActuatorHypermediaEndpointMiddleware))
-                {
-                    continue;
-                }
-                var type = middleware.GetType();
-                RequestDelegate pipeline = endpoints.CreateApplicationBuilder().UseMiddleware(middleware.GetType()).Build();
-                var epPath = middleware.EndpointOptions.GetContextPath(mgmtOption);
-                if(dict.Keys.Contains(epPath))
-                {
-                  //  throw new InvalidOperationException("Found duplicate path for "+ epPath+"context name:"+name );
-                    //epPath = middleware.GetType().Name;
-                }
-                else
-                {
-                   dict.Add(epPath, type);
-
-                    IEndpointConventionBuilder conventionBuilder = endpoints.MapMethods(epPath, middleware.EndpointOptions.AllowedVerbs, pipeline);
-                    convention?.Invoke(conventionBuilder);
-                }
-
-            }
-        }
-        
-    }
-    
     //internal static void MapActuatorEndpoint(this IEndpointRouteBuilder endpoints, Type typeEndpoint, Action<IEndpointConventionBuilder> convention)
     //{
     //    ArgumentGuard.NotNull(endpoints);
@@ -205,4 +105,20 @@ public static class ActuatorRouteBuilderExtensions
     //        }
     //    }
     //}
+}
+
+public class ActuatorConventionBuilder : IEndpointConventionBuilder
+{
+    private readonly List<IEndpointConventionBuilder> _builders = new();
+    public void Add(Action<EndpointBuilder> convention)
+    {
+        foreach(var builder in _builders)
+        {
+            builder.Add(convention);
+        }
+    }
+    public void Add(IEndpointConventionBuilder builder)
+    {
+        _builders.Add(builder);
+    }
 }

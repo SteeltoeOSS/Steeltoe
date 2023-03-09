@@ -35,26 +35,7 @@ public static class EndpointServiceCollectionExtensions
 
         services.AddCommonActuatorServices();
         services.AddInfoActuatorServices();
-     //   services.TryAddSingleton<ActuatorRouter>();
-       // services.TryAddScoped<ActuatorsMiddleware>();
 
-
-
-        //IEnumerable<IInfoContributor> otherInfoContributors = serviceProvider.GetServices<IInfoContributor>();
-
-        //var allContributors = new List<IInfoContributor>
-        //{
-        //    new GitInfoContributor(),
-        //  //  new AppSettingsInfoContributor(configuration),
-        //    new BuildInfoContributor()
-        //};
-
-        //foreach (IInfoContributor o in otherInfoContributors)
-        //{
-        //    allContributors.Add(o);
-        //}
-
-        // services.AddInfoActuator(allContributors.ToArray());
     }
 
     /// <summary>
@@ -62,10 +43,6 @@ public static class EndpointServiceCollectionExtensions
     /// </summary>
     /// <param name="services">
     /// Service collection to add info to.
-    /// </param>
-    /// <param name="configuration">
-    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
-    /// management:endpoints:info).
     /// </param>
     /// <param name="contributors">
     /// Contributors to application information.

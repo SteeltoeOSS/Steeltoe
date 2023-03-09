@@ -11,32 +11,29 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 /// <summary>
 /// Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators.
 /// </summary>
-public class ActuatorEndpoint : /*AbstractEndpoint<Links, string>*/ IEndpoint<Links, string>, IActuatorEndpoint
+public class ActuatorEndpoint : IActuatorEndpoint
 {
     private readonly ILogger<ActuatorEndpoint> _logger;
-    private IOptionsMonitor<HypermediaEndpointOptions> _options;
+    private readonly IOptionsMonitor<HypermediaEndpointOptions> _options;
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOption;
-    private readonly IEnumerable<IEndpointOptions> endpointOptions;
+    private readonly IEnumerable<IEndpointOptions> _endpointOptions;
 
-    //private readonly IActuatorHypermediaOptions _options;
-    // private readonly ActuatorManagementOptions _managementOption;
+    public IEndpointOptions Options => _options.CurrentValue;
 
-    public IOptionsMonitor<HypermediaEndpointOptions> Options => _options;
-
-    IEndpointOptions IEndpoint.Options => _options.CurrentValue;
-
-    public ActuatorEndpoint(IOptionsMonitor<HypermediaEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,IEnumerable<IEndpointOptions> endpointOptions, ILogger<ActuatorEndpoint> logger = null)
-        //: base(options)
+    public ActuatorEndpoint(IOptionsMonitor<HypermediaEndpointOptions> options,
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IEnumerable<IEndpointOptions> endpointOptions,
+        ILogger<ActuatorEndpoint> logger = null)
     {
         _options = options;
         _managementOption = managementOptions;
-        this.endpointOptions = endpointOptions;
+        _endpointOptions = endpointOptions;
         _logger = logger;
     }
 
     public virtual Links Invoke(string baseUrl)
     {
-        var service = new HypermediaService(_managementOption, _options, endpointOptions, _logger);
+        var service = new HypermediaService(_managementOption, _options, _endpointOptions, _logger);
         return service.Invoke(baseUrl);
     }
 }

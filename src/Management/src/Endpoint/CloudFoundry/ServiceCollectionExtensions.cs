@@ -34,32 +34,11 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCloudFoundryActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-
-        //services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(configuration)));
-        //services.TryAddSingleton(provider => provider.GetServices<IManagementOptions>().OfType<CloudFoundryManagementOptions>().First());
-
-        //services.TryAddSingleton<ICloudFoundryOptions>(new CloudFoundryEndpointOptions(configuration));
-
-        //services.TryAddSingleton(provider =>
-        //{
-        //    var options = provider.GetService<ICloudFoundryOptions>();
-
-        //    CloudFoundryManagementOptions managementOptions = provider.GetServices<IManagementOptions>().OfType<CloudFoundryManagementOptions>().Single();
-
-        //    managementOptions.EndpointOptions.Add(options);
-
-        //    return new CloudFoundryEndpoint(options, managementOptions);
-        //});
-        //  services.ConfigureOptions<ConfigureCloudFoundryEndpointOptions>();
-        // services.TryAddEnumerable(ServiceDescriptor.Scoped<IEndpointOptions, CloudFoundryEndpointOptions>(provider => provider.GetRequiredService<IOptionsMonitor<CloudFoundryEndpointOptions>>().CurrentValue));
         services.AddCommonActuatorServices();
         services.ConfigureEndpointOptions<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, CloudFoundryEndpointMiddleware>());
         services.AddSingleton<CloudFoundryEndpointMiddleware>();
-        services.TryAddScoped<CloudFoundryEndpoint>();
-
-        // services.TryAddSingleton<ICloudFoundryEndpoint>(provider => provider.GetRequiredService<CloudFoundryEndpoint>());
-
+        services.TryAddSingleton<ICloudFoundryEndpoint, CloudFoundryEndpoint>();
         return services;
     }
     

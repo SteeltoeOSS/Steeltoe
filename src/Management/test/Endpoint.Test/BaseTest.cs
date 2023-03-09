@@ -126,5 +126,5 @@ public abstract class BaseTest : IDisposable
 
     protected static TOptions GetOptionsFromSettings<TOptions>() => GetOptionsMonitorFromSettings<TOptions>().CurrentValue;
     protected static TOptions GetOptionsFromSettings<TOptions>(Dictionary<string, string> settings) => GetOptionsMonitorFromSettings<TOptions>(settings).CurrentValue;
-    
+
 }

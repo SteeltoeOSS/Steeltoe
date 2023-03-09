@@ -37,7 +37,7 @@ public class CloudFoundryEndpointTest : BaseTest
 
         var cloudFoundryOptions = tc.GetService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
 
-        var ep = tc.GetService<CloudFoundryEndpoint>();
+        var ep = tc.GetService<ICloudFoundryEndpoint>();
 
         Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
@@ -59,7 +59,7 @@ public class CloudFoundryEndpointTest : BaseTest
             services.AddCloudFoundryActuatorServices();
         };
 
-        var ep = tc.GetService<CloudFoundryEndpoint>();
+        var ep = tc.GetService<ICloudFoundryEndpoint>();
 
         Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
@@ -89,7 +89,7 @@ public class CloudFoundryEndpointTest : BaseTest
             });
         };
 
-        var ep = tc.GetService<CloudFoundryEndpoint>();
+        var ep = tc.GetService<ICloudFoundryEndpoint>();
 
         Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
@@ -120,7 +120,7 @@ public class CloudFoundryEndpointTest : BaseTest
             });
         };
 
-        var ep = tc.GetService<CloudFoundryEndpoint>();
+        var ep = tc.GetService<ICloudFoundryEndpoint>();
 
         Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);

@@ -30,14 +30,9 @@ public class Startup
     {
         app.UseRouting();
 
-        //app.UseEndpoints(endpoints =>
-        //{
-        //    endpoints.Map<CloudFoundryEndpoint>();
-        //    endpoints.Map<InfoEndpoint>();
-        //});
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapTheActuators(null);
+            var builder = endpoints.MapTheActuators();
         });
     }
 }

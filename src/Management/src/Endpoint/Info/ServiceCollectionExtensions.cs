@@ -34,12 +34,9 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        //services.ConfigureOptions<ConfigureInfoEndpointOptions>();
-        //services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointOptions, InfoEndpointOptions>(provider => provider.GetRequiredService<IOptionsMonitor<InfoEndpointOptions>>().CurrentValue));
 
         services.ConfigureEndpointOptions<InfoEndpointOptions, ConfigureInfoEndpointOptions>();
-        services.TryAddSingleton<InfoEndpoint>();
-        services.TryAddSingleton<IInfoEndpoint>(provider => provider.GetRequiredService<InfoEndpoint>()); //TOdo: remove?
+        services.TryAddSingleton<IInfoEndpoint,InfoEndpoint>();
 
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IEndpointMiddleware, InfoEndpointMiddleware>());
         services.AddScoped<InfoEndpointMiddleware>();

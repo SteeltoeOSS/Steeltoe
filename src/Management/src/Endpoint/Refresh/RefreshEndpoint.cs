@@ -9,21 +9,16 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-public class RefreshEndpoint : IEndpoint<IList<string>>, IRefreshEndpoint
+public class RefreshEndpoint :  IRefreshEndpoint
 {
     private readonly IOptionsMonitor<RefreshEndpointOptions> _options;
 
-    // private readonly IRefreshOptions _options;
     private readonly IConfiguration _configuration;
 
-    public IOptionsMonitor<RefreshEndpointOptions> Options => _options;
+    public IEndpointOptions Options => _options.CurrentValue;
 
-    IEndpointOptions IEndpoint.Options => _options.CurrentValue;
-
-    // public new IRefreshOptions Options => options as IRefreshOptions;
 
     public RefreshEndpoint(IOptionsMonitor<RefreshEndpointOptions> options, IConfiguration configuration, ILogger<RefreshEndpoint> logger = null)
-       // : base(options)
     {
         ArgumentGuard.NotNull(configuration);
         _options = options;

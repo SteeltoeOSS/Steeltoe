@@ -9,20 +9,17 @@ using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsEndpoint : IEndpoint<IMetricsResponse, MetricsRequest>, IMetricsEndpoint
+public class MetricsEndpoint : IMetricsEndpoint
 {
-    private readonly IOptionsMonitor<MetricsEndpointOptions> options;
+    private readonly IOptionsMonitor<MetricsEndpointOptions> _options;
     private readonly SteeltoeExporter _exporter;
     private readonly ILogger<MetricsEndpoint> _logger;
     
-   // public IOptionsMonitor<MetricsEndpointOptions> Options { get; }
-
-    IEndpointOptions IEndpoint.Options => options.CurrentValue;
+    public IEndpointOptions Options => _options.CurrentValue;
 
     public MetricsEndpoint(IOptionsMonitor<MetricsEndpointOptions> options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
-       // : base(options)
     {
-        this.options = options;
+        _options = options;
         _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter), $"Exporters must contain a single {nameof(SteeltoeExporter)}.");
         _logger = logger;
     }

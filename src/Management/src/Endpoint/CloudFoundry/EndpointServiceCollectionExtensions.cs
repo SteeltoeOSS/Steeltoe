@@ -16,6 +16,5 @@ public static class EndpointServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         services.AddCommonActuatorServices();
         services.AddCloudFoundryActuatorServices();
-       // services.AddActuatorEndpointMapping<CloudFoundryEndpoint>();
     }
 }

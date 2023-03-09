@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-public class RefreshEndpointOptions: EndpointOptionsBase //, IRefreshOptions
+public class RefreshEndpointOptions: EndpointOptionsBase 
 {
     private static bool defaultReturnConfiguration = true;
 

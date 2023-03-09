@@ -11,20 +11,17 @@ using Steeltoe.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class EnvEndpoint : /*AbstractEndpoint<EnvironmentDescriptor>*/ IEndpoint<EnvironmentDescriptor>, IEnvEndpoint
+public class EnvEndpoint :  IEnvEndpoint
 {
     private readonly IOptionsMonitor<EnvEndpointOptions> _options;
     private readonly IConfiguration _configuration;
     private readonly Sanitizer _sanitizer;
 
     private readonly IHostEnvironment _env;
-    
-    IEndpointOptions IEndpoint.Options => _options.CurrentValue;
 
-    //  public new IEnvOptions Options => options as IEnvOptions;
+    public IEndpointOptions Options => _options.CurrentValue;
 
     public EnvEndpoint(IOptionsMonitor<EnvEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILogger<EnvEndpoint> logger = null)
-       // : base(options)
     {
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(env);

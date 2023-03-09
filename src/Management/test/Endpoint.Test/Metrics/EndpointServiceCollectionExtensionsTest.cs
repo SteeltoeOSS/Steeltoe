@@ -50,7 +50,7 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
         List<IDiagnosticObserver> list = observers.ToList();
         Assert.NotEmpty(list); // Changed how this works Todo: add a new test to verify functionality
 
-        var ep = serviceProvider.GetService<MetricsEndpoint>();
+        var ep = serviceProvider.GetService<IMetricsEndpoint>();
         Assert.NotNull(ep);
     }
 

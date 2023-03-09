@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public class CloudFoundryEndpointOptions : EndpointOptionsBase//, ICloudFoundryOptions
+public class CloudFoundryEndpointOptions : EndpointOptionsBase
 {
     private const bool DefaultValidateCertificates = true;
 

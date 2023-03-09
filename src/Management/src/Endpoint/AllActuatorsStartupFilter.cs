@@ -10,17 +10,19 @@ using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.ManagementPort;
-using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint;
 
 public class AllActuatorsStartupFilter : IStartupFilter
 {
-    private readonly Action<IEndpointConventionBuilder> _configureConventions;
+    private readonly ActuatorConventionBuilder _conventionBuilder;
 
-    public AllActuatorsStartupFilter(Action<IEndpointConventionBuilder> configureConventions = null)
+    //private readonly Action<IEndpointConventionBuilder> _configureConventions;
+
+    public AllActuatorsStartupFilter(ActuatorConventionBuilder conventionBuilder)
     {
-        _configureConventions = configureConventions;
+        this._conventionBuilder = conventionBuilder;
+        // _configureConventions = configureConventions;
     }
 
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
@@ -42,7 +44,7 @@ public class AllActuatorsStartupFilter : IStartupFilter
 
             app.UseEndpoints(endpoints => 
             {
-                endpoints.MapTheActuators(_configureConventions);
+               endpoints.MapTheActuators(_conventionBuilder);
             });
 
             app.ApplicationServices.InitializeAvailability();

@@ -13,7 +13,6 @@ public class ConfigureCloudFoundryEndpointOptions : ConfigureEndpointOptions<Clo
     private const string ManagementInfoPrefix = "management:endpoints:cloudfoundry";
     private const string VcapApplicationIdKey = "vcap:application:application_id";
     private const string VcapApplicationCloudfoundryApiKey = "vcap:application:cf_api";
-   // public EndpointOptionsBase EndpointOptions { get; set; }
 
     public ConfigureCloudFoundryEndpointOptions(IConfiguration configuration): base(configuration, ManagementInfoPrefix, string.Empty)
     {

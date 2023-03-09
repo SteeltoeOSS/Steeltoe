@@ -37,8 +37,8 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HandleEntityFrameworkRequestAsync_ReturnsExpected()
     {
         var opts = GetOptionsMonitorFromSettings<DbMigrationsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(); //.Get(EndpointContextNames.ActuatorManagementOptionName);
-        managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName).EndpointOptions.Add(opts.CurrentValue);
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(); //.Get(ActuatorContextName.Name);
+        managementOptions.Get(ActuatorContext.Name).EndpointOptions.Add(opts.CurrentValue);
         //managementOptions.EndpointOptions.Add(opts);
         var container = new ServiceCollection();
         container.AddScoped<MockDbContext>();
@@ -126,13 +126,13 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = new DbMigrationsEndpointOptions();
+        var options = GetOptionsFromSettings<DbMigrationsEndpointOptions>();
         var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        var actuatorMgmtOptions = mgmtOptions.Get(EndpointContextNames.ActuatorManagementOptionName);
+        var actuatorMgmtOptions = mgmtOptions.Get(ActuatorContext.Name);
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator/dbmigrations", options.GetContextPath(actuatorMgmtOptions));
 
-        var cfMgmtOptions = mgmtOptions.Get(EndpointContextNames.CFManagemementOptionName);
+        var cfMgmtOptions = mgmtOptions.Get(CFContext.Name);
         Assert.Equal("/cloudfoundryapplication/dbmigrations", options.GetContextPath(cfMgmtOptions));
         Assert.Contains("Get", options.AllowedVerbs);
     }

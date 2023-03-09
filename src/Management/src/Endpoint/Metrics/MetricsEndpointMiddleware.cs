@@ -14,15 +14,15 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>, IMiddleware
+public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>
 {
-    public MetricsEndpointMiddleware(/*RequestDelegate next,*/ MetricsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public MetricsEndpointMiddleware(IMetricsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<MetricsEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
     }
     
-    public Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {

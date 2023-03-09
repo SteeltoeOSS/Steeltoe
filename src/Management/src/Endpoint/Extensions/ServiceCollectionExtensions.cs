@@ -2,11 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.Internal;
-
 namespace Steeltoe.Management.Endpoint.Extensions;
 
 public static class ServiceCollectionExtensions

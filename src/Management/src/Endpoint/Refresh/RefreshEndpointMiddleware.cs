@@ -11,15 +11,15 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>, IMiddleware
+public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
 {
-    public RefreshEndpointMiddleware(/*RequestDelegate next, */RefreshEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public RefreshEndpointMiddleware(IRefreshEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<RefreshEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
     }
     
-    public Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {

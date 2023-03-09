@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
@@ -12,7 +13,7 @@ public class CloudfoundryManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(EndpointContextNames.CFManagemementOptionName);
+        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(CFContext.Name);
         Assert.Equal("/cloudfoundryapplication", opts.Path);
     }
 
@@ -26,7 +27,7 @@ public class CloudfoundryManagementOptionsTest : BaseTest
         };
 
 
-        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(EndpointContextNames.CFManagemementOptionName);
+        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(CFContext.Name);
 
         Assert.Equal("/cloudfoundryapplication", opts.Path);
         Assert.False(opts.Enabled);
@@ -43,7 +44,7 @@ public class CloudfoundryManagementOptionsTest : BaseTest
             ["management:endpoints:path"] = "/management"
         };
 
-        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(EndpointContextNames.CFManagemementOptionName);
+        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(CFContext.Name);
 
         Assert.Equal("/cloudfoundryapplication", opts.Path);
         Assert.False(opts.Enabled);

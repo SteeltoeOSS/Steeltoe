@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-public class DbMigrationsEndpoint : /* AbstractEndpoint<Dictionary<string, DbMigrationsDescriptor>>,*/ IEndpoint<Dictionary<string, DbMigrationsDescriptor>>, IDbMigrationsEndpoint
+public class DbMigrationsEndpoint :  IDbMigrationsEndpoint
 {
     internal static readonly Type DbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
 
@@ -38,7 +38,6 @@ public class DbMigrationsEndpoint : /* AbstractEndpoint<Dictionary<string, DbMig
 
     public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, DbMigrationsEndpointHelper endpointHelper,
         ILogger<DbMigrationsEndpoint> logger = null)
-      //  : base(options)
     {
         _options = options;
         _container = container;
@@ -46,11 +45,9 @@ public class DbMigrationsEndpoint : /* AbstractEndpoint<Dictionary<string, DbMig
         _logger = logger;
     }
 
-    public IOptionsMonitor<DbMigrationsEndpointOptions> Options => _options;
+    public IEndpointOptions Options => _options.CurrentValue;
 
-    IEndpointOptions IEndpoint.Options => _options.CurrentValue;
-
-    public /*override*/ Dictionary<string, DbMigrationsDescriptor> Invoke()
+    public Dictionary<string, DbMigrationsDescriptor> Invoke()
     {
         return DoInvoke();
     }

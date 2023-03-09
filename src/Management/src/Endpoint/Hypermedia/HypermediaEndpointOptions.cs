@@ -6,17 +6,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
-public class HypermediaEndpointOptions: EndpointOptionsBase//, IActuatorHypermediaOptions
+public class HypermediaEndpointOptions : EndpointOptionsBase
 {
-    //public EndpointOptionsBase EndpointSharedOptions { get; set; }
-
-    //public HypermediaEndpointOptions()
-    //{
-    //    Id = string.Empty;
-    //}
-
-    //public HypermediaEndpointOptions(IConfiguration configuration)
-    //    : base(ManagementInfoPrefix, configuration)
-    //{
-    //}
 }

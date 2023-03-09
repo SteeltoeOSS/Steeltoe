@@ -41,6 +41,6 @@ public class Startup
     {
         app.UseRouting();
      //   app.UseMiddleware<ActuatorsMiddleware>();
-        app.UseEndpoints(endpoints => endpoints.MapTheActuators(null));   
+        app.UseEndpoints(endpoints => endpoints.MapTheActuators());   
     }
 }

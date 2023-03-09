@@ -160,8 +160,8 @@ public class EndpointMiddlewareTest : BaseTest
         var options = GetOptionsFromSettings<LoggersEndpointOptions>();
         var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.False(options.ExactMatch);
-        Assert.Equal("/actuator/loggers/{**_}", options.GetContextPath(managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName)));
-        Assert.Equal("/cloudfoundryapplication/loggers/{**_}", options.GetContextPath(managementOptions.Get(EndpointContextNames.CFManagemementOptionName)));
+        Assert.Equal("/actuator/loggers/{**_}", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/loggers/{**_}", options.GetContextPath(managementOptions.Get(CFContext.Name)));
 
         Assert.Collection(options.AllowedVerbs, verb => Assert.Contains("Get", verb, StringComparison.Ordinal),
             verb => Assert.Contains("Post", verb, StringComparison.Ordinal));

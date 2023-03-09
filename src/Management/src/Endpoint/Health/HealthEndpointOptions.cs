@@ -8,7 +8,7 @@ using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthEndpointOptions:  EndpointOptionsBase//, IHealthOptions 
+public class HealthEndpointOptions:  EndpointOptionsBase
 {
     public ShowDetails ShowDetails { get; set; }
 

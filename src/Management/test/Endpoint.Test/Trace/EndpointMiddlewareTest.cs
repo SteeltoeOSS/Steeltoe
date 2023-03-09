@@ -90,8 +90,8 @@ public class EndpointMiddlewareTest : BaseTest
         var options = GetOptionsFromSettings<TraceEndpointOptions>();
         var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/httptrace", options.GetContextPath(managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName)));
-        Assert.Equal("/cloudfoundryapplication/httptrace", options.GetContextPath(managementOptions.Get(EndpointContextNames.CFManagemementOptionName)));
+        Assert.Equal("/actuator/httptrace", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/httptrace", options.GetContextPath(managementOptions.Get(CFContext.Name)));
         Assert.Contains("Get", options.AllowedVerbs);
     }
 
@@ -101,8 +101,8 @@ public class EndpointMiddlewareTest : BaseTest
         var options = GetOptionsMonitorFromSettings<TraceEndpointOptions>().Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
         var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/trace", options.GetContextPath(managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName)));
-        Assert.Equal("/cloudfoundryapplication/trace", options.GetContextPath(managementOptions.Get(EndpointContextNames.CFManagemementOptionName)));
+        Assert.Equal("/actuator/trace", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/trace", options.GetContextPath(managementOptions.Get(CFContext.Name)));
         Assert.Contains("Get", options.AllowedVerbs);
     }
 

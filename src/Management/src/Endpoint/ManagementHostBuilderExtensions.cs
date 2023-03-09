@@ -312,7 +312,8 @@ public static class ManagementHostBuilderExtensions
         return hostBuilder.AddDynamicLogging().AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddAllActuators(context.Configuration, mediaTypeVersion, buildCorsPolicy);
-            ActivateActuatorEndpoints(collection, configureEndpoints);
+            var endpointConventionBuilder = ActivateActuatorEndpoints(collection);
+            configureEndpoints?.Invoke(endpointConventionBuilder);
         });
     }
 
@@ -325,7 +326,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="configureEndpoints">
     /// IEndpointConventionBuilder customizations (such as auth policy customization).
     /// </param>
-    public static void ActivateActuatorEndpoints(this IServiceCollection collection, Action<IEndpointConventionBuilder> configureEndpoints = null)
+    public static IEndpointConventionBuilder ActivateActuatorEndpoints(this IServiceCollection collection)
     {
         // check for existing AllActuatorsStartupFilter
         //IEnumerable<ServiceDescriptor> existingStartupFilters = collection.Where(t =>
@@ -353,11 +354,12 @@ public static class ManagementHostBuilderExtensions
         //}
         
         IEnumerable<ServiceDescriptor> existingStartupFilters = collection.Where(t => t.ImplementationFactory?.Method?.ReturnType == typeof(AllActuatorsStartupFilter));
-        
-        if (!existingStartupFilters.Any())
+        var actuatorConventionBuilder = new ActuatorConventionBuilder();
+         if (!existingStartupFilters.Any())
         {
-            collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(provider => new AllActuatorsStartupFilter(configureEndpoints));
+            collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(provider => new AllActuatorsStartupFilter(actuatorConventionBuilder));
         }
+        return (IEndpointConventionBuilder) actuatorConventionBuilder;
     }
 
     private static IHostBuilder AddManagementPort(this IHostBuilder hostBuilder)

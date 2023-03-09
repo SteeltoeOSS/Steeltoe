@@ -52,7 +52,7 @@ public class EndpointServiceCollectionTest : BaseTest
             item => item.GetType() == typeof(GitInfoContributor) || item.GetType() == typeof(AppSettingsInfoContributor) ||
                 item.GetType() == typeof(BuildInfoContributor) || item is TestInfoContributor);
 
-        var ep = serviceProvider.GetService<InfoEndpoint>();
+        var ep = serviceProvider.GetService<IInfoEndpoint>();
         Assert.NotNull(ep);
     }
 }

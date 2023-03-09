@@ -48,7 +48,7 @@ public class MetricsEndpointTest : BaseTest
 
             try
             {
-                var ep = tc.GetService<MetricsEndpoint>();
+                var ep = tc.GetService<IMetricsEndpoint>() as MetricsEndpoint;
                 Counter<long> requests = SteeltoeMetrics.Meter.CreateCounter<long>("http.server.requests");
                 requests.Add(1);
                 Counter<double> memory = SteeltoeMetrics.Meter.CreateCounter<double>("gc.memory.used");
@@ -83,7 +83,7 @@ public class MetricsEndpointTest : BaseTest
 
             try
             {
-                var ep = tc.GetService<MetricsEndpoint>();
+                var ep = tc.GetService<IMetricsEndpoint>() as MetricsEndpoint;
                 IMetricsResponse result = ep.Invoke(null);
                 Assert.NotNull(result);
 
@@ -114,7 +114,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<MetricsEndpoint>();
+            var ep = tc.GetService<IMetricsEndpoint>();
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.test5");
             long allKeysSum = 0;
@@ -169,8 +169,6 @@ public class MetricsEndpointTest : BaseTest
             configuration.AddInMemoryCollection(new Dictionary<string, string>
             {
                 ["management:endpoints:metrics:includedmetrics:0"] = "AdditionalTestMeter:AdditionalInstrument"
-
-                //["management:metrics:observer:includedmetrics:0"] = "AdditionalTestMeter:AdditionalInstrument"
             });
         };
 
@@ -185,7 +183,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<MetricsEndpoint>();
+            var ep = tc.GetService<IMetricsEndpoint>() as MetricsEndpoint;
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.test5");
             var additionalMeter = new Meter("AdditionalTestMeter");
@@ -252,7 +250,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<MetricsEndpoint>();
+            var ep = tc.GetService<IMetricsEndpoint>() as MetricsEndpoint;
 
             Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test7");
             counter.Add(100);
@@ -286,7 +284,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<MetricsEndpoint>();
+            var ep = tc.GetService<IMetricsEndpoint>() as MetricsEndpoint;
             Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test2");
 
             var v1Tags = new Dictionary<string, object>
@@ -364,7 +362,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<MetricsEndpoint>();
+            var ep = tc.GetService<IMetricsEndpoint>() as MetricsEndpoint;
 
             Histogram<double> testMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("test.test1");
 
@@ -543,7 +541,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<MetricsEndpoint>();
+            var ep = tc.GetService<IMetricsEndpoint>();
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.total");
 

@@ -34,7 +34,7 @@ public class Startup
         {
             //endpoints.Map<InfoEndpoint>();
 
-            app.UseEndpoints(endpoints => endpoints.MapTheActuators(null));
+            app.UseEndpoints(endpoints => endpoints.MapTheActuators());
         });
     }
 }

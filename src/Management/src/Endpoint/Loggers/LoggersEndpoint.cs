@@ -10,7 +10,7 @@ using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public class LoggersEndpoint : IEndpoint<Dictionary<string, object>, LoggersChangeRequest>, ILoggersEndpoint
+public class LoggersEndpoint : ILoggersEndpoint
 {
     private static readonly List<string> Levels = new()
     {
@@ -27,14 +27,9 @@ public class LoggersEndpoint : IEndpoint<Dictionary<string, object>, LoggersChan
     private readonly IOptionsMonitor<LoggersEndpointOptions> _options;
     private readonly IDynamicLoggerProvider _cloudFoundryLoggerProvider;
 
-    public IOptionsMonitor<LoggersEndpointOptions> Options => _options;
-
-    IEndpointOptions IEndpoint.Options => _options.CurrentValue;
-
-    //protected new ILoggersOptions Options => options as ILoggersOptions;
+    public IEndpointOptions Options => _options.CurrentValue;
 
     public LoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, IDynamicLoggerProvider cloudFoundryLoggerProvider = null, ILogger<LoggersEndpoint> logger = null)
-        //: base(options)
     {
         _options = options;
         _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider;

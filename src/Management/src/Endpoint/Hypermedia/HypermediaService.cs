@@ -24,7 +24,7 @@ public class HypermediaService
         ArgumentGuard.NotNull(options);
 
         _logger = logger;
-        _managementOptions = managementOptions.Get(EndpointContextNames.ActuatorManagementOptionName);
+        _managementOptions = managementOptions.Get(ActuatorContext.Name);
         this.endpointOptions = endpointOptions;
          _options = options.CurrentValue;
     }
@@ -35,7 +35,7 @@ public class HypermediaService
         this.endpointOptions = endpointOptions;
         _logger = logger;
         _options = options.CurrentValue;
-        _managementOptions = managementOptions.Get(EndpointContextNames.CFManagemementOptionName);
+        _managementOptions = managementOptions.Get(CFContext.Name);
     }
     
     public Links Invoke(string baseUrl)

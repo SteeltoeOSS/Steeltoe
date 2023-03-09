@@ -19,10 +19,8 @@ public class CloudFoundrySecurityMiddleware
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
 
-    //private readonly ICloudFoundryOptions _options;
     private readonly ManagementEndpointOptions _managementOptions;
 
-    // private readonly IManagementOptions _managementOptions;
     private readonly SecurityBase _base;
 
     public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
@@ -30,9 +28,9 @@ public class CloudFoundrySecurityMiddleware
         _next = next;
         _logger = logger;
         _options = options;
-        _managementOptions = managementOptions.Get(EndpointContextNames.CFManagemementOptionName);
+        _managementOptions = managementOptions.Get(CFContext.Name);
 
-        _base = new SecurityBase(options.CurrentValue, managementOptions.Get(EndpointContextNames.CFManagemementOptionName), logger);
+        _base = new SecurityBase(options.CurrentValue, managementOptions.Get(CFContext.Name), logger);
     }
     
     public async Task InvokeAsync(HttpContext context)
@@ -42,8 +40,6 @@ public class CloudFoundrySecurityMiddleware
         var endpointOptions = _options.CurrentValue;
         _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);
 
-    //    bool isEndpointExposed = _managementOptions == null || endpointOptions.IsExposed(_managementOptions); I think this is a bug
-    // Should not be checking Exposure settings 
 
         if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptions) && _base.IsCloudFoundryRequest(context.Request.Path))
         {

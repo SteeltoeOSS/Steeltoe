@@ -13,7 +13,7 @@ using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthEndpointCore:  /*bstractEndpoint<HealthEndpointResponse, ISecurityContext>*/ IEndpoint<HealthEndpointResponse, ISecurityContext>, IHealthEndpoint
+public class HealthEndpointCore:   IHealthEndpoint
 {
     private readonly IOptionsMonitor<HealthCheckServiceOptions> _serviceOptions;
     private readonly IServiceProvider _provider;
@@ -21,15 +21,10 @@ public class HealthEndpointCore:  /*bstractEndpoint<HealthEndpointResponse, ISec
     private readonly IHealthAggregator _aggregator;
     private readonly IList<IHealthContributor> _contributors;
     private readonly ILogger<HealthEndpointCore> _logger;
-
-    //public IOptionsMonitor<HealthEndpointOptions> Options => _options;
-
-    //public new IHealthOptions Options { get; }  => _options as IHealthOptions;
     public IEndpointOptions Options => _options.CurrentValue;
 
     public HealthEndpointCore(IOptionsMonitor<HealthEndpointOptions> options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
         IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpointCore> logger = null)
- //   : base(options, aggregator, contributors, logger)
  
     {
         ArgumentGuard.NotNull(options);
