@@ -26,14 +26,15 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
         });
 
         builder.AddPostgreSql();
-        builder.Services.AddDbContext<GoodDbContext>(options => PostgreSqlDbContextOptionsBuilderExtensions.UseNpgsql(options, builder.Configuration));
+        builder.Services.Configure<PostgreSqlOptions>(options => options.ConnectionString += ";Include Error Detail=true");
+        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseNpgsql(serviceProvider));
 
         await using WebApplication app = builder.Build();
 
         await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
         string connectionString = dbContext.Database.GetConnectionString();
 
-        connectionString.Should().Be("Host=localhost;Database=myDb;Username=myUser;Password=myPass;Log Parameters=True");
+        connectionString.Should().Be("Host=localhost;Database=myDb;Username=myUser;Password=myPass;Log Parameters=True;Include Error Detail=true");
     }
 
     [Fact]
@@ -47,16 +48,15 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
         });
 
         builder.AddPostgreSql();
-
-        builder.Services.AddDbContext<GoodDbContext>(options =>
-            PostgreSqlDbContextOptionsBuilderExtensions.UseNpgsql(options, builder.Configuration, "myPostgreSqlService"));
+        builder.Services.Configure<PostgreSqlOptions>("myPostgreSqlService", options => options.ConnectionString += ";Include Error Detail=true");
+        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseNpgsql(serviceProvider, "myPostgreSqlService"));
 
         await using WebApplication app = builder.Build();
 
         await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
         string connectionString = dbContext.Database.GetConnectionString();
 
-        connectionString.Should().Be("Host=localhost;Database=myDb;Username=myUser;Password=myPass;Log Parameters=True");
+        connectionString.Should().Be("Host=localhost;Database=myDb;Username=myUser;Password=myPass;Log Parameters=True;Include Error Detail=true");
     }
 
     [Fact]
@@ -64,15 +64,11 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.AddPostgreSql();
-
-        builder.Services.AddDbContext<GoodDbContext>(options =>
-            PostgreSqlDbContextOptionsBuilderExtensions.UseNpgsql(options, builder.Configuration, "unknownService"));
+        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseNpgsql(serviceProvider, "unknownService"));
 
         await using WebApplication app = builder.Build();
 
         Action action = () => app.Services.GetRequiredService<GoodDbContext>();
-
-        action.Should().ThrowExactly<InvalidOperationException>()
-            .WithMessage("Connection string for service binding 'unknownService' not found. Please verify that you have called AddPostgreSql() first.");
+        action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Connection string for service binding 'unknownService' not found.");
     }
 }

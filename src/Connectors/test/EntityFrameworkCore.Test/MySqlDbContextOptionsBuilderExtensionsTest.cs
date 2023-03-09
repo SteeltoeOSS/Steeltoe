@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Connector.MySql;
 using Xunit;
-using MySqlDbContextOptionsBuilderExtensions = Steeltoe.Connector.EntityFrameworkCore.MySql.MySqlDbContextOptionsBuilderExtensions;
+using SteeltoeExtensions = Steeltoe.Connector.EntityFrameworkCore.MySql.MySqlDbContextOptionsBuilderExtensions;
 
 namespace Steeltoe.Connector.EntityFrameworkCore.Test;
 
@@ -26,14 +26,15 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         });
 
         builder.AddMySql();
-        builder.Services.AddDbContext<GoodDbContext>(options => MySqlDbContextOptionsBuilderExtensions.UseMySql(options, builder.Configuration));
+        builder.Services.Configure<MySqlOptions>(options => options.ConnectionString += ";Use Compression=false");
+        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider));
 
         await using WebApplication app = builder.Build();
 
         await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
         string connectionString = dbContext.Database.GetConnectionString();
 
-        connectionString.Should().Be("server=localhost;database=myDb;user id=steeltoe;password=steeltoe;connectiontimeout=15");
+        connectionString.Should().Be("server=localhost;database=myDb;user id=steeltoe;password=steeltoe;connectiontimeout=15;Use Compression=false");
     }
 
     [Fact]
@@ -47,16 +48,15 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         });
 
         builder.AddMySql();
-
-        builder.Services.AddDbContext<GoodDbContext>(options =>
-            MySqlDbContextOptionsBuilderExtensions.UseMySql(options, builder.Configuration, "myMySqlService"));
+        builder.Services.Configure<MySqlOptions>("myMySqlService", options => options.ConnectionString += ";Use Compression=false");
+        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider, "myMySqlService"));
 
         await using WebApplication app = builder.Build();
 
         await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
         string connectionString = dbContext.Database.GetConnectionString();
 
-        connectionString.Should().Be("server=localhost;database=myDb;user id=steeltoe;password=steeltoe;connectiontimeout=15");
+        connectionString.Should().Be("server=localhost;database=myDb;user id=steeltoe;password=steeltoe;connectiontimeout=15;Use Compression=false");
     }
 
     [Fact]
@@ -64,15 +64,11 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.AddMySql();
-
-        builder.Services.AddDbContext<GoodDbContext>(options =>
-            MySqlDbContextOptionsBuilderExtensions.UseMySql(options, builder.Configuration, "unknownService"));
+        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider, "unknownService"));
 
         await using WebApplication app = builder.Build();
 
         Action action = () => app.Services.GetRequiredService<GoodDbContext>();
-
-        action.Should().ThrowExactly<InvalidOperationException>()
-            .WithMessage("Connection string for service binding 'unknownService' not found. Please verify that you have called AddMySql() first.");
+        action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Connection string for service binding 'unknownService' not found.");
     }
 }
