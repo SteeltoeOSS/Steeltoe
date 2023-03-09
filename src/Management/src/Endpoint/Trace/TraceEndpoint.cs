@@ -8,18 +8,15 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class TraceEndpoint : IEndpoint<List<TraceResult>>, ITraceEndpoint
+public class TraceEndpoint :  ITraceEndpoint
 {
     private readonly ITraceRepository _traceRepo;
 
-    private IOptionsMonitor<TraceEndpointOptions> _options { get; }
+    private readonly IOptionsMonitor<TraceEndpointOptions> _options;
 
-    IEndpointOptions IEndpoint.Options => _options.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
-
-    // public new ITraceOptions Options => options as ITraceOptions;
+    public IEndpointOptions Options => _options.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
 
     public TraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null)
-       // : base(options)
     {
         ArgumentGuard.NotNull(traceRepository);
         _options = options;

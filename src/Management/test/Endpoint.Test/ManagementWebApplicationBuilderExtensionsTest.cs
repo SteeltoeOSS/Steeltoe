@@ -289,7 +289,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<HttpTraceEndpoint>());
+        Assert.Single(host.Services.GetServices<IHttpTraceEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/httptrace", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

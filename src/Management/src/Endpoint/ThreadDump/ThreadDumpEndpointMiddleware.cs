@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 
 public class ThreadDumpEndpointMiddleware : EndpointMiddleware<List<ThreadInfo>>
 {
-    public ThreadDumpEndpointMiddleware(/*RequestDelegate next,*/ ThreadDumpEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public ThreadDumpEndpointMiddleware(IThreadDumpEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<ThreadDumpEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {

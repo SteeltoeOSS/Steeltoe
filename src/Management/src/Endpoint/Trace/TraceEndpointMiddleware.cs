@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
 {
-    public TraceEndpointMiddleware(TraceEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public TraceEndpointMiddleware(ITraceEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<TraceEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
