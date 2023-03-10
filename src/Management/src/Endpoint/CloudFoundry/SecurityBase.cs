@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Options;
@@ -25,12 +24,10 @@ public class SecurityBase
     public const string AuthorizationHeader = "Authorization";
     public const string Bearer = "bearer";
     public const string ReadSensitiveData = "read_sensitive_data";
-    private readonly CloudFoundryEndpointOptions _options;
 
-    //private readonly ICloudFoundryOptions _options;
+    private readonly CloudFoundryEndpointOptions _options;
     private readonly ManagementEndpointOptions _managementOptions;
 
-    //private readonly IManagementOptions _managementOptions;
     private readonly ILogger _logger;
     private HttpClient _httpClient;
 
@@ -44,7 +41,7 @@ public class SecurityBase
 
     public bool IsCloudFoundryRequest(string requestPath)
     {
-        var optionsPath = _options.Path;
+        string optionsPath = _options.Path;
 
         string contextPath = _managementOptions == null ? optionsPath : _managementOptions.Path;
         return requestPath.StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
@@ -63,7 +60,7 @@ public class SecurityBase
 
         return string.Empty;
     }
-    
+
     public async Task<SecurityResult> GetPermissionsAsync(string token)
     {
         if (string.IsNullOrEmpty(token))
@@ -105,7 +102,7 @@ public class SecurityBase
     public async Task<Permissions> GetPermissionsAsync(HttpResponseMessage response)
     {
         string json = string.Empty;
-        var permissions = Permissions.None;
+        Permissions permissions = Permissions.None;
 
         try
         {
@@ -113,7 +110,7 @@ public class SecurityBase
 
             _logger?.LogDebug("GetPermissionsAsync returned json: {json}", SecurityUtilities.SanitizeInput(json));
 
-            var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
+            Dictionary<string, JsonElement> result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
             if (result.TryGetValue(ReadSensitiveData, out JsonElement perm))
             {

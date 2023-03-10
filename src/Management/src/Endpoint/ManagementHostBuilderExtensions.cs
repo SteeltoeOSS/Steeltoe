@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Hosting;
@@ -88,7 +87,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddHealthActuator( contributors);
+            collection.AddHealthActuator(contributors);
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -109,7 +108,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddHealthActuator( aggregator, contributors);
+            collection.AddHealthActuator(aggregator, contributors);
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -312,7 +311,7 @@ public static class ManagementHostBuilderExtensions
         return hostBuilder.AddDynamicLogging().AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddAllActuators(context.Configuration, mediaTypeVersion, buildCorsPolicy);
-            var endpointConventionBuilder = ActivateActuatorEndpoints(collection);
+            IEndpointConventionBuilder endpointConventionBuilder = ActivateActuatorEndpoints(collection);
             configureEndpoints?.Invoke(endpointConventionBuilder);
         });
     }
@@ -323,43 +322,18 @@ public static class ManagementHostBuilderExtensions
     /// <param name="collection">
     /// <see cref="IServiceCollection" /> that has actuators to activate.
     /// </param>
-    /// <param name="configureEndpoints">
-    /// IEndpointConventionBuilder customizations (such as auth policy customization).
-    /// </param>
     public static IEndpointConventionBuilder ActivateActuatorEndpoints(this IServiceCollection collection)
     {
         // check for existing AllActuatorsStartupFilter
-        //IEnumerable<ServiceDescriptor> existingStartupFilters = collection.Where(t =>
-        //    t.ImplementationType == typeof(AllActuatorsStartupFilter) || t.ImplementationFactory?.Method?.ReturnType == typeof(AllActuatorsStartupFilter));
+        IEnumerable<ServiceDescriptor> existingStartupFilters = collection.Where(t =>
+            t.ImplementationType == typeof(AllActuatorsStartupFilter) || t.ImplementationFactory?.Method?.ReturnType == typeof(AllActuatorsStartupFilter));
 
-        //// if we have an Action<IEndpointConventionBuilder> and there isn't one, add a new one
-        //if (configureEndpoints != null)
-        //{
-        //    // remove any existing AllActuatorsStartupFilter registration
-        //    foreach (ServiceDescriptor f in existingStartupFilters.ToList())
-        //    {
-        //        collection.Remove(f);
-        //    }
-
-        //    // add a registration that includes this endpoint configuration
-        //    collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(provider => new AllActuatorsStartupFilter(configureEndpoints));
-        //}
-        //else
-        //{
-        //    // make sure there is (only) one AllActuatorsStartupFilter
-        //    if (!existingStartupFilters.Any())
-        //    {
-        //        collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>();
-        //    }
-        //}
-        
-        IEnumerable<ServiceDescriptor> existingStartupFilters = collection.Where(t => t.ImplementationFactory?.Method?.ReturnType == typeof(AllActuatorsStartupFilter));
         var actuatorConventionBuilder = new ActuatorConventionBuilder();
-         if (!existingStartupFilters.Any())
+        if (!existingStartupFilters.Any())
         {
             collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(provider => new AllActuatorsStartupFilter(actuatorConventionBuilder));
         }
-        return (IEndpointConventionBuilder) actuatorConventionBuilder;
+        return (IEndpointConventionBuilder)actuatorConventionBuilder;
     }
 
     private static IHostBuilder AddManagementPort(this IHostBuilder hostBuilder)

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
@@ -13,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 
 public class HypermediaService
 {
-    private readonly IEnumerable<IEndpointOptions> endpointOptions;
+    private readonly IEnumerable<IEndpointOptions> _endpointOptions;
     private readonly ILogger _logger;
     private readonly ManagementEndpointOptions _managementOptions;
     private readonly EndpointOptionsBase _options;
@@ -25,19 +24,19 @@ public class HypermediaService
 
         _logger = logger;
         _managementOptions = managementOptions.Get(ActuatorContext.Name);
-        this.endpointOptions = endpointOptions;
-         _options = options.CurrentValue;
+        this._endpointOptions = endpointOptions;
+        _options = options.CurrentValue;
     }
     public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options, IEnumerable<IEndpointOptions> endpointOptions, ILogger logger = null)
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);
-        this.endpointOptions = endpointOptions;
+        this._endpointOptions = endpointOptions;
         _logger = logger;
         _options = options.CurrentValue;
         _managementOptions = managementOptions.Get(CFContext.Name);
     }
-    
+
     public Links Invoke(string baseUrl)
     {
         var links = new Links();
@@ -50,7 +49,7 @@ public class HypermediaService
         _logger?.LogTrace("Processing hypermedia for {ManagementOptions}", _managementOptions);
 
         Link selfLink = null;
-        foreach (IEndpointOptions opt in endpointOptions)
+        foreach (IEndpointOptions opt in _endpointOptions)
         {
             if (!opt.IsEnabled(_managementOptions) || !opt.IsExposed(_managementOptions))
             {
@@ -77,7 +76,7 @@ public class HypermediaService
                 }
             }
         }
-        if(selfLink!= null)
+        if (selfLink != null)
         {
             links._links.Add("self", selfLink);
         }

@@ -18,7 +18,6 @@ using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
@@ -28,7 +27,7 @@ namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorServiceCollectionExtensions
 {
-   
+
     public static void AddCommonActuatorServices(this IServiceCollection services)
     {
         if (Platform.IsCloudFoundry)
@@ -43,7 +42,7 @@ public static class ActuatorServiceCollectionExtensions
     }
     public static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
         where TOptions : class, IEndpointOptions
-        where TConfigureOptions: class
+        where TConfigureOptions : class
     {
         services.ConfigureOptions<TConfigureOptions>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
@@ -68,7 +67,7 @@ public static class ActuatorServiceCollectionExtensions
 
         services.AddHypermediaActuator();
 
-        services.AddThreadDumpActuator( version);
+        services.AddThreadDumpActuator(version);
 
         services.AddHeapDumpActuator();
 
@@ -83,7 +82,7 @@ public static class ActuatorServiceCollectionExtensions
         services.AddRefreshActuator(configuration);
         return services;
     }
-   
+
     private static IServiceCollection AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy = null)
     {
         return services.AddCors(setup =>

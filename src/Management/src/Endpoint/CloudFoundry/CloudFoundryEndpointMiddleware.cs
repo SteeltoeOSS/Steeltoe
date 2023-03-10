@@ -56,5 +56,5 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
         return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
     }
 
-   
+
 }

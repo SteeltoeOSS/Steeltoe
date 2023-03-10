@@ -1,16 +1,19 @@
-using System.Xml.Linq;
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint;
+
 internal class ActuatorEndpointMapper
 {
     private readonly IEnumerable<IContextName> _contextNames;
@@ -32,39 +35,36 @@ internal class ActuatorEndpointMapper
     public IEndpointConventionBuilder Map(IEndpointRouteBuilder endpointRouteBuilder, ActuatorConventionBuilder conventionBuilder = null)
     {
         var collection = new HashSet<string>();
-        var contexts = new List<ManagementEndpointOptions>();
         conventionBuilder ??= new ActuatorConventionBuilder();
 
-        foreach (var name in _contextNames)
+        foreach (IContextName name in _contextNames)
         {
-            var mgmtOption = _managementOptions.Get(name.Name);
-            var path = mgmtOption.Path;
+            ManagementEndpointOptions mgmtOption = _managementOptions.Get(name.Name);
 
-     
-            foreach (var middleware in _middlewares)
+            foreach (IEndpointMiddleware middleware in _middlewares)
             {
-                if (name is ActuatorContext  && middleware.GetType() == typeof(CloudFoundryEndpointMiddleware)
-                     || name is CFContext && middleware.GetType() == typeof(ActuatorHypermediaEndpointMiddleware))
+                if ((name is ActuatorContext && middleware.GetType() == typeof(CloudFoundryEndpointMiddleware))
+                     || (name is CFContext && middleware.GetType() == typeof(ActuatorHypermediaEndpointMiddleware)))
                 {
                     continue;
                 }
-                var middlewareType = middleware.GetType();
+                Type middlewareType = middleware.GetType();
                 RequestDelegate pipeline = endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middlewareType).Build();
-                var epPath = middleware.EndpointOptions.GetContextPath(mgmtOption);
-                if (collection.Contains(epPath))
+                string epPath = middleware.EndpointOptions.GetContextPath(mgmtOption);
+
+                if (collection.Add(epPath))
                 {
-                    _logger.LogError("Skipping over duplicate path at" + epPath);
+                    IEndpointConventionBuilder builder = endpointRouteBuilder.MapMethods(epPath, middleware.EndpointOptions.AllowedVerbs, pipeline);
+                    conventionBuilder.Add(builder);
                 }
                 else
                 {
-                    collection.Add(epPath);
-                    IEndpointConventionBuilder builder = endpointRouteBuilder.MapMethods(epPath, middleware.EndpointOptions.AllowedVerbs, pipeline);
-                    conventionBuilder.Add(builder); 
+                    _logger.LogError("Skipping over duplicate path at {path}", epPath);
                 }
 
             }
 
         }
-        return (IEndpointConventionBuilder)conventionBuilder;
+        return conventionBuilder;
     }
 }

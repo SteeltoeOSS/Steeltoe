@@ -8,7 +8,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class TraceEndpoint :  ITraceEndpoint
+public class TraceEndpoint : ITraceEndpoint
 {
     private readonly ITraceRepository _traceRepo;
 

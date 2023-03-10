@@ -47,9 +47,9 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
             ManagementUrl = new Uri($"{basePath}{_managementOptions.Path}"),
             ServiceUrl = new Uri($"{basePath}/"),
             Metadata = new Dictionary<string, object>
-            {
-                { "startup", DateTime.Now }
-            }
+        {
+            { "startup", DateTime.Now }
+        }
         };
 
         app.Metadata.Merge(_options.Metadata);

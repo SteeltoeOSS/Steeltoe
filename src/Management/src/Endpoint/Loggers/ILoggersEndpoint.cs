@@ -6,7 +6,7 @@ using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public interface ILoggersEndpoint: IEndpoint<Dictionary<string, object>, LoggersChangeRequest>
+public interface ILoggersEndpoint : IEndpoint<Dictionary<string, object>, LoggersChangeRequest>
 {
     void AddLevels(Dictionary<string, object> result);
 

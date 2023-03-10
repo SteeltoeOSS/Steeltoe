@@ -75,7 +75,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, Type[] contributors)
     {
-        applicationBuilder.Services.AddHealthActuator( contributors);
+        applicationBuilder.Services.AddHealthActuator(contributors);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -219,7 +219,7 @@ public static class ManagementWebApplicationBuilderExtensions
     public static WebApplicationBuilder AddThreadDumpActuator(this WebApplicationBuilder applicationBuilder,
         MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
-        applicationBuilder.Services.AddThreadDumpActuator( mediaTypeVersion);
+        applicationBuilder.Services.AddThreadDumpActuator(mediaTypeVersion);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }

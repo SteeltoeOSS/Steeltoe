@@ -2,10 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Extensions;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 

@@ -51,7 +51,7 @@ public class HttpClientCoreObserver : MetricsObserver
             return;
         }
 
-        var request = DiagnosticHelpers.GetProperty<HttpRequestMessage>(value, "Request");
+        HttpRequestMessage request = DiagnosticHelpers.GetProperty<HttpRequestMessage>(value, "Request");
 
         if (request == null)
         {
@@ -62,8 +62,8 @@ public class HttpClientCoreObserver : MetricsObserver
         {
             Logger?.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
-            var response = DiagnosticHelpers.GetProperty<HttpResponseMessage>(value, "Response");
-            var requestStatus = DiagnosticHelpers.GetProperty<TaskStatus>(value, "RequestTaskStatus");
+            HttpResponseMessage response = DiagnosticHelpers.GetProperty<HttpResponseMessage>(value, "Response");
+            TaskStatus requestStatus = DiagnosticHelpers.GetProperty<TaskStatus>(value, "RequestTaskStatus");
             HandleStopEvent(current, request, response, requestStatus);
 
             Logger?.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
@@ -106,12 +106,12 @@ public class HttpClientCoreObserver : MetricsObserver
         string clientName = request.RequestUri.GetComponents(UriComponents.HostAndPort, UriFormat.UriEscaped);
 
         return new Dictionary<string, object>
-        {
-            { UriTagKey, uri },
-            { StatusTagKey, statusCode },
-            { ClientTagKey, clientName },
-            { MethodTagKey, request.Method.ToString() }
-        };
+    {
+        { UriTagKey, uri },
+        { StatusTagKey, statusCode },
+        { ClientTagKey, clientName },
+        { MethodTagKey, request.Method.ToString() }
+    };
     }
 
     protected internal string GetStatusCode(HttpResponseMessage response, TaskStatus taskStatus)

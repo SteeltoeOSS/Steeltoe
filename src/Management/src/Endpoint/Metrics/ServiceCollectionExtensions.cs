@@ -3,15 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.Metrics;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Exporters;
@@ -30,9 +26,6 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// Reference to the service collection.
     /// </param>
-    /// <param name="configuration">
-    /// Reference to the configuration system.
-    /// </param>
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
@@ -40,16 +33,14 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        var options = new MetricsEndpointOptions();
-
-
         services.ConfigureEndpointOptions<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>();
         services.TryAddSingleton<IMetricsEndpoint, MetricsEndpoint>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MetricsEndpointMiddleware>());
         services.TryAddSingleton<MetricsEndpointMiddleware>();
 
-        services.TryAddSingleton<IExporterOptions>(provider => {
-            var options = provider.GetService<IOptionsMonitor<MetricsEndpointOptions>>().CurrentValue;
+        services.TryAddSingleton<IExporterOptions>(provider =>
+        {
+            MetricsEndpointOptions options = provider.GetService<IOptionsMonitor<MetricsEndpointOptions>>().CurrentValue;
             return new MetricsExporterOptions
             {
                 CacheDurationMilliseconds = options.CacheDurationMilliseconds,
@@ -62,7 +53,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton(provider =>
         {
-            var exporterOptions = provider.GetService<IExporterOptions>();
+            IExporterOptions exporterOptions = provider.GetService<IExporterOptions>();
             return new SteeltoeExporter(exporterOptions);
         });
 
@@ -75,9 +66,9 @@ public static class ServiceCollectionExtensions
     {
         return services.AddSingleton(provider =>
         {
-            var steeltoeExporter = provider.GetService<SteeltoeExporter>();
-            var exporterOptions = provider.GetService<IExporterOptions>();
-            var logger = provider.GetService<ILogger<SteeltoeExporter>>();
+            SteeltoeExporter steeltoeExporter = provider.GetService<SteeltoeExporter>();
+            IExporterOptions exporterOptions = provider.GetService<IExporterOptions>();
+            ILogger<SteeltoeExporter> logger = provider.GetService<ILogger<SteeltoeExporter>>();
 
             var aggregationManager = new AggregationManager(exporterOptions.MaxTimeSeries, exporterOptions.MaxHistograms, steeltoeExporter.AddMetrics,
                 instrument => logger.LogTrace($"Begin measurements from {instrument.Name} for {instrument.Meter.Name}"),
@@ -109,5 +100,5 @@ public static class ServiceCollectionExtensions
             return aggregationManager;
         }).AddHostedService<MetricCollectionHostedService>();
     }
-    
+
 }

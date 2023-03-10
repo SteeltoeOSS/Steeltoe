@@ -1,16 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Options;
+
 internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<ManagementEndpointOptions>
 {
 
@@ -42,7 +37,7 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
                 options.SerializerOptions.Converters.Add(converterInstance);
             }
         }
-        foreach (var context in _contextNames)
+        foreach (IContextName context in _contextNames)
         {
             options.ContextNames.Add(context.Name);
         }
@@ -53,13 +48,13 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
 
             options.Exposure = new Exposure(_configuration);
 
-            options.EndpointOptions = new List<IEndpointOptions>( _endpoints.Where(e=> e.GetType() != typeof(CloudFoundryEndpointOptions)));
+            options.EndpointOptions = new List<IEndpointOptions>(_endpoints.Where(e => e.GetType() != typeof(CloudFoundryEndpointOptions)));
 
         }
         else if (name == CFContext.Name)
         {
             options.Path = DefaultCFPath;
-            var cfEnabledConfig = _configuration.GetSection(CloudFoundryEnabledPrefix).Value;
+            string cfEnabledConfig = _configuration.GetSection(CloudFoundryEnabledPrefix).Value;
             if (cfEnabledConfig != null)
             {
                 options.Enabled = !string.Equals(_configuration.GetSection(CloudFoundryEnabledPrefix).Value, "false", StringComparison.OrdinalIgnoreCase);

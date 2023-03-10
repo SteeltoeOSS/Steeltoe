@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -37,7 +36,7 @@ public class MappingsEndpoint : IMappingsEndpoint
     }
 
     public IEndpointOptions Options => _options.CurrentValue;
-     
+
     public ApplicationMappings Invoke()
     {
         return GetApplicationMappings();
@@ -154,9 +153,9 @@ public class MappingsEndpoint : IMappingsEndpoint
         var routeDetails = new AspNetCoreRouteDetails
         {
             HttpMethods = desc.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ?? new List<string>
-            {
-                MappingDescription.AllHttpMethods
-            },
+        {
+            MappingDescription.AllHttpMethods
+        },
             Consumes = new List<string>(),
             Produces = new List<string>()
         };
@@ -232,9 +231,9 @@ public class MappingsEndpoint : IMappingsEndpoint
         if (!string.IsNullOrEmpty(desc.HttpMethod))
         {
             return new List<string>
-            {
-                desc.HttpMethod
-            };
+        {
+            desc.HttpMethod
+        };
         }
 
         return null;

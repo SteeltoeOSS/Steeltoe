@@ -3,16 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
-//TODO rename to ManagementContextOptions
-// It should hold settings for base level
-public class ManagementEndpointOptions //: IManagementOptions
+public class ManagementEndpointOptions
 {
 
 
@@ -26,24 +21,16 @@ public class ManagementEndpointOptions //: IManagementOptions
 
     public List<IEndpointOptions> EndpointOptions { get; set; }
 
-    public HashSet<string> ContextNames { get; set; } = new HashSet<string>{ ActuatorContext.Name};
+    public HashSet<string> ContextNames { get; set; } = new HashSet<string> { ActuatorContext.Name };
 
     public bool UseStatusCodeFromResponse { get; set; } = true;
-
-    private JsonSerializerOptions _jsonOptions = new()
+    public JsonSerializerOptions SerializerOptions { get; set; } = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
-    public JsonSerializerOptions SerializerOptions { get {
-            return _jsonOptions;
-        } set
-        {
-            _jsonOptions = value;
-        }
-    } 
-    
+
     public Exposure Exposure { get; set; } = new();
-    
+
     /// <summary>
     /// Gets or sets a list of
     /// <see href="https://docs.microsoft.com/dotnet/api/system.type.assemblyqualifiedname">

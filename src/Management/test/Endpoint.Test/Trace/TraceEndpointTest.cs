@@ -38,7 +38,7 @@ public class TraceEndpointTest : BaseTest
             services.AddTraceActuatorServices(MediaTypeVersion.V1);
         };
 
-        var ep = tc.GetService<TraceEndpoint>();
+        var ep = tc.GetService<ITraceEndpoint>();
         List<TraceResult> result = ep.Invoke();
         Assert.NotNull(result);
         Assert.True(repo.GetTracesCalled);

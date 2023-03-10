@@ -18,7 +18,7 @@ public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
         : base(endpoint, managementOptions, logger)
     {
     }
-    
+
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
@@ -31,7 +31,7 @@ public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
 
     protected internal Task HandleRefreshRequestAsync(HttpContext context)
     {
-        
+
         string serialInfo = HandleRequest();
         logger?.LogDebug("Returning: {info}", serialInfo);
 

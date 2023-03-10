@@ -18,7 +18,7 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
     {
         Endpoint = endpoint;
     }
- 
+
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))

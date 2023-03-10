@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 namespace Steeltoe.Management.Endpoint.Options;
+
 public interface IContextName
 {
     string Name { get; }

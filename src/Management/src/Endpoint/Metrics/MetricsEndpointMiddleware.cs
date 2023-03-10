@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,7 +20,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         : base(endpoint, managementOptions, logger)
     {
     }
-    
+
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
@@ -46,7 +45,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         logger?.LogDebug("Incoming path: {path}", request.Path.Value);
 
         string metricName = GetMetricName(request);
-        
+
         if (!string.IsNullOrEmpty(metricName))
         {
             // GET /metrics/{metricName}?tag=key:value&tag=key:value
@@ -78,8 +77,8 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
     protected internal string GetMetricName(HttpRequest request)
     {
-      
-        var mgmtOptions =  managementOptions.GetCurrentContext(request.Path);
+
+        ManagementEndpointOptions mgmtOptions = managementOptions.GetCurrentContext(request.Path);
 
         if (mgmtOptions == null)
         {
@@ -123,8 +122,8 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
     {
         string[] str = kvp.Split(new[]
         {
-            ':'
-        }, 2);
+        ':'
+    }, 2);
 
         if (str != null && str.Length == 2)
         {

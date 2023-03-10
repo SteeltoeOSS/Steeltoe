@@ -3,15 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Extensions;
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
@@ -23,17 +18,13 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add actuator to.
     /// </param>
-    /// <param name="configuration">
-    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for settings starting with
-    /// management:endpoints:env).
-    /// </param>
     public static void AddEnvActuator(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
 
         services.TryAddSingleton<IHostEnvironment>(provider =>
         {
-            var service = provider.GetRequiredService<IWebHostEnvironment>();
+            IWebHostEnvironment service = provider.GetRequiredService<IWebHostEnvironment>();
 
             return new GenericHostingEnvironment
             {

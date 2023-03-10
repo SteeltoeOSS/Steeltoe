@@ -14,7 +14,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
-public abstract class EndpointMiddleware<TResult>: IEndpointMiddleware
+public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
 {
     protected ILogger logger;
     protected IOptionsMonitor<ManagementEndpointOptions> managementOptions;
@@ -49,7 +49,7 @@ public abstract class EndpointMiddleware<TResult>: IEndpointMiddleware
     {
         try
         {
-            var serializerOptions = managementOptions.CurrentValue.SerializerOptions;
+            JsonSerializerOptions serializerOptions = managementOptions.CurrentValue.SerializerOptions;
             JsonSerializerOptions options = GetSerializerOptions(serializerOptions);
 
             return JsonSerializer.Serialize(result, options);
@@ -62,13 +62,13 @@ public abstract class EndpointMiddleware<TResult>: IEndpointMiddleware
         return string.Empty;
     }
 
-    internal JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
+    internal static JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
     {
         serializerOptions ??= new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
-        
+
         if (serializerOptions.DefaultIgnoreCondition != JsonIgnoreCondition.WhenWritingNull)
         {
             serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
@@ -96,7 +96,7 @@ public abstract class EndpointMiddleware<TResult>: IEndpointMiddleware
 
 }
 
-public interface IEndpointMiddleware:IMiddleware
+public interface IEndpointMiddleware : IMiddleware
 {
     public IEndpointOptions EndpointOptions { get; }
 }

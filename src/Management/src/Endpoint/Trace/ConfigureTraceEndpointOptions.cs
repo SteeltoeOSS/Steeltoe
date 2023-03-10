@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Trace;
+
 internal class ConfigureTraceEndpointOptions : IConfigureNamedOptions<TraceEndpointOptions>
 {
 
@@ -21,13 +16,13 @@ internal class ConfigureTraceEndpointOptions : IConfigureNamedOptions<TraceEndpo
         V1,
         V2
     }
-        
+
 
     public ConfigureTraceEndpointOptions(IConfiguration configuration)
     {
         this._configuration = configuration;
     }
-    
+
     public void Configure(string name, TraceEndpointOptions options)
     {
         if (name == TraceEndpointOptionNames.V2.ToString()

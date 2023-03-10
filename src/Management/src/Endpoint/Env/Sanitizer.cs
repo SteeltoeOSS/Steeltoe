@@ -10,11 +10,11 @@ public class Sanitizer
 {
     private readonly string[] _regexParts =
     {
-        "*",
-        "$",
-        "^",
-        "+"
-    };
+    "*",
+    "$",
+    "^",
+    "+"
+};
 
     private readonly List<Regex> _matchers = new();
 

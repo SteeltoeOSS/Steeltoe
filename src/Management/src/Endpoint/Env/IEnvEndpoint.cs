@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public interface IEnvEndpoint: IEndpoint<EnvironmentDescriptor>
+public interface IEnvEndpoint : IEndpoint<EnvironmentDescriptor>
 {
     string GetPropertySourceName(IConfigurationProvider provider);
 

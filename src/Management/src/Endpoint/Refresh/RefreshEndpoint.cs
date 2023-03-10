@@ -9,7 +9,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-public class RefreshEndpoint :  IRefreshEndpoint
+public class RefreshEndpoint : IRefreshEndpoint
 {
     private readonly IOptionsMonitor<RefreshEndpointOptions> _options;
 

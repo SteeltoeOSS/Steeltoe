@@ -1,29 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
+
 internal class ConfigureHealthEndpointOptions : IConfigureOptions<HealthEndpointOptions>
 {
-    private readonly IConfiguration configuration;
+    private readonly IConfiguration _configuration;
     private const string HealthOptionsPrefix = "management:endpoints:health";
     public ConfigureHealthEndpointOptions(IConfiguration configuration)
     {
-        this.configuration = configuration;
+        _configuration = configuration;
     }
 
     public void Configure(HealthEndpointOptions options)
     {
-        configuration.GetSection(HealthOptionsPrefix).Bind(options);
-        
+        _configuration.GetSection(HealthOptionsPrefix).Bind(options);
+
         options.Id ??= "health";
 
         if (options.RequiredPermissions == Permissions.Undefined)

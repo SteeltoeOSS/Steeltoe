@@ -3,16 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.Tracing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
-using Steeltoe.Management.Endpoint.Extensions;
-using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
@@ -30,8 +26,6 @@ public static class EndpointServiceCollectionExtensions
         services.AddMetricsActuatorServices();
 
         services.AddMetricsObservers();
-
-       // services.AddActuatorEndpointMapping<MetricsEndpoint>();
     }
 
     public static void AddMetricsObservers(this IServiceCollection services)

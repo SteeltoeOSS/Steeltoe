@@ -40,10 +40,10 @@ public static class HealthCheckExtensions
             healthCheckResult.Description = res.Description;
 
             healthCheckResult.Details = new Dictionary<string, object>(res.Data)
-            {
-                { "status", status.ToSnakeCaseString(SnakeCaseStyle.AllCaps) },
-                { "description", res.Description }
-            };
+        {
+            { "status", status.ToSnakeCaseString(SnakeCaseStyle.AllCaps) },
+            { "description", res.Description }
+        };
 
             if (res.Exception != null && !string.IsNullOrEmpty(res.Exception.Message))
             {

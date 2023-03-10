@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
@@ -14,14 +13,14 @@ public class ConfigureCloudFoundryEndpointOptions : ConfigureEndpointOptions<Clo
     private const string VcapApplicationIdKey = "vcap:application:application_id";
     private const string VcapApplicationCloudfoundryApiKey = "vcap:application:cf_api";
 
-    public ConfigureCloudFoundryEndpointOptions(IConfiguration configuration): base(configuration, ManagementInfoPrefix, string.Empty)
+    public ConfigureCloudFoundryEndpointOptions(IConfiguration configuration) : base(configuration, ManagementInfoPrefix, string.Empty)
     {
     }
     public override void Configure(CloudFoundryEndpointOptions options)
     {
         base.Configure(options);
-        options.ApplicationId = configuration[VcapApplicationIdKey];
-        options.CloudFoundryApi = configuration[VcapApplicationCloudfoundryApiKey];
+        options.ApplicationId = _configuration[VcapApplicationIdKey];
+        options.CloudFoundryApi = _configuration[VcapApplicationCloudfoundryApiKey];
     }
-   
+
 }

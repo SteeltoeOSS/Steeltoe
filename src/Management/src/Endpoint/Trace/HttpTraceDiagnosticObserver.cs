@@ -66,7 +66,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
         {
             HttpTrace trace = MakeTrace(context, current.Duration);
             Queue.Enqueue(trace);
-            
+
             if (Queue.Count > _options.CurrentValue.Capacity && !Queue.TryDequeue(out _))
             {
                 _logger?.LogDebug("Stop - Dequeue failed");
@@ -94,7 +94,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
 
     protected internal string GetSessionId(HttpContext context)
     {
-        var sessionFeature = context.Features.Get<ISessionFeature>();
+        ISessionFeature sessionFeature = context.Features.Get<ISessionFeature>();
         return sessionFeature == null ? null : context.Session.Id;
     }
 

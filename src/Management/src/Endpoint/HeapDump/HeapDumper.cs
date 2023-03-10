@@ -17,7 +17,6 @@ public class HeapDumper : IHeapDumper
     private readonly string _basePathOverride;
     private readonly IOptionsMonitor<HeapDumpEndpointOptions> _options;
     private readonly ILogger<HeapDumper> _logger;
-    //private readonly IHeapDumpOptions _options;
 
     public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> options, string basePathOverride = null, ILogger<HeapDumper> logger = null)
     {
@@ -36,7 +35,7 @@ public class HeapDumper : IHeapDumper
         {
             fileName = _basePathOverride + fileName;
         }
-        
+
         try
         {
             if (Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))

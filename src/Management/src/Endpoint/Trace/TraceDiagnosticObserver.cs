@@ -24,7 +24,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
     private readonly ILogger<TraceDiagnosticObserver> _logger;
-   // private readonly ITraceOptions _options;
+    // private readonly ITraceOptions _options;
     internal ConcurrentQueue<TraceResult> Queue = new();
 
     public TraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILogger<TraceDiagnosticObserver> logger = null)
@@ -79,13 +79,13 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     {
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;
-        var options = _options.CurrentValue;
-        
+        TraceEndpointOptions options = _options.CurrentValue;
+
         var details = new Dictionary<string, object>
-        {
-            { "method", request.Method },
-            { "path", GetPathInfo(request) }
-        };
+    {
+        { "method", request.Method },
+        { "path", GetPathInfo(request) }
+    };
 
         var headers = new Dictionary<string, object>();
         details.Add("headers", headers);
@@ -151,7 +151,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
     protected internal string GetSessionId(HttpContext context)
     {
-        var sessionFeature = context.Features.Get<ISessionFeature>();
+        ISessionFeature sessionFeature = context.Features.Get<ISessionFeature>();
         return sessionFeature == null ? null : context.Session.Id;
     }
 

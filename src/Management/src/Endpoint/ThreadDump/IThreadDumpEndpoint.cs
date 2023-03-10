@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public interface IThreadDumpEndpoint: IEndpoint<List<ThreadInfo>>
+public interface IThreadDumpEndpoint : IEndpoint<List<ThreadInfo>>
 {
 }

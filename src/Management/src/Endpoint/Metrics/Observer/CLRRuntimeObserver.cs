@@ -22,19 +22,19 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
     internal const string ThreadsEvent = "Steeltoe.ClrMetrics.Threads";
 
     private readonly Dictionary<string, object> _heapTags = new()
-    {
-        { "area", "heap" }
-    };
+{
+    { "area", "heap" }
+};
 
     private readonly Dictionary<string, object> _workerTags = new()
-    {
-        { "kind", "worker" }
-    };
+{
+    { "kind", "worker" }
+};
 
     private readonly Dictionary<string, object> _comPortTags = new()
-    {
-        { "kind", "completionPort" }
-    };
+{
+    { "kind", "completionPort" }
+};
 
     private readonly ClrRuntimeSource.HeapMetrics _previous = default;
 
@@ -71,9 +71,9 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
             }
 
             var tags = new Dictionary<string, object>
-            {
-                { GenerationKey, GenerationTagValueName + i }
-            };
+        {
+            { GenerationKey, GenerationTagValueName + i }
+        };
 
             yield return new Measurement<long>(count, tags.AsReadonlySpan());
         }

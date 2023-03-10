@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,15 +19,10 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         : base(endpoint, managementOptions, logger)
     {
     }
-    
+
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
-        {
-            return HandleLoggersRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
+        return Endpoint.Options.ShouldInvoke(managementOptions, context, logger) ? HandleLoggersRequestAsync(context) : Task.CompletedTask;
     }
 
     protected internal async Task HandleLoggersRequestAsync(HttpContext context)
@@ -39,19 +33,15 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         if (context.Request.Method == "POST")
         {
             // POST - change a logger level
-            var paths = new List<string>();
             logger?.LogDebug("Incoming path: {path}", request.Path.Value);
-            var mgmtOptions = managementOptions.GetCurrentContext(request.Path);
+            ManagementEndpointOptions mgmtOptions = managementOptions.GetCurrentContext(request.Path);
 
-            paths.Add(managementOptions == null ? Endpoint.Options.Path : $"{mgmtOptions.Path}/{Endpoint.Options.Path}".Replace("//", "/", StringComparison.Ordinal)); //TODO: only one path here??!!
+            string path = managementOptions == null ? Endpoint.Options.Path : $"{mgmtOptions.Path}/{Endpoint.Options.Path}".Replace("//", "/", StringComparison.Ordinal);
 
-            foreach (string path in paths.Distinct())
+            if (ChangeLoggerLevel(request, path))
             {
-                if (ChangeLoggerLevel(request, path))
-                {
-                    response.StatusCode = (int)HttpStatusCode.OK;
-                    return;
-                }
+                response.StatusCode = (int)HttpStatusCode.OK;
+                return;
             }
 
             response.StatusCode = (int)HttpStatusCode.BadRequest;

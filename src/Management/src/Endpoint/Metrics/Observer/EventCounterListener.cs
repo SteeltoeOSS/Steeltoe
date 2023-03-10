@@ -23,10 +23,10 @@ public class EventCounterListener : EventListener
     private readonly bool _isInitialized;
 
     private readonly Dictionary<string, string> _refreshInterval = new()
-    {
-        { "EventCounterIntervalSec", "1" }
-    };
-    
+{
+    { "EventCounterIntervalSec", "1" }
+};
+
 
     private readonly ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new();
     private readonly ConcurrentDictionary<string, ObservableGauge<long>> _longMeasureMetrics = new();
@@ -79,11 +79,11 @@ public class EventCounterListener : EventListener
             _logger?.LogError(ex.Message);
         }
     }
-    
+
     protected override void OnEventSourceCreated(EventSource eventSource)
     {
         ArgumentGuard.NotNull(eventSource);
-        
+
         if (EventSourceName.Equals(eventSource.Name, StringComparison.OrdinalIgnoreCase))
         {
             if (!_isInitialized)
@@ -144,8 +144,8 @@ public class EventCounterListener : EventListener
             {
                 case var _ when key.Equals("Name", StringComparison.OrdinalIgnoreCase):
                     counterName = payload.Value.ToString();
-                    var includedMetrics = _options.CurrentValue.IncludedMetrics;
-                    var excludedMetrics = _options.CurrentValue.ExcludedMetrics;
+                    List<string> includedMetrics = _options.CurrentValue.IncludedMetrics;
+                    List<string> excludedMetrics = _options.CurrentValue.ExcludedMetrics;
                     if ((includedMetrics.Any() && !includedMetrics.Contains(counterName)) || excludedMetrics.Contains(counterName))
                     {
                         return;

@@ -15,7 +15,7 @@ public class ManagementPortMiddleware
     private readonly RequestDelegate _next;
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
     private readonly ILogger<ManagementPortMiddleware> _logger;
-    
+
     public ManagementPortMiddleware(RequestDelegate next, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<ManagementPortMiddleware> logger = null)
     {
         _next = next;
@@ -25,7 +25,7 @@ public class ManagementPortMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var mgmtOptions = _managementOptions.Get(ActuatorContext.Name);  // TODO: How does this work in cloudfoundry? 
+        ManagementEndpointOptions mgmtOptions = _managementOptions.Get(ActuatorContext.Name);  // TODO: How does this work in cloudfoundry? 
         _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, mgmtOptions.Path);
 
         string contextPath = mgmtOptions.Path;

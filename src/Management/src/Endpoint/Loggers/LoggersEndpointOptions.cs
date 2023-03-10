@@ -4,15 +4,15 @@
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public class LoggersEndpointOptions : EndpointOptionsBase//, ILoggersOptions
+public class LoggersEndpointOptions : EndpointOptionsBase
 {
-    private const string ManagementInfoPrefix = "management:endpoints:loggers";
 
-    public override IEnumerable<string> AllowedVerbs  { get; } = new List<string>
-        {
-            "Get",
-            "Post"
-        };
-    public override bool ExactMatch { get; } // defaults false;
- 
+    public override IEnumerable<string> AllowedVerbs { get; } = new List<string>
+    {
+        "Get",
+        "Post"
+    };
+
+    public override bool ExactMatch { get; }
+
 }

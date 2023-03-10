@@ -20,16 +20,13 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// Reference to the service collection.
     /// </param>
-    /// <param name="configuration">
-    /// Reference to the configuration system.
-    /// </param>
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
     public static IServiceCollection AddEnvActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        services.ConfigureEndpointOptions<EnvEndpointOptions,ConfigureEnvEndpointOptions>();
+        services.ConfigureEndpointOptions<EnvEndpointOptions, ConfigureEnvEndpointOptions>();
         services.TryAddSingleton<EnvEndpoint>();
         services.TryAddSingleton<IEnvEndpoint>(provider => provider.GetRequiredService<EnvEndpoint>());
 

@@ -17,10 +17,10 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
         : base(endpoint, managementOptions, logger)
     {
     }
-    
+
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        
+
         if (EndpointOptions.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleEnvRequestAsync(context);

@@ -5,8 +5,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -30,11 +28,6 @@ public static class EndPointExtensions
 
         return endpointOptions.DefaultEnabled;
     }
-
-    //public static bool IsEnabled(this IEndpointOptions endpoint, ManagementEndpointOptions options)
-    //{
-    //    return options == null ? endpoint.Enabled : endpoint.Options.IsEnabled(options);
-    //}
 
     public static bool IsExposed(this IEndpointOptions options, ManagementEndpointOptions mgmtOptions)
     {
@@ -75,7 +68,7 @@ public static class EndPointExtensions
 
     public static bool ShouldInvoke(this IEndpointOptions endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context, ILogger logger = null)
     {
-        var mgmtOptions = managementOptions.GetCurrentContext(context.Request.Path);
+        ManagementEndpointOptions mgmtOptions = managementOptions.GetCurrentContext(context.Request.Path);
 
         return ShouldInvoke(endpoint, mgmtOptions, logger);
     }
@@ -83,12 +76,12 @@ public static class EndPointExtensions
     public static ManagementEndpointOptions GetCurrentContext(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path)
     {
         List<ManagementEndpointOptions> options = new();
-        foreach (var name in managementOptions.CurrentValue.ContextNames)
+        foreach (string name in managementOptions.CurrentValue.ContextNames)
         {
             options.Add(managementOptions.Get(name));
         }
         options = options.OrderByDescending(option => option.Path.Length).ToList();
-        foreach (var opt in options)
+        foreach (ManagementEndpointOptions opt in options)
         {
             if (path.StartsWithSegments(new PathString(opt.Path)))
             {
@@ -118,7 +111,7 @@ public static class EndPointExtensions
 
             contextPath += "{**_}";
         }
-        
+
         return contextPath;
     }
 

@@ -4,12 +4,16 @@
 
 namespace Steeltoe.Management.Diagnostics;
 
-public class MetricsObserverOptions //: IMetricsObserverOptions
+public class MetricsObserverOptions
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets or sets a regex pattern for requests coming into this application where metrics should not be captured.
+    /// </summary>
     public string IngressIgnorePattern { get; set; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets or sets a regex pattern for requests leaving this application where metrics should not be captured.
+    /// </summary>
     public string EgressIgnorePattern { get; set; }
 
     public bool AspNetCoreHosting { get; set; } = true;
@@ -24,23 +28,34 @@ public class MetricsObserverOptions //: IMetricsObserverOptions
 
     public bool HttpClientDesktop { get; set; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets or sets an allow list of metrics that should be captured.
+    /// </summary>
+    /// <remarks>
+    /// Currently only applies to System.Runtime metrics captured by "EventCounterListener".
+    /// <para />
+    /// See this list for values to choose from: <see href="https://docs.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters" />.
+    /// </remarks>
     public List<string> IncludedMetrics { get; set; } = new();
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets or sets a list of metrics that should not be captured. Entries in <see cref="IncludedMetrics" /> take precedence in case of conflict.
+    /// </summary>
+    /// <remarks>
+    /// Currently only applies to System.Runtime metrics captured by EventCounterListener.
+    /// <para />
+    /// See this list for values to choose from: <see href="https://docs.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters" />.
+    /// </remarks>
     public List<string> ExcludedMetrics { get; set; } = new();
 
     public bool IncludeObserver(string name)
     {
-        switch (name)
+        return name switch
         {
-            case "AspnetCoreHostingObserver":
-                return AspNetCoreHosting;
-            case "HttpClientCoreObserver":
-                return HttpClientCore;
-            case "HttpClientDesktopObserver":
-                return HttpClientDesktop;
-            default: return true;
-        }
+            "AspnetCoreHostingObserver" => AspNetCoreHosting,
+            "HttpClientCoreObserver" => HttpClientCore,
+            "HttpClientDesktopObserver" => HttpClientDesktop,
+            _ => true,
+        };
     }
 }

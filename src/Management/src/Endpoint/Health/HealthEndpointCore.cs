@@ -13,7 +13,7 @@ using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthEndpointCore:   IHealthEndpoint
+public class HealthEndpointCore : IHealthEndpoint
 {
     private readonly IOptionsMonitor<HealthCheckServiceOptions> _serviceOptions;
     private readonly IServiceProvider _provider;
@@ -25,7 +25,6 @@ public class HealthEndpointCore:   IHealthEndpoint
 
     public HealthEndpointCore(IOptionsMonitor<HealthEndpointOptions> options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
         IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpointCore> logger = null)
- 
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(aggregator);
@@ -65,7 +64,7 @@ public class HealthEndpointCore:   IHealthEndpoint
             filteredContributors = _contributors;
             healthCheckRegistrations = _serviceOptions.CurrentValue.Registrations;
         }
-        
+
         HealthCheckResult result = _aggregator is not IHealthRegistrationsAggregator registrationAggregator
             ? _aggregator.Aggregate(filteredContributors)
             : registrationAggregator.Aggregate(filteredContributors, healthCheckRegistrations, _provider);
@@ -85,7 +84,7 @@ public class HealthEndpointCore:   IHealthEndpoint
 
         return response;
     }
-    
+
     private ICollection<HealthCheckRegistration> GetFilteredHealthCheckServiceOptions(string requestedGroup,
         IOptionsMonitor<HealthCheckServiceOptions> svcOptions)
     {

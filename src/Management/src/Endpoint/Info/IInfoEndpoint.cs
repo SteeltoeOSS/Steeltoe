@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-public interface IInfoEndpoint: IEndpoint<Dictionary<string, object>>
+public interface IInfoEndpoint : IEndpoint<Dictionary<string, object>>
 {
 }

@@ -2,12 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.Endpoint.ThreadDump;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -22,9 +20,6 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// Reference to the service collection.
     /// </param>
-    /// <param name="configuration">
-    /// Reference to the configuration system.
-    /// </param>
     /// <param name="version">
     /// The media version to use.
     /// </param>
@@ -34,7 +29,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddTraceActuatorServices(this IServiceCollection services, MediaTypeVersion version)
     {
         ArgumentGuard.NotNull(services);
-        services.ConfigureEndpointOptions<TraceEndpointOptions,ConfigureTraceEndpointOptions>();
+        services.ConfigureEndpointOptions<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
         switch (version)
         {
             case MediaTypeVersion.V1:

@@ -9,8 +9,6 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
-using Steeltoe.Management.Endpoint.Extensions;
-using Steeltoe.Management.Endpoint.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -37,10 +35,6 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add trace to.
     /// </param>
-    /// <param name="configuration">
-    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
-    /// management:endpoints:trace).
-    /// </param>
     /// <param name="version">
     /// <see cref="MediaTypeVersion" /> to use in responses.
     /// </param>
@@ -64,10 +58,10 @@ public static class EndpointServiceCollectionExtensions
             default:
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpTraceDiagnosticObserver>());
                 services.TryAddSingleton<IHttpTraceRepository, HttpTraceDiagnosticObserver>();
-            //    services.TryAddSingleton(p =>
-           //         new HttpTraceEndpoint(p.GetService<ITraceOptions>(), p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
+                //    services.TryAddSingleton(p =>
+                //         new HttpTraceEndpoint(p.GetService<ITraceOptions>(), p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
 
-              //  services.AddActuatorEndpointMapping<HttpTraceEndpoint>();
+                //  services.AddActuatorEndpointMapping<HttpTraceEndpoint>();
                 break;
         }
     }

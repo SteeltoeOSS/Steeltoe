@@ -15,9 +15,9 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
     private const string GitPropertiesFile = "git.properties";
 
     private static readonly List<string> DatetimeInputKeys = new()
-    {
-        "time"
-    };
+{
+    "time"
+};
 
     private readonly string _propFile;
     private readonly ILogger _logger;

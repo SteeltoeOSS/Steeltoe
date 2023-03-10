@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public interface IThreadDumpEndpointV2: IEndpoint<ThreadDumpResult>
+public interface IThreadDumpEndpointV2 : IEndpoint<ThreadDumpResult>
 {
 }

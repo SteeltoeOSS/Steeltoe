@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-public class DbMigrationsEndpoint :  IDbMigrationsEndpoint
+public class DbMigrationsEndpoint : IDbMigrationsEndpoint
 {
     internal static readonly Type DbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
 
@@ -126,8 +126,8 @@ public class DbMigrationsEndpoint :  IDbMigrationsEndpoint
 
             return (IEnumerable<string>)method.Invoke(null, new[]
             {
-                dbFacade
-            });
+            dbFacade
+        });
         }
     }
 }

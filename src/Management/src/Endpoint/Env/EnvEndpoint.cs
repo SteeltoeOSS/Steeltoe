@@ -11,7 +11,7 @@ using Steeltoe.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class EnvEndpoint :  IEnvEndpoint
+public class EnvEndpoint : IEnvEndpoint
 {
     private readonly IOptionsMonitor<EnvEndpointOptions> _options;
     private readonly IConfiguration _configuration;
@@ -39,9 +39,9 @@ public class EnvEndpoint :  IEnvEndpoint
     public EnvironmentDescriptor DoInvoke(IConfiguration configuration)
     {
         IList<string> activeProfiles = new List<string>
-        {
-            _env.EnvironmentName
-        };
+    {
+        _env.EnvironmentName
+    };
 
         IList<PropertySourceDescriptor> propertySources = GetPropertySources(configuration);
         return new EnvironmentDescriptor(activeProfiles, propertySources);

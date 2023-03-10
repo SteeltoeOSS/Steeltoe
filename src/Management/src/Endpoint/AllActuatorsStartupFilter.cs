@@ -17,12 +17,9 @@ public class AllActuatorsStartupFilter : IStartupFilter
 {
     private readonly ActuatorConventionBuilder _conventionBuilder;
 
-    //private readonly Action<IEndpointConventionBuilder> _configureConventions;
-
     public AllActuatorsStartupFilter(ActuatorConventionBuilder conventionBuilder)
     {
-        this._conventionBuilder = conventionBuilder;
-        // _configureConventions = configureConventions;
+        _conventionBuilder = conventionBuilder;
     }
 
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
@@ -42,9 +39,9 @@ public class AllActuatorsStartupFilter : IStartupFilter
             app.UseMiddleware<ManagementPortMiddleware>();
             next(app);
 
-            app.UseEndpoints(endpoints => 
+            app.UseEndpoints(endpoints =>
             {
-               endpoints.MapTheActuators(_conventionBuilder);
+                endpoints.MapTheActuators(_conventionBuilder);
             });
 
             app.ApplicationServices.InitializeAvailability();

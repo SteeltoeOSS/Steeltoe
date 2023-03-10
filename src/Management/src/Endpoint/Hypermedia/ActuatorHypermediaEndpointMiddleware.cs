@@ -21,7 +21,7 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
         : base(endpoint, managementOptions, logger)
     {
     }
-    
+
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         logger?.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);

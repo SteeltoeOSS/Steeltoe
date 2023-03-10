@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 
 namespace Steeltoe.Management.Endpoint;
+
 public static class EndpointApplicationBuilderExtensions
 {
     public static IApplicationBuilder UseActuators(this IApplicationBuilder builder)

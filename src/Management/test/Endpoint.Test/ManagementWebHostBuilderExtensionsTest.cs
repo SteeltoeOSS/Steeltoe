@@ -486,7 +486,7 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddTraceActuator().Build();
-        IEnumerable<HttpTraceEndpoint> managementEndpoint = host.Services.GetServices<HttpTraceEndpoint>();
+        IEnumerable<IHttpTraceEndpoint> managementEndpoint = host.Services.GetServices<IHttpTraceEndpoint>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(managementEndpoint);

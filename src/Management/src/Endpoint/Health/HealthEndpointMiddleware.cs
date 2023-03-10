@@ -16,12 +16,12 @@ namespace Steeltoe.Management.Endpoint.Health;
 public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointResponse, ISecurityContext>
 {
 
-    public HealthEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions,IHealthEndpoint endpoint, ILogger<InfoEndpointMiddleware> logger = null)
+    public HealthEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IHealthEndpoint endpoint, ILogger<InfoEndpointMiddleware> logger = null)
         : base(managementOptions, logger)
     {
         Endpoint = (IEndpoint<HealthEndpointResponse, ISecurityContext>)endpoint;
     }
-    public override Task InvokeAsync(HttpContext context , RequestDelegate next)
+    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
 
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
@@ -40,12 +40,12 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }
-    
+
     protected internal string DoRequest(HttpContext context)
     {
         HealthEndpointResponse result = ((HealthEndpointCore)Endpoint).Invoke(new CoreSecurityContext(context));
 
-        var currentOptions = managementOptions.CurrentValue;
+        ManagementEndpointOptions currentOptions = managementOptions.CurrentValue;
         if (currentOptions.UseStatusCodeFromResponse)
         {
             context.Response.StatusCode = ((HealthEndpointCore)Endpoint).GetStatusCode(result);

@@ -2,12 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
@@ -23,27 +20,19 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// Reference to the service collection.
     /// </param>
-    /// <param name="configuration">
-    /// Reference to the configuration system.
-    /// </param>
     /// <param name="version">
     /// The media version to use.
     /// </param>
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddThreadDumpActuatorServices(this IServiceCollection services,MediaTypeVersion version)
+    public static IServiceCollection AddThreadDumpActuatorServices(this IServiceCollection services, MediaTypeVersion version)
     {
         ArgumentGuard.NotNull(services);
 
-        //var options = new ThreadDumpEndpointOptions(configuration);
 
         if (version == MediaTypeVersion.V1) // TODO: Fix media type version as part of IOptions
         {
-
-            // services.ConfigureOptions<ConfigureThreadDumpEndpointOptionsV1>();
-
-
             services.ConfigureEndpointOptions<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
             services.TryAddSingleton<ThreadDumpEndpoint>();
             services.TryAddSingleton<IThreadDumpEndpoint>(provider => provider.GetRequiredService<ThreadDumpEndpoint>());
@@ -53,7 +42,6 @@ public static class ServiceCollectionExtensions
         }
         else
         {
-            // services.ConfigureOptions<ConfigureThreadDumpEndpointOptions>();
             services.ConfigureEndpointOptions<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions>();
 
             services.TryAddSingleton<ThreadDumpEndpointV2>();
@@ -63,10 +51,7 @@ public static class ServiceCollectionExtensions
 
         }
 
-        //services.TryAddSingleton<IThreadDumpOptions>(options);
         services.TryAddSingleton<IThreadDumper, ThreadDumperEp>();
-        // services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
-
 
         return services;
     }

@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
@@ -32,12 +31,12 @@ public class CloudFoundrySecurityMiddleware
 
         _base = new SecurityBase(options.CurrentValue, managementOptions.Get(CFContext.Name), logger);
     }
-    
+
     public async Task InvokeAsync(HttpContext context)
     {
 
-        var cfOptions = _options.CurrentValue;
-        var endpointOptions = _options.CurrentValue;
+        CloudFoundryEndpointOptions cfOptions = _options.CurrentValue;
+        CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
         _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);
 
 

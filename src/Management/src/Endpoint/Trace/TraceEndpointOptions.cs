@@ -2,11 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class TraceEndpointOptions: EndpointOptionsBase//, ITraceOptions
+public class TraceEndpointOptions : EndpointOptionsBase//, ITraceOptions
 {
     public int Capacity { get; set; } = -1;
 

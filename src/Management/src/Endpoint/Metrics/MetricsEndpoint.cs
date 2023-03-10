@@ -14,7 +14,7 @@ public class MetricsEndpoint : IMetricsEndpoint
     private readonly IOptionsMonitor<MetricsEndpointOptions> _options;
     private readonly SteeltoeExporter _exporter;
     private readonly ILogger<MetricsEndpoint> _logger;
-    
+
     public IEndpointOptions Options => _options.CurrentValue;
 
     public MetricsEndpoint(IOptionsMonitor<MetricsEndpointOptions> options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)

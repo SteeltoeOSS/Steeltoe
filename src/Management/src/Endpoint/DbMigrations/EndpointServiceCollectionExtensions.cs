@@ -15,10 +15,6 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add actuator to.
     /// </param>
-    /// <param name="configuration">
-    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided. (this actuator looks for settings starting with
-    /// management:endpoints:dbmigrations).
-    /// </param>
     public static void AddDbMigrationsActuator(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);

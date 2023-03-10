@@ -5,6 +5,7 @@
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
+
 internal class CFContext : IContextName
 {
     public const string Name = "CloudFoundry";

@@ -8,13 +8,13 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-public class InfoEndpoint :  IInfoEndpoint
+public class InfoEndpoint : IInfoEndpoint
 {
     private readonly IList<IInfoContributor> _contributors;
     private readonly IOptionsMonitor<InfoEndpointOptions> _options;
     private readonly ILogger<InfoEndpoint> _logger;
 
-    
+
     public InfoEndpoint(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
     {
         _options = options;
