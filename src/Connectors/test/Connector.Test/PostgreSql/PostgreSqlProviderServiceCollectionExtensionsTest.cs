@@ -143,14 +143,14 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
-        Assert.Contains("Host=2980cfbe-e198-46fd-8f81-966584bb4678.postgres.database.azure.com;", connString, StringComparison.Ordinal);
+        Assert.Contains("Host=2980cfbe-e198-46fd-8f81-966584bb4678.postgres.database.az.cloud;", connString, StringComparison.Ordinal);
         Assert.Contains("Port=5432;", connString, StringComparison.Ordinal);
         Assert.Contains("Database=g01w0qnrb7;", connString, StringComparison.Ordinal);
 
-        Assert.Contains("Username=c2cdhwt4nd@2980cfbe-e198-46fd-8f81-966584bb4678@2980cfbe-e198-46fd-8f81-966584bb4678.postgres.database.azure.com;",
+        Assert.Contains("Username=c2cdhwt4nd@2980cfbe-e198-46fd-8f81-966584bb4678@2980cfbe-e198-46fd-8f81-966584bb4678.postgres.database.az.cloud;",
             connString, StringComparison.Ordinal);
 
-        Assert.Contains("Password=Dko4PGJAsQyEj5gj;", connString, StringComparison.Ordinal);
+        Assert.Contains("Password=Dko4AsQyEj5gj;", connString, StringComparison.Ordinal);
     }
 
     [Fact]

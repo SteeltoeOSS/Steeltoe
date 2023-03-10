@@ -69,23 +69,23 @@ public class CosmosDbProviderConfigurerTest
 
         var si = new CosmosDbServiceInfo("MyId")
         {
-            Host = "https://u332d11658f3.documents.azure.com:443/",
-            MasterKey = "lXYMGIE4mYITjXvHwQjkh0U07lwF513NdbTfeyGndeqjVXzwKQ3ZalKXQNYeIZovoyl57IY1J0KnJUH36EPufA==",
-            ReadOnlyKey = "hy5XZOeVnBeMmbB9FGcD54tttGKExad9XkGhn5Esc4jAM60OF2U7TcCXgffqBtBRuPAp0uFqKvz1l13OX8auPw==",
+            Host = "https://u332d11658f3.documents.az.cloud:443/",
+            MasterKey = "lXYMGIE4mjXvHwQjkh0U07lwF513NdbTfeyGndeqjVXzwKQ3ZalKXQNYeIZovoyl57IY1J0KnJUH36EPufA==",
+            ReadOnlyKey = "hy5XZOeVnmbB9FGcD54tttGKExad9XkGhn5Esc4jAM60OF2U7TcCXgffqBtBRuPAp0uFqKvz1l13OX8auPw==",
             DatabaseId = "u33ba24fd208",
             DatabaseLink = "cbs/sTB+AA==/"
         };
 
         string connString = configurer.Configure(si, options);
 
-        Assert.Equal("https://u332d11658f3.documents.azure.com:443/", options.Host);
-        Assert.Equal("lXYMGIE4mYITjXvHwQjkh0U07lwF513NdbTfeyGndeqjVXzwKQ3ZalKXQNYeIZovoyl57IY1J0KnJUH36EPufA==", options.MasterKey);
-        Assert.Equal("hy5XZOeVnBeMmbB9FGcD54tttGKExad9XkGhn5Esc4jAM60OF2U7TcCXgffqBtBRuPAp0uFqKvz1l13OX8auPw==", options.ReadOnlyKey);
+        Assert.Equal("https://u332d11658f3.documents.az.cloud:443/", options.Host);
+        Assert.Equal("lXYMGIE4mjXvHwQjkh0U07lwF513NdbTfeyGndeqjVXzwKQ3ZalKXQNYeIZovoyl57IY1J0KnJUH36EPufA==", options.MasterKey);
+        Assert.Equal("hy5XZOeVnmbB9FGcD54tttGKExad9XkGhn5Esc4jAM60OF2U7TcCXgffqBtBRuPAp0uFqKvz1l13OX8auPw==", options.ReadOnlyKey);
         Assert.Equal("u33ba24fd208", options.DatabaseId);
         Assert.Equal("cbs/sTB+AA==/", options.DatabaseLink);
 
         Assert.Equal(
-            "AccountEndpoint=https://u332d11658f3.documents.azure.com:443/;AccountKey=lXYMGIE4mYITjXvHwQjkh0U07lwF513NdbTfeyGndeqjVXzwKQ3ZalKXQNYeIZovoyl57IY1J0KnJUH36EPufA==",
+            "AccountEndpoint=https://u332d11658f3.documents.az.cloud:443/;AccountKey=lXYMGIE4mjXvHwQjkh0U07lwF513NdbTfeyGndeqjVXzwKQ3ZalKXQNYeIZovoyl57IY1J0KnJUH36EPufA==",
             connString);
     }
 }

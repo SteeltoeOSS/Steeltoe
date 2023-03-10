@@ -161,8 +161,8 @@ public class MySqlProviderServiceCollectionExtensionsTest
         string connString = service.ConnectionString;
         Assert.Contains("ub6oyk1kkh", connString, StringComparison.Ordinal); // database
         Assert.Contains("3306", connString, StringComparison.Ordinal); // port
-        Assert.Contains("451200b4-c29d-4346-9a0a-70bc109bb6e9.mysql.database.azure.com", connString, StringComparison.Ordinal); // host
-        Assert.Contains("wj7tsxai7i@451200b4-c29d-4346-9a0a-70bc109bb6e9", connString, StringComparison.Ordinal); // user
+        Assert.Contains("451200b4-c29d-4346-9a0a-70bc109bb6e9.mysql.database.az.cloud", connString, StringComparison.Ordinal); // host
+        Assert.Contains("wj7tsxai7i@451200b4-c29d-4346-70bc109bb6e9", connString, StringComparison.Ordinal); // user
         Assert.Contains("10PUO82Uhqk8F2ii", connString, StringComparison.Ordinal); // password
     }
 

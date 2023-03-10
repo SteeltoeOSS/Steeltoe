@@ -148,12 +148,12 @@ public static class MongoDbTestHelpers
                     ""instance_name"": ""mongoCosmos"",
                     ""binding_name"": """",
                     ""credentials"": {
-                        ""cosmosdb_host_endpoint"": ""https://u83bde2c09fd.documents.azure.com:10255/"",
+                        ""cosmosdb_host_endpoint"": ""https://u83bde2c09fd.documents.az.cloud:10255/"",
                         ""cosmosdb_username"": ""u83bde2c09fd"",
-                        ""cosmosdb_password"": ""36SWUyZbIyuu4AwLWMbAal9QngyVbZJjyoH9m0kILXIiEA9fCUhb34JHOovSNk2jpbXEQDuGnsBrYj1vTlu41w=="",
-                        ""cosmosdb_readonly_password"": ""36SWUyZbIyuu4AwLWMbAal9QngyVbZJjyoH9m0kILXIiEA9fCUhb34JHOovSNk2jpbXEQDuGnsBrYj1vTlu41w=="",
-                        ""cosmosdb_connection_string"": ""mongodb://u83bde2c09fd:36SWUyZbIyuu4AwLWMbAal9QngyVbZJjyoH9m0kILXIiEA9fCUhb34JHOovSNk2jpbXEQDuGnsBrYj1vTlu41w==@u83bde2c09fd.documents.azure.com:10255/?ssl=true&replicaSet=globaldb"",
-                        ""cosmosdb_readonly_connection_string"": ""mongodb://u83bde2c09fd:36SWUyZbIyuu4AwLWMbAal9QngyVbZJjyoH9m0kILXIiEA9fCUhb34JHOovSNk2jpbXEQDuGnsBrYj1vTlu41w==@u83bde2c09fd.documents.azure.com:10255/?ssl=true&replicaSet=globaldb""
+                        ""cosmosdb_password"": ""36SWUyZbI4AwLWMbAal9QngyVbZJjyoH9m0kILXIiEA9fCUhb34JHOovSNk2jpbXEQDuGnsBrYj1vTlu41w=="",
+                        ""cosmosdb_readonly_password"": ""36SWUyZbI4AwLWMbAal9QngyVbZJjyoH9m0kILXIiEA9fCUhb34JHOovSNk2jpbXEQDuGnsBrYj1vTlu41w=="",
+                        ""cosmosdb_connection_string"": ""mongodb://u83bde2c09fd:36SWUyZbI4AwLWMbAal9QngyVbZJjyoH9m0kILXIiEA9fCUhb34JHOovSNk2jpbXEQDuGnsBrYj1vTlu41w==@u83bde2c09fd.documents.az.cloud:10255/?ssl=true&replicaSet=globaldb"",
+                        ""cosmosdb_readonly_connection_string"": ""mongodb://u83bde2c09fd:36SWUyZbI4AwLWMbAal9QngyVbZJjyoH9m0kILXIiEA9fCUhb34JHOovSNk2jpbXEQDuGnsBrYj1vTlu41w==@u83bde2c09fd.documents.az.cloud:10255/?ssl=true&replicaSet=globaldb""
                     },
                     ""syslog_drain_url"": null,
                     ""volume_mounts"": []

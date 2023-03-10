@@ -38,13 +38,13 @@ public static class MySqlTestHelpers
                     ""instance_name"": ""azure-beetmysql"",
                     ""binding_name"": null,
                     ""credentials"": {
-                        ""host"": ""451200b4-c29d-4346-9a0a-70bc109bb6e9.mysql.database.azure.com"",
+                        ""host"": ""451200b4-c29d-4346-9a0a-70bc109bb6e9.mysql.database.az.cloud"",
                         ""port"": 3306,
                         ""database"": ""ub6oyk1kkh"",
-                        ""username"": ""wj7tsxai7i@451200b4-c29d-4346-9a0a-70bc109bb6e9"",
+                        ""username"": ""wj7tsxai7i@451200b4-c29d-4346-70bc109bb6e9"",
                         ""password"": ""10PUO82Uhqk8F2ii"",
                         ""sslRequired"": true,
-                        ""uri"": ""mysql://wj7tsxai7i%40451200b4-c29d-4346-9a0a-70bc109bb6e9:10PUO82Uhqk8F2ii@451200b4-c29d-4346-9a0a-70bc109bb6e9.mysql.database.azure.com:3306/ub6oyk1kkh?useSSL=true&requireSSL=true"",
+                        ""uri"": ""mysql://wj7tsxai7i%40451200b4-c29d-4346-70bc109bb6e9:10PUO82Uhqk8F2ii@451200b4-c29d-4346-9a0a-70bc109bb6e9.mysql.database.az.cloud:3306/ub6oyk1kkh?useSSL=true&requireSSL=true"",
                         ""tags"": [
                             ""mysql""
                         ]
