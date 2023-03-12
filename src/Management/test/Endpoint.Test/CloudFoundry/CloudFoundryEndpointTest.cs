@@ -115,7 +115,7 @@ public class CloudFoundryEndpointTest : BaseTest
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string>
             {
-                { "management:cloudfoundry:enabled", "false" }, // TODO: Note breaking change
+                { "management:cloudfoundry:enabled", "false" },
                 { "management:endpoints:info:enabled", "true" } 
             });
         };

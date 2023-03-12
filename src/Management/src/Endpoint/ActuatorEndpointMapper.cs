@@ -32,7 +32,7 @@ internal class ActuatorEndpointMapper
         _middlewares = middlewares;
         _logger = logger;
     }
-    public IEndpointConventionBuilder Map(IEndpointRouteBuilder endpointRouteBuilder, ActuatorConventionBuilder conventionBuilder = null)
+    public IEndpointConventionBuilder Map(IEndpointRouteBuilder endpointRouteBuilder, ref ActuatorConventionBuilder conventionBuilder)
     {
         var collection = new HashSet<string>();
         conventionBuilder ??= new ActuatorConventionBuilder();

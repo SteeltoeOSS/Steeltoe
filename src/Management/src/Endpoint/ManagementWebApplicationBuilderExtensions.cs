@@ -202,7 +202,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddRefreshActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddRefreshActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddRefreshActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -269,7 +269,7 @@ public static class ManagementWebApplicationBuilderExtensions
         Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
         applicationBuilder.Logging.AddDynamicConsole();
-        applicationBuilder.Services.AddAllActuators(applicationBuilder.Configuration, mediaTypeVersion);
+        applicationBuilder.Services.AddAllActuators(mediaTypeVersion);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }

@@ -27,20 +27,12 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddRefreshActuatorServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddRefreshActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
-
-        //var options = new RefreshEndpointOptions(configuration);
-        //services.TryAddSingleton<IRefreshOptions>(options);
-        //services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
-        //services.ConfigureOptions<ConfigureRefreshEndpointOptions>();
-
 
         services.ConfigureEndpointOptions<RefreshEndpointOptions, ConfigureRefreshEndpointOptions>();
-        services.TryAddSingleton<RefreshEndpoint>();
-        services.TryAddSingleton<IRefreshEndpoint>(provider => provider.GetRequiredService<RefreshEndpoint>());
+        services.TryAddSingleton<IRefreshEndpoint, RefreshEndpoint>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, RefreshEndpointMiddleware>());
         services.AddSingleton<RefreshEndpointMiddleware>();
 

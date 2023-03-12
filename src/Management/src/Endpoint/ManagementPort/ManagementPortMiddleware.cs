@@ -25,7 +25,7 @@ public class ManagementPortMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        ManagementEndpointOptions mgmtOptions = _managementOptions.Get(ActuatorContext.Name);  // TODO: How does this work in cloudfoundry? 
+        ManagementEndpointOptions mgmtOptions = _managementOptions.Get(ActuatorContext.Name);
         _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, mgmtOptions.Path);
 
         string contextPath = mgmtOptions.Path;

@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsEndpointOptions : EndpointOptionsBase//, IMetricsEndpointOptions
+public class MetricsEndpointOptions : EndpointOptionsBase
 {
     public string IngressIgnorePattern { get; set; }
 

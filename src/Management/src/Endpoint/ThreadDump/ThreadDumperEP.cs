@@ -36,7 +36,6 @@ public class ThreadDumperEp : IThreadDumper
     };
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
     private readonly ILogger<ThreadDumperEp> _logger;
-    // private readonly IThreadDumpOptions _options;
 
     public ThreadDumperEp(IOptionsMonitor<ThreadDumpEndpointOptions> options, ILogger<ThreadDumperEp> logger = null)
     {

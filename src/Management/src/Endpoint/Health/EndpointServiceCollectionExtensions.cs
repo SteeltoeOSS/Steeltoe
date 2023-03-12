@@ -66,7 +66,6 @@ public static class EndpointServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(aggregator);
 
-        // configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.AddCommonActuatorServices();
         services.AddHealthActuatorServices();
@@ -74,12 +73,8 @@ public static class EndpointServiceCollectionExtensions
         AddHealthContributors(services, contributors);
 
         services.TryAddSingleton(aggregator);
-        //services.TryAddScoped<HealthEndpointCore>();
         services.TryAddScoped<IEndpoint<HealthEndpointResponse, ISecurityContext>, HealthEndpointCore>();
-        // services.AddActuatorEndpointMapping<HealthEndpointCore>();
         services.TryAddSingleton<ApplicationAvailability>();
-
-        //New:
 
 
         services.AddCommonActuatorServices();

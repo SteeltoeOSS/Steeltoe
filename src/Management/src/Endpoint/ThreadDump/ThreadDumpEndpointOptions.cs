@@ -4,18 +4,8 @@
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class ThreadDumpEndpointOptions : EndpointOptionsBase //, IThreadDumpOptions
+public class ThreadDumpEndpointOptions : EndpointOptionsBase
 {
-
     public int Duration { get; set; } = 10; // 10 ms
 
-
-    //public ThreadDumpEndpointOptions(IConfiguration configuration)
-    //    : base(ManagementInfoPrefix, configuration)
-    //{
-    //    if (string.IsNullOrEmpty(Id))
-    //    {
-    //        Id = "dump";
-    //    }
-    //}
 }

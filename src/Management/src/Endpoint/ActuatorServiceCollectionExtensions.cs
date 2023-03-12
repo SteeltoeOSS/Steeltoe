@@ -47,16 +47,15 @@ public static class ActuatorServiceCollectionExtensions
         services.ConfigureOptions<TConfigureOptions>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
     }
-    public static void AddAllActuators(this IServiceCollection services, IConfiguration configuration, Action<CorsPolicyBuilder> buildCorsPolicy)
+    public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy)
     {
-        services.AddAllActuators(configuration, MediaTypeVersion.V2, buildCorsPolicy);
+        services.AddAllActuators( MediaTypeVersion.V2, buildCorsPolicy);
     }
-    public static IServiceCollection AddAllActuators(this IServiceCollection services, IConfiguration configuration = null,
+    public static IServiceCollection AddAllActuators(this IServiceCollection services,
         MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
     {
         ArgumentGuard.NotNull(services);
 
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.AddSteeltoeCors(buildCorsPolicy);
 
@@ -79,7 +78,7 @@ public static class ActuatorServiceCollectionExtensions
         services.AddTraceActuator(version);
         services.AddMappingsActuator();
         services.AddMetricsActuator();
-        services.AddRefreshActuator(configuration);
+        services.AddRefreshActuator();
         return services;
     }
 

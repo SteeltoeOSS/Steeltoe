@@ -231,7 +231,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddRefreshActuator(context.Configuration);
+            collection.AddRefreshActuator();
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -310,7 +310,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddDynamicLogging().AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddAllActuators(context.Configuration, mediaTypeVersion, buildCorsPolicy);
+            collection.AddAllActuators(mediaTypeVersion, buildCorsPolicy);
             IEndpointConventionBuilder endpointConventionBuilder = ActivateActuatorEndpoints(collection);
             configureEndpoints?.Invoke(endpointConventionBuilder);
         });

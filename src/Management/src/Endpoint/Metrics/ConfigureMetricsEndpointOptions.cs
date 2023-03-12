@@ -20,6 +20,7 @@ internal class ConfigureMetricsEndpointOptions : ConfigureEndpointOptions<Metric
 
     public override void Configure(MetricsEndpointOptions options)
     {
+        base.Configure(options);
         if (string.IsNullOrEmpty(options.IngressIgnorePattern))
         {
             options.IngressIgnorePattern = DefaultIngressIgnorePattern;

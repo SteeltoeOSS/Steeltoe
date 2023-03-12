@@ -8,16 +8,11 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-public class ConfigureRefreshEndpointOptions : ConfigureEndpointOptions<RefreshEndpointOptions>, IConfigureOptions<RefreshEndpointOptions>
+public class ConfigureRefreshEndpointOptions : ConfigureEndpointOptions<RefreshEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:refresh";
 
     public ConfigureRefreshEndpointOptions(IConfiguration configuration) : base(configuration, ManagementInfoPrefix, "refresh")
     {
-    }
-    public override void Configure(RefreshEndpointOptions options)
-    {
-        base.Configure(options);
-
     }
 }

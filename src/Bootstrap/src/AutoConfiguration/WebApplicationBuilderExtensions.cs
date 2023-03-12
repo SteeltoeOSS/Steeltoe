@@ -270,7 +270,7 @@ public static class WebApplicationBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireAllActuators(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddAllActuators(webApplicationBuilder.Configuration);
+        webApplicationBuilder.Services.AddAllActuators();
         webApplicationBuilder.Services.ActivateActuatorEndpoints();
         Log(LogMessages.WireAllActuators);
     }

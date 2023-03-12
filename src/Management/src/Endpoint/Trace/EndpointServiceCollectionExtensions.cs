@@ -50,18 +50,14 @@ public static class EndpointServiceCollectionExtensions
         switch (version)
         {
             case MediaTypeVersion.V1:
-                //services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, TraceDiagnosticObserver>());
+
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, TraceDiagnosticObserver>());
                 services.TryAddSingleton<ITraceRepository, TraceDiagnosticObserver>();
-                //services.TryAddSingleton<ITraceRepository>(p => p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
-                //   services.AddActuatorEndpointMapping<TraceEndpoint>();
                 break;
             default:
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpTraceDiagnosticObserver>());
                 services.TryAddSingleton<IHttpTraceRepository, HttpTraceDiagnosticObserver>();
-                //    services.TryAddSingleton(p =>
-                //         new HttpTraceEndpoint(p.GetService<ITraceOptions>(), p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
-
-                //  services.AddActuatorEndpointMapping<HttpTraceEndpoint>();
+                
                 break;
         }
     }

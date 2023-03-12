@@ -19,7 +19,6 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
     public void AddMetricsActuator_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddMetricsActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
@@ -48,7 +47,7 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
 
         IEnumerable<IDiagnosticObserver> observers = serviceProvider.GetServices<IDiagnosticObserver>();
         List<IDiagnosticObserver> list = observers.ToList();
-        Assert.NotEmpty(list); // Changed how this works Todo: add a new test to verify functionality
+        Assert.NotEmpty(list);
 
         var ep = serviceProvider.GetService<IMetricsEndpoint>();
         Assert.NotNull(ep);

@@ -13,7 +13,7 @@ public static class ActuatorRouteBuilderExtensions
     public static IEndpointConventionBuilder MapTheActuators(this IEndpointRouteBuilder endpoints, ActuatorConventionBuilder conventionBuilder = null)
     {
         ActuatorEndpointMapper mapper = endpoints.ServiceProvider.GetService<ActuatorEndpointMapper>();
-        mapper.Map(endpoints, conventionBuilder);
+        mapper.Map(endpoints, ref conventionBuilder);
         return conventionBuilder;
 
     }

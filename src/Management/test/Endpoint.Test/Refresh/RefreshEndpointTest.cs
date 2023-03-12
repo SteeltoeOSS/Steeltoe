@@ -50,7 +50,7 @@ public class RefreshEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddRefreshActuatorServices(configuration);
+            services.AddRefreshActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>

@@ -30,8 +30,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-
-        if (version == MediaTypeVersion.V1) // TODO: Fix media type version as part of IOptions
+        if (version == MediaTypeVersion.V1) 
         {
             services.ConfigureEndpointOptions<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
             services.TryAddSingleton<ThreadDumpEndpoint>();

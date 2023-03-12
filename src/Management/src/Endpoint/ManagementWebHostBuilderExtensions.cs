@@ -232,7 +232,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddRefreshActuator(context.Configuration);
+            collection.AddRefreshActuator();
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -305,7 +305,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((context, collection) =>
         {
-            collection.AddAllActuators(context.Configuration, mediaTypeVersion);
+            collection.AddAllActuators(mediaTypeVersion);
             IEndpointConventionBuilder conventionBuilder = collection.ActivateActuatorEndpoints();
             configureEndpoints?.Invoke(conventionBuilder);
         });

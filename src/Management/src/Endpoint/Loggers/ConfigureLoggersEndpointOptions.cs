@@ -7,7 +7,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public class ConfigureLoggersEndpointOptions : ConfigureEndpointOptions<LoggersEndpointOptions>//, ILoggersOptions
+public class ConfigureLoggersEndpointOptions : ConfigureEndpointOptions<LoggersEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:loggers";
 

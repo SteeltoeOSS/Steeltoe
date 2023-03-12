@@ -23,7 +23,7 @@ public class RefreshStartup
     {
         services.AddRouting();
         services.AddHypermediaActuator();
-        services.AddRefreshActuator(Configuration);
+        services.AddRefreshActuator();
     }
 
     public void Configure(IApplicationBuilder app)

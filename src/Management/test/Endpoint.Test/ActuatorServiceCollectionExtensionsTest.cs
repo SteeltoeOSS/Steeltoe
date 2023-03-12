@@ -23,7 +23,7 @@ public class ActuatorServiceCollectionExtensionsTest
         {
         });
 
-        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration)).Build();
+        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators()).Build();
         var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 
         Assert.NotNull(options);
@@ -41,7 +41,7 @@ public class ActuatorServiceCollectionExtensionsTest
         });
 
         IWebHost host = hostBuilder.ConfigureServices((context, services) =>
-            services.AddAllActuators(context.Configuration, myPolicy => myPolicy.WithOrigins("http://google.com"))).Build();
+            services.AddAllActuators(myPolicy => myPolicy.WithOrigins("http://google.com"))).Build();
 
         var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 

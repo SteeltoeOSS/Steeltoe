@@ -53,11 +53,6 @@ public static class EndPointExtensions
         return true;
     }
 
-    //public static bool IsExposed(this IEndpointOptions endpoint, ManagementEndpointOptions options)
-    //{
-    //    return options == null || endpoint.IsExposed(options);
-    //}
-
     public static bool ShouldInvoke(this IEndpointOptions endpoint, ManagementEndpointOptions options, ILogger logger = null)
     {
         bool enabled = endpoint.IsEnabled(options);
@@ -115,7 +110,7 @@ public static class EndPointExtensions
         return contextPath;
     }
 
-    //Only used by Cloudfoundry security
+    // Only used by Cloudfoundry security
     public static bool IsAccessAllowed(this IEndpointOptions options, Permissions permissions)
     {
         return permissions >= options.RequiredPermissions;

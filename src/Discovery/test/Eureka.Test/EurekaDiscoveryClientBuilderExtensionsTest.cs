@@ -45,7 +45,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
-        serviceCollection.AddAllActuators(configurationRoot);
+        serviceCollection.AddAllActuators();
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
@@ -70,7 +70,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
-        serviceCollection.AddAllActuators(configurationRoot);
+        serviceCollection.AddAllActuators();
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
@@ -121,7 +121,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
-        serviceCollection.AddAllActuators(configurationRoot);
+        serviceCollection.AddAllActuators();
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
@@ -146,7 +146,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
-        serviceCollection.AddAllActuators(configurationRoot);
+        serviceCollection.AddAllActuators();
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);

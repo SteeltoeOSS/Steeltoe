@@ -24,7 +24,6 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
     private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
     private readonly ILogger<TraceDiagnosticObserver> _logger;
-    //private readonly ITraceOptions _options;
     internal ConcurrentQueue<HttpTrace> Queue = new();
 
     public HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILogger<TraceDiagnosticObserver> logger = null)

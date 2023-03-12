@@ -24,7 +24,7 @@ public class ActuatorManagementOptionsTest : BaseTest
     public void Constructor_InitializesWithDefaultsOnCF()
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
-        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(ActuatorContext.Name); // TODO: rethink this test 
+        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(ActuatorContext.Name);
 
         Assert.Equal("/actuator", opts.Path);
         Assert.Contains("health", opts.Exposure.Include);

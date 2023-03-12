@@ -240,7 +240,7 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddHypermediaActuator().Build();
-        IEnumerable<ActuatorEndpoint> managementEndpoint = host.Services.GetServices<ActuatorEndpoint>();
+        IEnumerable<IActuatorEndpoint> managementEndpoint = host.Services.GetServices<IActuatorEndpoint>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(managementEndpoint);
@@ -424,7 +424,7 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddRefreshActuator().Build();
-        IEnumerable<RefreshEndpoint> managementEndpoint = host.Services.GetServices<RefreshEndpoint>();
+        IEnumerable<IRefreshEndpoint> managementEndpoint = host.Services.GetServices<IRefreshEndpoint>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(managementEndpoint);
@@ -562,7 +562,7 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddAllActuators().Build();
-        IEnumerable<ActuatorEndpoint> managementEndpoint = host.Services.GetServices<ActuatorEndpoint>();
+        IEnumerable<IActuatorEndpoint> managementEndpoint = host.Services.GetServices<IActuatorEndpoint>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(managementEndpoint);
