@@ -15,8 +15,6 @@ public class ServiceCollectionTests
     public void AddTraceActuatorServices_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
-        const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddTraceActuatorServices(MediaTypeVersion.V2));
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);

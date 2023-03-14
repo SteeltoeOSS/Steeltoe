@@ -33,10 +33,5 @@ public class DbMigrationsStartup
         {
             endpoints.MapTheActuators();
         });
-        //app.UseEndpoints(endpoints =>
-        //{
-        //  //  endpoints.Map<ActuatorEndpoint>();
-        //    endpoints.Map<DbMigrationsEndpoint>();
-        //});
     }
 }

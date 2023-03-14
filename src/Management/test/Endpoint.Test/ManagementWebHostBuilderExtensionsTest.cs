@@ -530,11 +530,11 @@ public class ManagementWebHostBuilderExtensionsTest
         using IWebHost host = hostBuilder.AddAllActuators().Start();
         HttpClient client = host.GetTestServer().CreateClient();
 
-        //HttpResponseMessage response =  await client.GetAsync(new Uri("/actuator", UriKind.Relative));
-        //Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        //response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
-        //Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
+        HttpResponseMessage response =  await client.GetAsync(new Uri("/actuator", UriKind.Relative));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 

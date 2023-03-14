@@ -28,10 +28,6 @@ public class HyperMediaStartup
     {
         app.UseRouting();
 
-        //app.UseEndpoints(endpoints =>
-        //{
-        //    endpoints.Map<ActuatorEndpoint>();
-        //});
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapTheActuators();

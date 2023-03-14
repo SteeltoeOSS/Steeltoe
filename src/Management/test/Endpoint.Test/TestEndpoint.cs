@@ -6,10 +6,6 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 internal sealed class TestEndpoint : IEndpoint<int>
 {
-    //public TestEndpoint(IEndpointOptions opts)
-    //  //  : base(opts)
-    //{
-    //}
     public IEndpointOptions Options => throw new NotImplementedException();
 
     public int Invoke()

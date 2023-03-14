@@ -35,7 +35,6 @@ public class CloudFoundryEndpointTest : BaseTest
             services.AddCloudFoundryActuatorServices();
         };
 
-        var cloudFoundryOptions = tc.GetService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
 
         var ep = tc.GetService<ICloudFoundryEndpoint>();
 

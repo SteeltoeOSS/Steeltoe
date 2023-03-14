@@ -12,6 +12,7 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Info;
 using Xunit;
 
@@ -36,27 +37,26 @@ public class EndpointMiddlewareTest : BaseTest
         ["info:NET:ASPNET:version"] = "2.0.0"
     };
 
-    //[Fact]
-    //public async Task HandleInfoRequestAsync_ReturnsExpected()
-    //{
-    //    var opts = new InfoEndpointOptions();
-    //    var managementOptions = new ActuatorManagementOptions();
-    //    managementOptions.EndpointOptions.Add(opts);
+    [Fact]
+    public async Task HandleInfoRequestAsync_ReturnsExpected()
+    {
+        var opts = GetOptionsMonitorFromSettings<InfoEndpointOptions>();
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-    //    var contributors = new List<IInfoContributor>
-    //    {
-    //        new GitInfoContributor()
-    //    };
+        var contributors = new List<IInfoContributor>
+        {
+            new GitInfoContributor()
+        };
 
-    //    var ep = new TestInfoEndpoint(opts, contributors);
-    //    var middle = new InfoEndpointMiddleware(null, ep, managementOptions);
-    //    HttpContext context = CreateRequest("GET", "/loggers");
-    //    await middle.HandleInfoRequestAsync(context);
-    //    context.Response.Body.Seek(0, SeekOrigin.Begin);
-    //    var rdr = new StreamReader(context.Response.Body);
-    //    string json = await rdr.ReadToEndAsync();
-    //    Assert.Equal("{}", json);
-    //}
+        var ep = new TestInfoEndpoint(opts, contributors);
+        var middle = new InfoEndpointMiddleware(ep, managementOptions);
+        HttpContext context = CreateRequest("GET", "/loggers");
+        await middle.HandleInfoRequestAsync(context);
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var rdr = new StreamReader(context.Response.Body);
+        string json = await rdr.ReadToEndAsync();
+        Assert.Equal("{}", json);
+    }
 
     [Fact]
     public async Task InfoActuator_ReturnsExpectedData()
@@ -125,15 +125,18 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.DoesNotContain("2017-06-08T12:47:02Z", response, StringComparison.Ordinal);
     }
 
-    //[Fact]
-    //public void RoutesByPathAndVerb()
-    //{
-    //    var options = new InfoEndpointOptions();
-    //    Assert.True(options.ExactMatch);
-    //    Assert.Equal("/actuator/info", options.GetContextPath(new ActuatorManagementOptions()));
-    //    Assert.Equal("/cloudfoundryapplication/info", options.GetContextPath(new CloudFoundryManagementOptions()));
-    //    Assert.Null(options.AllowedVerbs);
-    //}
+    [Fact]
+    public void RoutesByPathAndVerb()
+    {
+        var options = GetOptionsFromSettings<InfoEndpointOptions>();
+        var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+
+        Assert.True(options.ExactMatch);
+        Assert.Equal("/actuator/info", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/info", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
+        Assert.Single(options.AllowedVerbs);
+        Assert.Contains("Get", options.AllowedVerbs);
+    }
 
     private HttpContext CreateRequest(string method, string path)
     {

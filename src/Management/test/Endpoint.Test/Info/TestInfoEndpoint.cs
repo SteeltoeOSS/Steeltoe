@@ -16,8 +16,8 @@ internal sealed class TestInfoEndpoint : InfoEndpoint
     {
     }
 
-    //public override Dictionary<string, object> Invoke()
-    //{
-    //    return new Dictionary<string, object>();
-    //}
+    public override Dictionary<string, object> Invoke()
+    {
+        return new Dictionary<string, object>();
+    }
 }

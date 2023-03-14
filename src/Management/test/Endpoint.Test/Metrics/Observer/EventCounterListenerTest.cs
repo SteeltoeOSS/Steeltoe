@@ -130,7 +130,7 @@ public class EventCounterListenerTest : BaseTest
             IncludedMetrics = inclusions,
             EventCounterEvents = true
         });
-        using var listener = new EventCounterListener(optionsMonitor);;
+        using var listener = new EventCounterListener(optionsMonitor);
 
         var exporter = new SteeltoeExporter(_exporterOptions);
         AggregationManager aggregationManager = GetTestMetrics(exporter);

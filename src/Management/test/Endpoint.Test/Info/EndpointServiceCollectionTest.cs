@@ -40,8 +40,6 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddSingleton(logger);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-      //  var options = serviceProvider.GetService<IInfoOptions>();
-       // Assert.NotNull(options);
         IEnumerable<IInfoContributor> contributors = serviceProvider.GetServices<IInfoContributor>();
 
         Assert.NotNull(contributors);

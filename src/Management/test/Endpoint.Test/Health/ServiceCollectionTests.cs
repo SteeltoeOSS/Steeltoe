@@ -15,8 +15,6 @@ public class ServiceCollectionTests
     public void AddHealthActuatorServices_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
-        const IConfigurationRoot configuration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuatorServices());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
@@ -36,32 +37,34 @@ public class EndpointMiddlewareTest : BaseTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue");// Allow routing to /cloudfoundryapplication
     }
 
-    //[Fact]
-    //public void RoutesByPathAndVerb()
-    //{
-    //    var options = new HypermediaEndpointOptions();
-    //    Assert.True(options.ExactMatch);
-    //    Assert.Equal("/cloudfoundryapplication", options.GetContextPath(new CloudFoundryManagementOptions()));
-    //    Assert.Null(options.AllowedVerbs);
-    //}
+    [Fact]
+    public void RoutesByPathAndVerb()
+    {
+        var options = new HypermediaEndpointOptions();
+        var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        Assert.True(options.ExactMatch);
+        Assert.Equal("/cloudfoundryapplication", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
 
-    //[Fact]
-    //public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
-    //{
-    //    var opts = new CloudFoundryEndpointOptions();
-    //    var managementOptions = new CloudFoundryManagementOptions();
-    //    managementOptions.EndpointOptions.Add(opts);
-    //    var ep = new TestCloudFoundryEndpoint(opts, managementOptions);
+        Assert.Single(options.AllowedVerbs);
+        Assert.Contains("Get", options.AllowedVerbs);
+    }
 
-    //    var middle = new CloudFoundryEndpointMiddleware(null, ep, managementOptions);
+    [Fact]
+    public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
+    {
+        var opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        var ep = new TestCloudFoundryEndpoint(opts, managementOptions);
 
-    //    HttpContext context = CreateRequest("GET", "/");
-    //    await middle.HandleCloudFoundryRequestAsync(context);
-    //    context.Response.Body.Seek(0, SeekOrigin.Begin);
-    //    var rdr = new StreamReader(context.Response.Body);
-    //    string json = await rdr.ReadToEndAsync();
-    //    Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
-    //}
+        var middle = new CloudFoundryEndpointMiddleware(ep, managementOptions);
+
+        HttpContext context = CreateRequest("GET", "/");
+        await middle.HandleCloudFoundryRequestAsync(context);
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var rdr = new StreamReader(context.Response.Body);
+        string json = await rdr.ReadToEndAsync();
+        Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
+    }
 
     [Fact]
     public async Task CloudFoundryEndpointMiddleware_ReturnsExpectedData()

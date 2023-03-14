@@ -32,7 +32,7 @@ public class SpringBootAdminClientHostedServiceTest:BaseTest
 
             IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
             var appInfo = new ApplicationInstanceInfo(configurationRoot);
-            var sbaOptions = new SpringBootAdminClientOptions(configurationRoot, appInfo); //TODO: change to IOptions Monitor
+            var sbaOptions = new SpringBootAdminClientOptions(configurationRoot, appInfo);
             var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appSettings);
             var healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
             var httpMessageHandler = new MockHttpMessageHandler();

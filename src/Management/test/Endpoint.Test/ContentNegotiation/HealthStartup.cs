@@ -33,10 +33,5 @@ public class HealthStartup
         {
             endpoints.MapTheActuators();
         });
-        //app.UseEndpoints(endpoints =>
-        //{
-        //    endpoints.Map<ActuatorEndpoint>();
-        //    endpoints.Map<HealthEndpointCore>();
-        //});
     }
 }

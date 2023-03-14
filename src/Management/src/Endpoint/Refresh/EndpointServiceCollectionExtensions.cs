@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 
@@ -15,10 +14,6 @@ public static class EndpointServiceCollectionExtensions
     /// </summary>
     /// <param name="services">
     /// Service collection to add actuator to.
-    /// </param>
-    /// <param name="configuration">
-    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
-    /// management:endpoints:refresh).
     /// </param>
     public static void AddRefreshActuator(this IServiceCollection services)
     {

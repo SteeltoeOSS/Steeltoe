@@ -78,7 +78,6 @@ public class EndpointMiddlewareTest : BaseTest
             string json = await result.Content.ReadAsStringAsync();
 
             const string expected =
-            //    "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\",\"environment\",\"applicationName\"]";
             "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"management:endpoints:actuator\",\"management:endpoints:actuator:exposure\",\"management:endpoints:actuator:exposure:include\",\"management:endpoints:actuator:exposure:include:0\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\",\"environment\",\"applicationName\"]";
             Assert.Equal(expected, json);
         }

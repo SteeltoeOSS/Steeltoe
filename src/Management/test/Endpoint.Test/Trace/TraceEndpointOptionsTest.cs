@@ -29,7 +29,6 @@ public class TraceEndpointOptionsTest : BaseTest
         Assert.False(opts.AddSessionId);
     }
 
-    //TODO: Add equivalent for trace
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {

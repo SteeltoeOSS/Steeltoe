@@ -17,7 +17,6 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddEntityFrameworkActuator_ThrowsOnNulls()
     {
         const ServiceCollection nullServices = null;
-        var services = new ServiceCollection();
 
         Action action1 = () => nullServices.AddDbMigrationsActuator();
 

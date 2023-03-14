@@ -17,7 +17,6 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddMappingsActuator_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddMappingsActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);

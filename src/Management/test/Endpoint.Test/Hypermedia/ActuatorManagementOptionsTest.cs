@@ -65,9 +65,6 @@ public class ActuatorManagementOptionsTest : BaseTest
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
 
-        //var configurationBuilder = new ConfigurationBuilder();
-        //configurationBuilder.AddInMemoryCollection(appsettings);
-        //IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var opts = GetOptionsFromSettings<ManagementEndpointOptions>(appsettings);
 
@@ -80,29 +77,4 @@ public class ActuatorManagementOptionsTest : BaseTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
     }
 
-    //This doesnt work like this anymore
-    //[Fact]
-    //public void Constructor_OverridesInvalidConfiguration_OnCF()
-    //{
-    //    var appsettings = new Dictionary<string, string>
-    //    {
-    //        ["management:endpoints:path"] = "/cloudfoundryapplication"
-    //    };
-
-    //  Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
-
-    //    //var configurationBuilder = new ConfigurationBuilder();
-    //    //configurationBuilder.AddInMemoryCollection(appsettings);
-    //    //IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-    //    var opts = GetOptionsFromSettings<ManagementEndpointOptions>(appsettings);
-
-
-    //    Assert.Equal("/actuator", opts.Path);
-
-    //    Assert.Contains("health", opts.Exposure.Include);
-    //    Assert.Contains("info", opts.Exposure.Include);
-
-    //    Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-    //}
 }

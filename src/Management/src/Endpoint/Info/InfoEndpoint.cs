@@ -23,7 +23,7 @@ public class InfoEndpoint : IInfoEndpoint
     }
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public Dictionary<string, object> Invoke()
+    public virtual Dictionary<string, object> Invoke()
     {
         return BuildInfo(_contributors);
     }

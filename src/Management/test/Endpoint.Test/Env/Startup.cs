@@ -27,11 +27,6 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        //services.AddHypermediaActuator(Configuration);
-
-
-        // New:
-        
         services.AddEnvActuator();
         services.AddRouting();
         
@@ -40,7 +35,6 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-     //   app.UseMiddleware<ActuatorsMiddleware>();
         app.UseEndpoints(endpoints => endpoints.MapTheActuators());   
     }
 }

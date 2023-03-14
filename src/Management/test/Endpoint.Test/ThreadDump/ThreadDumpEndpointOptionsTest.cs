@@ -35,7 +35,6 @@ public class ThreadDumpEndpointOptionsTest : BaseTest
 
         var optionsMonitor = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions>(appsettings);
         var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
-        var ep = new ThreadDumpEndpoint(optionsMonitor, new ThreadDumperEp(optionsMonitor));
         var opts = optionsMonitor.CurrentValue;
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);
@@ -44,8 +43,34 @@ public class ThreadDumpEndpointOptionsTest : BaseTest
 
         Assert.True(opts.Enabled);
         Assert.Equal("threaddump", opts.Id);
-        Assert.Equal("threaddump", opts.Path); //Todo: ASsert for "dump" as well
+        Assert.Equal("threaddump", opts.Path); 
 
-      //  Assert.True(ep.Enabled);
+    }
+    [Fact]
+    public void Constructor_BindsConfigurationCorrectlyV1()
+    {
+        var appsettings = new Dictionary<string, string>
+        {
+            ["management:endpoints:enabled"] = "false",
+            ["management:endpoints:loggers:enabled"] = "false",
+            ["management:endpoints:dump:enabled"] = "true",
+            ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
+            ["management:endpoints:cloudfoundry:enabled"] = "true"
+        };
+
+
+
+        var optionsMonitor = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>(appsettings);
+        var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
+        var opts = optionsMonitor.CurrentValue;
+        Assert.True(cloudOpts.Enabled);
+        Assert.Equal(string.Empty, cloudOpts.Id);
+        Assert.Equal(string.Empty, cloudOpts.Path);
+        Assert.True(cloudOpts.ValidateCertificates);
+
+        Assert.True(opts.Enabled);
+        Assert.Equal("dump", opts.Id);
+        Assert.Equal("dump", opts.Path);
+
     }
 }

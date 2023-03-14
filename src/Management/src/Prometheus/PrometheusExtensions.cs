@@ -3,14 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.MetricCollectors;
 
@@ -30,14 +28,7 @@ public static class PrometheusExtensions
     public static IServiceCollection AddPrometheusActuator(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-
-        services.AddOptions<PrometheusEndpointOptions>().Configure<IConfiguration>((options, configuration) =>
-        {
-            configuration.GetSection(PrometheusEndpointOptions.ManagementInfoPrefix).Bind(options);
-        });
-
-        ServiceDescriptor sd = ServiceDescriptor.Singleton<IEndpointOptions, PrometheusEndpointOptions>();
-        services.TryAddEnumerable(sd);
+        services.ConfigureEndpointOptions<PrometheusEndpointOptions, ConfigurePrometheusEndpointOptions>();
 
         services.AddOpenTelemetry().WithMetrics(builder =>
         {
@@ -52,8 +43,7 @@ public static class PrometheusExtensions
     {
 
         var managementOptions = app.ApplicationServices.GetService<IOptionsMonitor<ManagementEndpointOptions>>()?.CurrentValue;
-        PrometheusEndpointOptions? prometheusOptions = null;
-        //    app.ApplicationServices.GetService<IEnumerable<IEndpointOptions>>()?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
+        PrometheusEndpointOptions? prometheusOptions = app.ApplicationServices.GetService<IEnumerable<IEndpointOptions>>()?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
 
         string root = managementOptions?.Path ?? "/actuator";
         string id = prometheusOptions?.Id ?? "prometheus";

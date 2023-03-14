@@ -4,14 +4,12 @@
 
 using System.Net;
 using System.Text;
-using FluentAssertions.Common;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -45,7 +43,6 @@ public class EndpointMiddlewareTest : BaseTest
 
         var optionsMonitor = GetOptionsMonitorFromSettings<EnvEndpointOptions, ConfigureEnvEndpointOptions>();
         var managementOptions = new TestOptionsMonitor<ManagementEndpointOptions>(new ManagementEndpointOptions());
-       // new TestNamedOptionsMonitor<>("", new ManagementOptions());
 
         var ep = new EnvEndpoint(optionsMonitor, configurationRoot, _host);
         var middle = new EnvEndpointMiddleware(ep, managementOptions);
@@ -95,15 +92,18 @@ public class EndpointMiddlewareTest : BaseTest
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", originalEnv);
     }
 
-    //[Fact]
-    //public void RoutesByPathAndVerb()
-    //{
-    //    var options = new EnvEndpointOptions();
-    //    Assert.True(options.ExactMatch);
-    //    Assert.Equal("/actuator/env", options.GetContextPath(new ActuatorManagementOptions()));
-    //    Assert.Equal("/cloudfoundryapplication/env", options.GetContextPath(new CloudFoundryManagementOptions()));
-    //    Assert.Null(options.AllowedVerbs);
-    //}
+    [Fact]
+    public void RoutesByPathAndVerb()
+    {
+        var options = GetOptionsFromSettings<EnvEndpointOptions>();
+
+        var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        Assert.True(options.ExactMatch);
+        Assert.Equal("/actuator/env", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/env", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
+        Assert.Single(options.AllowedVerbs);
+        Assert.Contains("Get", options.AllowedVerbs);
+    }
 
     private HttpContext CreateRequest(string method, string path)
     {

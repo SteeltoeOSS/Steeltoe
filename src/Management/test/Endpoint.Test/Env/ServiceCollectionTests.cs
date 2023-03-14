@@ -11,17 +11,13 @@ namespace Steeltoe.Management.Endpoint.Test.Env;
 
 public class ServiceCollectionTests
 {
-    //[Fact]
-    //public void AddEnvActuatorServices_ThrowsOnNulls()
-    //{
-    //    const IServiceCollection services = null;
-    //    IServiceCollection services2 = new ServiceCollection();
-    //    const IConfigurationRoot configuration = null;
+    [Fact]
+    public void AddEnvActuatorServices_ThrowsOnNulls()
+    {
+        const IServiceCollection services = null;
 
-    //    var ex = Assert.Throws<ArgumentNullException>(() => services.AddEnvActuatorServices());
-    //    Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddEnvActuatorServices());
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
 
-    //    var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddEnvActuatorServices());
-    //    Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
-    //}
+    }
 }

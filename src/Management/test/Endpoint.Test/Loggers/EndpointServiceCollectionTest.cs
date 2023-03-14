@@ -17,7 +17,6 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddLoggersActuator_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddLoggersActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
@@ -49,10 +48,7 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddSingleton<IConfiguration>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-        //var options = serviceProvider.GetService<ILoggersOptions>();
         var ep = serviceProvider.GetService<LoggersEndpoint>();
-
-        //Assert.NotNull(options);
         Assert.NotNull(ep);
     }
 }

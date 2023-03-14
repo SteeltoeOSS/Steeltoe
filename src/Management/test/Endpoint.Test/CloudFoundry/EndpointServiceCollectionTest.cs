@@ -16,7 +16,6 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddCloudFoundryActuator_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddCloudFoundryActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);

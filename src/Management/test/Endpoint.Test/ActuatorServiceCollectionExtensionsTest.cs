@@ -54,32 +54,30 @@ public class ActuatorServiceCollectionExtensionsTest
         Assert.Contains(policy.Methods, m => m == "POST");
     }
 
-    //[Fact]
-    //public void AddAllActuators_YesCF_onCF()
-    //{
-    //    Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+    [Fact]
+    public void AddAllActuators_YesCF_onCF()
+    {
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
 
-    //    IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-    //    {
-    //    }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
+        {
+        }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
 
-    //    IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration)).Build();
+        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators()).Build();
 
-    //    Assert.NotNull(host.Services.GetService<ICloudFoundryOptions>());
-    //    Assert.NotNull(host.Services.GetService<CloudFoundryEndpoint>());
-    //    Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-    //}
+        Assert.NotNull(host.Services.GetService<ICloudFoundryEndpoint>());
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+    }
 
-    //[Fact]
-    //public void AddAllActuators_NoCF_offCF()
-    //{
-    //    IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-    //    {
-    //    }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
+    [Fact]
+    public void AddAllActuators_NoCF_offCF()
+    {
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
+        {
+        }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
 
-    //    IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration)).Build();
+        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators()).Build();
 
-    //    Assert.Null(host.Services.GetService<ICloudFoundryOptions>());
-    //    Assert.Null(host.Services.GetService<CloudFoundryEndpoint>());
-    //}
+        Assert.Null(host.Services.GetService<ICloudFoundryEndpoint>());
+    }
 }

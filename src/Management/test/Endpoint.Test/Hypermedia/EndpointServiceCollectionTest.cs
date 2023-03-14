@@ -30,8 +30,6 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddHypermediaActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        //var options = serviceProvider.GetService<IActuatorHypermediaOptions>();
-        //Assert.NotNull(options);
         var ep = serviceProvider.GetService<IActuatorEndpoint>();
         Assert.NotNull(ep);
     }

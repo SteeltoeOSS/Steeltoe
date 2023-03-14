@@ -32,7 +32,6 @@ public class LoggersEndpointOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var opts = GetOptionsFromSettings<LoggersEndpointOptions>(appsettings);
         var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);

@@ -9,13 +9,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Security;
 using Xunit;
+using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
@@ -28,32 +32,31 @@ public class EndpointMiddlewareTest : BaseTest
         ["management:endpoints:health:enabled"] = "true"
     };
 
-    //[Fact]
-    //public async Task HandleHealthRequestAsync_ReturnsExpected()
-    //{
-    //    var opts = new HealthEndpointOptions();
-    //    var managementOptions = new CloudFoundryManagementOptions();
-    //    managementOptions.EndpointOptions.Add(opts);
+    [Fact]
+    public async Task HandleHealthRequestAsync_ReturnsExpected()
+    {
+        var opts = GetOptionsMonitorFromSettings<HealthEndpointOptions>();
+        var mgmtOpts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        var hsOptions = new TestOptionsMonitor<HealthCheckServiceOptions>(new HealthCheckServiceOptions());
 
-    //    var contributors = new List<IHealthContributor>
-    //    {
-    //        new DiskSpaceContributor()
-    //    };
+        var contributors = new List<IHealthContributor>
+        {
+            new DiskSpaceContributor()
+        };
+        var sc = new ServiceCollection();
+        var sp = sc.BuildServiceProvider();
 
-    //    var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contributors);
+        var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contributors, hsOptions, sp);
 
-    //    var middle = new HealthEndpointMiddleware(managementOptions, ep);
-    //    //{
-    //    //    Endpoint = ep
-    //    //};
+        var middle = new HealthEndpointMiddleware(mgmtOpts, ep);
 
-    //    HttpContext context = CreateRequest("GET", "/health");
-    //    await middle.HandleHealthRequestAsync(context);
-    //    context.Response.Body.Seek(0, SeekOrigin.Begin);
-    //    var rdr = new StreamReader(context.Response.Body);
-    //    string json = await rdr.ReadToEndAsync();
-    //    Assert.Equal("{\"status\":\"UNKNOWN\"}", json);
-    //}
+        HttpContext context = CreateRequest("GET", "/health");
+        await middle.HandleHealthRequestAsync(context);
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var rdr = new StreamReader(context.Response.Body);
+        string json = await rdr.ReadToEndAsync();
+        Assert.Equal("{\"status\":\"UNKNOWN\"}", json);
+    }
 
     [Fact]
     public async Task HealthActuator_ReturnsOnlyStatus()
@@ -212,7 +215,6 @@ public class EndpointMiddlewareTest : BaseTest
 
         builder.ConfigureServices(services =>
         {
-         //   services.BuildServiceProvider().GetServices<HealthEndpoint>();
             services.BuildServiceProvider().GetServices<HealthEndpointCore>();
             services.BuildServiceProvider().GetServices<IEndpoint<HealthCheckResult, ISecurityContext>>();
         });
@@ -341,15 +343,19 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.Contains("\"status\":\"UP\"", unknownJson, StringComparison.Ordinal);
     }
 
-    //[Fact]
-    //public void RoutesByPathAndVerb()
-    //{
-    //    var options = new HealthEndpointOptions();
-    //    Assert.False(options.ExactMatch);
-    //    Assert.Equal("/actuator/health/{**_}", options.GetContextPath(new ActuatorManagementOptions()));
-    //    Assert.Equal("/cloudfoundryapplication/health/{**_}", options.GetContextPath(new CloudFoundryManagementOptions()));
-    //    Assert.Null(options.AllowedVerbs);
-    //}
+    [Fact]
+    public void RoutesByPathAndVerb()
+    {
+        var options = GetOptionsFromSettings<HealthEndpointOptions>();
+
+        var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+
+        Assert.False(options.ExactMatch);
+        Assert.Equal("/actuator/health/{**_}", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/health/{**_}", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
+        Assert.Single(options.AllowedVerbs);
+        Assert.Contains("Get", options.AllowedVerbs);
+    }
 
     private HttpContext CreateRequest(string method, string path)
     {

@@ -21,9 +21,6 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// Reference to the service collection.
     /// </param>
-    /// <param name="configuration">
-    /// Reference to the configuration system.
-    /// </param>
     /// <returns>
     /// A reference to the service collection.
     /// </returns>

@@ -37,9 +37,8 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HandleEntityFrameworkRequestAsync_ReturnsExpected()
     {
         var opts = GetOptionsMonitorFromSettings<DbMigrationsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(); //.Get(ActuatorContextName.Name);
+        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(); 
         managementOptions.Get(ActuatorContext.Name).EndpointOptions.Add(opts.CurrentValue);
-        //managementOptions.EndpointOptions.Add(opts);
         var container = new ServiceCollection();
         container.AddScoped<MockDbContext>();
         var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
