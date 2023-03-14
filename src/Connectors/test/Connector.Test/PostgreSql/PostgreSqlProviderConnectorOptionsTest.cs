@@ -9,7 +9,7 @@ using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connector.PostgreSql;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.PostgreSQL;
+namespace Steeltoe.Connector.Test.PostgreSql;
 
 public class PostgreSqlProviderConnectorOptionsTest
 {

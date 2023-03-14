@@ -12,12 +12,12 @@ internal static class ConfigurationDictionaryExtensions
     {
         var results = new List<string>();
 
-        foreach (KeyValuePair<string, string> pair in configurationData)
+        foreach ((string key, string value) in configurationData)
         {
-            if (pair.Key.StartsWith(keyPrefix, StringComparison.OrdinalIgnoreCase) && pair.Key.EndsWith(keySuffix, StringComparison.OrdinalIgnoreCase) &&
-                pair.Value == keyValue)
+            if (key.StartsWith(keyPrefix, StringComparison.OrdinalIgnoreCase) && key.EndsWith(keySuffix, StringComparison.OrdinalIgnoreCase) &&
+                value == keyValue)
             {
-                results.Add(ConfigurationPath.GetParentPath(pair.Key));
+                results.Add(ConfigurationPath.GetParentPath(key));
             }
         }
 

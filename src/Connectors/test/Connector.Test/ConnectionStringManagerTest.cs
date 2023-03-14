@@ -14,7 +14,7 @@ using Steeltoe.Connector.Services;
 using Steeltoe.Connector.SqlServer;
 using Steeltoe.Connector.Test.MongoDb;
 using Steeltoe.Connector.Test.MySql;
-using Steeltoe.Connector.Test.PostgreSQL;
+using Steeltoe.Connector.Test.PostgreSql;
 using Steeltoe.Connector.Test.Redis;
 using Steeltoe.Connector.Test.SqlServer;
 using Xunit;
