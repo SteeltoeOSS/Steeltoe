@@ -27,7 +27,9 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 
         builder.AddMySql();
         builder.Services.Configure<MySqlOptions>(options => options.ConnectionString += ";Use Compression=false");
-        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider));
+
+        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) =>
+            SteeltoeExtensions.UseMySql(options, serviceProvider, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
 
         await using WebApplication app = builder.Build();
 
@@ -49,7 +51,9 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 
         builder.AddMySql();
         builder.Services.Configure<MySqlOptions>("myMySqlService", options => options.ConnectionString += ";Use Compression=false");
-        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider, "myMySqlService"));
+
+        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) =>
+            SteeltoeExtensions.UseMySql(options, serviceProvider, "myMySqlService", MySqlServerVersion.LatestSupportedServerVersion));
 
         await using WebApplication app = builder.Build();
 

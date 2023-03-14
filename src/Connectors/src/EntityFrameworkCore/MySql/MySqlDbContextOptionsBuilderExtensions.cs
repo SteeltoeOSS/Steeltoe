@@ -11,7 +11,7 @@ namespace Steeltoe.Connector.EntityFrameworkCore.MySql;
 public static class MySqlDbContextOptionsBuilderExtensions
 {
     public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,
-        string serviceBindingName = null, Action<object> mySqlOptionsAction = null)
+        string serviceBindingName = null, object serverVersion = null, Action<object> mySqlOptionsAction = null)
     {
         ArgumentGuard.NotNull(optionsBuilder);
         ArgumentGuard.NotNull(serviceProvider);
@@ -24,7 +24,7 @@ public static class MySqlDbContextOptionsBuilderExtensions
             throw new InvalidOperationException($"Connection string for service binding '{serviceBindingName}' not found.");
         }
 
-        MySqlDbContextOptionsExtensions.DoUseMySql(optionsBuilder, connectionString, mySqlOptionsAction);
+        MySqlDbContextOptionsExtensions.DoUseMySql(optionsBuilder, connectionString, mySqlOptionsAction, serverVersion);
 
         return optionsBuilder;
     }
