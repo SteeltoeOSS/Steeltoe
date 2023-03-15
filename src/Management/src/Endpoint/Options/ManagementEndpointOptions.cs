@@ -10,7 +10,6 @@ namespace Steeltoe.Management.Endpoint.Options;
 public class ManagementEndpointOptions
 {
 
-
     public bool? Enabled { get; set; }
 
     public bool? Sensitive { get; set; }
