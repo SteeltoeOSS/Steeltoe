@@ -98,6 +98,7 @@ public static class ConfigurationBuilderExtensions
     {
         source.RegisterPostProcessor(new PostgreSqlPostProcessor());
         source.RegisterPostProcessor(new MySqlPostProcessor());
+        source.RegisterPostProcessor(new SqlServerPostProcessor());
 
         builder.Add(source);
         return builder;

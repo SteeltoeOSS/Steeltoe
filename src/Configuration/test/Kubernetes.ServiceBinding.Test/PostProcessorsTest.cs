@@ -1184,12 +1184,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         var secrets = new[]
         {
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username")
+            Tuple.Create("password", "test-password")
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, SqlServerPostProcessor.BindingType, secrets);
@@ -1198,7 +1193,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, SqlServerPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:database");
+        configurationData.Should().NotContainKey($"{keyPrefix}:Password");
     }
 
     [Fact]
@@ -1212,7 +1207,6 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("host", "test-host"),
             Tuple.Create("password", "test-password"),
             Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
             Tuple.Create("username", "test-username")
         };
 
@@ -1222,12 +1216,10 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, SqlServerPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
-        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
-        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
-        configurationData[$"{keyPrefix}:jdbcUrl"].Should().Be("test-jdbc-url");
+        configurationData[$"{keyPrefix}:Data Source"].Should().Be("test-host,test-port");
+        configurationData[$"{keyPrefix}:Initial Catalog"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:User ID"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:Password"].Should().Be("test-password");
     }
 
     [Fact]
