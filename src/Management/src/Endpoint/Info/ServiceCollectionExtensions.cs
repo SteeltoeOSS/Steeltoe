@@ -31,8 +31,8 @@ public static class ServiceCollectionExtensions
         services.ConfigureEndpointOptions<InfoEndpointOptions, ConfigureInfoEndpointOptions>();
         services.TryAddSingleton<IInfoEndpoint, InfoEndpoint>();
 
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IEndpointMiddleware, InfoEndpointMiddleware>());
-        services.AddScoped<InfoEndpointMiddleware>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, InfoEndpointMiddleware>());
+        services.AddSingleton<InfoEndpointMiddleware>();
 
         return services;
     }

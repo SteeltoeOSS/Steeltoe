@@ -24,7 +24,7 @@ public class HypermediaService
 
         _logger = logger;
         _managementOptions = managementOptions.Get(ActuatorContext.Name);
-        this._endpointOptions = endpointOptions;
+        _endpointOptions = endpointOptions;
         _options = options.CurrentValue;
     }
     public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options, IEnumerable<IEndpointOptions> endpointOptions, ILogger logger = null)

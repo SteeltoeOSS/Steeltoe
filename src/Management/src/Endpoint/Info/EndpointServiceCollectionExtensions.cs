@@ -21,9 +21,9 @@ public static class EndpointServiceCollectionExtensions
     /// 
     public static void AddInfoActuator(this IServiceCollection services)
     {
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IInfoContributor, GitInfoContributor>());
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IInfoContributor, AppSettingsInfoContributor>());
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IInfoContributor, BuildInfoContributor>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, GitInfoContributor>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, AppSettingsInfoContributor>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, BuildInfoContributor>());
 
         services.AddCommonActuatorServices();
         services.AddInfoActuatorServices();

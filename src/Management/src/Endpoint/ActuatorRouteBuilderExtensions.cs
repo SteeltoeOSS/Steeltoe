@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,12 +13,14 @@ public static class ActuatorRouteBuilderExtensions
 {
     public static IEndpointConventionBuilder MapTheActuators(this IEndpointRouteBuilder endpoints, ActuatorConventionBuilder conventionBuilder = null)
     {
-        ActuatorEndpointMapper mapper = endpoints.ServiceProvider.GetService<ActuatorEndpointMapper>();
-        mapper.Map(endpoints, ref conventionBuilder);
-        return conventionBuilder;
-
+        var serviceProvider = endpoints.ServiceProvider;
+        using (var scope = serviceProvider.CreateScope())
+        {
+            ActuatorEndpointMapper mapper = scope.ServiceProvider.GetService<ActuatorEndpointMapper>();
+            mapper.Map(endpoints, ref conventionBuilder);
+            return conventionBuilder;
+        }
     }
-
 }
 
 public class ActuatorConventionBuilder : IEndpointConventionBuilder

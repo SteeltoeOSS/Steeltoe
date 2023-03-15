@@ -29,8 +29,8 @@ public static class ServiceCollectionExtensions
 
         services.ConfigureEndpointOptions<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
         services.TryAddScoped<IHealthEndpoint, HealthEndpointCore>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, HealthEndpointMiddleware>());
-        services.AddSingleton<HealthEndpointMiddleware>();
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IEndpointMiddleware, HealthEndpointMiddleware>());
+        services.AddScoped<HealthEndpointMiddleware>();
 
         return services;
     }

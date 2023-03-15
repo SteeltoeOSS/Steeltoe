@@ -36,7 +36,7 @@ public static class ActuatorServiceCollectionExtensions
         }
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IContextName, ActuatorContext>());
-        services.TryAddSingleton<ActuatorEndpointMapper>();
+        services.TryAddScoped<ActuatorEndpointMapper>();
 
         services.ConfigureOptions<ConfigureManagementEndpointOptions>();
     }
