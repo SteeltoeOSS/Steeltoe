@@ -6,8 +6,7 @@ namespace Steeltoe.Management.Endpoint.Refresh;
 
 public class RefreshEndpointOptions : EndpointOptionsBase
 {
-    private static bool defaultReturnConfiguration = true;
+    private static readonly bool defaultReturnConfiguration = true;
 
     public bool ReturnConfiguration { get; set; } = defaultReturnConfiguration;
-
 }

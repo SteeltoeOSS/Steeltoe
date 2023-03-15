@@ -10,7 +10,9 @@ namespace Steeltoe.Management.Endpoint.Info;
 public class ConfigureInfoEndpointOptions : ConfigureEndpointOptions<InfoEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:info";
-    public ConfigureInfoEndpointOptions(IConfiguration configuration) : base(configuration, ManagementInfoPrefix, "info")
+
+    public ConfigureInfoEndpointOptions(IConfiguration configuration)
+        : base(configuration, ManagementInfoPrefix, "info")
     {
     }
 }

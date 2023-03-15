@@ -24,11 +24,11 @@ public class RefreshEndpointTest : BaseTest
     public void Constructor_ThrowsIfNulls()
     {
         const IConfigurationRoot configuration = null;
-        
+
         IOptionsMonitor<RefreshEndpointOptions> options1 = null;
 
         Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options1, configuration));
-        var options = GetOptionsMonitorFromSettings<RefreshEndpointOptions, ConfigureRefreshEndpointOptions>();
+        IOptionsMonitor<RefreshEndpointOptions> options = GetOptionsMonitorFromSettings<RefreshEndpointOptions, ConfigureRefreshEndpointOptions>();
 
         Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options, configuration));
     }

@@ -102,7 +102,7 @@ public class SecurityBase
     public async Task<Permissions> GetPermissionsAsync(HttpResponseMessage response)
     {
         string json = string.Empty;
-        Permissions permissions = Permissions.None;
+        var permissions = Permissions.None;
 
         try
         {
@@ -110,7 +110,7 @@ public class SecurityBase
 
             _logger?.LogDebug("GetPermissionsAsync returned json: {json}", SecurityUtilities.SanitizeInput(json));
 
-            Dictionary<string, JsonElement> result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
+            var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
             if (result.TryGetValue(ReadSensitiveData, out JsonElement perm))
             {

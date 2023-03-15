@@ -96,6 +96,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                         {
                             "Steeltoe.Management.IEndpointOptions"
                         });
+
                         Type contextNameType = ReflectionHelpers.FindType(new[]
                         {
                             endpointAssembly
@@ -103,13 +104,14 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                         {
                             "Steeltoe.Management.Endpoint.Options.IContextName"
                         });
-                        var contexts = serviceProvider.GetServices(contextNameType);
-                      
+
+                        IEnumerable<object> contexts = serviceProvider.GetServices(contextNameType);
+
                         if (contexts.Any())
                         {
-                            var actuatorOptions = GetOptionsMonitor(serviceProvider, mgmtOptionsType, "Actuator");
-                            var basePath = $"{(string)actuatorOptions.GetType().GetProperty("Path")?.GetValue(actuatorOptions)}/";
-                            
+                            object actuatorOptions = GetOptionsMonitor(serviceProvider, mgmtOptionsType, "Actuator");
+                            string basePath = $"{(string)actuatorOptions.GetType().GetProperty("Path")?.GetValue(actuatorOptions)}/";
+
                             if (string.IsNullOrEmpty(
                                 configuration.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:HealthCheckUrlPath")))
                             {
@@ -121,8 +123,8 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                                     "Steeltoe.Management.Endpoint.Health.HealthEndpointOptions"
                                 });
 
+                                object healthOptions = GetOptionsMonitor(serviceProvider, healthOptionsType);
 
-                                var healthOptions = GetOptionsMonitor(serviceProvider, healthOptionsType);
                                 if (healthOptions != null)
                                 {
                                     options.HealthCheckUrlPath =
@@ -141,7 +143,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                                     "Steeltoe.Management.Endpoint.Info.InfoEndpointOptions"
                                 });
 
-                                var infoOptions = GetOptionsMonitor(serviceProvider, infoOptionsType);
+                                object infoOptions = GetOptionsMonitor(serviceProvider, infoOptionsType);
 
                                 if (infoOptions != null)
                                 {
@@ -170,16 +172,18 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
     private static object GetOptionsMonitor(IServiceProvider serviceProvider, Type tOptions, string name = "")
     {
         Type optionsMonitor = typeof(IOptionsMonitor<>);
-        var genericOptions = optionsMonitor.MakeGenericType(tOptions);
-        var optionsMonitorT = serviceProvider.GetService(genericOptions);
+        Type genericOptions = optionsMonitor.MakeGenericType(tOptions);
+        object optionsMonitorT = serviceProvider.GetService(genericOptions);
 
         if (!string.IsNullOrEmpty(name))
         {
-            return genericOptions.GetMethod("Get").Invoke(optionsMonitorT, new[] { name });
+            return genericOptions.GetMethod("Get").Invoke(optionsMonitorT, new[]
+            {
+                name
+            });
         }
 
         return genericOptions.GetProperty("CurrentValue")?.GetValue(optionsMonitorT);
-
     }
 
     private void AddEurekaServices(IServiceCollection services)

@@ -32,7 +32,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<MappingsEndpointMiddleware>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MappingsEndpointMiddleware>());
 
-
         return services;
     }
 }

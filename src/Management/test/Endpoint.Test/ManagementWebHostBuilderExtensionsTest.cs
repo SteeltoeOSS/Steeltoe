@@ -288,7 +288,7 @@ public class ManagementWebHostBuilderExtensionsTest
             new AppSettingsInfoContributor(new ConfigurationBuilder().Build())
         }).Build();
 
-       var managementEndpoint = host.Services.GetService<IInfoEndpoint>();
+        var managementEndpoint = host.Services.GetService<IInfoEndpoint>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.NotNull(managementEndpoint);
@@ -396,7 +396,7 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddMetricsActuator().Build();
-        var managementEndpoint = host.Services.GetServices<IMetricsEndpoint>();
+        IEnumerable<IMetricsEndpoint> managementEndpoint = host.Services.GetServices<IMetricsEndpoint>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.NotNull(managementEndpoint);
@@ -514,7 +514,7 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddCloudFoundryActuator().Build();
-        var managementEndpoint = host.Services.GetServices<ICloudFoundryEndpoint>();
+        IEnumerable<ICloudFoundryEndpoint> managementEndpoint = host.Services.GetServices<ICloudFoundryEndpoint>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.NotNull(managementEndpoint);
@@ -530,7 +530,7 @@ public class ManagementWebHostBuilderExtensionsTest
         using IWebHost host = hostBuilder.AddAllActuators().Start();
         HttpClient client = host.GetTestServer().CreateClient();
 
-        HttpResponseMessage response =  await client.GetAsync(new Uri("/actuator", UriKind.Relative));
+        HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -575,12 +575,14 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         try
         {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue");// Allow routing to /cloudfoundryapplication
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
+
             var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "false"
             };
-            IWebHostBuilder hostBuilder = _testServerWithRouting.ConfigureAppConfiguration( configBuilder =>
+
+            IWebHostBuilder hostBuilder = _testServerWithRouting.ConfigureAppConfiguration(configBuilder =>
             {
                 configBuilder.AddInMemoryCollection(appSettings);
             });
@@ -594,7 +596,6 @@ public class ManagementWebHostBuilderExtensionsTest
         finally
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-
         }
     }
 

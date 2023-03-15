@@ -16,16 +16,16 @@ public class CloudFoundryEndpoint : ICloudFoundryEndpoint
     private readonly IEnumerable<IEndpointOptions> _endpointOptions;
     private readonly ILogger<CloudFoundryEndpoint> _logger;
 
-    public CloudFoundryEndpoint(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IEnumerable<IEndpointOptions> endpointOptions, ILogger<CloudFoundryEndpoint> logger = null)
+    public IEndpointOptions Options => _options.CurrentValue;
+
+    public CloudFoundryEndpoint(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IEnumerable<IEndpointOptions> endpointOptions, ILogger<CloudFoundryEndpoint> logger = null)
     {
         _options = options;
         _managementOptions = managementOptions;
         _endpointOptions = endpointOptions;
         _logger = logger;
     }
-
-    public IEndpointOptions Options => _options.CurrentValue;
-
 
     public virtual Links Invoke(string baseUrl)
     {

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Options;
@@ -291,8 +292,8 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
     [Fact]
     public void GetAccessToken_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<CloudFoundryEndpointOptions> opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions);
         HttpContext context = CreateRequest("GET", "/");
@@ -308,8 +309,8 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
     [Fact]
     public async Task GetPermissions_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<CloudFoundryEndpointOptions> opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions);
         HttpContext context = CreateRequest("GET", "/");

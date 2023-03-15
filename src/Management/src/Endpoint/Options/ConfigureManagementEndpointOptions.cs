@@ -12,7 +12,6 @@ namespace Steeltoe.Management.Endpoint.Options;
 
 internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<ManagementEndpointOptions>
 {
-
     private const string ManagementInfoPrefix = "management:endpoints";
     private const string CloudFoundryEnabledPrefix = "management:cloudfoundry:enabled";
     private const string DefaultPath = "/actuator";
@@ -21,7 +20,8 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
     private readonly IEnumerable<IContextName> _contextNames;
     private readonly IEnumerable<IEndpointOptions> _endpoints;
 
-    public ConfigureManagementEndpointOptions(IConfiguration configuration, IEnumerable<IContextName> contextNames, IEnumerable<IEndpointOptions> endpointsCollection)
+    public ConfigureManagementEndpointOptions(IConfiguration configuration, IEnumerable<IContextName> contextNames,
+        IEnumerable<IEndpointOptions> endpointsCollection)
     {
         _configuration = configuration;
         _contextNames = contextNames;
@@ -31,6 +31,7 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
     public virtual void Configure(string name, ManagementEndpointOptions options)
     {
         _configuration.GetSection(ManagementInfoPrefix).Bind(options);
+
         foreach (string converterTypeName in options.CustomJsonConverters ?? Array.Empty<string>())
         {
             var converterType = Type.GetType(converterTypeName);
@@ -41,6 +42,7 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
                 options.SerializerOptions.Converters.Add(converterInstance);
             }
         }
+
         foreach (IContextName context in _contextNames)
         {
             options.ContextNames.Add(context.Name);
@@ -53,12 +55,12 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
             options.Exposure = new Exposure(_configuration);
 
             options.EndpointOptions = new List<IEndpointOptions>(_endpoints.Where(e => e.GetType() != typeof(CloudFoundryEndpointOptions)));
-
         }
         else if (name == CFContext.Name)
         {
             options.Path = DefaultCFPath;
             string cfEnabledConfig = _configuration.GetSection(CloudFoundryEnabledPrefix).Value;
+
             if (cfEnabledConfig != null)
             {
                 options.Enabled = !string.Equals(_configuration.GetSection(CloudFoundryEnabledPrefix).Value, "false", StringComparison.OrdinalIgnoreCase);
@@ -67,10 +69,10 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
             {
                 options.Enabled ??= true;
             }
-            options.Exposure = new Exposure(allowAll: true);
+
+            options.Exposure = new Exposure(true);
             options.EndpointOptions = new List<IEndpointOptions>(_endpoints.Where(e => e.GetType() != typeof(HypermediaEndpointOptions)));
         }
-
     }
 
     public void Configure(ManagementEndpointOptions options)

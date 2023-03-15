@@ -30,6 +30,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
         services.ConfigureEndpointOptions<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
+
         switch (version)
         {
             case MediaTypeVersion.V1:
@@ -46,7 +47,6 @@ public static class ServiceCollectionExtensions
                 services.AddSingleton<HttpTraceEndpointMiddleware>();
                 break;
         }
-
 
         return services;
     }

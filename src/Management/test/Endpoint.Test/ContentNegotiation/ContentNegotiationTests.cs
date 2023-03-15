@@ -177,10 +177,11 @@ public class ContentNegotiationTests
     {
         try
         {
-            if(epName == EndpointNames.Cloudfoundry)
+            if (epName == EndpointNames.Cloudfoundry)
             {
-                Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue");// Allow routing to /cloudfoundryapplication
+                Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
             }
+
             // arrange a server and client
             IWebHostBuilder builder = new WebHostBuilder().StartupByEpName(epName)
                 .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(

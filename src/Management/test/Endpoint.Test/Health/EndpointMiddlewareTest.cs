@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -35,16 +36,17 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleHealthRequestAsync_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<HealthEndpointOptions>();
-        var mgmtOpts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<HealthEndpointOptions> opts = GetOptionsMonitorFromSettings<HealthEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> mgmtOpts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         var hsOptions = new TestOptionsMonitor<HealthCheckServiceOptions>(new HealthCheckServiceOptions());
 
         var contributors = new List<IHealthContributor>
         {
             new DiskSpaceContributor()
         };
+
         var sc = new ServiceCollection();
-        var sp = sc.BuildServiceProvider();
+        ServiceProvider sp = sc.BuildServiceProvider();
 
         var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contributors, hsOptions, sp);
 
@@ -81,7 +83,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string>(_appSettings)
         {
-            { "management:endpoints:health:showdetails", "whenauthorized" },
+            { "management:endpoints:health:showdetails", "whenauthorized" }
         };
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<AuthStartup>()
@@ -348,7 +350,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var options = GetOptionsFromSettings<HealthEndpointOptions>();
 
-        var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         Assert.False(options.ExactMatch);
         Assert.Equal("/actuator/health/{**_}", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));

@@ -5,12 +5,10 @@
 using System.Diagnostics.Metrics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Xml.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Health;
@@ -85,18 +83,30 @@ public abstract class BaseTest : IDisposable
 
         return aggregator;
     }
-    
-    protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>() => GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(new Dictionary<string, string>());
+
+    protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>()
+    {
+        return GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(new Dictionary<string, string>());
+    }
+
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string> settings)
     {
         return GetOptionsMonitorFromSettings<TOptions>(typeof(TConfigureOptions), settings);
     }
+
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>(Dictionary<string, string> settings)
     {
-        var tOptions = typeof(TOptions);
-        var type = ReflectionHelpers.FindType(new[] { tOptions.Assembly.FullName }, new[] { $"{tOptions.Namespace}.Configure{tOptions.Name}"});
+        Type tOptions = typeof(TOptions);
 
-        if (type == null )
+        Type type = ReflectionHelpers.FindType(new[]
+        {
+            tOptions.Assembly.FullName
+        }, new[]
+        {
+            $"{tOptions.Namespace}.Configure{tOptions.Name}"
+        });
+
+        if (type == null)
         {
             throw new InvalidOperationException($"Could not find Type Configure{typeof(TOptions).Name} in assembly {tOptions.Assembly.FullName}");
         }
@@ -114,17 +124,33 @@ public abstract class BaseTest : IDisposable
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.ConfigureOptions(tConfigureOptions);
 
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var opts = provider.GetService<IOptionsMonitor<TOptions>>();
         return opts;
     }
-    protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>() => GetOptionsMonitorFromSettings<TOptions>(new Dictionary<string, string>());
 
-    protected static TOptions GetOptionsFromSettings<TOptions, TConfigureOptions>() => GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>().CurrentValue;
+    protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>()
+    {
+        return GetOptionsMonitorFromSettings<TOptions>(new Dictionary<string, string>());
+    }
 
-    protected static TOptions GetOptionsFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string> settings) => GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(settings).CurrentValue;
+    protected static TOptions GetOptionsFromSettings<TOptions, TConfigureOptions>()
+    {
+        return GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>().CurrentValue;
+    }
 
-    protected static TOptions GetOptionsFromSettings<TOptions>() => GetOptionsMonitorFromSettings<TOptions>().CurrentValue;
-    protected static TOptions GetOptionsFromSettings<TOptions>(Dictionary<string, string> settings) => GetOptionsMonitorFromSettings<TOptions>(settings).CurrentValue;
+    protected static TOptions GetOptionsFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string> settings)
+    {
+        return GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(settings).CurrentValue;
+    }
 
+    protected static TOptions GetOptionsFromSettings<TOptions>()
+    {
+        return GetOptionsMonitorFromSettings<TOptions>().CurrentValue;
+    }
+
+    protected static TOptions GetOptionsFromSettings<TOptions>(Dictionary<string, string> settings)
+    {
+        return GetOptionsMonitorFromSettings<TOptions>(settings).CurrentValue;
+    }
 }

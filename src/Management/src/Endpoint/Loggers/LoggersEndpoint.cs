@@ -13,15 +13,15 @@ namespace Steeltoe.Management.Endpoint.Loggers;
 public class LoggersEndpoint : ILoggersEndpoint
 {
     private static readonly List<string> Levels = new()
-{
-    LoggerLevels.MapLogLevel(LogLevel.None),
-    LoggerLevels.MapLogLevel(LogLevel.Critical),
-    LoggerLevels.MapLogLevel(LogLevel.Error),
-    LoggerLevels.MapLogLevel(LogLevel.Warning),
-    LoggerLevels.MapLogLevel(LogLevel.Information),
-    LoggerLevels.MapLogLevel(LogLevel.Debug),
-    LoggerLevels.MapLogLevel(LogLevel.Trace)
-};
+    {
+        LoggerLevels.MapLogLevel(LogLevel.None),
+        LoggerLevels.MapLogLevel(LogLevel.Critical),
+        LoggerLevels.MapLogLevel(LogLevel.Error),
+        LoggerLevels.MapLogLevel(LogLevel.Warning),
+        LoggerLevels.MapLogLevel(LogLevel.Information),
+        LoggerLevels.MapLogLevel(LogLevel.Debug),
+        LoggerLevels.MapLogLevel(LogLevel.Trace)
+    };
 
     private readonly ILogger<LoggersEndpoint> _logger;
     private readonly IOptionsMonitor<LoggersEndpointOptions> _options;
@@ -29,7 +29,8 @@ public class LoggersEndpoint : ILoggersEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public LoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, IDynamicLoggerProvider cloudFoundryLoggerProvider = null, ILogger<LoggersEndpoint> logger = null)
+    public LoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, IDynamicLoggerProvider cloudFoundryLoggerProvider = null,
+        ILogger<LoggersEndpoint> logger = null)
     {
         _options = options;
         _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider;

@@ -10,17 +10,21 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 internal class ConfigureMetricsEndpointOptions : ConfigureEndpointOptions<MetricsEndpointOptions>
 {
     internal const string ManagementInfoPrefix = "management:endpoints:metrics";
+
     internal const string DefaultIngressIgnorePattern =
         "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|.*\\.gif";
 
     internal const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions";
-    public ConfigureMetricsEndpointOptions(IConfiguration configuration): base(configuration, ManagementInfoPrefix, "metrics")
+
+    public ConfigureMetricsEndpointOptions(IConfiguration configuration)
+        : base(configuration, ManagementInfoPrefix, "metrics")
     {
     }
 
     public override void Configure(MetricsEndpointOptions options)
     {
         base.Configure(options);
+
         if (string.IsNullOrEmpty(options.IngressIgnorePattern))
         {
             options.IngressIgnorePattern = DefaultIngressIgnorePattern;
@@ -30,7 +34,5 @@ internal class ConfigureMetricsEndpointOptions : ConfigureEndpointOptions<Metric
         {
             options.EgressIgnorePattern = DefaultEgressIgnorePattern;
         }
-
     }
-
 }

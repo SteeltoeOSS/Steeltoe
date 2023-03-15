@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Info;
 using Xunit;
 
@@ -29,7 +28,7 @@ public class InfoEndpointOptionsTest : BaseTest
             ["management:endpoints:info:id"] = "infomanagement"
         };
 
-        var opts = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appsettings);
+        InfoEndpointOptions opts = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appsettings);
         Assert.False(opts.Enabled);
         Assert.Equal("infomanagement", opts.Id);
     }

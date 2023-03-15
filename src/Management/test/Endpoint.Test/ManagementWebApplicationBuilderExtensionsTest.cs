@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.TestResources;
@@ -347,15 +346,16 @@ public class ManagementWebApplicationBuilderExtensionsTest
     {
         try
         {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue");// Allow routing to /cloudfoundryapplication
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
+
             var appSettings = new Dictionary<string, string>
             {
                 ["management:endpoints:enabled"] = "false"
             };
+
             WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
             hostBuilder.Configuration.AddInMemoryCollection(appSettings);
             hostBuilder.WebHost.UseTestServer();
-          
 
             WebApplication host = hostBuilder.AddCloudFoundryActuator().Build();
             host.UseRouting();

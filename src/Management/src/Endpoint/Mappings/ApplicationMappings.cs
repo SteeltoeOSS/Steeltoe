@@ -15,8 +15,8 @@ public class ApplicationMappings
     {
         // At this point, .NET will only ever has one application => "application"
         ContextMappings = new Dictionary<string, ContextMappings>
-    {
-        { "application", contextMappings }
-    };
+        {
+            { "application", contextMappings }
+        };
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -33,7 +34,7 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<MappingsEndpointOptions>();
-        var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator/mappings", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
         Assert.Equal("/cloudfoundryapplication/mappings", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
@@ -44,8 +45,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleMappingsRequestAsync_MVCNotUsed_NoRoutes_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<MappingsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<MappingsEndpointOptions> opts = GetOptionsMonitorFromSettings<MappingsEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
@@ -67,6 +68,7 @@ public class EndpointMiddlewareTest : BaseTest
         var appSettings = new Dictionary<string, string>(AppSettings);
 
         appSettings.Add("management:endpoints:actuator:exposure:include:0", "*");
+
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>

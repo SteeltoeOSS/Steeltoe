@@ -13,7 +13,6 @@ using Steeltoe.Common;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Xunit;
@@ -30,15 +29,15 @@ public class EndpointMiddlewareTest : BaseTest
         ["Logging:LogLevel:Steeltoe"] = "Information",
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:dump:enabled"] = "true",
-        ["management:endpoints:actuator:exposure:include:0"]="threaddump",
+        ["management:endpoints:actuator:exposure:include:0"] = "threaddump",
         ["management:endpoints:actuator:exposure:include:1"] = "dump"
     };
 
     [Fact]
     public async Task HandleThreadDumpRequestAsync_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ThreadDumpEndpointOptions> opts = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var obs = new ThreadDumperEp(opts);
         var ep = new ThreadDumpEndpoint(opts, obs);
@@ -57,7 +56,7 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task ThreadDumpActuator_ReturnsExpectedData()
     {
-         IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupV1>()
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupV1>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
                 {
@@ -104,23 +103,25 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb_V1()
     {
-        var options = GetOptionsFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ThreadDumpEndpointOptions options = GetOptionsFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator/dump", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
         Assert.Equal("/cloudfoundryapplication/dump", options.GetContextPath(managementOptions.Get(CFContext.Name)));
         Assert.Contains("Get", options.AllowedVerbs);
     }
+
     [Fact]
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<ThreadDumpEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator/threaddump", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
         Assert.Equal("/cloudfoundryapplication/threaddump", options.GetContextPath(managementOptions.Get(CFContext.Name)));
         Assert.Contains("Get", options.AllowedVerbs);
     }
+
     private HttpContext CreateRequest(string method, string path)
     {
         HttpContext context = new DefaultHttpContext

@@ -9,10 +9,8 @@ using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
-using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Security;
 using Xunit;
-using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
@@ -46,12 +44,12 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        services.AddHealthActuator( new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
+        services.AddHealthActuator(new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
 
         services.Configure<HealthCheckServiceOptions>(configurationRoot);
         services.AddSingleton<IConfiguration>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-     
+
         var agg = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(agg);
         IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();

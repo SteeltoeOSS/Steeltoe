@@ -6,10 +6,13 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Prometheus;
+
 internal class ConfigurePrometheusEndpointOptions : ConfigureEndpointOptions<PrometheusEndpointOptions>
 {
     internal const string ManagementInfoPrefix = "management:endpoints:prometheus";
-    public ConfigurePrometheusEndpointOptions(IConfiguration configuration) : base(configuration, ManagementInfoPrefix, "prometheus")
+
+    public ConfigurePrometheusEndpointOptions(IConfiguration configuration)
+        : base(configuration, ManagementInfoPrefix, "prometheus")
     {
     }
 }

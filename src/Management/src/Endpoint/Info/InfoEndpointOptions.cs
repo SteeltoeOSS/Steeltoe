@@ -6,5 +6,4 @@ namespace Steeltoe.Management.Endpoint.Info;
 
 public class InfoEndpointOptions : EndpointOptionsBase
 {
-
 }

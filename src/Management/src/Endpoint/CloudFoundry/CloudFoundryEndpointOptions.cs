@@ -13,5 +13,4 @@ public class CloudFoundryEndpointOptions : EndpointOptionsBase
     public string ApplicationId { get; set; }
 
     public string CloudFoundryApi { get; set; }
-
 }

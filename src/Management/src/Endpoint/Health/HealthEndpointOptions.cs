@@ -17,5 +17,4 @@ public class HealthEndpointOptions : EndpointOptionsBase
     public Dictionary<string, HealthGroupOptions> Groups { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     public override bool ExactMatch => false;
-
 }

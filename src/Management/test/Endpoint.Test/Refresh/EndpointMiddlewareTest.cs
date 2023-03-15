@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -32,8 +33,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleRefreshRequestAsync_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<RefreshEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<RefreshEndpointOptions> opts = GetOptionsMonitorFromSettings<RefreshEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
@@ -62,6 +63,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         var appSettings = new Dictionary<string, string>(AppSettings);
         appSettings.Add("management:endpoints:actuator:exposure:include:0", "*");
+
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
@@ -78,7 +80,8 @@ public class EndpointMiddlewareTest : BaseTest
             string json = await result.Content.ReadAsStringAsync();
 
             const string expected =
-            "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"management:endpoints:actuator\",\"management:endpoints:actuator:exposure\",\"management:endpoints:actuator:exposure:include\",\"management:endpoints:actuator:exposure:include:0\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\",\"environment\",\"applicationName\"]";
+                "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"management:endpoints:actuator\",\"management:endpoints:actuator:exposure\",\"management:endpoints:actuator:exposure:include\",\"management:endpoints:actuator:exposure:include:0\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\",\"environment\",\"applicationName\"]";
+
             Assert.Equal(expected, json);
         }
 
@@ -89,7 +92,7 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<RefreshEndpointOptions>();
-        var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator/refresh", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
         Assert.Equal("/cloudfoundryapplication/refresh", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));

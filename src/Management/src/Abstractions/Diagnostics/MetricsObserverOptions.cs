@@ -55,7 +55,7 @@ public class MetricsObserverOptions
             "AspnetCoreHostingObserver" => AspNetCoreHosting,
             "HttpClientCoreObserver" => HttpClientCore,
             "HttpClientDesktopObserver" => HttpClientDesktop,
-            _ => true,
+            _ => true
         };
     }
 }

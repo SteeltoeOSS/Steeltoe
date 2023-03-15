@@ -10,9 +10,9 @@ namespace Steeltoe.Management.Endpoint.Options;
 public class ConfigureEndpointOptions<T> : IConfigureOptions<T>
     where T : EndpointOptionsBase
 {
-    protected readonly IConfiguration _configuration;
     private readonly string _prefix;
     private readonly string _id;
+    protected readonly IConfiguration _configuration;
 
     public ConfigureEndpointOptions(IConfiguration configuration, string prefix, string id)
     {
@@ -29,6 +29,7 @@ public class ConfigureEndpointOptions<T> : IConfigureOptions<T>
         {
             options.Id = _id;
         }
+
         if (options.RequiredPermissions == Permissions.Undefined)
         {
             options.RequiredPermissions = Permissions.Restricted;

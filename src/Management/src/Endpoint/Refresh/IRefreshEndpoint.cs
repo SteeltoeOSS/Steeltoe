@@ -6,5 +6,4 @@ namespace Steeltoe.Management.Endpoint.Refresh;
 
 public interface IRefreshEndpoint : IEndpoint<IList<string>>
 {
-
 }

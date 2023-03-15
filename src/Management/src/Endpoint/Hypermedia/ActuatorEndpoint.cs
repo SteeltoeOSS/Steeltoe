@@ -20,10 +20,8 @@ public class ActuatorEndpoint : IActuatorEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public ActuatorEndpoint(IOptionsMonitor<HypermediaEndpointOptions> options,
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IEnumerable<IEndpointOptions> endpointOptions,
-        ILogger<ActuatorEndpoint> logger = null)
+    public ActuatorEndpoint(IOptionsMonitor<HypermediaEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IEnumerable<IEndpointOptions> endpointOptions, ILogger<ActuatorEndpoint> logger = null)
     {
         _options = options;
         _managementOption = managementOptions;

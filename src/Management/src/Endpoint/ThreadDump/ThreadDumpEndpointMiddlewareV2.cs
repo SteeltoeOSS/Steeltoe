@@ -24,6 +24,7 @@ public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResul
         {
             return HandleThreadDumpRequestAsync(context);
         }
+
         return Task.CompletedTask;
     }
 

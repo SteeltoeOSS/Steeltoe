@@ -22,19 +22,19 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
     internal const string ThreadsEvent = "Steeltoe.ClrMetrics.Threads";
 
     private readonly Dictionary<string, object> _heapTags = new()
-{
-    { "area", "heap" }
-};
+    {
+        { "area", "heap" }
+    };
 
     private readonly Dictionary<string, object> _workerTags = new()
-{
-    { "kind", "worker" }
-};
+    {
+        { "kind", "worker" }
+    };
 
     private readonly Dictionary<string, object> _comPortTags = new()
-{
-    { "kind", "completionPort" }
-};
+    {
+        { "kind", "completionPort" }
+    };
 
     private readonly ClrRuntimeSource.HeapMetrics _previous = default;
 
@@ -44,12 +44,12 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
 
         if (options.CurrentValue.GCEvents)
         {
-
             meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");
             meter.CreateObservableGauge("clr.gc.collections", GetCollectionCount, "Garbage collection count", "count");
             meter.CreateObservableGauge("clr.process.uptime", GetUpTime, "Process uptime in seconds", "count");
             meter.CreateObservableGauge("clr.cpu.count", () => Environment.ProcessorCount, "Total processor count", "count");
         }
+
         if (options.CurrentValue.ThreadPoolEvents)
         {
             meter.CreateObservableGauge("clr.threadpool.active", GetActiveThreadPoolWorkers, "Active thread count", "count");
@@ -71,9 +71,9 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
             }
 
             var tags = new Dictionary<string, object>
-        {
-            { GenerationKey, GenerationTagValueName + i }
-        };
+            {
+                { GenerationKey, GenerationTagValueName + i }
+            };
 
             yield return new Measurement<long>(count, tags.AsReadonlySpan());
         }

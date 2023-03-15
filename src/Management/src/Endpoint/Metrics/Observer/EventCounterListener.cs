@@ -23,10 +23,9 @@ public class EventCounterListener : EventListener
     private readonly bool _isInitialized;
 
     private readonly Dictionary<string, string> _refreshInterval = new()
-{
-    { "EventCounterIntervalSec", "1" }
-};
-
+    {
+        { "EventCounterIntervalSec", "1" }
+    };
 
     private readonly ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new();
     private readonly ConcurrentDictionary<string, ObservableGauge<long>> _longMeasureMetrics = new();
@@ -42,6 +41,7 @@ public class EventCounterListener : EventListener
 
         _options = options;
         _logger = logger;
+
         if (options.CurrentValue.EventCounterEvents)
         {
             _isInitialized = true;
@@ -113,6 +113,7 @@ public class EventCounterListener : EventListener
             {
                 throw new InvalidOperationException("Should not call enable events before initialization");
             }
+
             if (_options?.CurrentValue?.EventCounterEvents != true)
             {
                 return;
@@ -146,6 +147,7 @@ public class EventCounterListener : EventListener
                     counterName = payload.Value.ToString();
                     List<string> includedMetrics = _options.CurrentValue.IncludedMetrics;
                     List<string> excludedMetrics = _options.CurrentValue.ExcludedMetrics;
+
                     if ((includedMetrics.Any() && !includedMetrics.Contains(counterName)) || excludedMetrics.Contains(counterName))
                     {
                         return;

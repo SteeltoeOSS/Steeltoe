@@ -13,10 +13,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations;
 
 public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
 {
-
-    public DbMigrationsEndpointMiddleware(
-        IDbMigrationsEndpoint endpoint,
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public DbMigrationsEndpointMiddleware(IDbMigrationsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<DbMigrationsEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {

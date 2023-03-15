@@ -11,8 +11,6 @@ namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 
 public class EndpointServiceCollectionTest : BaseTest
 {
-  
-
     [Fact]
     public void AddHyperMediaActuator_AddsCorrectServices()
     {

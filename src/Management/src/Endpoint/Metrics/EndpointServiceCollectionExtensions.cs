@@ -30,7 +30,6 @@ public static class EndpointServiceCollectionExtensions
 
     public static void AddMetricsObservers(this IServiceCollection services)
     {
-
         services.ConfigureOptions<ConfigureMetricsObserverOptions>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientCoreObserver>());

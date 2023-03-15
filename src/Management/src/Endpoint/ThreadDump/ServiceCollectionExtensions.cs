@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        if (version == MediaTypeVersion.V1) 
+        if (version == MediaTypeVersion.V1)
         {
             services.ConfigureEndpointOptions<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
             services.TryAddSingleton<ThreadDumpEndpoint>();
@@ -47,7 +47,6 @@ public static class ServiceCollectionExtensions
             services.TryAddSingleton<IThreadDumpEndpointV2>(provider => provider.GetRequiredService<ThreadDumpEndpointV2>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ThreadDumpEndpointMiddlewareV2>());
             services.AddSingleton<ThreadDumpEndpointMiddlewareV2>();
-
         }
 
         services.TryAddSingleton<IThreadDumper, ThreadDumperEp>();

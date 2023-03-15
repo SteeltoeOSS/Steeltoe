@@ -57,7 +57,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
         {
             Logger?.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
-            HttpContext context = DiagnosticHelpers.GetProperty<HttpContext>(value, "HttpContext");
+            var context = DiagnosticHelpers.GetProperty<HttpContext>(value, "HttpContext");
 
             if (context != null)
             {
@@ -92,17 +92,17 @@ public class AspNetCoreHostingObserver : MetricsObserver
         string exception = GetException(arg);
 
         return new Dictionary<string, object>
-    {
-        { UriTagKey, uri },
-        { StatusTagKey, statusCode },
-        { ExceptionTagKey, exception },
-        { MethodTagKey, arg.Request.Method }
-    };
+        {
+            { UriTagKey, uri },
+            { StatusTagKey, statusCode },
+            { ExceptionTagKey, exception },
+            { MethodTagKey, arg.Request.Method }
+        };
     }
 
     protected internal string GetException(HttpContext arg)
     {
-        IExceptionHandlerFeature exception = arg.Features.Get<IExceptionHandlerFeature>();
+        var exception = arg.Features.Get<IExceptionHandlerFeature>();
 
         if (exception != null && exception.Error != null)
         {

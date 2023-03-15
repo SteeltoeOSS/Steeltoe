@@ -22,7 +22,8 @@ public class CloudFoundrySecurityMiddleware
 
     private readonly SecurityBase _base;
 
-    public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
+    public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options,
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
     {
         _next = next;
         _logger = logger;
@@ -34,11 +35,9 @@ public class CloudFoundrySecurityMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-
         CloudFoundryEndpointOptions cfOptions = _options.CurrentValue;
         CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
         _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);
-
 
         if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptions) && _base.IsCloudFoundryRequest(context.Request.Path))
         {

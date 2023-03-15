@@ -3,11 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Security.Claims;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using NSubstitute.Extensions;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using Xunit;
 
@@ -19,20 +14,18 @@ public class HealthEndpointOptionsTest : BaseTest
     public void Constructor_InitializesWithDefaults()
     {
         HealthEndpointOptions opts = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
-        
+
         Assert.Null(opts.Enabled);
         Assert.Equal("health", opts.Id);
         Assert.Equal(ShowDetails.Always, opts.ShowDetails);
         Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);
     }
 
-
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
         var appsettings = new Dictionary<string, string>
         {
-
             ["management:endpoints:health:enabled"] = "true",
             ["management:endpoints:health:requiredPermissions"] = "NONE",
             ["management:endpoints:health:groups:custom:include"] = "diskSpace",
@@ -40,7 +33,7 @@ public class HealthEndpointOptionsTest : BaseTest
             ["management:endpoints:health:groups:rEadinEss:include"] = "diskSpace"
         };
 
-        HealthEndpointOptions opts = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>( appsettings);
+        HealthEndpointOptions opts = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appsettings);
 
         Assert.True(opts.Enabled);
         Assert.Equal("health", opts.Id);
@@ -52,8 +45,6 @@ public class HealthEndpointOptionsTest : BaseTest
         Assert.True(opts.Groups.ContainsKey("READINESS"));
     }
 
-   
-
     [Fact]
     public void Constructor_BindsClaimCorrectly()
     {
@@ -64,7 +55,7 @@ public class HealthEndpointOptionsTest : BaseTest
             ["management:endpoints:health:role"] = "roleclaimvalue"
         };
 
-        HealthEndpointOptions opts = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions> (appsettings);
+        HealthEndpointOptions opts = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appsettings);
         Assert.NotNull(opts.Claim);
         Assert.Equal("claimtype", opts.Claim.Type);
         Assert.Equal("claimvalue", opts.Claim.Value);

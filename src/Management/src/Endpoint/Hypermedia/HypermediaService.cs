@@ -17,7 +17,8 @@ public class HypermediaService
     private readonly ManagementEndpointOptions _managementOptions;
     private readonly EndpointOptionsBase _options;
 
-    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HypermediaEndpointOptions> options, IEnumerable<IEndpointOptions> endpointOptions, ILogger logger = null)
+    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HypermediaEndpointOptions> options,
+        IEnumerable<IEndpointOptions> endpointOptions, ILogger logger = null)
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);
@@ -27,11 +28,13 @@ public class HypermediaService
         _endpointOptions = endpointOptions;
         _options = options.CurrentValue;
     }
-    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options, IEnumerable<IEndpointOptions> endpointOptions, ILogger logger = null)
+
+    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options,
+        IEnumerable<IEndpointOptions> endpointOptions, ILogger logger = null)
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);
-        this._endpointOptions = endpointOptions;
+        _endpointOptions = endpointOptions;
         _logger = logger;
         _options = options.CurrentValue;
         _managementOptions = managementOptions.Get(CFContext.Name);
@@ -49,6 +52,7 @@ public class HypermediaService
         _logger?.LogTrace("Processing hypermedia for {ManagementOptions}", _managementOptions);
 
         Link selfLink = null;
+
         foreach (IEndpointOptions opt in _endpointOptions)
         {
             if (!opt.IsEnabled(_managementOptions) || !opt.IsExposed(_managementOptions))
@@ -76,6 +80,7 @@ public class HypermediaService
                 }
             }
         }
+
         if (selfLink != null)
         {
             links._links.Add("self", selfLink);

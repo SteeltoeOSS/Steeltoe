@@ -31,6 +31,8 @@ public class DbMigrationsEndpoint : IDbMigrationsEndpoint
     private readonly DbMigrationsEndpointHelper _endpointHelper;
     private readonly ILogger<DbMigrationsEndpoint> _logger;
 
+    public IEndpointOptions Options => _options.CurrentValue;
+
     public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, ILogger<DbMigrationsEndpoint> logger = null)
         : this(options, container, new DbMigrationsEndpointHelper(), logger)
     {
@@ -44,8 +46,6 @@ public class DbMigrationsEndpoint : IDbMigrationsEndpoint
         _endpointHelper = endpointHelper;
         _logger = logger;
     }
-
-    public IEndpointOptions Options => _options.CurrentValue;
 
     public Dictionary<string, DbMigrationsDescriptor> Invoke()
     {
@@ -126,8 +126,8 @@ public class DbMigrationsEndpoint : IDbMigrationsEndpoint
 
             return (IEnumerable<string>)method.Invoke(null, new[]
             {
-            dbFacade
-        });
+                dbFacade
+            });
         }
     }
 }

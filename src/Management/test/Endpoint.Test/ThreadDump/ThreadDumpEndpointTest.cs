@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Xunit;
@@ -22,7 +23,7 @@ public class ThreadDumpEndpointTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfNullRepo()
     {
-        var options = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions>();
+        IOptionsMonitor<ThreadDumpEndpointOptions> options = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions>();
         Assert.Throws<ArgumentNullException>(() => new ThreadDumpEndpoint(options, null));
     }
 

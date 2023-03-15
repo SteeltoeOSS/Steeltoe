@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -35,8 +36,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleLoggersRequestAsync_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<LoggersEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<LoggersEndpointOptions> opts = GetOptionsMonitorFromSettings<LoggersEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         var ep = new TestLoggersEndpoint(opts);
         var middle = new LoggersEndpointMiddleware(ep, managementOptions);
         HttpContext context = CreateRequest("GET", "/loggers");
@@ -158,7 +159,7 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<LoggersEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.False(options.ExactMatch);
         Assert.Equal("/actuator/loggers/{**_}", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
         Assert.Equal("/cloudfoundryapplication/loggers/{**_}", options.GetContextPath(managementOptions.Get(CFContext.Name)));

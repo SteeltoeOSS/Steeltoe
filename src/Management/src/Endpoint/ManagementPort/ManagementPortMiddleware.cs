@@ -16,7 +16,8 @@ public class ManagementPortMiddleware
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
     private readonly ILogger<ManagementPortMiddleware> _logger;
 
-    public ManagementPortMiddleware(RequestDelegate next, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<ManagementPortMiddleware> logger = null)
+    public ManagementPortMiddleware(RequestDelegate next, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILogger<ManagementPortMiddleware> logger = null)
     {
         _next = next;
         _managementOptions = managementOptions;

@@ -21,17 +21,15 @@ internal class ActuatorEndpointMapper
     private readonly IEnumerable<IEndpointMiddleware> _middlewares;
     private readonly ILogger<ActuatorEndpointMapper> _logger;
 
-    public ActuatorEndpointMapper(
-        IEnumerable<IContextName> contextNames,
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IEnumerable<IEndpointMiddleware> middlewares,
-        ILogger<ActuatorEndpointMapper> logger)
+    public ActuatorEndpointMapper(IEnumerable<IContextName> contextNames, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IEnumerable<IEndpointMiddleware> middlewares, ILogger<ActuatorEndpointMapper> logger)
     {
         _contextNames = contextNames;
         _managementOptions = managementOptions;
         _middlewares = middlewares;
         _logger = logger;
     }
+
     public IEndpointConventionBuilder Map(IEndpointRouteBuilder endpointRouteBuilder, ref ActuatorConventionBuilder conventionBuilder)
     {
         var collection = new HashSet<string>();
@@ -43,11 +41,12 @@ internal class ActuatorEndpointMapper
 
             foreach (IEndpointMiddleware middleware in _middlewares)
             {
-                if ((name is ActuatorContext && middleware.GetType() == typeof(CloudFoundryEndpointMiddleware))
-                     || (name is CFContext && middleware.GetType() == typeof(ActuatorHypermediaEndpointMiddleware)))
+                if ((name is ActuatorContext && middleware.GetType() == typeof(CloudFoundryEndpointMiddleware)) ||
+                    (name is CFContext && middleware.GetType() == typeof(ActuatorHypermediaEndpointMiddleware)))
                 {
                     continue;
                 }
+
                 Type middlewareType = middleware.GetType();
                 RequestDelegate pipeline = endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middlewareType).Build();
                 string epPath = middleware.EndpointOptions.GetContextPath(mgmtOption);
@@ -61,10 +60,9 @@ internal class ActuatorEndpointMapper
                 {
                     _logger.LogError("Skipping over duplicate path at {path}", epPath);
                 }
-
             }
-
         }
+
         return conventionBuilder;
     }
 }

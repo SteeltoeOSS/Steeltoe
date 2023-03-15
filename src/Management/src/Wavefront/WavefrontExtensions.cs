@@ -38,7 +38,6 @@ public static class WavefrontExtensions
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
 
-
         services.AddMetricsObservers();
 
         services.AddOpenTelemetry().WithMetrics(builder =>

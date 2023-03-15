@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Management.Endpoint.Env;
@@ -26,7 +27,7 @@ public class EnvEndpointTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfNulls()
     {
-        var options = GetOptionsMonitorFromSettings<EnvEndpointOptions>();
+        IOptionsMonitor<EnvEndpointOptions> options = GetOptionsMonitorFromSettings<EnvEndpointOptions>();
         IConfiguration configuration = null;
         const IHostEnvironment env = null;
 

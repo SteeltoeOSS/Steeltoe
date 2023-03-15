@@ -7,5 +7,4 @@ namespace Steeltoe.Management.Endpoint.DbMigrations;
 public class DbMigrationsEndpointOptions : EndpointOptionsBase
 {
     public string[] KeysToSanitize => Array.Empty<string>();
-
 }

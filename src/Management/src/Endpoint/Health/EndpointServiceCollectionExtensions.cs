@@ -17,9 +17,9 @@ public static class EndpointServiceCollectionExtensions
     internal static Type[] DefaultHealthContributors =>
         new[]
         {
-        typeof(DiskSpaceContributor),
-        typeof(LivenessHealthContributor),
-        typeof(ReadinessHealthContributor)
+            typeof(DiskSpaceContributor),
+            typeof(LivenessHealthContributor),
+            typeof(ReadinessHealthContributor)
         };
 
     /// <summary>
@@ -66,7 +66,6 @@ public static class EndpointServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(aggregator);
 
-
         services.AddCommonActuatorServices();
         services.AddHealthActuatorServices();
 
@@ -75,7 +74,6 @@ public static class EndpointServiceCollectionExtensions
         services.TryAddSingleton(aggregator);
         services.TryAddScoped<IEndpoint<HealthEndpointResponse, ISecurityContext>, HealthEndpointCore>();
         services.TryAddSingleton<ApplicationAvailability>();
-
 
         services.AddCommonActuatorServices();
     }

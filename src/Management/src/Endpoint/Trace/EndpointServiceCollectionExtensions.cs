@@ -57,7 +57,7 @@ public static class EndpointServiceCollectionExtensions
             default:
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpTraceDiagnosticObserver>());
                 services.TryAddSingleton<IHttpTraceRepository, HttpTraceDiagnosticObserver>();
-                
+
                 break;
         }
     }

@@ -4,6 +4,7 @@
 
 using System.Diagnostics.Metrics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics;
@@ -25,8 +26,8 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     [Fact]
     public void ParseTag_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
 
@@ -38,12 +39,11 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         Assert.Null(middle.ParseTag("foo,bar"));
     }
 
-
     [Fact]
     public void ParseTags_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
 
@@ -76,8 +76,10 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     [Fact]
     public void GetMetricName_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureTestManagementOptions>();
+        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions =
+            GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureTestManagementOptions>();
 
         var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
 
@@ -96,9 +98,8 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     [Fact]
     public void GetMetricName_ReturnsExpected_When_ManagementPath_Is_Slash()
     {
-
-        var opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions));
 
@@ -117,9 +118,9 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        
+        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
         var exporter = new SteeltoeExporter(_scraperOptions);
 
@@ -141,8 +142,11 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureTestManagementOptions>();
+        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions =
+            GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureTestManagementOptions>();
+
         var exporter = new SteeltoeExporter(_scraperOptions);
 
         var ep = new MetricsEndpoint(opts, exporter);
@@ -159,8 +163,10 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureTestManagementOptions>();
+        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions =
+            GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureTestManagementOptions>();
 
         var exporter = new SteeltoeExporter(_scraperOptions);
         AggregationManager aggManager = GetTestMetrics(exporter);
@@ -189,7 +195,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<MetricsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.False(options.ExactMatch);
         Assert.Equal("/actuator/metrics/{**_}", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
         Assert.Equal("/cloudfoundryapplication/metrics/{**_}", options.GetContextPath(managementOptions.Get(CFContext.Name)));

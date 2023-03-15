@@ -25,7 +25,6 @@ public class HealthEndpointTest : BaseTest
         _output = output;
     }
 
-  
     [Fact]
     public void Invoke_NoContributors_ReturnsExpectedHealth()
     {

@@ -253,7 +253,7 @@ public class ManagementHostBuilderExtensionsTest
         var hostBuilder = new HostBuilder();
 
         IHost host = hostBuilder.AddInfoActuator().Build();
-       var managementEndpoint = host.Services.GetService<IInfoEndpoint>();
+        var managementEndpoint = host.Services.GetService<IInfoEndpoint>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.NotNull(managementEndpoint);
@@ -540,11 +540,12 @@ public class ManagementHostBuilderExtensionsTest
         {
             var appSettings = new Dictionary<string, string>
             {
-                ["management:endpoints:enabled"] = "false", // Turn off security middleware
+                ["management:endpoints:enabled"] = "false" // Turn off security middleware
             };
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue");// Allow routing to /cloudfoundryapplication
-            IHostBuilder hostBuilder = new HostBuilder()
-                .ConfigureAppConfiguration(configBuilder => configBuilder.AddInMemoryCollection(appSettings))
+
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
+
+            IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(configBuilder => configBuilder.AddInMemoryCollection(appSettings))
                 .ConfigureWebHost(_testServerWithRouting);
 
             using IHost host = await hostBuilder.AddCloudFoundryActuator().StartAsync();

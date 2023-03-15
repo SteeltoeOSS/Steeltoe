@@ -20,6 +20,7 @@ internal class ConfigureEnvEndpointOptions : IConfigureOptions<EnvEndpointOption
         ".*credentials.*",
         "vcap_services"
     };
+
     private readonly IConfiguration _configuration;
 
     public ConfigureEnvEndpointOptions(IConfiguration configuration)

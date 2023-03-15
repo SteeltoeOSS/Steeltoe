@@ -2,9 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Xunit;
 
@@ -34,7 +32,7 @@ public class HeapDumpEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        var opts = GetOptionsFromSettings<HeapDumpEndpointOptions>(appsettings); 
+        var opts = GetOptionsFromSettings<HeapDumpEndpointOptions>(appsettings);
         var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);
 
         Assert.True(cloudOpts.Enabled);

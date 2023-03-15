@@ -93,7 +93,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
 
     protected internal string GetSessionId(HttpContext context)
     {
-        ISessionFeature sessionFeature = context.Features.Get<ISessionFeature>();
+        var sessionFeature = context.Features.Get<ISessionFeature>();
         return sessionFeature == null ? null : context.Session.Id;
     }
 

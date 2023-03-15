@@ -27,5 +27,4 @@ public class TraceEndpointOptions : EndpointOptionsBase
     public bool AddSessionId { get; set; }
 
     public bool AddTimeTaken { get; set; } = true;
-
 }

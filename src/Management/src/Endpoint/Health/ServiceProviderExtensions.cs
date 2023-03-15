@@ -18,11 +18,11 @@ public static class ServiceProviderExtensions
     /// </param>
     public static IServiceProvider InitializeAvailability(this IServiceProvider serviceProvider)
     {
-        ApplicationAvailability availability = serviceProvider.GetService<ApplicationAvailability>();
+        var availability = serviceProvider.GetService<ApplicationAvailability>();
 
         if (availability != null)
         {
-            IHostApplicationLifetime lifetime = serviceProvider.GetService<IHostApplicationLifetime>();
+            var lifetime = serviceProvider.GetService<IHostApplicationLifetime>();
 
             lifetime.ApplicationStarted.Register(() =>
             {

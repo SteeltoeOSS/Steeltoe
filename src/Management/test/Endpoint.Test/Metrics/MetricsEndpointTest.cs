@@ -5,6 +5,7 @@
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.MetricCollectors;
@@ -28,7 +29,7 @@ public class MetricsEndpointTest : BaseTest
     public void Constructor_ThrowsIfNulls()
     {
         Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(null, null));
-        var options = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+        IOptionsMonitor<MetricsEndpointOptions> options = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
         Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(options, null));
     }
 

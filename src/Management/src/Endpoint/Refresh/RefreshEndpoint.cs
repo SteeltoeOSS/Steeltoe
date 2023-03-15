@@ -17,7 +17,6 @@ public class RefreshEndpoint : IRefreshEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-
     public RefreshEndpoint(IOptionsMonitor<RefreshEndpointOptions> options, IConfiguration configuration, ILogger<RefreshEndpoint> logger = null)
     {
         ArgumentGuard.NotNull(configuration);

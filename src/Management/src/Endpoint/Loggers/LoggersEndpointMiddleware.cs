@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Loggers;
 
 public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>, LoggersChangeRequest>
 {
-    public LoggersEndpointMiddleware(/*RequestDelegate next,*/ LoggersEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public LoggersEndpointMiddleware( /*RequestDelegate next,*/ LoggersEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<LoggersEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
@@ -36,7 +36,9 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
             logger?.LogDebug("Incoming path: {path}", request.Path.Value);
             ManagementEndpointOptions mgmtOptions = managementOptions.GetCurrentContext(request.Path);
 
-            string path = managementOptions == null ? Endpoint.Options.Path : $"{mgmtOptions.Path}/{Endpoint.Options.Path}".Replace("//", "/", StringComparison.Ordinal);
+            string path = managementOptions == null
+                ? Endpoint.Options.Path
+                : $"{mgmtOptions.Path}/{Endpoint.Options.Path}".Replace("//", "/", StringComparison.Ordinal);
 
             if (ChangeLoggerLevel(request, path))
             {

@@ -2,12 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -42,10 +40,10 @@ public class ActuatorRouteBuilderExtensionsTest
     {
         return new HostBuilder().AddDynamicLogging().ConfigureServices((context, s) =>
         {
-            s.AddTraceActuator( MediaTypeVersion.V1);
-            s.AddThreadDumpActuator( MediaTypeVersion.V1);
+            s.AddTraceActuator(MediaTypeVersion.V1);
+            s.AddThreadDumpActuator(MediaTypeVersion.V1);
             s.AddCloudFoundryActuator();
-            s.AddAllActuators(); 
+            s.AddAllActuators();
             s.AddRouting();
 
             s.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
@@ -57,13 +55,11 @@ public class ActuatorRouteBuilderExtensionsTest
             s.AddServerSideBlazor();
         }).ConfigureWebHost(builder =>
         {
-            builder.Configure(app => app.UseRouting().UseAuthentication().UseAuthorization()
-            .UseEndpoints(endpoints =>
+            builder.Configure(app => app.UseRouting().UseAuthentication().UseAuthorization().UseEndpoints(endpoints =>
             {
                 endpoints.MapTheActuators().RequireAuthorization("TestAuth");
                 endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
-            }))
-                .UseTestServer();
+            })).UseTestServer();
         });
     }
 
@@ -79,7 +75,8 @@ public class ActuatorRouteBuilderExtensionsTest
         using TestServer server = host.GetTestServer();
 
         IEnumerable<IEndpointOptions> optionsCollection = host.Services.GetServices<IEndpointOptions>();
-        foreach (var options in optionsCollection)
+
+        foreach (IEndpointOptions options in optionsCollection)
         {
             string path = options.GetContextPath(GetManagementContext(host.Services));
 
@@ -91,5 +88,4 @@ public class ActuatorRouteBuilderExtensionsTest
                 $"Expected {(expectedSuccess ? "success" : "failure")}, but got {response.StatusCode} for {path} and type {options}");
         }
     }
-
 }

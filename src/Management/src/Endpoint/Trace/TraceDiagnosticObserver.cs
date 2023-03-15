@@ -81,10 +81,10 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         TraceEndpointOptions options = _options.CurrentValue;
 
         var details = new Dictionary<string, object>
-    {
-        { "method", request.Method },
-        { "path", GetPathInfo(request) }
-    };
+        {
+            { "method", request.Method },
+            { "path", GetPathInfo(request) }
+        };
 
         var headers = new Dictionary<string, object>();
         details.Add("headers", headers);
@@ -150,7 +150,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
     protected internal string GetSessionId(HttpContext context)
     {
-        ISessionFeature sessionFeature = context.Features.Get<ISessionFeature>();
+        var sessionFeature = context.Features.Get<ISessionFeature>();
         return sessionFeature == null ? null : context.Session.Id;
     }
 

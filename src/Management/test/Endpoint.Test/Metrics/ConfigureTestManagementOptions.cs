@@ -10,13 +10,15 @@ namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
 internal class ConfigureTestManagementOptions : ConfigureManagementEndpointOptions
 {
-    public ConfigureTestManagementOptions(IConfiguration configuration, IEnumerable<IContextName> contextNames, IEnumerable<IEndpointOptions> endpointsCollection)
+    public ConfigureTestManagementOptions(IConfiguration configuration, IEnumerable<IContextName> contextNames,
+        IEnumerable<IEndpointOptions> endpointsCollection)
         : base(configuration, contextNames, endpointsCollection)
     {
     }
+
     public override void Configure(string name, ManagementEndpointOptions options)
     {
         base.Configure(name, options);
-        options.ContextNames.Add(CFContext.Name);    
+        options.ContextNames.Add(CFContext.Name);
     }
 }

@@ -18,7 +18,6 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add info to.
     /// </param>
-    /// 
     public static void AddInfoActuator(this IServiceCollection services)
     {
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, GitInfoContributor>());
@@ -27,7 +26,6 @@ public static class EndpointServiceCollectionExtensions
 
         services.AddCommonActuatorServices();
         services.AddInfoActuatorServices();
-
     }
 
     /// <summary>
@@ -45,7 +43,6 @@ public static class EndpointServiceCollectionExtensions
 
         AddContributors(services, contributors);
         services.AddInfoActuator();
-
     }
 
     private static void AddContributors(IServiceCollection services, params IInfoContributor[] contributors)

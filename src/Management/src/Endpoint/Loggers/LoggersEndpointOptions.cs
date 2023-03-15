@@ -6,7 +6,6 @@ namespace Steeltoe.Management.Endpoint.Loggers;
 
 public class LoggersEndpointOptions : EndpointOptionsBase
 {
-
     public override IEnumerable<string> AllowedVerbs { get; } = new List<string>
     {
         "Get",
@@ -14,5 +13,4 @@ public class LoggersEndpointOptions : EndpointOptionsBase
     };
 
     public override bool ExactMatch { get; }
-
 }

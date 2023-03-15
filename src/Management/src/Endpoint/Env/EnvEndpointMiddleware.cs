@@ -13,14 +13,14 @@ namespace Steeltoe.Management.Endpoint.Env;
 
 public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
 {
-    public EnvEndpointMiddleware(IEnvEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<EnvEndpointMiddleware> logger = null)
+    public EnvEndpointMiddleware(IEnvEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILogger<EnvEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
     }
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-
         if (EndpointOptions.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleEnvRequestAsync(context);

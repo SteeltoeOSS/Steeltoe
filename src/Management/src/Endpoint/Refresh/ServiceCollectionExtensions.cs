@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
@@ -32,7 +31,6 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IRefreshEndpoint, RefreshEndpoint>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, RefreshEndpointMiddleware>());
         services.AddSingleton<RefreshEndpointMiddleware>();
-
 
         return services;
     }

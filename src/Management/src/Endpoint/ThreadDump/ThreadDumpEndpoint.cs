@@ -13,6 +13,8 @@ public class ThreadDumpEndpoint : IThreadDumpEndpoint
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
     private readonly IThreadDumper _threadDumper;
 
+    public IEndpointOptions Options => _options.CurrentValue;
+
     public ThreadDumpEndpoint(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpoint> logger = null)
     {
         ArgumentGuard.NotNull(threadDumper);
@@ -20,8 +22,6 @@ public class ThreadDumpEndpoint : IThreadDumpEndpoint
 
         _threadDumper = threadDumper;
     }
-
-    public IEndpointOptions Options => _options.CurrentValue;
 
     public List<ThreadInfo> Invoke()
     {

@@ -41,6 +41,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IExporterOptions>(provider =>
         {
             MetricsEndpointOptions options = provider.GetService<IOptionsMonitor<MetricsEndpointOptions>>().CurrentValue;
+
             return new MetricsExporterOptions
             {
                 CacheDurationMilliseconds = options.CacheDurationMilliseconds,
@@ -48,12 +49,11 @@ public static class ServiceCollectionExtensions
                 MaxHistograms = options.MaxHistograms,
                 IncludedMetrics = options.IncludedMetrics
             };
-
         });
 
         services.TryAddSingleton(provider =>
         {
-            IExporterOptions exporterOptions = provider.GetService<IExporterOptions>();
+            var exporterOptions = provider.GetService<IExporterOptions>();
             return new SteeltoeExporter(exporterOptions);
         });
 
@@ -66,9 +66,9 @@ public static class ServiceCollectionExtensions
     {
         return services.AddSingleton(provider =>
         {
-            SteeltoeExporter steeltoeExporter = provider.GetService<SteeltoeExporter>();
-            IExporterOptions exporterOptions = provider.GetService<IExporterOptions>();
-            ILogger<SteeltoeExporter> logger = provider.GetService<ILogger<SteeltoeExporter>>();
+            var steeltoeExporter = provider.GetService<SteeltoeExporter>();
+            var exporterOptions = provider.GetService<IExporterOptions>();
+            var logger = provider.GetService<ILogger<SteeltoeExporter>>();
 
             var aggregationManager = new AggregationManager(exporterOptions.MaxTimeSeries, exporterOptions.MaxHistograms, steeltoeExporter.AddMetrics,
                 instrument => logger.LogTrace($"Begin measurements from {instrument.Name} for {instrument.Meter.Name}"),
@@ -100,5 +100,4 @@ public static class ServiceCollectionExtensions
             return aggregationManager;
         }).AddHostedService<MetricCollectionHostedService>();
     }
-
 }

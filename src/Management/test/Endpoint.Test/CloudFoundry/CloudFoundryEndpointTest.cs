@@ -3,9 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
@@ -34,7 +31,6 @@ public class CloudFoundryEndpointTest : BaseTest
             services.AddInfoActuatorServices();
             services.AddCloudFoundryActuatorServices();
         };
-
 
         var ep = tc.GetService<ICloudFoundryEndpoint>();
 
@@ -77,7 +73,6 @@ public class CloudFoundryEndpointTest : BaseTest
         {
             services.AddCloudFoundryActuatorServices();
             services.AddInfoActuatorServices();
-
         };
 
         tc.AdditionalConfiguration = configuration =>
@@ -115,7 +110,7 @@ public class CloudFoundryEndpointTest : BaseTest
             configuration.AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "management:cloudfoundry:enabled", "false" },
-                { "management:endpoints:info:enabled", "true" } 
+                { "management:endpoints:info:enabled", "true" }
             });
         };
 

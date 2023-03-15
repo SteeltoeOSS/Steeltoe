@@ -43,10 +43,12 @@ public class HealthEndpointCore : IHealthEndpoint
     {
         return BuildHealth(securityContext);
     }
+
     public int GetStatusCode(HealthCheckResult health)
     {
         return health.Status == HealthStatus.Down || health.Status == HealthStatus.OutOfService ? 503 : 200;
     }
+
     protected HealthEndpointResponse BuildHealth(ISecurityContext securityContext)
     {
         string groupName = GetRequestedHealthGroup(securityContext);
@@ -89,6 +91,7 @@ public class HealthEndpointCore : IHealthEndpoint
         IOptionsMonitor<HealthCheckServiceOptions> svcOptions)
     {
         var options = Options as HealthEndpointOptions;
+
         if (!string.IsNullOrEmpty(requestedGroup))
         {
             if (options.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
@@ -107,6 +110,7 @@ public class HealthEndpointCore : IHealthEndpoint
 
         return svcOptions.CurrentValue.Registrations;
     }
+
     /// <summary>
     /// Returns the last value returned by <see cref="ISecurityContext.GetRequestComponents()" />, expected to be the name of a configured health group.
     /// </summary>
@@ -126,6 +130,7 @@ public class HealthEndpointCore : IHealthEndpoint
 
         return string.Empty;
     }
+
     /// <summary>
     /// Filter out health contributors that do not belong to the requested group.
     /// </summary>
@@ -143,6 +148,7 @@ public class HealthEndpointCore : IHealthEndpoint
     private IList<IHealthContributor> GetFilteredContributorList(string requestedGroup, IList<IHealthContributor> contributors)
     {
         var options = Options as HealthEndpointOptions;
+
         if (!string.IsNullOrEmpty(requestedGroup))
         {
             if (options.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))

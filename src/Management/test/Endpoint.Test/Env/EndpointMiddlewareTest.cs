@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -30,18 +31,17 @@ public class EndpointMiddlewareTest : BaseTest
         ["Logging:LogLevel:Steeltoe"] = "Information",
         ["management:endpoints:enabled"] = "true"
     };
-    
+
     private readonly IHostEnvironment _host = HostingHelpers.GetHostingEnvironment();
 
     [Fact]
     public async Task HandleEnvRequestAsync_ReturnsExpected()
     {
-        
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var optionsMonitor = GetOptionsMonitorFromSettings<EnvEndpointOptions, ConfigureEnvEndpointOptions>();
+        IOptionsMonitor<EnvEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<EnvEndpointOptions, ConfigureEnvEndpointOptions>();
         var managementOptions = new TestOptionsMonitor<ManagementEndpointOptions>(new ManagementEndpointOptions());
 
         var ep = new EnvEndpoint(optionsMonitor, configurationRoot, _host);
@@ -68,6 +68,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         var appSettings = new Dictionary<string, string>(AppSettings);
         appSettings.Add("management:endpoints:actuator:exposure:include:0", "*");
+
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
@@ -85,7 +86,7 @@ public class EndpointMiddlewareTest : BaseTest
 
             const string expected =
                 "{\"activeProfiles\":[\"Production\"],\"propertySources\":[{\"name\":\"ChainedConfigurationProvider\",\"properties\":{\"applicationName\":{\"value\":\"Steeltoe.Management.Endpoint.Test\"}}},{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:Console:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:actuator:exposure:include:0\":{\"value\":\"*\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
-                
+
             Assert.Equal(expected, json);
         }
 
@@ -97,7 +98,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var options = GetOptionsFromSettings<EnvEndpointOptions>();
 
-        var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator/env", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
         Assert.Equal("/cloudfoundryapplication/env", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));

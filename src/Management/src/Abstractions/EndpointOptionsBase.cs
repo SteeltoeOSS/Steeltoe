@@ -3,7 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 namespace Steeltoe.Management;
-public class EndpointOptionsBase : IEndpointOptions 
+
+public class EndpointOptionsBase : IEndpointOptions
 {
     protected bool? sensitive;
 
@@ -31,8 +32,10 @@ public class EndpointOptionsBase : IEndpointOptions
 
     public virtual bool DefaultEnabled { get; } = true;
 
-    public virtual IEnumerable<string> AllowedVerbs { get; } = new List<string>() { "Get" };
+    public virtual IEnumerable<string> AllowedVerbs { get; } = new List<string>
+    {
+        "Get"
+    };
 
     public virtual bool ExactMatch => true;
-
 }

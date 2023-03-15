@@ -39,9 +39,9 @@ public class EnvEndpoint : IEnvEndpoint
     public EnvironmentDescriptor DoInvoke(IConfiguration configuration)
     {
         IList<string> activeProfiles = new List<string>
-    {
-        _env.EnvironmentName
-    };
+        {
+            _env.EnvironmentName
+        };
 
         IList<PropertySourceDescriptor> propertySources = GetPropertySources(configuration);
         return new EnvironmentDescriptor(activeProfiles, propertySources);

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
 using Xunit;
@@ -14,8 +13,8 @@ public class MetricsObserverOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
-        
+        MetricsObserverOptions opts = GetOptionsFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
+
         Assert.Equal(ConfigureMetricsObserverOptions.DefaultIngressIgnorePattern, opts.IngressIgnorePattern);
         Assert.Equal(ConfigureMetricsObserverOptions.DefaultEgressIgnorePattern, opts.EgressIgnorePattern);
         Assert.True(opts.AspNetCoreHosting);
@@ -41,7 +40,7 @@ public class MetricsObserverOptionsTest : BaseTest
             ["management:metrics:observer:httpClientDesktop"] = "true"
         };
 
-        var opts = GetOptionsFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>(appsettings);
+        MetricsObserverOptions opts = GetOptionsFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>(appsettings);
 
         Assert.Equal("pattern", opts.IngressIgnorePattern);
         Assert.Equal("pattern", opts.EgressIgnorePattern);

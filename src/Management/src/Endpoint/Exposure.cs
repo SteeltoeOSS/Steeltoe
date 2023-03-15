@@ -12,9 +12,10 @@ public class Exposure
     private const string ExposureSecondChancePrefix = "management:endpoints:web:exposure";
 
     private static readonly List<string> DefaultInclude = new()
-{
-    "health", "info"
-};
+    {
+        "health",
+        "info"
+    };
 
     public List<string> Include { get; set; }
 
@@ -24,9 +25,15 @@ public class Exposure
     {
         Include = DefaultInclude;
     }
+
     public Exposure(bool allowAll)
     {
-        Include = allowAll ? new List<string>() { "*" } : DefaultInclude;
+        Include = allowAll
+            ? new List<string>
+            {
+                "*"
+            }
+            : DefaultInclude;
     }
 
     public Exposure(IConfiguration configuration)

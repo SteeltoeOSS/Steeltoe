@@ -30,20 +30,22 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
 
     public IList<IRuntimeDiagnosticSource> Sources => InnerSources;
 
-    public DiagnosticsManager(IOptionsMonitor<MetricsObserverOptions>  observerOptions, IEnumerable<IRuntimeDiagnosticSource> runtimeSources, IEnumerable<IDiagnosticObserver> observers,
-        IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger = null)
+    public DiagnosticsManager(IOptionsMonitor<MetricsObserverOptions> observerOptions, IEnumerable<IRuntimeDiagnosticSource> runtimeSources,
+        IEnumerable<IDiagnosticObserver> observers, IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger = null)
     {
         ArgumentGuard.NotNull(observers);
 
         Logger = logger;
         var filteredObservers = new List<IDiagnosticObserver>();
-        foreach (var observer in observers)
+
+        foreach (IDiagnosticObserver observer in observers)
         {
             if (observerOptions.CurrentValue.IncludeObserver(observer.ObserverName))
             {
                 filteredObservers.Add(observer);
             }
         }
+
         InnerObservers = filteredObservers;
         InnerSources = runtimeSources.ToList();
         EventListeners = eventListeners.ToList();

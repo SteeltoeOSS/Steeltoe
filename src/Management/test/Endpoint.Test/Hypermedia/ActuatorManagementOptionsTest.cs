@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 using Xunit;
@@ -14,7 +13,7 @@ public class ActuatorManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(ActuatorContext.Name);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(ActuatorContext.Name);
         Assert.Equal("/actuator", opts.Path);
         Assert.Contains("health", opts.Exposure.Include);
         Assert.Contains("info", opts.Exposure.Include);
@@ -24,7 +23,7 @@ public class ActuatorManagementOptionsTest : BaseTest
     public void Constructor_InitializesWithDefaultsOnCF()
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
-        var opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(ActuatorContext.Name);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(ActuatorContext.Name);
 
         Assert.Equal("/actuator", opts.Path);
         Assert.Contains("health", opts.Exposure.Include);
@@ -33,7 +32,6 @@ public class ActuatorManagementOptionsTest : BaseTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
     }
 
-   
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
@@ -42,8 +40,6 @@ public class ActuatorManagementOptionsTest : BaseTest
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management"
         };
-
-
 
         var opts = GetOptionsFromSettings<ManagementEndpointOptions>(appsettings);
 
@@ -65,7 +61,6 @@ public class ActuatorManagementOptionsTest : BaseTest
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
 
-
         var opts = GetOptionsFromSettings<ManagementEndpointOptions>(appsettings);
 
         Assert.Equal("/management", opts.Path);
@@ -76,5 +71,4 @@ public class ActuatorManagementOptionsTest : BaseTest
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
     }
-
 }

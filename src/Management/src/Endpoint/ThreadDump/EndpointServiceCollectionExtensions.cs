@@ -24,9 +24,7 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-
         services.AddCommonActuatorServices();
         services.AddThreadDumpActuatorServices(version);
-
     }
 }

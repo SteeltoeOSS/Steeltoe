@@ -3,10 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.Metrics;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Exporters;
@@ -52,6 +50,7 @@ public class EventCounterListenerTest : BaseTest
         {
             EventCounterEvents = true
         };
+
         var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
         using var listener = new EventCounterListener(optionsMonitor);
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
@@ -89,6 +88,7 @@ public class EventCounterListenerTest : BaseTest
             ExcludedMetrics = exclusions,
             EventCounterEvents = true
         };
+
         var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
         using var listener = new EventCounterListener(optionsMonitor);
 
@@ -130,6 +130,7 @@ public class EventCounterListenerTest : BaseTest
             IncludedMetrics = inclusions,
             EventCounterEvents = true
         });
+
         using var listener = new EventCounterListener(optionsMonitor);
 
         var exporter = new SteeltoeExporter(_exporterOptions);

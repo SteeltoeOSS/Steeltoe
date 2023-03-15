@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
@@ -22,7 +23,7 @@ public class TraceEndpointTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfNullRepo()
     {
-        var opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
+        IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
         Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(opts, null));
     }
 

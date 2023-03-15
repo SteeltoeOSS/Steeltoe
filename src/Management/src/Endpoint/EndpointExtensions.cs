@@ -61,7 +61,8 @@ public static class EndPointExtensions
         return enabled && exposed;
     }
 
-    public static bool ShouldInvoke(this IEndpointOptions endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context, ILogger logger = null)
+    public static bool ShouldInvoke(this IEndpointOptions endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context,
+        ILogger logger = null)
     {
         ManagementEndpointOptions mgmtOptions = managementOptions.GetCurrentContext(context.Request.Path);
 
@@ -71,11 +72,14 @@ public static class EndPointExtensions
     public static ManagementEndpointOptions GetCurrentContext(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path)
     {
         List<ManagementEndpointOptions> options = new();
+
         foreach (string name in managementOptions.CurrentValue.ContextNames)
         {
             options.Add(managementOptions.Get(name));
         }
+
         options = options.OrderByDescending(option => option.Path.Length).ToList();
+
         foreach (ManagementEndpointOptions opt in options)
         {
             if (path.StartsWithSegments(new PathString(opt.Path)))
@@ -83,6 +87,7 @@ public static class EndPointExtensions
                 return opt;
             }
         }
+
         return managementOptions.Get(ActuatorContext.Name);
     }
 

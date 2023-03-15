@@ -24,7 +24,7 @@ public static class EndpointServiceCollectionExtensions
 
         services.TryAddSingleton<IHostEnvironment>(provider =>
         {
-            IWebHostEnvironment service = provider.GetRequiredService<IWebHostEnvironment>();
+            var service = provider.GetRequiredService<IWebHostEnvironment>();
 
             return new GenericHostingEnvironment
             {
@@ -37,6 +37,5 @@ public static class EndpointServiceCollectionExtensions
 
         services.AddCommonActuatorServices();
         services.AddEnvActuatorServices();
-
     }
 }

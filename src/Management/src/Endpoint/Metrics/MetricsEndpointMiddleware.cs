@@ -77,13 +77,13 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
     protected internal string GetMetricName(HttpRequest request)
     {
-
         ManagementEndpointOptions mgmtOptions = managementOptions.GetCurrentContext(request.Path);
 
         if (mgmtOptions == null)
         {
             return GetMetricName(request, Endpoint.Options.Path);
         }
+
         string path = $"{mgmtOptions.Path}/{Endpoint.Options.Id}".Replace("//", "/", StringComparison.Ordinal);
         string metricName = GetMetricName(request, path);
 
@@ -122,8 +122,8 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
     {
         string[] str = kvp.Split(new[]
         {
-        ':'
-    }, 2);
+            ':'
+        }, 2);
 
         if (str != null && str.Length == 2)
         {

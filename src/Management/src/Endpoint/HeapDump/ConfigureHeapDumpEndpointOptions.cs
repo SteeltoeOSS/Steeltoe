@@ -11,8 +11,8 @@ public class ConfigureHeapDumpEndpointOptions : ConfigureEndpointOptions<HeapDum
 {
     private const string ManagementInfoPrefix = "management:endpoints:heapdump";
 
-
-    public ConfigureHeapDumpEndpointOptions(IConfiguration configuration) : base(configuration, ManagementInfoPrefix, "heapdump")
-    { }
-
+    public ConfigureHeapDumpEndpointOptions(IConfiguration configuration)
+        : base(configuration, ManagementInfoPrefix, "heapdump")
+    {
+    }
 }

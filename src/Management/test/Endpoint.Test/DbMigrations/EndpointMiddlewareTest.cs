@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -36,8 +37,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleEntityFrameworkRequestAsync_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<DbMigrationsEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(); 
+        IOptionsMonitor<DbMigrationsEndpointOptions> opts = GetOptionsMonitorFromSettings<DbMigrationsEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         managementOptions.Get(ActuatorContext.Name).EndpointOptions.Add(opts.CurrentValue);
         var container = new ServiceCollection();
         container.AddScoped<MockDbContext>();
@@ -126,12 +127,12 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<DbMigrationsEndpointOptions>();
-        var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        var actuatorMgmtOptions = mgmtOptions.Get(ActuatorContext.Name);
+        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ManagementEndpointOptions actuatorMgmtOptions = mgmtOptions.Get(ActuatorContext.Name);
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator/dbmigrations", options.GetContextPath(actuatorMgmtOptions));
 
-        var cfMgmtOptions = mgmtOptions.Get(CFContext.Name);
+        ManagementEndpointOptions cfMgmtOptions = mgmtOptions.Get(CFContext.Name);
         Assert.Equal("/cloudfoundryapplication/dbmigrations", options.GetContextPath(cfMgmtOptions));
         Assert.Contains("Get", options.AllowedVerbs);
     }

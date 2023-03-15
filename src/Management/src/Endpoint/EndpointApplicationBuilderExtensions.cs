@@ -17,6 +17,7 @@ public static class EndpointApplicationBuilderExtensions
 
         return builder.UseEndpoints(endpoints => endpoints.MapTheActuators());
     }
+
     public static void Add(this IEndpointConventionBuilder buider, Action<IEndpointConventionBuilder> action)
     {
         action.Invoke(buider);

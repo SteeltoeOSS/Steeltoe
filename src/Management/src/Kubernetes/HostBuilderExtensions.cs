@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint;
@@ -58,7 +59,7 @@ public static class HostBuilderExtensions
         return hostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole()).ConfigureServices((context, collection) =>
         {
             collection.AddKubernetesActuators(context.Configuration, version: mediaTypeVersion);
-            var epBuilder = collection.ActivateActuatorEndpoints();
+            IEndpointConventionBuilder epBuilder = collection.ActivateActuatorEndpoints();
             configureEndpoints?.Invoke(epBuilder);
         });
     }
@@ -81,9 +82,8 @@ public static class HostBuilderExtensions
         return webHostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole()).ConfigureServices((context, collection) =>
         {
             collection.AddKubernetesActuators(context.Configuration, version: mediaTypeVersion);
-            var epBuilder = collection.ActivateActuatorEndpoints();
+            IEndpointConventionBuilder epBuilder = collection.ActivateActuatorEndpoints();
             configureEndpoints?.Invoke(epBuilder);
-
         });
     }
 
@@ -118,8 +118,8 @@ public static class HostBuilderExtensions
     {
         webApplicationBuilder.Logging.AddDynamicConsole();
 
-        var services = webApplicationBuilder.Services.AddKubernetesActuators(webApplicationBuilder.Configuration, version: mediaTypeVersion);
-        var epBuilder = services.ActivateActuatorEndpoints();
+        IServiceCollection services = webApplicationBuilder.Services.AddKubernetesActuators(webApplicationBuilder.Configuration, version: mediaTypeVersion);
+        IEndpointConventionBuilder epBuilder = services.ActivateActuatorEndpoints();
         configureEndpoints?.Invoke(epBuilder);
 
         return webApplicationBuilder;

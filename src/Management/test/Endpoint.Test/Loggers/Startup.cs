@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Loggers;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;
@@ -29,6 +28,5 @@ public class Startup
     {
         app.UseRouting();
         app.UseEndpoints(endpoints => endpoints.MapTheActuators());
-        
     }
 }

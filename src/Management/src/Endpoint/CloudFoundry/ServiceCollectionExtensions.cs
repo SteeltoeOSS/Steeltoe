@@ -33,5 +33,4 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ICloudFoundryEndpoint, CloudFoundryEndpoint>();
         return services;
     }
-
 }

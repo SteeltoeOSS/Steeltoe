@@ -31,7 +31,6 @@ public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
 
     protected internal Task HandleRefreshRequestAsync(HttpContext context)
     {
-
         string serialInfo = HandleRequest();
         logger?.LogDebug("Returning: {info}", serialInfo);
 

@@ -13,14 +13,14 @@ public class ThreadDumpEndpointV2 : IThreadDumpEndpointV2
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
     private readonly IThreadDumper _threadDumper;
 
+    public IEndpointOptions Options => _options.CurrentValue;
+
     public ThreadDumpEndpointV2(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpointV2> logger = null)
     {
         ArgumentGuard.NotNull(threadDumper);
         _options = options;
         _threadDumper = threadDumper;
     }
-
-    public IEndpointOptions Options => _options.CurrentValue;
 
     public ThreadDumpResult Invoke()
     {

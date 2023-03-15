@@ -93,7 +93,6 @@ public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
     }
 
     public abstract Task InvokeAsync(HttpContext context, RequestDelegate next);
-
 }
 
 public interface IEndpointMiddleware : IMiddleware

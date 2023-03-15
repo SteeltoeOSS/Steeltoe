@@ -30,7 +30,6 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<EnvEndpoint>();
         services.TryAddSingleton<IEnvEndpoint>(provider => provider.GetRequiredService<EnvEndpoint>());
 
-
         // New: 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, EnvEndpointMiddleware>());
         services.AddSingleton<EnvEndpointMiddleware>();

@@ -20,8 +20,9 @@ internal class ConfigureMetricsObserverOptions : IConfigureOptions<MetricsObserv
 
     public ConfigureMetricsObserverOptions(IConfiguration configuration)
     {
-        this._configuration = configuration;
+        _configuration = configuration;
     }
+
     public void Configure(MetricsObserverOptions options)
     {
         _configuration.GetSection(ManagementMetricsPrefix).Bind(options);

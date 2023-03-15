@@ -5,8 +5,8 @@
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
@@ -26,14 +26,14 @@ public class HeapDumpEndpointTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfNullRepo()
     {
-        var options = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions>();
+        IOptionsMonitor<HeapDumpEndpointOptions> options = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions>();
         Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpoint(options, null));
     }
 
     [Fact]
     public void Invoke_CreatesDump()
     {
-        var options = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions>();
+        IOptionsMonitor<HeapDumpEndpointOptions> options = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions>();
 
         if (Platform.IsWindows && RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase))
         {
@@ -63,8 +63,7 @@ public class HeapDumpEndpointTest : BaseTest
                 {
                     services.AddHeapDumpActuatorServices();
 
-                    services.AddSingleton<IHeapDumper>(sp =>
-                        new HeapDumper(options, logger: sp.GetRequiredService<ILogger<HeapDumper>>()));
+                    services.AddSingleton<IHeapDumper>(sp => new HeapDumper(options, logger: sp.GetRequiredService<ILogger<HeapDumper>>()));
                 };
 
                 var ep = tc.GetService<IHeapDumpEndpoint>();

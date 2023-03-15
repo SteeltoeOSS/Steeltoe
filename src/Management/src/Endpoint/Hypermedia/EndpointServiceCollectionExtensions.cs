@@ -15,7 +15,5 @@ public static class EndpointServiceCollectionExtensions
 
         services.AddCommonActuatorServices();
         services.AddHypermediaActuatorServices();
-
     }
-
 }

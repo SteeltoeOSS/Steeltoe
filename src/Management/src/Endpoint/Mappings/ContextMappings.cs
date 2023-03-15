@@ -17,14 +17,14 @@ public class ContextMappings
     public ContextMappings()
     {
         var mappingList = new Dictionary<string, IList<MappingDescription>>
-    {
-        { "dispatcherServlet", new List<MappingDescription>() }
-    };
+        {
+            { "dispatcherServlet", new List<MappingDescription>() }
+        };
 
         Mappings = new Dictionary<string, IDictionary<string, IList<MappingDescription>>>
-    {
-        { "dispatcherServlets", mappingList }
-    };
+        {
+            { "dispatcherServlets", mappingList }
+        };
 
         ParentId = null;
     }
@@ -42,9 +42,9 @@ public class ContextMappings
         }
 
         Mappings = new Dictionary<string, IDictionary<string, IList<MappingDescription>>>
-    {
-        { "dispatcherServlets", mappingDict }
-    };
+        {
+            { "dispatcherServlets", mappingDict }
+        };
 
         ParentId = parentId;
     }

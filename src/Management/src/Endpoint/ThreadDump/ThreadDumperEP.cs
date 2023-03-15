@@ -34,6 +34,7 @@ public class ThreadDumperEp : IThreadDumper
         MethodName = "[NativeMethods]",
         IsNativeMethod = true
     };
+
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
     private readonly ILogger<ThreadDumperEp> _logger;
 
@@ -62,9 +63,9 @@ public class ThreadDumperEp : IThreadDumper
             var client = new DiagnosticsClient(Process.GetCurrentProcess().Id);
 
             var providers = new List<EventPipeProvider>
-        {
-            new("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)
-        };
+            {
+                new("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)
+            };
 
             using EventPipeSession session = client.StartEventPipeSession(providers);
             DumpThreads(session, results);
@@ -131,7 +132,7 @@ public class ThreadDumperEp : IThreadDumper
                     {
                         samplesForThread[threadId] = new List<StackSourceSample>
                         {
-                        sample
+                            sample
                         };
                     }
                 });

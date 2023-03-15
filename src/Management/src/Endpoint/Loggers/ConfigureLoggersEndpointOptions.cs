@@ -11,7 +11,8 @@ public class ConfigureLoggersEndpointOptions : ConfigureEndpointOptions<LoggersE
 {
     private const string ManagementInfoPrefix = "management:endpoints:loggers";
 
-    public ConfigureLoggersEndpointOptions(IConfiguration configuration) : base(configuration, ManagementInfoPrefix, "loggers")
+    public ConfigureLoggersEndpointOptions(IConfiguration configuration)
+        : base(configuration, ManagementInfoPrefix, "loggers")
     {
     }
 }

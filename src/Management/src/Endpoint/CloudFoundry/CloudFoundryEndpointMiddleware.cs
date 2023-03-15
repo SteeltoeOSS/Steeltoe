@@ -28,6 +28,7 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         logger?.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
+
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleCloudFoundryRequestAsync(context);
@@ -55,6 +56,4 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 
         return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
     }
-
-
 }

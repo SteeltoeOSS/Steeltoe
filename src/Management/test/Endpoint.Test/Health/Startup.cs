@@ -9,7 +9,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
-using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;

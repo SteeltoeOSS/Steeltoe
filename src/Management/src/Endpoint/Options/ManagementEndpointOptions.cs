@@ -9,7 +9,6 @@ namespace Steeltoe.Management.Endpoint.Options;
 
 public class ManagementEndpointOptions
 {
-
     public bool? Enabled { get; set; }
 
     public bool? Sensitive { get; set; }
@@ -20,9 +19,13 @@ public class ManagementEndpointOptions
 
     public List<IEndpointOptions> EndpointOptions { get; set; }
 
-    public HashSet<string> ContextNames { get; set; } = new HashSet<string> { ActuatorContext.Name };
+    public HashSet<string> ContextNames { get; set; } = new()
+    {
+        ActuatorContext.Name
+    };
 
     public bool UseStatusCodeFromResponse { get; set; } = true;
+
     public JsonSerializerOptions SerializerOptions { get; set; } = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
@@ -38,6 +41,4 @@ public class ManagementEndpointOptions
     /// custom JsonConverters.
     /// </summary>
     public string[] CustomJsonConverters { get; set; }
-
-
 }

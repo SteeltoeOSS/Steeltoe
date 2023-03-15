@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -36,9 +37,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleHeapDumpRequestAsync_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-
+        IOptionsMonitor<HeapDumpEndpointOptions> opts = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         IServiceCollection serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
@@ -96,7 +96,7 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<HeapDumpEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator/heapdump", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
         Assert.Equal("/cloudfoundryapplication/heapdump", options.GetContextPath(managementOptions.Get(CFContext.Name)));

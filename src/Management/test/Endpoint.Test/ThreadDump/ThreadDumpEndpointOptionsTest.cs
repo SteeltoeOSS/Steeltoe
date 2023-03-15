@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Xunit;
@@ -31,11 +31,11 @@ public class ThreadDumpEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-      
+        IOptionsMonitor<ThreadDumpEndpointOptions> optionsMonitor =
+            GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions>(appsettings);
 
-        var optionsMonitor = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions>(appsettings);
-        var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
-        var opts = optionsMonitor.CurrentValue;
+        CloudFoundryEndpointOptions cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
+        ThreadDumpEndpointOptions opts = optionsMonitor.CurrentValue;
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);
         Assert.Equal(string.Empty, cloudOpts.Path);
@@ -43,9 +43,9 @@ public class ThreadDumpEndpointOptionsTest : BaseTest
 
         Assert.True(opts.Enabled);
         Assert.Equal("threaddump", opts.Id);
-        Assert.Equal("threaddump", opts.Path); 
-
+        Assert.Equal("threaddump", opts.Path);
     }
+
     [Fact]
     public void Constructor_BindsConfigurationCorrectlyV1()
     {
@@ -58,11 +58,11 @@ public class ThreadDumpEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
+        IOptionsMonitor<ThreadDumpEndpointOptions> optionsMonitor =
+            GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>(appsettings);
 
-
-        var optionsMonitor = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>(appsettings);
-        var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
-        var opts = optionsMonitor.CurrentValue;
+        CloudFoundryEndpointOptions cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
+        ThreadDumpEndpointOptions opts = optionsMonitor.CurrentValue;
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);
         Assert.Equal(string.Empty, cloudOpts.Path);
@@ -71,6 +71,5 @@ public class ThreadDumpEndpointOptionsTest : BaseTest
         Assert.True(opts.Enabled);
         Assert.Equal("dump", opts.Id);
         Assert.Equal("dump", opts.Path);
-
     }
 }

@@ -329,11 +329,13 @@ public static class ManagementHostBuilderExtensions
             t.ImplementationType == typeof(AllActuatorsStartupFilter) || t.ImplementationFactory?.Method?.ReturnType == typeof(AllActuatorsStartupFilter));
 
         var actuatorConventionBuilder = new ActuatorConventionBuilder();
+
         if (!existingStartupFilters.Any())
         {
             collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(provider => new AllActuatorsStartupFilter(actuatorConventionBuilder));
         }
-        return (IEndpointConventionBuilder)actuatorConventionBuilder;
+
+        return actuatorConventionBuilder;
     }
 
     private static IHostBuilder AddManagementPort(this IHostBuilder hostBuilder)

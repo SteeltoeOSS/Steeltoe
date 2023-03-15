@@ -25,22 +25,22 @@ public class BuildInfoContributor : IInfoContributor
 
         // this is for Spring Boot Admin
         builder.WithInfo("build", new Dictionary<string, string>
-    {
-        { "version", _application.GetName().Version.ToString() }
-    });
+        {
+            { "version", _application.GetName().Version.ToString() }
+        });
     }
 
     private Dictionary<string, string> GetImportantDetails(Assembly assembly)
     {
         return new Dictionary<string, string>
-    {
-        { "ProductName", assembly.GetName().Name },
-        { "FileVersion", ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyFileVersionAttribute), false)).Version },
         {
-            "ProductVersion",
-            ((AssemblyInformationalVersionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyInformationalVersionAttribute), false))
-            .InformationalVersion
-        }
-    };
+            { "ProductName", assembly.GetName().Name },
+            { "FileVersion", ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyFileVersionAttribute), false)).Version },
+            {
+                "ProductVersion",
+                ((AssemblyInformationalVersionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyInformationalVersionAttribute), false))
+                .InformationalVersion
+            }
+        };
     }
 }

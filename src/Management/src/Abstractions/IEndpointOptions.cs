@@ -17,5 +17,4 @@ public interface IEndpointOptions
     IEnumerable<string> AllowedVerbs { get; }
 
     bool ExactMatch { get; }
-
 }

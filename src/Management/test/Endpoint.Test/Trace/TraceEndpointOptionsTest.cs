@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
+
 namespace Steeltoe.Management.Endpoint.Test.Trace;
 
 public class TraceEndpointOptionsTest : BaseTest
@@ -53,8 +53,8 @@ public class TraceEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        var opts = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>(appsettings).Get(string.Empty);
-        var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
+        TraceEndpointOptions opts = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>(appsettings).Get(string.Empty);
+        CloudFoundryEndpointOptions cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
 
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);

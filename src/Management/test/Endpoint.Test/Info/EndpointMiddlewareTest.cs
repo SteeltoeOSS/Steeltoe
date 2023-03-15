@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
@@ -40,8 +41,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleInfoRequestAsync_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<InfoEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<InfoEndpointOptions> opts = GetOptionsMonitorFromSettings<InfoEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var contributors = new List<IInfoContributor>
         {
@@ -129,7 +130,7 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<InfoEndpointOptions>();
-        var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator/info", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));

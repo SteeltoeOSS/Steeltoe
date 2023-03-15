@@ -6,5 +6,4 @@ namespace Steeltoe.Management.Endpoint.Mappings;
 
 public class MappingsEndpointOptions : EndpointOptionsBase
 {
-
 }

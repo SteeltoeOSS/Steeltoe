@@ -17,5 +17,4 @@ public class MetricsEndpointOptions : EndpointOptionsBase
 
     public EndpointOptionsBase EndpointOptions { get; set; }
     public override bool ExactMatch => false;
-
 }

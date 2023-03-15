@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
@@ -34,14 +35,14 @@ public class EndpointMiddlewareTest : BaseTest
 
     public EndpointMiddlewareTest()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue");// Allow routing to /cloudfoundryapplication
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
     }
 
     [Fact]
     public void RoutesByPathAndVerb()
     {
         var options = new HypermediaEndpointOptions();
-        var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
         Assert.Equal("/cloudfoundryapplication", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
 
@@ -52,8 +53,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<CloudFoundryEndpointOptions> opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         var ep = new TestCloudFoundryEndpoint(opts, managementOptions);
 
         var middle = new CloudFoundryEndpointMiddleware(ep, managementOptions);
@@ -152,6 +153,4 @@ public class EndpointMiddlewareTest : BaseTest
         context.Request.Host = new HostString("localhost");
         return context;
     }
-
-
 }

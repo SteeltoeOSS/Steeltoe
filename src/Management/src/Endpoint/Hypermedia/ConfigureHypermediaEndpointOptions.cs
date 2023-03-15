@@ -11,7 +11,8 @@ internal class ConfigureHypermediaEndpointOptions : ConfigureEndpointOptions<Hyp
 {
     private const string ManagementInfoPrefix = "management:endpoints:actuator";
 
-    public ConfigureHypermediaEndpointOptions(IConfiguration configuration) : base(configuration, ManagementInfoPrefix, string.Empty)
+    public ConfigureHypermediaEndpointOptions(IConfiguration configuration)
+        : base(configuration, ManagementInfoPrefix, string.Empty)
     {
     }
 }

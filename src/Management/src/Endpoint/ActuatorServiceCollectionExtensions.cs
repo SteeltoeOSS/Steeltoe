@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -27,7 +26,6 @@ namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorServiceCollectionExtensions
 {
-
     public static void AddCommonActuatorServices(this IServiceCollection services)
     {
         if (Platform.IsCloudFoundry)
@@ -40,22 +38,26 @@ public static class ActuatorServiceCollectionExtensions
 
         services.ConfigureOptions<ConfigureManagementEndpointOptions>();
     }
+
     public static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
         where TOptions : class, IEndpointOptions
         where TConfigureOptions : class
     {
         services.ConfigureOptions<TConfigureOptions>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
+
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IEndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
     }
+
     public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy)
     {
-        services.AddAllActuators( MediaTypeVersion.V2, buildCorsPolicy);
+        services.AddAllActuators(MediaTypeVersion.V2, buildCorsPolicy);
     }
-    public static IServiceCollection AddAllActuators(this IServiceCollection services,
-        MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+
+    public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version = MediaTypeVersion.V2,
+        Action<CorsPolicyBuilder> buildCorsPolicy = null)
     {
         ArgumentGuard.NotNull(services);
-
 
         services.AddSteeltoeCors(buildCorsPolicy);
 

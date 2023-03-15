@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 using Xunit;
@@ -32,12 +33,12 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<HypermediaEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<HypermediaEndpointOptions> opts = GetOptionsMonitorFromSettings<HypermediaEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         var ep = new TestHypermediaEndpoint(opts, managementOptions);
         var middle = new ActuatorHypermediaEndpointMiddleware(ep, managementOptions);
         HttpContext context = CreateRequest("GET", "/");
-        await middle.InvokeAsync(context,null);
+        await middle.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var rdr = new StreamReader(context.Response.Body);
         string json = await rdr.ReadToEndAsync();
@@ -108,8 +109,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
-        var mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>();
+        HypermediaEndpointOptions options = GetOptionsFromSettings<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
         Assert.Contains("Get", options.AllowedVerbs);

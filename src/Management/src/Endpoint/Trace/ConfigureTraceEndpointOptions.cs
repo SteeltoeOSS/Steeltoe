@@ -9,18 +9,10 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 internal class ConfigureTraceEndpointOptions : IConfigureNamedOptions<TraceEndpointOptions>
 {
-
     private const string ManagementInfoPrefixV1 = "management:endpoints:trace";
     private const string ManagementInfoPrefix = "management:endpoints:httptrace";
-    private readonly IConfiguration _configuration;
     private const int DefaultCapacity = 100;
-
-    public enum TraceEndpointOptionNames
-    {
-        V1,
-        V2
-    }
-
+    private readonly IConfiguration _configuration;
 
     public ConfigureTraceEndpointOptions(IConfiguration configuration)
     {
@@ -29,14 +21,14 @@ internal class ConfigureTraceEndpointOptions : IConfigureNamedOptions<TraceEndpo
 
     public void Configure(string name, TraceEndpointOptions options)
     {
-        if (name == TraceEndpointOptionNames.V2.ToString()
-            || name == string.Empty)
+        if (name == TraceEndpointOptionNames.V2.ToString() || name == string.Empty)
         {
             Configure(options);
         }
         else
         {
             _configuration.GetSection(ManagementInfoPrefixV1).Bind(options);
+
             if (string.IsNullOrEmpty(options.Id))
             {
                 options.Id = "trace";
@@ -57,5 +49,11 @@ internal class ConfigureTraceEndpointOptions : IConfigureNamedOptions<TraceEndpo
         {
             options.Id = "httptrace";
         }
+    }
+
+    public enum TraceEndpointOptionNames
+    {
+        V1,
+        V2
     }
 }

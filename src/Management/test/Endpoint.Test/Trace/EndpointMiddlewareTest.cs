@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Trace;
@@ -28,14 +28,14 @@ public class EndpointMiddlewareTest : BaseTest
         ["Logging:LogLevel:Steeltoe"] = "Information",
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:trace:enabled"] = "true",
-        ["management:endpoints:actuator:exposure:include:0"]= "httptrace",
+        ["management:endpoints:actuator:exposure:include:0"] = "httptrace"
     };
 
     [Fact]
     public async Task HandleTraceRequestAsync_ReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var obs = new TraceDiagnosticObserver(opts);
         var ep = new TestTraceEndpoint(opts, obs);
@@ -51,8 +51,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleTraceRequestAsync_OtherPathReturnsExpected()
     {
-        var opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var obs = new TraceDiagnosticObserver(opts);
         var ep = new TestTraceEndpoint(opts, obs);
@@ -88,7 +88,7 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<TraceEndpointOptions>();
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator/httptrace", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
         Assert.Equal("/cloudfoundryapplication/httptrace", options.GetContextPath(managementOptions.Get(CFContext.Name)));
@@ -98,8 +98,10 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerbTrace()
     {
-        var options = GetOptionsMonitorFromSettings<TraceEndpointOptions>().Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
-        var managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        TraceEndpointOptions options = GetOptionsMonitorFromSettings<TraceEndpointOptions>()
+            .Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
+
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator/trace", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
         Assert.Equal("/cloudfoundryapplication/trace", options.GetContextPath(managementOptions.Get(CFContext.Name)));

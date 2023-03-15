@@ -2,16 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing.Constraints;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
@@ -22,25 +22,23 @@ public class MappingsEndpoint : IMappingsEndpoint
     private readonly IEnumerable<IApiDescriptionProvider> _apiDescriptionProviders;
     private readonly IRouteMappings _routeMappings;
 
-    public MappingsEndpoint(IOptionsMonitor<MappingsEndpointOptions> options,
-        IRouteMappings routeMappings = null,
-        IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null,
-        IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null,
+    public IEndpointOptions Options => _options.CurrentValue;
+
+    public MappingsEndpoint(IOptionsMonitor<MappingsEndpointOptions> options, IRouteMappings routeMappings = null,
+        IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null,
         ILogger<MappingsEndpoint> logger = null)
     {
         _options = options;
         _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
         _apiDescriptionProviders = apiDescriptionProviders;
         _routeMappings = routeMappings;
-
     }
-
-    public IEndpointOptions Options => _options.CurrentValue;
 
     public ApplicationMappings Invoke()
     {
         return GetApplicationMappings();
     }
+
     protected internal ApplicationMappings GetApplicationMappings()
     {
         IDictionary<string, IList<MappingDescription>> desc = new Dictionary<string, IList<MappingDescription>>();
@@ -153,9 +151,9 @@ public class MappingsEndpoint : IMappingsEndpoint
         var routeDetails = new AspNetCoreRouteDetails
         {
             HttpMethods = desc.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ?? new List<string>
-        {
-            MappingDescription.AllHttpMethods
-        },
+            {
+                MappingDescription.AllHttpMethods
+            },
             Consumes = new List<string>(),
             Produces = new List<string>()
         };
@@ -231,9 +229,9 @@ public class MappingsEndpoint : IMappingsEndpoint
         if (!string.IsNullOrEmpty(desc.HttpMethod))
         {
             return new List<string>
-        {
-            desc.HttpMethod
-        };
+            {
+                desc.HttpMethod
+            };
         }
 
         return null;
