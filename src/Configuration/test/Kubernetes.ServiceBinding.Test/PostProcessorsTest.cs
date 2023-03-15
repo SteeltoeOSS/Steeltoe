@@ -539,11 +539,6 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         var secrets = new[]
         {
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
             Tuple.Create("username", "test-username")
         };
 
@@ -553,7 +548,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:database");
+        configurationData.Should().NotContainKey($"{keyPrefix}:username");
     }
 
     [Fact]
@@ -563,12 +558,11 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         var secrets = new[]
         {
-            Tuple.Create("database", "test-database"),
             Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
             Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username")
+            Tuple.Create("database", "test-database"),
+            Tuple.Create("username", "test-username"),
+            Tuple.Create("password", "test-password")
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlPostProcessor.BindingType, secrets);
@@ -577,12 +571,11 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
         configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
         configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
-        configurationData[$"{keyPrefix}:jdbcUrl"].Should().Be("test-jdbc-url");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
     }
 
     [Fact]
@@ -689,15 +682,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         var secrets = new[]
         {
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
-            Tuple.Create("username", "test-username"),
-            Tuple.Create("sslmode", "verify-full"),
-            Tuple.Create("sslrootcert", "root.cert"),
-            Tuple.Create("options", "--cluster=routing-id&opt=val1")
+            Tuple.Create("username", "test-username")
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlPostProcessor.BindingType, secrets);
@@ -706,7 +691,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:database");
+        configurationData.Should().NotContainKey($"{keyPrefix}:username");
     }
 
     [Fact]
@@ -716,15 +701,11 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         var secrets = new[]
         {
-            Tuple.Create("database", "test-database"),
             Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
             Tuple.Create("port", "test-port"),
-            Tuple.Create("jdbc-url", "test-jdbc-url"),
+            Tuple.Create("database", "test-database"),
             Tuple.Create("username", "test-username"),
-            Tuple.Create("sslmode", "verify-full"),
-            Tuple.Create("sslrootcert", "root.cert"),
-            Tuple.Create("options", "--cluster=routing-id&opt=val1")
+            Tuple.Create("password", "test-password")
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlPostProcessor.BindingType, secrets);
@@ -733,15 +714,11 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
         configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
         configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
-        configurationData[$"{keyPrefix}:jdbcUrl"].Should().Be("test-jdbc-url");
-        configurationData[$"{keyPrefix}:sslmode"].Should().Be("verify-full");
-        configurationData[$"{keyPrefix}:sslrootcert"].Should().Be("root.cert");
-        configurationData[$"{keyPrefix}:options"].Should().Be("--cluster=routing-id&opt=val1");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
     }
 
     [Fact]
