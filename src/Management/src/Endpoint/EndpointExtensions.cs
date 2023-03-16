@@ -64,12 +64,12 @@ public static class EndPointExtensions
     public static bool ShouldInvoke(this IEndpointOptions endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context,
         ILogger logger = null)
     {
-        ManagementEndpointOptions mgmtOptions = managementOptions.GetCurrentContext(context.Request.Path);
+        ManagementEndpointOptions mgmtOptions = managementOptions.GetFromContextPath(context.Request.Path);
 
         return ShouldInvoke(endpoint, mgmtOptions, logger);
     }
 
-    public static ManagementEndpointOptions GetCurrentContext(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path)
+    public static ManagementEndpointOptions GetFromContextPath(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path)
     {
         List<ManagementEndpointOptions> options = new();
 

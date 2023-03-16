@@ -32,7 +32,7 @@ public class TraceStartup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapTheActuators();
+            endpoints.MapAllActuators();
         });
     }
 }

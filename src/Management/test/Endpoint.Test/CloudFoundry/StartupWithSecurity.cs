@@ -35,7 +35,7 @@ public class StartupWithSecurity
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapTheActuators();
+            endpoints.MapAllActuators();
         });
         // app.UseEndpoints
     }

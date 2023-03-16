@@ -30,7 +30,7 @@ public class HyperMediaStartup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapTheActuators();
+            endpoints.MapAllActuators();
         });
     }
 }

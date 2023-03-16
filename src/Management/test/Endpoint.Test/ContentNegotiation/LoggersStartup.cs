@@ -32,7 +32,7 @@ public class LoggersStartup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapTheActuators();
+            endpoints.MapAllActuators();
         });
     }
 }

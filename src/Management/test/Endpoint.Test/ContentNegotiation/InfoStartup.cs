@@ -32,7 +32,7 @@ public class InfoStartup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapTheActuators();
+            endpoints.MapAllActuators();
         });
     }
 }

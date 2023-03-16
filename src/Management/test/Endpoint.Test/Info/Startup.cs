@@ -32,7 +32,7 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
-            app.UseEndpoints(endpoints => endpoints.MapTheActuators());
+            app.UseEndpoints(endpoints => endpoints.MapAllActuators());
         });
     }
 }

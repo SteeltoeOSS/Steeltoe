@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorRouteBuilderExtensions
 {
-    public static IEndpointConventionBuilder MapTheActuators(this IEndpointRouteBuilder endpoints, ActuatorConventionBuilder conventionBuilder = null)
+    public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints, ActuatorConventionBuilder conventionBuilder = null)
     {
         IServiceProvider serviceProvider = endpoints.ServiceProvider;
 

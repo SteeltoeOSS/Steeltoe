@@ -15,7 +15,7 @@ public static class EndpointApplicationBuilderExtensions
             throw new ArgumentNullException(nameof(builder));
         }
 
-        return builder.UseEndpoints(endpoints => endpoints.MapTheActuators());
+        return builder.UseEndpoints(endpoints => endpoints.MapAllActuators());
     }
 
     public static void Add(this IEndpointConventionBuilder buider, Action<IEndpointConventionBuilder> action)

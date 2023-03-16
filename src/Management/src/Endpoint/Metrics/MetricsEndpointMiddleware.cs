@@ -77,7 +77,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
     protected internal string GetMetricName(HttpRequest request)
     {
-        ManagementEndpointOptions mgmtOptions = managementOptions.GetCurrentContext(request.Path);
+        ManagementEndpointOptions mgmtOptions = managementOptions.GetFromContextPath(request.Path);
 
         if (mgmtOptions == null)
         {

@@ -53,6 +53,6 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-        app.UseEndpoints(endpoints => endpoints.MapTheActuators());
+        app.UseEndpoints(endpoints => endpoints.MapAllActuators());
     }
 }

@@ -57,7 +57,7 @@ public class ActuatorRouteBuilderExtensionsTest
         {
             builder.Configure(app => app.UseRouting().UseAuthentication().UseAuthorization().UseEndpoints(endpoints =>
             {
-                endpoints.MapTheActuators().RequireAuthorization("TestAuth");
+                endpoints.MapAllActuators().RequireAuthorization("TestAuth");
                 endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
             })).UseTestServer();
         });

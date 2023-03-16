@@ -34,6 +34,6 @@ public class AuthStartup
 
     public static void MapHealthActuator(IApplicationBuilder app)
     {
-        app.UseEndpoints(endpoints => endpoints.MapTheActuators());
+        app.UseEndpoints(endpoints => endpoints.MapAllActuators());
     }
 }

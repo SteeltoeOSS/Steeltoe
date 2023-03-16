@@ -41,7 +41,7 @@ public class AllActuatorsStartupFilter : IStartupFilter
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapTheActuators(_conventionBuilder);
+                endpoints.MapAllActuators(_conventionBuilder);
             });
 
             app.ApplicationServices.InitializeAvailability();

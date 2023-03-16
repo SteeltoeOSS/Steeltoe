@@ -34,7 +34,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         {
             // POST - change a logger level
             logger?.LogDebug("Incoming path: {path}", request.Path.Value);
-            ManagementEndpointOptions mgmtOptions = managementOptions.GetCurrentContext(request.Path);
+            ManagementEndpointOptions mgmtOptions = managementOptions.GetFromContextPath(request.Path);
 
             string path = managementOptions == null
                 ? Endpoint.Options.Path
