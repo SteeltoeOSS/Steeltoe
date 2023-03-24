@@ -2,16 +2,18 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 
-public class ServiceBindingTest
+public sealed class ServiceBindingTest
 {
     [Fact]
     public void InvalidDirectory_Throws()
     {
-        Assert.Throws<ArgumentException>(() => new ServiceBindingConfigurationProvider.ServiceBinding("invalid"));
+        Action action = () => _ = new ServiceBindingConfigurationProvider.ServiceBinding("invalid");
+        action.Should().ThrowExactly<ArgumentException>();
     }
 
     [Fact]
@@ -19,13 +21,13 @@ public class ServiceBindingTest
     {
         string rootDir = GetK8SResourcesDirectory("test-name-1");
         var binding = new ServiceBindingConfigurationProvider.ServiceBinding(rootDir);
-        Assert.Equal("test-name-1", binding.Name);
-        Assert.Equal("test-type-1", binding.Type);
-        Assert.Equal("test-provider-1", binding.Provider);
-        Assert.Contains(Path.Combine("resources", "k8s", "test-name-1"), binding.Path, StringComparison.OrdinalIgnoreCase);
-        Assert.NotNull(binding.Secrets);
-        Assert.Single(binding.Secrets);
-        Assert.Equal("test-secret-value", binding.Secrets["test-secret-key"]);
+        binding.Name.Should().Be("test-name-1");
+        binding.Type.Should().Be("test-type-1");
+        binding.Provider.Should().Be("test-provider-1");
+        binding.Path.Should().Contain(Path.Combine("resources", "k8s", "test-name-1"));
+        binding.Secrets.Should().NotBeNull();
+        binding.Secrets.Should().ContainSingle();
+        binding.Secrets["test-secret-key"].Should().Be("test-secret-value");
     }
 
     [Fact]
@@ -34,13 +36,13 @@ public class ServiceBindingTest
         // Hidden & links
         string rootDir = GetK8SResourcesDirectory("test-k8s");
         var binding = new ServiceBindingConfigurationProvider.ServiceBinding(rootDir);
-        Assert.Equal("test-k8s", binding.Name);
-        Assert.Equal("test-type-1", binding.Type);
-        Assert.Equal("test-provider-1", binding.Provider);
-        Assert.Contains(Path.Combine("resources", "k8s", "test-k8s"), binding.Path, StringComparison.OrdinalIgnoreCase);
-        Assert.NotNull(binding.Secrets);
-        Assert.Single(binding.Secrets);
-        Assert.Equal("test-secret-value", binding.Secrets["test-secret-key"]);
+        binding.Name.Should().Be("test-k8s");
+        binding.Type.Should().Be("test-type-1");
+        binding.Provider.Should().Be("test-provider-1");
+        binding.Path.Should().Contain(Path.Combine("resources", "k8s", "test-k8s"));
+        binding.Secrets.Should().NotBeNull();
+        binding.Secrets.Should().ContainSingle();
+        binding.Secrets["test-secret-key"].Should().Be("test-secret-value");
     }
 
     private static string GetK8SResourcesDirectory(string name)

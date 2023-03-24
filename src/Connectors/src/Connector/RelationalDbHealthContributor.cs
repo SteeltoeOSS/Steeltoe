@@ -24,12 +24,22 @@ public class RelationalDbHealthContributor : IHealthContributor
     public readonly IDbConnection Connection;
 
     public string Id { get; }
+    public string HostName { get; }
+
+    public RelationalDbHealthContributor(IDbConnection connection, string serviceName, string hostName, ILogger<RelationalDbHealthContributor> logger = null)
+    {
+        Connection = connection;
+        Id = serviceName;
+        HostName = hostName;
+        _logger = logger;
+    }
 
     public RelationalDbHealthContributor(IDbConnection connection, ILogger<RelationalDbHealthContributor> logger = null)
     {
         Connection = connection;
         _logger = logger;
         Id = GetDbName(connection);
+        HostName = Id;
     }
 
     public static IHealthContributor GetMySqlContributor(IConfiguration configuration, ILogger<RelationalDbHealthContributor> logger = null)
@@ -84,7 +94,7 @@ public class RelationalDbHealthContributor : IHealthContributor
     {
         _logger?.LogTrace("Checking {DbConnection} health", Id);
         var result = new HealthCheckResult();
-        result.Details.Add("database", Id);
+        result.Details.Add("host", HostName);
 
         try
         {

@@ -7,16 +7,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Extensions;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
-using Steeltoe.Management.Endpoint.Metrics.Prometheus;
-using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
-using Steeltoe.Management.OpenTelemetry.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
@@ -36,78 +32,12 @@ public static class EndpointServiceCollectionExtensions
 
         var observerOptions = new MetricsObserverOptions(configuration);
         services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
-
-        services.TryAddSingleton<IViewRegistry, ViewRegistry>();
-        AddMetricsObservers(services);
+        services.AddMetricsObservers();
 
         services.AddActuatorEndpointMapping<MetricsEndpoint>();
     }
 
-    public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration configuration = null)
-    {
-        ArgumentGuard.NotNull(services);
-
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-
-        services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
-
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(configuration)));
-
-        var metricsEndpointOptions = new MetricsEndpointOptions(configuration);
-        services.TryAddSingleton<IMetricsEndpointOptions>(metricsEndpointOptions);
-
-        var observerOptions = new MetricsObserverOptions(configuration);
-        services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
-        services.TryAddSingleton<IViewRegistry, ViewRegistry>();
-        services.TryAddSingleton<PrometheusEndpointOptions>();
-
-        services.AddPrometheusActuatorServices(configuration);
-
-        AddMetricsObservers(services);
-
-        services.AddActuatorEndpointMapping<PrometheusScraperEndpoint>();
-    }
-
-    /// <summary>
-    /// Adds the services used by the Wavefront exporter.
-    /// </summary>
-    /// <param name="services">
-    /// Reference to the service collection.
-    /// </param>
-    /// <returns>
-    /// A reference to the service collection.
-    /// </returns>
-    public static IServiceCollection AddWavefrontMetrics(this IServiceCollection services)
-    {
-        ArgumentGuard.NotNull(services);
-
-        services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
-
-        services.TryAddSingleton<IMetricsObserverOptions>(provider =>
-        {
-            var configuration = provider.GetService<IConfiguration>();
-            return new MetricsObserverOptions(configuration);
-        });
-
-        services.TryAddSingleton<IViewRegistry, ViewRegistry>();
-
-        AddMetricsObservers(services);
-
-        services.TryAddSingleton(provider =>
-        {
-            var logger = provider.GetService<ILogger<WavefrontMetricsExporter>>();
-            var configuration = provider.GetService<IConfiguration>();
-            return new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);
-        });
-
-        services.AddOpenTelemetryMetricsForSteeltoe();
-
-        return services;
-    }
-
-    internal static void AddMetricsObservers(IServiceCollection services)
+    public static void AddMetricsObservers(this IServiceCollection services)
     {
         var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
         var observerOptions = new MetricsObserverOptions(configuration);

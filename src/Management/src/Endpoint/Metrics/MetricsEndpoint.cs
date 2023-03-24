@@ -3,10 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
-using Steeltoe.Management.OpenTelemetry.Exporters;
-using Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
-using Steeltoe.Management.OpenTelemetry.Metrics;
+using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
@@ -17,14 +15,10 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
 
     public new IMetricsEndpointOptions Options => options as IMetricsEndpointOptions;
 
-    public MetricsEndpoint(IMetricsEndpointOptions options, IEnumerable<MetricsExporter> exporters, ILogger<MetricsEndpoint> logger = null)
+    public MetricsEndpoint(IMetricsEndpointOptions options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
         : base(options)
     {
-        ArgumentGuard.NotNull(exporters);
-
-        _exporter = exporters.OfType<SteeltoeExporter>().SingleOrDefault() ??
-            throw new ArgumentException($"Exporters must contain a single {nameof(SteeltoeExporter)}.", nameof(exporters));
-
+        _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter), $"Exporters must contain a single {nameof(SteeltoeExporter)}.");
         _logger = logger;
     }
 
@@ -41,6 +35,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
 
         if (metricNames.Contains(request.MetricName))
         {
+            _logger?.LogTrace("Fetching metrics for " + request.MetricName);
             List<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
 
             return GetMetric(request, sampleList, availTags[request.MetricName]);
@@ -70,41 +65,57 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
             return new MetricSample(current.Statistic, current.Value > next.Value ? current.Value : next.Value, current.Tags);
         }
 
-        IEnumerable<MetricSample> valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Value);
-
-        if (valueSamples.Any())
+        try
         {
-            MetricSample sample = valueSamples.Aggregate(SumAggregator);
-            sampleList.Add(new MetricSample(MetricStatistic.Value, sample.Value / valueSamples.Count(), sample.Tags));
+            IEnumerable<MetricSample> rateSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Rate).ToList();
+
+            if (rateSamples.Any())
+            {
+                MetricSample sample = rateSamples.Aggregate(SumAggregator);
+                sampleList.Add(new MetricSample(MetricStatistic.Rate, sample.Value / rateSamples.Count(), sample.Tags));
+            }
+
+            IEnumerable<MetricSample> valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Value).ToList();
+
+            if (valueSamples.Any())
+            {
+                MetricSample sample = valueSamples.Aggregate(SumAggregator);
+                sampleList.Add(new MetricSample(MetricStatistic.Value, sample.Value / valueSamples.Count(), sample.Tags));
+            }
+
+            IEnumerable<MetricSample> totalSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Total).ToList();
+
+            if (totalSamples.Any())
+            {
+                sampleList.Add(totalSamples.Aggregate(SumAggregator));
+            }
+
+            IEnumerable<MetricSample> totalTimeSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TotalTime).ToList();
+
+            if (totalTimeSamples.Any())
+            {
+                sampleList.Add(totalTimeSamples.Aggregate(SumAggregator));
+            }
+
+            IEnumerable<MetricSample> countSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Count).ToList();
+
+            if (countSamples.Any())
+            {
+                sampleList.Add(countSamples.Aggregate(SumAggregator));
+            }
+
+            IEnumerable<MetricSample> maxSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Max).ToList();
+
+            if (maxSamples.Any())
+            {
+                MetricSample sample = maxSamples.Aggregate(MaxAggregator);
+                sampleList.Add(new MetricSample(MetricStatistic.Max, sample.Value, sample.Tags));
+            }
         }
-
-        IEnumerable<MetricSample> totalSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Total);
-
-        if (totalSamples.Any())
+        catch (Exception ex)
         {
-            sampleList.Add(totalSamples.Aggregate(SumAggregator));
-        }
-
-        IEnumerable<MetricSample> totalTimeSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TotalTime);
-
-        if (totalTimeSamples.Any())
-        {
-            sampleList.Add(totalTimeSamples.Aggregate(SumAggregator));
-        }
-
-        IEnumerable<MetricSample> countSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Count);
-
-        if (countSamples.Any())
-        {
-            sampleList.Add(countSamples.Aggregate(SumAggregator));
-        }
-
-        IEnumerable<MetricSample> maxSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Max);
-
-        if (maxSamples.Any())
-        {
-            MetricSample sample = maxSamples.Aggregate(MaxAggregator);
-            sampleList.Add(new MetricSample(MetricStatistic.Max, sample.Value, sample.Tags));
+            // Nothing we can do , log and move on 
+            _logger?.LogError(ex, "Error transforming metrics.");
         }
 
         return sampleList;
@@ -117,15 +128,6 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
 
     protected internal (MetricsCollection<List<MetricSample>> Samples, MetricsCollection<List<MetricTag>> Tags) GetMetrics()
     {
-        ICollectionResponse response = _exporter.CollectionManager.EnterCollectAsync().Result;
-
-        if (response is SteeltoeCollectionResponse collectionResponse)
-        {
-            return (collectionResponse.MetricSamples, collectionResponse.AvailableTags);
-        }
-
-        _logger?.LogWarning("Please ensure OpenTelemetry is configured via Steeltoe extension methods.");
-
-        return (new MetricsCollection<List<MetricSample>>(), new MetricsCollection<List<MetricTag>>());
+        return _exporter.Export();
     }
 }

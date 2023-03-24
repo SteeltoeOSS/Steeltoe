@@ -2,12 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 
-public class ServiceBindingConfigurationProviderTest
+public sealed class ServiceBindingConfigurationProviderTest
 {
     [Fact]
     public void EnvironmentVariableNotSet()
@@ -26,7 +27,8 @@ public class ServiceBindingConfigurationProviderTest
 
         // Not optional, should throw
         provider = new ServiceBindingConfigurationProvider(source);
-        Assert.Throws<DirectoryNotFoundException>(() => provider.Load());
+        Action action = () => provider.Load();
+        action.Should().ThrowExactly<DirectoryNotFoundException>();
     }
 
     [Fact]
@@ -49,7 +51,8 @@ public class ServiceBindingConfigurationProviderTest
             };
 
             provider = new ServiceBindingConfigurationProvider(source);
-            Assert.Throws<DirectoryNotFoundException>(() => provider.Load());
+            Action action = () => provider.Load();
+            action.Should().ThrowExactly<DirectoryNotFoundException>();
         }
         finally
         {
@@ -69,26 +72,26 @@ public class ServiceBindingConfigurationProviderTest
             var provider = new ServiceBindingConfigurationProvider(source);
             provider.Load();
 
-            Assert.True(provider.TryGet("k8s:bindings:test-name-1:type", out string value));
-            Assert.Equal("test-type-1", value);
-            Assert.True(provider.TryGet("k8s:bindings:test-name-1:provider", out value));
-            Assert.Equal("test-provider-1", value);
-            Assert.True(provider.TryGet("k8s:bindings:test-name-1:test-secret-key", out value));
-            Assert.Equal("test-secret-value", value);
+            provider.TryGet("k8s:bindings:test-name-1:type", out string value).Should().BeTrue();
+            value.Should().Be("test-type-1");
+            provider.TryGet("k8s:bindings:test-name-1:provider", out value).Should().BeTrue();
+            value.Should().Be("test-provider-1");
+            provider.TryGet("k8s:bindings:test-name-1:test-secret-key", out value).Should().BeTrue();
+            value.Should().Be("test-secret-value");
 
-            Assert.True(provider.TryGet("k8s:bindings:test-name-2:type", out value));
-            Assert.Equal("test-type-2", value);
-            Assert.True(provider.TryGet("k8s:bindings:test-name-2:provider", out value));
-            Assert.Equal("test-provider-2", value);
-            Assert.True(provider.TryGet("k8s:bindings:test-name-2:test-secret-key", out value));
-            Assert.Equal("test-secret-value", value);
+            provider.TryGet("k8s:bindings:test-name-2:type", out value).Should().BeTrue();
+            value.Should().Be("test-type-2");
+            provider.TryGet("k8s:bindings:test-name-2:provider", out value).Should().BeTrue();
+            value.Should().Be("test-provider-2");
+            provider.TryGet("k8s:bindings:test-name-2:test-secret-key", out value).Should().BeTrue();
+            value.Should().Be("test-secret-value");
 
-            Assert.True(provider.TryGet("k8s:bindings:test-k8s:type", out value));
-            Assert.Equal("test-type-1", value);
-            Assert.True(provider.TryGet("k8s:bindings:test-k8s:provider", out value));
-            Assert.Equal("test-provider-1", value);
-            Assert.True(provider.TryGet("k8s:bindings:test-k8s:test-secret-key", out value));
-            Assert.Equal("test-secret-value", value);
+            provider.TryGet("k8s:bindings:test-k8s:type", out value).Should().BeTrue();
+            value.Should().Be("test-type-1");
+            provider.TryGet("k8s:bindings:test-k8s:provider", out value).Should().BeTrue();
+            value.Should().Be("test-provider-1");
+            provider.TryGet("k8s:bindings:test-k8s:test-secret-key", out value).Should().BeTrue();
+            value.Should().Be("test-secret-value");
         }
         finally
         {
@@ -97,17 +100,17 @@ public class ServiceBindingConfigurationProviderTest
     }
 
     [Fact]
-    public void NoBindings()
+    public void NoBindings_DoesNotThrow()
     {
         var builder = new ConfigurationBuilder();
         builder.Add(new ServiceBindingConfigurationSource(GetEmptyK8SResourcesDirectory()));
-        IConfigurationRoot configuration = builder.Build();
-        Assert.NotNull(configuration);
-        Assert.Throws<InvalidOperationException>(() => configuration.GetRequiredSection("k8s"));
+
+        Action action = () => builder.Build();
+        action.Should().NotThrow();
     }
 
     [Fact]
-    public void PostProcessors_OffByDefault()
+    public void PostProcessors_OnByDefault()
     {
         string rootDir = GetK8SResourcesDirectory(null);
 
@@ -118,20 +121,21 @@ public class ServiceBindingConfigurationProviderTest
         var provider = new ServiceBindingConfigurationProvider(source);
         provider.Load();
 
-        Assert.False(postProcessor.PostProcessorCalled);
+        postProcessor.PostProcessorCalled.Should().BeTrue();
     }
 
     [Fact]
-    public void PostProcessors_CanBeEnabled()
+    public void PostProcessors_CanBeDisabled()
     {
         string rootDir = GetK8SResourcesDirectory(null);
 
-        var source = new ServiceBindingConfigurationSource(rootDir);
-
-        source.ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        var source = new ServiceBindingConfigurationSource(rootDir)
         {
-            { "steeltoe:kubernetes:bindings:enable", "true" }
-        }).Build();
+            ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { "steeltoe:kubernetes:service-bindings:enable", "false" }
+            }).Build()
+        };
 
         var postProcessor = new TestPostProcessor();
         source.RegisterPostProcessor(postProcessor);
@@ -139,7 +143,7 @@ public class ServiceBindingConfigurationProviderTest
         var provider = new ServiceBindingConfigurationProvider(source);
         provider.Load();
 
-        Assert.True(postProcessor.PostProcessorCalled);
+        postProcessor.PostProcessorCalled.Should().BeFalse();
     }
 
     private static string GetK8SResourcesDirectory(string name)
@@ -152,11 +156,11 @@ public class ServiceBindingConfigurationProviderTest
         return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s-empty");
     }
 
-    private class TestPostProcessor : IConfigurationPostProcessor
+    private sealed class TestPostProcessor : IConfigurationPostProcessor
     {
         public bool PostProcessorCalled { get; set; }
 
-        public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
+        public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
         {
             PostProcessorCalled = true;
         }

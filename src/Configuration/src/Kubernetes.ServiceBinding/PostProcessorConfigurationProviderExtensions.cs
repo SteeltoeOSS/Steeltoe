@@ -8,17 +8,17 @@ namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
 internal static class PostProcessorConfigurationProviderExtensions
 {
-    public static bool IsBindingTypeEnabled(this PostProcessorConfigurationProvider provider, string bindingTypeKey)
+    public static bool IsKubernetesBindingsEnabled(this PostProcessorConfigurationProvider provider)
     {
-        return GetValue(provider, $"steeltoe:kubernetes:bindings:{bindingTypeKey}:enable", true);
+        return GetBooleanValue(provider, "steeltoe:kubernetes:service-bindings:enable", true);
     }
 
-    public static bool IsSteeltoeBindingsEnabled(this PostProcessorConfigurationProvider provider)
+    public static bool IsBindingTypeEnabled(this PostProcessorConfigurationProvider provider, string bindingType)
     {
-        return GetValue(provider, "steeltoe:kubernetes:bindings:enable", false);
+        return GetBooleanValue(provider, $"steeltoe:kubernetes:service-bindings:{bindingType}:enable", true);
     }
 
-    private static bool GetValue(PostProcessorConfigurationProvider provider, string key, bool defaultValue)
+    private static bool GetBooleanValue(PostProcessorConfigurationProvider provider, string key, bool defaultValue)
     {
         return provider.Source.ParentConfiguration?.GetValue(key, defaultValue) ?? defaultValue;
     }

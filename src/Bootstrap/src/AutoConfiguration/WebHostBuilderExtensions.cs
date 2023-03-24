@@ -25,9 +25,9 @@ using Steeltoe.Connector.SqlServer;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Kubernetes;
 using Steeltoe.Management.Tracing;
+using Steeltoe.Management.Wavefront;
 using Steeltoe.Security.Authentication.CloudFoundry;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration;
@@ -107,7 +107,7 @@ public static class WebHostBuilderExtensions
             hostBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.SteeltoeManagementEndpoint);
         }
 
-        hostBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeManagementEndpoint);
+        hostBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeWavefront);
 
         hostBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblies.SteeltoeManagementTracing);
 
