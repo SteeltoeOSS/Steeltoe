@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common;
+using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Connector.PostgreSql;
 
@@ -17,9 +18,15 @@ public static class PostgreSqlWebApplicationBuilderExtensions
         Type connectionType = PostgreSqlTypeLocator.NpgsqlConnection;
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<PostgreSqlOptions>(builder, "postgresql", connectionType, "PostgreSQL", "host");
+        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<PostgreSqlOptions>(builder, "postgresql", CreateHealthContributor);
         BaseWebApplicationBuilderExtensions.RegisterConnectionFactory<PostgreSqlOptions>(builder.Services, connectionType);
 
         return builder;
+    }
+
+    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
+    {
+        return BaseWebApplicationBuilderExtensions.CreateRelationalHealthContributor<PostgreSqlOptions>(serviceProvider, bindingName,
+            PostgreSqlTypeLocator.NpgsqlConnection, "PostgreSQL", "host");
     }
 }

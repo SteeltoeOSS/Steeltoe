@@ -479,13 +479,6 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         var secrets = new[]
         {
-            Tuple.Create("authentication-database", "test-authentication-database"),
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("grid-fs-database", "test-grid-fs-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("uri", "test-uri"),
             Tuple.Create("username", "test-username")
         };
 
@@ -495,7 +488,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:authenticationDatabase");
+        configurationData.Should().NotContainKey($"{keyPrefix}:username");
     }
 
     [Fact]
@@ -505,14 +498,14 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         var secrets = new[]
         {
+            Tuple.Create("uri", "test-uri"),
+            Tuple.Create("username", "test-username"),
+            Tuple.Create("password", "test-password"),
+            Tuple.Create("host", "test-host"),
+            Tuple.Create("port", "test-port"),
             Tuple.Create("authentication-database", "test-authentication-database"),
             Tuple.Create("database", "test-database"),
-            Tuple.Create("grid-fs-database", "test-grid-fs-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("uri", "test-uri"),
-            Tuple.Create("username", "test-username")
+            Tuple.Create("grid-fs-database", "test-grid-fs-database")
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MongoDbPostProcessor.BindingType, secrets);
@@ -522,14 +515,14 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbPostProcessor.BindingType);
 
+        configurationData[$"{keyPrefix}:url"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:server"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
         configurationData[$"{keyPrefix}:authenticationDatabase"].Should().Be("test-authentication-database");
         configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
         configurationData[$"{keyPrefix}:gridfsDatabase"].Should().Be("test-grid-fs-database");
-        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
-        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:uri"].Should().Be("test-uri");
-        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
     }
 
     [Fact]

@@ -295,19 +295,20 @@ internal sealed class MongoDbPostProcessor : IConfigurationPostProcessor
         configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingType).ForEach(
             bindingNameKey =>
             {
-                // Spring -> spring.data.mongodb....
-                // Steeltoe -> steeltoe:service-bindings:mongodb....
                 var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingType,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
+                // See MongoDB connection string parameters at: https://www.mongodb.com/docs/manual/reference/connection-string/
+                mapper.MapFromTo("uri", "url");
+                mapper.MapFromTo("username", "username");
+                mapper.MapFromTo("password", "password");
+                mapper.MapFromTo("host", "server");
+                mapper.MapFromTo("port", "port");
                 mapper.MapFromTo("authentication-database", "authenticationDatabase");
+
+                // These are currently unused by Steeltoe connectors. To be revisited when testing on TAP.
                 mapper.MapFromTo("database", "database");
                 mapper.MapFromTo("grid-fs-database", "gridfsDatabase");
-                mapper.MapFromTo("host", "host");
-                mapper.MapFromTo("password", "password");
-                mapper.MapFromTo("port", "port");
-                mapper.MapFromTo("uri", "uri");
-                mapper.MapFromTo("username", "username");
             });
     }
 }

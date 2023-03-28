@@ -17,9 +17,9 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
     protected abstract string BindingType { get; }
 
-    protected virtual DbConnectionStringBuilder CreateConnectionStringBuilder()
+    protected virtual IConnectionStringBuilder CreateConnectionStringBuilder()
     {
-        return new DbConnectionStringBuilder();
+        return new DbConnectionStringBuilderWrapper(new DbConnectionStringBuilder());
     }
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
@@ -117,7 +117,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
     private void SetConnectionString(IDictionary<string, string> configurationData, string bindingName, BindingInfo bindingInfo)
     {
-        DbConnectionStringBuilder connectionStringBuilder = CreateConnectionStringBuilder();
+        IConnectionStringBuilder connectionStringBuilder = CreateConnectionStringBuilder();
 
         if (bindingInfo.ClientBindingSection != null)
         {

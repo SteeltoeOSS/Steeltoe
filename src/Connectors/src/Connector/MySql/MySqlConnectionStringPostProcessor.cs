@@ -10,8 +10,9 @@ internal sealed class MySqlConnectionStringPostProcessor : ConnectionStringPostP
 {
     protected override string BindingType => "mysql";
 
-    protected override DbConnectionStringBuilder CreateConnectionStringBuilder()
+    protected override IConnectionStringBuilder CreateConnectionStringBuilder()
     {
-        return (DbConnectionStringBuilder)Activator.CreateInstance(MySqlTypeLocator.MySqlConnectionStringBuilderType);
+        var dbConnectionStringBuilder = (DbConnectionStringBuilder)Activator.CreateInstance(MySqlTypeLocator.MySqlConnectionStringBuilderType);
+        return new DbConnectionStringBuilderWrapper(dbConnectionStringBuilder);
     }
 }

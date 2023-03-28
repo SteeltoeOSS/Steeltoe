@@ -20,13 +20,25 @@ public class MongoDbHealthContributor : IHealthContributor
 
     private int Timeout { get; }
 
-    public string Id => "MongoDb";
+    public string Id { get; }
+    public string HostName { get; }
 
     public MongoDbHealthContributor(MongoDbConnectorFactory factory, ILogger<MongoDbHealthContributor> logger = null, int timeout = 5000)
     {
         _logger = logger;
         _mongoClient = factory.Create(null);
         Timeout = timeout;
+        Id = "MongoDb";
+        HostName = Id;
+    }
+
+    internal MongoDbHealthContributor(object mongoClient, string serviceName, string hostName, ILogger<MongoDbHealthContributor> logger)
+    {
+        _mongoClient = mongoClient;
+        Id = serviceName;
+        HostName = hostName;
+        _logger = logger;
+        Timeout = 5000;
     }
 
     public static IHealthContributor GetMongoDbHealthContributor(IConfiguration configuration, ILogger<MongoDbHealthContributor> logger = null)
@@ -52,6 +64,11 @@ public class MongoDbHealthContributor : IHealthContributor
     {
         _logger?.LogTrace("Checking MongoDb connection health");
         var result = new HealthCheckResult();
+
+        if (HostName != null)
+        {
+            result.Details.Add("host", HostName);
+        }
 
         try
         {
