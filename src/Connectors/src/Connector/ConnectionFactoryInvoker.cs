@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,18 +15,10 @@ internal static class ConnectionFactoryInvoker
         Type connectionFactoryType = MakeConnectionFactoryType<TOptions>(connectionType);
         object connectionFactory = ResolveConnectionFactory(serviceProvider, connectionFactoryType);
 
-        return InvokeGetConnectionString<TOptions>(connectionFactory, connectionFactoryType, serviceBindingName);
-    }
+        Type connectionProviderType = MakeConnectionProviderType<TOptions>(connectionType);
+        object connectionProvider = InvokeConnectionFactoryGetNamed<TOptions>(connectionFactory, connectionFactoryType, serviceBindingName);
 
-    private static string InvokeGetConnectionString<TOptions>(object connectionFactory, Type connectionFactoryType, string serviceBindingName)
-        where TOptions : ConnectionStringOptions
-    {
-        MethodInfo getConnectionStringMethod = connectionFactoryType.GetMethod(nameof(ConnectionFactory<TOptions, object>.GetConnectionString))!;
-
-        return (string)getConnectionStringMethod.Invoke(connectionFactory, new object[]
-        {
-            serviceBindingName
-        });
+        return InvokeGetConnectionString<TOptions>(connectionProvider, connectionProviderType);
     }
 
     public static object CreateConnection<TOptions>(IServiceProvider serviceProvider, string serviceBindingName, Type connectionType)
@@ -36,24 +27,51 @@ internal static class ConnectionFactoryInvoker
         Type connectionFactoryType = MakeConnectionFactoryType<TOptions>(connectionType);
         object connectionFactory = ResolveConnectionFactory(serviceProvider, connectionFactoryType);
 
-        return InvokeGetConnection<TOptions>(connectionFactory, connectionFactoryType, serviceBindingName);
-    }
+        Type connectionProviderType = MakeConnectionProviderType<TOptions>(connectionType);
+        object connectionProvider = InvokeConnectionFactoryGetNamed<TOptions>(connectionFactory, connectionFactoryType, serviceBindingName);
 
-    private static object InvokeGetConnection<TOptions>(object connectionFactory, Type connectionFactoryType, string serviceBindingName)
-        where TOptions : ConnectionStringOptions
-    {
-        MethodInfo getConnectionMethod = connectionFactoryType.GetMethod(nameof(ConnectionFactory<TOptions, object>.GetConnection))!;
-
-        return getConnectionMethod.Invoke(connectionFactory, new object[]
-        {
-            serviceBindingName
-        });
+        return InvokeCreateConnection<TOptions>(connectionProvider, connectionProviderType);
     }
 
     public static Type MakeConnectionFactoryType<TOptions>(Type connectionType)
         where TOptions : ConnectionStringOptions
     {
         return typeof(ConnectionFactory<,>).MakeGenericType(typeof(TOptions), connectionType);
+    }
+
+    private static Type MakeConnectionProviderType<TOptions>(Type connectionType)
+        where TOptions : ConnectionStringOptions
+    {
+        return typeof(ConnectionProvider<,>).MakeGenericType(typeof(TOptions), connectionType);
+    }
+
+    private static object InvokeConnectionFactoryGetNamed<TOptions>(object connectionFactory, Type connectionFactoryType, string serviceBindingName)
+        where TOptions : ConnectionStringOptions
+    {
+        MethodInfo getNamedMethod = connectionFactoryType.GetMethod(nameof(ConnectionFactory<TOptions, object>.GetNamed))!;
+
+        return getNamedMethod.Invoke(connectionFactory, new object[]
+        {
+            serviceBindingName
+        });
+    }
+
+    private static string InvokeGetConnectionString<TOptions>(object connectionProvider, Type connectionProviderType)
+        where TOptions : ConnectionStringOptions
+    {
+        PropertyInfo optionsProperty = connectionProviderType.GetProperty(nameof(ConnectionProvider<TOptions, object>.Options))!;
+        object options = optionsProperty.GetMethod!.Invoke(connectionProvider, null);
+
+        PropertyInfo connectionStringProperty = typeof(TOptions).GetProperty(nameof(ConnectionStringOptions.ConnectionString))!;
+        return (string)connectionStringProperty.GetMethod!.Invoke(options, null);
+    }
+
+    private static object InvokeCreateConnection<TOptions>(object connectionProvider, Type connectionProviderType)
+        where TOptions : ConnectionStringOptions
+    {
+        MethodInfo createConnectionMethod = connectionProviderType.GetMethod(nameof(ConnectionProvider<TOptions, object>.CreateConnection))!;
+
+        return createConnectionMethod.Invoke(connectionProvider, null);
     }
 
     private static object ResolveConnectionFactory(IServiceProvider serviceProvider, Type connectionFactoryType)

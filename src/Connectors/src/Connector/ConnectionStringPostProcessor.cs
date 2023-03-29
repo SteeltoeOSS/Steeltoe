@@ -121,7 +121,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
         if (bindingInfo.ClientBindingSection != null)
         {
-            string existingConnectionString = bindingInfo.ClientBindingSection.Value;
+            string existingConnectionString = bindingInfo.ClientBindingSection.GetSection("ConnectionString").Value;
 
             if (!string.IsNullOrEmpty(existingConnectionString))
             {

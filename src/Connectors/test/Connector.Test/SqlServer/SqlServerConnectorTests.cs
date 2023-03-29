@@ -139,8 +139,8 @@ public sealed class SqlServerConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:SqlServer:mySqlServerServiceOne"] = "Data Source=localhost;Initial Catalog=db1;UID=user1;PWD=pass1",
-            ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo"] = "Server=localhost;Database=db2;UID=user2;PWD=pass2"
+            ["Steeltoe:Client:SqlServer:mySqlServerServiceOne:ConnectionString"] = "Data Source=localhost;Initial Catalog=db1;UID=user1;PWD=pass1",
+            ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "Server=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
         builder.AddSqlServer();
@@ -181,7 +181,7 @@ public sealed class SqlServerConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:SqlServer:mySqlServerServiceOne"] = "Data Source=localhost;Max Pool Size=50"
+            ["Steeltoe:Client:SqlServer:mySqlServerServiceOne:ConnectionString"] = "Data Source=localhost;Max Pool Size=50"
         });
 
         builder.AddSqlServer();
@@ -220,8 +220,8 @@ public sealed class SqlServerConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:SqlServer:mySqlServerServiceOne"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
-            ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
+            ["Steeltoe:Client:SqlServer:mySqlServerServiceOne:ConnectionString"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
+            ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
         builder.AddSqlServer();
@@ -230,10 +230,10 @@ public sealed class SqlServerConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<SqlServerOptions, SqlConnection>>();
 
-        await using SqlConnection connectionOne = connectionFactory.GetConnection("mySqlServerServiceOne");
+        await using SqlConnection connectionOne = connectionFactory.GetNamed("mySqlServerServiceOne").CreateConnection();
         connectionOne.ConnectionString.Should().Be("Data Source=localhost;Initial Catalog=db1;User ID=user1;Password=pass1");
 
-        await using SqlConnection connectionTwo = connectionFactory.GetConnection("mySqlServerServiceTwo");
+        await using SqlConnection connectionTwo = connectionFactory.GetNamed("mySqlServerServiceTwo").CreateConnection();
         connectionTwo.ConnectionString.Should().Be("Data Source=localhost;Initial Catalog=db2;User ID=user2;Password=pass2");
     }
 
@@ -244,8 +244,8 @@ public sealed class SqlServerConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:SqlServer:mySqlServerServiceOne"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
-            ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
+            ["Steeltoe:Client:SqlServer:mySqlServerServiceOne:ConnectionString"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
+            ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
         builder.AddSqlServer();
@@ -271,10 +271,10 @@ public sealed class SqlServerConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<SqlServerOptions, SqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNull();
 
-        string namedConnectionString = connectionFactory.GetConnectionString("mySqlServerService");
+        string namedConnectionString = connectionFactory.GetNamed("mySqlServerService").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -287,7 +287,7 @@ public sealed class SqlServerConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:SqlServer:Default"] = "SERVER=localhost;Database=myDb;UID=myUser;PWD=myPass"
+            ["Steeltoe:Client:SqlServer:Default:ConnectionString"] = "SERVER=localhost;Database=myDb;UID=myUser;PWD=myPass"
         });
 
         builder.AddSqlServer();
@@ -296,7 +296,7 @@ public sealed class SqlServerConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<SqlServerOptions, SqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);

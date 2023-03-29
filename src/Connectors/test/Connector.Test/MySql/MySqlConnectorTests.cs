@@ -106,8 +106,8 @@ public sealed class MySqlConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:MySql:myMySqlServiceOne"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
-            ["Steeltoe:Client:MySql:myMySqlServiceTwo"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
+            ["Steeltoe:Client:MySql:myMySqlServiceOne:ConnectionString"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
+            ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
         builder.AddMySql();
@@ -148,7 +148,7 @@ public sealed class MySqlConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:MySql:myMySqlServiceOne"] = "Connection Timeout=15;host=localhost"
+            ["Steeltoe:Client:MySql:myMySqlServiceOne:ConnectionString"] = "Connection Timeout=15;host=localhost"
         });
 
         builder.AddMySql();
@@ -189,8 +189,8 @@ public sealed class MySqlConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:MySql:myMySqlServiceOne"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
-            ["Steeltoe:Client:MySql:myMySqlServiceTwo"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
+            ["Steeltoe:Client:MySql:myMySqlServiceOne:ConnectionString"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
+            ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
         builder.AddMySql();
@@ -199,10 +199,10 @@ public sealed class MySqlConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MySqlOptions, MySqlConnection>>();
 
-        await using MySqlConnection connectionOne = connectionFactory.GetConnection("myMySqlServiceOne");
+        await using MySqlConnection connectionOne = connectionFactory.GetNamed("myMySqlServiceOne").CreateConnection();
         connectionOne.ConnectionString.Should().Be("server=localhost;database=db1;user id=user1;password=pass1");
 
-        await using MySqlConnection connectionTwo = connectionFactory.GetConnection("myMySqlServiceTwo");
+        await using MySqlConnection connectionTwo = connectionFactory.GetNamed("myMySqlServiceTwo").CreateConnection();
         connectionTwo.ConnectionString.Should().Be("server=localhost;database=db2;user id=user2;password=pass2");
     }
 
@@ -213,8 +213,8 @@ public sealed class MySqlConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:MySql:myMySqlServiceOne"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
-            ["Steeltoe:Client:MySql:myMySqlServiceTwo"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
+            ["Steeltoe:Client:MySql:myMySqlServiceOne:ConnectionString"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
+            ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
         builder.AddMySql();
@@ -240,10 +240,10 @@ public sealed class MySqlConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MySqlOptions, MySqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNull();
 
-        string namedConnectionString = connectionFactory.GetConnectionString("myMySqlServiceOne");
+        string namedConnectionString = connectionFactory.GetNamed("myMySqlServiceOne").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -256,7 +256,7 @@ public sealed class MySqlConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:MySql:Default"] = "SERVER=localhost;Database=myDb;UID=myUser;PWD=myPass"
+            ["Steeltoe:Client:MySql:Default:ConnectionString"] = "SERVER=localhost;Database=myDb;UID=myUser;PWD=myPass"
         });
 
         builder.AddMySql();
@@ -265,7 +265,7 @@ public sealed class MySqlConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MySqlOptions, MySqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);

@@ -103,8 +103,8 @@ public sealed class MongoDbConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne"] = "mongodb://localhost:27017",
-            ["Steeltoe:Client:MongoDb:myMongoDbServiceTwo"] = "mongodb://user:pass@localhost:27018"
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017",
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceTwo:ConnectionString"] = "mongodb://user:pass@localhost:27018"
         });
 
         builder.AddMongoDb();
@@ -139,7 +139,7 @@ public sealed class MongoDbConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne"] = "mongodb://localhost:27017"
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017"
         });
 
         builder.AddMongoDb();
@@ -167,8 +167,8 @@ public sealed class MongoDbConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne"] = "mongodb://localhost:27017",
-            ["Steeltoe:Client:MongoDb:myMongoDbServiceTwo"] = "mongodb://user:pass@localhost:27018"
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017",
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceTwo:ConnectionString"] = "mongodb://user:pass@localhost:27018"
         });
 
         builder.AddMongoDb();
@@ -177,12 +177,12 @@ public sealed class MongoDbConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MongoDbOptions, MongoClient>>();
 
-        IMongoClient connectionOne = connectionFactory.GetConnection("myMongoDbServiceOne");
+        IMongoClient connectionOne = connectionFactory.GetNamed("myMongoDbServiceOne").CreateConnection();
         connectionOne.Settings.Credential.Should().BeNull();
         connectionOne.Settings.Server.Host.Should().Be("localhost");
         connectionOne.Settings.Server.Port.Should().Be(27017);
 
-        IMongoClient connectionTwo = connectionFactory.GetConnection("myMongoDbServiceTwo");
+        IMongoClient connectionTwo = connectionFactory.GetNamed("myMongoDbServiceTwo").CreateConnection();
         connectionTwo.Settings.Credential.Username.Should().Be("user");
         connectionTwo.Settings.Credential.Evidence.Should().Be(new PasswordEvidence("pass"));
         connectionTwo.Settings.Server.Host.Should().Be("localhost");
@@ -196,8 +196,8 @@ public sealed class MongoDbConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne"] = "mongodb://localhost:27017",
-            ["Steeltoe:Client:MongoDb:myMongoDbServiceTwo"] = "mongodb://user:pass@localhost:27018"
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017",
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceTwo:ConnectionString"] = "mongodb://user:pass@localhost:27018"
         });
 
         builder.AddMongoDb();
@@ -223,10 +223,10 @@ public sealed class MongoDbConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MongoDbOptions, MongoClient>>();
 
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNull();
 
-        string namedConnectionString = connectionFactory.GetConnectionString("myMongoDbService");
+        string namedConnectionString = connectionFactory.GetNamed("myMongoDbService").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -239,7 +239,7 @@ public sealed class MongoDbConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:MongoDb:Default"] = "mongodb://localhost:27017"
+            ["Steeltoe:Client:MongoDb:Default:ConnectionString"] = "mongodb://localhost:27017"
         });
 
         builder.AddMongoDb();
@@ -248,7 +248,7 @@ public sealed class MongoDbConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MongoDbOptions, MongoClient>>();
 
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
