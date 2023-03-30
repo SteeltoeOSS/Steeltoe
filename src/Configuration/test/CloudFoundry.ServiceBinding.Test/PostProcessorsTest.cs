@@ -178,15 +178,16 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         var secrets = new[]
         {
-            Tuple.Create("credentials:uri", "test-uri")
+            Tuple.Create("credentials:uri", "mongodb://localhost:27017/auth-db?appname=sample")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(MongoDbPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+        Dictionary<string, string> configurationData = GetConfigurationData(MongoDbPostProcessor.BindingType, "csb-azure-mongodb", TestBindingName, secrets);
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:url"].Should().Be("test-uri");
+        configurationData[$"{keyPrefix}:url"].Should().Be("mongodb://localhost:27017/auth-db?appname=sample");
+        configurationData[$"{keyPrefix}:database"].Should().Be("auth-db");
     }
 }

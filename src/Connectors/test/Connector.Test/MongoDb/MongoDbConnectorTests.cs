@@ -103,8 +103,10 @@ public sealed class MongoDbConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017",
-            ["Steeltoe:Client:MongoDb:myMongoDbServiceTwo:ConnectionString"] = "mongodb://user:pass@localhost:27018"
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017/auth-db",
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:Database"] = "db1",
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceTwo:ConnectionString"] = "mongodb://user:pass@localhost:27018/auth-db",
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceTwo:Database"] = "db2"
         });
 
         builder.AddMongoDb();
@@ -124,11 +126,13 @@ public sealed class MongoDbConnectorTests
 
         MongoDbOptions optionsOne = optionsSnapshot.Get("myMongoDbServiceOne");
         optionsOne.ConnectionString.Should().NotBeNull();
-        optionsOne.ConnectionString.Should().Be("mongodb://localhost/?appname=mongodb-test");
+        optionsOne.ConnectionString.Should().Be("mongodb://localhost/auth-db?appname=mongodb-test");
+        optionsOne.Database.Should().Be("db1");
 
         MongoDbOptions optionsTwo = optionsSnapshot.Get("myMongoDbServiceTwo");
         optionsTwo.ConnectionString.Should().NotBeNull();
-        optionsTwo.ConnectionString.Should().Be("mongodb://user:pass@localhost:27018");
+        optionsTwo.ConnectionString.Should().Be("mongodb://user:pass@localhost:27018/auth-db");
+        optionsTwo.Database.Should().Be("db2");
     }
 
     [Fact]
@@ -139,7 +143,8 @@ public sealed class MongoDbConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017"
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017/auth-db",
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:Database"] = "db1"
         });
 
         builder.AddMongoDb();
@@ -153,11 +158,15 @@ public sealed class MongoDbConnectorTests
         optionsOne.ConnectionString.Should().Be(
             "mongodb://csb0230eada-2354-4c73-b3e4-8a1aaa996894:AiNtEyASbdXR5neJmTStMzKGItX2xvKuyEkcy65rviKD0ggZR19E1iVFIJ5ZAIY1xvvAiS5tOXsmACDbKDJIhQ==@csb0230eada-2354-4c73-b3e4-8a1aaa996894.mongo.cosmos.cloud-hostname.com:10255/csb-db0230eada-2354-4c73-b3e4-8a1aaa996894?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@csb0230eada-2354-4c73-b3e4-8a1aaa996894@");
 
+        optionsOne.Database.Should().Be("csb-db0230eada-2354-4c73-b3e4-8a1aaa996894");
+
         MongoDbOptions optionsTwo = optionsMonitor.Get("myMongoDbServiceTwo");
         optionsTwo.Should().NotBeNull();
 
         optionsTwo.ConnectionString.Should().Be(
             "mongodb://csb3aa12f5f-7530-4ff3-b328-a23a42af18df:NhCG266clYbNakBniDs8oLTniqTE06XXafhJWcbkNuma8Ie1XntsO2DqvPudYwqgk4le896YZjxbACDb8GiQYg==@csb3aa12f5f-7530-4ff3-b328-a23a42af18df.mongo.cosmos.cloud-hostname.com:10255/csb-db3aa12f5f-7530-4ff3-b328-a23a42af18df?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@csb3aa12f5f-7530-4ff3-b328-a23a42af18df@");
+
+        optionsTwo.Database.Should().Be("csb-db3aa12f5f-7530-4ff3-b328-a23a42af18df");
     }
 
     [Fact]
@@ -196,8 +205,8 @@ public sealed class MongoDbConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017",
-            ["Steeltoe:Client:MongoDb:myMongoDbServiceTwo:ConnectionString"] = "mongodb://user:pass@localhost:27018"
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017/auth-db",
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceTwo:ConnectionString"] = "mongodb://user:pass@localhost:27018/auth-db"
         });
 
         builder.AddMongoDb();
@@ -223,11 +232,13 @@ public sealed class MongoDbConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MongoDbOptions, MongoClient>>();
 
-        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().NotBeNull();
+        MongoDbOptions defaultOptions = connectionFactory.GetDefault().Options;
+        defaultOptions.ConnectionString.Should().NotBeNull();
+        defaultOptions.Database.Should().NotBeNull();
 
-        string namedConnectionString = connectionFactory.GetNamed("myMongoDbService").Options.ConnectionString;
-        namedConnectionString.Should().Be(defaultConnectionString);
+        MongoDbOptions namedOptions = connectionFactory.GetNamed("myMongoDbService").Options;
+        namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
+        namedOptions.Database.Should().Be(defaultOptions.Database);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
@@ -239,7 +250,8 @@ public sealed class MongoDbConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:MongoDb:Default:ConnectionString"] = "mongodb://localhost:27017"
+            ["Steeltoe:Client:MongoDb:Default:ConnectionString"] = "mongodb://localhost:27017/auth-db",
+            ["Steeltoe:Client:MongoDb:Default:Database"] = "db"
         });
 
         builder.AddMongoDb();
@@ -248,8 +260,9 @@ public sealed class MongoDbConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MongoDbOptions, MongoClient>>();
 
-        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().NotBeNull();
+        MongoDbOptions defaultOptions = connectionFactory.GetDefault().Options;
+        defaultOptions.ConnectionString.Should().NotBeNull();
+        defaultOptions.Database.Should().Be("db");
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }

@@ -305,10 +305,7 @@ internal sealed class MongoDbPostProcessor : IConfigurationPostProcessor
                 mapper.MapFromTo("host", "server");
                 mapper.MapFromTo("port", "port");
                 mapper.MapFromTo("authentication-database", "authenticationDatabase");
-
-                // These are currently unused by Steeltoe connectors. To be revisited when testing on TAP.
                 mapper.MapFromTo("database", "database");
-                mapper.MapFromTo("grid-fs-database", "gridfsDatabase");
             });
     }
 }

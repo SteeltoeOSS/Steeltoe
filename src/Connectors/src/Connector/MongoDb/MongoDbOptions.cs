@@ -6,4 +6,5 @@ namespace Steeltoe.Connector.MongoDb;
 
 public sealed class MongoDbOptions : ConnectionStringOptions
 {
+    public string Database { get; set; }
 }

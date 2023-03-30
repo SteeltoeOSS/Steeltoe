@@ -504,8 +504,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("host", "test-host"),
             Tuple.Create("port", "test-port"),
             Tuple.Create("authentication-database", "test-authentication-database"),
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("grid-fs-database", "test-grid-fs-database")
+            Tuple.Create("database", "test-database")
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MongoDbPostProcessor.BindingType, secrets);
@@ -522,7 +521,6 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
         configurationData[$"{keyPrefix}:authenticationDatabase"].Should().Be("test-authentication-database");
         configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
-        configurationData[$"{keyPrefix}:gridfsDatabase"].Should().Be("test-grid-fs-database");
     }
 
     [Fact]

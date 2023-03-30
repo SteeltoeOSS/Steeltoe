@@ -17,6 +17,11 @@ internal sealed class MongoDbConnectionStringPostProcessor : ConnectionStringPos
         return new MongoDbConnectionStringBuilder();
     }
 
+    protected override bool IsPartOfConnectionString(string secretName)
+    {
+        return !string.Equals(secretName, "database", StringComparison.OrdinalIgnoreCase);
+    }
+
     private sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
     {
         private static readonly HashSet<string> NonQueryStringKeywords = new(new[]
