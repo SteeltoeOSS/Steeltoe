@@ -12,12 +12,9 @@ public abstract class MetricsObserver : DiagnosticObserver
 {
     private Regex _pathMatcher;
 
-    protected IMetricsObserverOptions Options { get; }
-
-    protected MetricsObserver(string observerName, string diagnosticName, IMetricsObserverOptions options, ILogger logger = null)
+    protected MetricsObserver(string observerName, string diagnosticName, ILogger logger = null)
         : base(observerName, diagnosticName, logger)
     {
-        Options = options;
     }
 
     protected Regex GetPathMatcher()

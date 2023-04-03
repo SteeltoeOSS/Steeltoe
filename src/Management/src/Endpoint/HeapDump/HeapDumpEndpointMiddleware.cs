@@ -4,21 +4,24 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
 public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 {
-    public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IManagementOptions managementOptions,
+    public HeapDumpEndpointMiddleware(IHeapDumpEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<HeapDumpEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
+        Endpoint = endpoint;
     }
 
-    public Task InvokeAsync(HttpContext context)
+    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.ShouldInvoke(managementOptions, logger))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleHeapDumpRequestAsync(context);
         }

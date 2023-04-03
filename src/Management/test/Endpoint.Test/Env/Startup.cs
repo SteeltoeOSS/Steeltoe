@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Env;
 
 namespace Steeltoe.Management.Endpoint.Test.Env;
@@ -21,19 +20,13 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddCloudFoundryActuator(Configuration);
-        services.AddEnvActuator(Configuration);
+        services.AddEnvActuator();
         services.AddRouting();
     }
 
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<CloudFoundryEndpoint>();
-            endpoints.Map<EnvEndpoint>();
-        });
+        app.UseEndpoints(endpoints => endpoints.MapAllActuators());
     }
 }

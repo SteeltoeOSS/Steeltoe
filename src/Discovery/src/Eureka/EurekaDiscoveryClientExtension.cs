@@ -81,12 +81,12 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
 
                     if (ReflectionHelpers.IsAssemblyLoaded(endpointAssembly))
                     {
-                        Type actuatorOptionsType = ReflectionHelpers.FindType(new[]
+                        Type mgmtOptionsType = ReflectionHelpers.FindType(new[]
                         {
                             endpointAssembly
                         }, new[]
                         {
-                            "Steeltoe.Management.Endpoint.Hypermedia.ActuatorManagementOptions"
+                            "Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions"
                         });
 
                         Type endpointOptionsBaseType = ReflectionHelpers.FindType(new[]
@@ -97,11 +97,20 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                             "Steeltoe.Management.IEndpointOptions"
                         });
 
-                        object managementOptions = serviceProvider.GetService(actuatorOptionsType);
-
-                        if (managementOptions != null)
+                        Type contextNameType = ReflectionHelpers.FindType(new[]
                         {
-                            string basePath = $"{(string)actuatorOptionsType.GetProperty("Path").GetValue(managementOptions)}/";
+                            endpointAssembly
+                        }, new[]
+                        {
+                            "Steeltoe.Management.Endpoint.Options.IContextName"
+                        });
+
+                        IEnumerable<object> contexts = serviceProvider.GetServices(contextNameType);
+
+                        if (contexts.Any())
+                        {
+                            object actuatorOptions = GetOptionsMonitor(serviceProvider, mgmtOptionsType, "Actuator");
+                            string basePath = $"{(string)actuatorOptions.GetType().GetProperty("Path")?.GetValue(actuatorOptions)}/";
 
                             if (string.IsNullOrEmpty(
                                 configuration.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:HealthCheckUrlPath")))
@@ -111,10 +120,10 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                                     endpointAssembly
                                 }, new[]
                                 {
-                                    "Steeltoe.Management.Endpoint.Health.IHealthOptions"
+                                    "Steeltoe.Management.Endpoint.Health.HealthEndpointOptions"
                                 });
 
-                                object healthOptions = serviceProvider.GetService(healthOptionsType);
+                                object healthOptions = GetOptionsMonitor(serviceProvider, healthOptionsType);
 
                                 if (healthOptions != null)
                                 {
@@ -131,10 +140,10 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                                     endpointAssembly
                                 }, new[]
                                 {
-                                    "Steeltoe.Management.Endpoint.Info.IInfoOptions"
+                                    "Steeltoe.Management.Endpoint.Info.InfoEndpointOptions"
                                 });
 
-                                object infoOptions = serviceProvider.GetService(infoOptionsType);
+                                object infoOptions = GetOptionsMonitor(serviceProvider, infoOptionsType);
 
                                 if (infoOptions != null)
                                 {
@@ -158,6 +167,23 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(clientOptions.Value.CacheTtl)
             };
         });
+    }
+
+    private static object GetOptionsMonitor(IServiceProvider serviceProvider, Type tOptions, string name = "")
+    {
+        Type optionsMonitor = typeof(IOptionsMonitor<>);
+        Type genericOptions = optionsMonitor.MakeGenericType(tOptions);
+        object optionsMonitorT = serviceProvider.GetService(genericOptions);
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            return genericOptions.GetMethod("Get").Invoke(optionsMonitorT, new[]
+            {
+                name
+            });
+        }
+
+        return genericOptions.GetProperty("CurrentValue")?.GetValue(optionsMonitorT);
     }
 
     private void AddEurekaServices(IServiceCollection services)

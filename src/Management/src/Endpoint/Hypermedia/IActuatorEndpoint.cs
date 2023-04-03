@@ -4,7 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
-public interface IActuatorEndpoint
+public interface IActuatorEndpoint : IEndpoint<Links, string>
 {
-    Links Invoke(string baseUrl);
 }

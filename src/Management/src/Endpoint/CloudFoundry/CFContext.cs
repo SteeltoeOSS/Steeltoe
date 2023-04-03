@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Management.Endpoint.Options;
+
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public interface ICloudFoundryOptions : IEndpointOptions
+internal class CFContext : IContextName
 {
-    bool ValidateCertificates { get; }
+    public const string Name = "CloudFoundry";
 
-    string ApplicationId { get; }
-
-    string CloudFoundryApi { get; }
+    string IContextName.Name => Name;
 }

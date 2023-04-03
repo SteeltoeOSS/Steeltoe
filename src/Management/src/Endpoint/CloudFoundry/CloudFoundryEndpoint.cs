@@ -3,31 +3,33 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>, ICloudFoundryEndpoint
+public class CloudFoundryEndpoint : ICloudFoundryEndpoint
 {
+    private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
+    private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
+    private readonly IEnumerable<IEndpointOptions> _endpointOptions;
     private readonly ILogger<CloudFoundryEndpoint> _logger;
-    private readonly IManagementOptions _managementOptions;
 
-    protected new ICloudFoundryOptions Options => options as ICloudFoundryOptions;
+    public IEndpointOptions Options => _options.CurrentValue;
 
-    public CloudFoundryEndpoint(ICloudFoundryOptions options, CloudFoundryManagementOptions managementOptions, ILogger<CloudFoundryEndpoint> logger = null)
-        : base(options)
+    public CloudFoundryEndpoint(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IEnumerable<IEndpointOptions> endpointOptions, ILogger<CloudFoundryEndpoint> logger = null)
     {
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(managementOptions);
-
+        _options = options;
         _managementOptions = managementOptions;
+        _endpointOptions = endpointOptions;
         _logger = logger;
     }
 
-    public override Links Invoke(string baseUrl)
+    public virtual Links Invoke(string baseUrl)
     {
-        var hypermediaService = new HypermediaService(_managementOptions, options, _logger);
+        var hypermediaService = new HypermediaService(_managementOptions, _options, _endpointOptions, _logger);
         return hypermediaService.Invoke(baseUrl);
     }
 }

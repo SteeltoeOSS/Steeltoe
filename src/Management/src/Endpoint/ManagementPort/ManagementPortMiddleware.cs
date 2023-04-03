@@ -4,36 +4,41 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ManagementPort;
 
 public class ManagementPortMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
     private readonly ILogger<ManagementPortMiddleware> _logger;
-    private readonly IManagementOptions _managementOptions;
 
-    public ManagementPortMiddleware(RequestDelegate next, IEnumerable<IManagementOptions> managementOptions, ILogger<ManagementPortMiddleware> logger = null)
+    public ManagementPortMiddleware(RequestDelegate next, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILogger<ManagementPortMiddleware> logger = null)
     {
         _next = next;
+        _managementOptions = managementOptions;
         _logger = logger;
-        _managementOptions = managementOptions.OfType<ManagementEndpointOptions>().First();
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
-        _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);
+        ManagementEndpointOptions mgmtOptions = _managementOptions.Get(ActuatorContext.Name);
+        _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, mgmtOptions.Path);
 
-        string contextPath = _managementOptions.Path;
+        string contextPath = mgmtOptions.Path;
         bool isManagementPath = context.Request.Path.ToString().StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
 
-        bool allowRequest = string.IsNullOrEmpty(_managementOptions.Port);
-        allowRequest = allowRequest || (context.Request.Host.Port.ToString() == _managementOptions.Port && isManagementPath);
-        allowRequest = allowRequest || (context.Request.Host.Port.ToString() != _managementOptions.Port && !isManagementPath);
+        bool allowRequest = string.IsNullOrEmpty(mgmtOptions.Port);
+        allowRequest = allowRequest || (context.Request.Host.Port.ToString() == mgmtOptions.Port && isManagementPath);
+        allowRequest = allowRequest || (context.Request.Host.Port.ToString() != mgmtOptions.Port && !isManagementPath);
 
         if (!allowRequest)
         {
-            await ReturnErrorAsync(context, _managementOptions.Port);
+            await ReturnErrorAsync(context, mgmtOptions.Port);
         }
         else
         {

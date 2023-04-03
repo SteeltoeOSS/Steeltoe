@@ -9,6 +9,7 @@ using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
+using Steeltoe.Management.Endpoint.Security;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
@@ -19,13 +20,11 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddHealthActuator_ThrowsOnNulls()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         const IHealthAggregator aggregator = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(null));
         Assert.Equal("services", ex.ParamName);
-        Assert.Throws<InvalidOperationException>(() => services.AddHealthActuator());
-        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuator(configurationRoot, aggregator));
+        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuator(aggregator));
         Assert.Contains(nameof(aggregator), ex3.Message, StringComparison.Ordinal);
     }
 
@@ -45,20 +44,21 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        services.AddHealthActuator(configurationRoot, new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
+        services.AddHealthActuator(new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
 
         services.Configure<HealthCheckServiceOptions>(configurationRoot);
+        services.AddSingleton<IConfiguration>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IHealthOptions>();
-        Assert.NotNull(options);
-        var ep = serviceProvider.GetService<HealthEndpointCore>();
-        Assert.NotNull(ep);
+
         var agg = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(agg);
         IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
         Assert.NotNull(contributors);
         List<IHealthContributor> contributorList = contributors.ToList();
         Assert.Single(contributorList);
+
+        var ep = serviceProvider.GetService<IEndpoint<HealthEndpointResponse, ISecurityContext>>();
+        Assert.NotNull(ep);
     }
 
     [Fact]
@@ -77,13 +77,12 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        services.AddHealthActuator(configurationRoot);
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddHealthActuator();
 
         services.Configure<HealthCheckServiceOptions>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IHealthOptions>();
-        Assert.NotNull(options);
-        var ep = serviceProvider.GetService<HealthEndpointCore>();
+        var ep = serviceProvider.GetService<IHealthEndpoint>();
         Assert.NotNull(ep);
         var agg = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(agg);

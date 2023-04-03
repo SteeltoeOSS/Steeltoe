@@ -2,18 +2,18 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
@@ -22,77 +22,28 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public class ActuatorRouteBuilderExtensionsTest
 {
-    public static IEnumerable<object[]> EndpointImplementations
+    [Fact]
+    public async Task MapTestAuthSuccess()
     {
-        get
-        {
-            static bool Query(Type t)
-            {
-                return t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
-            }
-
-            IEnumerable<Type> types = Assembly.Load("Steeltoe.Management.Endpoint").GetTypes().Where(Query);
-
-            return types.Select(type => new object[]
-            {
-                type
-            });
-        }
+        IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "actuators.read"));
+        await ActAndAssertAsync(hostBuilder, true);
     }
 
-    public static IEnumerable<object[]> EndpointImplementationsForCurrentPlatform
+    [Fact]
+    public async Task MapTestAuthFail()
     {
-        get
-        {
-            static bool Query(Type t)
-            {
-                return t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
-            }
-
-            List<Type> types = Assembly.Load("Steeltoe.Management.Endpoint").GetTypes().Where(Query).ToList();
-
-            return
-                from t in types
-                select new object[]
-                {
-                    t
-                };
-        }
+        IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "invalidscope"));
+        await ActAndAssertAsync(hostBuilder, false);
     }
 
-    [Theory]
-    [MemberData(nameof(EndpointImplementations))]
-    public void LookupMiddlewareTest(Type type)
-    {
-        (Type middlewareType, Type optionsType) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
-        Assert.NotNull(middlewareType);
-        Assert.NotNull(optionsType);
-    }
-
-    [Theory]
-    [MemberData(nameof(EndpointImplementationsForCurrentPlatform))]
-    public async Task MapTestAuthSuccess(Type type)
-    {
-        IHostBuilder hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "actuators.read"));
-        await ActAndAssertAsync(type, hostBuilder, true);
-    }
-
-    [Theory]
-    [MemberData(nameof(EndpointImplementationsForCurrentPlatform))]
-    public async Task MapTestAuthFail(Type type)
-    {
-        IHostBuilder hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "invalidscope"));
-        await ActAndAssertAsync(type, hostBuilder, false);
-    }
-
-    private static IHostBuilder GetHostBuilder(Type type, Action<AuthorizationPolicyBuilder> policyAction)
+    private static IHostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction)
     {
         return new HostBuilder().AddDynamicLogging().ConfigureServices((context, s) =>
         {
-            s.AddTraceActuator(context.Configuration, MediaTypeVersion.V1);
-            s.AddThreadDumpActuator(context.Configuration, MediaTypeVersion.V1);
-            s.AddCloudFoundryActuator(context.Configuration);
-            s.AddAllActuators(context.Configuration); // Add all of them, but map one at a time
+            s.AddTraceActuator(MediaTypeVersion.V1);
+            s.AddThreadDumpActuator(MediaTypeVersion.V1);
+            s.AddCloudFoundryActuator();
+            s.AddAllActuators();
             s.AddRouting();
 
             s.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
@@ -104,37 +55,37 @@ public class ActuatorRouteBuilderExtensionsTest
             s.AddServerSideBlazor();
         }).ConfigureWebHost(builder =>
         {
-            builder.Configure(app => app.UseRouting().UseAuthentication().UseAuthorization().UseEndpoints(endpoints => MapEndpoints(type, endpoints)))
-                .UseTestServer();
+            builder.Configure(app => app.UseRouting().UseAuthentication().UseAuthorization().UseEndpoints(endpoints =>
+            {
+                endpoints.MapAllActuators().RequireAuthorization("TestAuth");
+                endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
+            })).UseTestServer();
         });
     }
 
-    private static IManagementOptions GetManagementContext(Type type, IServiceProvider services)
+    private static ManagementEndpointOptions GetManagementContext(IServiceProvider services)
     {
-        return type.IsAssignableFrom(typeof(CloudFoundryEndpoint))
-            ? services.GetRequiredService<CloudFoundryManagementOptions>()
-            : services.GetRequiredService<ActuatorManagementOptions>();
+        var mgmtOptions = services.GetService<IOptionsMonitor<ManagementEndpointOptions>>();
+        return mgmtOptions.Get(ActuatorContext.Name);
     }
 
-    private async Task ActAndAssertAsync(Type type, IHostBuilder hostBuilder, bool expectedSuccess)
+    private async Task ActAndAssertAsync(IHostBuilder hostBuilder, bool expectedSuccess)
     {
         using IHost host = await hostBuilder.StartAsync();
-        (_, Type optionsType) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
-        var options = host.Services.GetService(optionsType) as IEndpointOptions;
-        string path = options.GetContextPath(GetManagementContext(type, host.Services));
-
-        Assert.NotNull(path);
-
         using TestServer server = host.GetTestServer();
-        HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri(path, UriKind.RelativeOrAbsolute));
 
-        Assert.True(expectedSuccess == response.IsSuccessStatusCode,
-            $"Expected {(expectedSuccess ? "success" : "failure")}, but got {response.StatusCode} for {path} and type {type}");
-    }
+        IEnumerable<IEndpointOptions> optionsCollection = host.Services.GetServices<IEndpointOptions>();
 
-    private static void MapEndpoints(Type type, IEndpointRouteBuilder endpoints)
-    {
-        endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
-        endpoints.MapActuatorEndpoint(type, convention => convention.RequireAuthorization("TestAuth"));
+        foreach (IEndpointOptions options in optionsCollection)
+        {
+            string path = options.GetContextPath(GetManagementContext(host.Services));
+
+            Assert.NotNull(path);
+
+            HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri(path, UriKind.RelativeOrAbsolute));
+
+            Assert.True(expectedSuccess == response.IsSuccessStatusCode,
+                $"Expected {(expectedSuccess ? "success" : "failure")}, but got {response.StatusCode} for {path} and type {options}");
+        }
     }
 }

@@ -292,7 +292,7 @@ public class WebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddSteeltoe(exclusions).Build();
-        IEnumerable<ActuatorEndpoint> managementEndpoint = host.Services.GetServices<ActuatorEndpoint>();
+        IEnumerable<IActuatorEndpoint> managementEndpoint = host.Services.GetServices<IActuatorEndpoint>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(managementEndpoint);

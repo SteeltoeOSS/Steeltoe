@@ -26,6 +26,16 @@ public class Exposure
         Include = DefaultInclude;
     }
 
+    public Exposure(bool allowAll)
+    {
+        Include = allowAll
+            ? new List<string>
+            {
+                "*"
+            }
+            : DefaultInclude;
+    }
+
     public Exposure(IConfiguration configuration)
     {
         IConfigurationSection section = configuration.GetSection(ExposurePrefix);

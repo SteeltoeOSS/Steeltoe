@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Logging;
 using Steeltoe.Management.Endpoint.Loggers;
 
@@ -10,7 +11,8 @@ namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
 internal sealed class TestLoggersEndpoint : LoggersEndpoint
 {
-    public TestLoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider loggerProvider = null, ILogger<LoggersEndpoint> logger = null)
+    public TestLoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, IDynamicLoggerProvider loggerProvider = null,
+        ILogger<LoggersEndpoint> logger = null)
         : base(options, loggerProvider, logger)
     {
     }

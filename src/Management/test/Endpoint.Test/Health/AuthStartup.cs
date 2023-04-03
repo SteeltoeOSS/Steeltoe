@@ -21,7 +21,7 @@ public class AuthStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddHealthActuator(Configuration);
+        services.AddHealthActuator();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -29,9 +29,11 @@ public class AuthStartup
         app.UseMiddleware<AuthenticatedTestMiddleware>();
         app.UseRouting();
 
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<HealthEndpointCore>();
-        });
+        MapHealthActuator(app);
+    }
+
+    public static void MapHealthActuator(IApplicationBuilder app)
+    {
+        app.UseEndpoints(endpoints => endpoints.MapAllActuators());
     }
 }

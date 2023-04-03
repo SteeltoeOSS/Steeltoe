@@ -4,34 +4,34 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
-public class EndpointMiddleware<TResult>
+public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
 {
     protected ILogger logger;
-    protected IManagementOptions managementOptions;
+    protected IOptionsMonitor<ManagementEndpointOptions> managementOptions;
 
     public IEndpoint<TResult> Endpoint { get; set; }
 
-    public EndpointMiddleware(IManagementOptions managementOptions, ILogger logger = null)
+    public virtual IEndpointOptions EndpointOptions => Endpoint.Options;
+
+    protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
     {
         ArgumentGuard.NotNull(managementOptions);
 
         this.logger = logger;
         this.managementOptions = managementOptions;
-
-        if (this.managementOptions is ManagementEndpointOptions options)
-        {
-            options.SerializerOptions = GetSerializerOptions(options.SerializerOptions);
-        }
     }
 
-    public EndpointMiddleware(IEndpoint<TResult> endpoint, IManagementOptions managementOptions, ILogger logger = null)
+    protected EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
         : this(managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpoint);
@@ -49,16 +49,8 @@ public class EndpointMiddleware<TResult>
     {
         try
         {
-            JsonSerializerOptions options;
-
-            if (managementOptions is ManagementEndpointOptions endpointOptions)
-            {
-                options = endpointOptions.SerializerOptions;
-            }
-            else
-            {
-                options = GetSerializerOptions(null);
-            }
+            JsonSerializerOptions serializerOptions = managementOptions.CurrentValue.SerializerOptions;
+            JsonSerializerOptions options = GetSerializerOptions(serializerOptions);
 
             return JsonSerializer.Serialize(result, options);
         }
@@ -70,14 +62,17 @@ public class EndpointMiddleware<TResult>
         return string.Empty;
     }
 
-    internal JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
+    internal static JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
     {
         serializerOptions ??= new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
 
-        serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        if (serializerOptions.DefaultIgnoreCondition != JsonIgnoreCondition.WhenWritingNull)
+        {
+            serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        }
 
         if (serializerOptions.Converters?.Any(c => c is JsonStringEnumConverter) != true)
         {
@@ -96,13 +91,22 @@ public class EndpointMiddleware<TResult>
 
         return serializerOptions;
     }
+
+    public abstract Task InvokeAsync(HttpContext context, RequestDelegate next);
 }
 
-public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
+public interface IEndpointMiddleware : IMiddleware
+{
+    public IEndpointOptions EndpointOptions { get; }
+}
+
+public abstract class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
 {
     public new IEndpoint<TResult, TRequest> Endpoint { get; set; }
 
-    public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IManagementOptions managementOptions, ILogger logger = null)
+    public override IEndpointOptions EndpointOptions => Endpoint.Options;
+
+    protected EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
         : base(managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpoint);
@@ -110,7 +114,7 @@ public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
         Endpoint = endpoint;
     }
 
-    public EndpointMiddleware(IManagementOptions managementOptions, ILogger logger = null)
+    protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
         : base(managementOptions, logger)
     {
     }
@@ -120,4 +124,6 @@ public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
         TResult result = Endpoint.Invoke(arg);
         return Serialize(result);
     }
+
+    public abstract override Task InvokeAsync(HttpContext context, RequestDelegate next);
 }

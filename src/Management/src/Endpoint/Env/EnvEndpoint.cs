@@ -5,32 +5,33 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
+public class EnvEndpoint : IEnvEndpoint
 {
+    private readonly IOptionsMonitor<EnvEndpointOptions> _options;
     private readonly IConfiguration _configuration;
     private readonly Sanitizer _sanitizer;
 
     private readonly IHostEnvironment _env;
 
-    public new IEnvOptions Options => options as IEnvOptions;
+    public IEndpointOptions Options => _options.CurrentValue;
 
-    public EnvEndpoint(IEnvOptions options, IConfiguration configuration, IHostEnvironment env, ILogger<EnvEndpoint> logger = null)
-        : base(options)
+    public EnvEndpoint(IOptionsMonitor<EnvEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILogger<EnvEndpoint> logger = null)
     {
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(env);
-
+        _options = options;
         _configuration = configuration;
         _env = env;
-        _sanitizer = new Sanitizer(options.KeysToSanitize);
+        _sanitizer = new Sanitizer(options.CurrentValue.KeysToSanitize);
     }
 
-    public override EnvironmentDescriptor Invoke()
+    public EnvironmentDescriptor Invoke()
     {
         return DoInvoke(_configuration);
     }

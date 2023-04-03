@@ -26,14 +26,6 @@ public class HealthEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Constructor_ThrowsOptionsNull()
-    {
-        Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(null, null, null));
-        Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), null, null));
-        Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), new DefaultHealthAggregator(), null));
-    }
-
-    [Fact]
     public void Invoke_NoContributors_ReturnsExpectedHealth()
     {
         using var tc = new TestContext(_output);
@@ -42,7 +34,7 @@ public class HealthEndpointTest : BaseTest
         {
             services.AddSingleton(new List<IHealthContributor>());
             services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
-            services.AddHealthActuatorServices(configuration);
+            services.AddHealthActuatorServices();
         };
 
         var ep = tc.GetService<IHealthEndpoint>();
@@ -68,7 +60,7 @@ public class HealthEndpointTest : BaseTest
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
-            services.AddHealthActuatorServices(configuration);
+            services.AddHealthActuatorServices();
         };
 
         var ep = tc.GetService<IHealthEndpoint>();
@@ -97,7 +89,7 @@ public class HealthEndpointTest : BaseTest
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
-            services.AddHealthActuatorServices(configuration);
+            services.AddHealthActuatorServices();
         };
 
         var ep = tc.GetService<IHealthEndpoint>();
@@ -135,7 +127,7 @@ public class HealthEndpointTest : BaseTest
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
-            services.AddHealthActuatorServices(configuration);
+            services.AddHealthActuatorServices();
         };
 
         var ep = tc.GetService<IHealthEndpoint>();
@@ -177,7 +169,7 @@ public class HealthEndpointTest : BaseTest
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
-            services.AddHealthActuatorServices(configuration);
+            services.AddHealthActuatorServices();
         };
 
         var ep = tc.GetService<IHealthEndpoint>();
@@ -217,7 +209,7 @@ public class HealthEndpointTest : BaseTest
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
-            services.AddHealthActuatorServices(configuration);
+            services.AddHealthActuatorServices();
         };
 
         var ep = tc.GetService<IHealthEndpoint>();
@@ -257,7 +249,7 @@ public class HealthEndpointTest : BaseTest
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
-            services.AddHealthActuatorServices(configuration);
+            services.AddHealthActuatorServices();
         };
 
         var ep = tc.GetService<IHealthEndpoint>();

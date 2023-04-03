@@ -40,7 +40,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddDbMigrationsActuator(context.Configuration);
+            collection.AddDbMigrationsActuator();
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -55,7 +55,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddEnvActuator(context.Configuration);
+            collection.AddEnvActuator();
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -70,7 +70,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddHealthActuator(context.Configuration);
+            collection.AddHealthActuator();
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -88,7 +88,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddHealthActuator(context.Configuration, contributors);
+            collection.AddHealthActuator(contributors);
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -109,7 +109,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddHealthActuator(context.Configuration, aggregator, contributors);
+            collection.AddHealthActuator(aggregator, contributors);
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -124,7 +124,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddHeapDumpActuator(context.Configuration);
+            collection.AddHeapDumpActuator();
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -139,7 +139,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddHypermediaActuator(context.Configuration);
+            collection.AddHypermediaActuator();
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -154,7 +154,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddInfoActuator(context.Configuration);
+            collection.AddInfoActuator();
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -172,7 +172,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddInfoActuator(context.Configuration, contributors);
+            collection.AddInfoActuator(contributors);
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -187,7 +187,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((context, collection) =>
         {
-            collection.AddLoggersActuator(context.Configuration);
+            collection.AddLoggersActuator();
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -202,7 +202,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddMappingsActuator(context.Configuration);
+            collection.AddMappingsActuator();
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -217,7 +217,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddMetricsActuator(context.Configuration);
+            collection.AddMetricsActuator();
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -232,7 +232,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddRefreshActuator(context.Configuration);
+            collection.AddRefreshActuator();
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -250,7 +250,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddThreadDumpActuator(context.Configuration, mediaTypeVersion);
+            collection.AddThreadDumpActuator(mediaTypeVersion);
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -268,7 +268,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddTraceActuator(context.Configuration, mediaTypeVersion);
+            collection.AddTraceActuator(mediaTypeVersion);
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -283,7 +283,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddCloudFoundryActuator(context.Configuration);
+            collection.AddCloudFoundryActuator();
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -305,8 +305,9 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((context, collection) =>
         {
-            collection.AddAllActuators(context.Configuration, mediaTypeVersion);
-            collection.ActivateActuatorEndpoints(configureEndpoints);
+            collection.AddAllActuators(mediaTypeVersion);
+            IEndpointConventionBuilder conventionBuilder = collection.ActivateActuatorEndpoints();
+            configureEndpoints?.Invoke(conventionBuilder);
         });
     }
 

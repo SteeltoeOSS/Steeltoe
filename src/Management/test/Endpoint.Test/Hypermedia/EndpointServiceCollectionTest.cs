@@ -12,18 +12,7 @@ namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 public class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddCloudFoundryActuator_ThrowsOnNulls()
-    {
-        const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
-
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHypermediaActuator());
-        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => services2.AddHypermediaActuator());
-    }
-
-    [Fact]
-    public void AddCloudFoundryActuator_AddsCorrectServices()
+    public void AddHyperMediaActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
@@ -35,13 +24,11 @@ public class EndpointServiceCollectionTest : BaseTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        services.AddHypermediaActuator(configurationRoot);
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddHypermediaActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IActuatorHypermediaOptions>();
-        Assert.NotNull(options);
-        var ep = serviceProvider.GetService<ActuatorEndpoint>();
+        var ep = serviceProvider.GetService<IActuatorEndpoint>();
         Assert.NotNull(ep);
     }
 }

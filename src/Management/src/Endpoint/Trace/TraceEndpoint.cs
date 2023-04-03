@@ -3,25 +3,27 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class TraceEndpoint : AbstractEndpoint<List<TraceResult>>, ITraceEndpoint
+public class TraceEndpoint : ITraceEndpoint
 {
     private readonly ITraceRepository _traceRepo;
 
-    public new ITraceOptions Options => options as ITraceOptions;
+    private readonly IOptionsMonitor<TraceEndpointOptions> _options;
 
-    public TraceEndpoint(ITraceOptions options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null)
-        : base(options)
+    public IEndpointOptions Options => _options.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
+
+    public TraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null)
     {
         ArgumentGuard.NotNull(traceRepository);
-
+        _options = options;
         _traceRepo = traceRepository;
     }
 
-    public override List<TraceResult> Invoke()
+    public virtual List<TraceResult> Invoke()
     {
         return DoInvoke(_traceRepo);
     }

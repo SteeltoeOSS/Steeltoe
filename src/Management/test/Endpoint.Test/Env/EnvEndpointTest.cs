@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Management.Endpoint.Env;
@@ -26,13 +27,10 @@ public class EnvEndpointTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfNulls()
     {
-        IEnvOptions options = null;
+        IOptionsMonitor<EnvEndpointOptions> options = GetOptionsMonitorFromSettings<EnvEndpointOptions>();
         IConfiguration configuration = null;
         const IHostEnvironment env = null;
 
-        Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env));
-
-        options = new EnvEndpointOptions();
         Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env));
 
         configuration = new ConfigurationBuilder().Build();
@@ -47,7 +45,7 @@ public class EnvEndpointTest : BaseTest
             tc.AdditionalServices = (services, configuration) =>
             {
                 services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-                services.AddEnvActuatorServices(configuration);
+                services.AddEnvActuatorServices();
             };
 
             tc.AdditionalConfiguration = configuration =>
@@ -67,7 +65,7 @@ public class EnvEndpointTest : BaseTest
             tc.AdditionalServices = (services, configuration) =>
             {
                 services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-                services.AddEnvActuatorServices(configuration);
+                services.AddEnvActuatorServices();
             };
 
             tc.AdditionalConfiguration = configuration =>
@@ -110,7 +108,7 @@ public class EnvEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvActuatorServices(configuration);
+            services.AddEnvActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>
@@ -162,7 +160,7 @@ public class EnvEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvActuatorServices(configuration);
+            services.AddEnvActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>
@@ -202,7 +200,7 @@ public class EnvEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvActuatorServices(configuration);
+            services.AddEnvActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>
@@ -240,7 +238,7 @@ public class EnvEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvActuatorServices(configuration);
+            services.AddEnvActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>
@@ -288,7 +286,7 @@ public class EnvEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvActuatorServices(configuration);
+            services.AddEnvActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>
@@ -329,7 +327,7 @@ public class EnvEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
-            services.AddEnvActuatorServices(configuration);
+            services.AddEnvActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>

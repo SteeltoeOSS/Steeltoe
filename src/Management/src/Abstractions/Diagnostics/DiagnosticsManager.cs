@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Diagnostics;
@@ -29,13 +30,23 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
 
     public IList<IRuntimeDiagnosticSource> Sources => InnerSources;
 
-    public DiagnosticsManager(IEnumerable<IRuntimeDiagnosticSource> runtimeSources, IEnumerable<IDiagnosticObserver> observers,
-        IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger = null)
+    public DiagnosticsManager(IOptionsMonitor<MetricsObserverOptions> observerOptions, IEnumerable<IRuntimeDiagnosticSource> runtimeSources,
+        IEnumerable<IDiagnosticObserver> observers, IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger = null)
     {
         ArgumentGuard.NotNull(observers);
 
         Logger = logger;
-        InnerObservers = observers.ToList();
+        var filteredObservers = new List<IDiagnosticObserver>();
+
+        foreach (IDiagnosticObserver observer in observers)
+        {
+            if (observerOptions.CurrentValue.IncludeObserver(observer.ObserverName))
+            {
+                filteredObservers.Add(observer);
+            }
+        }
+
+        InnerObservers = filteredObservers;
         InnerSources = runtimeSources.ToList();
         EventListeners = eventListeners.ToList();
     }

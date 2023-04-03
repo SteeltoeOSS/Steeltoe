@@ -8,10 +8,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Xunit;
 
@@ -26,20 +28,20 @@ public class EndpointMiddlewareTest : BaseTest
         ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
         ["management:endpoints:enabled"] = "true",
-        ["management:endpoints:dump:enabled"] = "true"
+        ["management:endpoints:dump:enabled"] = "true",
+        ["management:endpoints:actuator:exposure:include:0"] = "threaddump",
+        ["management:endpoints:actuator:exposure:include:1"] = "dump"
     };
 
     [Fact]
     public async Task HandleThreadDumpRequestAsync_ReturnsExpected()
     {
-        var opts = new ThreadDumpEndpointOptions();
-
-        var managementOptions = new ActuatorManagementOptions();
-        managementOptions.EndpointOptions.Add(opts);
+        IOptionsMonitor<ThreadDumpEndpointOptions> opts = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var obs = new ThreadDumperEp(opts);
         var ep = new ThreadDumpEndpoint(opts, obs);
-        var middle = new ThreadDumpEndpointMiddleware(null, ep, managementOptions);
+        var middle = new ThreadDumpEndpointMiddleware(ep, managementOptions);
         HttpContext context = CreateRequest("GET", "/dump");
         await middle.HandleThreadDumpRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -64,7 +66,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/dump"));
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/dump"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
         Assert.NotNull(json);
@@ -88,7 +90,7 @@ public class EndpointMiddlewareTest : BaseTest
 
             using var server = new TestServer(builder);
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/threaddump"));
+            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/threaddump"));
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             string json = await result.Content.ReadAsStringAsync();
             Assert.NotNull(json);
@@ -99,13 +101,25 @@ public class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
+    public void RoutesByPathAndVerb_V1()
+    {
+        ThreadDumpEndpointOptions options = GetOptionsFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        Assert.True(options.ExactMatch);
+        Assert.Equal("/actuator/dump", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/dump", options.GetContextPath(managementOptions.Get(CFContext.Name)));
+        Assert.Contains("Get", options.AllowedVerbs);
+    }
+
+    [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = new ThreadDumpEndpointOptions();
+        var options = GetOptionsFromSettings<ThreadDumpEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/dump", options.GetContextPath(new ActuatorManagementOptions()));
-        Assert.Equal("/cloudfoundryapplication/dump", options.GetContextPath(new CloudFoundryManagementOptions()));
-        Assert.Null(options.AllowedVerbs);
+        Assert.Equal("/actuator/threaddump", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/threaddump", options.GetContextPath(managementOptions.Get(CFContext.Name)));
+        Assert.Contains("Get", options.AllowedVerbs);
     }
 
     private HttpContext CreateRequest(string method, string path)

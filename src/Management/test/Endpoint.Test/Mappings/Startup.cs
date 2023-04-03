@@ -21,8 +21,8 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddCloudFoundryActuator(Configuration);
-        services.AddMappingsActuator(Configuration);
+        services.AddCloudFoundryActuator();
+        services.AddMappingsActuator();
         services.AddMvc();
     }
 
@@ -33,8 +33,7 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-            endpoints.Map<CloudFoundryEndpoint>();
-            endpoints.Map<MappingsEndpoint>();
+            endpoints.MapAllActuators();
         });
     }
 }

@@ -5,23 +5,25 @@
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
 public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>
 {
-    public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IManagementOptions managementOptions,
+    public MetricsEndpointMiddleware(IMetricsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<MetricsEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
     }
 
-    public Task InvokeAsync(HttpContext context)
+    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.ShouldInvoke(managementOptions, logger))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleMetricsRequestAsync(context);
         }
@@ -75,12 +77,14 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
     protected internal string GetMetricName(HttpRequest request)
     {
-        if (managementOptions == null)
+        ManagementEndpointOptions mgmtOptions = managementOptions.GetFromContextPath(request.Path);
+
+        if (mgmtOptions == null)
         {
-            return GetMetricName(request, Endpoint.Path);
+            return GetMetricName(request, Endpoint.Options.Path);
         }
 
-        string path = $"{managementOptions.Path}/{Endpoint.Id}".Replace("//", "/", StringComparison.Ordinal);
+        string path = $"{mgmtOptions.Path}/{Endpoint.Options.Id}".Replace("//", "/", StringComparison.Ordinal);
         string metricName = GetMetricName(request, path);
 
         return metricName;
