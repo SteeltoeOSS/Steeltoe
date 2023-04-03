@@ -8,6 +8,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -23,12 +24,14 @@ public class SecurityBase
     public const string AuthorizationHeader = "Authorization";
     public const string Bearer = "bearer";
     public const string ReadSensitiveData = "read_sensitive_data";
-    private readonly ICloudFoundryOptions _options;
-    private readonly IManagementOptions _managementOptions;
+
+    private readonly CloudFoundryEndpointOptions _options;
+    private readonly ManagementEndpointOptions _managementOptions;
+
     private readonly ILogger _logger;
     private HttpClient _httpClient;
 
-    public SecurityBase(ICloudFoundryOptions options, IManagementOptions managementOptions, ILogger logger = null, HttpClient httpClient = null)
+    public SecurityBase(CloudFoundryEndpointOptions options, ManagementEndpointOptions managementOptions, ILogger logger = null, HttpClient httpClient = null)
     {
         _options = options;
         _managementOptions = managementOptions;
@@ -38,7 +41,9 @@ public class SecurityBase
 
     public bool IsCloudFoundryRequest(string requestPath)
     {
-        string contextPath = _managementOptions == null ? _options.Path : _managementOptions.Path;
+        string optionsPath = _options.Path;
+
+        string contextPath = _managementOptions == null ? optionsPath : _managementOptions.Path;
         return requestPath.StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
     }
 

@@ -22,8 +22,8 @@ public class EnvStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddHypermediaActuator(Configuration);
-        services.AddEnvActuator(Configuration);
+        services.AddHypermediaActuator();
+        services.AddEnvActuator();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -32,8 +32,7 @@ public class EnvStartup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.Map<ActuatorEndpoint>();
-            endpoints.Map<EnvEndpoint>();
+            endpoints.MapAllActuators();
         });
     }
 }

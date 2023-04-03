@@ -4,7 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public interface IHttpTraceEndpoint
+public interface IHttpTraceEndpoint : IEndpoint<HttpTraceResult>
 {
-    HttpTraceResult Invoke();
 }

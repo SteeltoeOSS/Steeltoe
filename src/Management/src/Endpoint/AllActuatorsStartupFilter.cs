@@ -15,11 +15,11 @@ namespace Steeltoe.Management.Endpoint;
 
 public class AllActuatorsStartupFilter : IStartupFilter
 {
-    private readonly Action<IEndpointConventionBuilder> _configureConventions;
+    private readonly ActuatorConventionBuilder _conventionBuilder;
 
-    public AllActuatorsStartupFilter(Action<IEndpointConventionBuilder> configureConventions = null)
+    public AllActuatorsStartupFilter(ActuatorConventionBuilder conventionBuilder)
     {
-        _configureConventions = configureConventions;
+        _conventionBuilder = conventionBuilder;
     }
 
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
@@ -37,12 +37,11 @@ public class AllActuatorsStartupFilter : IStartupFilter
             }
 
             app.UseMiddleware<ManagementPortMiddleware>();
-
             next(app);
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapAllActuators(_configureConventions);
+                endpoints.MapAllActuators(_conventionBuilder);
             });
 
             app.ApplicationServices.InitializeAvailability();

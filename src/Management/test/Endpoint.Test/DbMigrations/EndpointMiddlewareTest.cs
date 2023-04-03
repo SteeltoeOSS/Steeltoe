@@ -11,11 +11,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
@@ -28,18 +30,16 @@ public class EndpointMiddlewareTest : BaseTest
         ["Logging:LogLevel:Default"] = "Warning",
         ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
-        ["management:endpoints:enabled"] = "true"
+        ["management:endpoints:enabled"] = "true",
+        ["management:endpoints:actuator:exposure:include:0"] = "dbmigrations"
     };
 
     [Fact]
     public async Task HandleEntityFrameworkRequestAsync_ReturnsExpected()
     {
-        var opts = new DbMigrationsEndpointOptions();
-
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(AppSettings);
-        var managementOptions = new ActuatorManagementOptions();
-        managementOptions.EndpointOptions.Add(opts);
+        IOptionsMonitor<DbMigrationsEndpointOptions> opts = GetOptionsMonitorFromSettings<DbMigrationsEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        managementOptions.Get(ActuatorContext.Name).EndpointOptions.Add(opts.CurrentValue);
         var container = new ServiceCollection();
         container.AddScoped<MockDbContext>();
         var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
@@ -57,7 +57,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         var ep = new DbMigrationsEndpoint(opts, container.BuildServiceProvider(), helper);
 
-        var middle = new DbMigrationsEndpointMiddleware(null, ep, managementOptions);
+        var middle = new DbMigrationsEndpointMiddleware(ep, managementOptions);
 
         HttpContext context = CreateRequest("GET", "/dbmigrations");
         await middle.HandleEntityFrameworkRequestAsync(context);
@@ -99,7 +99,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/dbmigrations"));
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/dbmigrations"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
 
@@ -126,11 +126,15 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = new DbMigrationsEndpointOptions();
+        var options = GetOptionsFromSettings<DbMigrationsEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ManagementEndpointOptions actuatorMgmtOptions = mgmtOptions.Get(ActuatorContext.Name);
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/dbmigrations", options.GetContextPath(new ActuatorManagementOptions()));
-        Assert.Equal("/cloudfoundryapplication/dbmigrations", options.GetContextPath(new CloudFoundryManagementOptions()));
-        Assert.Null(options.AllowedVerbs);
+        Assert.Equal("/actuator/dbmigrations", options.GetContextPath(actuatorMgmtOptions));
+
+        ManagementEndpointOptions cfMgmtOptions = mgmtOptions.Get(CFContext.Name);
+        Assert.Equal("/cloudfoundryapplication/dbmigrations", options.GetContextPath(cfMgmtOptions));
+        Assert.Contains("Get", options.AllowedVerbs);
     }
 
     private HttpContext CreateRequest(string method, string path)

@@ -63,7 +63,7 @@ public class DbMigrationsEndpointTests : BaseTest
         {
             services.AddScoped(_ => new MockDbContext());
             services.AddScoped(_ => helper);
-            services.AddDbMigrationsActuatorServices(configuration);
+            services.AddDbMigrationsActuatorServices();
         };
 
         var sut = tc.GetService<IDbMigrationsEndpoint>();
@@ -92,7 +92,7 @@ public class DbMigrationsEndpointTests : BaseTest
         {
             services.AddScoped(_ => new MockDbContext());
             services.AddScoped(_ => helper);
-            services.AddDbMigrationsActuatorServices(configuration);
+            services.AddDbMigrationsActuatorServices();
         };
 
         var sut = tc.GetService<IDbMigrationsEndpoint>();
@@ -114,7 +114,7 @@ public class DbMigrationsEndpointTests : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddScoped(_ => helper);
-            services.AddDbMigrationsActuatorServices(configuration);
+            services.AddDbMigrationsActuatorServices();
         };
 
         var sut = tc.GetService<IDbMigrationsEndpoint>();

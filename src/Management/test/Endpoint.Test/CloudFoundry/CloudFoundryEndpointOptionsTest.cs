@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Info;
 using Xunit;
@@ -14,17 +13,10 @@ public class CloudFoundryEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new CloudFoundryEndpointOptions();
+        var opts = GetOptionsFromSettings<CloudFoundryEndpointOptions>();
         Assert.Null(opts.Enabled);
         Assert.True(opts.ValidateCertificates);
         Assert.Equal(string.Empty, opts.Id);
-    }
-
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new CloudFoundryEndpointOptions(configuration));
     }
 
     [Fact]
@@ -39,12 +31,8 @@ public class CloudFoundryEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var opts = new InfoEndpointOptions(configurationRoot);
-        var cloudOpts = new CloudFoundryEndpointOptions(configurationRoot);
+        var opts = GetOptionsFromSettings<InfoEndpointOptions>(appsettings);
+        var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);
 
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);

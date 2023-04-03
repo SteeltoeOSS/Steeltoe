@@ -5,8 +5,10 @@
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -14,30 +16,32 @@ public class CloudFoundrySecurityMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
-    private readonly ICloudFoundryOptions _options;
-    private readonly IManagementOptions _managementOptions;
+    private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
+
+    private readonly ManagementEndpointOptions _managementOptions;
+
     private readonly SecurityBase _base;
 
-    public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, CloudFoundryManagementOptions managementOptions,
-        ILogger<CloudFoundrySecurityMiddleware> logger = null)
+    public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options,
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
     {
         _next = next;
         _logger = logger;
         _options = options;
-        _managementOptions = managementOptions;
+        _managementOptions = managementOptions.Get(CFContext.Name);
 
-        _base = new SecurityBase(options, _managementOptions, logger);
+        _base = new SecurityBase(options.CurrentValue, managementOptions.Get(CFContext.Name), logger);
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
+        CloudFoundryEndpointOptions cfOptions = _options.CurrentValue;
+        CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
         _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);
 
-        bool isEndpointExposed = _managementOptions == null || _options.IsExposed(_managementOptions);
-
-        if (Platform.IsCloudFoundry && isEndpointExposed && _base.IsCloudFoundryRequest(context.Request.Path))
+        if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptions) && _base.IsCloudFoundryRequest(context.Request.Path))
         {
-            if (string.IsNullOrEmpty(_options.ApplicationId))
+            if (string.IsNullOrEmpty(cfOptions.ApplicationId))
             {
                 _logger?.LogCritical(
                     "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
@@ -47,7 +51,7 @@ public class CloudFoundrySecurityMiddleware
                 return;
             }
 
-            if (string.IsNullOrEmpty(_options.CloudFoundryApi))
+            if (string.IsNullOrEmpty(cfOptions.CloudFoundryApi))
             {
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.CloudfoundryApiMissingMessage));
 

@@ -4,7 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-public interface IHeapDumpEndpoint
+public interface IHeapDumpEndpoint : IEndpoint<string>
 {
-    string Invoke();
 }

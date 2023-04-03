@@ -3,11 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.Metrics;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Exporters;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
@@ -25,33 +26,30 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// Reference to the service collection.
     /// </param>
-    /// <param name="configuration">
-    /// Reference to the configuration system.
-    /// </param>
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddMetricsActuatorServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddMetricsActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
 
-        var options = new MetricsEndpointOptions(configuration);
-        services.TryAddSingleton<IMetricsEndpointOptions>(options);
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
-        services.TryAddSingleton<MetricsEndpoint>();
+        services.ConfigureEndpointOptions<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>();
+        services.TryAddSingleton<IMetricsEndpoint, MetricsEndpoint>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MetricsEndpointMiddleware>());
+        services.TryAddSingleton<MetricsEndpointMiddleware>();
 
-        services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
-
-        var exporterOptions = new MetricsExporterOptions
+        services.TryAddSingleton<IExporterOptions>(provider =>
         {
-            CacheDurationMilliseconds = options.CacheDurationMilliseconds,
-            MaxTimeSeries = options.MaxTimeSeries,
-            MaxHistograms = options.MaxHistograms,
-            IncludedMetrics = options.IncludedMetrics
-        };
+            MetricsEndpointOptions options = provider.GetService<IOptionsMonitor<MetricsEndpointOptions>>().CurrentValue;
 
-        services.TryAddSingleton<IExporterOptions>(exporterOptions);
+            return new MetricsExporterOptions
+            {
+                CacheDurationMilliseconds = options.CacheDurationMilliseconds,
+                MaxTimeSeries = options.MaxTimeSeries,
+                MaxHistograms = options.MaxHistograms,
+                IncludedMetrics = options.IncludedMetrics
+            };
+        });
 
         services.TryAddSingleton(provider =>
         {

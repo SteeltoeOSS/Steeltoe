@@ -6,10 +6,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public interface IEnvEndpoint
+public interface IEnvEndpoint : IEndpoint<EnvironmentDescriptor>
 {
-    EnvironmentDescriptor Invoke();
-
     string GetPropertySourceName(IConfigurationProvider provider);
 
     IList<PropertySourceDescriptor> GetPropertySources(IConfiguration configuration);

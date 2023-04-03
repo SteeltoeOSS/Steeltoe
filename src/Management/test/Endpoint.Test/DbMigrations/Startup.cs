@@ -24,9 +24,9 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddDbContext<MockDbContext>();
-        services.AddCloudFoundryActuator(Configuration);
+        services.AddCloudFoundryActuator();
         services.AddEntityFrameworkInMemoryDatabase().AddDbContext<MockDbContext>();
-        services.AddDbMigrationsActuator(Configuration);
+        services.AddDbMigrationsActuator();
         var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
 
         helper.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[]
@@ -50,8 +50,7 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.Map<CloudFoundryEndpoint>();
-            endpoints.Map<DbMigrationsEndpoint>();
+            endpoints.MapAllActuators();
         });
     }
 }

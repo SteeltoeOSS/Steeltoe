@@ -7,9 +7,7 @@ using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public interface IHealthEndpoint
+public interface IHealthEndpoint : IEndpoint<HealthEndpointResponse, ISecurityContext>
 {
-    HealthEndpointResponse Invoke(ISecurityContext securityContext);
-
     int GetStatusCode(HealthCheckResult health);
 }

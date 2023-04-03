@@ -5,6 +5,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
@@ -14,10 +15,7 @@ public class SecurityBaseTest : BaseTest
     [Fact]
     public void IsCloudFoundryRequest_ReturnsExpected()
     {
-        var cloudOpts = new CloudFoundryEndpointOptions();
-        var managementOptions = new CloudFoundryManagementOptions();
-        managementOptions.EndpointOptions.Add(cloudOpts);
-        var securityBase = new SecurityBase(cloudOpts, managementOptions);
+        SecurityBase securityBase = GetSecurityBase(out _, out _);
 
         Assert.True(securityBase.IsCloudFoundryRequest("/cloudfoundryapplication"));
         Assert.True(securityBase.IsCloudFoundryRequest("/cloudfoundryapplication/badpath"));
@@ -26,10 +24,7 @@ public class SecurityBaseTest : BaseTest
     [Fact]
     public async Task GetPermissionsAsyncTest()
     {
-        var cloudOpts = new CloudFoundryEndpointOptions();
-        var managementOptions = new CloudFoundryManagementOptions();
-        managementOptions.EndpointOptions.Add(cloudOpts);
-        var securityBase = new SecurityBase(cloudOpts, managementOptions);
+        SecurityBase securityBase = GetSecurityBase(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions);
         SecurityResult result = await securityBase.GetPermissionsAsync("testToken");
         Assert.NotNull(result);
     }
@@ -37,10 +32,7 @@ public class SecurityBaseTest : BaseTest
     [Fact]
     public async Task GetPermissionsTest()
     {
-        var cloudOpts = new CloudFoundryEndpointOptions();
-        var managementOptions = new CloudFoundryManagementOptions();
-        managementOptions.EndpointOptions.Add(cloudOpts);
-        var securityBase = new SecurityBase(cloudOpts, managementOptions);
+        SecurityBase securityBase = GetSecurityBase(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions);
         var response = new HttpResponseMessage(HttpStatusCode.OK);
 
         var perms = new Dictionary<string, object>
@@ -51,5 +43,13 @@ public class SecurityBaseTest : BaseTest
         response.Content = JsonContent.Create(perms);
         Permissions result = await securityBase.GetPermissionsAsync(response);
         Assert.Equal(Permissions.Full, result);
+    }
+
+    private static SecurityBase GetSecurityBase(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions)
+    {
+        cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>();
+        managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(CFContext.Name);
+        var securityBase = new SecurityBase(cloudOpts, managementOptions);
+        return securityBase;
     }
 }

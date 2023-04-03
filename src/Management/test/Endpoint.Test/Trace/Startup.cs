@@ -22,18 +22,13 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddCloudFoundryActuator(Configuration);
+        services.AddCloudFoundryActuator();
         services.AddTraceActuator(Configuration);
     }
 
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<CloudFoundryEndpoint>();
-            endpoints.Map<HttpTraceEndpoint>();
-        });
+        app.UseEndpoints(endpoints => endpoints.MapAllActuators());
     }
 }

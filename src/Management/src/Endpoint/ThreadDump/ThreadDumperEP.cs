@@ -11,6 +11,7 @@ using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Etlx;
 using Microsoft.Diagnostics.Tracing.Stacks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
@@ -34,10 +35,10 @@ public class ThreadDumperEp : IThreadDumper
         IsNativeMethod = true
     };
 
+    private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
     private readonly ILogger<ThreadDumperEp> _logger;
-    private readonly IThreadDumpOptions _options;
 
-    public ThreadDumperEp(IThreadDumpOptions options, ILogger<ThreadDumperEp> logger = null)
+    public ThreadDumperEp(IOptionsMonitor<ThreadDumpEndpointOptions> options, ILogger<ThreadDumperEp> logger = null)
     {
         ArgumentGuard.NotNull(options);
 
@@ -434,7 +435,7 @@ public class ThreadDumperEp : IThreadDumper
             await using (FileStream fs = File.OpenWrite(tempNetTraceFilename))
             {
                 Task copyTask = session.EventStream.CopyToAsync(fs);
-                await Task.Delay(_options.Duration);
+                await Task.Delay(_options.CurrentValue.Duration);
                 session.Stop();
 
                 // check if rundown is taking more than 5 seconds and log

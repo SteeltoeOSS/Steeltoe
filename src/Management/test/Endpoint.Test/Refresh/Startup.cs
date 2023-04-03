@@ -22,8 +22,8 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddCloudFoundryActuator(Configuration);
-        services.AddRefreshActuator(Configuration);
+        services.AddCloudFoundryActuator();
+        services.AddRefreshActuator();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -32,7 +32,7 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.Map<RefreshEndpoint>();
+            endpoints.MapAllActuators();
         });
     }
 }

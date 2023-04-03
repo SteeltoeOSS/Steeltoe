@@ -8,6 +8,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
@@ -21,11 +22,11 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     private const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
     private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private readonly IOptionsMonitor<TraceEndpointOptions> _options;
     private readonly ILogger<TraceDiagnosticObserver> _logger;
-    private readonly ITraceOptions _options;
     internal ConcurrentQueue<TraceResult> Queue = new();
 
-    public TraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
+    public TraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILogger<TraceDiagnosticObserver> logger = null)
         : base(DefaultObserverName, DiagnosticName, logger)
     {
         ArgumentGuard.NotNull(options);
@@ -66,7 +67,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
             TraceResult trace = MakeTrace(context, current.Duration);
             Queue.Enqueue(trace);
 
-            if (Queue.Count > _options.Capacity && !Queue.TryDequeue(out _))
+            if (Queue.Count > _options.CurrentValue.Capacity && !Queue.TryDequeue(out _))
             {
                 _logger?.LogDebug("Stop - Dequeue failed");
             }
@@ -77,6 +78,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     {
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;
+        TraceEndpointOptions options = _options.CurrentValue;
 
         var details = new Dictionary<string, object>
         {
@@ -87,52 +89,52 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         var headers = new Dictionary<string, object>();
         details.Add("headers", headers);
 
-        if (_options.AddRequestHeaders)
+        if (options.AddRequestHeaders)
         {
             headers.Add("request", GetHeaders(request.Headers));
         }
 
-        if (_options.AddResponseHeaders)
+        if (options.AddResponseHeaders)
         {
             headers.Add("response", GetHeaders(response.StatusCode, response.Headers));
         }
 
-        if (_options.AddPathInfo)
+        if (options.AddPathInfo)
         {
             details.Add("pathInfo", GetPathInfo(request));
         }
 
-        if (_options.AddUserPrincipal)
+        if (options.AddUserPrincipal)
         {
             details.Add("userPrincipal", GetUserPrincipal(context));
         }
 
-        if (_options.AddParameters)
+        if (options.AddParameters)
         {
             details.Add("parameters", GetRequestParameters(request));
         }
 
-        if (_options.AddQueryString)
+        if (options.AddQueryString)
         {
             details.Add("query", request.QueryString.Value);
         }
 
-        if (_options.AddAuthType)
+        if (options.AddAuthType)
         {
             details.Add("authType", GetAuthType(request));
         }
 
-        if (_options.AddRemoteAddress)
+        if (options.AddRemoteAddress)
         {
             details.Add("remoteAddress", GetRemoteAddress(context));
         }
 
-        if (_options.AddSessionId)
+        if (options.AddSessionId)
         {
             details.Add("sessionId", GetSessionId(context));
         }
 
-        if (_options.AddTimeTaken)
+        if (options.AddTimeTaken)
         {
             details.Add("timeTaken", GetTimeTaken(duration));
         }

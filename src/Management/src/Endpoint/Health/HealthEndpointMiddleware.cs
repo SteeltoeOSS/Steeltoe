@@ -4,25 +4,27 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
 public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointResponse, ISecurityContext>
 {
-    public HealthEndpointMiddleware(RequestDelegate next, IManagementOptions managementOptions, ILogger<InfoEndpointMiddleware> logger = null)
+    public HealthEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IHealthEndpoint endpoint,
+        ILogger<InfoEndpointMiddleware> logger = null)
         : base(managementOptions, logger)
     {
+        Endpoint = endpoint;
     }
 
-    public Task InvokeAsync(HttpContext context, HealthEndpointCore endpoint)
+    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        Endpoint = endpoint;
-
-        if (Endpoint.ShouldInvoke(managementOptions))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleHealthRequestAsync(context);
         }
@@ -41,11 +43,13 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
 
     protected internal string DoRequest(HttpContext context)
     {
-        HealthEndpointResponse result = Endpoint.Invoke(new CoreSecurityContext(context));
+        HealthEndpointResponse result = ((HealthEndpointCore)Endpoint).Invoke(new CoreSecurityContext(context));
 
-        if (managementOptions.UseStatusCodeFromResponse)
+        ManagementEndpointOptions currentOptions = managementOptions.CurrentValue;
+
+        if (currentOptions.UseStatusCodeFromResponse)
         {
-            context.Response.StatusCode = ((HealthEndpoint)Endpoint).GetStatusCode(result);
+            context.Response.StatusCode = ((HealthEndpointCore)Endpoint).GetStatusCode(result);
         }
 
         return Serialize(result);
