@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Connector.EntityFrameworkCore.PostgreSql;
-using Steeltoe.Connector.PostgreSql;
+using Steeltoe.Connector.MySql;
 using Xunit;
+using SteeltoeExtensions = Steeltoe.Connector.EntityFrameworkCore.MySql.MySqlDbContextOptionsBuilderExtensions;
 
 namespace Steeltoe.Connector.EntityFrameworkCore.Test;
 
-public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
+public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 {
     [Fact]
     public async Task Registers_connection_string_for_default_service_binding()
@@ -22,19 +22,21 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:Default"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass;Log Parameters=True"
+            ["Steeltoe:Client:MySql:Default"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;connect timeout=15"
         });
 
-        builder.AddPostgreSql();
-        builder.Services.Configure<PostgreSqlOptions>(options => options.ConnectionString += ";Include Error Detail=true");
-        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseNpgsql(serviceProvider));
+        builder.AddMySql();
+        builder.Services.Configure<MySqlOptions>(options => options.ConnectionString += ";Use Compression=false");
+
+        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) =>
+            SteeltoeExtensions.UseMySql(options, serviceProvider, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
 
         await using WebApplication app = builder.Build();
 
         await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
         string connectionString = dbContext.Database.GetConnectionString();
 
-        connectionString.Should().Be("Host=localhost;Database=myDb;Username=myUser;Password=myPass;Log Parameters=True;Include Error Detail=true");
+        connectionString.Should().Be("server=localhost;database=myDb;user id=steeltoe;password=steeltoe;connectiontimeout=15;Use Compression=false");
     }
 
     [Fact]
@@ -44,27 +46,29 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:myPostgreSqlService"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass;Log Parameters=True"
+            ["Steeltoe:Client:MySql:myMySqlService"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;connect timeout=15"
         });
 
-        builder.AddPostgreSql();
-        builder.Services.Configure<PostgreSqlOptions>("myPostgreSqlService", options => options.ConnectionString += ";Include Error Detail=true");
-        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseNpgsql(serviceProvider, "myPostgreSqlService"));
+        builder.AddMySql();
+        builder.Services.Configure<MySqlOptions>("myMySqlService", options => options.ConnectionString += ";Use Compression=false");
+
+        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) =>
+            SteeltoeExtensions.UseMySql(options, serviceProvider, "myMySqlService", MySqlServerVersion.LatestSupportedServerVersion));
 
         await using WebApplication app = builder.Build();
 
         await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
         string connectionString = dbContext.Database.GetConnectionString();
 
-        connectionString.Should().Be("Host=localhost;Database=myDb;Username=myUser;Password=myPass;Log Parameters=True;Include Error Detail=true");
+        connectionString.Should().Be("server=localhost;database=myDb;user id=steeltoe;password=steeltoe;connectiontimeout=15;Use Compression=false");
     }
 
     [Fact]
     public async Task Throws_for_unknown_service_binding()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.AddPostgreSql();
-        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseNpgsql(serviceProvider, "unknownService"));
+        builder.AddMySql();
+        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider, "unknownService"));
 
         await using WebApplication app = builder.Build();
 

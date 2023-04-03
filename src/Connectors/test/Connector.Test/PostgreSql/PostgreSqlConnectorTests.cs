@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Npgsql;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connector.PostgreSql;
 using Xunit;
 
@@ -345,6 +346,47 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         }, options => options.WithoutStrictOrdering());
 
         CleanupTempFiles(optionsAzureOne.ConnectionString, optionsAzureTwo.ConnectionString, optionsGoogle.ConnectionString);
+    }
+
+    [Fact]
+    public async Task Binds_options_with_Kubernetes_service_bindings()
+    {
+        try
+        {
+            string rootDir = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
+            Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", rootDir);
+
+            WebApplicationBuilder builder = WebApplication.CreateBuilder();
+            builder.Configuration.AddEnvironmentVariables();
+            builder.Configuration.AddKubernetesServiceBindings();
+
+            builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["Steeltoe:Client:PostgreSql:customer-profiles"] = "Include Error Detail=true;Log Parameters=true;host=localhost"
+            });
+
+            builder.AddPostgreSql();
+
+            await using WebApplication app = builder.Build();
+            var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
+
+            PostgreSqlOptions customerProfilesOptions = optionsMonitor.Get("customer-profiles");
+            customerProfilesOptions.Should().NotBeNull();
+
+            ExtractConnectionStringParameters(customerProfilesOptions.ConnectionString).Should().BeEquivalentTo(new List<string>
+            {
+                "Include Error Detail=True",
+                "Log Parameters=True",
+                "Host=10.194.59.205",
+                "Database=steeltoe",
+                "Username=testrolee93ccf859894dc60dcd53218492b37b4",
+                "Password=Qp!1mB1$Zk2T!$!D85_E"
+            }, options => options.WithoutStrictOrdering());
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", null);
+        }
     }
 
     [Fact]

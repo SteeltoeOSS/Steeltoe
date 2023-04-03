@@ -326,21 +326,15 @@ internal sealed class MySqlPostProcessor : IConfigurationPostProcessor
         configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingType).ForEach(
             bindingNameKey =>
             {
-                // Spring -> spring.datasource....
-                // Steeltoe -> steeltoe:service-bindings:mysql:binding-name....
                 var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingType,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
-                mapper.MapFromTo("username", "username");
-                mapper.MapFromTo("password", "password");
+                // See MySQL connection string parameters at: https://dev.mysql.com/doc/refman/8.0/en/connecting-using-uri-or-key-value-pairs.html#connection-parameters-base
                 mapper.MapFromTo("host", "host");
                 mapper.MapFromTo("port", "port");
                 mapper.MapFromTo("database", "database");
-
-                // Spring indicates this takes precedence over above
-                mapper.MapFromTo("jdbc-url", "jdbcUrl");
-
-                // Note: Spring also adds spring.r2dbc.... properties as well
+                mapper.MapFromTo("username", "username");
+                mapper.MapFromTo("password", "password");
             });
     }
 }
@@ -418,27 +412,15 @@ internal sealed class PostgreSqlPostProcessor : IConfigurationPostProcessor
         configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingType).ForEach(
             bindingNameKey =>
             {
-                // Spring -> spring.datasource....
-                // Steeltoe -> steeltoe:service-bindings:postgresql:binding-name....
                 var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingType,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
-                mapper.MapFromTo("username", "username");
-                mapper.MapFromTo("password", "password");
+                // See PostgreSQL connection string parameters at: https://www.npgsql.org/doc/connection-string-parameters.html
                 mapper.MapFromTo("host", "host");
                 mapper.MapFromTo("port", "port");
                 mapper.MapFromTo("database", "database");
-
-                // Note, look at the Spring PostgreSqlBindingsPropertiesProcessor for format
-                // of the below key values
-                mapper.MapFromTo("sslmode", "sslmode");
-                mapper.MapFromTo("sslrootcert", "sslrootcert");
-                mapper.MapFromTo("options", "options");
-
-                // Spring indicates this takes precedence over above
-                mapper.MapFromTo("jdbc-url", "jdbcUrl");
-
-                // Note: Spring also adds spring.r2dbc.... properties as well
+                mapper.MapFromTo("username", "username");
+                mapper.MapFromTo("password", "password");
             });
     }
 }
