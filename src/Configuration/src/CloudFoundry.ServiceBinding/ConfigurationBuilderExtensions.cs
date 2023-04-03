@@ -97,6 +97,7 @@ public static class ConfigurationBuilderExtensions
     private static IConfigurationBuilder RegisterPostProcessors(IConfigurationBuilder builder, ServiceBindingConfigurationSource source)
     {
         source.RegisterPostProcessor(new PostgreSqlPostProcessor());
+        source.RegisterPostProcessor(new MySqlPostProcessor());
 
         builder.Add(source);
         return builder;
