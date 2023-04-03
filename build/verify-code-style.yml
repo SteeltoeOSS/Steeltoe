@@ -35,7 +35,7 @@ jobs:
       script: |
         if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
           Write-Output "Running code cleanup on all files in branch."
-          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff
+          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=TRACE --jb --LogFolder=$env:BUILD_ARTIFACTSTAGINGDIRECTORY/cleanup-logs --jb --debug --fail-on-diff --print-diff
         }
         else {
           # We are in detached head (the merge result), so there's no need to account for an out-of-date PR.
@@ -46,5 +46,18 @@ jobs:
           if ($LastExitCode -ne 0) { throw "Command 'git rev-parse (2)' failed with exit code $LastExitCode." }
   
           Write-Output "Running code cleanup on commit range $baseCommitHash..$headCommitHash in pull request."
-          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff -f commits -a $headCommitHash -b $baseCommitHash
+          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=TRACE --jb --LogFolder=$env:BUILD_ARTIFACTSTAGINGDIRECTORY/cleanup-logs --jb --debug --fail-on-diff --print-diff -f commits -a $headCommitHash -b $baseCommitHash
         }
+  - task: PowerShell@2
+    condition: always()
+    displayName: Kill hanging processes
+    inputs:
+      targetType: 'inline'
+      script: |
+        Get-Process | Where-Object {$_.ProcessName -eq 'dotnet'} | Stop-Process -Force
+        Get-Process | Where-Object {$_.ProcessName -eq 'msbuild'} | Stop-Process -Force
+        Get-Process | Where-Object {$_.ProcessName -eq 'VBCSCompiler'} | Stop-Process -Force
+  - publish: $(Build.ArtifactStagingDirectory)/cleanup-logs
+    condition: always()
+    displayName: Publish cleanup logs
+    artifact: cleanup-logs
