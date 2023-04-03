@@ -2,18 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
 namespace Steeltoe.Connector;
 
-public sealed class ConnectionProvider<TOptions, TConnection>
+public sealed class ConnectionProvider<TOptions, TConnection> : IDisposable
     where TOptions : ConnectionStringOptions
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IOptionsMonitor<TOptions> _optionsMonitor;
     private readonly string _name;
-    private readonly Func<string, object> _createConnection;
+    private readonly Func<TOptions, string, object> _createConnection;
+    private readonly Lazy<(object Connection, TOptions OptionsSnapshot)> _singletonConnectionWithOptions;
+    private bool _hasDisposedSingleton;
 
     /// <summary>
     /// Gets the options for this service binding.
@@ -22,20 +23,37 @@ public sealed class ConnectionProvider<TOptions, TConnection>
     {
         get
         {
-            var optionsMonitor = _serviceProvider.GetRequiredService<IOptionsMonitor<TOptions>>();
-            return optionsMonitor.Get(_name);
+            if (_singletonConnectionWithOptions != null)
+            {
+                AssertNotDisposed();
+
+                // Return the options snapshot that was taken at singleton creation time, for consistency.
+                // When a singleton connection is used, we don't expose or respond to option changes. We can't dispose
+                // the previous singleton, because it may still be in use. And replacing the singleton could result
+                // in a single request observing two difference instances, leading to hard-to-reproduce bugs.
+                return _singletonConnectionWithOptions.Value.OptionsSnapshot;
+            }
+
+            return _optionsMonitor.Get(_name);
         }
     }
 
-    public ConnectionProvider(IServiceProvider serviceProvider, string name, Func<string, object> createConnection)
+    internal ConnectionProvider(IOptionsMonitor<TOptions> optionsMonitor, string name, Func<TOptions, string, object> createConnection,
+        bool useSingletonConnection)
     {
-        ArgumentGuard.NotNull(createConnection);
+        ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(name);
-        ArgumentGuard.NotNull(serviceProvider);
+        ArgumentGuard.NotNull(createConnection);
 
-        _serviceProvider = serviceProvider;
+        _optionsMonitor = optionsMonitor;
         _name = name;
         _createConnection = createConnection;
+
+        if (useSingletonConnection)
+        {
+            _singletonConnectionWithOptions =
+                new Lazy<(object Connection, TOptions OptionsSnapshot)>(CreateConnectionFromOptions, LazyThreadSafetyMode.ExecutionAndPublication);
+        }
     }
 
     /// <summary>
@@ -46,18 +64,54 @@ public sealed class ConnectionProvider<TOptions, TConnection>
     /// </returns>
     public TConnection CreateConnection()
     {
-        string connectionString = Options.ConnectionString;
-
-        if (connectionString == null)
+        if (_singletonConnectionWithOptions != null)
         {
-            string message = _name == string.Empty
-                ? "Connection string for default service binding not found."
-                : $"Connection string for service binding '{_name}' not found.";
-
-            throw new InvalidOperationException(message);
+            AssertNotDisposed();
+            return (TConnection)_singletonConnectionWithOptions.Value.Connection;
         }
 
-        object connection = _createConnection(connectionString);
+        (object connection, TOptions _) = CreateConnectionFromOptions();
         return (TConnection)connection;
+    }
+
+    private void AssertNotDisposed()
+    {
+        if (_hasDisposedSingleton)
+        {
+            throw new ObjectDisposedException(GetType().FullName);
+        }
+    }
+
+    private (object Connection, TOptions OptionsSnapshot) CreateConnectionFromOptions()
+    {
+        TOptions optionsSnapshot = _optionsMonitor.Get(_name);
+
+        if (optionsSnapshot.ConnectionString == null)
+        {
+            throw new InvalidOperationException(_name == string.Empty
+                ? "Connection string for default service binding not found."
+                : $"Connection string for service binding '{_name}' not found.");
+        }
+
+        object connection = _createConnection(optionsSnapshot, _name);
+
+        if (connection == null)
+        {
+            throw new InvalidOperationException(_name == string.Empty
+                ? "Failed to create connection for default service binding."
+                : $"Failed to create connection for service binding '{_name}'.");
+        }
+
+        return (connection, optionsSnapshot);
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_singletonConnectionWithOptions is { IsValueCreated: true, Value.Connection: IDisposable disposable })
+        {
+            disposable.Dispose();
+            _hasDisposedSingleton = true;
+        }
     }
 }

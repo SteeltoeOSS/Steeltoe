@@ -10,23 +10,24 @@ namespace Steeltoe.Connector.SqlServer;
 
 public static class SqlServerWebApplicationBuilderExtensions
 {
+    private static readonly Type ConnectionType = SqlServerTypeLocator.SqlConnection;
+
     public static WebApplicationBuilder AddSqlServer(this WebApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
         var connectionStringPostProcessor = new SqlServerConnectionStringPostProcessor();
-        Type connectionType = SqlServerTypeLocator.SqlConnection;
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
         BaseWebApplicationBuilderExtensions.RegisterNamedOptions<SqlServerOptions>(builder, "sqlserver", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory<SqlServerOptions>(builder.Services, connectionType);
+        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory<SqlServerOptions>(builder.Services, ConnectionType, false, null);
 
         return builder;
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
     {
-        return BaseWebApplicationBuilderExtensions.CreateRelationalHealthContributor<SqlServerOptions>(serviceProvider, bindingName,
-            SqlServerTypeLocator.SqlConnection, "SqlServer", "Data Source");
+        return BaseWebApplicationBuilderExtensions.CreateRelationalHealthContributor<SqlServerOptions>(serviceProvider, bindingName, ConnectionType,
+            "SqlServer", "Data Source");
     }
 }

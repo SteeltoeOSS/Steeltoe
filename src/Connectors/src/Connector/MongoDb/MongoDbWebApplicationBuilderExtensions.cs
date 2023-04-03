@@ -12,26 +12,27 @@ namespace Steeltoe.Connector.MongoDb;
 
 public static class MongoDbWebApplicationBuilderExtensions
 {
+    private static readonly Type ConnectionType = MongoDbTypeLocator.MongoClient;
+
     public static WebApplicationBuilder AddMongoDb(this WebApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
         var connectionStringPostProcessor = new MongoDbConnectionStringPostProcessor();
-        Type connectionType = MongoDbTypeLocator.MongoClient;
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
         BaseWebApplicationBuilderExtensions.RegisterNamedOptions<MongoDbOptions>(builder, "mongodb", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory<MongoDbOptions>(builder.Services, connectionType);
+        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory<MongoDbOptions>(builder.Services, ConnectionType, false, null);
 
         return builder;
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
     {
-        string connectionString = ConnectionFactoryInvoker.GetConnectionString<MongoDbOptions>(serviceProvider, bindingName, MongoDbTypeLocator.MongoClient);
+        string connectionString = ConnectionFactoryInvoker.GetConnectionString<MongoDbOptions>(serviceProvider, bindingName, ConnectionType);
         string serviceName = $"MongoDB-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connectionString);
-        object mongoClient = ConnectionFactoryInvoker.CreateConnection<MongoDbOptions>(serviceProvider, bindingName, MongoDbTypeLocator.MongoClient);
+        object mongoClient = ConnectionFactoryInvoker.CreateConnection<MongoDbOptions>(serviceProvider, bindingName, ConnectionType);
         var logger = serviceProvider.GetRequiredService<ILogger<MongoDbHealthContributor>>();
 
         return new MongoDbHealthContributor(mongoClient, serviceName, hostName, logger);
