@@ -42,7 +42,7 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
         }
 
         string gzFileName = $"{fileName}.gz";
-        Stream result = await Utils.CompressFileAsync(fileName, gzFileName,logger);
+        Stream result = await Utils.CompressFileAsync(fileName, gzFileName, logger);
 
         if (result != null)
         {

@@ -13,8 +13,7 @@ namespace Steeltoe.Management.Endpoint.Env;
 
 public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
 {
-    public EnvEndpointMiddleware(IEnvEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<EnvEndpointMiddleware> logger)
+    public EnvEndpointMiddleware(IEnvEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<EnvEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
     }

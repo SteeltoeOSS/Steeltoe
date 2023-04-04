@@ -13,8 +13,7 @@ namespace Steeltoe.Management.Endpoint.Info;
 
 public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>>
 {
-    public InfoEndpointMiddleware(IInfoEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<InfoEndpointMiddleware> logger)
+    public InfoEndpointMiddleware(IInfoEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<InfoEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
     }

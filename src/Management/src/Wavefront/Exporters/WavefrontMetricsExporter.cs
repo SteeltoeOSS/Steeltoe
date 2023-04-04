@@ -32,10 +32,12 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
 
         string token = string.Empty;
         string uri = Options.Uri;
-        if(string.IsNullOrEmpty(uri))
+
+        if (string.IsNullOrEmpty(uri))
         {
             throw new ArgumentException("management:metrics:export:wavefront:uri cannot be null or empty");
         }
+
         if (uri.StartsWith("proxy://", StringComparison.Ordinal))
         {
             uri = $"http{Options.Uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
@@ -117,7 +119,7 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
     private IDictionary<string, string> GetTags(ReadOnlyTagCollection inputTags)
     {
         IDictionary<string, string> tags = inputTags.AsDictionary();
-        
+
         tags.Add("application", Options.Name.ToLowerInvariant());
         tags.Add("service", Options.Service.ToLowerInvariant());
 

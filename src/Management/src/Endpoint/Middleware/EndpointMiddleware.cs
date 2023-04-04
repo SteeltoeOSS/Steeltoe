@@ -110,7 +110,7 @@ public abstract class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware
         : base(managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpoint);
-      
+
         Endpoint = endpoint;
     }
 

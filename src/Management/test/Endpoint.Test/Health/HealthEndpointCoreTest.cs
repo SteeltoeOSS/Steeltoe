@@ -29,11 +29,20 @@ public class HealthEndpointCoreTest : BaseTest
     {
         var contributors = new List<IHealthContributor>();
 
-        var optionsEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(null, _aggregator, contributors, ServiceOptions(), _provider, NullLogger<HealthEndpointCore>.Instance));
-        var aggregatorEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(_options, null, contributors, ServiceOptions(), _provider, NullLogger<HealthEndpointCore>.Instance));
-        var contribEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(_options, _aggregator, null, ServiceOptions(), _provider, NullLogger<HealthEndpointCore>.Instance));
-        var svcOptsEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(_options, _aggregator, contributors, null, _provider, NullLogger<HealthEndpointCore>.Instance));
-        var providerEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), null, NullLogger<HealthEndpointCore>.Instance));
+        var optionsEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpointCore(null, _aggregator, contributors, ServiceOptions(), _provider, NullLogger<HealthEndpointCore>.Instance));
+
+        var aggregatorEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpointCore(_options, null, contributors, ServiceOptions(), _provider, NullLogger<HealthEndpointCore>.Instance));
+
+        var contribEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpointCore(_options, _aggregator, null, ServiceOptions(), _provider, NullLogger<HealthEndpointCore>.Instance));
+
+        var svcOptsEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpointCore(_options, _aggregator, contributors, null, _provider, NullLogger<HealthEndpointCore>.Instance));
+
+        var providerEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), null, NullLogger<HealthEndpointCore>.Instance));
 
         Assert.Equal("options", optionsEx.ParamName);
         Assert.Equal("aggregator", aggregatorEx.ParamName);
@@ -148,7 +157,10 @@ public class HealthEndpointCoreTest : BaseTest
         };
 
         IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
-        var ep = new HealthEndpointCore(options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider, NullLogger<HealthEndpointCore>.Instance);
+
+        var ep = new HealthEndpointCore(options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider,
+            NullLogger<HealthEndpointCore>.Instance);
+
         var context = Substitute.For<ISecurityContext>();
 
         context.GetRequestComponents().Returns(new[]
@@ -240,7 +252,10 @@ public class HealthEndpointCoreTest : BaseTest
         };
 
         IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
-        var ep = new HealthEndpointCore(options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), _provider, NullLogger<HealthEndpointCore>.Instance);
+
+        var ep = new HealthEndpointCore(options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), _provider,
+            NullLogger<HealthEndpointCore>.Instance);
+
         var context = Substitute.For<ISecurityContext>();
 
         context.GetRequestComponents().Returns(new[]
@@ -275,7 +290,9 @@ public class HealthEndpointCoreTest : BaseTest
             new UpContributor()
         };
 
-        var ep = new HealthEndpointCore(options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider, NullLogger<HealthEndpointCore>.Instance);
+        var ep = new HealthEndpointCore(options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider,
+            NullLogger<HealthEndpointCore>.Instance);
+
         var context = Substitute.For<ISecurityContext>();
 
         context.GetRequestComponents().Returns(new[]

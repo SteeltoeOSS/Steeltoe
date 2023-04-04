@@ -43,7 +43,10 @@ public class SpringBootAdminClientHostedServiceTest : BaseTest
                 .Respond(_ => new HttpResponseMessage(HttpStatusCode.NoContent));
 
             Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
-            var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions, NullLogger<SpringBootAdminClientHostedService>.Instance, httpMessageHandler.ToHttpClient());
+
+            var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions,
+                NullLogger<SpringBootAdminClientHostedService>.Instance, httpMessageHandler.ToHttpClient());
+
             await service.StartAsync(default);
             await service.StopAsync(default);
 
@@ -79,7 +82,10 @@ public class SpringBootAdminClientHostedServiceTest : BaseTest
             .Throw(new HttpRequestException("No connection could be made because the target machine actively refused it."));
 
         Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
-        var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions, NullLogger<SpringBootAdminClientHostedService>.Instance, httpMessageHandler.ToHttpClient());
+
+        var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions,
+            NullLogger<SpringBootAdminClientHostedService>.Instance, httpMessageHandler.ToHttpClient());
+
         await service.StartAsync(default);
 
         httpMessageHandler.VerifyNoOutstandingExpectation();

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Net.Security;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -57,6 +56,7 @@ public class TracingBaseServiceCollectionExtensionsTest : TestBase
         {
             { "Management:Tracing:AlwaysSample", "true" }
         }));
+
         services.AddLogging();
         ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
         var hst = serviceProvider.GetService<IHostedService>();
@@ -69,7 +69,7 @@ public class TracingBaseServiceCollectionExtensionsTest : TestBase
         {
             { "Management:Tracing:NeverSample", "true" }
         }));
-    
+
         serviceProvider = services.AddLogging().AddDistributedTracing(null).BuildServiceProvider();
         hst = serviceProvider.GetService<IHostedService>();
         Assert.NotNull(hst);
