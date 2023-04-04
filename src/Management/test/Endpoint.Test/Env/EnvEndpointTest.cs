@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Placeholder;
@@ -31,10 +32,10 @@ public class EnvEndpointTest : BaseTest
         IConfiguration configuration = null;
         const IHostEnvironment env = null;
 
-        Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env));
+        Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env, NullLogger<EnvEndpoint>.Instance));
 
         configuration = new ConfigurationBuilder().Build();
-        Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env));
+        Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env, NullLogger<EnvEndpoint>.Instance));
     }
 
     [Fact]

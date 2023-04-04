@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.Metrics;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
@@ -52,7 +53,7 @@ public class EventCounterListenerTest : BaseTest
         };
 
         var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
-        using var listener = new EventCounterListener(optionsMonitor);
+        using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
         var exporter = new SteeltoeExporter(_exporterOptions);
@@ -90,7 +91,7 @@ public class EventCounterListenerTest : BaseTest
         };
 
         var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
-        using var listener = new EventCounterListener(optionsMonitor);
+        using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
 
         var exporter = new SteeltoeExporter(_exporterOptions);
         AggregationManager aggregationManager = GetTestMetrics(exporter);
@@ -131,7 +132,7 @@ public class EventCounterListenerTest : BaseTest
             EventCounterEvents = true
         });
 
-        using var listener = new EventCounterListener(optionsMonitor);
+        using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
 
         var exporter = new SteeltoeExporter(_exporterOptions);
         AggregationManager aggregationManager = GetTestMetrics(exporter);

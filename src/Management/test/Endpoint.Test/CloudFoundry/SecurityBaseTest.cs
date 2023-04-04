@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Options;
 using Xunit;
@@ -49,7 +50,7 @@ public class SecurityBaseTest : BaseTest
     {
         cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>();
         managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(CFContext.Name);
-        var securityBase = new SecurityBase(cloudOpts, managementOptions);
+        var securityBase = new SecurityBase(cloudOpts, managementOptions, NullLogger.Instance);
         return securityBase;
     }
 }

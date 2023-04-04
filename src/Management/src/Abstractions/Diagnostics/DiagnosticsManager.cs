@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
@@ -12,7 +13,7 @@ namespace Steeltoe.Management.Diagnostics;
 
 public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
 {
-    private static readonly Lazy<DiagnosticsManager> AsSingleton = new(() => new DiagnosticsManager());
+    private static readonly Lazy<DiagnosticsManager> AsSingleton = new(() => new DiagnosticsManager(NullLogger<DiagnosticsManager>.Instance));
 
     private bool _isDisposed;
     internal IDisposable ListenersSubscription;
@@ -31,7 +32,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
     public IList<IRuntimeDiagnosticSource> Sources => InnerSources;
 
     public DiagnosticsManager(IOptionsMonitor<MetricsObserverOptions> observerOptions, IEnumerable<IRuntimeDiagnosticSource> runtimeSources,
-        IEnumerable<IDiagnosticObserver> observers, IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger = null)
+        IEnumerable<IDiagnosticObserver> observers, IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger)
     {
         ArgumentGuard.NotNull(observers);
 
@@ -51,7 +52,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
         EventListeners = eventListeners.ToList();
     }
 
-    internal DiagnosticsManager(ILogger<DiagnosticsManager> logger = null)
+    internal DiagnosticsManager(ILogger<DiagnosticsManager> logger)
     {
         Logger = logger;
         InnerObservers = new List<IDiagnosticObserver>();

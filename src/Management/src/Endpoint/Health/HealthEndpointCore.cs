@@ -24,7 +24,7 @@ public class HealthEndpointCore : IHealthEndpoint
     public IEndpointOptions Options => _options.CurrentValue;
 
     public HealthEndpointCore(IOptionsMonitor<HealthEndpointOptions> options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
-        IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpointCore> logger = null)
+        IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpointCore> logger)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(aggregator);
@@ -101,11 +101,11 @@ public class HealthEndpointCore : IHealthEndpoint
                 return svcOptions.CurrentValue.Registrations.Where(n => includedContributors.Contains(n.Name, StringComparer.OrdinalIgnoreCase)).ToList();
             }
 
-            _logger?.LogInformation("Health check requested for a group that is not configured");
+            _logger.LogInformation("Health check requested for a group that is not configured");
         }
         else
         {
-            _logger?.LogTrace("Health group name not found in request");
+            _logger.LogTrace("Health group name not found in request");
         }
 
         return svcOptions.CurrentValue.Registrations;
@@ -126,7 +126,7 @@ public class HealthEndpointCore : IHealthEndpoint
             return requestComponents[^1];
         }
 
-        _logger?.LogWarning("Failed to find anything in the request from which to parse health group name.");
+        _logger.LogWarning("Failed to find anything in the request from which to parse health group name.");
 
         return string.Empty;
     }
@@ -158,12 +158,12 @@ public class HealthEndpointCore : IHealthEndpoint
             }
             else
             {
-                _logger?.LogInformation("Health check requested for a group that is not configured");
+                _logger.LogInformation("Health check requested for a group that is not configured");
             }
         }
         else
         {
-            _logger?.LogTrace("Health group name not found in request");
+            _logger.LogTrace("Health group name not found in request");
         }
 
         return contributors;

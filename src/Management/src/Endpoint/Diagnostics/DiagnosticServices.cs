@@ -12,7 +12,7 @@ public class DiagnosticServices : IHostedService
 {
     private readonly IDiagnosticsManager _observerManager;
 
-    public DiagnosticServices(IDiagnosticsManager observerManager, ILogger<DiagnosticServices> logger = null)
+    public DiagnosticServices(IDiagnosticsManager observerManager, ILogger<DiagnosticServices> logger)
     {
         _observerManager = observerManager;
     }

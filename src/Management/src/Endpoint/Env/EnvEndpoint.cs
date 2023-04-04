@@ -21,7 +21,7 @@ public class EnvEndpoint : IEnvEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public EnvEndpoint(IOptionsMonitor<EnvEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILogger<EnvEndpoint> logger = null)
+    public EnvEndpoint(IOptionsMonitor<EnvEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILogger<EnvEndpoint> logger)
     {
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(env);

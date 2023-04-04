@@ -19,7 +19,7 @@ public class CloudFoundryEndpoint : ICloudFoundryEndpoint
     public IEndpointOptions Options => _options.CurrentValue;
 
     public CloudFoundryEndpoint(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IEnumerable<IEndpointOptions> endpointOptions, ILogger<CloudFoundryEndpoint> logger = null)
+        IEnumerable<IEndpointOptions> endpointOptions, ILogger<CloudFoundryEndpoint> logger)
     {
         _options = options;
         _managementOptions = managementOptions;

@@ -12,7 +12,7 @@ public class TracingCoreHostBuilderExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration());
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
 
         ServiceProvider serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider();
 

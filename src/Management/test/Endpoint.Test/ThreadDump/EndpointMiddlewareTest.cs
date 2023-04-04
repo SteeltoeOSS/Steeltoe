@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Logging.DynamicLogger;
@@ -39,9 +40,9 @@ public class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<ThreadDumpEndpointOptions> opts = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-        var obs = new ThreadDumperEp(opts);
-        var ep = new ThreadDumpEndpoint(opts, obs);
-        var middle = new ThreadDumpEndpointMiddleware(ep, managementOptions);
+        var obs = new ThreadDumperEp(opts, NullLogger<ThreadDumperEp>.Instance);
+        var ep = new ThreadDumpEndpoint(opts, obs, NullLogger<ThreadDumpEndpoint>.Instance);
+        var middle = new ThreadDumpEndpointMiddleware(ep, managementOptions, NullLogger<ThreadDumpEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/dump");
         await middle.HandleThreadDumpRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);

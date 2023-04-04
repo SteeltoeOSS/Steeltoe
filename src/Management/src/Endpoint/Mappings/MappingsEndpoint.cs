@@ -24,9 +24,8 @@ public class MappingsEndpoint : IMappingsEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public MappingsEndpoint(IOptionsMonitor<MappingsEndpointOptions> options, IRouteMappings routeMappings = null,
-        IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null,
-        ILogger<MappingsEndpoint> logger = null)
+    public MappingsEndpoint(IOptionsMonitor<MappingsEndpointOptions> options, ILogger<MappingsEndpoint> logger, IRouteMappings routeMappings = null,
+        IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null)
     {
         _options = options;
         _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;

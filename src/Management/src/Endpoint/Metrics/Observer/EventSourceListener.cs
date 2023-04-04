@@ -22,7 +22,7 @@ public class EventSourceListener : EventListener
 
     protected ConcurrentDictionary<string, Counter<double>> DoubleCounters { get; set; }
 
-    internal EventSourceListener(ILogger<EventSourceListener> logger = null)
+    internal EventSourceListener(ILogger<EventSourceListener> logger)
     {
         _logger = logger;
         LongCounters = new ConcurrentDictionary<string, Counter<long>>();
@@ -70,7 +70,7 @@ public class EventSourceListener : EventListener
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex.Message, ex);
+            _logger.LogError(ex.Message, ex);
         }
     }
 
@@ -129,7 +129,7 @@ public class EventSourceListener : EventListener
                 longValue = Convert.ToInt64(boolValue, CultureInfo.InvariantCulture);
                 break;
             default:
-                _logger?.LogDebug($"Unhandled type at {metricName} - {payloadValue.GetType()} - {payloadValue}");
+                _logger.LogDebug($"Unhandled type at {metricName} - {payloadValue.GetType()} - {payloadValue}");
                 break;
         }
 

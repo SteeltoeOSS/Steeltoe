@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Info;
 public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>>
 {
     public InfoEndpointMiddleware(IInfoEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<InfoEndpointMiddleware> logger = null)
+        ILogger<InfoEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
     }
@@ -34,7 +34,7 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
     protected internal Task HandleInfoRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest();
-        logger?.LogDebug("Returning: {info}", serialInfo);
+        logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);

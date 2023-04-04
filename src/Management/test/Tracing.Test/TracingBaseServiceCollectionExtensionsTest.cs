@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net.Security;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -24,6 +25,7 @@ public class TracingBaseServiceCollectionExtensionsTest : TestBase
     public void AddDistributedTracing_ConfiguresExpectedDefaults()
     {
         IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration());
+        services.AddLogging();
 
         ServiceProvider serviceProvider = services.AddDistributedTracing().BuildServiceProvider();
 
@@ -35,7 +37,7 @@ public class TracingBaseServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracing_WiresIncludedExporters()
     {
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration());
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
 
         ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
         var hst = serviceProvider.GetService<IHostedService>();
@@ -55,7 +57,7 @@ public class TracingBaseServiceCollectionExtensionsTest : TestBase
         {
             { "Management:Tracing:AlwaysSample", "true" }
         }));
-
+        services.AddLogging();
         ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
         var hst = serviceProvider.GetService<IHostedService>();
         Assert.NotNull(hst);
@@ -67,8 +69,8 @@ public class TracingBaseServiceCollectionExtensionsTest : TestBase
         {
             { "Management:Tracing:NeverSample", "true" }
         }));
-
-        serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+    
+        serviceProvider = services.AddLogging().AddDistributedTracing(null).BuildServiceProvider();
         hst = serviceProvider.GetService<IHostedService>();
         Assert.NotNull(hst);
         tracerProvider = serviceProvider.GetService<TracerProvider>();

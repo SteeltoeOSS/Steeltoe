@@ -13,7 +13,7 @@ internal sealed class TestLoggersEndpoint : LoggersEndpoint
 {
     public TestLoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, IDynamicLoggerProvider loggerProvider = null,
         ILogger<LoggersEndpoint> logger = null)
-        : base(options, loggerProvider, logger)
+        : base(options, logger, loggerProvider)
     {
     }
 

@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.Trace;
@@ -21,7 +22,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         const IOptionsMonitor<TraceEndpointOptions> options = null;
 
-        var ex2 = Assert.Throws<ArgumentNullException>(() => new TraceDiagnosticObserver(options));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => new TraceDiagnosticObserver(options, NullLogger<TraceDiagnosticObserver>.Instance));
         Assert.Contains(nameof(options), ex2.Message, StringComparison.Ordinal);
     }
 
@@ -30,7 +31,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         HttpContext context = CreateRequest();
         string result = obs.GetSessionId(context);
         Assert.Null(result);
@@ -41,7 +42,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         HttpContext context = CreateRequest();
 
         var session = new TestSession();
@@ -62,7 +63,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         HttpContext context = CreateRequest();
         string result = obs.GetUserPrincipal(context);
         Assert.Null(result);
@@ -73,7 +74,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         HttpContext context = CreateRequest();
 
         context.User = new ClaimsPrincipal(new MyIdentity());
@@ -86,7 +87,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         HttpContext context = CreateRequest();
         string result = obs.GetRemoteAddress(context);
         Assert.Null(result);
@@ -97,7 +98,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         HttpContext context = CreateRequest();
 
         string result = obs.GetPathInfo(context.Request);
@@ -109,7 +110,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         HttpContext context = CreateRequest();
         string result = obs.GetRequestUri(context.Request);
         Assert.Equal("http://localhost:1111/myPath", result);
@@ -120,7 +121,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         HttpContext context = CreateRequest();
         Dictionary<string, string[]> result = obs.GetRequestParameters(context.Request);
         Assert.NotNull(result);
@@ -139,7 +140,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         TimeSpan time = TimeSpan.FromTicks(10_000_000);
         string result = obs.GetTimeTaken(time);
         string expected = time.TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
@@ -151,7 +152,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         HttpContext context = CreateRequest();
 
         Dictionary<string, object> result = obs.GetHeaders(100, context.Request.Headers);
@@ -172,7 +173,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
 
         HttpContext context = obs.GetHttpContextPropertyValue(new
         {
@@ -187,7 +188,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         HttpContext expectedContext = CreateRequest();
 
         HttpContext context = obs.GetHttpContextPropertyValue(new
@@ -203,7 +204,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         HttpContext context = CreateRequest();
         TimeSpan duration = TimeSpan.FromTicks(20_000_000 - 10_000_000);
         TraceResult result = obs.MakeTrace(context, duration);
@@ -231,7 +232,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
 
         // No current activity, event ignored
         obs.ProcessEvent("foobar", null);
@@ -258,7 +259,7 @@ public class TraceDiagnosticObserverTest : BaseTest
         var listener = new DiagnosticListener("Microsoft.AspNetCore");
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         obs.Subscribe(listener);
 
         HttpContext context = CreateRequest();
@@ -303,7 +304,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
 
         var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
         current.Start();
@@ -342,7 +343,7 @@ public class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
         current.Start();
 
@@ -365,7 +366,7 @@ public class TraceDiagnosticObserverTest : BaseTest
         var listener = new DiagnosticListener("test");
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option);
+        var obs = new TraceDiagnosticObserver(option, NullLogger<TraceDiagnosticObserver>.Instance);
         var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
         current.Start();
 

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -37,9 +38,9 @@ public class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(opts);
+        var obs = new TraceDiagnosticObserver(opts, NullLogger<TraceDiagnosticObserver>.Instance);
         var ep = new TestTraceEndpoint(opts, obs);
-        var middle = new TraceEndpointMiddleware(ep, managementOptions);
+        var middle = new TraceEndpointMiddleware(ep, managementOptions, NullLogger<TraceEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/httptrace");
         await middle.HandleTraceRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -54,9 +55,9 @@ public class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(opts);
+        var obs = new TraceDiagnosticObserver(opts, NullLogger<TraceDiagnosticObserver>.Instance);
         var ep = new TestTraceEndpoint(opts, obs);
-        var middle = new TraceEndpointMiddleware(ep, managementOptions);
+        var middle = new TraceEndpointMiddleware(ep, managementOptions, NullLogger<TraceEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/trace");
         await middle.HandleTraceRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);

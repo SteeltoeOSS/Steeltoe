@@ -68,7 +68,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
 
             if (Queue.Count > _options.CurrentValue.Capacity && !Queue.TryDequeue(out _))
             {
-                _logger?.LogDebug("Stop - Dequeue failed");
+                _logger.LogDebug("Stop - Dequeue failed");
             }
         }
     }

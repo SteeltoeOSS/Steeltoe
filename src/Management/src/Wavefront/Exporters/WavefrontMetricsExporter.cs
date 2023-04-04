@@ -106,11 +106,11 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error sending metrics to wavefront: {message}", ex.Message);
+                _logger.LogError(ex, "Error sending metrics to wavefront: {message}", ex.Message);
             }
         }
 
-        _logger?.LogTrace("Exported {MetricCount} metrics to {Uri}", metricCount, Options.Uri);
+        _logger.LogTrace("Exported {MetricCount} metrics to {Uri}", metricCount, Options.Uri);
         return ExportResult.Success;
     }
 

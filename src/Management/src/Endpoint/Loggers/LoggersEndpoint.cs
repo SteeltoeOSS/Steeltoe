@@ -29,8 +29,7 @@ public class LoggersEndpoint : ILoggersEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public LoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, IDynamicLoggerProvider cloudFoundryLoggerProvider = null,
-        ILogger<LoggersEndpoint> logger = null)
+    public LoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, ILogger<LoggersEndpoint> logger, IDynamicLoggerProvider cloudFoundryLoggerProvider = null)
     {
         _options = options;
         _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider;
@@ -39,7 +38,7 @@ public class LoggersEndpoint : ILoggersEndpoint
 
     public virtual Dictionary<string, object> Invoke(LoggersChangeRequest request)
     {
-        _logger?.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
+        _logger.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
 
         return DoInvoke(_cloudFoundryLoggerProvider, request);
     }
@@ -80,7 +79,7 @@ public class LoggersEndpoint : ILoggersEndpoint
     {
         if (provider == null)
         {
-            _logger?.LogInformation("Unable to access the Dynamic Logging provider, log configuration unavailable");
+            _logger.LogInformation("Unable to access the Dynamic Logging provider, log configuration unavailable");
             return new List<ILoggerConfiguration>();
         }
 
@@ -91,7 +90,7 @@ public class LoggersEndpoint : ILoggersEndpoint
     {
         if (provider == null)
         {
-            _logger?.LogInformation("Unable to access the Dynamic Logging provider, log level not changed");
+            _logger.LogInformation("Unable to access the Dynamic Logging provider, log level not changed");
             return;
         }
 
@@ -108,7 +107,7 @@ public class LoggersEndpoint : ILoggersEndpoint
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Exception deserializing LoggersEndpoint Request.");
+            _logger.LogError(e, "Exception deserializing LoggersEndpoint Request.");
         }
 
         return new Dictionary<string, string>();

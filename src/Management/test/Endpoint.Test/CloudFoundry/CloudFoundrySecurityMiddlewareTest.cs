@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -295,7 +296,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         IOptionsMonitor<CloudFoundryEndpointOptions> opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-        var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions);
+        var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions, NullLogger<CloudFoundrySecurityMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/");
         string token = middle.GetAccessToken(context.Request);
         Assert.Null(token);
@@ -312,7 +313,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         IOptionsMonitor<CloudFoundryEndpointOptions> opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-        var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions);
+        var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions, NullLogger<CloudFoundrySecurityMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/");
         SecurityResult result = await middle.GetPermissionsAsync(context);
         Assert.NotNull(result);

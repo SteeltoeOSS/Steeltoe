@@ -15,7 +15,7 @@ public class HttpTraceEndpoint : IHttpTraceEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public HttpTraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, IHttpTraceRepository traceRepository, ILogger<HttpTraceEndpoint> logger = null)
+    public HttpTraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, IHttpTraceRepository traceRepository, ILogger<HttpTraceEndpoint> logger)
     {
         ArgumentGuard.NotNull(traceRepository);
         _options = options;

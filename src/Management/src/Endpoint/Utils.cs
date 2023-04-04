@@ -24,7 +24,7 @@ public static class Utils
     /// <returns>
     /// A file stream with the file's compressed contents.
     /// </returns>
-    public static Stream CompressFile(string filename, string gzFilename, ILogger logger = null)
+    public static Stream CompressFile(string filename, string gzFilename, ILogger logger)
     {
         try
         {
@@ -39,7 +39,7 @@ public static class Utils
         }
         catch (Exception e)
         {
-            logger?.LogError(e, "Unable to compress dump");
+            logger.LogError(e, "Unable to compress dump");
         }
         finally
         {
@@ -64,7 +64,7 @@ public static class Utils
     /// <returns>
     /// A file stream with the file's compressed contents.
     /// </returns>
-    public static async Task<Stream> CompressFileAsync(string filename, string gzFilename, ILogger logger = null)
+    public static async Task<Stream> CompressFileAsync(string filename, string gzFilename, ILogger logger)
     {
         try
         {
@@ -79,7 +79,7 @@ public static class Utils
         }
         catch (Exception e)
         {
-            logger?.LogError(e, "Unable to compress dump");
+            logger.LogError(e, "Unable to compress dump");
         }
         finally
         {

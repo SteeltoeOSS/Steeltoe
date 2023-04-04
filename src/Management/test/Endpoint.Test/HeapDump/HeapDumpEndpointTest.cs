@@ -5,6 +5,7 @@
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.HeapDump;
@@ -27,7 +28,7 @@ public class HeapDumpEndpointTest : BaseTest
     public void Constructor_ThrowsIfNullRepo()
     {
         IOptionsMonitor<HeapDumpEndpointOptions> options = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions>();
-        Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpoint(options, null));
+        Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpoint(options, null, NullLogger<HeapDumpEndpoint>.Instance));
     }
 
     [Fact]

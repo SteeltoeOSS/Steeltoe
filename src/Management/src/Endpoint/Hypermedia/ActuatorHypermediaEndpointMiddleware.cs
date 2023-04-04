@@ -17,19 +17,19 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>
 {
     public ActuatorHypermediaEndpointMiddleware(IActuatorEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<ActuatorHypermediaEndpointMiddleware> logger = null)
+        ILogger<ActuatorHypermediaEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
     }
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        logger?.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
+        logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             string serialInfo = HandleRequest(Endpoint, GetRequestUri(context.Request), logger);
-            logger?.LogDebug("Returning: {info}", serialInfo);
+            logger.LogDebug("Returning: {info}", serialInfo);
 
             context.HandleContentNegotiation(logger);
             return context.Response.WriteAsync(serialInfo);
@@ -77,7 +77,7 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
         }
         catch (Exception e)
         {
-            logger?.LogError(e, "Error serializing {MiddlewareResponse}", result);
+            logger.LogError(e, "Error serializing {MiddlewareResponse}", result);
         }
 
         return string.Empty;

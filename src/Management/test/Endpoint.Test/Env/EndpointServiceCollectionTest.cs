@@ -40,7 +40,7 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         services.AddSingleton<IConfiguration>(configurationRoot);
-
+        services.AddLogging();
         services.AddEnvActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();

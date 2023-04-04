@@ -35,7 +35,7 @@ public class EventCounterListener : EventListener
 
     private readonly ConcurrentBag<EventSource> _eventSources = new();
 
-    public EventCounterListener(IOptionsMonitor<MetricsObserverOptions> options, ILogger<EventCounterListener> logger = null)
+    public EventCounterListener(IOptionsMonitor<MetricsObserverOptions> options, ILogger<EventCounterListener> logger)
     {
         ArgumentGuard.NotNull(options);
 
@@ -76,7 +76,7 @@ public class EventCounterListener : EventListener
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex.Message);
+            _logger.LogError(ex.Message);
         }
     }
 
@@ -123,7 +123,7 @@ public class EventCounterListener : EventListener
         }
         catch (Exception ex)
         {
-            _logger?.LogError($"Failed to enable events: {ex.Message}", ex);
+            _logger.LogError($"Failed to enable events: {ex.Message}", ex);
         }
     }
 

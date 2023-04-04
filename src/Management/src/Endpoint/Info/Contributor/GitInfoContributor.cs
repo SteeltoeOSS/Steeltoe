@@ -22,13 +22,12 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
     private readonly string _propFile;
     private readonly ILogger _logger;
 
-    public GitInfoContributor(ILogger<GitInfoContributor> logger = null)
-        : this(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + GitPropertiesFile)
+    public GitInfoContributor(ILogger<GitInfoContributor> logger)
+        : this(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + GitPropertiesFile, logger)
     {
-        _logger = logger;
     }
 
-    public GitInfoContributor(string propFile, ILogger<GitInfoContributor> logger = null)
+    public GitInfoContributor(string propFile, ILogger<GitInfoContributor> logger)
     {
         _propFile = propFile;
         _logger = logger;
@@ -77,7 +76,7 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
         }
         else
         {
-            _logger?.LogWarning("Unable to locate GitInfo at {GitInfoLocation}", propFile);
+            _logger.LogWarning("Unable to locate GitInfo at {GitInfoLocation}", propFile);
         }
 
         return null;

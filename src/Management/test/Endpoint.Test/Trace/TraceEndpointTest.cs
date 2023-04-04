@@ -24,7 +24,7 @@ public class TraceEndpointTest : BaseTest
     public void Constructor_ThrowsIfNullRepo()
     {
         IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
-        Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(opts, null));
+        Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(opts, null, null));
     }
 
     [Fact]

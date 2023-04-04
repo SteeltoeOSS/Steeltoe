@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Refresh;
 public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
 {
     public RefreshEndpointMiddleware(IRefreshEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<RefreshEndpointMiddleware> logger = null)
+        ILogger<RefreshEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
     }
@@ -32,7 +32,7 @@ public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
     protected internal Task HandleRefreshRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest();
-        logger?.LogDebug("Returning: {info}", serialInfo);
+        logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);

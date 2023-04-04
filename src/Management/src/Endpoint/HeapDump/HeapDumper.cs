@@ -18,7 +18,7 @@ public class HeapDumper : IHeapDumper
     private readonly IOptionsMonitor<HeapDumpEndpointOptions> _options;
     private readonly ILogger<HeapDumper> _logger;
 
-    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> options, string basePathOverride = null, ILogger<HeapDumper> logger = null)
+    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> options, ILogger<HeapDumper> logger, string basePathOverride = null)
     {
         ArgumentGuard.NotNull(options);
 
@@ -40,7 +40,7 @@ public class HeapDumper : IHeapDumper
         {
             if (Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
             {
-                _logger?.LogInformation("Attempting to create a gcdump");
+                _logger.LogInformation("Attempting to create a gcdump");
 
                 if (TryCollectMemoryGraph(CancellationToken.None, Process.GetCurrentProcess().Id, 30, true, out MemoryGraph memoryGraph))
                 {
@@ -56,13 +56,13 @@ public class HeapDumper : IHeapDumper
                 dumpType = DumpType.Full;
             }
 
-            _logger?.LogInformation($"Attempting to create a '{dumpType}' dump");
+            _logger.LogInformation($"Attempting to create a '{dumpType}' dump");
             new DiagnosticsClient(Process.GetCurrentProcess().Id).WriteDump((DumpType)dumpType, fileName);
             return fileName;
         }
         catch (DiagnosticsClientException exception)
         {
-            _logger?.LogError($"Could not create core dump to process. Error {exception}.");
+            _logger.LogError($"Could not create core dump to process. Error {exception}.");
             return null;
         }
     }

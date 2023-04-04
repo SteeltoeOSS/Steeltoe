@@ -28,9 +28,9 @@ public class MetricsEndpointTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfNulls()
     {
-        Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(null, null));
+        Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(null, null, null));
         IOptionsMonitor<MetricsEndpointOptions> options = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(options, null));
+        Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(options, null, null));
     }
 
     [Fact]

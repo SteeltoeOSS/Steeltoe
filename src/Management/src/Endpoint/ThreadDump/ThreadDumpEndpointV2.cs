@@ -15,7 +15,7 @@ public class ThreadDumpEndpointV2 : IThreadDumpEndpointV2
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public ThreadDumpEndpointV2(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpointV2> logger = null)
+    public ThreadDumpEndpointV2(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpointV2> logger)
     {
         ArgumentGuard.NotNull(threadDumper);
         _options = options;

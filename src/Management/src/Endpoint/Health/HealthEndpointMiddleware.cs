@@ -16,7 +16,7 @@ namespace Steeltoe.Management.Endpoint.Health;
 public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointResponse, ISecurityContext>
 {
     public HealthEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IHealthEndpoint endpoint,
-        ILogger<InfoEndpointMiddleware> logger = null)
+        ILogger<HealthEndpointMiddleware> logger)
         : base(managementOptions, logger)
     {
         Endpoint = endpoint;
@@ -35,7 +35,7 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
     protected internal Task HandleHealthRequestAsync(HttpContext context)
     {
         string serialInfo = DoRequest(context);
-        logger?.LogDebug("Returning: {info}", serialInfo);
+        logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);

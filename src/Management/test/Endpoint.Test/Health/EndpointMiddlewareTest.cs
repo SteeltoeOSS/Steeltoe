@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
@@ -50,7 +51,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contributors, hsOptions, sp);
 
-        var middle = new HealthEndpointMiddleware(mgmtOpts, ep);
+        var middle = new HealthEndpointMiddleware(mgmtOpts, ep, NullLogger<HealthEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/health");
         await middle.HandleHealthRequestAsync(context);

@@ -18,7 +18,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
 
     public string ObserverName { get; }
 
-    protected DiagnosticObserver(string name, string listenerName, ILogger logger = null)
+    protected DiagnosticObserver(string name, string listenerName, ILogger logger)
     {
         ArgumentGuard.NotNullOrEmpty(name);
         ArgumentGuard.NotNullOrEmpty(listenerName);
@@ -41,7 +41,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
             Subscription?.Dispose();
             Subscription = null;
 
-            Logger?.LogInformation("DiagnosticObserver {observer} Disposed", ObserverName);
+            Logger.LogInformation("DiagnosticObserver {observer} Disposed", ObserverName);
         }
     }
 
@@ -55,7 +55,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
             }
 
             Subscription = listener.Subscribe(this);
-            Logger?.LogInformation("DiagnosticObserver {observer} Subscribed to {listener}", ObserverName, listener.Name);
+            Logger.LogInformation("DiagnosticObserver {observer} Subscribed to {listener}", ObserverName, listener.Name);
         }
     }
 
@@ -75,7 +75,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
         }
         catch (Exception e)
         {
-            Logger?.LogError(e, "ProcessEvent exception: {Id}", @event.Key);
+            Logger.LogError(e, "ProcessEvent exception: {Id}", @event.Key);
         }
     }
 

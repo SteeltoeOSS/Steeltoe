@@ -15,7 +15,7 @@ public class InfoEndpoint : IInfoEndpoint
     private readonly ILogger<InfoEndpoint> _logger;
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public InfoEndpoint(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
+    public InfoEndpoint(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger)
     {
         _options = options;
         _logger = logger;
@@ -39,7 +39,7 @@ public class InfoEndpoint : IInfoEndpoint
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "Operation failed.");
+                _logger.LogError(e, "Operation failed.");
             }
         }
 

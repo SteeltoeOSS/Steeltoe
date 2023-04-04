@@ -16,7 +16,7 @@ public class HeapDumpEndpoint : IHeapDumpEndpoint
 
     public IOptionsMonitor<HeapDumpEndpointOptions> Options { get; }
 
-    public HeapDumpEndpoint(IOptionsMonitor<HeapDumpEndpointOptions> options, IHeapDumper heapDumper, ILogger<HeapDumpEndpoint> logger = null)
+    public HeapDumpEndpoint(IOptionsMonitor<HeapDumpEndpointOptions> options, IHeapDumper heapDumper, ILogger<HeapDumpEndpoint> logger)
     {
         ArgumentGuard.NotNull(heapDumper);
         Options = options;

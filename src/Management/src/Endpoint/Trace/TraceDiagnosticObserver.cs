@@ -26,7 +26,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     private readonly ILogger<TraceDiagnosticObserver> _logger;
     internal ConcurrentQueue<TraceResult> Queue = new();
 
-    public TraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILogger<TraceDiagnosticObserver> logger = null)
+    public TraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILogger<TraceDiagnosticObserver> logger)
         : base(DefaultObserverName, DiagnosticName, logger)
     {
         ArgumentGuard.NotNull(options);
@@ -69,7 +69,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
             if (Queue.Count > _options.CurrentValue.Capacity && !Queue.TryDequeue(out _))
             {
-                _logger?.LogDebug("Stop - Dequeue failed");
+                _logger.LogDebug("Stop - Dequeue failed");
             }
         }
     }

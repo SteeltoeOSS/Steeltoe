@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -46,11 +47,11 @@ public class EndpointMiddlewareTest : BaseTest
 
         var contributors = new List<IInfoContributor>
         {
-            new GitInfoContributor()
+            new GitInfoContributor(NullLogger<GitInfoContributor>.Instance)
         };
 
         var ep = new TestInfoEndpoint(opts, contributors);
-        var middle = new InfoEndpointMiddleware(ep, managementOptions);
+        var middle = new InfoEndpointMiddleware(ep, managementOptions, NullLogger<InfoEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/loggers");
         await middle.HandleInfoRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);

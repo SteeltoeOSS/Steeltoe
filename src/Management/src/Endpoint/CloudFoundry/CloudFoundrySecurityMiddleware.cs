@@ -23,7 +23,7 @@ public class CloudFoundrySecurityMiddleware
     private readonly SecurityBase _base;
 
     public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options,
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger)
     {
         _next = next;
         _logger = logger;
@@ -37,13 +37,13 @@ public class CloudFoundrySecurityMiddleware
     {
         CloudFoundryEndpointOptions cfOptions = _options.CurrentValue;
         CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
-        _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);
+        _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);
 
         if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptions) && _base.IsCloudFoundryRequest(context.Request.Path))
         {
             if (string.IsNullOrEmpty(cfOptions.ApplicationId))
             {
-                _logger?.LogCritical(
+                _logger.LogCritical(
                     "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
 
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.ApplicationIdMissingMessage));
@@ -157,7 +157,7 @@ public class CloudFoundrySecurityMiddleware
 
     private void LogError(HttpContext context, SecurityResult error)
     {
-        _logger?.LogError("Actuator Security Error: {code} - {message}", error.Code, error.Message);
+        _logger.LogError("Actuator Security Error: {code} - {message}", error.Code, error.Message);
 
         if (_logger != null && _logger.IsEnabled(LogLevel.Trace))
         {
