@@ -21,6 +21,7 @@ public class HeapDumper : IHeapDumper
     public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> options, ILogger<HeapDumper> logger, string basePathOverride = null)
     {
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(logger);
 
         _options = options;
         _logger = logger;

@@ -11,6 +11,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 public class ThreadDumpEndpoint : IThreadDumpEndpoint
 {
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
+    private readonly ILogger<ThreadDumpEndpoint> _logger;
     private readonly IThreadDumper _threadDumper;
 
     public IEndpointOptions Options => _options.CurrentValue;
@@ -18,13 +19,16 @@ public class ThreadDumpEndpoint : IThreadDumpEndpoint
     public ThreadDumpEndpoint(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpoint> logger)
     {
         ArgumentGuard.NotNull(threadDumper);
-        _options = options;
+        ArgumentGuard.NotNull(logger);
 
+        _options = options;
+        _logger = logger;
         _threadDumper = threadDumper;
     }
 
     public List<ThreadInfo> Invoke()
     {
+        _logger.LogTrace("Invoking ThreadDumper");
         return _threadDumper.DumpThreads();
     }
 }

@@ -41,6 +41,7 @@ public class ThreadDumperEp : IThreadDumper
     public ThreadDumperEp(IOptionsMonitor<ThreadDumpEndpointOptions> options, ILogger<ThreadDumperEp> logger)
     {
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(logger);
 
         _options = options;
         _logger = logger;

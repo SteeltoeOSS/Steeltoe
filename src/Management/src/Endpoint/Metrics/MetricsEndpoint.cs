@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
@@ -19,6 +20,8 @@ public class MetricsEndpoint : IMetricsEndpoint
 
     public MetricsEndpoint(IOptionsMonitor<MetricsEndpointOptions> options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger)
     {
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter), $"Exporters must contain a single {nameof(SteeltoeExporter)}.");
         _logger = logger;

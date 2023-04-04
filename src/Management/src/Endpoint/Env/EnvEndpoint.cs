@@ -18,6 +18,7 @@ public class EnvEndpoint : IEnvEndpoint
     private readonly Sanitizer _sanitizer;
 
     private readonly IHostEnvironment _env;
+    private readonly ILogger<EnvEndpoint> _logger;
 
     public IEndpointOptions Options => _options.CurrentValue;
 
@@ -25,10 +26,13 @@ public class EnvEndpoint : IEnvEndpoint
     {
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(env);
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _configuration = configuration;
         _env = env;
         _sanitizer = new Sanitizer(options.CurrentValue.KeysToSanitize);
+        _logger = logger;
     }
 
     public EnvironmentDescriptor Invoke()

@@ -38,6 +38,7 @@ public class EventCounterListener : EventListener
     public EventCounterListener(IOptionsMonitor<MetricsObserverOptions> options, ILogger<EventCounterListener> logger)
     {
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(logger);
 
         _options = options;
         _logger = logger;

@@ -20,6 +20,8 @@ public class RefreshEndpoint : IRefreshEndpoint
     public RefreshEndpoint(IOptionsMonitor<RefreshEndpointOptions> options, IConfiguration configuration, ILogger<RefreshEndpoint> logger)
     {
         ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _configuration = configuration;
     }

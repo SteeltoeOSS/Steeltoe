@@ -35,6 +35,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
         IEnumerable<IDiagnosticObserver> observers, IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger)
     {
         ArgumentGuard.NotNull(observers);
+        ArgumentGuard.NotNull(logger);
 
         Logger = logger;
         var filteredObservers = new List<IDiagnosticObserver>();
@@ -54,6 +55,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
 
     internal DiagnosticsManager(ILogger<DiagnosticsManager> logger)
     {
+        ArgumentGuard.NotNull(logger);
         Logger = logger;
         InnerObservers = new List<IDiagnosticObserver>();
         InnerSources = new List<IRuntimeDiagnosticSource>();

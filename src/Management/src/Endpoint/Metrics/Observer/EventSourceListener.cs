@@ -24,6 +24,7 @@ public class EventSourceListener : EventListener
 
     internal EventSourceListener(ILogger<EventSourceListener> logger)
     {
+        ArgumentGuard.NotNull(logger);
         _logger = logger;
         LongCounters = new ConcurrentDictionary<string, Counter<long>>();
         DoubleCounters = new ConcurrentDictionary<string, Counter<double>>();

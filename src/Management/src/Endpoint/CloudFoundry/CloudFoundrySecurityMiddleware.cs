@@ -25,6 +25,8 @@ public class CloudFoundrySecurityMiddleware
     public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options,
         IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger)
     {
+        ArgumentGuard.NotNull(logger);
+
         _next = next;
         _logger = logger;
         _options = options;

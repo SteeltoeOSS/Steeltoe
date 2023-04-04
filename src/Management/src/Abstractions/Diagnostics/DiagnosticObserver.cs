@@ -22,6 +22,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
     {
         ArgumentGuard.NotNullOrEmpty(name);
         ArgumentGuard.NotNullOrEmpty(listenerName);
+        ArgumentGuard.NotNull(logger);
 
         ObserverName = name;
         ListenerName = listenerName;

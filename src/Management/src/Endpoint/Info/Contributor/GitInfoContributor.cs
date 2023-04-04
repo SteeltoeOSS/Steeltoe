@@ -5,6 +5,7 @@
 using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
@@ -29,6 +30,8 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
 
     public GitInfoContributor(string propFile, ILogger<GitInfoContributor> logger)
     {
+        ArgumentGuard.NotNull(logger);
+
         _propFile = propFile;
         _logger = logger;
     }
