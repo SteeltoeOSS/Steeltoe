@@ -27,7 +27,7 @@ internal abstract class ConfigurationDictionaryMapper
 
     public void MapFromTo(string fromKey, string toKey)
     {
-        string value = GetFrom(fromKey);
+        string value = GetFromValue(fromKey);
 
         if (value != null)
         {
@@ -37,7 +37,7 @@ internal abstract class ConfigurationDictionaryMapper
 
     public void MapFromTo(string fromKey, params string[] toKeySegments)
     {
-        string value = GetFrom(fromKey);
+        string value = GetFromValue(fromKey);
 
         if (value != null)
         {
@@ -48,11 +48,11 @@ internal abstract class ConfigurationDictionaryMapper
 
     public void MapFromAppendTo(string fromKey, string appendToKey, string separator)
     {
-        string valueToAppend = GetFrom(fromKey);
+        string valueToAppend = GetFromValue(fromKey);
 
         if (valueToAppend != null)
         {
-            string existingValue = GetTo(appendToKey);
+            string existingValue = GetToValue(appendToKey);
 
             if (existingValue != null)
             {
@@ -64,7 +64,7 @@ internal abstract class ConfigurationDictionaryMapper
 
     public void MapFromToFile(string fromKey, string toKey)
     {
-        string value = GetFrom(fromKey);
+        string value = GetFromValue(fromKey);
 
         if (value != null)
         {
@@ -85,13 +85,13 @@ internal abstract class ConfigurationDictionaryMapper
         ConfigurationData[key] = value;
     }
 
-    public string GetFrom(string fromKey)
+    public string GetFromValue(string fromKey)
     {
         string key = $"{BindingKey}{fromKey}";
         return ConfigurationData.TryGetValue(key, out string value) ? value : null;
     }
 
-    private string GetTo(string toKey)
+    private string GetToValue(string toKey)
     {
         string key = $"{ToPrefix}{toKey}";
         return ConfigurationData.TryGetValue(key, out string value) ? value : null;

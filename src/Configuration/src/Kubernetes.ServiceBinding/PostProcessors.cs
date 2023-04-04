@@ -624,7 +624,7 @@ internal sealed class VaultPostProcessor : IConfigurationPostProcessor
 
                 mapper.MapFromTo("uri", "uri");
                 mapper.MapFromTo("namespace", "namespace");
-                string authenticationMethod = mapper.GetFrom("authentication-method");
+                string authenticationMethod = mapper.GetFromValue("authentication-method");
 
                 if (authenticationMethod == null)
                 {
