@@ -31,6 +31,8 @@ public class HealthEndpointCore : IHealthEndpoint
         ArgumentGuard.NotNull(contributors);
         ArgumentGuard.NotNull(serviceOptions);
         ArgumentGuard.NotNull(provider);
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _aggregator = aggregator;
         _serviceOptions = serviceOptions;

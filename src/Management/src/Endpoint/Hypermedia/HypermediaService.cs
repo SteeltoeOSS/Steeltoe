@@ -22,6 +22,7 @@ public class HypermediaService
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(logger);
 
         _logger = logger;
         _managementOptions = managementOptions.Get(ActuatorContext.Name);
@@ -34,6 +35,8 @@ public class HypermediaService
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(logger);
+
         _endpointOptions = endpointOptions;
         _logger = logger;
         _options = options.CurrentValue;

@@ -7,6 +7,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
@@ -41,6 +42,8 @@ public class DbMigrationsEndpoint : IDbMigrationsEndpoint
     public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, DbMigrationsEndpointHelper endpointHelper,
         ILogger<DbMigrationsEndpoint> logger)
     {
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _container = container;
         _endpointHelper = endpointHelper;

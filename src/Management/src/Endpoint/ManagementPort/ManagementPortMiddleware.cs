@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -19,6 +20,8 @@ public class ManagementPortMiddleware
     public ManagementPortMiddleware(RequestDelegate next, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<ManagementPortMiddleware> logger)
     {
+        ArgumentGuard.NotNull(logger);
+
         _next = next;
         _managementOptions = managementOptions;
         _logger = logger;

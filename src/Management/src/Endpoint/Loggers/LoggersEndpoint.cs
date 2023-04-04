@@ -32,6 +32,8 @@ public class LoggersEndpoint : ILoggersEndpoint
     public LoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, ILogger<LoggersEndpoint> logger,
         IDynamicLoggerProvider cloudFoundryLoggerProvider = null)
     {
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider;
         _logger = logger;
