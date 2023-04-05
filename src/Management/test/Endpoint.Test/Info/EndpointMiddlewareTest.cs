@@ -50,7 +50,7 @@ public class EndpointMiddlewareTest : BaseTest
             new GitInfoContributor(NullLogger<GitInfoContributor>.Instance)
         };
 
-        var ep = new TestInfoEndpoint(opts, contributors);
+        var ep = new TestInfoEndpoint(opts, contributors, NullLogger<InfoEndpoint>.Instance);
         var middle = new InfoEndpointMiddleware(ep, managementOptions, NullLogger<InfoEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/loggers");
         await middle.HandleInfoRequestAsync(context);

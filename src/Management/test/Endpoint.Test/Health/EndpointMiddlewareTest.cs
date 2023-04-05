@@ -49,7 +49,7 @@ public class EndpointMiddlewareTest : BaseTest
         var sc = new ServiceCollection();
         ServiceProvider sp = sc.BuildServiceProvider();
 
-        var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contributors, hsOptions, sp);
+        var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contributors, hsOptions, sp, NullLogger<HealthEndpointCore>.Instance);
 
         var middle = new HealthEndpointMiddleware(mgmtOpts, ep, NullLogger<HealthEndpointMiddleware>.Instance);
 

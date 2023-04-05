@@ -39,7 +39,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         IOptionsMonitor<LoggersEndpointOptions> opts = GetOptionsMonitorFromSettings<LoggersEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        var ep = new TestLoggersEndpoint(opts);
+        var ep = new TestLoggersEndpoint(opts, NullLogger<LoggersEndpoint>.Instance);
         var middle = new LoggersEndpointMiddleware(ep, managementOptions, NullLogger<LoggersEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/loggers");
         await middle.HandleLoggersRequestAsync(context);

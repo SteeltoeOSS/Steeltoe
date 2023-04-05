@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
@@ -18,7 +19,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
     public void ShouldIgnore_ReturnsExpected()
     {
         IOptionsMonitor<MetricsObserverOptions> options = GetOptionsMonitorFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
-        var observer = new AspNetCoreHostingObserver(options, null);
+        var observer = new AspNetCoreHostingObserver(options, NullLogger<AspNetCoreHostingObserver>.Instance);
 
         Assert.True(observer.ShouldIgnoreRequest("/cloudfoundryapplication/info"));
         Assert.True(observer.ShouldIgnoreRequest("/cloudfoundryapplication/health"));
@@ -39,7 +40,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
     public void GetException_ReturnsExpected()
     {
         IOptionsMonitor<MetricsObserverOptions> options = GetOptionsMonitorFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
-        var observer = new AspNetCoreHostingObserver(options, null);
+        var observer = new AspNetCoreHostingObserver(options, NullLogger<AspNetCoreHostingObserver>.Instance);
 
         HttpContext context = GetHttpRequestMessage();
         string exception = observer.GetException(context);
@@ -61,7 +62,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
     public void GetLabelSets_ReturnsExpected()
     {
         IOptionsMonitor<MetricsObserverOptions> options = GetOptionsMonitorFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
-        var observer = new AspNetCoreHostingObserver(options, null);
+        var observer = new AspNetCoreHostingObserver(options, NullLogger<AspNetCoreHostingObserver>.Instance);
 
         HttpContext context = GetHttpRequestMessage();
 

@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Test.Info;
 
 internal sealed class TestInfoEndpoint : InfoEndpoint
 {
-    public TestInfoEndpoint(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
+    public TestInfoEndpoint(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger)
         : base(options, contributors, logger)
     {
     }

@@ -36,7 +36,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         IOptionsMonitor<HypermediaEndpointOptions> opts = GetOptionsMonitorFromSettings<HypermediaEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        var ep = new TestHypermediaEndpoint(opts, managementOptions);
+        var ep = new TestHypermediaEndpoint(opts, managementOptions, NullLogger<ActuatorEndpoint>.Instance);
         var middle = new ActuatorHypermediaEndpointMiddleware(ep, managementOptions, NullLogger<ActuatorHypermediaEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/");
         await middle.InvokeAsync(context, null);
