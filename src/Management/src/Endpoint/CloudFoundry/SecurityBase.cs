@@ -33,7 +33,6 @@ public class SecurityBase
 
     public SecurityBase(CloudFoundryEndpointOptions options, ManagementEndpointOptions managementOptions, ILogger logger, HttpClient httpClient = null)
     {
-
         ArgumentGuard.NotNull(logger);
 
         _options = options;

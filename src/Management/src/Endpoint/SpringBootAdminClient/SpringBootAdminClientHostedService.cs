@@ -5,7 +5,6 @@
 using System.Net.Http.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
