@@ -25,41 +25,48 @@ internal abstract class ConfigurationDictionaryMapper
         }
     }
 
-    public void MapFromTo(string existingKey, string newKey)
+    public void MapFromTo(string fromKey, string toKey)
     {
-        if (ConfigurationData.TryGetValue(BindingKey + existingKey, out string value))
+        string value = GetFromValue(fromKey);
+
+        if (value != null)
         {
-            if (ToPrefix != null)
+            SetToValue(toKey, value);
+        }
+    }
+
+    public void MapFromTo(string fromKey, params string[] toKeySegments)
+    {
+        string value = GetFromValue(fromKey);
+
+        if (value != null)
+        {
+            string toKey = string.Join(ConfigurationPath.KeyDelimiter, toKeySegments);
+            SetToValue(toKey, value);
+        }
+    }
+
+    public void MapFromAppendTo(string fromKey, string appendToKey, string separator)
+    {
+        string valueToAppend = GetFromValue(fromKey);
+
+        if (valueToAppend != null)
+        {
+            string existingValue = GetToValue(appendToKey);
+
+            if (existingValue != null)
             {
-                ConfigurationData[ToPrefix + newKey] = value;
-            }
-            else
-            {
-                ConfigurationData[newKey] = value;
+                string newValue = $"{existingValue}{separator}{valueToAppend}";
+                SetToValue(appendToKey, newValue);
             }
         }
     }
 
-    public void MapFromTo(string existingKey, params string[] newKeyPath)
+    public void MapFromToFile(string fromKey, string toKey)
     {
-        if (ConfigurationData.TryGetValue(BindingKey + existingKey, out string value))
-        {
-            string newKey = string.Join(ConfigurationPath.KeyDelimiter, newKeyPath);
+        string value = GetFromValue(fromKey);
 
-            if (ToPrefix != null)
-            {
-                ConfigurationData[ToPrefix + newKey] = value;
-            }
-            else
-            {
-                ConfigurationData[newKey] = value;
-            }
-        }
-    }
-
-    public void MapFromToFile(string existingKey, string newKey)
-    {
-        if (ConfigurationData.TryGetValue(BindingKey + existingKey, out string value))
+        if (value != null)
         {
             string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
@@ -68,30 +75,25 @@ internal abstract class ConfigurationDictionaryMapper
                 writer.Write(value);
             }
 
-            if (ToPrefix != null)
-            {
-                ConfigurationData[ToPrefix + newKey] = tempPath;
-            }
-            else
-            {
-                ConfigurationData[newKey] = tempPath;
-            }
+            SetToValue(toKey, tempPath);
         }
     }
 
-    public void AddKeyValue(string newKey, string value)
+    public void SetToValue(string toKey, string value)
     {
-        ConfigurationData.Add(ToPrefix + newKey, value);
+        string key = $"{ToPrefix}{toKey}";
+        ConfigurationData[key] = value;
     }
 
-    public string Get(string key)
+    public string GetFromValue(string fromKey)
     {
-        return Get(key, null);
+        string key = $"{BindingKey}{fromKey}";
+        return ConfigurationData.TryGetValue(key, out string value) ? value : null;
     }
 
-    public string Get(string key, string defaultValue)
+    private string GetToValue(string toKey)
     {
-        _ = ConfigurationData.TryGetValue(BindingKey + key, out string result);
-        return result ?? defaultValue;
+        string key = $"{ToPrefix}{toKey}";
+        return ConfigurationData.TryGetValue(key, out string value) ? value : null;
     }
 }

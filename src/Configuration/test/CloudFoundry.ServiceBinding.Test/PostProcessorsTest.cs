@@ -106,4 +106,49 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
         configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
     }
+
+    [Fact]
+    public void SqlServerTest_BindingTypeDisabled()
+    {
+        var postProcessor = new SqlServerPostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("credentials:password", "test-password")
+        };
+
+        Dictionary<string, string> configurationData = GetConfigurationData(SqlServerPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SqlServerPostProcessor.BindingType, false);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SqlServerPostProcessor.BindingType);
+        configurationData.Should().NotContainKey($"{keyPrefix}:password");
+    }
+
+    [Fact]
+    public void SqlServerTest_BindingTypeEnabled()
+    {
+        var postProcessor = new SqlServerPostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("credentials:hostname", "test-host"),
+            Tuple.Create("credentials:port", "test-port"),
+            Tuple.Create("credentials:name", "test-database"),
+            Tuple.Create("credentials:username", "test-username"),
+            Tuple.Create("credentials:password", "test-password")
+        };
+
+        Dictionary<string, string> configurationData = GetConfigurationData(SqlServerPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SqlServerPostProcessor.BindingType, true);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SqlServerPostProcessor.BindingType);
+        configurationData[$"{keyPrefix}:Data Source"].Should().Be("test-host,test-port");
+        configurationData[$"{keyPrefix}:Initial Catalog"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:User ID"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:Password"].Should().Be("test-password");
+    }
 }
