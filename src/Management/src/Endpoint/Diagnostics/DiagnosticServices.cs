@@ -24,15 +24,15 @@ public class DiagnosticServices : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _observerManager.Start();
         _logger.LogTrace("Starting Diagnostics manager");
+        _observerManager.Start();
         return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _observerManager.Stop();
         _logger.LogTrace("Stopping Diagnostics manager");
+        _observerManager.Stop();
         return Task.CompletedTask;
     }
 }

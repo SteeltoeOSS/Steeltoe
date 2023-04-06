@@ -4,6 +4,7 @@
 
 using System.IO.Compression;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -28,6 +29,8 @@ public static class Utils
     {
         try
         {
+            ArgumentGuard.NotNull(logger);
+
             using (var input = new FileStream(filename, FileMode.Open))
             {
                 using var output = new FileStream(gzFilename, FileMode.CreateNew);
@@ -68,6 +71,8 @@ public static class Utils
     {
         try
         {
+            ArgumentGuard.NotNull(logger);
+
             await using (var input = new FileStream(filename, FileMode.Open))
             {
                 await using var output = new FileStream(gzFilename, FileMode.CreateNew);

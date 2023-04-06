@@ -21,6 +21,7 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
     public WavefrontMetricsExporter(IWavefrontExporterOptions options, ILogger<WavefrontMetricsExporter> logger)
     {
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(logger);
 
         if (options is not WavefrontExporterOptions exporterOptions)
         {

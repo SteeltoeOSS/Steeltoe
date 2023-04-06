@@ -12,18 +12,22 @@ public class ThreadDumpEndpointV2 : IThreadDumpEndpointV2
 {
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
     private readonly IThreadDumper _threadDumper;
+    private readonly ILogger<ThreadDumpEndpointV2> _logger;
 
     public IEndpointOptions Options => _options.CurrentValue;
 
     public ThreadDumpEndpointV2(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpointV2> logger)
     {
         ArgumentGuard.NotNull(threadDumper);
+        ArgumentGuard.NotNull(logger);
         _options = options;
         _threadDumper = threadDumper;
+        _logger = logger;
     }
 
     public ThreadDumpResult Invoke()
     {
+        _logger.LogTrace("Dumping Thread info");
         return new ThreadDumpResult
         {
             Threads = _threadDumper.DumpThreads()

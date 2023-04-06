@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 using Steeltoe.Management.MetricCollectors.Metrics;
 using Xunit;
 using Xunit.Abstractions;
@@ -31,6 +32,7 @@ public class MetricsEndpointTest : BaseTest
         Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(null, null, null));
         IOptionsMonitor<MetricsEndpointOptions> options = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
         Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(options, null, null));
+        Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(options,new SteeltoeExporter(null), null));
     }
 
     [Fact]

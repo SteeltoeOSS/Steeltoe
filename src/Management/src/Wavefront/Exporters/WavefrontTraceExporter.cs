@@ -23,6 +23,7 @@ public class WavefrontTraceExporter : BaseExporter<Activity>
     public WavefrontTraceExporter(IWavefrontExporterOptions options, ILogger<WavefrontTraceExporter> logger)
     {
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(logger);
 
         if (options is not WavefrontExporterOptions exporterOptions)
         {

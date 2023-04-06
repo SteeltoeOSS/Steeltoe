@@ -87,7 +87,7 @@ public static class TracingBaseServiceCollectionExtensions
                     .GetApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.ConfigurationPrefix}:name");
 
                 var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
-                ILogger logger = serviceProvider.GetService<ILoggerFactory>()?.CreateLogger("Steeltoe.Management.Tracing.Setup");
+                ILogger logger = serviceProvider.GetRequiredService<ILoggerFactory>()?.CreateLogger("Steeltoe.Management.Tracing.Setup");
 
                 logger.LogTrace("Found Zipkin exporter: {exportToZipkin}. Found Jaeger exporter: {exportToJaeger}. Found OTLP exporter: {exportToOtlp}.",
                     exportToZipkin, exportToJaeger, exportToOpenTelemetryProtocol);

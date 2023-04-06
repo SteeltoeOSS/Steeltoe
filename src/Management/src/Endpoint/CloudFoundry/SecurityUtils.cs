@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public class SecurityBase
+public class SecurityUtils
 {
     public const int DefaultGetPermissionsTimeout = 5000; // Milliseconds
     public const string ApplicationIdMissingMessage = "Application id is not available";
@@ -31,7 +31,7 @@ public class SecurityBase
     private readonly ILogger _logger;
     private HttpClient _httpClient;
 
-    public SecurityBase(CloudFoundryEndpointOptions options, ManagementEndpointOptions managementOptions, ILogger logger, HttpClient httpClient = null)
+    internal SecurityUtils(CloudFoundryEndpointOptions options, ManagementEndpointOptions managementOptions, ILogger logger, HttpClient httpClient = null)
     {
         ArgumentGuard.NotNull(logger);
 

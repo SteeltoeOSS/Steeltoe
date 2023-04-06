@@ -16,7 +16,7 @@ public class SecurityBaseTest : BaseTest
     [Fact]
     public void IsCloudFoundryRequest_ReturnsExpected()
     {
-        SecurityBase securityBase = GetSecurityBase(out _, out _);
+        SecurityUtils securityBase = GetSecurityBase(out _, out _);
 
         Assert.True(securityBase.IsCloudFoundryRequest("/cloudfoundryapplication"));
         Assert.True(securityBase.IsCloudFoundryRequest("/cloudfoundryapplication/badpath"));
@@ -25,7 +25,7 @@ public class SecurityBaseTest : BaseTest
     [Fact]
     public async Task GetPermissionsAsyncTest()
     {
-        SecurityBase securityBase = GetSecurityBase(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions);
+        SecurityUtils securityBase = GetSecurityBase(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions);
         SecurityResult result = await securityBase.GetPermissionsAsync("testToken");
         Assert.NotNull(result);
     }
@@ -33,7 +33,7 @@ public class SecurityBaseTest : BaseTest
     [Fact]
     public async Task GetPermissionsTest()
     {
-        SecurityBase securityBase = GetSecurityBase(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions);
+        SecurityUtils securityBase = GetSecurityBase(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions);
         var response = new HttpResponseMessage(HttpStatusCode.OK);
 
         var perms = new Dictionary<string, object>
@@ -46,11 +46,11 @@ public class SecurityBaseTest : BaseTest
         Assert.Equal(Permissions.Full, result);
     }
 
-    private static SecurityBase GetSecurityBase(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions)
+    private static SecurityUtils GetSecurityBase(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions)
     {
         cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>();
         managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(CFContext.Name);
-        var securityBase = new SecurityBase(cloudOpts, managementOptions, NullLogger.Instance);
+        var securityBase = new SecurityUtils(cloudOpts, managementOptions, NullLogger.Instance);
         return securityBase;
     }
 }
