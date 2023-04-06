@@ -69,10 +69,10 @@ public static class Utils
     /// </returns>
     public static async Task<Stream> CompressFileAsync(string filename, string gzFilename, ILogger logger)
     {
+        ArgumentGuard.NotNull(logger);
+
         try
         {
-            ArgumentGuard.NotNull(logger);
-
             await using (var input = new FileStream(filename, FileMode.Open))
             {
                 await using var output = new FileStream(gzFilename, FileMode.CreateNew);
