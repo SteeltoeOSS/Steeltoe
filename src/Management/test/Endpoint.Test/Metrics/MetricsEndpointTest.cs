@@ -32,7 +32,7 @@ public class MetricsEndpointTest : BaseTest
         Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(null, null, null));
         IOptionsMonitor<MetricsEndpointOptions> options = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
         Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(options, null, null));
-        Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(options,new SteeltoeExporter(null), null));
+        Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(options, new SteeltoeExporter(null), null));
     }
 
     [Fact]

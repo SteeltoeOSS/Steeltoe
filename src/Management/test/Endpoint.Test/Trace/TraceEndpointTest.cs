@@ -45,6 +45,7 @@ public class TraceEndpointTest : BaseTest
         Assert.NotNull(result);
         Assert.True(repo.GetTracesCalled);
     }
+
     private class TestTraceRepository : ITraceRepository
     {
         public List<TraceResult> GetTraces()

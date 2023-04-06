@@ -28,6 +28,7 @@ public class ThreadDumpEndpointV2 : IThreadDumpEndpointV2
     public ThreadDumpResult Invoke()
     {
         _logger.LogTrace("Dumping Thread info");
+
         return new ThreadDumpResult
         {
             Threads = _threadDumper.DumpThreads()
