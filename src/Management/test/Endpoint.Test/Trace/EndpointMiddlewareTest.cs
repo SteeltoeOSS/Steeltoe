@@ -39,7 +39,7 @@ public class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var obs = new TraceDiagnosticObserver(opts, NullLogger<TraceDiagnosticObserver>.Instance);
-        var ep = new TestTraceEndpoint(opts, obs);
+        var ep = new TestTraceEndpoint(opts, obs, NullLogger<TraceEndpoint>.Instance);
         var middle = new TraceEndpointMiddleware(ep, managementOptions, NullLogger<TraceEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/httptrace");
         await middle.HandleTraceRequestAsync(context);
@@ -56,7 +56,7 @@ public class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var obs = new TraceDiagnosticObserver(opts, NullLogger<TraceDiagnosticObserver>.Instance);
-        var ep = new TestTraceEndpoint(opts, obs);
+        var ep = new TestTraceEndpoint(opts, obs, NullLogger<TraceEndpoint>.Instance);
         var middle = new TraceEndpointMiddleware(ep, managementOptions, NullLogger<TraceEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/trace");
         await middle.HandleTraceRequestAsync(context);
