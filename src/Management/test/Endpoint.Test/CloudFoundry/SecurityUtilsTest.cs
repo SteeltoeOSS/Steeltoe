@@ -11,29 +11,29 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public class SecurityBaseTest : BaseTest
+public class SecurityUtilsTest : BaseTest
 {
     [Fact]
     public void IsCloudFoundryRequest_ReturnsExpected()
     {
-        SecurityUtils securityBase = GetSecurityBase(out _, out _);
+        SecurityUtils securityUtils = GetSecurityUtils(out _, out _);
 
-        Assert.True(securityBase.IsCloudFoundryRequest("/cloudfoundryapplication"));
-        Assert.True(securityBase.IsCloudFoundryRequest("/cloudfoundryapplication/badpath"));
+        Assert.True(securityUtils.IsCloudFoundryRequest("/cloudfoundryapplication"));
+        Assert.True(securityUtils.IsCloudFoundryRequest("/cloudfoundryapplication/badpath"));
     }
 
     [Fact]
     public async Task GetPermissionsAsyncTest()
     {
-        SecurityUtils securityBase = GetSecurityBase(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions);
-        SecurityResult result = await securityBase.GetPermissionsAsync("testToken");
+        SecurityUtils securityUtils = GetSecurityUtils(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions);
+        SecurityResult result = await securityUtils.GetPermissionsAsync("testToken");
         Assert.NotNull(result);
     }
 
     [Fact]
     public async Task GetPermissionsTest()
     {
-        SecurityUtils securityBase = GetSecurityBase(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions);
+        SecurityUtils securityUtils = GetSecurityUtils(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions);
         var response = new HttpResponseMessage(HttpStatusCode.OK);
 
         var perms = new Dictionary<string, object>
@@ -42,15 +42,15 @@ public class SecurityBaseTest : BaseTest
         };
 
         response.Content = JsonContent.Create(perms);
-        Permissions result = await securityBase.GetPermissionsAsync(response);
+        Permissions result = await securityUtils.GetPermissionsAsync(response);
         Assert.Equal(Permissions.Full, result);
     }
 
-    private static SecurityUtils GetSecurityBase(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions)
+    private static SecurityUtils GetSecurityUtils(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions)
     {
         cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>();
         managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(CFContext.Name);
-        var securityBase = new SecurityUtils(cloudOpts, managementOptions, NullLogger.Instance);
-        return securityBase;
+        var securityUtils = new SecurityUtils(cloudOpts, managementOptions, NullLogger.Instance);
+        return securityUtils;
     }
 }
