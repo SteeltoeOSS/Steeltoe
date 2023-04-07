@@ -31,7 +31,6 @@ public static class Utils
 
         try
         {
-
             using (var input = new FileStream(filename, FileMode.Open))
             {
                 using var output = new FileStream(gzFilename, FileMode.CreateNew);
