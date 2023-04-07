@@ -27,9 +27,10 @@ public static class Utils
     /// </returns>
     public static Stream CompressFile(string filename, string gzFilename, ILogger logger)
     {
+        ArgumentGuard.NotNull(logger);
+
         try
         {
-            ArgumentGuard.NotNull(logger);
 
             using (var input = new FileStream(filename, FileMode.Open))
             {
