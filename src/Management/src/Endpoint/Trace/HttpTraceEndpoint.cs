@@ -12,18 +12,23 @@ public class HttpTraceEndpoint : IHttpTraceEndpoint
 {
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
     private readonly IHttpTraceRepository _traceRepo;
+    private readonly ILogger<HttpTraceEndpoint> _logger;
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public HttpTraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, IHttpTraceRepository traceRepository, ILogger<HttpTraceEndpoint> logger = null)
+    public HttpTraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, IHttpTraceRepository traceRepository, ILogger<HttpTraceEndpoint> logger)
     {
         ArgumentGuard.NotNull(traceRepository);
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _traceRepo = traceRepository;
+        _logger = logger;
     }
 
     public HttpTraceResult Invoke()
     {
+        _logger.LogTrace("Fetching Traces");
         return DoInvoke(_traceRepo);
     }
 

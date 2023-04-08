@@ -14,8 +14,8 @@ namespace Steeltoe.Management.Endpoint.Loggers;
 
 public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>, LoggersChangeRequest>
 {
-    public LoggersEndpointMiddleware( /*RequestDelegate next,*/ LoggersEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<LoggersEndpointMiddleware> logger = null)
+    public LoggersEndpointMiddleware(LoggersEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILogger<LoggersEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
     }
@@ -33,7 +33,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         if (context.Request.Method == "POST")
         {
             // POST - change a logger level
-            logger?.LogDebug("Incoming path: {path}", request.Path.Value);
+            logger.LogDebug("Incoming path: {path}", request.Path.Value);
             ManagementEndpointOptions mgmtOptions = managementOptions.GetFromContextPath(request.Path);
 
             string path = managementOptions == null
@@ -52,7 +52,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
 
         // GET request
         string serialInfo = HandleRequest(null);
-        logger?.LogDebug("Returning: {info}", serialInfo);
+        logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         await context.Response.WriteAsync(serialInfo);
@@ -70,13 +70,13 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
 
             change.TryGetValue("configuredLevel", out string level);
 
-            logger?.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
+            logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
 
             if (!string.IsNullOrEmpty(loggerName))
             {
                 if (!string.IsNullOrEmpty(level) && LoggerLevels.MapLogLevel(level) == null)
                 {
-                    logger?.LogDebug("Invalid LogLevel specified: {level}", level);
+                    logger.LogDebug("Invalid LogLevel specified: {level}", level);
                 }
                 else
                 {

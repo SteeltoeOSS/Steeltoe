@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Steeltoe.Logging.DynamicLogger;
@@ -55,9 +56,9 @@ public class EndpointMiddlewareTest : BaseTest
             "applied"
         });
 
-        var ep = new DbMigrationsEndpoint(opts, container.BuildServiceProvider(), helper);
+        var ep = new DbMigrationsEndpoint(opts, container.BuildServiceProvider(), helper, NullLogger<DbMigrationsEndpoint>.Instance);
 
-        var middle = new DbMigrationsEndpointMiddleware(ep, managementOptions);
+        var middle = new DbMigrationsEndpointMiddleware(ep, managementOptions, NullLogger<DbMigrationsEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/dbmigrations");
         await middle.HandleEntityFrameworkRequestAsync(context);

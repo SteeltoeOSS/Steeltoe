@@ -62,7 +62,7 @@ public class HttpClientDesktopObserver : MetricsObserver
 
         if (eventName == StopEvent)
         {
-            Logger?.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
+            Logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
             var response = DiagnosticHelpers.GetProperty<HttpWebResponse>(value, "Response");
 
@@ -71,17 +71,17 @@ public class HttpClientDesktopObserver : MetricsObserver
                 HandleStopEvent(current, request, response.StatusCode);
             }
 
-            Logger?.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
+            Logger.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
         else if (eventName == StopExEvent)
         {
-            Logger?.LogTrace("HandleStopEventEx start {thread}", Thread.CurrentThread.ManagedThreadId);
+            Logger.LogTrace("HandleStopEventEx start {thread}", Thread.CurrentThread.ManagedThreadId);
 
             var statusCode = DiagnosticHelpers.GetProperty<HttpStatusCode>(value, "StatusCode");
 
             HandleStopEvent(current, request, statusCode);
 
-            Logger?.LogTrace("HandleStopEventEx finished {thread}", Thread.CurrentThread.ManagedThreadId);
+            Logger.LogTrace("HandleStopEventEx finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
     }
 
@@ -89,7 +89,7 @@ public class HttpClientDesktopObserver : MetricsObserver
     {
         if (ShouldIgnoreRequest(request.RequestUri.AbsolutePath))
         {
-            Logger?.LogDebug("HandleStopEvent: Ignoring path: {path}", SecurityUtilities.SanitizeInput(request.RequestUri.AbsolutePath));
+            Logger.LogDebug("HandleStopEvent: Ignoring path: {path}", SecurityUtilities.SanitizeInput(request.RequestUri.AbsolutePath));
             return;
         }
 

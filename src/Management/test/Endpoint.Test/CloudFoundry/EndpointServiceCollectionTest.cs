@@ -38,6 +38,7 @@ public class EndpointServiceCollectionTest : BaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddLogging();
         services.AddCloudFoundryActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();

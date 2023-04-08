@@ -24,7 +24,8 @@ public class TraceEndpointTest : BaseTest
     public void Constructor_ThrowsIfNullRepo()
     {
         IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
-        Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(opts, null));
+        Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(opts, null, null));
+        Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(opts, new TestTraceRepository(), null));
     }
 
     [Fact]
@@ -43,5 +44,13 @@ public class TraceEndpointTest : BaseTest
         List<TraceResult> result = ep.Invoke();
         Assert.NotNull(result);
         Assert.True(repo.GetTracesCalled);
+    }
+
+    private class TestTraceRepository : ITraceRepository
+    {
+        public List<TraceResult> GetTraces()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

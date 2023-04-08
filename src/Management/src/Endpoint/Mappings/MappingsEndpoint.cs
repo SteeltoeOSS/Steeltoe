@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
@@ -21,21 +22,25 @@ public class MappingsEndpoint : IMappingsEndpoint
     private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
     private readonly IEnumerable<IApiDescriptionProvider> _apiDescriptionProviders;
     private readonly IRouteMappings _routeMappings;
+    private readonly ILogger<MappingsEndpoint> _logger;
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public MappingsEndpoint(IOptionsMonitor<MappingsEndpointOptions> options, IRouteMappings routeMappings = null,
-        IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null,
-        ILogger<MappingsEndpoint> logger = null)
+    public MappingsEndpoint(IOptionsMonitor<MappingsEndpointOptions> options, ILogger<MappingsEndpoint> logger, IRouteMappings routeMappings = null,
+        IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null)
     {
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
         _apiDescriptionProviders = apiDescriptionProviders;
         _routeMappings = routeMappings;
+        _logger = logger;
     }
 
     public ApplicationMappings Invoke()
     {
+        _logger.LogTrace("Fetching application mappings");
         return GetApplicationMappings();
     }
 

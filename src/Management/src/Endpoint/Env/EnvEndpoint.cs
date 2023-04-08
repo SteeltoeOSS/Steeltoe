@@ -18,17 +18,21 @@ public class EnvEndpoint : IEnvEndpoint
     private readonly Sanitizer _sanitizer;
 
     private readonly IHostEnvironment _env;
+    private readonly ILogger<EnvEndpoint> _logger;
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public EnvEndpoint(IOptionsMonitor<EnvEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILogger<EnvEndpoint> logger = null)
+    public EnvEndpoint(IOptionsMonitor<EnvEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILogger<EnvEndpoint> logger)
     {
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(env);
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _configuration = configuration;
         _env = env;
         _sanitizer = new Sanitizer(options.CurrentValue.KeysToSanitize);
+        _logger = logger;
     }
 
     public EnvironmentDescriptor Invoke()
@@ -43,6 +47,7 @@ public class EnvEndpoint : IEnvEndpoint
             _env.EnvironmentName
         };
 
+        _logger.LogTrace("Fetching property sources");
         IList<PropertySourceDescriptor> propertySources = GetPropertySources(configuration);
         return new EnvironmentDescriptor(activeProfiles, propertySources);
     }

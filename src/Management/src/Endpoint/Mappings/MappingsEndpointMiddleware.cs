@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Mappings;
 public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings>
 {
     public MappingsEndpointMiddleware(IOptionsMonitor<MappingsEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IMappingsEndpoint endpoint, ILogger<MappingsEndpointMiddleware> logger = null)
+        IMappingsEndpoint endpoint, ILogger<MappingsEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
     }
@@ -34,7 +34,7 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
         ApplicationMappings result = Endpoint.Invoke();
         string serialInfo = Serialize(result);
 
-        logger?.LogDebug("Returning: {info}", serialInfo);
+        logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);

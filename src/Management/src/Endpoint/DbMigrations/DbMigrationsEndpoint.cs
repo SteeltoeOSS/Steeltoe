@@ -7,6 +7,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
@@ -33,14 +34,16 @@ public class DbMigrationsEndpoint : IDbMigrationsEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, ILogger<DbMigrationsEndpoint> logger = null)
+    public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, ILogger<DbMigrationsEndpoint> logger)
         : this(options, container, new DbMigrationsEndpointHelper(), logger)
     {
     }
 
     public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, DbMigrationsEndpointHelper endpointHelper,
-        ILogger<DbMigrationsEndpoint> logger = null)
+        ILogger<DbMigrationsEndpoint> logger)
     {
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _container = container;
         _endpointHelper = endpointHelper;
@@ -58,7 +61,7 @@ public class DbMigrationsEndpoint : IDbMigrationsEndpoint
 
         if (DbContextType is null)
         {
-            _logger?.LogCritical("DbMigrations endpoint invoked but no DbContext was found.");
+            _logger.LogCritical("DbMigrations endpoint invoked but no DbContext was found.");
         }
         else
         {
@@ -89,7 +92,7 @@ public class DbMigrationsEndpoint : IDbMigrationsEndpoint
                 }
                 catch (DbException e) when (e.Message.Contains("exist", StringComparison.Ordinal))
                 {
-                    _logger?.LogWarning(e, "Encountered exception loading migrations: {exception}", e.Message);
+                    _logger.LogWarning(e, "Encountered exception loading migrations: {exception}", e.Message);
                     descriptor.PendingMigrations = _endpointHelper.GetMigrations(dbContext).ToList();
                 }
             }

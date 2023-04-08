@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -53,16 +54,18 @@ public static class EndPointExtensions
         return true;
     }
 
-    public static bool ShouldInvoke(this IEndpointOptions endpoint, ManagementEndpointOptions options, ILogger logger = null)
+    public static bool ShouldInvoke(this IEndpointOptions endpoint, ManagementEndpointOptions options, ILogger logger)
     {
+        ArgumentGuard.NotNull(logger);
+
         bool enabled = endpoint.IsEnabled(options);
         bool exposed = endpoint.IsExposed(options);
-        logger?.LogDebug($"endpoint: {endpoint.Id}, contextPath: {options.Path}, enabled: {enabled}, exposed: {exposed}");
+        logger.LogDebug($"endpoint: {endpoint.Id}, contextPath: {options.Path}, enabled: {enabled}, exposed: {exposed}");
         return enabled && exposed;
     }
 
     public static bool ShouldInvoke(this IEndpointOptions endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context,
-        ILogger logger = null)
+        ILogger logger)
     {
         ManagementEndpointOptions mgmtOptions = managementOptions.GetFromContextPath(context.Request.Path);
 

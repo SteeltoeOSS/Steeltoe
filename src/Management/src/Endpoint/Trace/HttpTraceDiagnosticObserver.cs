@@ -26,7 +26,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
     private readonly ILogger<TraceDiagnosticObserver> _logger;
     internal ConcurrentQueue<HttpTrace> Queue = new();
 
-    public HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILogger<TraceDiagnosticObserver> logger = null)
+    public HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILogger<TraceDiagnosticObserver> logger)
         : base(DefaultObserverName, DiagnosticName, logger)
     {
         ArgumentGuard.NotNull(options);
@@ -68,7 +68,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
 
             if (Queue.Count > _options.CurrentValue.Capacity && !Queue.TryDequeue(out _))
             {
-                _logger?.LogDebug("Stop - Dequeue failed");
+                _logger.LogDebug("Stop - Dequeue failed");
             }
         }
     }

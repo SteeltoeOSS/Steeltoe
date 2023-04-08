@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public class SecurityBase
+public class SecurityUtils
 {
     public const int DefaultGetPermissionsTimeout = 5000; // Milliseconds
     public const string ApplicationIdMissingMessage = "Application id is not available";
@@ -31,8 +31,10 @@ public class SecurityBase
     private readonly ILogger _logger;
     private HttpClient _httpClient;
 
-    public SecurityBase(CloudFoundryEndpointOptions options, ManagementEndpointOptions managementOptions, ILogger logger = null, HttpClient httpClient = null)
+    internal SecurityUtils(CloudFoundryEndpointOptions options, ManagementEndpointOptions managementOptions, ILogger logger, HttpClient httpClient = null)
     {
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _managementOptions = managementOptions;
         _logger = logger;
@@ -55,7 +57,7 @@ public class SecurityBase
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Serialization Exception.");
+            _logger.LogError(e, "Serialization Exception.");
         }
 
         return string.Empty;
@@ -75,13 +77,13 @@ public class SecurityBase
 
         try
         {
-            _logger?.LogDebug("GetPermissionsAsync({uri}, {token})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
+            _logger.LogDebug("GetPermissionsAsync({uri}, {token})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
             _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DefaultGetPermissionsTimeout);
             using HttpResponseMessage response = await _httpClient.SendAsync(request);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                _logger?.LogInformation("Cloud Foundry returned status: {HttpStatus} while obtaining permissions from: {PermissionsUri}", response.StatusCode,
+                _logger.LogInformation("Cloud Foundry returned status: {HttpStatus} while obtaining permissions from: {PermissionsUri}", response.StatusCode,
                     checkPermissionsUri);
 
                 return response.StatusCode == HttpStatusCode.Forbidden
@@ -93,7 +95,7 @@ public class SecurityBase
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Cloud Foundry returned exception while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
+            _logger.LogError(e, "Cloud Foundry returned exception while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
 
             return new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
         }
@@ -108,7 +110,7 @@ public class SecurityBase
         {
             json = await response.Content.ReadAsStringAsync();
 
-            _logger?.LogDebug("GetPermissionsAsync returned json: {json}", SecurityUtilities.SanitizeInput(json));
+            _logger.LogDebug("GetPermissionsAsync returned json: {json}", SecurityUtilities.SanitizeInput(json));
 
             var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
@@ -120,11 +122,11 @@ public class SecurityBase
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Exception extracting permissions from {json}", SecurityUtilities.SanitizeInput(json));
+            _logger.LogError(e, "Exception extracting permissions from {json}", SecurityUtilities.SanitizeInput(json));
             throw;
         }
 
-        _logger?.LogDebug("GetPermissionsAsync returning: {permissions}", permissions);
+        _logger.LogDebug("GetPermissionsAsync returning: {permissions}", permissions);
         return permissions;
     }
 }

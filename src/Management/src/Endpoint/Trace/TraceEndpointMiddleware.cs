@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Trace;
 public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
 {
     public TraceEndpointMiddleware(ITraceEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<TraceEndpointMiddleware> logger = null)
+        ILogger<TraceEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
     }
@@ -33,7 +33,7 @@ public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
     {
         string serialInfo = HandleRequest();
 
-        logger?.LogDebug("Returning: {info}", serialInfo);
+        logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);

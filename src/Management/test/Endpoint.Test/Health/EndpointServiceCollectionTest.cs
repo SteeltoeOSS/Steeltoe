@@ -44,6 +44,7 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
+        services.AddLogging();
         services.AddHealthActuator(new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
 
         services.Configure<HealthCheckServiceOptions>(configurationRoot);
@@ -77,6 +78,7 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
+        services.AddLogging();
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddHealthActuator();
 

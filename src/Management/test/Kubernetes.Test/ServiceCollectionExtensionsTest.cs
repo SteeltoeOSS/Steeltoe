@@ -57,6 +57,7 @@ public class ServiceCollectionExtensionsTest
         services.AddSingleton<IConfiguration>(configurationBuilder.Build());
         var utils = new FakePodUtilities(FakePodUtilities.SamplePod);
 
+        services.AddLogging();
         services.AddKubernetesActuators(null, utils);
         ServiceProvider provider = services.BuildServiceProvider();
 

@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Test.Health;
 internal sealed class TestHealthEndpoint : HealthEndpointCore
 {
     public TestHealthEndpoint(IOptionsMonitor<HealthEndpointOptions> options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
-        IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpointCore> logger = null)
+        IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpointCore> logger)
         : base(options, aggregator, contributors, serviceOptions, provider, logger)
     {
     }

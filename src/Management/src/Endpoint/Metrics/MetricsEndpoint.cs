@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
@@ -17,8 +18,10 @@ public class MetricsEndpoint : IMetricsEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public MetricsEndpoint(IOptionsMonitor<MetricsEndpointOptions> options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
+    public MetricsEndpoint(IOptionsMonitor<MetricsEndpointOptions> options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger)
     {
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter), $"Exporters must contain a single {nameof(SteeltoeExporter)}.");
         _logger = logger;
@@ -37,7 +40,7 @@ public class MetricsEndpoint : IMetricsEndpoint
 
         if (metricNames.Contains(request.MetricName))
         {
-            _logger?.LogTrace("Fetching metrics for " + request.MetricName);
+            _logger.LogTrace("Fetching metrics for " + request.MetricName);
             List<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
 
             return GetMetric(request, sampleList, availTags[request.MetricName]);
@@ -117,7 +120,7 @@ public class MetricsEndpoint : IMetricsEndpoint
         catch (Exception ex)
         {
             // Nothing we can do , log and move on 
-            _logger?.LogError(ex, "Error transforming metrics.");
+            _logger.LogError(ex, "Error transforming metrics.");
         }
 
         return sampleList;

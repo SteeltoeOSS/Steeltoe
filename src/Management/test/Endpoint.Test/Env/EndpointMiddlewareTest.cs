@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
@@ -44,8 +45,8 @@ public class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<EnvEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<EnvEndpointOptions, ConfigureEnvEndpointOptions>();
         var managementOptions = new TestOptionsMonitor<ManagementEndpointOptions>(new ManagementEndpointOptions());
 
-        var ep = new EnvEndpoint(optionsMonitor, configurationRoot, _host);
-        var middle = new EnvEndpointMiddleware(ep, managementOptions);
+        var ep = new EnvEndpoint(optionsMonitor, configurationRoot, _host, NullLogger<EnvEndpoint>.Instance);
+        var middle = new EnvEndpointMiddleware(ep, managementOptions, NullLogger<EnvEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/env");
         await middle.HandleEnvRequestAsync(context);

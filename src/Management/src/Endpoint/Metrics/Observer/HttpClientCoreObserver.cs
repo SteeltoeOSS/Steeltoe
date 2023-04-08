@@ -29,7 +29,7 @@ public class HttpClientCoreObserver : MetricsObserver
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
 
-    public HttpClientCoreObserver(IOptionsMonitor<MetricsObserverOptions> options, ILogger<HttpClientCoreObserver> logger /*, IViewRegistry viewRegistry*/)
+    public HttpClientCoreObserver(IOptionsMonitor<MetricsObserverOptions> options, ILogger<HttpClientCoreObserver> logger)
         : base(DefaultObserverName, DiagnosticName, logger)
     {
         SetPathMatcher(new Regex(options.CurrentValue.EgressIgnorePattern));
@@ -60,21 +60,21 @@ public class HttpClientCoreObserver : MetricsObserver
 
         if (eventName == StopEvent)
         {
-            Logger?.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
+            Logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
             var response = DiagnosticHelpers.GetProperty<HttpResponseMessage>(value, "Response");
             var requestStatus = DiagnosticHelpers.GetProperty<TaskStatus>(value, "RequestTaskStatus");
             HandleStopEvent(current, request, response, requestStatus);
 
-            Logger?.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
+            Logger.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
         else if (eventName == ExceptionEvent)
         {
-            Logger?.LogTrace("HandleExceptionEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
+            Logger.LogTrace("HandleExceptionEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
             HandleExceptionEvent(current, request);
 
-            Logger?.LogTrace("HandleExceptionEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
+            Logger.LogTrace("HandleExceptionEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
     }
 
@@ -87,7 +87,7 @@ public class HttpClientCoreObserver : MetricsObserver
     {
         if (ShouldIgnoreRequest(request.RequestUri.AbsolutePath))
         {
-            Logger?.LogDebug("HandleStopEvent: Ignoring path: {path}", SecurityUtilities.SanitizeInput(request.RequestUri.AbsolutePath));
+            Logger.LogDebug("HandleStopEvent: Ignoring path: {path}", SecurityUtilities.SanitizeInput(request.RequestUri.AbsolutePath));
             return;
         }
 

@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -19,8 +20,10 @@ public class CloudFoundryEndpoint : ICloudFoundryEndpoint
     public IEndpointOptions Options => _options.CurrentValue;
 
     public CloudFoundryEndpoint(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IEnumerable<IEndpointOptions> endpointOptions, ILogger<CloudFoundryEndpoint> logger = null)
+        IEnumerable<IEndpointOptions> endpointOptions, ILogger<CloudFoundryEndpoint> logger)
     {
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _managementOptions = managementOptions;
         _endpointOptions = endpointOptions;

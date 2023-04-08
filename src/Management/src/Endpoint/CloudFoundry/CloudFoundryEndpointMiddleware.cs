@@ -20,14 +20,14 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 {
     public CloudFoundryEndpointMiddleware(ICloudFoundryEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<CloudFoundryEndpointMiddleware> logger = null)
+        ILogger<CloudFoundryEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
     }
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        logger?.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
+        logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
         if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
@@ -40,7 +40,7 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
     protected internal Task HandleCloudFoundryRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest(GetRequestUri(context.Request));
-        logger?.LogDebug("Returning: {info}", serialInfo);
+        logger.LogDebug("Returning: {info}", serialInfo);
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }

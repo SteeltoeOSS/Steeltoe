@@ -37,6 +37,7 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
+        services.AddLogging();
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddHeapDumpActuator();
 

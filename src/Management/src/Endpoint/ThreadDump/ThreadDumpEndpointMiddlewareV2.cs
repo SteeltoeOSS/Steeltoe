@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResult>
 {
     public ThreadDumpEndpointMiddlewareV2(IThreadDumpEndpointV2 endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<ThreadDumpEndpointMiddlewareV2> logger = null)
+        ILogger<ThreadDumpEndpointMiddlewareV2> logger)
         : base(endpoint, managementOptions, logger)
     {
     }
@@ -32,7 +32,7 @@ public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResul
     {
         string serialInfo = HandleRequest();
 
-        logger?.LogDebug("Returning: {info}", serialInfo);
+        logger.LogDebug("Returning: {info}", serialInfo);
         context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
         return context.Response.WriteAsync(serialInfo);
     }

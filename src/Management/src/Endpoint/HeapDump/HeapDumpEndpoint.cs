@@ -11,20 +11,25 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 public class HeapDumpEndpoint : IHeapDumpEndpoint
 {
     private readonly IHeapDumper _heapDumper;
+    private readonly ILogger<HeapDumpEndpoint> _logger;
 
     IEndpointOptions IEndpoint.Options => Options.CurrentValue;
 
     public IOptionsMonitor<HeapDumpEndpointOptions> Options { get; }
 
-    public HeapDumpEndpoint(IOptionsMonitor<HeapDumpEndpointOptions> options, IHeapDumper heapDumper, ILogger<HeapDumpEndpoint> logger = null)
+    public HeapDumpEndpoint(IOptionsMonitor<HeapDumpEndpointOptions> options, IHeapDumper heapDumper, ILogger<HeapDumpEndpoint> logger)
     {
         ArgumentGuard.NotNull(heapDumper);
+        ArgumentGuard.NotNull(logger);
+
         Options = options;
         _heapDumper = heapDumper;
+        _logger = logger;
     }
 
     public string Invoke()
     {
+        _logger.LogTrace("Invoking the heap dumper");
         return _heapDumper.DumpHeap();
     }
 }

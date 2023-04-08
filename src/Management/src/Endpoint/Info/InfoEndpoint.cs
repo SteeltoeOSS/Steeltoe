@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info;
@@ -15,8 +16,10 @@ public class InfoEndpoint : IInfoEndpoint
     private readonly ILogger<InfoEndpoint> _logger;
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public InfoEndpoint(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
+    public InfoEndpoint(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger)
     {
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _logger = logger;
         _contributors = contributors.ToList();
@@ -39,7 +42,7 @@ public class InfoEndpoint : IInfoEndpoint
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "Operation failed.");
+                _logger.LogError(e, "Operation failed.");
             }
         }
 

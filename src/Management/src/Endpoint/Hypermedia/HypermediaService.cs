@@ -18,10 +18,11 @@ public class HypermediaService
     private readonly EndpointOptionsBase _options;
 
     public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HypermediaEndpointOptions> options,
-        IEnumerable<IEndpointOptions> endpointOptions, ILogger logger = null)
+        IEnumerable<IEndpointOptions> endpointOptions, ILogger logger)
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(logger);
 
         _logger = logger;
         _managementOptions = managementOptions.Get(ActuatorContext.Name);
@@ -30,10 +31,12 @@ public class HypermediaService
     }
 
     public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options,
-        IEnumerable<IEndpointOptions> endpointOptions, ILogger logger = null)
+        IEnumerable<IEndpointOptions> endpointOptions, ILogger logger)
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(logger);
+
         _endpointOptions = endpointOptions;
         _logger = logger;
         _options = options.CurrentValue;
@@ -49,7 +52,7 @@ public class HypermediaService
             return links;
         }
 
-        _logger?.LogTrace("Processing hypermedia for {ManagementOptions}", _managementOptions);
+        _logger.LogTrace("Processing hypermedia for {ManagementOptions}", _managementOptions);
 
         Link selfLink = null;
 
@@ -75,7 +78,7 @@ public class HypermediaService
                     }
                     else if (links._links.ContainsKey(opt.Id))
                     {
-                        _logger?.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", opt.Id);
+                        _logger.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", opt.Id);
                     }
                 }
             }

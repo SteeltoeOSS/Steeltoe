@@ -38,6 +38,8 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         var listener = new DiagnosticListener("Test");
+
+        services.AddLogging();
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddSingleton(listener);
 

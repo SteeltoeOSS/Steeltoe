@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Test.Trace;
 
 internal sealed class TestTraceEndpoint : TraceEndpoint
 {
-    public TestTraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null)
+    public TestTraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger)
         : base(options, traceRepository, logger)
     {
     }

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
@@ -27,10 +28,10 @@ public class RefreshEndpointTest : BaseTest
 
         IOptionsMonitor<RefreshEndpointOptions> options1 = null;
 
-        Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options1, configuration));
+        Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options1, configuration, NullLogger<RefreshEndpoint>.Instance));
         IOptionsMonitor<RefreshEndpointOptions> options = GetOptionsMonitorFromSettings<RefreshEndpointOptions, ConfigureRefreshEndpointOptions>();
 
-        Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options, configuration));
+        Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options, configuration, NullLogger<RefreshEndpoint>.Instance));
     }
 
     [Fact]

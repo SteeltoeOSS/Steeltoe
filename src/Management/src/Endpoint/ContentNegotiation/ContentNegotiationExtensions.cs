@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ContentNegotiation;
 
@@ -18,8 +19,10 @@ public static class ContentNegotiationExtensions
 
     public static void LogContentType(this ILogger logger, IHeaderDictionary requestHeaders, string contentType)
     {
-        logger?.LogTrace("setting contentType to {type}", contentType);
-        bool? logTrace = logger?.IsEnabled(LogLevel.Trace);
+        ArgumentGuard.NotNull(logger);
+
+        logger.LogTrace("setting contentType to {type}", contentType);
+        bool? logTrace = logger.IsEnabled(LogLevel.Trace);
 
         if (logTrace.GetValueOrDefault())
         {
@@ -40,6 +43,6 @@ public static class ContentNegotiationExtensions
 
         responseHeaders.Add("Content-Type", contentType);
 
-        logger?.LogContentType(requestHeaders, contentType);
+        logger.LogContentType(requestHeaders, contentType);
     }
 }

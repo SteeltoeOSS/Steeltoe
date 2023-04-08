@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
@@ -21,8 +22,9 @@ public class ActuatorEndpoint : IActuatorEndpoint
     public IEndpointOptions Options => _options.CurrentValue;
 
     public ActuatorEndpoint(IOptionsMonitor<HypermediaEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IEnumerable<IEndpointOptions> endpointOptions, ILogger<ActuatorEndpoint> logger = null)
+        IEnumerable<IEndpointOptions> endpointOptions, ILogger<ActuatorEndpoint> logger)
     {
+        ArgumentGuard.NotNull(logger);
         _options = options;
         _managementOption = managementOptions;
         _endpointOptions = endpointOptions;

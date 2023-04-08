@@ -23,19 +23,18 @@ public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
 
     public virtual IEndpointOptions EndpointOptions => Endpoint.Options;
 
-    protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
+    protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
     {
-        ArgumentGuard.NotNull(managementOptions);
-
+        ArgumentGuard.NotNull(logger);
         this.logger = logger;
         this.managementOptions = managementOptions;
     }
 
-    protected EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
+    protected EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
         : this(managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpoint);
-
+        ArgumentGuard.NotNull(logger);
         Endpoint = endpoint;
     }
 
@@ -56,7 +55,7 @@ public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
         }
         catch (Exception e) when (e is ArgumentException or ArgumentNullException or NotSupportedException)
         {
-            logger?.LogError(e, "Error serializing {MiddlewareResponse}", result);
+            logger.LogError(e, "Error serializing {MiddlewareResponse}", result);
         }
 
         return string.Empty;
@@ -106,7 +105,7 @@ public abstract class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware
 
     public override IEndpointOptions EndpointOptions => Endpoint.Options;
 
-    protected EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
+    protected EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
         : base(managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpoint);
@@ -114,7 +113,7 @@ public abstract class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware
         Endpoint = endpoint;
     }
 
-    protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger = null)
+    protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
         : base(managementOptions, logger)
     {
     }

@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -17,8 +18,10 @@ public class ManagementPortMiddleware
     private readonly ILogger<ManagementPortMiddleware> _logger;
 
     public ManagementPortMiddleware(RequestDelegate next, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<ManagementPortMiddleware> logger = null)
+        ILogger<ManagementPortMiddleware> logger)
     {
+        ArgumentGuard.NotNull(logger);
+
         _next = next;
         _managementOptions = managementOptions;
         _logger = logger;
@@ -27,7 +30,7 @@ public class ManagementPortMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         ManagementEndpointOptions mgmtOptions = _managementOptions.Get(ActuatorContext.Name);
-        _logger?.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, mgmtOptions.Path);
+        _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, mgmtOptions.Path);
 
         string contextPath = mgmtOptions.Path;
         bool isManagementPath = context.Request.Path.ToString().StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
@@ -56,7 +59,7 @@ public class ManagementPortMiddleware
             Status = StatusCodes.Status404NotFound
         };
 
-        _logger?.LogError("ManagementMiddleWare Error: Access denied on {port} since Management Port is set to {managementPort}", context.Request.Host.Port,
+        _logger.LogError("ManagementMiddleWare Error: Access denied on {port} since Management Port is set to {managementPort}", context.Request.Host.Port,
             managementPort);
 
         context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");

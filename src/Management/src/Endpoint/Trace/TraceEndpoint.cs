@@ -11,20 +11,23 @@ namespace Steeltoe.Management.Endpoint.Trace;
 public class TraceEndpoint : ITraceEndpoint
 {
     private readonly ITraceRepository _traceRepo;
-
+    private readonly ILogger<TraceEndpoint> _logger;
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
 
     public IEndpointOptions Options => _options.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
 
-    public TraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null)
+    public TraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger)
     {
         ArgumentGuard.NotNull(traceRepository);
+        ArgumentGuard.NotNull(logger);
         _options = options;
         _traceRepo = traceRepository;
+        _logger = logger;
     }
 
     public virtual List<TraceResult> Invoke()
     {
+        _logger.LogTrace("Fetching Traces");
         return DoInvoke(_traceRepo);
     }
 

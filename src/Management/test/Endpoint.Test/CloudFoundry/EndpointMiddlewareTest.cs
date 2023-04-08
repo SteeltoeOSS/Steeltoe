@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -55,9 +56,9 @@ public class EndpointMiddlewareTest : BaseTest
     {
         IOptionsMonitor<CloudFoundryEndpointOptions> opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        var ep = new TestCloudFoundryEndpoint(opts, managementOptions);
+        var ep = new TestCloudFoundryEndpoint(opts, managementOptions, NullLogger<CloudFoundryEndpoint>.Instance);
 
-        var middle = new CloudFoundryEndpointMiddleware(ep, managementOptions);
+        var middle = new CloudFoundryEndpointMiddleware(ep, managementOptions, NullLogger<CloudFoundryEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/");
         await middle.HandleCloudFoundryRequestAsync(context);

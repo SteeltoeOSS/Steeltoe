@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
@@ -35,8 +36,8 @@ public class EndpointMiddlewareTest : BaseTest
     {
         IOptionsMonitor<HypermediaEndpointOptions> opts = GetOptionsMonitorFromSettings<HypermediaEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        var ep = new TestHypermediaEndpoint(opts, managementOptions);
-        var middle = new ActuatorHypermediaEndpointMiddleware(ep, managementOptions);
+        var ep = new TestHypermediaEndpoint(opts, managementOptions, NullLogger<ActuatorEndpoint>.Instance);
+        var middle = new ActuatorHypermediaEndpointMiddleware(ep, managementOptions, NullLogger<ActuatorHypermediaEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/");
         await middle.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);

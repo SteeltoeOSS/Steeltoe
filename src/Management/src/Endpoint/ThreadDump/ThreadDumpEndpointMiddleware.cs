@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 public class ThreadDumpEndpointMiddleware : EndpointMiddleware<List<ThreadInfo>>
 {
     public ThreadDumpEndpointMiddleware(IThreadDumpEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<ThreadDumpEndpointMiddleware> logger = null)
+        ILogger<ThreadDumpEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
     }
@@ -32,7 +32,7 @@ public class ThreadDumpEndpointMiddleware : EndpointMiddleware<List<ThreadInfo>>
     protected internal Task HandleThreadDumpRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest();
-        logger?.LogDebug("Returning: {info}", serialInfo);
+        logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);

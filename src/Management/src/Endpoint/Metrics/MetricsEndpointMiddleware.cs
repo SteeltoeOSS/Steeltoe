@@ -16,7 +16,7 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>
 {
     public MetricsEndpointMiddleware(IMetricsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<MetricsEndpointMiddleware> logger = null)
+        ILogger<MetricsEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
     }
@@ -42,7 +42,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;
 
-        logger?.LogDebug("Incoming path: {path}", request.Path.Value);
+        logger.LogDebug("Incoming path: {path}", request.Path.Value);
 
         string metricName = GetMetricName(request);
 
@@ -67,7 +67,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         {
             // GET /metrics
             string serialInfo = HandleRequest(null);
-            logger?.LogDebug("Returning: {info}", serialInfo);
+            logger.LogDebug("Returning: {info}", serialInfo);
 
             context.HandleContentNegotiation(logger);
             context.Response.StatusCode = (int)HttpStatusCode.OK;

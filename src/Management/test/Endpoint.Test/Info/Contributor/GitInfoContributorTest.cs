@@ -4,6 +4,7 @@
 
 using System.Globalization;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Info;
 using Xunit;
@@ -15,7 +16,7 @@ public class GitInfoContributorTest : BaseTest
     [Fact]
     public void ReadGitPropertiesMissingPropertiesFile()
     {
-        IConfiguration configuration = new GitInfoContributor().ReadGitProperties("foobar");
+        IConfiguration configuration = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitProperties("foobar");
         Assert.Null(configuration);
     }
 
@@ -23,7 +24,7 @@ public class GitInfoContributorTest : BaseTest
     public void ReadEmptyGitPropertiesFile()
     {
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}empty.git.properties";
-        IConfiguration configuration = new GitInfoContributor().ReadGitProperties(path);
+        IConfiguration configuration = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitProperties(path);
         Assert.Null(configuration);
     }
 
@@ -31,7 +32,7 @@ public class GitInfoContributorTest : BaseTest
     public void ReadMalformedGitPropertiesFile()
     {
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}garbage.git.properties";
-        IConfiguration configuration = new GitInfoContributor().ReadGitProperties(path);
+        IConfiguration configuration = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitProperties(path);
         Assert.NotNull(configuration);
         Assert.Null(configuration["git"]);
     }
@@ -40,7 +41,7 @@ public class GitInfoContributorTest : BaseTest
     public void ReadGoodPropertiesFile()
     {
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}git.properties";
-        IConfiguration configuration = new GitInfoContributor().ReadGitProperties(path);
+        IConfiguration configuration = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitProperties(path);
         Assert.NotNull(configuration);
         Assert.Equal("true", configuration["git:dirty"]);
 
@@ -54,7 +55,7 @@ public class GitInfoContributorTest : BaseTest
     public void ContributeWithNullBuilderThrows()
     {
         // Uses git.properties file in test project
-        var contrib = new GitInfoContributor();
+        var contrib = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
         Assert.Throws<ArgumentNullException>(() => contrib.Contribute(null));
     }
 
@@ -62,7 +63,7 @@ public class GitInfoContributorTest : BaseTest
     public void ContributeAddsToBuilder()
     {
         // Uses git.properties file in test project
-        var contrib = new GitInfoContributor();
+        var contrib = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
         var builder = new InfoBuilder();
         contrib.Contribute(builder);
 
