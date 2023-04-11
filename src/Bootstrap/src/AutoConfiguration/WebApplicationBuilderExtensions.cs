@@ -262,7 +262,7 @@ public static class WebApplicationBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireKubernetesActuators(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddKubernetesActuators(webApplicationBuilder.Configuration);
+        webApplicationBuilder.Services.AddKubernetesActuators();
         webApplicationBuilder.Services.ActivateActuatorEndpoints();
         Log(LogMessages.WireKubernetesActuators);
     }

@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
     /// <param name="podUtilities">
     /// Bring your own <see cref="IPodUtilities" />. Defaults to <see cref="StandardPodUtilities" />.
     /// </param>
-    public static IServiceCollection AddKubernetesInfoContributor(this IServiceCollection services, IPodUtilities podUtilities = null)
+    public static IServiceCollection AddKubernetesInfoContributor(this IServiceCollection services, IPodUtilities podUtilities)
     {
         ArgumentGuard.NotNull(services);
 
@@ -42,6 +42,13 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IInfoContributor, KubernetesInfoContributor>();
         return services;
     }
+    /// <summary>
+    /// Add an IInfoContributor that reports basic Kubernetes pod and host information.
+    /// </summary>
+    /// <param name="services">
+    /// <see cref="IServiceCollection" />.
+    /// </param>
+    public static IServiceCollection AddKubernetesInfoContributor(this IServiceCollection services) => services.AddKubernetesInfoContributor(null);
 
     /// <summary>
     /// Add actuators that are useful when running in Kubernetes.
@@ -49,22 +56,23 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// <see cref="IServiceCollection" />.
     /// </param>
-    /// <param name="configuration">
-    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided.
-    /// </param>
     /// <param name="podUtilities">
     /// Bring your own <see cref="IPodUtilities" />. Defaults to <see cref="StandardPodUtilities" />.
     /// </param>
-    /// <param name="version">
-    /// Set response type version.
-    /// </param>
-    public static IServiceCollection AddKubernetesActuators(this IServiceCollection services, IConfiguration configuration = null,
-        IPodUtilities podUtilities = null, MediaTypeVersion version = MediaTypeVersion.V2)
+    public static IServiceCollection AddKubernetesActuators(this IServiceCollection services, IPodUtilities podUtilities)
     {
         ArgumentGuard.NotNull(services);
 
         services.AddKubernetesInfoContributor(podUtilities);
-        services.AddAllActuators(version);
+        services.AddAllActuators();
         return services;
     }
+
+    /// <summary>
+    /// Add actuators that are useful when running in Kubernetes.
+    /// </summary>
+    /// <param name="services">
+    /// <see cref="IServiceCollection" />.
+    /// </param>
+    public static IServiceCollection AddKubernetesActuators(this IServiceCollection services) => services.AddKubernetesActuators(null);
 }

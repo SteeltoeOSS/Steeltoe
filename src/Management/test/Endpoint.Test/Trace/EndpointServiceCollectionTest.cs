@@ -43,7 +43,7 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddSingleton(listener);
 
-        services.AddTraceActuator(configurationRoot);
+        services.AddTraceActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<TraceEndpointOptions>>();

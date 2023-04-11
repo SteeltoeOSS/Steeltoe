@@ -23,7 +23,7 @@ public class Startup
     {
         services.AddRouting();
         services.AddCloudFoundryActuator();
-        services.AddTraceActuator(Configuration);
+        services.AddTraceActuator();
     }
 
     public void Configure(IApplicationBuilder app)

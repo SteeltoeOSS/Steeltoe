@@ -9,9 +9,9 @@ namespace Steeltoe.Management.MetricCollectors;
 
 public static class SteeltoeMetrics
 {
-    public static readonly AssemblyName AssemblyName = typeof(SteeltoeMetrics).Assembly.GetName();
+    private static readonly AssemblyName AssemblyName = typeof(SteeltoeMetrics).Assembly.GetName();
 
-    public static readonly string? InstrumentationVersion = AssemblyName.Version?.ToString();
+    private static readonly string? InstrumentationVersion = AssemblyName.Version?.ToString();
 
     public static Meter Meter => new(InstrumentationName, InstrumentationVersion);
 

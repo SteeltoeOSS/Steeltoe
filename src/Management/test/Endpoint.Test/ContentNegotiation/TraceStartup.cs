@@ -23,7 +23,7 @@ public class TraceStartup
     {
         services.AddRouting();
         services.AddHypermediaActuator();
-        services.AddTraceActuator(Configuration);
+        services.AddTraceActuator();
     }
 
     public void Configure(IApplicationBuilder app)

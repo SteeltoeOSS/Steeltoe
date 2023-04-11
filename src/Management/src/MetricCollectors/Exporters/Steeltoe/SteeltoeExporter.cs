@@ -9,7 +9,7 @@ namespace Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 /// <summary>
 /// Exporter metrics to Steeltoe Format.
 /// </summary>
-public class SteeltoeExporter
+internal class SteeltoeExporter : ISteeltoeExporter
 {
     private readonly MetricsCollection<List<MetricSample>> _metricSamples = new();
     private readonly MetricsCollection<List<MetricTag>> _availTags = new();
@@ -33,7 +33,7 @@ public class SteeltoeExporter
         _cacheDurationMilliseconds = options?.CacheDurationMilliseconds ?? 5000;
     }
 
-    internal (MetricsCollection<List<MetricSample>> MetricSamples, MetricsCollection<List<MetricTag>> AvailableTags) Export()
+    public (MetricsCollection<List<MetricSample>> MetricSamples, MetricsCollection<List<MetricTag>> AvailableTags) Export()
     {
         if (Collect == null)
         {

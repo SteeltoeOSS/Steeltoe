@@ -20,11 +20,7 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add trace to.
     /// </param>
-    /// <param name="configuration">
-    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
-    /// management:endpoints:trace).
-    /// </param>
-    public static void AddTraceActuator(this IServiceCollection services, IConfiguration configuration = null)
+    public static void AddTraceActuator(this IServiceCollection services)
     {
         services.AddTraceActuator(MediaTypeVersion.V2);
     }
