@@ -125,12 +125,10 @@ public sealed class MongoDbConnectorTests
         var optionsSnapshot = app.Services.GetRequiredService<IOptionsSnapshot<MongoDbOptions>>();
 
         MongoDbOptions optionsOne = optionsSnapshot.Get("myMongoDbServiceOne");
-        optionsOne.ConnectionString.Should().NotBeNull();
         optionsOne.ConnectionString.Should().Be("mongodb://localhost/auth-db?appname=mongodb-test");
         optionsOne.Database.Should().Be("db1");
 
         MongoDbOptions optionsTwo = optionsSnapshot.Get("myMongoDbServiceTwo");
-        optionsTwo.ConnectionString.Should().NotBeNull();
         optionsTwo.ConnectionString.Should().Be("mongodb://user:pass@localhost:27018/auth-db");
         optionsTwo.Database.Should().Be("db2");
     }
@@ -184,7 +182,7 @@ public sealed class MongoDbConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MongoDbOptions, MongoClient>>();
+        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MongoDbOptions, IMongoClient>>();
 
         IMongoClient connectionOne = connectionFactory.GetNamed("myMongoDbServiceOne").CreateConnection();
         connectionOne.Settings.Credential.Should().BeNull();
@@ -231,7 +229,7 @@ public sealed class MongoDbConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MongoDbOptions, MongoClient>>();
+        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MongoDbOptions, IMongoClient>>();
 
         MongoDbOptions defaultOptions = connectionFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNull();
@@ -259,7 +257,7 @@ public sealed class MongoDbConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MongoDbOptions, MongoClient>>();
+        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MongoDbOptions, IMongoClient>>();
 
         MongoDbOptions defaultOptions = connectionFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNull();

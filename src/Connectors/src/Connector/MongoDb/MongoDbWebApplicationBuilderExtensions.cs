@@ -13,6 +13,7 @@ namespace Steeltoe.Connector.MongoDb;
 public static class MongoDbWebApplicationBuilderExtensions
 {
     private static readonly Type ConnectionType = MongoDbTypeLocator.MongoClient;
+    private static readonly Type ConnectionInterface = MongoDbTypeLocator.MongoClientInterface;
 
     public static WebApplicationBuilder AddMongoDb(this WebApplicationBuilder builder)
     {
@@ -20,19 +21,21 @@ public static class MongoDbWebApplicationBuilderExtensions
 
         var connectionStringPostProcessor = new MongoDbConnectionStringPostProcessor();
 
+        Func<MongoDbOptions, string, object> createMongoClient = (options, _) => Activator.CreateInstance(ConnectionType, options.ConnectionString);
+
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
         BaseWebApplicationBuilderExtensions.RegisterNamedOptions<MongoDbOptions>(builder, "mongodb", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory<MongoDbOptions>(builder.Services, ConnectionType, false, null);
+        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory(builder.Services, ConnectionInterface, false, createMongoClient);
 
         return builder;
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
     {
-        string connectionString = ConnectionFactoryInvoker.GetConnectionString<MongoDbOptions>(serviceProvider, bindingName, ConnectionType);
+        string connectionString = ConnectionFactoryInvoker.GetConnectionString<MongoDbOptions>(serviceProvider, bindingName, ConnectionInterface);
         string serviceName = $"MongoDB-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connectionString);
-        object mongoClient = ConnectionFactoryInvoker.CreateConnection<MongoDbOptions>(serviceProvider, bindingName, ConnectionType);
+        object mongoClient = ConnectionFactoryInvoker.CreateConnection<MongoDbOptions>(serviceProvider, bindingName, ConnectionInterface);
         var logger = serviceProvider.GetRequiredService<ILogger<MongoDbHealthContributor>>();
 
         return new MongoDbHealthContributor(mongoClient, serviceName, hostName, logger);
