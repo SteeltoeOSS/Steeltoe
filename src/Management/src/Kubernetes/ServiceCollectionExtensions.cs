@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
@@ -42,13 +41,17 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IInfoContributor, KubernetesInfoContributor>();
         return services;
     }
+
     /// <summary>
     /// Add an IInfoContributor that reports basic Kubernetes pod and host information.
     /// </summary>
     /// <param name="services">
     /// <see cref="IServiceCollection" />.
     /// </param>
-    public static IServiceCollection AddKubernetesInfoContributor(this IServiceCollection services) => services.AddKubernetesInfoContributor(null);
+    public static IServiceCollection AddKubernetesInfoContributor(this IServiceCollection services)
+    {
+        return services.AddKubernetesInfoContributor(null);
+    }
 
     /// <summary>
     /// Add actuators that are useful when running in Kubernetes.
@@ -74,5 +77,8 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// <see cref="IServiceCollection" />.
     /// </param>
-    public static IServiceCollection AddKubernetesActuators(this IServiceCollection services) => services.AddKubernetesActuators(null);
+    public static IServiceCollection AddKubernetesActuators(this IServiceCollection services)
+    {
+        return services.AddKubernetesActuators(null);
+    }
 }

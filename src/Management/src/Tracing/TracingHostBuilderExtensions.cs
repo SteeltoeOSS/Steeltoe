@@ -33,7 +33,11 @@ public static class TracingHostBuilderExtensions
     /// <param name="hostBuilder">
     /// Your HostBuilder.
     /// </param>
-    public static IHostBuilder AddDistributedTracingAspNetCore(this IHostBuilder hostBuilder) => hostBuilder.AddDistributedTracingAspNetCore(null);
+    public static IHostBuilder AddDistributedTracingAspNetCore(this IHostBuilder hostBuilder)
+    {
+        return hostBuilder.AddDistributedTracingAspNetCore(null);
+    }
+
     /// <summary>
     /// Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin and Wavefront
     /// exporting.
@@ -48,6 +52,7 @@ public static class TracingHostBuilderExtensions
     {
         return hostBuilder.ConfigureServices((_, services) => services.AddDistributedTracingAspNetCore(action));
     }
+
     /// <summary>
     /// Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin and Wavefront
     /// exporting.
@@ -55,7 +60,10 @@ public static class TracingHostBuilderExtensions
     /// <param name="hostBuilder">
     /// Your HostBuilder.
     /// </param>
-    public static IWebHostBuilder AddDistributedTracingAspNetCore(this IWebHostBuilder hostBuilder) => hostBuilder.AddDistributedTracingAspNetCore(null);
+    public static IWebHostBuilder AddDistributedTracingAspNetCore(this IWebHostBuilder hostBuilder)
+    {
+        return hostBuilder.AddDistributedTracingAspNetCore(null);
+    }
 
     /// <summary>
     /// Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin and Wavefront
@@ -72,6 +80,7 @@ public static class TracingHostBuilderExtensions
         hostBuilder.Services.AddDistributedTracingAspNetCore(action);
         return hostBuilder;
     }
+
     /// <summary>
     /// Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin and Wavefront
     /// exporting.
@@ -79,5 +88,8 @@ public static class TracingHostBuilderExtensions
     /// <param name="hostBuilder">
     /// Your HostBuilder.
     /// </param>
-    public static WebApplicationBuilder AddDistributedTracingAspNetCore(this WebApplicationBuilder hostBuilder) => hostBuilder.AddDistributedTracingAspNetCore(null);
+    public static WebApplicationBuilder AddDistributedTracingAspNetCore(this WebApplicationBuilder hostBuilder)
+    {
+        return hostBuilder.AddDistributedTracingAspNetCore(null);
+    }
 }
