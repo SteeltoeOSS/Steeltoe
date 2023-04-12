@@ -51,7 +51,7 @@ public static class ServiceCollectionExtensions
             };
         });
 
-        services.TryAddSingleton(provider =>
+        services.TryAddSingleton<ISteeltoeExporter>(provider =>
         {
             var exporterOptions = provider.GetService<IExporterOptions>();
             return new SteeltoeExporter(exporterOptions);
@@ -66,7 +66,8 @@ public static class ServiceCollectionExtensions
     {
         return services.AddSingleton(provider =>
         {
-            var steeltoeExporter = provider.GetService<SteeltoeExporter>();
+            var steeltoeExporter = provider.GetService<ISteeltoeExporter>();
+
             var exporterOptions = provider.GetService<IExporterOptions>();
             var logger = provider.GetService<ILogger<SteeltoeExporter>>();
 

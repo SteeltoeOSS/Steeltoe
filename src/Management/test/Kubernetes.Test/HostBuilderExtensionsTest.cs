@@ -68,18 +68,6 @@ public class HostBuilderExtensionsTest
     }
 
     [Fact]
-    public async Task AddKubernetesActuators_IWebHostBuilder_AddsAndActivatesActuators_MediaV1()
-    {
-        var hostBuilder = new WebHostBuilder();
-        _testServerWithRouting.Invoke(hostBuilder);
-
-        using IWebHost host = hostBuilder.AddKubernetesActuators().Start();
-        HttpClient testClient = host.GetTestServer().CreateClient();
-
-        await AssertActuatorResponsesAsync(testClient, MediaTypeVersion.V1);
-    }
-
-    [Fact]
     public async Task AddKubernetesActuatorsWithConventions_IWebHostBuilder_AddsAndActivatesActuatorsAddAllActuators()
     {
         var hostBuilder = new WebHostBuilder();
@@ -100,18 +88,6 @@ public class HostBuilderExtensionsTest
         await host.StartAsync();
         HttpClient testClient = host.GetTestServer().CreateClient();
         await AssertActuatorResponsesAsync(testClient);
-    }
-
-    [Fact]
-    public async Task AddKubernetesActuators_WebApplicationBuilder_AddsAndActivatesActuators_MediaV1()
-    {
-        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
-        await using WebApplication host = hostBuilder.AddKubernetesActuators().Build();
-
-        host.UseRouting();
-        await host.StartAsync();
-        HttpClient testClient = host.GetTestServer().CreateClient();
-        await AssertActuatorResponsesAsync(testClient, MediaTypeVersion.V1);
     }
 
     [Fact]
@@ -143,7 +119,7 @@ public class HostBuilderExtensionsTest
         return app;
     }
 
-    private async Task AssertActuatorResponsesAsync(HttpClient testClient, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    private async Task AssertActuatorResponsesAsync(HttpClient testClient)
     {
         HttpResponseMessage response = await testClient.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -158,15 +134,8 @@ public class HostBuilderExtensionsTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
 
-        if (mediaTypeVersion == MediaTypeVersion.V1)
-        {
-            response = await testClient.GetAsync(new Uri("/actuator/trace", UriKind.Relative));
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-        else
-        {
-            response = await testClient.GetAsync(new Uri("/actuator/httptrace", UriKind.Relative));
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
+        response = await testClient.GetAsync(new Uri("/actuator/httptrace", UriKind.Relative));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
     }
 }

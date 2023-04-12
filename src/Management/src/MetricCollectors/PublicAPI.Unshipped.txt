@@ -6,6 +6,7 @@ static Steeltoe.Management.MetricCollectors.SteeltoeMetrics.Meter.get -> System.
 Steeltoe.Management.MetricCollectors.Exporters.ICollectionResponse
 Steeltoe.Management.MetricCollectors.Exporters.ICollectionResponse.GeneratedAtUtc.get -> System.DateTime
 Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter
+Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.AddMetrics(System.Diagnostics.Metrics.Instrument! instrument, System.Diagnostics.Metrics.LabeledAggregationStatistics! stats) -> void
 Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.Collect.get -> System.Action?
 Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.Collect.set -> void
 Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.Export() -> (Steeltoe.Management.MetricCollectors.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.MetricSample!>!>! MetricSamples, Steeltoe.Management.MetricCollectors.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.MetricTag!>!>! AvailableTags)
@@ -42,3 +43,8 @@ Steeltoe.Management.MetricCollectors.MetricTag.MetricTag(string! tag, System.Col
 Steeltoe.Management.MetricCollectors.MetricTag.Tag.get -> string!
 Steeltoe.Management.MetricCollectors.MetricTag.Values.get -> System.Collections.Generic.ISet<string!>!
 Steeltoe.Management.MetricCollectors.SteeltoeMetrics
+System.Diagnostics.Metrics.IAggregationStatistics
+System.Diagnostics.Metrics.LabeledAggregationStatistics
+System.Diagnostics.Metrics.LabeledAggregationStatistics.AggregationStatistics.get -> System.Diagnostics.Metrics.IAggregationStatistics!
+System.Diagnostics.Metrics.LabeledAggregationStatistics.LabeledAggregationStatistics(System.Diagnostics.Metrics.IAggregationStatistics! stats, params System.Collections.Generic.KeyValuePair<string!, string!>[]! labels) -> void
+System.Diagnostics.Metrics.LabeledAggregationStatistics.Labels.get -> System.Collections.Generic.KeyValuePair<string!, string!>[]!

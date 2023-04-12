@@ -56,7 +56,7 @@ internal class SteeltoeExporter : ISteeltoeExporter
         return (_lastCollectionSamples, _lastAvailableTags);
     }
 
-    internal void AddMetrics(Instrument instrument, LabeledAggregationStatistics stats)
+    public void AddMetrics(Instrument instrument, LabeledAggregationStatistics stats)
     {
         UpdateAvailableTags(_availTags, instrument.Name, stats.Labels);
 

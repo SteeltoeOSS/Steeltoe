@@ -13,7 +13,7 @@ internal abstract class Aggregator
     public abstract IAggregationStatistics Collect();
 }
 
-internal interface IAggregationStatistics
+public interface IAggregationStatistics
 {
 }
 
@@ -46,7 +46,7 @@ internal sealed class HistogramStatistics : IAggregationStatistics
     }
 }
 
-internal sealed class LabeledAggregationStatistics
+public sealed class LabeledAggregationStatistics
 {
     public KeyValuePair<string, string>[] Labels { get; }
     public IAggregationStatistics AggregationStatistics { get; }
