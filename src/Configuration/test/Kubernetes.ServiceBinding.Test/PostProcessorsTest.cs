@@ -719,12 +719,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         var secrets = new[]
         {
-            Tuple.Create("addresses", "test-addresses"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("username", "test-username"),
-            Tuple.Create("virtual-host", "test-virtual-host")
+            Tuple.Create("username", "test-username")
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQPostProcessor.BindingType, secrets);
@@ -733,7 +728,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:addresses");
+        configurationData.Should().NotContainKey($"{keyPrefix}:username");
     }
 
     [Fact]
@@ -743,11 +738,10 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         var secrets = new[]
         {
-            Tuple.Create("addresses", "test-addresses"),
             Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
             Tuple.Create("port", "test-port"),
             Tuple.Create("username", "test-username"),
+            Tuple.Create("password", "test-password"),
             Tuple.Create("virtual-host", "test-virtual-host")
         };
 
@@ -757,11 +751,10 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:addresses"].Should().Be("test-addresses");
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
         configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
         configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
         configurationData[$"{keyPrefix}:virtualHost"].Should().Be("test-virtual-host");
     }
 
