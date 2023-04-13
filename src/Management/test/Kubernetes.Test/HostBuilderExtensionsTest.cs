@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Test;
 using Xunit;
 
@@ -136,6 +135,5 @@ public class HostBuilderExtensionsTest
 
         response = await testClient.GetAsync(new Uri("/actuator/httptrace", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
     }
 }

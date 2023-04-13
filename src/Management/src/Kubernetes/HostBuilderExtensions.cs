@@ -30,7 +30,7 @@ public static class HostBuilderExtensions
     /// <param name="webHostBuilder">
     /// Your WebHostBuilder.
     /// </param>
-    public static IWebHostBuilder AddKubernetesActuators(this IWebHostBuilder webHostBuilder    )
+    public static IWebHostBuilder AddKubernetesActuators(this IWebHostBuilder webHostBuilder)
     {
         return webHostBuilder.AddKubernetesActuators(null);
     }
@@ -53,7 +53,7 @@ public static class HostBuilderExtensions
             configureEndpoints?.Invoke(epBuilder);
         });
     }
- 
+
     /// <summary>
     /// Adds all standard and Kubernetes-specific actuators to the application.
     /// </summary>
