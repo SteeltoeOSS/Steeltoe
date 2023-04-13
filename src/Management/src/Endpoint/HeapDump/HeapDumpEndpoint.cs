@@ -27,7 +27,7 @@ public class HeapDumpEndpoint : IHeapDumpEndpoint
         _logger = logger;
     }
 
-    public string Invoke()
+    public virtual string Invoke()
     {
         _logger.LogTrace("Invoking the heap dumper");
         return _heapDumper.DumpHeap();

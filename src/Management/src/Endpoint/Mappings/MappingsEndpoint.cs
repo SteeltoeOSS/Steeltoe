@@ -38,7 +38,7 @@ public class MappingsEndpoint : IMappingsEndpoint
         _logger = logger;
     }
 
-    public ApplicationMappings Invoke()
+    public virtual ApplicationMappings Invoke()
     {
         _logger.LogTrace("Fetching application mappings");
         return GetApplicationMappings();

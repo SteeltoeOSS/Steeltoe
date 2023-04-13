@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class Sanitizer
+internal class Sanitizer
 {
     private readonly string[] _regexParts =
     {
@@ -18,7 +18,7 @@ public class Sanitizer
 
     private readonly List<Regex> _matchers = new();
 
-    public Sanitizer(string[] keysToSanitize)
+    internal Sanitizer(string[] keysToSanitize)
     {
         foreach (string key in keysToSanitize)
         {
@@ -28,7 +28,7 @@ public class Sanitizer
         }
     }
 
-    public KeyValuePair<string, string> Sanitize(KeyValuePair<string, string> kvp)
+    internal KeyValuePair<string, string> Sanitize(KeyValuePair<string, string> kvp)
     {
         if (kvp.Value != null && _matchers.Any(m => m.IsMatch(kvp.Key)))
         {

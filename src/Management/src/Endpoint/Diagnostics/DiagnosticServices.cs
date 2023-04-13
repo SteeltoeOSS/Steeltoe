@@ -9,12 +9,12 @@ using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Diagnostics;
 
-public class DiagnosticServices : IHostedService
+internal class DiagnosticServices : IHostedService
 {
     private readonly ILogger<DiagnosticServices> _logger;
     private readonly IDiagnosticsManager _observerManager;
 
-    public DiagnosticServices(IDiagnosticsManager observerManager, ILogger<DiagnosticServices> logger)
+    internal DiagnosticServices(IDiagnosticsManager observerManager, ILogger<DiagnosticServices> logger)
     {
         ArgumentGuard.NotNull(logger);
 

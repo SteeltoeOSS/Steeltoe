@@ -14,9 +14,14 @@ public class PropertyValueDescriptor
     [JsonPropertyName("origin")]
     public string Origin { get; }
 
-    public PropertyValueDescriptor(object value, string origin = null)
+    public PropertyValueDescriptor(object value, string origin)
     {
         Value = value;
         Origin = origin;
+    }
+    public PropertyValueDescriptor(object value)
+    {
+        Value = value;
+        Origin = null;
     }
 }

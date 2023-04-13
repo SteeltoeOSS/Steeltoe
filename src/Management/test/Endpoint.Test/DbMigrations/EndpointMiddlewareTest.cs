@@ -66,21 +66,14 @@ public class EndpointMiddlewareTest : BaseTest
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string json = await reader.ReadToEndAsync();
+        var descriptor = new DbMigrationsDescriptor();
+        descriptor.AppliedMigrations.Add("applied");
+        descriptor.PendingMigrations.Add("pending");
 
         string expected = Serialize(new Dictionary<string, DbMigrationsDescriptor>
         {
             {
-                nameof(MockDbContext), new DbMigrationsDescriptor
-                {
-                    AppliedMigrations = new List<string>
-                    {
-                        "applied"
-                    },
-                    PendingMigrations = new List<string>
-                    {
-                        "pending"
-                    }
-                }
+                nameof(MockDbContext), descriptor
             }
         });
 
@@ -103,21 +96,13 @@ public class EndpointMiddlewareTest : BaseTest
         HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/dbmigrations"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
-
+        var descriptor = new DbMigrationsDescriptor();
+        descriptor.AppliedMigrations.Add("applied");
+        descriptor.PendingMigrations.Add("pending");
         string expected = Serialize(new Dictionary<string, DbMigrationsDescriptor>
         {
             {
-                nameof(MockDbContext), new DbMigrationsDescriptor
-                {
-                    AppliedMigrations = new List<string>
-                    {
-                        "applied"
-                    },
-                    PendingMigrations = new List<string>
-                    {
-                        "pending"
-                    }
-                }
+                nameof(MockDbContext), descriptor
             }
         });
 

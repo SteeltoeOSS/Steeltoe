@@ -11,3 +11,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Messaging")]
+[assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]

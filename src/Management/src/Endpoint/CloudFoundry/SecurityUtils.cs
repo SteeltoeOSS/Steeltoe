@@ -41,7 +41,7 @@ public class SecurityUtils
         _httpClient = httpClient;
     }
 
-    public bool IsCloudFoundryRequest(string requestPath)
+    internal bool IsCloudFoundryRequest(string requestPath)
     {
         string optionsPath = _options.Path;
 
@@ -49,7 +49,7 @@ public class SecurityUtils
         return requestPath.StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
     }
 
-    public string Serialize(SecurityResult error)
+    internal string Serialize(SecurityResult error)
     {
         try
         {
@@ -63,7 +63,7 @@ public class SecurityUtils
         return string.Empty;
     }
 
-    public async Task<SecurityResult> GetPermissionsAsync(string token)
+    internal async Task<SecurityResult> GetPermissionsAsync(string token)
     {
         if (string.IsNullOrEmpty(token))
         {
@@ -101,7 +101,7 @@ public class SecurityUtils
         }
     }
 
-    public async Task<Permissions> GetPermissionsAsync(HttpResponseMessage response)
+    internal async Task<Permissions> GetPermissionsAsync(HttpResponseMessage response)
     {
         string json = string.Empty;
         var permissions = Permissions.None;

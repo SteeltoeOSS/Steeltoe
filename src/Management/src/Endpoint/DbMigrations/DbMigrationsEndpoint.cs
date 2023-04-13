@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
@@ -50,7 +51,7 @@ public class DbMigrationsEndpoint : IDbMigrationsEndpoint
         _logger = logger;
     }
 
-    public Dictionary<string, DbMigrationsDescriptor> Invoke()
+    public virtual Dictionary<string, DbMigrationsDescriptor> Invoke()
     {
         return DoInvoke();
     }
@@ -87,13 +88,13 @@ public class DbMigrationsEndpoint : IDbMigrationsEndpoint
 
                 try
                 {
-                    descriptor.PendingMigrations = _endpointHelper.GetPendingMigrations(dbContext).ToList();
-                    descriptor.AppliedMigrations = _endpointHelper.GetAppliedMigrations(dbContext).ToList();
+                    descriptor.PendingMigrations.AddRange(_endpointHelper.GetPendingMigrations(dbContext));
+                    descriptor.AppliedMigrations.AddRange(_endpointHelper.GetAppliedMigrations(dbContext));
                 }
                 catch (DbException e) when (e.Message.Contains("exist", StringComparison.Ordinal))
                 {
                     _logger.LogWarning(e, "Encountered exception loading migrations: {exception}", e.Message);
-                    descriptor.PendingMigrations = _endpointHelper.GetMigrations(dbContext).ToList();
+                    descriptor.PendingMigrations.AddRange(_endpointHelper.GetMigrations(dbContext));
                 }
             }
         }

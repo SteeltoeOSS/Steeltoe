@@ -35,12 +35,12 @@ public class EnvEndpoint : IEnvEndpoint
         _logger = logger;
     }
 
-    public EnvironmentDescriptor Invoke()
+    public virtual EnvironmentDescriptor Invoke()
     {
         return DoInvoke(_configuration);
     }
 
-    public EnvironmentDescriptor DoInvoke(IConfiguration configuration)
+    private EnvironmentDescriptor DoInvoke(IConfiguration configuration)
     {
         IList<string> activeProfiles = new List<string>
         {
