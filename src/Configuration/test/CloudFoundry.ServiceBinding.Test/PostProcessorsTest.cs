@@ -151,4 +151,43 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         configurationData[$"{keyPrefix}:User ID"].Should().Be("test-username");
         configurationData[$"{keyPrefix}:Password"].Should().Be("test-password");
     }
+
+    [Fact]
+    public void MongoDbTest_BindingTypeDisabled()
+    {
+        var postProcessor = new MongoDbPostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("credentials:uri", "test-uri")
+        };
+
+        Dictionary<string, string> configurationData = GetConfigurationData(MongoDbPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingType, false);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbPostProcessor.BindingType);
+        configurationData.Should().NotContainKey($"{keyPrefix}:url");
+    }
+
+    [Fact]
+    public void MongoDbTest_BindingTypeEnabled()
+    {
+        var postProcessor = new MongoDbPostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("credentials:uri", "mongodb://localhost:27017/auth-db?appname=sample")
+        };
+
+        Dictionary<string, string> configurationData = GetConfigurationData(MongoDbPostProcessor.BindingType, "csb-azure-mongodb", TestBindingName, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingType, true);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbPostProcessor.BindingType);
+        configurationData[$"{keyPrefix}:url"].Should().Be("mongodb://localhost:27017/auth-db?appname=sample");
+        configurationData[$"{keyPrefix}:database"].Should().Be("auth-db");
+    }
 }

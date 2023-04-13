@@ -22,8 +22,8 @@ internal static class BaseWebApplicationBuilderExtensions
         configurationBuilder.Add(source);
     }
 
-    public static void RegisterNamedOptions<TOptions>(WebApplicationBuilder builder, string bindingType, Type connectionType, string healthDisplayName,
-        string healthHostNameKey)
+    public static void RegisterNamedOptions<TOptions>(WebApplicationBuilder builder, string bindingType,
+        Func<IServiceProvider, string, IHealthContributor> createHealthContributor)
         where TOptions : ConnectionStringOptions
     {
         string key = ConfigurationPath.Combine(ConnectionStringPostProcessor.ServiceBindingsConfigurationKey, bindingType);
@@ -40,13 +40,13 @@ internal static class BaseWebApplicationBuilderExtensions
 
                 if (registerDefaultHealthContributor)
                 {
-                    RegisterHealthContributor<TOptions>(builder.Services, string.Empty, connectionType, healthDisplayName, healthHostNameKey);
+                    RegisterHealthContributor(builder.Services, string.Empty, createHealthContributor);
                 }
             }
             else
             {
                 builder.Services.Configure<TOptions>(bindingName, child);
-                RegisterHealthContributor<TOptions>(builder.Services, bindingName, connectionType, healthDisplayName, healthHostNameKey);
+                RegisterHealthContributor(builder.Services, bindingName, createHealthContributor);
             }
         }
     }
@@ -57,19 +57,17 @@ internal static class BaseWebApplicationBuilderExtensions
         return childSections.Length == 1 && childSections[0].Key == ConnectionStringPostProcessor.DefaultBindingName;
     }
 
-    private static void RegisterHealthContributor<TOptions>(IServiceCollection services, string bindingName, Type connectionType, string healthDisplayName,
-        string healthHostNameKey)
-        where TOptions : ConnectionStringOptions
+    private static void RegisterHealthContributor(IServiceCollection services, string bindingName,
+        Func<IServiceProvider, string, IHealthContributor> createHealthContributor)
     {
-        services.AddSingleton(typeof(IHealthContributor),
-            serviceProvider => CreateHealthContributor<TOptions>(serviceProvider, bindingName, connectionType, healthDisplayName, healthHostNameKey));
+        services.AddSingleton(typeof(IHealthContributor), serviceProvider => createHealthContributor(serviceProvider, bindingName));
     }
 
-    private static IHealthContributor CreateHealthContributor<TOptions>(IServiceProvider serviceProvider, string bindingName, Type connectionType,
+    public static IHealthContributor CreateRelationalHealthContributor<TOptions>(IServiceProvider serviceProvider, string bindingName, Type connectionType,
         string healthDisplayName, string healthHostNameKey)
         where TOptions : ConnectionStringOptions
     {
-        IDbConnection connection = ConnectionFactoryInvoker.CreateConnection<TOptions>(serviceProvider, bindingName, connectionType);
+        var connection = (IDbConnection)ConnectionFactoryInvoker.CreateConnection<TOptions>(serviceProvider, bindingName, connectionType);
         string serviceName = $"{healthDisplayName}-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connection.ConnectionString, healthHostNameKey);
         var logger = serviceProvider.GetRequiredService<ILogger<RelationalDbHealthContributor>>();

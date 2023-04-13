@@ -10,8 +10,9 @@ internal sealed class SqlServerConnectionStringPostProcessor : ConnectionStringP
 {
     protected override string BindingType => "sqlserver";
 
-    protected override DbConnectionStringBuilder CreateConnectionStringBuilder()
+    protected override IConnectionStringBuilder CreateConnectionStringBuilder()
     {
-        return (DbConnectionStringBuilder)Activator.CreateInstance(SqlServerTypeLocator.SqlConnectionStringBuilderType);
+        var dbConnectionStringBuilder = (DbConnectionStringBuilder)Activator.CreateInstance(SqlServerTypeLocator.SqlConnectionStringBuilderType);
+        return new DbConnectionStringBuilderWrapper(dbConnectionStringBuilder);
     }
 }
