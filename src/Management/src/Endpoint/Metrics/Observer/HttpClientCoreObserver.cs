@@ -32,7 +32,6 @@ public class HttpClientCoreObserver : MetricsObserver
     public HttpClientCoreObserver(IOptionsMonitor<MetricsObserverOptions> options, ILogger<HttpClientCoreObserver> logger)
         : base(DefaultObserverName, DiagnosticName, logger)
     {
-
         ArgumentGuard.NotNull(options);
         SetPathMatcher(new Regex(options.CurrentValue.EgressIgnorePattern));
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.time");

@@ -253,14 +253,18 @@ public static class ManagementHostBuilderExtensions
             ActivateActuatorEndpoints(collection);
         });
     }
+
     /// <summary>
     /// Adds the ThreadDump actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
     /// Your HostBuilder.
     /// </param>
-    public static IHostBuilder AddThreadDumpActuator(this IHostBuilder hostBuilder) =>
-        hostBuilder.AddThreadDumpActuator(MediaTypeVersion.V2);
+    public static IHostBuilder AddThreadDumpActuator(this IHostBuilder hostBuilder)
+    {
+        return hostBuilder.AddThreadDumpActuator(MediaTypeVersion.V2);
+    }
+
     /// <summary>
     /// Adds the Trace actuator to the application.
     /// </summary>

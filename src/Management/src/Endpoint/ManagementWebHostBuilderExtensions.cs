@@ -283,13 +283,18 @@ public static class ManagementWebHostBuilderExtensions
             collection.ActivateActuatorEndpoints();
         });
     }
+
     /// <summary>
     /// Adds the Trace actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
     /// Your HostBuilder.
     /// </param>
-    public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder hostBuilder) => hostBuilder.AddTraceActuator(MediaTypeVersion.V2);
+    public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder hostBuilder)
+    {
+        return hostBuilder.AddTraceActuator(MediaTypeVersion.V2);
+    }
+
     /// <summary>
     /// Adds the Cloud Foundry actuator to the application.
     /// </summary>

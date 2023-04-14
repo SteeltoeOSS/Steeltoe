@@ -33,7 +33,6 @@ public class HttpClientDesktopObserver : MetricsObserver
     public HttpClientDesktopObserver(IOptionsMonitor<MetricsObserverOptions> options, ILogger<HttpClientDesktopObserver> logger)
         : base(DefaultObserverName, DiagnosticName, logger)
     {
-
         ArgumentGuard.NotNull(options);
         SetPathMatcher(new Regex(options.CurrentValue.EgressIgnorePattern));
 

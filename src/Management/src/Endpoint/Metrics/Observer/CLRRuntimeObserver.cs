@@ -5,7 +5,6 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Metrics;
@@ -98,7 +97,8 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
 
     public void AddInstrumentation()
     {
-        var meter = SteeltoeMetrics.Meter;
+        Meter meter = SteeltoeMetrics.Meter;
+
         if (_options.CurrentValue.GCEvents)
         {
             meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");

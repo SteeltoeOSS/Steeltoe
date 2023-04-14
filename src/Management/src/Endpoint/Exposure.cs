@@ -18,13 +18,6 @@ public class Exposure
         "info"
     };
 
-#pragma warning disable S4004 // Collection properties should be readonly
-    public IList<string> Include { get; set; }
-
-    public IList<string> Exclude { get; set; }
-
-#pragma warning restore S4004 // Collection properties should be readonly
-
     public Exposure()
     {
         Include = DefaultInclude;
@@ -69,4 +62,11 @@ public class Exposure
     {
         return configSection.GetValue<string>(key)?.Split(',').ToList();
     }
+
+#pragma warning disable S4004 // Collection properties should be readonly
+    public IList<string> Include { get; set; }
+
+    public IList<string> Exclude { get; set; }
+
+#pragma warning restore S4004 // Collection properties should be readonly
 }

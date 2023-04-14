@@ -350,6 +350,5 @@ public static class ManagementWebApplicationBuilderExtensions
 
         IEndpointConventionBuilder endpointConventionBuilder = applicationBuilder.Services.ActivateActuatorEndpoints();
         configureEndpoints?.Invoke(endpointConventionBuilder);
-
     }
 }

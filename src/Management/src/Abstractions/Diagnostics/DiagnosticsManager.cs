@@ -83,12 +83,12 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
             _listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
         }
 
-        if(_listenersSubscription != null)
+        if (_listenersSubscription != null)
         {
             _logger.LogTrace("Subscribed to Diagnostic Listener");
         }
 
-        if(_eventListeners !=null)
+        if (_eventListeners != null)
         {
             _logger.LogTrace("Subscribed to EventListeners: {eventListeners}", string.Join(",", _eventListeners.Select(e => e.GetType().Name)));
         }

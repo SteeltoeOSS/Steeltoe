@@ -44,6 +44,7 @@ public class DefaultHealthAggregator : IHealthAggregator
     protected static string GetKey(ConcurrentBag<string> keys, string key)
     {
         ArgumentGuard.NotNull(keys);
+
         lock (keys)
         {
             // add the contributor with a -n appended to the id
