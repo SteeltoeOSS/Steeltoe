@@ -37,7 +37,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         return result == null ? null : Serialize(result);
     }
 
-    protected internal async Task HandleMetricsRequestAsync(HttpContext context)
+    internal async Task HandleMetricsRequestAsync(HttpContext context)
     {
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;
@@ -75,7 +75,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         }
     }
 
-    protected internal string GetMetricName(HttpRequest request)
+    internal string GetMetricName(HttpRequest request)
     {
         ManagementEndpointOptions mgmtOptions = ManagementOptions.GetFromContextPath(request.Path);
 
@@ -118,7 +118,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         return results;
     }
 
-    protected internal KeyValuePair<string, string>? ParseTag(string kvp)
+    internal KeyValuePair<string, string>? ParseTag(string kvp)
     {
         string[] str = kvp.Split(new[]
         {

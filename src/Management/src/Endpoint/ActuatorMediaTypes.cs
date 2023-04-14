@@ -12,7 +12,7 @@ public static class ActuatorMediaTypes
     public const string AppJson = "application/json";
     public const string Any = "*/*";
 
-    public static string GetContentHeaders(IList<string> acceptHeaders, MediaTypeVersion version = MediaTypeVersion.V2)
+    public static string GetContentHeaders(IList<string> acceptHeaders, MediaTypeVersion version)
     {
         string contentHeader = AppJson;
         string versionContentHeader = GetContentTypeHeaderForVersion(version);
@@ -25,6 +25,7 @@ public static class ActuatorMediaTypes
         return $"{contentHeader};charset=UTF-8";
     }
 
+    public static string GetContentHeaders(IList<string> acceptHeaders) => GetContentHeaders(acceptHeaders, MediaTypeVersion.V2);
     private static string GetContentTypeHeaderForVersion(MediaTypeVersion version = MediaTypeVersion.V2)
     {
         return version switch

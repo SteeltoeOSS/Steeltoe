@@ -18,9 +18,9 @@ public class EventSourceListener : EventListener
 {
     private readonly ILogger<EventSourceListener> _logger;
 
-    protected ConcurrentDictionary<string, Counter<long>> LongCounters { get; set; }
+    protected ConcurrentDictionary<string, Counter<long>> LongCounters { get; }
 
-    protected ConcurrentDictionary<string, Counter<double>> DoubleCounters { get; set; }
+    protected ConcurrentDictionary<string, Counter<double>> DoubleCounters { get; }
 
     internal EventSourceListener(ILogger<EventSourceListener> logger)
     {
@@ -45,6 +45,7 @@ public class EventSourceListener : EventListener
     protected virtual void ExtractAndRecordMetric(string eventSourceName, EventWrittenEventArgs eventData, IDictionary<string, object> labels,
         string[] ignorePayloadNames, string[] counterNames)
     {
+        ArgumentGuard.NotNull(eventData);
         ReadOnlyCollection<string> payloadNames = eventData.PayloadNames;
         ReadOnlyCollection<object> payload = eventData.Payload;
 

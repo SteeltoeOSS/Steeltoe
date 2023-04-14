@@ -24,7 +24,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
     private readonly ILogger<TraceDiagnosticObserver> _logger;
-    internal ConcurrentQueue<TraceResult> Queue = new();
+    internal ConcurrentQueue<TraceResult> Queue { get; } = new();
 
     public TraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILogger<TraceDiagnosticObserver> logger)
         : base(DefaultObserverName, DiagnosticName, logger)
@@ -76,6 +76,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
     protected internal TraceResult MakeTrace(HttpContext context, TimeSpan duration)
     {
+        ArgumentGuard.NotNull(context);
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;
         TraceEndpointOptions options = _options.CurrentValue;
@@ -142,19 +143,19 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         return new TraceResult(GetJavaTime(DateTime.Now.Ticks), details);
     }
 
-    protected internal long GetJavaTime(long ticks)
+    internal long GetJavaTime(long ticks)
     {
         long javaTicks = ticks - BaseTime.Ticks;
         return javaTicks / 10000;
     }
 
-    protected internal string GetSessionId(HttpContext context)
+    internal string GetSessionId(HttpContext context)
     {
         var sessionFeature = context.Features.Get<ISessionFeature>();
         return sessionFeature == null ? null : context.Session.Id;
     }
 
-    protected internal string GetTimeTaken(TimeSpan duration)
+    internal string GetTimeTaken(TimeSpan duration)
     {
         long timeInMilliseconds = (long)duration.TotalMilliseconds;
         return timeInMilliseconds.ToString(CultureInfo.InvariantCulture);
@@ -165,7 +166,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         return string.Empty;
     }
 
-    protected internal Dictionary<string, string[]> GetRequestParameters(HttpRequest request)
+    internal Dictionary<string, string[]> GetRequestParameters(HttpRequest request)
     {
         var parameters = new Dictionary<string, string[]>();
         IQueryCollection query = request.Query;
@@ -188,17 +189,17 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         return parameters;
     }
 
-    protected internal string GetRequestUri(HttpRequest request)
+    internal string GetRequestUri(HttpRequest request)
     {
         return $"{request.Scheme}://{request.Host.Value}{request.Path.Value}";
     }
 
-    protected internal string GetPathInfo(HttpRequest request)
+    internal string GetPathInfo(HttpRequest request)
     {
         return request.Path.Value;
     }
 
-    protected internal string GetUserPrincipal(HttpContext context)
+    internal string GetUserPrincipal(HttpContext context)
     {
         return context?.User?.Identity?.Name;
     }
@@ -215,7 +216,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         return result;
     }
 
-    protected internal Dictionary<string, object> GetHeaders(IHeaderDictionary headers)
+    internal Dictionary<string, object> GetHeaders(IHeaderDictionary headers)
     {
         var result = new Dictionary<string, object>();
 
@@ -230,7 +231,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         return result;
     }
 
-    protected internal object GetHeaderValue(StringValues values)
+    internal object GetHeaderValue(StringValues values)
     {
         var result = new List<string>();
 

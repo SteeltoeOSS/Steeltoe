@@ -74,6 +74,7 @@ public class LoggersEndpoint : ILoggersEndpoint
 
     public virtual void AddLevels(Dictionary<string, object> result)
     {
+        ArgumentGuard.NotNull(result);
         result.Add("levels", Levels);
     }
 

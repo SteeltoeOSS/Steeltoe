@@ -31,7 +31,7 @@ public class TraceEndpoint : ITraceEndpoint
         return DoInvoke(_traceRepo);
     }
 
-    public IList<TraceResult> DoInvoke(ITraceRepository repo)
+    private IList<TraceResult> DoInvoke(ITraceRepository repo)
     {
         return repo.GetTraces();
     }

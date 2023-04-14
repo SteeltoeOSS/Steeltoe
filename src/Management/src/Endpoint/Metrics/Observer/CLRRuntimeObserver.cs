@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Metrics;
@@ -37,24 +38,11 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
     };
 
     private readonly ClrRuntimeSource.HeapMetrics _previous = default;
+    private readonly IOptionsMonitor<MetricsObserverOptions> _options;
 
     public ClrRuntimeObserver(IOptionsMonitor<MetricsObserverOptions> options)
     {
-        Meter meter = SteeltoeMetrics.Meter;
-
-        if (options.CurrentValue.GCEvents)
-        {
-            meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");
-            meter.CreateObservableGauge("clr.gc.collections", GetCollectionCount, "Garbage collection count", "count");
-            meter.CreateObservableGauge("clr.process.uptime", GetUpTime, "Process uptime in seconds", "count");
-            meter.CreateObservableGauge("clr.cpu.count", () => Environment.ProcessorCount, "Total processor count", "count");
-        }
-
-        if (options.CurrentValue.ThreadPoolEvents)
-        {
-            meter.CreateObservableGauge("clr.threadpool.active", GetActiveThreadPoolWorkers, "Active thread count", "count");
-            meter.CreateObservableGauge("clr.threadpool.avail", GetAvailableThreadPoolWorkers, "Available thread count", "count");
-        }
+        _options = options;
     }
 
     private IEnumerable<Measurement<long>> GetCollectionCount()
@@ -106,5 +94,23 @@ public class ClrRuntimeObserver : IRuntimeDiagnosticSource
         ClrRuntimeSource.ThreadMetrics metrics = ClrRuntimeSource.GetThreadMetrics();
         yield return new Measurement<long>(metrics.AvailableThreadPoolWorkers, _workerTags.AsReadonlySpan());
         yield return new Measurement<long>(metrics.AvailableThreadCompletionPort, _comPortTags.AsReadonlySpan());
+    }
+
+    public void AddInstrumentation()
+    {
+        var meter = SteeltoeMetrics.Meter;
+        if (_options.CurrentValue.GCEvents)
+        {
+            meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");
+            meter.CreateObservableGauge("clr.gc.collections", GetCollectionCount, "Garbage collection count", "count");
+            meter.CreateObservableGauge("clr.process.uptime", GetUpTime, "Process uptime in seconds", "count");
+            meter.CreateObservableGauge("clr.cpu.count", () => Environment.ProcessorCount, "Total processor count", "count");
+        }
+
+        if (_options.CurrentValue.ThreadPoolEvents)
+        {
+            meter.CreateObservableGauge("clr.threadpool.active", GetActiveThreadPoolWorkers, "Active thread count", "count");
+            meter.CreateObservableGauge("clr.threadpool.avail", GetAvailableThreadPoolWorkers, "Available thread count", "count");
+        }
     }
 }

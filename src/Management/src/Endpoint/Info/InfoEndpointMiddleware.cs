@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
@@ -20,6 +21,9 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
+        ArgumentGuard.NotNull(context);
+        ArgumentGuard.NotNull(next);
+
         Logger.LogDebug("Info middleware InvokeAsync({path})", context.Request.Path.Value);
 
         if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
@@ -30,7 +34,7 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
         return Task.CompletedTask;
     }
 
-    protected internal Task HandleInfoRequestAsync(HttpContext context)
+    internal Task HandleInfoRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest();
         Logger.LogDebug("Returning: {info}", serialInfo);

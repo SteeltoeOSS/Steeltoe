@@ -25,7 +25,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         return Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger) ? HandleLoggersRequestAsync(context) : Task.CompletedTask;
     }
 
-    protected internal async Task HandleLoggersRequestAsync(HttpContext context)
+    internal async Task HandleLoggersRequestAsync(HttpContext context)
     {
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;

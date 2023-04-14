@@ -80,6 +80,7 @@ public static class EndpointServiceCollectionExtensions
 
     public static void AddHealthContributors(this IServiceCollection services, params Type[] contributors)
     {
+        ArgumentGuard.NotNull(contributors);
         var descriptors = new List<ServiceDescriptor>();
 
         foreach (Type c in contributors)

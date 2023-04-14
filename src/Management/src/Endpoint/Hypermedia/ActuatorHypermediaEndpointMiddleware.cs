@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
@@ -24,6 +25,7 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
+        ArgumentGuard.NotNull(context);
         Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
         if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))

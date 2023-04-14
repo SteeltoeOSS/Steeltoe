@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -17,9 +18,12 @@ public class Exposure
         "info"
     };
 
-    public List<string> Include { get; set; }
+#pragma warning disable S4004 // Collection properties should be readonly
+    public IList<string> Include { get; set; }
 
-    public List<string> Exclude { get; set; }
+    public IList<string> Exclude { get; set; }
+
+#pragma warning restore S4004 // Collection properties should be readonly
 
     public Exposure()
     {
@@ -38,6 +42,8 @@ public class Exposure
 
     public Exposure(IConfiguration configuration)
     {
+        ArgumentGuard.NotNull(configuration);
+
         IConfigurationSection section = configuration.GetSection(ExposurePrefix);
 
         if (section != null)

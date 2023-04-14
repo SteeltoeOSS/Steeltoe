@@ -15,14 +15,16 @@ public class Links
     public string Type { get; set; } = "steeltoe";
 
     /// <summary>
-    /// Gets the list of links contained in this collection.
+    /// Gets or sets the list of links contained in this collection.
     /// </summary>
 
     // ReSharper disable once InconsistentNaming
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable S100 // Methods and properties should be named in PascalCase
 #pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable S4004 // Collection properties should be readonly
     public Dictionary<string, Link> _links { get; set; } = new();
+#pragma warning restore S4004 // Collection properties should be readonly
 #pragma warning restore IDE1006 // Naming Styles
 #pragma warning restore S100 // Methods and properties should be named in PascalCase
 #pragma warning restore SA1300 // Element should begin with upper-case letter

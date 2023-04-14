@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
@@ -31,7 +32,7 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
         return Task.CompletedTask;
     }
 
-    protected internal Task HandleHealthRequestAsync(HttpContext context)
+    internal Task HandleHealthRequestAsync(HttpContext context)
     {
         string serialInfo = DoRequest(context);
         Logger.LogDebug("Returning: {info}", serialInfo);
@@ -40,7 +41,7 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
         return context.Response.WriteAsync(serialInfo);
     }
 
-    protected internal string DoRequest(HttpContext context)
+    internal string DoRequest(HttpContext context)
     {
         HealthEndpointResponse result = ((HealthEndpointCore)Endpoint).Invoke(new CoreSecurityContext(context));
 

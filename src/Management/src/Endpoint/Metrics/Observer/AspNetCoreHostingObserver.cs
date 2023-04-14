@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Metrics;
@@ -32,6 +33,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
     public AspNetCoreHostingObserver(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILogger<AspNetCoreHostingObserver> logger)
         : base(DefaultObserverName, DiagnosticName, logger)
     {
+        ArgumentGuard.NotNull(optionsMonitor);
         SetPathMatcher(new Regex(optionsMonitor.CurrentValue.IngressIgnorePattern));
         Meter meter = SteeltoeMetrics.Meter;
 
@@ -70,6 +72,9 @@ public class AspNetCoreHostingObserver : MetricsObserver
 
     protected internal void HandleStopEvent(Activity current, HttpContext arg)
     {
+        ArgumentGuard.NotNull(current);
+        ArgumentGuard.NotNull(arg);
+
         if (ShouldIgnoreRequest(arg.Request.Path))
         {
             Logger.LogDebug("HandleStopEvent: Ignoring path: {path}", arg.Request.Path);
@@ -87,6 +92,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
 
     protected internal IEnumerable<KeyValuePair<string, object>> GetLabelSets(HttpContext arg)
     {
+        ArgumentGuard.NotNull(arg);
         string uri = arg.Request.Path.ToString();
         string statusCode = arg.Response.StatusCode.ToString(CultureInfo.InvariantCulture);
         string exception = GetException(arg);
@@ -100,7 +106,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
         };
     }
 
-    protected internal string GetException(HttpContext arg)
+    internal string GetException(HttpContext arg)
     {
         var exception = arg.Features.Get<IExceptionHandlerFeature>();
 

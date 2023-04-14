@@ -174,7 +174,7 @@ public class ThreadDumperEp : IThreadDumper
         _logger.LogTrace("Finished thread walk");
     }
 
-    private bool IsThreadInNative(List<StackTraceElement> frames)
+    private bool IsThreadInNative(IList<StackTraceElement> frames)
     {
         if (frames.Count > 0)
         {
@@ -184,7 +184,7 @@ public class ThreadDumperEp : IThreadDumper
         return false;
     }
 
-    private State GetThreadState(List<StackTraceElement> frames)
+    private State GetThreadState(IList<StackTraceElement> frames)
     {
         if (IsThreadInNative(frames) && frames.Count > 1 && frames[1].MethodName.Contains("Wait", StringComparison.OrdinalIgnoreCase))
         {

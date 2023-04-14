@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Middleware;
@@ -27,6 +28,8 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
+        ArgumentGuard.NotNull(context);
+
         Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
         if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
@@ -37,7 +40,7 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
         return Task.CompletedTask;
     }
 
-    protected internal Task HandleCloudFoundryRequestAsync(HttpContext context)
+    internal Task HandleCloudFoundryRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest(GetRequestUri(context.Request));
         Logger.LogDebug("Returning: {info}", serialInfo);
@@ -45,7 +48,7 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
         return context.Response.WriteAsync(serialInfo);
     }
 
-    protected internal string GetRequestUri(HttpRequest request)
+    private string GetRequestUri(HttpRequest request)
     {
         string scheme = request.Scheme;
 

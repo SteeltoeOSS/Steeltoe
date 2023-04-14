@@ -87,6 +87,8 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
 
     protected override void AddKeyValue(Dictionary<string, object> dict, string key, string value)
     {
+        ArgumentGuard.NotNull(dict);
+
         object valueToInsert = value;
 
         if (DatetimeInputKeys.Contains(key))

@@ -27,7 +27,7 @@ public class MetricsEndpoint : IMetricsEndpoint
         _logger = logger;
     }
 
-    public IMetricsResponse Invoke(MetricsRequest request)
+    public virtual IMetricsResponse Invoke(MetricsRequest request)
     {
         (MetricsCollection<List<MetricSample>> measurements, MetricsCollection<List<MetricTag>> availTags) = GetMetrics();
 
@@ -49,7 +49,7 @@ public class MetricsEndpoint : IMetricsEndpoint
         return null;
     }
 
-    protected internal IList<MetricSample> GetMetricSamplesByTags(MetricsCollection<List<MetricSample>> measurements, string metricName,
+    internal IList<MetricSample> GetMetricSamplesByTags(MetricsCollection<List<MetricSample>> measurements, string metricName,
         IEnumerable<KeyValuePair<string, string>> tags)
     {
         IEnumerable<MetricSample> filtered = measurements[metricName];
@@ -126,12 +126,12 @@ public class MetricsEndpoint : IMetricsEndpoint
         return sampleList;
     }
 
-    protected internal static MetricsResponse GetMetric(MetricsRequest request, IList<MetricSample> metricSamples, IList<MetricTag> availTags)
+    internal static MetricsResponse GetMetric(MetricsRequest request, IList<MetricSample> metricSamples, IList<MetricTag> availTags)
     {
         return new MetricsResponse(request.MetricName, metricSamples, availTags);
     }
 
-    protected internal (MetricsCollection<List<MetricSample>> Samples, MetricsCollection<List<MetricTag>> Tags) GetMetrics()
+    internal (MetricsCollection<List<MetricSample>> Samples, MetricsCollection<List<MetricTag>> Tags) GetMetrics()
     {
         return _exporter.Export();
     }

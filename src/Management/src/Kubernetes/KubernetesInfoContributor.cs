@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using k8s.Models;
+using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 using Steeltoe.Management.Info;
 
@@ -19,6 +20,8 @@ public class KubernetesInfoContributor : IInfoContributor
 
     public void Contribute(IInfoBuilder builder)
     {
+        ArgumentGuard.NotNull(builder);
+
         V1Pod current = _podUtilities.GetCurrentPodAsync().GetAwaiter().GetResult();
         var details = new Dictionary<string, object>();
 

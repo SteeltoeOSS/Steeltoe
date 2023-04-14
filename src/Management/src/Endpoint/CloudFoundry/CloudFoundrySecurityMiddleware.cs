@@ -26,6 +26,8 @@ public sealed class CloudFoundrySecurityMiddleware
         IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger)
     {
         ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(managementOptions);
 
         _next = next;
         _logger = logger;
@@ -37,6 +39,7 @@ public sealed class CloudFoundrySecurityMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
+        ArgumentGuard.NotNull(context);
         CloudFoundryEndpointOptions cfOptions = _options.CurrentValue;
         CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
         _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);

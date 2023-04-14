@@ -51,6 +51,9 @@ public abstract class AbstractConfigurationContributor
 
     protected virtual void AddChildren(Dictionary<string, object> dict, IEnumerable<IConfigurationSection> sections)
     {
+        ArgumentGuard.NotNull(dict);
+        ArgumentGuard.NotNull(sections);
+
         foreach (IConfigurationSection section in sections)
         {
             string key = section.Key;
@@ -71,6 +74,7 @@ public abstract class AbstractConfigurationContributor
 
     protected virtual void AddKeyValue(Dictionary<string, object> dict, string key, string value)
     {
+        ArgumentGuard.NotNull(dict);
         dict[key] = value;
     }
 }

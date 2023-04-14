@@ -15,6 +15,8 @@ public static class EndPointExtensions
 {
     public static bool IsEnabled(this IEndpointOptions options, ManagementEndpointOptions managementOptions)
     {
+        ArgumentGuard.NotNull(managementOptions);
+
         var endpointOptions = (EndpointOptionsBase)options;
 
         if (endpointOptions.Enabled.HasValue)
@@ -32,16 +34,19 @@ public static class EndPointExtensions
 
     public static bool IsExposed(this IEndpointOptions options, ManagementEndpointOptions mgmtOptions)
     {
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(mgmtOptions);
+
         if (!string.IsNullOrEmpty(options.Id) && mgmtOptions.Exposure != null)
         {
-            List<string> exclude = mgmtOptions.Exposure.Exclude;
+            IList<string> exclude = mgmtOptions.Exposure.Exclude;
 
             if (exclude != null && (exclude.Contains("*") || exclude.Contains(options.Id)))
             {
                 return false;
             }
 
-            List<string> include = mgmtOptions.Exposure.Include;
+            IList<string> include = mgmtOptions.Exposure.Include;
 
             if (include != null && (include.Contains("*") || include.Contains(options.Id)))
             {
@@ -57,6 +62,8 @@ public static class EndPointExtensions
     public static bool ShouldInvoke(this IEndpointOptions endpoint, ManagementEndpointOptions options, ILogger logger)
     {
         ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(endpoint);
+        ArgumentGuard.NotNull(options);
 
         bool enabled = endpoint.IsEnabled(options);
         bool exposed = endpoint.IsExposed(options);
@@ -67,6 +74,7 @@ public static class EndPointExtensions
     public static bool ShouldInvoke(this IEndpointOptions endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context,
         ILogger logger)
     {
+        ArgumentGuard.NotNull(context);
         ManagementEndpointOptions mgmtOptions = managementOptions.GetFromContextPath(context.Request.Path);
 
         return ShouldInvoke(endpoint, mgmtOptions, logger);
@@ -96,6 +104,9 @@ public static class EndPointExtensions
 
     public static string GetContextPath(this IEndpointOptions options, ManagementEndpointOptions managementOptions)
     {
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(managementOptions);
+
         string contextPath = managementOptions.Path;
 
         if (!contextPath.EndsWith('/') && !string.IsNullOrEmpty(options.Path))
@@ -121,6 +132,7 @@ public static class EndPointExtensions
     // Only used by Cloudfoundry security
     public static bool IsAccessAllowed(this IEndpointOptions options, Permissions permissions)
     {
+        ArgumentGuard.NotNull(options);
         return permissions >= options.RequiredPermissions;
     }
 }

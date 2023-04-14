@@ -29,7 +29,7 @@ public class HttpTraceEndpointMiddleware : EndpointMiddleware<HttpTraceResult>
         return Task.CompletedTask;
     }
 
-    protected internal Task HandleTraceRequestAsync(HttpContext context)
+    internal Task HandleTraceRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest();
 

@@ -29,7 +29,7 @@ public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
         return Task.CompletedTask;
     }
 
-    protected internal Task HandleRefreshRequestAsync(HttpContext context)
+    internal Task HandleRefreshRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest();
         Logger.LogDebug("Returning: {info}", serialInfo);

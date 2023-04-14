@@ -320,7 +320,7 @@ internal sealed class MultiSizeLabelNameDictionary<TAggregator>
             default:
                 // we should never get here unless this library has a bug
                 Debug.Fail("Unexpected sequence type");
-                return null;
+                return new();
         }
     }
 

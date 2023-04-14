@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
@@ -31,6 +32,8 @@ public class TraceEndpointMiddleware : EndpointMiddleware<IList<TraceResult>>
 
     protected internal Task HandleTraceRequestAsync(HttpContext context)
     {
+        ArgumentGuard.NotNull(context);
+
         string serialInfo = HandleRequest();
 
         Logger.LogDebug("Returning: {info}", serialInfo);

@@ -32,6 +32,8 @@ public class HttpClientCoreObserver : MetricsObserver
     public HttpClientCoreObserver(IOptionsMonitor<MetricsObserverOptions> options, ILogger<HttpClientCoreObserver> logger)
         : base(DefaultObserverName, DiagnosticName, logger)
     {
+
+        ArgumentGuard.NotNull(options);
         SetPathMatcher(new Regex(options.CurrentValue.EgressIgnorePattern));
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.time");
         _clientCountMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.count");
@@ -78,12 +80,12 @@ public class HttpClientCoreObserver : MetricsObserver
         }
     }
 
-    protected internal void HandleExceptionEvent(Activity current, HttpRequestMessage request)
+    private void HandleExceptionEvent(Activity current, HttpRequestMessage request)
     {
         HandleStopEvent(current, request, null, TaskStatus.Faulted);
     }
 
-    protected internal void HandleStopEvent(Activity current, HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
+    private void HandleStopEvent(Activity current, HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
     {
         if (ShouldIgnoreRequest(request.RequestUri.AbsolutePath))
         {
@@ -99,7 +101,7 @@ public class HttpClientCoreObserver : MetricsObserver
         }
     }
 
-    protected internal IEnumerable<KeyValuePair<string, object>> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
+    internal IEnumerable<KeyValuePair<string, object>> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
     {
         string uri = request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
         string statusCode = GetStatusCode(response, taskStatus);

@@ -73,7 +73,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
         }
     }
 
-    protected internal HttpTrace MakeTrace(HttpContext context, TimeSpan duration)
+    private HttpTrace MakeTrace(HttpContext context, TimeSpan duration)
     {
         HttpRequest req = context.Request;
         HttpResponse res = context.Response;
@@ -85,13 +85,13 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
         return new HttpTrace(request, response, GetJavaTime(DateTime.Now.Ticks), principal, session, duration.Milliseconds);
     }
 
-    protected internal long GetJavaTime(long ticks)
+    private long GetJavaTime(long ticks)
     {
         long javaTicks = ticks - BaseTime.Ticks;
         return javaTicks / 10000;
     }
 
-    protected internal string GetSessionId(HttpContext context)
+    private string GetSessionId(HttpContext context)
     {
         var sessionFeature = context.Features.Get<ISessionFeature>();
         return sessionFeature == null ? null : context.Session.Id;
@@ -103,27 +103,22 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
         return timeInMilliseconds.ToString(CultureInfo.InvariantCulture);
     }
 
-    protected internal string GetRequestUri(HttpRequest request)
+    private string GetRequestUri(HttpRequest request)
     {
         return $"{request.Scheme}://{request.Host.Value}{request.Path.Value}";
     }
 
-    protected internal string GetPathInfo(HttpRequest request)
-    {
-        return request.Path.Value;
-    }
-
-    protected internal string GetUserPrincipal(HttpContext context)
+    private string GetUserPrincipal(HttpContext context)
     {
         return context?.User?.Identity?.Name;
     }
 
-    protected internal string GetRemoteAddress(HttpContext context)
+    private string GetRemoteAddress(HttpContext context)
     {
         return context?.Connection?.RemoteIpAddress?.ToString();
     }
 
-    protected internal Dictionary<string, string[]> GetHeaders(IHeaderDictionary headers)
+    private Dictionary<string, string[]> GetHeaders(IHeaderDictionary headers)
     {
         var result = new Dictionary<string, string[]>();
 
@@ -138,7 +133,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
         return result;
     }
 
-    protected internal HttpContext GetHttpContextPropertyValue(object obj)
+    private HttpContext GetHttpContextPropertyValue(object obj)
     {
         return DiagnosticHelpers.GetProperty<HttpContext>(obj, "HttpContext");
     }

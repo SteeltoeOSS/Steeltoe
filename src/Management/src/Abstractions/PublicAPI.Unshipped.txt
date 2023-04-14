@@ -29,6 +29,7 @@ Steeltoe.Management.Diagnostics.IDiagnosticsManager
 Steeltoe.Management.Diagnostics.IDiagnosticsManager.Start() -> void
 Steeltoe.Management.Diagnostics.IDiagnosticsManager.Stop() -> void
 Steeltoe.Management.Diagnostics.IRuntimeDiagnosticSource
+Steeltoe.Management.Diagnostics.IRuntimeDiagnosticSource.AddInstrumentation() -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.AspNetCoreHosting.get -> bool
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.AspNetCoreHosting.set -> void
@@ -36,7 +37,7 @@ Steeltoe.Management.Diagnostics.MetricsObserverOptions.EgressIgnorePattern.get -
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.EgressIgnorePattern.set -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterEvents.get -> bool
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterEvents.set -> void
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.ExcludedMetrics.get -> System.Collections.Generic.List<string>
+Steeltoe.Management.Diagnostics.MetricsObserverOptions.ExcludedMetrics.get -> System.Collections.Generic.IList<string>
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.ExcludedMetrics.set -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.GCEvents.get -> bool
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.GCEvents.set -> void
@@ -54,6 +55,7 @@ Steeltoe.Management.Diagnostics.MetricsObserverOptions.ThreadPoolEvents.get -> b
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.ThreadPoolEvents.set -> void
 Steeltoe.Management.EndpointOptionsBase
 Steeltoe.Management.EndpointOptionsBase.EndpointOptionsBase() -> void
+Steeltoe.Management.EndpointOptionsBase.RequiredPermissions.get -> Steeltoe.Management.Permissions
 Steeltoe.Management.EndpointOptionsBase.RequiredPermissions.set -> void
 Steeltoe.Management.IEndpoint
 Steeltoe.Management.IEndpoint.Options.get -> Steeltoe.Management.IEndpointOptions

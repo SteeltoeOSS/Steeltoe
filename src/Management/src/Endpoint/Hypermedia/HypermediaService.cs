@@ -45,6 +45,7 @@ public class HypermediaService
 
     public Links Invoke(string baseUrl)
     {
+        ArgumentGuard.NotNull(baseUrl);
         var links = new Links();
 
         if (!_options.IsEnabled(_managementOptions))

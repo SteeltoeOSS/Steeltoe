@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Common;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
@@ -20,6 +21,7 @@ public class BuildInfoContributor : IInfoContributor
 
     public void Contribute(IInfoBuilder builder)
     {
+        ArgumentGuard.NotNull(builder);
         builder.WithInfo("applicationVersionInfo", GetImportantDetails(_application));
         builder.WithInfo("steeltoeVersionInfo", GetImportantDetails(_steeltoe));
 

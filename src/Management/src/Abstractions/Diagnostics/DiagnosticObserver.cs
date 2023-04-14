@@ -48,6 +48,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
 
     public void Subscribe(DiagnosticListener listener)
     {
+        ArgumentGuard.NotNull(listener);
         if (ListenerName == listener.Name)
         {
             if (Subscription != null)

@@ -27,7 +27,7 @@ public class EnvEndpoint : IEnvEndpoint
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(env);
         ArgumentGuard.NotNull(logger);
-
+        ArgumentGuard.NotNull(options);
         _options = options;
         _configuration = configuration;
         _env = env;
@@ -82,6 +82,7 @@ public class EnvEndpoint : IEnvEndpoint
 
     public virtual PropertySourceDescriptor GetPropertySourceDescriptor(IConfigurationProvider provider)
     {
+        ArgumentGuard.NotNull(provider);
         var properties = new Dictionary<string, PropertyValueDescriptor>();
         string sourceName = GetPropertySourceName(provider);
 
@@ -104,6 +105,7 @@ public class EnvEndpoint : IEnvEndpoint
 
     public virtual string GetPropertySourceName(IConfigurationProvider provider)
     {
+        ArgumentGuard.NotNull(provider);
         return provider is FileConfigurationProvider fileProvider ? $"{provider.GetType().Name}: [{fileProvider.Source.Path}]" : provider.GetType().Name;
     }
 

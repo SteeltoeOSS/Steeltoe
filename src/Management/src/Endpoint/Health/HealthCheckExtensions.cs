@@ -22,7 +22,7 @@ public static class HealthCheckExtensions
         };
     }
 
-    public static async Task<SteeltoeHealthCheckResult> HealthCheckAsync(this HealthCheckRegistration registration, IServiceProvider provider)
+    internal static async Task<SteeltoeHealthCheckResult> HealthCheckAsync(this HealthCheckRegistration registration, IServiceProvider provider)
     {
         var context = new HealthCheckContext
         {

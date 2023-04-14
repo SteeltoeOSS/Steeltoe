@@ -63,7 +63,7 @@ public class MappingsEndpoint : IMappingsEndpoint
         return new ApplicationMappings(contextMappings);
     }
 
-    protected internal IDictionary<string, IList<MappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)
+    internal IDictionary<string, IList<MappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)
     {
         IDictionary<string, IList<MappingDescription>> mappingDescriptions = new Dictionary<string, IList<MappingDescription>>();
 
@@ -110,7 +110,7 @@ public class MappingsEndpoint : IMappingsEndpoint
         return mappingDescriptions;
     }
 
-    protected internal IRouteDetails GetRouteDetails(ApiDescription desc)
+    internal IRouteDetails GetRouteDetails(ApiDescription desc)
     {
         var routeDetails = new AspNetCoreRouteDetails
         {
@@ -151,7 +151,7 @@ public class MappingsEndpoint : IMappingsEndpoint
         return routeDetails;
     }
 
-    protected internal IRouteDetails GetRouteDetails(ActionDescriptor desc)
+    internal IRouteDetails GetRouteDetails(ActionDescriptor desc)
     {
         var routeDetails = new AspNetCoreRouteDetails
         {
@@ -192,7 +192,7 @@ public class MappingsEndpoint : IMappingsEndpoint
         return routeDetails;
     }
 
-    protected internal IRouteDetails GetRouteDetails(Route route)
+    internal IRouteDetails GetRouteDetails(Route route)
     {
         var routeDetails = new AspNetCoreRouteDetails
         {
@@ -203,7 +203,7 @@ public class MappingsEndpoint : IMappingsEndpoint
         return routeDetails;
     }
 
-    protected internal void AddRouteMappingsDescriptions(IRouteMappings routeMappings, IDictionary<string, IList<MappingDescription>> desc)
+    internal void AddRouteMappingsDescriptions(IRouteMappings routeMappings, IDictionary<string, IList<MappingDescription>> desc)
     {
         if (routeMappings == null)
         {
@@ -239,7 +239,7 @@ public class MappingsEndpoint : IMappingsEndpoint
             };
         }
 
-        return null;
+        return new List<string>();
     }
 
     private IList<string> GetHttpMethods(Route route)
@@ -251,7 +251,7 @@ public class MappingsEndpoint : IMappingsEndpoint
             return methodConstraint.AllowedMethods;
         }
 
-        return null;
+        return new List<string>();
     }
 
     private ApiDescriptionProviderContext GetApiDescriptions(IReadOnlyList<ActionDescriptor> actionDescriptors)

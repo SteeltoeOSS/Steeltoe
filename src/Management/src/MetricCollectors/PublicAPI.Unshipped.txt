@@ -21,6 +21,7 @@ Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.SteeltoeCollectionRespon
 Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.SteeltoeCollectionResponse.SteeltoeCollectionResponse(Steeltoe.Management.MetricCollectors.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.MetricSample!>!>! MetricSamples, Steeltoe.Management.MetricCollectors.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.MetricTag!>!>! AvailableTags, System.DateTime GeneratedAtUtc) -> void
 Steeltoe.Management.MetricCollectors.Metrics.MetricLabelExtensions
 Steeltoe.Management.MetricCollectors.MetricSample
+Steeltoe.Management.MetricCollectors.MetricSample.MetricSample(Steeltoe.Management.MetricCollectors.MetricStatistic statistic, double value, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string!, string!>>? tags) -> void
 Steeltoe.Management.MetricCollectors.MetricSample.Statistic.get -> Steeltoe.Management.MetricCollectors.MetricStatistic
 Steeltoe.Management.MetricCollectors.MetricSample.Tags.get -> System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string!, string!>>?
 Steeltoe.Management.MetricCollectors.MetricSample.Tags.set -> void

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Trace;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Tracing;
 
@@ -50,6 +51,7 @@ public static class TracingHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddDistributedTracingAspNetCore(this IWebHostBuilder hostBuilder, Action<TracerProviderBuilder> action)
     {
+        ArgumentGuard.NotNull(hostBuilder);
         return hostBuilder.ConfigureServices((_, services) => services.AddDistributedTracingAspNetCore(action));
     }
 
@@ -77,6 +79,7 @@ public static class TracingHostBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddDistributedTracingAspNetCore(this WebApplicationBuilder hostBuilder, Action<TracerProviderBuilder> action)
     {
+        ArgumentGuard.NotNull(hostBuilder);
         hostBuilder.Services.AddDistributedTracingAspNetCore(action);
         return hostBuilder;
     }

@@ -7,6 +7,7 @@ using Steeltoe.Management.Endpoint.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "Allow in Options")]
 public class ManagementEndpointOptions
 {
     public bool? Enabled { get; set; }
@@ -17,7 +18,7 @@ public class ManagementEndpointOptions
 
     public string Port { get; set; }
 
-    public List<IEndpointOptions> EndpointOptions { get; set; }
+    public IList<IEndpointOptions> EndpointOptions { get; set; }
 
     public HashSet<string> ContextNames { get; set; } = new()
     {

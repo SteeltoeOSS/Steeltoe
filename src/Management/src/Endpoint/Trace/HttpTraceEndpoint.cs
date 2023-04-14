@@ -32,7 +32,7 @@ public class HttpTraceEndpoint : IHttpTraceEndpoint
         return DoInvoke(_traceRepo);
     }
 
-    public HttpTraceResult DoInvoke(IHttpTraceRepository repo)
+    private HttpTraceResult DoInvoke(IHttpTraceRepository repo)
     {
         return repo.GetTraces();
     }

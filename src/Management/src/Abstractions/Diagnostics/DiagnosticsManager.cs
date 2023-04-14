@@ -27,13 +27,12 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
 
     public IList<IDiagnosticObserver> Observers { get; }
 
-    //public IList<IRuntimeDiagnosticSource> Sources => InnerSources;
-
     public DiagnosticsManager(IOptionsMonitor<MetricsObserverOptions> observerOptions, IEnumerable<IRuntimeDiagnosticSource> runtimeSources,
         IEnumerable<IDiagnosticObserver> observers, IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger)
     {
         ArgumentGuard.NotNull(observers);
         ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(observerOptions);
 
         _logger = logger;
         var filteredObservers = new List<IDiagnosticObserver>();
@@ -82,6 +81,16 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
         if (Interlocked.CompareExchange(ref _started, 1, 0) == 0)
         {
             _listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
+        }
+
+        if(_listenersSubscription != null)
+        {
+            _logger.LogTrace("Subscribed to Diagnostic Listener");
+        }
+
+        if(_eventListeners !=null)
+        {
+            _logger.LogTrace("Subscribed to EventListeners: {eventListeners}", string.Join(",", _eventListeners.Select(e => e.GetType().Name)));
         }
     }
 

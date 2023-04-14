@@ -5,6 +5,8 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Builder;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
@@ -19,6 +21,7 @@ public class EpochSecondsDateTimeConverter : JsonConverter<DateTime>
 
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
     {
+        ArgumentGuard.NotNull(writer);
         DateTime utc = value.ToUniversalTime();
         long valueToInsert = (utc.Ticks - BaseTime.Ticks) / 10000;
         writer.WriteNumberValue(valueToInsert);

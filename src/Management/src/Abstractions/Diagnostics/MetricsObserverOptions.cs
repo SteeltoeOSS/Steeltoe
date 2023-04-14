@@ -49,7 +49,7 @@ public class MetricsObserverOptions
     /// <para />
     /// See this list for values to choose from: <see href="https://docs.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters" />.
     /// </remarks>
-    public List<string> ExcludedMetrics { get; set; } = new();
+    public IList<string> ExcludedMetrics { get; set; } = new List<string>();
 
     public bool IncludeObserver(string name)
     {

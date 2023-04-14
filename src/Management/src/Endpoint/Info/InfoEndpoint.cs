@@ -32,6 +32,8 @@ public class InfoEndpoint : IInfoEndpoint
 
     protected virtual Dictionary<string, object> BuildInfo(IList<IInfoContributor> infoContributors)
     {
+        ArgumentGuard.NotNull(infoContributors);
+
         IInfoBuilder builder = new InfoBuilder();
 
         foreach (IInfoContributor contributor in infoContributors)

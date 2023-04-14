@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint;
 
@@ -96,6 +97,8 @@ public static class HostBuilderExtensions
     public static WebApplicationBuilder AddKubernetesActuators(this WebApplicationBuilder webApplicationBuilder,
         Action<IEndpointConventionBuilder> configureEndpoints)
     {
+        ArgumentGuard.NotNull(webApplicationBuilder);
+
         webApplicationBuilder.Logging.AddDynamicConsole();
 
         IServiceCollection services = webApplicationBuilder.Services.AddKubernetesActuators();

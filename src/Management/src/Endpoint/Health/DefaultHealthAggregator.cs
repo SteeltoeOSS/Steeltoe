@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Health;
@@ -42,6 +43,7 @@ public class DefaultHealthAggregator : IHealthAggregator
 
     protected static string GetKey(ConcurrentBag<string> keys, string key)
     {
+        ArgumentGuard.NotNull(keys);
         lock (keys)
         {
             // add the contributor with a -n appended to the id
@@ -59,6 +61,9 @@ public class DefaultHealthAggregator : IHealthAggregator
 
     protected HealthCheckResult AddChecksSetStatus(HealthCheckResult result, ConcurrentDictionary<string, HealthCheckResult> healthChecks)
     {
+        ArgumentGuard.NotNull(result);
+        ArgumentGuard.NotNull(healthChecks);
+
         foreach (KeyValuePair<string, HealthCheckResult> healthCheck in healthChecks)
         {
             if (healthCheck.Value.Status > result.Status)

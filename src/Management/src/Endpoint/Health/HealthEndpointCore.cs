@@ -48,6 +48,7 @@ public class HealthEndpointCore : IHealthEndpoint
 
     public int GetStatusCode(HealthCheckResult health)
     {
+        ArgumentGuard.NotNull(health);
         return health.Status == HealthStatus.Down || health.Status == HealthStatus.OutOfService ? 503 : 200;
     }
 

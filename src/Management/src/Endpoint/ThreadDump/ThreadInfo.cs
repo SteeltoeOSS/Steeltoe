@@ -33,7 +33,8 @@ public class ThreadInfo
     public string LockOwnerName { get; set; }
 
     [JsonPropertyName("stackTrace")]
-    public List<StackTraceElement> StackTrace { get; set; }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "For serialization")]
+    public IList<StackTraceElement> StackTrace { get; set; }
 
     [JsonPropertyName("threadId")]
     public long ThreadId { get; set; }

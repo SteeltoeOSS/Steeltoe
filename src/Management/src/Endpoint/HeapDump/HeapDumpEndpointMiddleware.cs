@@ -29,7 +29,7 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
         return Task.CompletedTask;
     }
 
-    protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)
+    internal async Task HandleHeapDumpRequestAsync(HttpContext context)
     {
         string fileName = Endpoint.Invoke();
         Logger.LogDebug("Returning: {fileName}", fileName);

@@ -33,6 +33,8 @@ public class HttpClientDesktopObserver : MetricsObserver
     public HttpClientDesktopObserver(IOptionsMonitor<MetricsObserverOptions> options, ILogger<HttpClientDesktopObserver> logger)
         : base(DefaultObserverName, DiagnosticName, logger)
     {
+
+        ArgumentGuard.NotNull(options);
         SetPathMatcher(new Regex(options.CurrentValue.EgressIgnorePattern));
 
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.desktop.client.request.time");
@@ -85,7 +87,7 @@ public class HttpClientDesktopObserver : MetricsObserver
         }
     }
 
-    protected internal void HandleStopEvent(Activity current, HttpWebRequest request, HttpStatusCode statusCode)
+    private void HandleStopEvent(Activity current, HttpWebRequest request, HttpStatusCode statusCode)
     {
         if (ShouldIgnoreRequest(request.RequestUri.AbsolutePath))
         {
@@ -101,7 +103,7 @@ public class HttpClientDesktopObserver : MetricsObserver
         }
     }
 
-    protected internal IEnumerable<KeyValuePair<string, object>> GetLabels(HttpWebRequest request, HttpStatusCode statusCode)
+    private IEnumerable<KeyValuePair<string, object>> GetLabels(HttpWebRequest request, HttpStatusCode statusCode)
     {
         string uri = request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
         string status = ((int)statusCode).ToString(CultureInfo.InvariantCulture);

@@ -29,7 +29,7 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
         return Task.CompletedTask;
     }
 
-    protected internal Task HandleMappingsRequestAsync(HttpContext context)
+    internal Task HandleMappingsRequestAsync(HttpContext context)
     {
         ApplicationMappings result = Endpoint.Invoke();
         string serialInfo = Serialize(result);

@@ -29,7 +29,7 @@ public class ThreadDumpEndpointMiddleware : EndpointMiddleware<IList<ThreadInfo>
         return Task.CompletedTask;
     }
 
-    protected internal Task HandleThreadDumpRequestAsync(HttpContext context)
+    internal Task HandleThreadDumpRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest();
         Logger.LogDebug("Returning: {info}", serialInfo);

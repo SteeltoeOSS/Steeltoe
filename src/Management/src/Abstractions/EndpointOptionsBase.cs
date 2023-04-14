@@ -6,8 +6,6 @@ namespace Steeltoe.Management;
 
 public class EndpointOptionsBase : IEndpointOptions
 {
-    // protected bool? sensitive;
-
     private string _path;
 
     public virtual bool? Enabled { get; set; }
