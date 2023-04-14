@@ -307,11 +307,10 @@ public static class ManagementWebApplicationBuilderExtensions
         MediaTypeVersion mediaTypeVersion)
     {
         ArgumentGuard.NotNull(applicationBuilder);
-        ArgumentGuard.NotNull(configureEndpoints);
 
         applicationBuilder.Logging.AddDynamicConsole();
         applicationBuilder.Services.AddAllActuators(mediaTypeVersion);
-        applicationBuilder.AddCommonServices();
+        applicationBuilder.AddCommonServices(configureEndpoints);
         return applicationBuilder;
     }
 
@@ -340,7 +339,7 @@ public static class ManagementWebApplicationBuilderExtensions
         return AddAllActuators(applicationBuilder, configureEndpoints, MediaTypeVersion.V2);
     }
 
-    private static void AddCommonServices(this WebApplicationBuilder applicationBuilder)
+    private static void AddCommonServices(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null)
     {
         applicationBuilder.WebHost.GetManagementUrl(out int? httpPort, out int? httpsPort);
 
@@ -349,6 +348,8 @@ public static class ManagementWebApplicationBuilderExtensions
             applicationBuilder.UseCloudHosting(httpPort, httpsPort);
         }
 
-        applicationBuilder.Services.ActivateActuatorEndpoints();
+        IEndpointConventionBuilder endpointConventionBuilder = applicationBuilder.Services.ActivateActuatorEndpoints();
+        configureEndpoints?.Invoke(endpointConventionBuilder);
+
     }
 }
