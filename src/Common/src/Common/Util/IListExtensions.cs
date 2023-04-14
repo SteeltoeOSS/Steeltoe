@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 namespace Steeltoe.Common.Util;
+
 internal static class IListExtensions
 {
     public static void AddRange<T>(this IList<T> list, IEnumerable<T> items)
@@ -16,7 +17,7 @@ internal static class IListExtensions
         }
         else
         {
-            foreach (var item in items)
+            foreach (T item in items)
             {
                 list.Add(item);
             }

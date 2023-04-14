@@ -7,17 +7,22 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
-
 namespace Steeltoe.Common.TestResources;
+
 public static class HelperExtensions
 {
     /// <summary>
     /// Add a mock IActionDescriptorCollectionProvider for testing
     /// </summary>
-    /// <param name="svc">The IServiceCollection to update</param>
-    /// <returns>The updated IServiceCollection</returns>
-    public static IServiceCollection AddActionDescriptorCollectionProvider(this IServiceCollection svc) =>
-        svc.AddSingleton(_ =>
+    /// <param name="svc">
+    /// The IServiceCollection to update
+    /// </param>
+    /// <returns>
+    /// The updated IServiceCollection
+    /// </returns>
+    public static IServiceCollection AddActionDescriptorCollectionProvider(this IServiceCollection svc)
+    {
+        return svc.AddSingleton(_ =>
         {
             var actionDescriptorCollectionProviderMock = new Mock<IActionDescriptorCollectionProvider>();
 
@@ -25,4 +30,5 @@ public static class HelperExtensions
 
             return actionDescriptorCollectionProviderMock.Object;
         });
+    }
 }

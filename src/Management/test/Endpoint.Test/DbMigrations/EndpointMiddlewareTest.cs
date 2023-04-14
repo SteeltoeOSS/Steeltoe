@@ -72,9 +72,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         string expected = Serialize(new Dictionary<string, DbMigrationsDescriptor>
         {
-            {
-                nameof(MockDbContext), descriptor
-            }
+            { nameof(MockDbContext), descriptor }
         });
 
         Assert.Equal(expected, json);
@@ -99,11 +97,10 @@ public class EndpointMiddlewareTest : BaseTest
         var descriptor = new DbMigrationsDescriptor();
         descriptor.AppliedMigrations.Add("applied");
         descriptor.PendingMigrations.Add("pending");
+
         string expected = Serialize(new Dictionary<string, DbMigrationsDescriptor>
         {
-            {
-                nameof(MockDbContext), descriptor
-            }
+            { nameof(MockDbContext), descriptor }
         });
 
         Assert.Equal(expected, json);

@@ -271,6 +271,7 @@ public static class ManagementHostBuilderExtensions
             ActivateActuatorEndpoints(collection);
         });
     }
+
     /// <summary>
     /// Adds the Trace actuator to the application.
     /// </summary>
@@ -278,9 +279,11 @@ public static class ManagementHostBuilderExtensions
     /// Your HostBuilder.
     /// </param>
     public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder)
-        => AddTraceActuator(hostBuilder, MediaTypeVersion.V2); 
+    {
+        return AddTraceActuator(hostBuilder, MediaTypeVersion.V2);
+    }
 
-        /// <summary>
+    /// <summary>
     /// Adds the Cloud Foundry actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
@@ -323,6 +326,7 @@ public static class ManagementHostBuilderExtensions
             configureEndpoints?.Invoke(endpointConventionBuilder);
         });
     }
+
     /// <summary>
     /// Adds all standard actuators to the application.
     /// </summary>
@@ -333,7 +337,10 @@ public static class ManagementHostBuilderExtensions
     /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
     /// </remarks>
     public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder)
-        => AddAllActuators(hostBuilder, null);
+    {
+        return AddAllActuators(hostBuilder, null);
+    }
+
     /// <summary>
     /// Adds all standard actuators to the application.
     /// </summary>
@@ -351,7 +358,10 @@ public static class ManagementHostBuilderExtensions
     /// </remarks>
     public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints,
         MediaTypeVersion mediaTypeVersion)
-        => AddAllActuators(hostBuilder, configureEndpoints, mediaTypeVersion, null);
+    {
+        return AddAllActuators(hostBuilder, configureEndpoints, mediaTypeVersion, null);
+    }
+
     /// <summary>
     /// Adds all standard actuators to the application.
     /// </summary>
@@ -361,12 +371,14 @@ public static class ManagementHostBuilderExtensions
     /// <param name="configureEndpoints">
     /// Customize endpoint behavior. Useful for tailoring auth requirements.
     /// </param>
-    
     /// <remarks>
     /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
     /// </remarks>
     public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
-        => AddAllActuators(hostBuilder, configureEndpoints, MediaTypeVersion.V2);
+    {
+        return AddAllActuators(hostBuilder, configureEndpoints, MediaTypeVersion.V2);
+    }
+
     /// <summary>
     /// Registers an <see cref="IStartupFilter" /> that will map all configured actuators, initialize health.
     /// </summary>

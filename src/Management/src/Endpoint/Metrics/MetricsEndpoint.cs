@@ -126,7 +126,7 @@ public class MetricsEndpoint : IMetricsEndpoint
         return sampleList;
     }
 
-    internal protected static MetricsResponse GetMetric(MetricsRequest request, IList<MetricSample> metricSamples, IList<MetricTag> availTags)
+    protected internal static MetricsResponse GetMetric(MetricsRequest request, IList<MetricSample> metricSamples, IList<MetricTag> availTags)
     {
         return new MetricsResponse(request.MetricName, metricSamples, availTags);
     }

@@ -254,13 +254,18 @@ public static class ManagementWebHostBuilderExtensions
             collection.ActivateActuatorEndpoints();
         });
     }
+
     /// <summary>
     /// Adds the ThreadDump actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
     /// Your HostBuilder.
     /// </param>
-    public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder hostBuilder) => AddThreadDumpActuator(hostBuilder, MediaTypeVersion.V2);
+    public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder hostBuilder)
+    {
+        return AddThreadDumpActuator(hostBuilder, MediaTypeVersion.V2);
+    }
+
     /// <summary>
     /// Adds the Trace actuator to the application.
     /// </summary>
@@ -316,6 +321,7 @@ public static class ManagementWebHostBuilderExtensions
             configureEndpoints?.Invoke(conventionBuilder);
         });
     }
+
     /// <summary>
     /// Adds all Steeltoe Actuators to the application.
     /// </summary>
@@ -326,7 +332,10 @@ public static class ManagementWebHostBuilderExtensions
     /// <see cref="IEndpointConventionBuilder" />.
     /// </param>
     public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
-            => AddAllActuators(hostBuilder, configureEndpoints, MediaTypeVersion.V2);
+    {
+        return AddAllActuators(hostBuilder, configureEndpoints, MediaTypeVersion.V2);
+    }
+
     /// <summary>
     /// Adds all Steeltoe Actuators to the application.
     /// </summary>
@@ -334,7 +343,10 @@ public static class ManagementWebHostBuilderExtensions
     /// Your HostBuilder.
     /// </param>
     public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder)
-            => AddAllActuators(hostBuilder, null);
+    {
+        return AddAllActuators(hostBuilder, null);
+    }
+
     internal static void GetManagementUrl(this IWebHostBuilder webHostBuilder, out int? httpPort, out int? httpsPort)
     {
         string portSetting = webHostBuilder.GetSetting(ManagementPortKey);

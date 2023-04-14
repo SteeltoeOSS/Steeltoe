@@ -19,6 +19,7 @@ public class PropertyValueDescriptor
         Value = value;
         Origin = origin;
     }
+
     public PropertyValueDescriptor(object value)
     {
         Value = value;

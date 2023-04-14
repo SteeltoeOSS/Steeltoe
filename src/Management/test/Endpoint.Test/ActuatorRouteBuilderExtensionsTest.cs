@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -17,7 +18,6 @@ using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
-using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -47,6 +47,7 @@ public class ActuatorRouteBuilderExtensionsTest
             s.AddAllActuators();
             s.AddRouting();
             s.AddActionDescriptorCollectionProvider();
+
             s.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.AuthenticationScheme, _ =>
                 {

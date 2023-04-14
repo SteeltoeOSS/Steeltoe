@@ -48,7 +48,7 @@ public class EndpointMiddlewareTest : BaseTest
         ILogger<HeapDumpEndpoint> logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
         ILogger<HeapDumpEndpointMiddleware> logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
 
-        var obs = new HeapDumper(opts, logger: logger1, basePathOverride: null);
+        var obs = new HeapDumper(opts, logger1, null);
 
         var ep = new HeapDumpEndpoint(opts, obs, logger2);
         var middle = new HeapDumpEndpointMiddleware(ep, managementOptions, logger3);

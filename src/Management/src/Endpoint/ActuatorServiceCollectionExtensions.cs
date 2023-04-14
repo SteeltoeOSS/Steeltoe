@@ -53,12 +53,18 @@ public static class ActuatorServiceCollectionExtensions
     {
         services.AddAllActuators(MediaTypeVersion.V2, buildCorsPolicy);
     }
+
     public static IServiceCollection AddAllActuators(this IServiceCollection services)
-        => AddAllActuators(services, MediaTypeVersion.V2);
+    {
+        return AddAllActuators(services, MediaTypeVersion.V2);
+    }
+
     public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version)
-        => AddAllActuators(services, version, null);
-    public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version,
-        Action<CorsPolicyBuilder> buildCorsPolicy)
+    {
+        return AddAllActuators(services, version, null);
+    }
+
+    public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version, Action<CorsPolicyBuilder> buildCorsPolicy)
     {
         ArgumentGuard.NotNull(services);
 

@@ -17,9 +17,12 @@ public class HeapDumper : IHeapDumper
     private readonly string _basePathOverride;
     private readonly IOptionsMonitor<HeapDumpEndpointOptions> _options;
     private readonly ILogger<HeapDumper> _logger;
+
     public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> options, ILogger<HeapDumper> loggeer)
-        :this(options, loggeer, null)
-    { }
+        : this(options, loggeer, null)
+    {
+    }
+
     public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> options, ILogger<HeapDumper> logger, string basePathOverride)
     {
         ArgumentGuard.NotNull(options);

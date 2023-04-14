@@ -26,8 +26,8 @@ public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
     protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
     {
         ArgumentGuard.NotNull(logger);
-        this.Logger = logger;
-        this.ManagementOptions = managementOptions;
+        Logger = logger;
+        ManagementOptions = managementOptions;
     }
 
     protected EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)

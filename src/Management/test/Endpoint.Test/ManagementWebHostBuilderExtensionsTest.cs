@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -30,22 +31,19 @@ using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Info;
 using Xunit;
-using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public class ManagementWebHostBuilderExtensionsTest:BaseTest
+public class ManagementWebHostBuilderExtensionsTest : BaseTest
 {
-    private readonly IWebHostBuilder _testServerWithRouting =
-        new WebHostBuilder().UseTestServer()
-            .ConfigureServices(s =>
-                s.AddRouting().AddActionDescriptorCollectionProvider())
-            .Configure(a => a.UseRouting());
+    private readonly IWebHostBuilder _testServerWithRouting = new WebHostBuilder().UseTestServer()
+        .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting());
 
     private readonly IWebHostBuilder _testServerWithSecureRouting = new WebHostBuilder().UseTestServer().ConfigureServices(s =>
     {
         s.AddRouting();
         s.AddActionDescriptorCollectionProvider();
+
         s.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme,
             _ =>
             {

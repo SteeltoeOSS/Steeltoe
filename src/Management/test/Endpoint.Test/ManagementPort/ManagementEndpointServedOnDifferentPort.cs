@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Common.TestResources;
@@ -133,7 +132,6 @@ public class ManagementEndpointServedOnDifferentPort
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-
     [Fact]
     public async Task AddAllActuators_GenericHost_MakeSure_SSLEnabled()
     {
@@ -164,5 +162,4 @@ public class ManagementEndpointServedOnDifferentPort
         Assert.Equal("Not Found", jsonResponse?.Error);
         Assert.Equal("Path not found at port", jsonResponse?.Message);
     }
-  
 }

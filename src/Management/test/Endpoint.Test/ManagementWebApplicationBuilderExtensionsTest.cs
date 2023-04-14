@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.TestResources;
@@ -380,9 +379,10 @@ public class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddSeveralActuators_WebApplicationBuilder_NoConflict()
     {
-        WebApplication host = GetTestWebAppWithSecureRouting( builder =>
+        WebApplication host = GetTestWebAppWithSecureRouting(builder =>
         {
-            builder.AddHypermediaActuator().AddInfoActuator().AddHealthActuator().AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).Services.AddActionDescriptorCollectionProvider();
+            builder.AddHypermediaActuator().AddInfoActuator().AddHealthActuator().AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).Services
+                .AddActionDescriptorCollectionProvider();
         });
 
         await host.StartAsync();

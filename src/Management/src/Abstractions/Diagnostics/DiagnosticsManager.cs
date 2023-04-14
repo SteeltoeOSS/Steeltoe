@@ -14,19 +14,18 @@ namespace Steeltoe.Management.Diagnostics;
 public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
 {
     private static readonly Lazy<DiagnosticsManager> AsSingleton = new(() => new DiagnosticsManager(NullLogger<DiagnosticsManager>.Instance));
+    private readonly IList<IRuntimeDiagnosticSource> _innerSources;
+    private readonly IList<EventListener> _eventListeners;
 
     private bool _isDisposed;
     private IDisposable _listenersSubscription;
     private ILogger<DiagnosticsManager> _logger;
-    private readonly IList<IDiagnosticObserver> _innerObservers;
-    private readonly IList<IRuntimeDiagnosticSource> _innerSources;
-    private readonly IList<EventListener> _eventListeners;
 
     private int _started;
 
     public static DiagnosticsManager Instance => AsSingleton.Value;
 
-    public IList<IDiagnosticObserver> Observers => _innerObservers;
+    public IList<IDiagnosticObserver> Observers { get; }
 
     //public IList<IRuntimeDiagnosticSource> Sources => InnerSources;
 
@@ -47,7 +46,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
             }
         }
 
-        _innerObservers = filteredObservers;
+        Observers = filteredObservers;
         _innerSources = runtimeSources.ToList();
         _eventListeners = eventListeners.ToList();
     }
@@ -56,7 +55,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
     {
         ArgumentGuard.NotNull(logger);
         _logger = logger;
-        _innerObservers = new List<IDiagnosticObserver>();
+        Observers = new List<IDiagnosticObserver>();
         _innerSources = new List<IRuntimeDiagnosticSource>();
     }
 
@@ -72,7 +71,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
 
     public void OnNext(DiagnosticListener value)
     {
-        foreach (IDiagnosticObserver listener in _innerObservers)
+        foreach (IDiagnosticObserver listener in Observers)
         {
             listener.Subscribe(value);
         }
@@ -90,7 +89,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
     {
         if (Interlocked.CompareExchange(ref _started, 0, 1) == 1)
         {
-            foreach (IDiagnosticObserver listener in _innerObservers)
+            foreach (IDiagnosticObserver listener in Observers)
             {
                 listener.Dispose();
             }
@@ -109,7 +108,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
         {
             Stop();
 
-            _innerObservers?.Clear();
+            Observers?.Clear();
             _innerSources?.Clear();
             _logger = null;
 

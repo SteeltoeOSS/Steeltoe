@@ -16,9 +16,9 @@ public class DiskSpaceContributor : IHealthContributor
 
     public DiskSpaceContributor()
     {
-        _options= new DiskSpaceContributorOptions();
+        _options = new DiskSpaceContributorOptions();
     }
-    
+
     public DiskSpaceContributor(DiskSpaceContributorOptions options)
     {
         _options = options ?? new DiskSpaceContributorOptions();

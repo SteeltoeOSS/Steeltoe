@@ -17,7 +17,7 @@ public abstract class AbstractConfigurationContributor
 
     protected AbstractConfigurationContributor(IConfiguration configuration)
     {
-        this.Configuration = configuration;
+        Configuration = configuration;
     }
 
     protected virtual void Contribute(IInfoBuilder builder, string prefix, bool keepPrefix)
@@ -44,7 +44,6 @@ public abstract class AbstractConfigurationContributor
             }
 
             AddChildren(dict, children);
-
         }
 
         return result;
