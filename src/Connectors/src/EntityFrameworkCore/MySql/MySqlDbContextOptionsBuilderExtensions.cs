@@ -17,7 +17,9 @@ public static class MySqlDbContextOptionsBuilderExtensions
         ArgumentGuard.NotNull(serviceProvider);
 
         Type connectionType = MySqlTypeLocator.MySqlConnection;
-        string connectionString = ConnectionFactoryInvoker.GetConnectionString<MySqlOptions>(serviceProvider, serviceBindingName, connectionType);
+
+        string optionName = serviceBindingName ?? string.Empty;
+        string connectionString = ConnectionFactoryInvoker.GetConnectionString<MySqlOptions>(serviceProvider, optionName, connectionType);
 
         if (connectionString == null)
         {

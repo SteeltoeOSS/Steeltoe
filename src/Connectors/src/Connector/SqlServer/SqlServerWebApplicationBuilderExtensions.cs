@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common;
+using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Connector.SqlServer;
 
@@ -17,9 +18,15 @@ public static class SqlServerWebApplicationBuilderExtensions
         Type connectionType = SqlServerTypeLocator.SqlConnection;
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<SqlServerOptions>(builder, "sqlserver", connectionType, "SqlServer", "Data Source");
+        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<SqlServerOptions>(builder, "sqlserver", CreateHealthContributor);
         BaseWebApplicationBuilderExtensions.RegisterConnectionFactory<SqlServerOptions>(builder.Services, connectionType);
 
         return builder;
+    }
+
+    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
+    {
+        return BaseWebApplicationBuilderExtensions.CreateRelationalHealthContributor<SqlServerOptions>(serviceProvider, bindingName,
+            SqlServerTypeLocator.SqlConnection, "SqlServer", "Data Source");
     }
 }

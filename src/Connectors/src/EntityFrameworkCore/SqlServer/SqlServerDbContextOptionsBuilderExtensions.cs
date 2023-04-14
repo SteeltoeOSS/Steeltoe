@@ -17,7 +17,9 @@ public static class SqlServerDbContextOptionsBuilderExtensions
         ArgumentGuard.NotNull(serviceProvider);
 
         Type connectionType = SqlServerTypeLocator.SqlConnection;
-        string connectionString = ConnectionFactoryInvoker.GetConnectionString<SqlServerOptions>(serviceProvider, serviceBindingName, connectionType);
+
+        string optionName = serviceBindingName ?? string.Empty;
+        string connectionString = ConnectionFactoryInvoker.GetConnectionString<SqlServerOptions>(serviceProvider, optionName, connectionType);
 
         if (connectionString == null)
         {
