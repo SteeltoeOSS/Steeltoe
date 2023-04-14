@@ -37,6 +37,7 @@ public class SpringBootAdminClientOptions
     /// <summary>
     /// Gets or sets metadata to use when registering with SBA.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "Allow in Options")]
     public Dictionary<string, object> Metadata { get; set; }
 
     public SpringBootAdminClientOptions(IConfiguration configuration, IApplicationInstanceInfo appInfo)

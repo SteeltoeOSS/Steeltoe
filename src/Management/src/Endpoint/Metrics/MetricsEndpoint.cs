@@ -41,7 +41,7 @@ public class MetricsEndpoint : IMetricsEndpoint
         if (metricNames.Contains(request.MetricName))
         {
             _logger.LogTrace("Fetching metrics for " + request.MetricName);
-            List<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
+            IList<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
 
             return GetMetric(request, sampleList, availTags[request.MetricName]);
         }
@@ -49,7 +49,7 @@ public class MetricsEndpoint : IMetricsEndpoint
         return null;
     }
 
-    protected internal List<MetricSample> GetMetricSamplesByTags(MetricsCollection<List<MetricSample>> measurements, string metricName,
+    protected internal IList<MetricSample> GetMetricSamplesByTags(MetricsCollection<List<MetricSample>> measurements, string metricName,
         IEnumerable<KeyValuePair<string, string>> tags)
     {
         IEnumerable<MetricSample> filtered = measurements[metricName];
@@ -126,7 +126,7 @@ public class MetricsEndpoint : IMetricsEndpoint
         return sampleList;
     }
 
-    protected internal MetricsResponse GetMetric(MetricsRequest request, List<MetricSample> metricSamples, List<MetricTag> availTags)
+    internal protected static MetricsResponse GetMetric(MetricsRequest request, IList<MetricSample> metricSamples, IList<MetricTag> availTags)
     {
         return new MetricsResponse(request.MetricName, metricSamples, availTags);
     }

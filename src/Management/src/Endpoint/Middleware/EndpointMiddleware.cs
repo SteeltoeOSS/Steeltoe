@@ -17,7 +17,7 @@ namespace Steeltoe.Management.Endpoint.Middleware;
 public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
 {
     protected ILogger Logger { get; }
-    protected IOptionsMonitor<ManagementEndpointOptions> ManagementOptions;
+    protected IOptionsMonitor<ManagementEndpointOptions> ManagementOptions { get; }
 
     public IEndpoint<TResult> Endpoint { get; set; }
 

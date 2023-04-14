@@ -381,7 +381,7 @@ public class TraceDiagnosticObserverTest : BaseTest
         }
 
         Assert.Equal(option.CurrentValue.Capacity, obs.Queue.Count);
-        List<TraceResult> traces = obs.GetTraces();
+        IList<TraceResult> traces = obs.GetTraces();
         Assert.Equal(option.CurrentValue.Capacity, traces.Count);
         Assert.Equal(option.CurrentValue.Capacity, obs.Queue.Count);
 

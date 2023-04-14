@@ -53,7 +53,7 @@ public class ThreadDumperEp : IThreadDumper
     /// <returns>
     /// the list of threads with stack trace information.
     /// </returns>
-    public List<ThreadInfo> DumpThreads()
+    public IList<ThreadInfo> DumpThreads()
     {
         var results = new List<ThreadInfo>();
 

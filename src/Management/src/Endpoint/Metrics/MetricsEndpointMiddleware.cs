@@ -49,7 +49,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         if (!string.IsNullOrEmpty(metricName))
         {
             // GET /metrics/{metricName}?tag=key:value&tag=key:value
-            List<KeyValuePair<string, string>> tags = ParseTags(request.Query);
+            IList<KeyValuePair<string, string>> tags = ParseTags(request.Query);
             var metricRequest = new MetricsRequest(metricName, tags);
             string serialInfo = HandleRequest(metricRequest);
 
@@ -90,7 +90,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         return metricName;
     }
 
-    protected internal List<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
+    protected internal IList<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
     {
         var results = new List<KeyValuePair<string, string>>();
 

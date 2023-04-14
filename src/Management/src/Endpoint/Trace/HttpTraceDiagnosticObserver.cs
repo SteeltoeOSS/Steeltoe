@@ -24,7 +24,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
     private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
     private readonly ILogger<TraceDiagnosticObserver> _logger;
-    internal ConcurrentQueue<HttpTrace> Queue = new();
+    private readonly ConcurrentQueue<HttpTrace> _queue = new();
 
     public HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILogger<TraceDiagnosticObserver> logger)
         : base(DefaultObserverName, DiagnosticName, logger)
@@ -37,7 +37,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
 
     public HttpTraceResult GetTraces()
     {
-        return new HttpTraceResult(Queue.ToList());
+        return new HttpTraceResult(_queue.ToList());
     }
 
     public override void ProcessEvent(string eventName, object value)
@@ -64,9 +64,9 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
         if (context != null)
         {
             HttpTrace trace = MakeTrace(context, current.Duration);
-            Queue.Enqueue(trace);
+            _queue.Enqueue(trace);
 
-            if (Queue.Count > _options.CurrentValue.Capacity && !Queue.TryDequeue(out _))
+            if (_queue.Count > _options.CurrentValue.Capacity && !_queue.TryDequeue(out _))
             {
                 _logger.LogDebug("Stop - Dequeue failed");
             }

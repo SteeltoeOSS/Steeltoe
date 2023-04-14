@@ -25,13 +25,13 @@ public class TraceEndpoint : ITraceEndpoint
         _logger = logger;
     }
 
-    public virtual List<TraceResult> Invoke()
+    public virtual IList<TraceResult> Invoke()
     {
         _logger.LogTrace("Fetching Traces");
         return DoInvoke(_traceRepo);
     }
 
-    public List<TraceResult> DoInvoke(ITraceRepository repo)
+    public IList<TraceResult> DoInvoke(ITraceRepository repo)
     {
         return repo.GetTraces();
     }

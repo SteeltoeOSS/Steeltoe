@@ -10,7 +10,7 @@ internal sealed class TestThreadDumper : IThreadDumper
 {
     public bool DumpThreadsCalled { get; set; }
 
-    public List<ThreadInfo> DumpThreads()
+    public IList<ThreadInfo> DumpThreads()
     {
         DumpThreadsCalled = true;
         return new List<ThreadInfo>();

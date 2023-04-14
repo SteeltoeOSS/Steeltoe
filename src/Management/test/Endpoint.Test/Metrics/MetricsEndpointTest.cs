@@ -439,7 +439,7 @@ public class MetricsEndpointTest : BaseTest
                 new("a", "v1")
             };
 
-            List<MetricSample> result = ep.GetMetricSamplesByTags(measurements, "test.test1", aTags);
+            IList<MetricSample> result = ep.GetMetricSamplesByTags(measurements, "test.test1", aTags);
             Assert.NotNull(result);
             Assert.Single(result);
 

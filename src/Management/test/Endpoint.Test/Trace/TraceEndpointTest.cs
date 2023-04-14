@@ -41,14 +41,14 @@ public class TraceEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<ITraceEndpoint>();
-        List<TraceResult> result = ep.Invoke();
+        IList<TraceResult> result = ep.Invoke();
         Assert.NotNull(result);
         Assert.True(repo.GetTracesCalled);
     }
 
     private class TestTraceRepository : ITraceRepository
     {
-        public List<TraceResult> GetTraces()
+        public IList<TraceResult> GetTraces()
         {
             throw new NotImplementedException();
         }

@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public interface ITraceEndpoint : IEndpoint<List<TraceResult>>
+public interface ITraceEndpoint : IEndpoint<IList<TraceResult>>
 {
 }
