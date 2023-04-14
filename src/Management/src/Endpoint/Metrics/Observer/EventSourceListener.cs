@@ -43,7 +43,7 @@ public class EventSourceListener : EventListener
     }
 
     protected virtual void ExtractAndRecordMetric(string eventSourceName, EventWrittenEventArgs eventData, IDictionary<string, object> labels,
-        string[] ignorePayloadNames = null, string[] counterNames = null)
+        string[] ignorePayloadNames, string[] counterNames)
     {
         ReadOnlyCollection<string> payloadNames = eventData.PayloadNames;
         ReadOnlyCollection<object> payload = eventData.Payload;

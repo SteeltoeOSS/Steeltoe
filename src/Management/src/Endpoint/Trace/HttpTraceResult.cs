@@ -9,14 +9,14 @@ namespace Steeltoe.Management.Endpoint.Trace;
 public class HttpTraceResult
 {
     [JsonPropertyName("traces")]
-    public List<HttpTrace> Traces { get; }
+    public IList<HttpTrace> Traces { get; }
 
-    public HttpTraceResult(List<HttpTrace> traces)
+    public HttpTraceResult(IList<HttpTrace> traces)
     {
         Traces = traces;
     }
 
-    public HttpTraceResult(List<TraceResult> list)
+    public HttpTraceResult(IList<TraceResult> list)
     {
     }
 }

@@ -4,6 +4,8 @@
 
 namespace Steeltoe.Management.Diagnostics;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "Allow in Options")]
+
 public class MetricsObserverOptions
 {
     /// <summary>
@@ -36,7 +38,7 @@ public class MetricsObserverOptions
     /// <para />
     /// See this list for values to choose from: <see href="https://docs.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters" />.
     /// </remarks>
-    public List<string> IncludedMetrics { get; set; } = new();
+    public IList<string> IncludedMetrics { get; set; } = new List<string>();
 
     /// <summary>
     /// Gets or sets a list of metrics that should not be captured. Entries in <see cref="IncludedMetrics" /> take precedence in case of conflict.

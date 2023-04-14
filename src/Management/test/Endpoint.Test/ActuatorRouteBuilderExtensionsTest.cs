@@ -17,6 +17,7 @@ using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -45,7 +46,7 @@ public class ActuatorRouteBuilderExtensionsTest
             s.AddCloudFoundryActuator();
             s.AddAllActuators();
             s.AddRouting();
-
+            s.AddActionDescriptorCollectionProvider();
             s.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.AuthenticationScheme, _ =>
                 {

@@ -18,11 +18,12 @@ namespace Steeltoe.Management.Kubernetes.Test;
 public class HostBuilderExtensionsTest
 {
     private readonly Action<IWebHostBuilder> _testServerWithRouting = builder =>
-        builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+        builder.UseTestServer().ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting());
 
     private readonly Action<IWebHostBuilder> _testServerWithSecureRouting = builder => builder.UseTestServer().ConfigureServices(s =>
     {
         s.AddRouting();
+        s.AddActionDescriptorCollectionProvider();
 
         s.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme,
             _ =>

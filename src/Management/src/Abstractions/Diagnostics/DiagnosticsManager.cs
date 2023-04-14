@@ -16,20 +16,19 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
     private static readonly Lazy<DiagnosticsManager> AsSingleton = new(() => new DiagnosticsManager(NullLogger<DiagnosticsManager>.Instance));
 
     private bool _isDisposed;
-    internal IDisposable ListenersSubscription;
-    internal ILogger<DiagnosticsManager> Logger;
-    internal IList<IDiagnosticObserver> InnerObservers;
-    internal IList<IRuntimeDiagnosticSource> InnerSources;
-    internal IList<EventListener> EventListeners;
+    private IDisposable _listenersSubscription;
+    private ILogger<DiagnosticsManager> _logger;
+    private readonly IList<IDiagnosticObserver> _innerObservers;
+    private readonly IList<IRuntimeDiagnosticSource> _innerSources;
+    private readonly IList<EventListener> _eventListeners;
 
-    internal bool WorkerThreadShutdown;
-    internal int Started;
+    private int _started;
 
     public static DiagnosticsManager Instance => AsSingleton.Value;
 
-    public IList<IDiagnosticObserver> Observers => InnerObservers;
+    public IList<IDiagnosticObserver> Observers => _innerObservers;
 
-    public IList<IRuntimeDiagnosticSource> Sources => InnerSources;
+    //public IList<IRuntimeDiagnosticSource> Sources => InnerSources;
 
     public DiagnosticsManager(IOptionsMonitor<MetricsObserverOptions> observerOptions, IEnumerable<IRuntimeDiagnosticSource> runtimeSources,
         IEnumerable<IDiagnosticObserver> observers, IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger)
@@ -37,7 +36,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
         ArgumentGuard.NotNull(observers);
         ArgumentGuard.NotNull(logger);
 
-        Logger = logger;
+        _logger = logger;
         var filteredObservers = new List<IDiagnosticObserver>();
 
         foreach (IDiagnosticObserver observer in observers)
@@ -48,17 +47,17 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
             }
         }
 
-        InnerObservers = filteredObservers;
-        InnerSources = runtimeSources.ToList();
-        EventListeners = eventListeners.ToList();
+        _innerObservers = filteredObservers;
+        _innerSources = runtimeSources.ToList();
+        _eventListeners = eventListeners.ToList();
     }
 
     internal DiagnosticsManager(ILogger<DiagnosticsManager> logger)
     {
         ArgumentGuard.NotNull(logger);
-        Logger = logger;
-        InnerObservers = new List<IDiagnosticObserver>();
-        InnerSources = new List<IRuntimeDiagnosticSource>();
+        _logger = logger;
+        _innerObservers = new List<IDiagnosticObserver>();
+        _innerSources = new List<IRuntimeDiagnosticSource>();
     }
 
     public void OnCompleted()
@@ -73,7 +72,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
 
     public void OnNext(DiagnosticListener value)
     {
-        foreach (IDiagnosticObserver listener in InnerObservers)
+        foreach (IDiagnosticObserver listener in _innerObservers)
         {
             listener.Subscribe(value);
         }
@@ -81,19 +80,17 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
 
     public void Start()
     {
-        if (Interlocked.CompareExchange(ref Started, 1, 0) == 0)
+        if (Interlocked.CompareExchange(ref _started, 1, 0) == 0)
         {
-            ListenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
+            _listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
         }
     }
 
     public void Stop()
     {
-        if (Interlocked.CompareExchange(ref Started, 0, 1) == 1)
+        if (Interlocked.CompareExchange(ref _started, 0, 1) == 1)
         {
-            WorkerThreadShutdown = true;
-
-            foreach (IDiagnosticObserver listener in InnerObservers)
+            foreach (IDiagnosticObserver listener in _innerObservers)
             {
                 listener.Dispose();
             }
@@ -112,9 +109,9 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
         {
             Stop();
 
-            InnerObservers?.Clear();
-            InnerSources?.Clear();
-            Logger = null;
+            _innerObservers?.Clear();
+            _innerSources?.Clear();
+            _logger = null;
 
             _isDisposed = true;
         }

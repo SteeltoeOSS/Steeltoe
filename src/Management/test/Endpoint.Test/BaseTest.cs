@@ -5,10 +5,13 @@
 using System.Diagnostics.Metrics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Moq;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Health;
@@ -153,4 +156,5 @@ public abstract class BaseTest : IDisposable
     {
         return GetOptionsMonitorFromSettings<TOptions>(settings).CurrentValue;
     }
+  
 }

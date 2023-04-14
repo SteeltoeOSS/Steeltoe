@@ -20,7 +20,7 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (EndpointOptions.ShouldInvoke(managementOptions, context, logger))
+        if (EndpointOptions.ShouldInvoke(ManagementOptions, context, Logger))
         {
             return HandleEnvRequestAsync(context);
         }
@@ -31,9 +31,9 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
     protected internal Task HandleEnvRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest();
-        logger.LogDebug("Returning: {info}", serialInfo);
+        Logger.LogDebug("Returning: {info}", serialInfo);
 
-        context.HandleContentNegotiation(logger);
+        context.HandleContentNegotiation(Logger);
         return context.Response.WriteAsync(serialInfo);
     }
 }

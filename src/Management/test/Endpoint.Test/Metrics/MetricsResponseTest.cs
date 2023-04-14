@@ -15,7 +15,7 @@ public class MetricsResponseTest : BaseTest
     {
         var samples = new List<MetricSample>
         {
-            new(MetricStatistic.TotalTime, 100.00)
+            new(MetricStatistic.TotalTime, 100.00, null)
         };
 
         var tags = new List<MetricTag>
@@ -37,7 +37,7 @@ public class MetricsResponseTest : BaseTest
     {
         var samples = new List<MetricSample>
         {
-            new(MetricStatistic.TotalTime, 100.1)
+            new(MetricStatistic.TotalTime, 100.1, null)
         };
 
         var tags = new List<MetricTag>

@@ -30,18 +30,22 @@ using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Info;
 using Xunit;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public class ManagementWebHostBuilderExtensionsTest
+public class ManagementWebHostBuilderExtensionsTest:BaseTest
 {
     private readonly IWebHostBuilder _testServerWithRouting =
-        new WebHostBuilder().UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+        new WebHostBuilder().UseTestServer()
+            .ConfigureServices(s =>
+                s.AddRouting().AddActionDescriptorCollectionProvider())
+            .Configure(a => a.UseRouting());
 
     private readonly IWebHostBuilder _testServerWithSecureRouting = new WebHostBuilder().UseTestServer().ConfigureServices(s =>
     {
         s.AddRouting();
-
+        s.AddActionDescriptorCollectionProvider();
         s.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme,
             _ =>
             {

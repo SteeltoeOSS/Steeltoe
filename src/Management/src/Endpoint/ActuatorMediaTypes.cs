@@ -12,7 +12,7 @@ public static class ActuatorMediaTypes
     public const string AppJson = "application/json";
     public const string Any = "*/*";
 
-    public static string GetContentHeaders(List<string> acceptHeaders, MediaTypeVersion version = MediaTypeVersion.V2)
+    public static string GetContentHeaders(IList<string> acceptHeaders, MediaTypeVersion version = MediaTypeVersion.V2)
     {
         string contentHeader = AppJson;
         string versionContentHeader = GetContentTypeHeaderForVersion(version);

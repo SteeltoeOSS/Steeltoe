@@ -149,8 +149,6 @@ public class ThreadDumperEp : IThreadDumper
                         ThreadState = State.Runnable,
                         IsInNative = false,
                         IsSuspended = false,
-                        LockedMonitors = new List<MonitorInfo>(),
-                        LockedSynchronizers = new List<LockInfo>(),
                         StackTrace = GetStackTrace(threadId, samples[0], stackSource, symbolReader)
                     };
 

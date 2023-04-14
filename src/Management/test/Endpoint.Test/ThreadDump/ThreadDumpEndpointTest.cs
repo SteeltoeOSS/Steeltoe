@@ -41,7 +41,7 @@ public class ThreadDumpEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IThreadDumpEndpoint>();
-        List<ThreadInfo> result = ep.Invoke();
+        IList<ThreadInfo> result = ep.Invoke();
         Assert.NotNull(result);
         Assert.True(dumper.DumpThreadsCalled);
     }

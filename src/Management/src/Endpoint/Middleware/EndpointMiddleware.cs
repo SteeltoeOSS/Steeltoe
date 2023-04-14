@@ -16,8 +16,8 @@ namespace Steeltoe.Management.Endpoint.Middleware;
 
 public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
 {
-    protected ILogger logger;
-    protected IOptionsMonitor<ManagementEndpointOptions> managementOptions;
+    protected ILogger Logger { get; }
+    protected IOptionsMonitor<ManagementEndpointOptions> ManagementOptions;
 
     public IEndpoint<TResult> Endpoint { get; set; }
 
@@ -26,8 +26,8 @@ public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
     protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
     {
         ArgumentGuard.NotNull(logger);
-        this.logger = logger;
-        this.managementOptions = managementOptions;
+        this.Logger = logger;
+        this.ManagementOptions = managementOptions;
     }
 
     protected EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
@@ -48,14 +48,14 @@ public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
     {
         try
         {
-            JsonSerializerOptions serializerOptions = managementOptions.CurrentValue.SerializerOptions;
+            JsonSerializerOptions serializerOptions = ManagementOptions.CurrentValue.SerializerOptions;
             JsonSerializerOptions options = GetSerializerOptions(serializerOptions);
 
             return JsonSerializer.Serialize(result, options);
         }
         catch (Exception e) when (e is ArgumentException or ArgumentNullException or NotSupportedException)
         {
-            logger.LogError(e, "Error serializing {MiddlewareResponse}", result);
+            Logger.LogError(e, "Error serializing {MiddlewareResponse}", result);
         }
 
         return string.Empty;

@@ -246,7 +246,7 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion)
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
@@ -254,7 +254,13 @@ public static class ManagementWebHostBuilderExtensions
             collection.ActivateActuatorEndpoints();
         });
     }
-
+    /// <summary>
+    /// Adds the ThreadDump actuator to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder hostBuilder) => AddThreadDumpActuator(hostBuilder, MediaTypeVersion.V2);
     /// <summary>
     /// Adds the Trace actuator to the application.
     /// </summary>
@@ -300,8 +306,8 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null,
-        MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints,
+        MediaTypeVersion mediaTypeVersion)
     {
         return hostBuilder.AddManagementPort().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((context, collection) =>
         {
@@ -310,7 +316,25 @@ public static class ManagementWebHostBuilderExtensions
             configureEndpoints?.Invoke(conventionBuilder);
         });
     }
-
+    /// <summary>
+    /// Adds all Steeltoe Actuators to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    /// <param name="configureEndpoints">
+    /// <see cref="IEndpointConventionBuilder" />.
+    /// </param>
+    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
+            => AddAllActuators(hostBuilder, configureEndpoints, MediaTypeVersion.V2);
+    /// <summary>
+    /// Adds all Steeltoe Actuators to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder)
+            => AddAllActuators(hostBuilder, null);
     internal static void GetManagementUrl(this IWebHostBuilder webHostBuilder, out int? httpPort, out int? httpsPort)
     {
         string portSetting = webHostBuilder.GetSetting(ManagementPortKey);

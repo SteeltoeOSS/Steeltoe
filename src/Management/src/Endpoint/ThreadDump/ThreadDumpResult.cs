@@ -9,5 +9,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 public class ThreadDumpResult
 {
     [JsonPropertyName("threads")]
-    public List<ThreadInfo> Threads { get; set; }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "Allow in Options")]
+    public IList<ThreadInfo> Threads { get; set; }
 }

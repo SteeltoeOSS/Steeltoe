@@ -20,7 +20,7 @@ public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResul
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
+        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
         {
             return HandleThreadDumpRequestAsync(context);
         }
@@ -32,7 +32,7 @@ public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResul
     {
         string serialInfo = HandleRequest();
 
-        logger.LogDebug("Returning: {info}", serialInfo);
+        Logger.LogDebug("Returning: {info}", serialInfo);
         context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
         return context.Response.WriteAsync(serialInfo);
     }

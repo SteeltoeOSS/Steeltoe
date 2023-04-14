@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.TestResources;
@@ -219,6 +220,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddMappingsActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        hostBuilder.Services.AddActionDescriptorCollectionProvider();
 
         WebApplication host = hostBuilder.AddMappingsActuator().Build();
         host.UseRouting();
@@ -309,6 +311,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddAllActuators_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        hostBuilder.Services.AddActionDescriptorCollectionProvider();
 
         WebApplication host = hostBuilder.AddAllActuators().Build();
         host.UseRouting();
@@ -328,7 +331,11 @@ public class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddAllActuatorsWithConventions_WebApplicationBuilder_IStartupFilterFires()
     {
-        WebApplication host = GetTestWebAppWithSecureRouting(builder => builder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")));
+        WebApplication host = GetTestWebAppWithSecureRouting(builder =>
+        {
+            builder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth"));
+            builder.Services.AddActionDescriptorCollectionProvider();
+        });
 
         await host.StartAsync();
         HttpClient client = host.GetTestClient();
@@ -373,9 +380,9 @@ public class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddSeveralActuators_WebApplicationBuilder_NoConflict()
     {
-        WebApplication host = GetTestWebAppWithSecureRouting(s =>
+        WebApplication host = GetTestWebAppWithSecureRouting( builder =>
         {
-            s.AddHypermediaActuator().AddInfoActuator().AddHealthActuator().AddAllActuators(ep => ep.RequireAuthorization("TestAuth"));
+            builder.AddHypermediaActuator().AddInfoActuator().AddHealthActuator().AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).Services.AddActionDescriptorCollectionProvider();
         });
 
         await host.StartAsync();

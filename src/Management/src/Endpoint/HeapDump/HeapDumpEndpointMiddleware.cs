@@ -21,7 +21,7 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
+        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
         {
             return HandleHeapDumpRequestAsync(context);
         }
@@ -32,7 +32,7 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
     protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)
     {
         string fileName = Endpoint.Invoke();
-        logger.LogDebug("Returning: {fileName}", fileName);
+        Logger.LogDebug("Returning: {fileName}", fileName);
         context.Response.Headers.Add("Content-Type", "application/octet-stream");
 
         if (!File.Exists(fileName))
@@ -42,7 +42,7 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
         }
 
         string gzFileName = $"{fileName}.gz";
-        Stream result = await Utils.CompressFileAsync(fileName, gzFileName, logger);
+        Stream result = await Utils.CompressFileAsync(fileName, gzFileName, Logger);
 
         if (result != null)
         {

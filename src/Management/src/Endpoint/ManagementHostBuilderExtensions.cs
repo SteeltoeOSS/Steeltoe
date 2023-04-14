@@ -263,7 +263,7 @@ public static class ManagementHostBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion)
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
@@ -271,8 +271,16 @@ public static class ManagementHostBuilderExtensions
             ActivateActuatorEndpoints(collection);
         });
     }
-
     /// <summary>
+    /// Adds the Trace actuator to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder)
+        => AddTraceActuator(hostBuilder, MediaTypeVersion.V2); 
+
+        /// <summary>
     /// Adds the Cloud Foundry actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
@@ -305,8 +313,8 @@ public static class ManagementHostBuilderExtensions
     /// <remarks>
     /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
     /// </remarks>
-    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null,
-        MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints,
+        MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy)
     {
         return hostBuilder.AddDynamicLogging().AddManagementPort().ConfigureServices((context, collection) =>
         {
@@ -315,7 +323,50 @@ public static class ManagementHostBuilderExtensions
             configureEndpoints?.Invoke(endpointConventionBuilder);
         });
     }
-
+    /// <summary>
+    /// Adds all standard actuators to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    /// <remarks>
+    /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
+    /// </remarks>
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder)
+        => AddAllActuators(hostBuilder, null);
+    /// <summary>
+    /// Adds all standard actuators to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    /// <param name="configureEndpoints">
+    /// Customize endpoint behavior. Useful for tailoring auth requirements.
+    /// </param>
+    /// <param name="mediaTypeVersion">
+    /// Specify the media type version to use in the response.
+    /// </param>
+    /// <remarks>
+    /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
+    /// </remarks>
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints,
+        MediaTypeVersion mediaTypeVersion)
+        => AddAllActuators(hostBuilder, configureEndpoints, mediaTypeVersion, null);
+    /// <summary>
+    /// Adds all standard actuators to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    /// <param name="configureEndpoints">
+    /// Customize endpoint behavior. Useful for tailoring auth requirements.
+    /// </param>
+    
+    /// <remarks>
+    /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
+    /// </remarks>
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
+        => AddAllActuators(hostBuilder, configureEndpoints, MediaTypeVersion.V2);
     /// <summary>
     /// Registers an <see cref="IStartupFilter" /> that will map all configured actuators, initialize health.
     /// </summary>

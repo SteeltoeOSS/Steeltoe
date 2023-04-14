@@ -1,4 +1,4 @@
-﻿abstract Steeltoe.Management.Diagnostics.DiagnosticObserver.ProcessEvent(string eventName, object value) -> void
+abstract Steeltoe.Management.Diagnostics.DiagnosticObserver.ProcessEvent(string eventName, object value) -> void
 static Steeltoe.Management.Diagnostics.DiagnosticHelpers.GetProperty<T>(object o, string name) -> T
 static Steeltoe.Management.Diagnostics.DiagnosticsManager.Instance.get -> Steeltoe.Management.Diagnostics.DiagnosticsManager
 Steeltoe.Management.Diagnostics.DiagnosticHelpers
@@ -18,7 +18,6 @@ Steeltoe.Management.Diagnostics.DiagnosticsManager.Observers.get -> System.Colle
 Steeltoe.Management.Diagnostics.DiagnosticsManager.OnCompleted() -> void
 Steeltoe.Management.Diagnostics.DiagnosticsManager.OnError(System.Exception error) -> void
 Steeltoe.Management.Diagnostics.DiagnosticsManager.OnNext(System.Diagnostics.DiagnosticListener value) -> void
-Steeltoe.Management.Diagnostics.DiagnosticsManager.Sources.get -> System.Collections.Generic.IList<Steeltoe.Management.Diagnostics.IRuntimeDiagnosticSource>
 Steeltoe.Management.Diagnostics.DiagnosticsManager.Start() -> void
 Steeltoe.Management.Diagnostics.DiagnosticsManager.Stop() -> void
 Steeltoe.Management.Diagnostics.IDiagnosticObserver
@@ -45,7 +44,7 @@ Steeltoe.Management.Diagnostics.MetricsObserverOptions.HttpClientCore.get -> boo
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.HttpClientCore.set -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.HttpClientDesktop.get -> bool
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.HttpClientDesktop.set -> void
-Steeltoe.Management.Diagnostics.MetricsObserverOptions.IncludedMetrics.get -> System.Collections.Generic.List<string>
+Steeltoe.Management.Diagnostics.MetricsObserverOptions.IncludedMetrics.get -> System.Collections.Generic.IList<string>
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.IncludedMetrics.set -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.IncludeObserver(string name) -> bool
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.IngressIgnorePattern.get -> string
@@ -55,10 +54,7 @@ Steeltoe.Management.Diagnostics.MetricsObserverOptions.ThreadPoolEvents.get -> b
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.ThreadPoolEvents.set -> void
 Steeltoe.Management.EndpointOptionsBase
 Steeltoe.Management.EndpointOptionsBase.EndpointOptionsBase() -> void
-Steeltoe.Management.EndpointOptionsBase.path -> string
-Steeltoe.Management.EndpointOptionsBase.RequiredPermissions.get -> Steeltoe.Management.Permissions
 Steeltoe.Management.EndpointOptionsBase.RequiredPermissions.set -> void
-Steeltoe.Management.EndpointOptionsBase.sensitive -> bool?
 Steeltoe.Management.IEndpoint
 Steeltoe.Management.IEndpoint.Options.get -> Steeltoe.Management.IEndpointOptions
 Steeltoe.Management.IEndpoint<TResult, TRequest>
@@ -75,7 +71,8 @@ Steeltoe.Management.IEndpointOptions.RequiredPermissions.get -> Steeltoe.Managem
 Steeltoe.Management.Info.AbstractConfigurationContributor
 Steeltoe.Management.Info.AbstractConfigurationContributor.AbstractConfigurationContributor() -> void
 Steeltoe.Management.Info.AbstractConfigurationContributor.AbstractConfigurationContributor(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
-Steeltoe.Management.Info.AbstractConfigurationContributor.configuration -> Microsoft.Extensions.Configuration.IConfiguration
+Steeltoe.Management.Info.AbstractConfigurationContributor.Configuration.get -> Microsoft.Extensions.Configuration.IConfiguration
+Steeltoe.Management.Info.AbstractConfigurationContributor.Configuration.set -> void
 Steeltoe.Management.Info.IInfoBuilder
 Steeltoe.Management.Info.IInfoBuilder.Build() -> System.Collections.Generic.Dictionary<string, object>
 Steeltoe.Management.Info.IInfoBuilder.WithInfo(string key, object value) -> Steeltoe.Management.Info.IInfoBuilder

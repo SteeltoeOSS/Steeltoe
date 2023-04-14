@@ -146,8 +146,8 @@ public class EventCounterListener : EventListener
             {
                 case var _ when key.Equals("Name", StringComparison.OrdinalIgnoreCase):
                     counterName = payload.Value.ToString();
-                    List<string> includedMetrics = _options.CurrentValue.IncludedMetrics;
-                    List<string> excludedMetrics = _options.CurrentValue.ExcludedMetrics;
+                    IList<string> includedMetrics = _options.CurrentValue.IncludedMetrics;
+                    IList<string> excludedMetrics = _options.CurrentValue.ExcludedMetrics;
 
                     if ((includedMetrics.Any() && !includedMetrics.Contains(counterName)) || excludedMetrics.Contains(counterName))
                     {

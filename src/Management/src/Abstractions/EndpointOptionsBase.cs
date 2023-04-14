@@ -6,9 +6,9 @@ namespace Steeltoe.Management;
 
 public class EndpointOptionsBase : IEndpointOptions
 {
-    protected bool? sensitive;
+   // protected bool? sensitive;
 
-    protected string path;
+    private string _path;
 
     public virtual bool? Enabled { get; set; }
 
@@ -18,14 +18,14 @@ public class EndpointOptionsBase : IEndpointOptions
     {
         get
         {
-            if (!string.IsNullOrEmpty(path))
+            if (!string.IsNullOrEmpty(_path))
             {
-                return path;
+                return _path;
             }
 
             return Id;
         }
-        set => path = value;
+        set => _path = value;
     }
 
     public Permissions RequiredPermissions { get; set; } = Permissions.Undefined;

@@ -13,6 +13,7 @@ internal abstract class Aggregator
     public abstract IAggregationStatistics Collect();
 }
 
+[CodeAnalysis.SuppressMessage("Minor Code Smell", "S4023:Interfaces should not be empty", Justification = "Cannot be replaced by attributes as suggested")]
 public interface IAggregationStatistics
 {
 }

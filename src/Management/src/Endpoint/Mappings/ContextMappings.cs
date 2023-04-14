@@ -28,8 +28,9 @@ public class ContextMappings
 
         ParentId = null;
     }
-
-    public ContextMappings(IDictionary<string, IList<MappingDescription>> mappingDict, string parentId = null)
+    public ContextMappings(IDictionary<string, IList<MappingDescription>> mappingDict): this(mappingDict, null)
+    { }
+    public ContextMappings(IDictionary<string, IList<MappingDescription>> mappingDict, string parentId)
     {
         // At this point, .NET will only ever has one context and it must be named "dispatcherServlets"
         // For .NET, the mappingDict contains keys that represent the type name of the controller and then a

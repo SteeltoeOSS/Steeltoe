@@ -21,7 +21,7 @@ public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<stri
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
+        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
         {
             return HandleEntityFrameworkRequestAsync(context);
         }
@@ -32,9 +32,9 @@ public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<stri
     protected internal Task HandleEntityFrameworkRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest();
-        logger.LogDebug("Returning: {info}", serialInfo);
+        Logger.LogDebug("Returning: {info}", serialInfo);
 
-        context.HandleContentNegotiation(logger);
+        context.HandleContentNegotiation(Logger);
         return context.Response.WriteAsync(serialInfo);
     }
 }

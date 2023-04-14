@@ -90,6 +90,7 @@ public static class TestHelpers
         WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder(args);
         webAppBuilder.Configuration.AddInMemoryCollection(FastTestsConfiguration);
         webAppBuilder.WebHost.UseTestServer();
+        webAppBuilder.Services.AddActionDescriptorCollectionProvider();
         return webAppBuilder;
     }
 }

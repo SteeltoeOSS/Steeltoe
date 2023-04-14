@@ -26,7 +26,7 @@ public interface IMetricsObserverOptions
     /// <para />
     /// See this list for values to choose from: <see href="https://docs.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters" />.
     /// </remarks>
-    List<string> IncludedMetrics { get; }
+    IList<string> IncludedMetrics { get; }
 
     /// <summary>
     /// Gets a list of metrics that should not be captured. Entries in <see cref="IncludedMetrics" /> take precedence in case of conflict.

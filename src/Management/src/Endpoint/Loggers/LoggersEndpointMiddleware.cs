@@ -22,7 +22,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        return Endpoint.Options.ShouldInvoke(managementOptions, context, logger) ? HandleLoggersRequestAsync(context) : Task.CompletedTask;
+        return Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger) ? HandleLoggersRequestAsync(context) : Task.CompletedTask;
     }
 
     protected internal async Task HandleLoggersRequestAsync(HttpContext context)
@@ -33,10 +33,10 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         if (context.Request.Method == "POST")
         {
             // POST - change a logger level
-            logger.LogDebug("Incoming path: {path}", request.Path.Value);
-            ManagementEndpointOptions mgmtOptions = managementOptions.GetFromContextPath(request.Path);
+            Logger.LogDebug("Incoming path: {path}", request.Path.Value);
+            ManagementEndpointOptions mgmtOptions = ManagementOptions.GetFromContextPath(request.Path);
 
-            string path = managementOptions == null
+            string path = ManagementOptions == null
                 ? Endpoint.Options.Path
                 : $"{mgmtOptions.Path}/{Endpoint.Options.Path}".Replace("//", "/", StringComparison.Ordinal);
 
@@ -52,9 +52,9 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
 
         // GET request
         string serialInfo = HandleRequest(null);
-        logger.LogDebug("Returning: {info}", serialInfo);
+        Logger.LogDebug("Returning: {info}", serialInfo);
 
-        context.HandleContentNegotiation(logger);
+        context.HandleContentNegotiation(Logger);
         await context.Response.WriteAsync(serialInfo);
     }
 
@@ -70,13 +70,13 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
 
             change.TryGetValue("configuredLevel", out string level);
 
-            logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
+            Logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
 
             if (!string.IsNullOrEmpty(loggerName))
             {
                 if (!string.IsNullOrEmpty(level) && LoggerLevels.MapLogLevel(level) == null)
                 {
-                    logger.LogDebug("Invalid LogLevel specified: {level}", level);
+                    Logger.LogDebug("Invalid LogLevel specified: {level}", level);
                 }
                 else
                 {

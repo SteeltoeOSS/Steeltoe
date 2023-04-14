@@ -11,8 +11,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Hosting;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.ManagementPort;
 using Xunit;
 
@@ -32,6 +34,7 @@ public class ManagementEndpointServedOnDifferentPort
         hostBuilder.Configuration.AddInMemoryCollection(config);
         hostBuilder.AddAllActuators();
         hostBuilder.WebHost.UseTestServer();
+        hostBuilder.Services.AddActionDescriptorCollectionProvider();
 
         WebApplication app = hostBuilder.Build();
         app.MapGet("/", () => "Hello World!");
@@ -57,6 +60,7 @@ public class ManagementEndpointServedOnDifferentPort
         hostBuilder.Configuration.AddInMemoryCollection(config);
         hostBuilder.UseCloudHosting();
         hostBuilder.AddAllActuators();
+        hostBuilder.Services.AddActionDescriptorCollectionProvider();
         hostBuilder.WebHost.UseTestServer();
 
         WebApplication app = hostBuilder.Build();
@@ -85,6 +89,8 @@ public class ManagementEndpointServedOnDifferentPort
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Configuration.AddInMemoryCollection(config);
         hostBuilder.AddAllActuators();
+
+        hostBuilder.Services.AddActionDescriptorCollectionProvider();
         hostBuilder.WebHost.UseTestServer();
 
         WebApplication app = hostBuilder.Build();
@@ -113,6 +119,7 @@ public class ManagementEndpointServedOnDifferentPort
                 webhostBuilder.Configure(app => app.UseRouting());
                 webhostBuilder.ConfigureServices(svc => svc.AddRouting());
                 webhostBuilder.UseSetting("management:endpoints:port", "9090");
+                webhostBuilder.ConfigureServices(svc => svc.AddActionDescriptorCollectionProvider());
                 webhostBuilder.AddAllActuators();
                 webhostBuilder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
             });
@@ -126,6 +133,7 @@ public class ManagementEndpointServedOnDifferentPort
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
+
     [Fact]
     public async Task AddAllActuators_GenericHost_MakeSure_SSLEnabled()
     {
@@ -136,10 +144,10 @@ public class ManagementEndpointServedOnDifferentPort
         {
             webhostBuilder.Configure(app => app.UseRouting().Run(async context => await context.Response.WriteAsync("Response from Run Middleware")));
             webhostBuilder.ConfigureServices(svc => svc.AddRouting());
+            webhostBuilder.ConfigureServices(svc => svc.AddActionDescriptorCollectionProvider());
             webhostBuilder.UseSetting("management:endpoints:port", "9090");
             webhostBuilder.UseSetting("management:endpoints:sslenabled", "true");
             webhostBuilder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
-
             webhostBuilder.AddAllActuators();
         });
 
@@ -156,4 +164,5 @@ public class ManagementEndpointServedOnDifferentPort
         Assert.Equal("Not Found", jsonResponse?.Error);
         Assert.Equal("Path not found at port", jsonResponse?.Message);
     }
+  
 }

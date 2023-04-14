@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-internal class CloudFoundrySecurityMiddleware
+public sealed class CloudFoundrySecurityMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
@@ -22,7 +22,7 @@ internal class CloudFoundrySecurityMiddleware
 
     private readonly SecurityUtils _base;
 
-    internal CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options,
+    public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options,
         IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger)
     {
         ArgumentGuard.NotNull(logger);
@@ -35,7 +35,7 @@ internal class CloudFoundrySecurityMiddleware
         _base = new SecurityUtils(options.CurrentValue, managementOptions.Get(CFContext.Name), logger);
     }
 
-    internal virtual async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context)
     {
         CloudFoundryEndpointOptions cfOptions = _options.CurrentValue;
         CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
@@ -112,7 +112,7 @@ internal class CloudFoundrySecurityMiddleware
 
     private IEndpointOptions FindTargetEndpoint(PathString path)
     {
-        List<IEndpointOptions> configEndpoints;
+        IList<IEndpointOptions> configEndpoints;
 
         configEndpoints = _managementOptions.EndpointOptions;
 

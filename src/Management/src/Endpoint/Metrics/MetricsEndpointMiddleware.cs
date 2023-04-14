@@ -23,7 +23,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
+        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
         {
             return HandleMetricsRequestAsync(context);
         }
@@ -42,7 +42,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;
 
-        logger.LogDebug("Incoming path: {path}", request.Path.Value);
+        Logger.LogDebug("Incoming path: {path}", request.Path.Value);
 
         string metricName = GetMetricName(request);
 
@@ -67,9 +67,9 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         {
             // GET /metrics
             string serialInfo = HandleRequest(null);
-            logger.LogDebug("Returning: {info}", serialInfo);
+            Logger.LogDebug("Returning: {info}", serialInfo);
 
-            context.HandleContentNegotiation(logger);
+            context.HandleContentNegotiation(Logger);
             context.Response.StatusCode = (int)HttpStatusCode.OK;
             await context.Response.WriteAsync(serialInfo);
         }
@@ -77,7 +77,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
     protected internal string GetMetricName(HttpRequest request)
     {
-        ManagementEndpointOptions mgmtOptions = managementOptions.GetFromContextPath(request.Path);
+        ManagementEndpointOptions mgmtOptions = ManagementOptions.GetFromContextPath(request.Path);
 
         if (mgmtOptions == null)
         {

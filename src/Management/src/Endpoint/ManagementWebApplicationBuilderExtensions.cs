@@ -217,13 +217,20 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Specify the media type version to use in the response.
     /// </param>
     public static WebApplicationBuilder AddThreadDumpActuator(this WebApplicationBuilder applicationBuilder,
-        MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+        MediaTypeVersion mediaTypeVersion)
     {
         applicationBuilder.Services.AddThreadDumpActuator(mediaTypeVersion);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
-
+    /// <summary>
+    /// Adds the ThreadDump actuator to the application.
+    /// </summary>
+    /// <param name="applicationBuilder">
+    /// Your <see cref="WebApplicationBuilder" />.
+    /// </param>
+    public static WebApplicationBuilder AddThreadDumpActuator(this WebApplicationBuilder applicationBuilder)
+        => AddThreadDumpActuator(applicationBuilder, MediaTypeVersion.V2);
     /// <summary>
     /// Adds the Trace actuator to the application.
     /// </summary>
@@ -233,13 +240,20 @@ public static class ManagementWebApplicationBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder applicationBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder applicationBuilder, MediaTypeVersion mediaTypeVersion)
     {
         applicationBuilder.Services.AddTraceActuator(mediaTypeVersion);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
-
+    /// <summary>
+    /// Adds the Trace actuator to the application.
+    /// </summary>
+    /// <param name="applicationBuilder">
+    /// Your <see cref="WebApplicationBuilder" />.
+    /// </param>
+    public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder applicationBuilder) =>
+        AddTraceActuator(applicationBuilder, MediaTypeVersion.V2);
     /// <summary>
     /// Adds the Cloud Foundry actuator to the application.
     /// </summary>
@@ -266,13 +280,33 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Specify the media type version to use in the response.
     /// </param>
     public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder,
-        Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+        Action<IEndpointConventionBuilder> configureEndpoints, MediaTypeVersion mediaTypeVersion)
     {
         applicationBuilder.Logging.AddDynamicConsole();
         applicationBuilder.Services.AddAllActuators(mediaTypeVersion);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
+    /// <summary>
+    /// Adds all Steeltoe Actuators to the application.
+    /// </summary>
+    /// <param name="applicationBuilder">
+    /// Your <see cref="WebApplicationBuilder" />.
+    /// </param>
+    public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder)
+        => AddAllActuators(applicationBuilder, null);
+    /// <summary>
+    /// Adds all Steeltoe Actuators to the application.
+    /// </summary>
+    /// <param name="applicationBuilder">
+    /// Your <see cref="WebApplicationBuilder" />.
+    /// </param>
+    /// <param name="configureEndpoints">
+    /// <see cref="IEndpointConventionBuilder" />.
+    /// </param>
+    public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder,
+        Action<IEndpointConventionBuilder> configureEndpoints) =>
+        AddAllActuators(applicationBuilder, configureEndpoints, MediaTypeVersion.V2);
 
     private static void AddCommonServices(this WebApplicationBuilder applicationBuilder)
     {

@@ -14,6 +14,7 @@ public class HealthEndpointOptions : EndpointOptionsBase
 
     public string Role { get; set; }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "Allow in Options")]
     public Dictionary<string, HealthGroupOptions> Groups { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     public override bool ExactMatch => false;

@@ -24,14 +24,14 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
+        Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
+        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
         {
-            string serialInfo = HandleRequest(Endpoint, GetRequestUri(context.Request), logger);
-            logger.LogDebug("Returning: {info}", serialInfo);
+            string serialInfo = HandleRequest(Endpoint, GetRequestUri(context.Request), Logger);
+            Logger.LogDebug("Returning: {info}", serialInfo);
 
-            context.HandleContentNegotiation(logger);
+            context.HandleContentNegotiation(Logger);
             return context.Response.WriteAsync(serialInfo);
         }
 

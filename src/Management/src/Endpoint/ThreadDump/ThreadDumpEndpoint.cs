@@ -26,7 +26,7 @@ public class ThreadDumpEndpoint : IThreadDumpEndpoint
         _threadDumper = threadDumper;
     }
 
-    public List<ThreadInfo> Invoke()
+    public virtual IList<ThreadInfo> Invoke()
     {
         _logger.LogTrace("Invoking ThreadDumper");
         return _threadDumper.DumpThreads();

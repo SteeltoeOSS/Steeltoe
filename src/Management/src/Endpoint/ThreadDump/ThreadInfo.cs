@@ -15,10 +15,10 @@ public class ThreadInfo
     public long BlockedTime { get; set; } = -1; // Not available
 
     [JsonPropertyName("lockedMonitors")]
-    public List<MonitorInfo> LockedMonitors { get; set; }
+    public IList<MonitorInfo> LockedMonitors { get; } = new List<MonitorInfo>();// Not available
 
     [JsonPropertyName("lockedSynchronizers")]
-    public List<LockInfo> LockedSynchronizers { get; set; }
+    public IList<LockInfo> LockedSynchronizers { get; } = new List<LockInfo>(); // Not available
 
     [JsonPropertyName("lockInfo")]
     public LockInfo LockInfo { get; set; }

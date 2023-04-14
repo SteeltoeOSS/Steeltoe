@@ -15,7 +15,7 @@ public class Links
     public string Type { get; set; } = "steeltoe";
 
     /// <summary>
-    /// Gets or sets the list of links contained in this collection.
+    /// Gets the list of links contained in this collection.
     /// </summary>
 
     // ReSharper disable once InconsistentNaming

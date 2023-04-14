@@ -23,7 +23,7 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
+        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
         {
             return HandleHealthRequestAsync(context);
         }
@@ -34,9 +34,9 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
     protected internal Task HandleHealthRequestAsync(HttpContext context)
     {
         string serialInfo = DoRequest(context);
-        logger.LogDebug("Returning: {info}", serialInfo);
+        Logger.LogDebug("Returning: {info}", serialInfo);
 
-        context.HandleContentNegotiation(logger);
+        context.HandleContentNegotiation(Logger);
         return context.Response.WriteAsync(serialInfo);
     }
 
@@ -44,7 +44,7 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
     {
         HealthEndpointResponse result = ((HealthEndpointCore)Endpoint).Invoke(new CoreSecurityContext(context));
 
-        ManagementEndpointOptions currentOptions = managementOptions.CurrentValue;
+        ManagementEndpointOptions currentOptions = ManagementOptions.CurrentValue;
 
         if (currentOptions.UseStatusCodeFromResponse)
         {

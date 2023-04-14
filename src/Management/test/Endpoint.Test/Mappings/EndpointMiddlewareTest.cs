@@ -51,7 +51,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
-        var ep = new MappingsEndpoint(opts, NullLogger<MappingsEndpoint>.Instance);
+        var ep = new MappingsEndpoint(opts, NullLogger<MappingsEndpoint>.Instance,routeMappings: null,actionDescriptorCollectionProvider: null, apiDescriptionProviders: null);
         var middle = new MappingsEndpointMiddleware(opts, managementOptions, ep, NullLogger<MappingsEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/mappings");

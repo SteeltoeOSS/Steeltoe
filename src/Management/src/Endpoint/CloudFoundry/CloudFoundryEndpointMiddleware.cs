@@ -27,9 +27,9 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
+        Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
+        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
         {
             return HandleCloudFoundryRequestAsync(context);
         }
@@ -40,8 +40,8 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
     protected internal Task HandleCloudFoundryRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest(GetRequestUri(context.Request));
-        logger.LogDebug("Returning: {info}", serialInfo);
-        context.HandleContentNegotiation(logger);
+        Logger.LogDebug("Returning: {info}", serialInfo);
+        context.HandleContentNegotiation(Logger);
         return context.Response.WriteAsync(serialInfo);
     }
 

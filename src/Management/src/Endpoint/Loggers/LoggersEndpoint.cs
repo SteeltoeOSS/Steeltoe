@@ -30,7 +30,7 @@ public class LoggersEndpoint : ILoggersEndpoint
     public IEndpointOptions Options => _options.CurrentValue;
 
     public LoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, ILogger<LoggersEndpoint> logger,
-        IDynamicLoggerProvider cloudFoundryLoggerProvider = null)
+        IDynamicLoggerProvider cloudFoundryLoggerProvider)
     {
         ArgumentGuard.NotNull(logger);
 

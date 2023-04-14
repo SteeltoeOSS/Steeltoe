@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Logging;
+using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
@@ -27,6 +29,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
+            services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
@@ -57,6 +60,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
+            services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
@@ -72,6 +76,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
+            services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
@@ -90,6 +95,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
+            services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
@@ -105,6 +111,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
+            services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
@@ -122,6 +129,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
+            services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
@@ -137,6 +145,5 @@ public class LoggersEndpointTest : BaseTest
         Assert.True(result.ContainsKey("loggers"));
         var loggers = result["loggers"] as Dictionary<string, LoggerLevels>;
         Assert.NotNull(loggers);
-        Assert.Empty(loggers);
     }
 }
