@@ -190,4 +190,46 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         configurationData[$"{keyPrefix}:url"].Should().Be("mongodb://localhost:27017/auth-db?appname=sample");
         configurationData[$"{keyPrefix}:database"].Should().Be("auth-db");
     }
+
+    [Fact]
+    public void CosmosDbTest_BindingTypeDisabled()
+    {
+        var postProcessor = new CosmosDbPostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("credentials:cosmosdb_host_endpoint", "test-endpoint")
+        };
+
+        Dictionary<string, string> configurationData = GetConfigurationData(CosmosDbPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CosmosDbPostProcessor.BindingType, false);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CosmosDbPostProcessor.BindingType);
+        configurationData.Should().NotContainKey($"{keyPrefix}:accountEndpoint");
+    }
+
+    [Fact]
+    public void CosmosDbTest_BindingTypeEnabled()
+    {
+        var postProcessor = new CosmosDbPostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("credentials:cosmosdb_host_endpoint", "test-endpoint"),
+            Tuple.Create("credentials:cosmosdb_master_key", "test-key"),
+            Tuple.Create("credentials:cosmosdb_database_id", "test-database")
+        };
+
+        Dictionary<string, string> configurationData = GetConfigurationData(CosmosDbPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CosmosDbPostProcessor.BindingType, true);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CosmosDbPostProcessor.BindingType);
+        configurationData[$"{keyPrefix}:accountEndpoint"].Should().Be("test-endpoint");
+        configurationData[$"{keyPrefix}:accountKey"].Should().Be("test-key");
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+    }
 }

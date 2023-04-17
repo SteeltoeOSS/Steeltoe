@@ -100,6 +100,7 @@ public static class ConfigurationBuilderExtensions
         source.RegisterPostProcessor(new MySqlPostProcessor());
         source.RegisterPostProcessor(new SqlServerPostProcessor());
         source.RegisterPostProcessor(new MongoDbPostProcessor());
+        source.RegisterPostProcessor(new CosmosDbPostProcessor());
 
         builder.Add(source);
         return builder;

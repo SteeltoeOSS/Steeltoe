@@ -10,23 +10,24 @@ namespace Steeltoe.Connector.PostgreSql;
 
 public static class PostgreSqlWebApplicationBuilderExtensions
 {
+    private static readonly Type ConnectionType = PostgreSqlTypeLocator.NpgsqlConnection;
+
     public static WebApplicationBuilder AddPostgreSql(this WebApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
         var connectionStringPostProcessor = new PostgreSqlConnectionStringPostProcessor();
-        Type connectionType = PostgreSqlTypeLocator.NpgsqlConnection;
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
         BaseWebApplicationBuilderExtensions.RegisterNamedOptions<PostgreSqlOptions>(builder, "postgresql", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory<PostgreSqlOptions>(builder.Services, connectionType);
+        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory<PostgreSqlOptions>(builder.Services, ConnectionType, false, null);
 
         return builder;
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
     {
-        return BaseWebApplicationBuilderExtensions.CreateRelationalHealthContributor<PostgreSqlOptions>(serviceProvider, bindingName,
-            PostgreSqlTypeLocator.NpgsqlConnection, "PostgreSQL", "host");
+        return BaseWebApplicationBuilderExtensions.CreateRelationalHealthContributor<PostgreSqlOptions>(serviceProvider, bindingName, ConnectionType,
+            "PostgreSQL", "host");
     }
 }
