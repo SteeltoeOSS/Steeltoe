@@ -13,32 +13,32 @@ using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthEndpointCore : IHealthEndpoint
+public class HealthEndpoint : IHealthEndpoint
 {
     private readonly IOptionsMonitor<HealthCheckServiceOptions> _serviceOptions;
     private readonly IServiceProvider _provider;
     private readonly IOptionsMonitor<HealthEndpointOptions> _options;
     private readonly IHealthAggregator _aggregator;
     private readonly IList<IHealthContributor> _contributors;
-    private readonly ILogger<HealthEndpointCore> _logger;
+    private readonly ILogger<HealthEndpoint> _logger;
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public HealthEndpointCore(IOptionsMonitor<HealthEndpointOptions> options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
-        IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpointCore> logger)
+    public HealthEndpoint(IOptionsMonitor<HealthEndpointOptions> options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
+        IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(aggregator);
         ArgumentGuard.NotNull(contributors);
         ArgumentGuard.NotNull(serviceOptions);
         ArgumentGuard.NotNull(provider);
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _options = options;
         _aggregator = aggregator;
         _serviceOptions = serviceOptions;
         _provider = provider;
         _contributors = contributors.ToList();
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<HealthEndpoint>();
     }
 
     public virtual HealthEndpointResponse Invoke(ISecurityContext securityContext)

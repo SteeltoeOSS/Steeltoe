@@ -18,13 +18,15 @@ public class MetricsEndpoint : IMetricsEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public MetricsEndpoint(IOptionsMonitor<MetricsEndpointOptions> options, ISteeltoeExporter exporter, ILogger<MetricsEndpoint> logger)
+    public MetricsEndpoint(IOptionsMonitor<MetricsEndpointOptions> options, ISteeltoeExporter exporter, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(exporter);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _options = options;
-        _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter), $"Exporters must contain a single {nameof(SteeltoeExporter)}.");
-        _logger = logger;
+        _exporter = exporter;
+        _logger = loggerFactory.CreateLogger<MetricsEndpoint>();
     }
 
     public virtual IMetricsResponse Invoke(MetricsRequest request)

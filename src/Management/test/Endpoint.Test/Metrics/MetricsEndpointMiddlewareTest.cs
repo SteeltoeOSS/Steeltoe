@@ -30,7 +30,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions), NullLogger<MetricsEndpoint>.Instance);
+        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
 
         var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLogger<MetricsEndpointMiddleware>.Instance);
 
@@ -46,7 +46,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions), NullLogger<MetricsEndpoint>.Instance);
+        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
 
         var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLogger<MetricsEndpointMiddleware>.Instance);
 
@@ -82,7 +82,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         IOptionsMonitor<ManagementEndpointOptions> managementOptions =
             GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureTestManagementOptions>();
 
-        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions), NullLogger<MetricsEndpoint>.Instance);
+        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
 
         var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLogger<MetricsEndpointMiddleware>.Instance);
 
@@ -102,7 +102,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions), NullLogger<MetricsEndpoint>.Instance);
+        var ep = new MetricsEndpoint(opts, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
 
         var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLogger<MetricsEndpointMiddleware>.Instance);
 
@@ -127,7 +127,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
         GetTestMetrics(exporter);
 
-        var ep = new MetricsEndpoint(opts, exporter, NullLogger<MetricsEndpoint>.Instance);
+        var ep = new MetricsEndpoint(opts, exporter, NullLoggerFactory.Instance);
 
         var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLogger<MetricsEndpointMiddleware>.Instance);
 
@@ -150,7 +150,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
         var exporter = new SteeltoeExporter(_scraperOptions);
 
-        var ep = new MetricsEndpoint(opts, exporter, NullLogger<MetricsEndpoint>.Instance);
+        var ep = new MetricsEndpoint(opts, exporter, NullLoggerFactory.Instance);
 
         GetTestMetrics(exporter);
         var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLogger<MetricsEndpointMiddleware>.Instance);
@@ -172,7 +172,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var exporter = new SteeltoeExporter(_scraperOptions);
         AggregationManager aggManager = GetTestMetrics(exporter);
         aggManager.Start();
-        var ep = new MetricsEndpoint(opts, exporter, NullLogger<MetricsEndpoint>.Instance);
+        var ep = new MetricsEndpoint(opts, exporter, NullLoggerFactory.Instance);
 
         var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLogger<MetricsEndpointMiddleware>.Instance);
 

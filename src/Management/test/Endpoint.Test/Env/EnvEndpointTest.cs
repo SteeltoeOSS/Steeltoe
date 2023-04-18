@@ -32,10 +32,10 @@ public class EnvEndpointTest : BaseTest
         IConfiguration configuration = null;
         const IHostEnvironment env = null;
 
-        Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env, NullLogger<EnvEndpoint>.Instance));
+        Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env, NullLoggerFactory.Instance));
 
         configuration = new ConfigurationBuilder().Build();
-        Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env, NullLogger<EnvEndpoint>.Instance));
+        Assert.Throws<ArgumentNullException>(() => new EnvEndpoint(options, configuration, env, NullLoggerFactory.Instance));
     }
 
     [Fact]

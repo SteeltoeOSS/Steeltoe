@@ -49,7 +49,7 @@ public class EndpointMiddlewareTest : BaseTest
         var sc = new ServiceCollection();
         ServiceProvider sp = sc.BuildServiceProvider();
 
-        var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contributors, hsOptions, sp, NullLogger<HealthEndpointCore>.Instance);
+        var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contributors, hsOptions, sp, NullLoggerFactory.Instance);
 
         var middle = new HealthEndpointMiddleware(mgmtOpts, ep, NullLogger<HealthEndpointMiddleware>.Instance);
 
@@ -218,7 +218,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         builder.ConfigureServices(services =>
         {
-            services.BuildServiceProvider().GetServices<HealthEndpointCore>();
+            services.BuildServiceProvider().GetServices<HealthEndpoint>();
             services.BuildServiceProvider().GetServices<IEndpoint<HealthCheckResult, ISecurityContext>>();
         });
 

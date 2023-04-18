@@ -28,10 +28,10 @@ public class RefreshEndpointTest : BaseTest
 
         IOptionsMonitor<RefreshEndpointOptions> options1 = null;
 
-        Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options1, configuration, NullLogger<RefreshEndpoint>.Instance));
+        Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options1, configuration, NullLoggerFactory.Instance));
         IOptionsMonitor<RefreshEndpointOptions> options = GetOptionsMonitorFromSettings<RefreshEndpointOptions, ConfigureRefreshEndpointOptions>();
 
-        Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options, configuration, NullLogger<RefreshEndpoint>.Instance));
+        Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options, configuration, NullLoggerFactory.Instance));
     }
 
     [Fact]

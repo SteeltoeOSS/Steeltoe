@@ -14,16 +14,19 @@ public class RefreshEndpoint : IRefreshEndpoint
     private readonly IOptionsMonitor<RefreshEndpointOptions> _options;
 
     private readonly IConfiguration _configuration;
+    private readonly ILogger<RefreshEndpoint> _logger;
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public RefreshEndpoint(IOptionsMonitor<RefreshEndpointOptions> options, IConfiguration configuration, ILogger<RefreshEndpoint> logger)
+    public RefreshEndpoint(IOptionsMonitor<RefreshEndpointOptions> options, IConfiguration configuration, ILoggerFactory loggerFactory)
     {
+        ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _options = options;
         _configuration = configuration;
+        _logger = loggerFactory.CreateLogger<RefreshEndpoint>();    
     }
 
     public IList<string> Invoke()
@@ -33,6 +36,8 @@ public class RefreshEndpoint : IRefreshEndpoint
 
     public IList<string> DoInvoke(IConfiguration configuration)
     {
+        _logger.LogInformation("Refreshing Configuration");
+
         if (configuration is IConfigurationRoot root)
         {
             root.Reload();

@@ -16,13 +16,15 @@ public class InfoEndpoint : IInfoEndpoint
     private readonly ILogger<InfoEndpoint> _logger;
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public InfoEndpoint(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger)
+    public InfoEndpoint(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(contributors);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _options = options;
-        _logger = logger;
         _contributors = contributors.ToList();
+        _logger = loggerFactory.CreateLogger<InfoEndpoint>();
     }
 
     public virtual Dictionary<string, object> Invoke()

@@ -45,7 +45,7 @@ public class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<EnvEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<EnvEndpointOptions, ConfigureEnvEndpointOptions>();
         var managementOptions = new TestOptionsMonitor<ManagementEndpointOptions>(new ManagementEndpointOptions());
 
-        var ep = new EnvEndpoint(optionsMonitor, configurationRoot, _host, NullLogger<EnvEndpoint>.Instance);
+        var ep = new EnvEndpoint(optionsMonitor, configurationRoot, _host, NullLoggerFactory.Instance);
         var middle = new EnvEndpointMiddleware(ep, managementOptions, NullLogger<EnvEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/env");

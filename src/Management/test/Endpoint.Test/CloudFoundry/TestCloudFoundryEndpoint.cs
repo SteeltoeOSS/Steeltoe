@@ -13,8 +13,8 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 internal sealed class TestCloudFoundryEndpoint : CloudFoundryEndpoint
 {
     public TestCloudFoundryEndpoint(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<CloudFoundryEndpoint> logger = null)
-        : base(options, managementOptions, null, logger)
+        ILoggerFactory loggerFactory)
+        : base(options, managementOptions, Enumerable.Empty<IEndpointOptions>(), loggerFactory)
     {
     }
 

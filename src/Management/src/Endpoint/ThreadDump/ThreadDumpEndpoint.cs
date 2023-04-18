@@ -16,14 +16,15 @@ public class ThreadDumpEndpoint : IThreadDumpEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public ThreadDumpEndpoint(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpoint> logger)
+    public ThreadDumpEndpoint(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILoggerFactory loggerFactory)
     {
+        ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(threadDumper);
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _options = options;
-        _logger = logger;
         _threadDumper = threadDumper;
+        _logger = loggerFactory.CreateLogger<ThreadDumpEndpoint>();
     }
 
     public virtual IList<ThreadInfo> Invoke()

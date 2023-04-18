@@ -28,7 +28,7 @@ public class HeapDumpEndpointTest : BaseTest
     public void Constructor_ThrowsIfNullRepo()
     {
         IOptionsMonitor<HeapDumpEndpointOptions> options = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions>();
-        Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpoint(options, null, NullLogger<HeapDumpEndpoint>.Instance));
+        Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpoint(options, null, NullLoggerFactory.Instance));
     }
 
     [Fact]

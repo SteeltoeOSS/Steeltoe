@@ -22,17 +22,18 @@ public class EnvEndpoint : IEnvEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public EnvEndpoint(IOptionsMonitor<EnvEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILogger<EnvEndpoint> logger)
+    public EnvEndpoint(IOptionsMonitor<EnvEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(env);
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(loggerFactory);
         ArgumentGuard.NotNull(options);
+
         _options = options;
         _configuration = configuration;
         _env = env;
         _sanitizer = new Sanitizer(options.CurrentValue.KeysToSanitize);
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<EnvEndpoint>();
     }
 
     public virtual EnvironmentDescriptor Invoke()

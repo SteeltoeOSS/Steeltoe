@@ -11,11 +11,11 @@ using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-internal sealed class TestHealthEndpoint : HealthEndpointCore
+internal sealed class TestHealthEndpoint : HealthEndpoint
 {
     public TestHealthEndpoint(IOptionsMonitor<HealthEndpointOptions> options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
-        IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpointCore> logger)
-        : base(options, aggregator, contributors, serviceOptions, provider, logger)
+        IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILoggerFactory loggerFactory)
+        : base(options, aggregator, contributors, serviceOptions, provider, loggerFactory)
     {
     }
 

@@ -56,7 +56,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         IOptionsMonitor<CloudFoundryEndpointOptions> opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        var ep = new TestCloudFoundryEndpoint(opts, managementOptions, NullLogger<CloudFoundryEndpoint>.Instance);
+        var ep = new TestCloudFoundryEndpoint(opts, managementOptions, NullLoggerFactory.Instance);
 
         var middle = new CloudFoundryEndpointMiddleware(ep, managementOptions, NullLogger<CloudFoundryEndpointMiddleware>.Instance);
 

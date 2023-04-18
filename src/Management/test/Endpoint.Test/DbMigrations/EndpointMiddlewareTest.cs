@@ -56,7 +56,7 @@ public class EndpointMiddlewareTest : BaseTest
             "applied"
         });
 
-        var ep = new DbMigrationsEndpoint(opts, container.BuildServiceProvider(), helper, NullLogger<DbMigrationsEndpoint>.Instance);
+        var ep = new DbMigrationsEndpoint(opts, container.BuildServiceProvider(), helper, NullLoggerFactory.Instance);
 
         var middle = new DbMigrationsEndpointMiddleware(ep, managementOptions, NullLogger<DbMigrationsEndpointMiddleware>.Instance);
 

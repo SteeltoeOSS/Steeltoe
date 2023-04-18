@@ -11,7 +11,9 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -39,7 +41,9 @@ public class EndpointMiddlewareTest : BaseTest
     {
         IOptionsMonitor<LoggersEndpointOptions> opts = GetOptionsMonitorFromSettings<LoggersEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        var ep = new TestLoggersEndpoint(opts, NullLogger<LoggersEndpoint>.Instance);
+        IOptionsMonitor<LoggerFilterOptions> loggerOpts = new TestOptionsMonitor<LoggerFilterOptions>(new LoggerFilterOptions());
+        IOptionsMonitor<ConsoleLoggerOptions> consoleLoggerOpts = new TestOptionsMonitor<ConsoleLoggerOptions>(new ConsoleLoggerOptions());
+        var ep = new TestLoggersEndpoint(opts, NullLoggerFactory.Instance, new DynamicConsoleLoggerProvider(loggerOpts, new ConsoleLoggerProvider(consoleLoggerOpts)));
         var middle = new LoggersEndpointMiddleware(ep, managementOptions, NullLogger<LoggersEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/loggers");
         await middle.HandleLoggersRequestAsync(context);

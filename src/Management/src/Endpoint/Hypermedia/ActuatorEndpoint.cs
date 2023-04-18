@@ -22,13 +22,16 @@ public class ActuatorEndpoint : IActuatorEndpoint
     public IEndpointOptions Options => _options.CurrentValue;
 
     public ActuatorEndpoint(IOptionsMonitor<HypermediaEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IEnumerable<IEndpointOptions> endpointOptions, ILogger<ActuatorEndpoint> logger)
+        IEnumerable<IEndpointOptions> endpointOptions, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(managementOptions);
+        ArgumentGuard.NotNull(endpointOptions);
+        ArgumentGuard.NotNull(loggerFactory);
         _options = options;
         _managementOption = managementOptions;
         _endpointOptions = endpointOptions;
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<ActuatorEndpoint>();
     }
 
     public virtual Links Invoke(string baseUrl)

@@ -16,14 +16,15 @@ public class HttpTraceEndpoint : IHttpTraceEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public HttpTraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, IHttpTraceRepository traceRepository, ILogger<HttpTraceEndpoint> logger)
+    public HttpTraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, IHttpTraceRepository traceRepository, ILoggerFactory loggerFactory)
     {
+        ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(traceRepository);
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _options = options;
         _traceRepo = traceRepository;
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<HttpTraceEndpoint>();
     }
 
     public HttpTraceResult Invoke()

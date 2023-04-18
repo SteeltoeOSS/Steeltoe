@@ -25,24 +25,26 @@ public class LoggersEndpoint : ILoggersEndpoint
 
     private readonly ILogger<LoggersEndpoint> _logger;
     private readonly IOptionsMonitor<LoggersEndpointOptions> _options;
-    private readonly IDynamicLoggerProvider _cloudFoundryLoggerProvider;
+    private readonly IDynamicLoggerProvider _dynamicLoggerProvider;
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public LoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, ILogger<LoggersEndpoint> logger, IDynamicLoggerProvider cloudFoundryLoggerProvider)
+    public LoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, ILoggerFactory loggerFactory, IDynamicLoggerProvider dynamicLoggerProvider)
     {
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentGuard.NotNull(dynamicLoggerProvider);
 
         _options = options;
-        _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider;
-        _logger = logger;
+        _dynamicLoggerProvider = dynamicLoggerProvider;
+        _logger = loggerFactory.CreateLogger<LoggersEndpoint>();
     }
 
     public virtual Dictionary<string, object> Invoke(LoggersChangeRequest request)
     {
         _logger.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
 
-        return DoInvoke(_cloudFoundryLoggerProvider, request);
+        return DoInvoke(_dynamicLoggerProvider, request);
     }
 
     public virtual Dictionary<string, object> DoInvoke(IDynamicLoggerProvider provider, LoggersChangeRequest request)

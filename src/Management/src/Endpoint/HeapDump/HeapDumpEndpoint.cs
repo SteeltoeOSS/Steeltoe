@@ -17,14 +17,14 @@ public class HeapDumpEndpoint : IHeapDumpEndpoint
 
     public IOptionsMonitor<HeapDumpEndpointOptions> Options { get; }
 
-    public HeapDumpEndpoint(IOptionsMonitor<HeapDumpEndpointOptions> options, IHeapDumper heapDumper, ILogger<HeapDumpEndpoint> logger)
+    public HeapDumpEndpoint(IOptionsMonitor<HeapDumpEndpointOptions> options, IHeapDumper heapDumper, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(heapDumper);
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(loggerFactory);
 
         Options = options;
         _heapDumper = heapDumper;
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<HeapDumpEndpoint>();
     }
 
     public virtual string Invoke()

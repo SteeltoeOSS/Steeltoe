@@ -34,12 +34,6 @@ public abstract class BaseTest : IDisposable
         }
     }
 
-    public ILogger<T> GetLogger<T>()
-    {
-        var lf = new LoggerFactory();
-        return lf.CreateLogger<T>();
-    }
-
     public string Serialize<T>(T value)
     {
         return JsonSerializer.Serialize(value, GetSerializerOptions());

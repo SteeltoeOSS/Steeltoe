@@ -26,16 +26,20 @@ public class MappingsEndpoint : IMappingsEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public MappingsEndpoint(IOptionsMonitor<MappingsEndpointOptions> options, ILogger<MappingsEndpoint> logger, IRouteMappings routeMappings,
+    public MappingsEndpoint(IOptionsMonitor<MappingsEndpointOptions> options, ILoggerFactory loggerFactory, IRouteMappings routeMappings,
         IActionDescriptorCollectionProvider actionDescriptorCollectionProvider, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders)
     {
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentGuard.NotNull(routeMappings);
+        ArgumentGuard.NotNull(actionDescriptorCollectionProvider);
+        ArgumentGuard.NotNull(apiDescriptionProviders);
 
         _options = options;
         _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
         _apiDescriptionProviders = apiDescriptionProviders;
         _routeMappings = routeMappings;
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<MappingsEndpoint>();
     }
 
     public virtual ApplicationMappings Invoke()

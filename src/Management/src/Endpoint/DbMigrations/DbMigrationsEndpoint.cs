@@ -35,20 +35,23 @@ public class DbMigrationsEndpoint : IDbMigrationsEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, ILogger<DbMigrationsEndpoint> logger)
-        : this(options, container, new DbMigrationsEndpointHelper(), logger)
+    public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, ILoggerFactory loggerFactory)
+        : this(options, container, new DbMigrationsEndpointHelper(), loggerFactory)
     {
     }
 
     public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, DbMigrationsEndpointHelper endpointHelper,
-        ILogger<DbMigrationsEndpoint> logger)
+        ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentGuard.NotNull(container);
+        ArgumentGuard.NotNull(endpointHelper);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _options = options;
         _container = container;
         _endpointHelper = endpointHelper;
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<DbMigrationsEndpoint>();
     }
 
     public virtual Dictionary<string, DbMigrationsDescriptor> Invoke()

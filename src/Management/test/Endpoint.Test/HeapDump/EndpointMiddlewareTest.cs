@@ -45,12 +45,11 @@ public class EndpointMiddlewareTest : BaseTest
         var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
 
         ILogger<HeapDumper> logger1 = loggerFactory.CreateLogger<HeapDumper>();
-        ILogger<HeapDumpEndpoint> logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
         ILogger<HeapDumpEndpointMiddleware> logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
 
         var obs = new HeapDumper(opts, logger1, null);
 
-        var ep = new HeapDumpEndpoint(opts, obs, logger2);
+        var ep = new HeapDumpEndpoint(opts, obs, loggerFactory);
         var middle = new HeapDumpEndpointMiddleware(ep, managementOptions, logger3);
         HttpContext context = CreateRequest("GET", "/heapdump");
         await middle.HandleHeapDumpRequestAsync(context);

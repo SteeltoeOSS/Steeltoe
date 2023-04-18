@@ -6,11 +6,15 @@ using System.Net;
 using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Moq;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -51,7 +55,12 @@ public class EndpointMiddlewareTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
-        var ep = new MappingsEndpoint(opts, NullLogger<MappingsEndpoint>.Instance, null, null, null);
+        var mockRouteMappings = new Mock<IRouteMappings>();
+        mockRouteMappings.Setup(m => m.Routers).Returns(new List<IRouter>());
+        var mockActionDescriptorCollectionProvider =  new Mock<IActionDescriptorCollectionProvider>();
+        var mockApiDescriptionProvider = new Mock<IEnumerable<IApiDescriptionProvider>>();
+
+        var ep = new MappingsEndpoint(opts, NullLoggerFactory.Instance, mockRouteMappings.Object, mockActionDescriptorCollectionProvider.Object, mockApiDescriptionProvider.Object);
         var middle = new MappingsEndpointMiddleware(opts, managementOptions, ep, NullLogger<MappingsEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
