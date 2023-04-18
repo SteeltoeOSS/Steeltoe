@@ -30,9 +30,9 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
     public DiagnosticsManager(IOptionsMonitor<MetricsObserverOptions> observerOptions, IEnumerable<IRuntimeDiagnosticSource> runtimeSources,
         IEnumerable<IDiagnosticObserver> observers, IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger)
     {
+        ArgumentGuard.NotNull(observerOptions);
         ArgumentGuard.NotNull(observers);
         ArgumentGuard.NotNull(logger);
-        ArgumentGuard.NotNull(observerOptions);
 
         _logger = logger;
         var filteredObservers = new List<IDiagnosticObserver>();

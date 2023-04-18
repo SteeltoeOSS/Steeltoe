@@ -80,10 +80,10 @@ public class EndpointMiddlewareTest : BaseTest
         options.PropertyNameCaseInsensitive = true;
         var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", options);
         Assert.NotNull(links);
-        Assert.True(links._links.ContainsKey("self"));
-        Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].Href);
-        Assert.True(links._links.ContainsKey("info"));
-        Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].Href);
+        Assert.True(links.LinkCollection.ContainsKey("self"));
+        Assert.Equal("http://localhost/cloudfoundryapplication", links.LinkCollection["self"].Href);
+        Assert.True(links.LinkCollection.ContainsKey("info"));
+        Assert.Equal("http://localhost/cloudfoundryapplication/info", links.LinkCollection["info"].Href);
     }
 
     [Fact]

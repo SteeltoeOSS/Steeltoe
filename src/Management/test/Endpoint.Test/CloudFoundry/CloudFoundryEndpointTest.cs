@@ -36,12 +36,12 @@ public class CloudFoundryEndpointTest : BaseTest
 
         Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
-        Assert.NotNull(info._links);
-        Assert.True(info._links.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
-        Assert.True(info._links.ContainsKey("info"));
-        Assert.Equal("http://localhost:5000/foobar/info", info._links["info"].Href);
-        Assert.Equal(2, info._links.Count);
+        Assert.NotNull(info.LinkCollection);
+        Assert.True(info.LinkCollection.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", info.LinkCollection["self"].Href);
+        Assert.True(info.LinkCollection.ContainsKey("info"));
+        Assert.Equal("http://localhost:5000/foobar/info", info.LinkCollection["info"].Href);
+        Assert.Equal(2, info.LinkCollection.Count);
     }
 
     [Fact]
@@ -58,10 +58,10 @@ public class CloudFoundryEndpointTest : BaseTest
 
         Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
-        Assert.NotNull(info._links);
-        Assert.True(info._links.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
-        Assert.Single(info._links);
+        Assert.NotNull(info.LinkCollection);
+        Assert.True(info.LinkCollection.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", info.LinkCollection["self"].Href);
+        Assert.Single(info.LinkCollection);
     }
 
     [Fact]
@@ -87,11 +87,11 @@ public class CloudFoundryEndpointTest : BaseTest
 
         Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
-        Assert.NotNull(info._links);
-        Assert.True(info._links.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
-        Assert.True(info._links.ContainsKey("info"));
-        Assert.Equal(2, info._links.Count);
+        Assert.NotNull(info.LinkCollection);
+        Assert.True(info.LinkCollection.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", info.LinkCollection["self"].Href);
+        Assert.True(info.LinkCollection.ContainsKey("info"));
+        Assert.Equal(2, info.LinkCollection.Count);
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class CloudFoundryEndpointTest : BaseTest
 
         Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
-        Assert.NotNull(info._links);
-        Assert.Empty(info._links);
+        Assert.NotNull(info.LinkCollection);
+        Assert.Empty(info.LinkCollection);
     }
 }

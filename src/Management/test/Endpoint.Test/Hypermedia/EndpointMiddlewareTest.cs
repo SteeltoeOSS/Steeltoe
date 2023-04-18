@@ -61,10 +61,10 @@ public class EndpointMiddlewareTest : BaseTest
         client.DefaultRequestHeaders.Add("X-Forwarded-Proto", xForwarded);
         var links = await client.GetFromJsonAsync<Links>($"{requestUriString}/actuator");
         Assert.NotNull(links);
-        Assert.True(links._links.ContainsKey("self"));
-        Assert.Equal($"{calculatedHost}/actuator", links._links["self"].Href);
-        Assert.True(links._links.ContainsKey("info"));
-        Assert.Equal($"{calculatedHost}/actuator/info", links._links["info"].Href);
+        Assert.True(links.LinkCollection.ContainsKey("self"));
+        Assert.Equal($"{calculatedHost}/actuator", links.LinkCollection["self"].Href);
+        Assert.True(links.LinkCollection.ContainsKey("info"));
+        Assert.Equal($"{calculatedHost}/actuator/info", links.LinkCollection["info"].Href);
     }
 
     [Fact]

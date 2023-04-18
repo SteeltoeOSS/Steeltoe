@@ -406,11 +406,11 @@ Steeltoe.Management.Endpoint.Hypermedia.Link.Link() -> void
 Steeltoe.Management.Endpoint.Hypermedia.Link.Link(string href) -> void
 Steeltoe.Management.Endpoint.Hypermedia.Link.Templated.get -> bool
 Steeltoe.Management.Endpoint.Hypermedia.Links
+Steeltoe.Management.Endpoint.Hypermedia.Links.LinkCollection.get -> System.Collections.Generic.Dictionary<string, Steeltoe.Management.Endpoint.Hypermedia.Link>
+Steeltoe.Management.Endpoint.Hypermedia.Links.LinkCollection.set -> void
 Steeltoe.Management.Endpoint.Hypermedia.Links.Links() -> void
 Steeltoe.Management.Endpoint.Hypermedia.Links.Type.get -> string
 Steeltoe.Management.Endpoint.Hypermedia.Links.Type.set -> void
-Steeltoe.Management.Endpoint.Hypermedia.Links._links.get -> System.Collections.Generic.Dictionary<string, Steeltoe.Management.Endpoint.Hypermedia.Link>
-Steeltoe.Management.Endpoint.Hypermedia.Links._links.set -> void
 Steeltoe.Management.Endpoint.Hypermedia.ServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Info.ConfigureInfoEndpointOptions
 Steeltoe.Management.Endpoint.Info.ConfigureInfoEndpointOptions.ConfigureInfoEndpointOptions(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void

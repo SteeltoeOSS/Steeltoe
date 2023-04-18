@@ -72,12 +72,12 @@ public class HypermediaService
             {
                 if (!string.IsNullOrEmpty(opt.Id))
                 {
-                    if (!links._links.ContainsKey(opt.Id))
+                    if (!links.LinkCollection.ContainsKey(opt.Id))
                     {
                         string linkPath = $"{baseUrl.TrimEnd('/')}/{opt.Path}";
-                        links._links.Add(opt.Id, new Link(linkPath));
+                        links.LinkCollection.Add(opt.Id, new Link(linkPath));
                     }
-                    else if (links._links.ContainsKey(opt.Id))
+                    else if (links.LinkCollection.ContainsKey(opt.Id))
                     {
                         _logger.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", opt.Id);
                     }
@@ -87,7 +87,7 @@ public class HypermediaService
 
         if (selfLink != null)
         {
-            links._links.Add("self", selfLink);
+            links.LinkCollection.Add("self", selfLink);
         }
 
         return links;
