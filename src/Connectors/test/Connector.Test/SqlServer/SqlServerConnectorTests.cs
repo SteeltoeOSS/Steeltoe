@@ -253,6 +253,7 @@ public sealed class SqlServerConnectorTests
         await using WebApplication app = builder.Build();
 
         IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
+        healthContributors.Should().AllBeOfType<RelationalDbHealthContributor>();
 
         healthContributors.Should().HaveCount(2);
         healthContributors[0].Id.Should().Be("SqlServer-mySqlServerServiceOne");

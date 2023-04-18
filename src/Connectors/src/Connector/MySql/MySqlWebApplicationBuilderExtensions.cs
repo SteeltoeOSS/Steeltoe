@@ -10,23 +10,24 @@ namespace Steeltoe.Connector.MySql;
 
 public static class MySqlWebApplicationBuilderExtensions
 {
+    private static readonly Type ConnectionType = MySqlTypeLocator.MySqlConnection;
+
     public static WebApplicationBuilder AddMySql(this WebApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
         var connectionStringPostProcessor = new MySqlConnectionStringPostProcessor();
-        Type connectionType = MySqlTypeLocator.MySqlConnection;
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
         BaseWebApplicationBuilderExtensions.RegisterNamedOptions<MySqlOptions>(builder, "mysql", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory<MySqlOptions>(builder.Services, connectionType);
+        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory<MySqlOptions>(builder.Services, ConnectionType, false, null);
 
         return builder;
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
     {
-        return BaseWebApplicationBuilderExtensions.CreateRelationalHealthContributor<MySqlOptions>(serviceProvider, bindingName,
-            MySqlTypeLocator.MySqlConnection, "MySQL", "server");
+        return BaseWebApplicationBuilderExtensions.CreateRelationalHealthContributor<MySqlOptions>(serviceProvider, bindingName, ConnectionType, "MySQL",
+            "server");
     }
 }

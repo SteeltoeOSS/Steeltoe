@@ -4,6 +4,7 @@
 
 using System.Data;
 using System.Data.Common;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -85,12 +86,37 @@ internal static class BaseWebApplicationBuilderExtensions
         return (string)builder[healthHostNameKey];
     }
 
-    public static void RegisterConnectionFactory<TOptions>(IServiceCollection services, Type connectionType)
+    public static void RegisterConnectionFactory<TOptions>(IServiceCollection services, Type connectionType, bool useSingletonConnection,
+        Func<TOptions, string, object> createConnection)
         where TOptions : ConnectionStringOptions
     {
         Type connectionFactoryType = ConnectionFactoryInvoker.MakeConnectionFactoryType<TOptions>(connectionType);
 
+        createConnection = WrapCreateConnection(createConnection, connectionType);
+
         services.AddSingleton(connectionFactoryType,
-            serviceProvider => ConnectionFactoryInvoker.CreateConnectionFactory(serviceProvider, connectionFactoryType, connectionType));
+            serviceProvider =>
+                ConnectionFactoryInvoker.CreateConnectionFactory(serviceProvider, connectionFactoryType, useSingletonConnection, createConnection));
+    }
+
+    private static Func<TOptions, string, object> WrapCreateConnection<TOptions>(Func<TOptions, string, object> createConnection, Type connectionType)
+        where TOptions : ConnectionStringOptions
+    {
+        return (options, serviceBindingName) =>
+        {
+            try
+            {
+                if (createConnection != null)
+                {
+                    return createConnection(options, serviceBindingName);
+                }
+
+                return Activator.CreateInstance(connectionType, options.ConnectionString);
+            }
+            catch (TargetInvocationException exception)
+            {
+                throw exception.InnerException ?? exception;
+            }
+        };
     }
 }

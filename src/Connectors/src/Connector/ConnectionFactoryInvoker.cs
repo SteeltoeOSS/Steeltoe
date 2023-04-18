@@ -79,20 +79,10 @@ internal static class ConnectionFactoryInvoker
         return serviceProvider.GetRequiredService(connectionFactoryType);
     }
 
-    public static object CreateConnectionFactory(IServiceProvider serviceProvider, Type connectionFactoryType, Type connectionType)
+    public static object CreateConnectionFactory<TOptions>(IServiceProvider serviceProvider, Type connectionFactoryType, bool useSingletonConnection,
+        Func<TOptions, string, object> createConnection)
+        where TOptions : ConnectionStringOptions
     {
-        Func<string, object> createConnection = connectionString =>
-        {
-            try
-            {
-                return Activator.CreateInstance(connectionType, connectionString);
-            }
-            catch (TargetInvocationException exception)
-            {
-                throw exception.InnerException ?? exception;
-            }
-        };
-
-        return Activator.CreateInstance(connectionFactoryType, serviceProvider, createConnection);
+        return Activator.CreateInstance(connectionFactoryType, serviceProvider, createConnection, useSingletonConnection);
     }
 }
