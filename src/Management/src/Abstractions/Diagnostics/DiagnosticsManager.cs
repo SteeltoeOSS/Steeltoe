@@ -44,6 +44,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
                 filteredObservers.Add(observer);
             }
         }
+
         Observers = filteredObservers;
         _runtimeSources = runtimeSources;
         _eventListeners = eventListeners;
@@ -86,9 +87,9 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
             _logger.LogTrace("Subscribed to Diagnostic Listener");
         }
 
-        if(_runtimeSources  != null)
+        if (_runtimeSources != null)
         {
-            foreach(var source in _runtimeSources)
+            foreach (IRuntimeDiagnosticSource source in _runtimeSources)
             {
                 source.AddInstrumentation();
             }

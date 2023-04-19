@@ -25,22 +25,24 @@ public class TestOptionsMonitor<T> : IOptionsMonitor<T>
         return new EmptyDisposable();
     }
 }
+
 public class EmptyDisposable : IDisposable
 {
     private bool _disposed;
-  
+
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
-
     }
+
     protected virtual void Dispose(bool disposing)
     {
         if (_disposed)
         {
             return;
         }
+
         _disposed = true;
     }
 }

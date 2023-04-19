@@ -39,8 +39,7 @@ public class HealthEndpointCoreTest : BaseTest
         var contribEx = Assert.Throws<ArgumentNullException>(() =>
             new HealthEndpoint(_options, _aggregator, null, ServiceOptions(), _provider, nullLoggerFactory));
 
-        var svcOptsEx = Assert.Throws<ArgumentNullException>(() =>
-            new HealthEndpoint(_options, _aggregator, contributors, null, _provider, nullLoggerFactory));
+        var svcOptsEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(_options, _aggregator, contributors, null, _provider, nullLoggerFactory));
 
         var providerEx = Assert.Throws<ArgumentNullException>(() =>
             new HealthEndpoint(_options, _aggregator, contributors, ServiceOptions(), null, nullLoggerFactory));
@@ -254,8 +253,7 @@ public class HealthEndpointCoreTest : BaseTest
 
         IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
 
-        var ep = new HealthEndpoint(options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), _provider,
-            NullLoggerFactory.Instance);
+        var ep = new HealthEndpoint(options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), _provider, NullLoggerFactory.Instance);
 
         var context = Substitute.For<ISecurityContext>();
 

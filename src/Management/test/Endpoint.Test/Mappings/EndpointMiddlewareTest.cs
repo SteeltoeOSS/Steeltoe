@@ -57,10 +57,12 @@ public class EndpointMiddlewareTest : BaseTest
         configurationBuilder.AddInMemoryCollection(AppSettings);
         var mockRouteMappings = new Mock<IRouteMappings>();
         mockRouteMappings.Setup(m => m.Routers).Returns(new List<IRouter>());
-        var mockActionDescriptorCollectionProvider =  new Mock<IActionDescriptorCollectionProvider>();
+        var mockActionDescriptorCollectionProvider = new Mock<IActionDescriptorCollectionProvider>();
         var mockApiDescriptionProvider = new Mock<IEnumerable<IApiDescriptionProvider>>();
 
-        var ep = new MappingsEndpoint(opts, NullLoggerFactory.Instance, mockRouteMappings.Object, mockActionDescriptorCollectionProvider.Object, mockApiDescriptionProvider.Object);
+        var ep = new MappingsEndpoint(opts, NullLoggerFactory.Instance, mockRouteMappings.Object, mockActionDescriptorCollectionProvider.Object,
+            mockApiDescriptionProvider.Object);
+
         var middle = new MappingsEndpointMiddleware(opts, managementOptions, ep, NullLogger<MappingsEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
