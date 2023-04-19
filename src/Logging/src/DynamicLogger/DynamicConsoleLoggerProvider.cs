@@ -31,8 +31,9 @@ public class DynamicConsoleLoggerProvider : DynamicLoggerProviderBase
         : base(() => consoleLoggerProvider, GetInitialLevelsFromOptions(filterOptions), messageProcessors)
     {
     }
+
     public DynamicConsoleLoggerProvider(IOptionsMonitor<LoggerFilterOptions> filterOptions, ConsoleLoggerProvider consoleLoggerProvider)
-        :this(filterOptions, consoleLoggerProvider, null)
+        : this(filterOptions, consoleLoggerProvider, null)
     {
     }
 

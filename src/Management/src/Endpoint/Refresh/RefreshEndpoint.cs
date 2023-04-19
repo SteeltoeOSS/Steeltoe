@@ -26,7 +26,7 @@ internal class RefreshEndpoint : IRefreshEndpoint
 
         _options = options;
         _configuration = configuration;
-        _logger = loggerFactory.CreateLogger<RefreshEndpoint>();    
+        _logger = loggerFactory.CreateLogger<RefreshEndpoint>();
     }
 
     public IList<string> Invoke()
