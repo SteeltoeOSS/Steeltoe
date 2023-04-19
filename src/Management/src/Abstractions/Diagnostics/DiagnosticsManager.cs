@@ -14,8 +14,8 @@ namespace Steeltoe.Management.Diagnostics;
 public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
 {
     private static readonly Lazy<DiagnosticsManager> AsSingleton = new(() => new DiagnosticsManager(NullLogger<DiagnosticsManager>.Instance));
-    private readonly IList<IRuntimeDiagnosticSource> _innerSources;
-    private readonly IList<EventListener> _eventListeners;
+    private readonly IEnumerable<IRuntimeDiagnosticSource> _runtimeSources;
+    private readonly IEnumerable<EventListener> _eventListeners;
 
     private bool _isDisposed;
     private IDisposable _listenersSubscription;
@@ -44,10 +44,9 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
                 filteredObservers.Add(observer);
             }
         }
-
         Observers = filteredObservers;
-        _innerSources = runtimeSources.ToList();
-        _eventListeners = eventListeners.ToList();
+        _runtimeSources = runtimeSources;
+        _eventListeners = eventListeners;
     }
 
     internal DiagnosticsManager(ILogger<DiagnosticsManager> logger)
@@ -55,7 +54,6 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
         ArgumentGuard.NotNull(logger);
         _logger = logger;
         Observers = new List<IDiagnosticObserver>();
-        _innerSources = new List<IRuntimeDiagnosticSource>();
     }
 
     public void OnCompleted()
@@ -88,6 +86,14 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
             _logger.LogTrace("Subscribed to Diagnostic Listener");
         }
 
+        if(_runtimeSources  != null)
+        {
+            foreach(var source in _runtimeSources)
+            {
+                source.AddInstrumentation();
+            }
+        }
+
         if (_eventListeners != null)
         {
             _logger.LogTrace("Subscribed to EventListeners: {eventListeners}", string.Join(",", _eventListeners.Select(e => e.GetType().Name)));
@@ -117,10 +123,10 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
         {
             Stop();
 
-            Observers?.Clear();
-            _innerSources?.Clear();
+            Observers.Clear();
+            _runtimeSources?.ToList()?.Clear();
+            _eventListeners?.ToList()?.Clear();
             _logger = null;
-
             _isDisposed = true;
         }
     }
