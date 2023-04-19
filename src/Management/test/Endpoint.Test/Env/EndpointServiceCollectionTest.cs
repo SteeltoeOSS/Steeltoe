@@ -19,7 +19,7 @@ public class EndpointServiceCollectionTest : BaseTest
     {
         const IServiceCollection services = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddEnvActuator());
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddEnvironmentActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
     }
 
@@ -41,12 +41,12 @@ public class EndpointServiceCollectionTest : BaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddLogging();
-        services.AddEnvActuator();
+        services.AddEnvironmentActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<EnvEndpointOptions>>();
         Assert.NotNull(options);
-        var ep = serviceProvider.GetService<EnvEndpoint>();
+        var ep = serviceProvider.GetService<EnvironmentEndpoint>();
         Assert.NotNull(ep);
     }
 }

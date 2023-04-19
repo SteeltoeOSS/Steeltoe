@@ -27,12 +27,11 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
         services.ConfigureEndpointOptions<EnvEndpointOptions, ConfigureEnvEndpointOptions>();
-        services.TryAddSingleton<EnvEndpoint>();
-        services.TryAddSingleton<IEnvEndpoint>(provider => provider.GetRequiredService<EnvEndpoint>());
+        services.TryAddSingleton<EnvironmentEndpoint>();
+        services.TryAddSingleton<IEnvironmentEndpoint>(provider => provider.GetRequiredService<EnvironmentEndpoint>());
 
-        // New: 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, EnvEndpointMiddleware>());
-        services.AddSingleton<EnvEndpointMiddleware>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, EnvironmentEndpointMiddleware>());
+        services.AddSingleton<EnvironmentEndpointMiddleware>();
 
         return services;
     }

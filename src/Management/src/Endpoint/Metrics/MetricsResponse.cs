@@ -7,7 +7,7 @@ using Steeltoe.Management.MetricCollectors;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsResponse : IMetricsResponse
+public sealed class MetricsResponse : IMetricsResponse
 {
     [JsonPropertyName("name")]
     public string Name { get; }

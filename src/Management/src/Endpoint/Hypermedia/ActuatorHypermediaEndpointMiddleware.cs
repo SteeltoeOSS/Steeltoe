@@ -15,7 +15,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
-public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>
+internal class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>
 {
     public ActuatorHypermediaEndpointMiddleware(IActuatorEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<ActuatorHypermediaEndpointMiddleware> logger)

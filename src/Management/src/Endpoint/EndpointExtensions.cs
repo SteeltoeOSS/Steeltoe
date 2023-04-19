@@ -89,7 +89,6 @@ public static class EndPointExtensions
             options.Add(managementOptions.Get(name));
         }
 
-        options = options.OrderByDescending(option => option.Path.Length).ToList();
 
         foreach (ManagementEndpointOptions opt in options)
         {

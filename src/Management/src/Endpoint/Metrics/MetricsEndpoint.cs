@@ -10,7 +10,7 @@ using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsEndpoint : IMetricsEndpoint
+internal class MetricsEndpoint : IMetricsEndpoint
 {
     private readonly IOptionsMonitor<MetricsEndpointOptions> _options;
     private readonly ISteeltoeExporter _exporter;

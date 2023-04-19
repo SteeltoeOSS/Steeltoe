@@ -8,7 +8,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class HttpTraceEndpoint : IHttpTraceEndpoint
+internal class HttpTraceEndpoint : IHttpTraceEndpoint
 {
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
     private readonly IHttpTraceRepository _traceRepo;

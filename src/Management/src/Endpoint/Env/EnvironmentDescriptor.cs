@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class EnvironmentDescriptor
+public sealed class EnvironmentDescriptor
 {
     [JsonPropertyName("activeProfiles")]
     public IList<string> ActiveProfiles { get; }

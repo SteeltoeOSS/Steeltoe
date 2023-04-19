@@ -17,7 +17,7 @@ using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-public class AspNetCoreHostingObserver : MetricsObserver
+internal class AspNetCoreHostingObserver : MetricsObserver
 {
     private const string DefaultObserverName = "AspNetCoreHostingObserver";
     private const string DiagnosticName = "Microsoft.AspNetCore";

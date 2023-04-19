@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-public class ApplicationMappings
+public sealed class ApplicationMappings
 {
     [JsonPropertyName("contexts")]
     public IDictionary<string, ContextMappings> ContextMappings { get; }

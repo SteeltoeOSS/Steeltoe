@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-public class ContextMappings
+public sealed class ContextMappings
 {
     [JsonPropertyName("parentId")]
     public string ParentId { get; }

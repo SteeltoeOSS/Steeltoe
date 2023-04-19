@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings>
+internal class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings>
 {
     public MappingsEndpointMiddleware(IOptionsMonitor<MappingsEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         IMappingsEndpoint endpoint, ILogger<MappingsEndpointMiddleware> logger)

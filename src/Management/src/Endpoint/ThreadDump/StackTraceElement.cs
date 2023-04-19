@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class StackTraceElement
+public sealed class StackTraceElement
 {
     [JsonPropertyName("className")]
     public string ClassName { get; set; }

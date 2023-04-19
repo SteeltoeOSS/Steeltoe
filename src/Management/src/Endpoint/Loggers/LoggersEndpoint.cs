@@ -10,7 +10,7 @@ using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public class LoggersEndpoint : ILoggersEndpoint
+internal class LoggersEndpoint : ILoggersEndpoint
 {
     private static readonly List<string> Levels = new()
     {
@@ -47,7 +47,7 @@ public class LoggersEndpoint : ILoggersEndpoint
         return DoInvoke(_dynamicLoggerProvider, request);
     }
 
-    public virtual Dictionary<string, object> DoInvoke(IDynamicLoggerProvider provider, LoggersChangeRequest request)
+    private Dictionary<string, object> DoInvoke(IDynamicLoggerProvider provider, LoggersChangeRequest request)
     {
         var result = new Dictionary<string, object>();
 
@@ -74,13 +74,13 @@ public class LoggersEndpoint : ILoggersEndpoint
         return result;
     }
 
-    public virtual void AddLevels(Dictionary<string, object> result)
+    internal void AddLevels(Dictionary<string, object> result)
     {
         ArgumentGuard.NotNull(result);
         result.Add("levels", Levels);
     }
 
-    public virtual ICollection<ILoggerConfiguration> GetLoggerConfigurations(IDynamicLoggerProvider provider)
+    internal ICollection<ILoggerConfiguration> GetLoggerConfigurations(IDynamicLoggerProvider provider)
     {
         if (provider == null)
         {
@@ -91,7 +91,7 @@ public class LoggersEndpoint : ILoggersEndpoint
         return provider.GetLoggerConfigurations();
     }
 
-    public virtual void SetLogLevel(IDynamicLoggerProvider provider, string name, string level)
+    internal void SetLogLevel(IDynamicLoggerProvider provider, string name, string level)
     {
         if (provider == null)
         {
@@ -104,7 +104,7 @@ public class LoggersEndpoint : ILoggersEndpoint
         provider.SetLogLevel(name, LoggerLevels.MapLogLevel(level));
     }
 
-    public Dictionary<string, string> DeserializeRequest(Stream stream)
+    internal Dictionary<string, string> DeserializeRequest(Stream stream)
     {
         try
         {

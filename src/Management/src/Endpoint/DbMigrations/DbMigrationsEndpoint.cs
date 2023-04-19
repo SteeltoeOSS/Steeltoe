@@ -12,7 +12,7 @@ using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-public class DbMigrationsEndpoint : IDbMigrationsEndpoint
+internal class DbMigrationsEndpoint : IDbMigrationsEndpoint
 {
     internal static readonly Type DbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
 

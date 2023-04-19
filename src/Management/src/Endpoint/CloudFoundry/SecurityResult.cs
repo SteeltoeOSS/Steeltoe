@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public class SecurityResult
+public sealed class SecurityResult
 {
     [JsonIgnore]
     public HttpStatusCode Code { get; }

@@ -8,7 +8,7 @@ using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-public abstract class MetricsObserver : DiagnosticObserver
+internal abstract class MetricsObserver : DiagnosticObserver
 {
     private Regex _pathMatcher;
 

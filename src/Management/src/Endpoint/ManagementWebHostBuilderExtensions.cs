@@ -55,7 +55,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddEnvActuator();
+            collection.AddEnvironmentActuator();
             collection.ActivateActuatorEndpoints();
         });
     }

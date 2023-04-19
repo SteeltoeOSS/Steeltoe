@@ -6,7 +6,7 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthEndpointResponse : HealthCheckResult
+public sealed class HealthEndpointResponse : HealthCheckResult
 {
     /// <summary>
     /// Gets or sets the list of available health groups.

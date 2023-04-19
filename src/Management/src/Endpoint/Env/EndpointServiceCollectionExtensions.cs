@@ -18,7 +18,7 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add actuator to.
     /// </param>
-    public static void AddEnvActuator(this IServiceCollection services)
+    public static IServiceCollection AddEnvironmentActuator(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
 
@@ -37,5 +37,6 @@ public static class EndpointServiceCollectionExtensions
 
         services.AddCommonActuatorServices();
         services.AddEnvActuatorServices();
+        return services;
     }
 }

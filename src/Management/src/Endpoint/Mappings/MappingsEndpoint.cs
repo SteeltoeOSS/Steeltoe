@@ -16,7 +16,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-public class MappingsEndpoint : IMappingsEndpoint
+internal class MappingsEndpoint : IMappingsEndpoint
 {
     private readonly IOptionsMonitor<MappingsEndpointOptions> _options;
     private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;

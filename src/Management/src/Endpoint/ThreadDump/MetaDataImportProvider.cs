@@ -6,7 +6,7 @@ using Microsoft.DiaSymReader;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class MetaDataImportProvider : IMetadataImportProvider
+internal class MetaDataImportProvider : IMetadataImportProvider
 {
     private readonly object _import;
 

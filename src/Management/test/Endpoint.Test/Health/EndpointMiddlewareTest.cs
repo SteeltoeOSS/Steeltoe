@@ -35,33 +35,6 @@ public class EndpointMiddlewareTest : BaseTest
     };
 
     [Fact]
-    public async Task HandleHealthRequestAsync_ReturnsExpected()
-    {
-        IOptionsMonitor<HealthEndpointOptions> opts = GetOptionsMonitorFromSettings<HealthEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> mgmtOpts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        var hsOptions = new TestOptionsMonitor<HealthCheckServiceOptions>(new HealthCheckServiceOptions());
-
-        var contributors = new List<IHealthContributor>
-        {
-            new DiskSpaceContributor()
-        };
-
-        var sc = new ServiceCollection();
-        ServiceProvider sp = sc.BuildServiceProvider();
-
-        var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contributors, hsOptions, sp, NullLoggerFactory.Instance);
-
-        var middle = new HealthEndpointMiddleware(mgmtOpts, ep, NullLogger<HealthEndpointMiddleware>.Instance);
-
-        HttpContext context = CreateRequest("GET", "/health");
-        await middle.HandleHealthRequestAsync(context);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
-        Assert.Equal("{\"status\":\"UNKNOWN\"}", json);
-    }
-
-    [Fact]
     public async Task HealthActuator_ReturnsOnlyStatus()
     {
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
@@ -358,20 +331,5 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.Equal("/cloudfoundryapplication/health/{**_}", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
-    }
-
-    private HttpContext CreateRequest(string method, string path)
-    {
-        HttpContext context = new DefaultHttpContext
-        {
-            TraceIdentifier = Guid.NewGuid().ToString()
-        };
-
-        context.Response.Body = new MemoryStream();
-        context.Request.Method = method;
-        context.Request.Path = new PathString(path);
-        context.Request.Scheme = "http";
-        context.Request.Host = new HostString("localhost");
-        return context;
     }
 }

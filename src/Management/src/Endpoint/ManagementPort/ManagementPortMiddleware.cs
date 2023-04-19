@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ManagementPort;
 
-public class ManagementPortMiddleware
+internal class ManagementPortMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;

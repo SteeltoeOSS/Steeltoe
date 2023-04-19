@@ -33,7 +33,7 @@ public class LoggersEndpointTest : BaseTest
             services.AddLoggersActuatorServices();
         };
 
-        var ep = tc.GetService<ILoggersEndpoint>();
+        var ep = (LoggersEndpoint)tc.GetService<ILoggersEndpoint>();
 
         var dict = new Dictionary<string, object>();
         ep.AddLevels(dict);
@@ -64,7 +64,7 @@ public class LoggersEndpointTest : BaseTest
             services.AddLoggersActuatorServices();
         };
 
-        var ep = tc.GetService<ILoggersEndpoint>();
+        var ep = (LoggersEndpoint)tc.GetService<ILoggersEndpoint>();
 
         Assert.Throws<ArgumentNullException>(() => ep.SetLogLevel(new TestLogProvider(), null, null));
     }
@@ -80,7 +80,7 @@ public class LoggersEndpointTest : BaseTest
             services.AddLoggersActuatorServices();
         };
 
-        var ep = tc.GetService<ILoggersEndpoint>();
+        var ep = (LoggersEndpoint)tc.GetService<ILoggersEndpoint>();
         var provider = new TestLogProvider();
         ep.SetLogLevel(provider, "foobar", "WARN");
 
@@ -99,7 +99,7 @@ public class LoggersEndpointTest : BaseTest
             services.AddLoggersActuatorServices();
         };
 
-        var ep = tc.GetService<ILoggersEndpoint>();
+        var ep = (LoggersEndpoint)tc.GetService<ILoggersEndpoint>();
         ICollection<ILoggerConfiguration> result = ep.GetLoggerConfigurations(null);
         Assert.NotNull(result);
     }
@@ -115,7 +115,7 @@ public class LoggersEndpointTest : BaseTest
             services.AddLoggersActuatorServices();
         };
 
-        var ep = tc.GetService<ILoggersEndpoint>();
+        var ep = (LoggersEndpoint)tc.GetService<ILoggersEndpoint>();
         var provider = new TestLogProvider();
         ICollection<ILoggerConfiguration> result = ep.GetLoggerConfigurations(provider);
         Assert.NotNull(result);

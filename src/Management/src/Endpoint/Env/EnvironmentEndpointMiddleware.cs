@@ -11,9 +11,9 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
+internal class EnvironmentEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
 {
-    public EnvEndpointMiddleware(IEnvEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<EnvEndpointMiddleware> logger)
+    public EnvironmentEndpointMiddleware(IEnvironmentEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<EnvironmentEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
     }

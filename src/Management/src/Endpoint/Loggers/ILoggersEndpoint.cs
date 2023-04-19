@@ -8,9 +8,4 @@ namespace Steeltoe.Management.Endpoint.Loggers;
 
 public interface ILoggersEndpoint : IEndpoint<Dictionary<string, object>, LoggersChangeRequest>
 {
-    void AddLevels(Dictionary<string, object> result);
-
-    void SetLogLevel(IDynamicLoggerProvider provider, string name, string level);
-
-    ICollection<ILoggerConfiguration> GetLoggerConfigurations(IDynamicLoggerProvider provider);
 }

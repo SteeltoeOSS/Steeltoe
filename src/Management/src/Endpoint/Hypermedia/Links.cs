@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 /// <summary>
 /// A typed collection of links.
 /// </summary>
-public class Links
+public sealed class Links
 {
     /// <summary>
     /// Gets or sets the type of links contained in this collection.

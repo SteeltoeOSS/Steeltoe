@@ -23,7 +23,7 @@ public class EnvStartup
     {
         services.AddRouting();
         services.AddHypermediaActuator();
-        services.AddEnvActuator();
+        services.AddEnvironmentActuator();
     }
 
     public void Configure(IApplicationBuilder app)

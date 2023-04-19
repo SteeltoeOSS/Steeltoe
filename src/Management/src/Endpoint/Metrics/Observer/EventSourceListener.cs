@@ -14,7 +14,7 @@ using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-public class EventSourceListener : EventListener
+internal class EventSourceListener : EventListener
 {
     private readonly ILogger<EventSourceListener> _logger;
 

@@ -6,7 +6,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
-public class Link
+public sealed class Link
 {
     public string Href { get; set; }
 

@@ -9,7 +9,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-public class MappingDescription
+public sealed class MappingDescription
 {
     public const string AllHttpMethods = "GET || PUT || POST || DELETE || HEAD || OPTIONS";
 

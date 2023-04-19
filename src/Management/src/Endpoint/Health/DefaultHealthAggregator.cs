@@ -8,7 +8,7 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class DefaultHealthAggregator : IHealthAggregator
+internal class DefaultHealthAggregator : IHealthAggregator
 {
     public HealthCheckResult Aggregate(IList<IHealthContributor> contributors)
     {

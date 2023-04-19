@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsRequest
+public sealed class MetricsRequest
 {
     public string MetricName { get; }
 

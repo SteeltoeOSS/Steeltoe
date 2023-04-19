@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class PropertyValueDescriptor
+public sealed class PropertyValueDescriptor
 {
     [JsonPropertyName("value")]
     public object Value { get; }

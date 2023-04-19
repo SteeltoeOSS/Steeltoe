@@ -13,7 +13,7 @@ using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthEndpoint : IHealthEndpoint
+internal class HealthEndpoint : IHealthEndpoint
 {
     private readonly IOptionsMonitor<HealthCheckServiceOptions> _serviceOptions;
     private readonly IServiceProvider _provider;
@@ -41,7 +41,7 @@ public class HealthEndpoint : IHealthEndpoint
         _logger = loggerFactory.CreateLogger<HealthEndpoint>();
     }
 
-    public virtual HealthEndpointResponse Invoke(ISecurityContext securityContext)
+    public HealthEndpointResponse Invoke(ISecurityContext securityContext)
     {
         return BuildHealth(securityContext);
     }
@@ -52,7 +52,7 @@ public class HealthEndpoint : IHealthEndpoint
         return health.Status == HealthStatus.Down || health.Status == HealthStatus.OutOfService ? 503 : 200;
     }
 
-    protected HealthEndpointResponse BuildHealth(ISecurityContext securityContext)
+    private HealthEndpointResponse BuildHealth(ISecurityContext securityContext)
     {
         string groupName = GetRequestedHealthGroup(securityContext);
         ICollection<HealthCheckRegistration> healthCheckRegistrations;

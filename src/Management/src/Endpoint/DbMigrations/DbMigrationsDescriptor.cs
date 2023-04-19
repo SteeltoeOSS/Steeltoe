@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-public class DbMigrationsDescriptor
+public sealed class DbMigrationsDescriptor
 {
     public IList<string> PendingMigrations { get; } = new List<string>();
     public IList<string> AppliedMigrations { get; } = new List<string>();

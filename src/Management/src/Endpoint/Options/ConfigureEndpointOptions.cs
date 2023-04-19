@@ -8,7 +8,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
-public class ConfigureEndpointOptions<T> : IConfigureOptions<T>
+internal class ConfigureEndpointOptions<T> : IConfigureOptions<T>
     where T : EndpointOptionsBase
 {
     private readonly string _prefix;

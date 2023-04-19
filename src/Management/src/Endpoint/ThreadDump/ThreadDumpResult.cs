@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class ThreadDumpResult
+public sealed class ThreadDumpResult
 {
     [JsonPropertyName("threads")]
     [SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "Allow in Options")]

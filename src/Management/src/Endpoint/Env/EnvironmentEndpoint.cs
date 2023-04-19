@@ -11,18 +11,18 @@ using Steeltoe.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class EnvEndpoint : IEnvEndpoint
+internal class EnvironmentEndpoint : IEnvironmentEndpoint
 {
     private readonly IOptionsMonitor<EnvEndpointOptions> _options;
     private readonly IConfiguration _configuration;
     private readonly Sanitizer _sanitizer;
 
     private readonly IHostEnvironment _env;
-    private readonly ILogger<EnvEndpoint> _logger;
+    private readonly ILogger<EnvironmentEndpoint> _logger;
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public EnvEndpoint(IOptionsMonitor<EnvEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILoggerFactory loggerFactory)
+    public EnvironmentEndpoint(IOptionsMonitor<EnvEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(env);
@@ -33,7 +33,7 @@ public class EnvEndpoint : IEnvEndpoint
         _configuration = configuration;
         _env = env;
         _sanitizer = new Sanitizer(options.CurrentValue.KeysToSanitize);
-        _logger = loggerFactory.CreateLogger<EnvEndpoint>();
+        _logger = loggerFactory.CreateLogger<EnvironmentEndpoint>();
     }
 
     public virtual EnvironmentDescriptor Invoke()
@@ -53,7 +53,7 @@ public class EnvEndpoint : IEnvEndpoint
         return new EnvironmentDescriptor(activeProfiles, propertySources);
     }
 
-    public virtual IList<PropertySourceDescriptor> GetPropertySources(IConfiguration configuration)
+    internal IList<PropertySourceDescriptor> GetPropertySources(IConfiguration configuration)
     {
         var results = new List<PropertySourceDescriptor>();
 

@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 /// <summary>
 /// Thread dumper that uses the EventPipe to acquire the call stacks of all the running Threads.
 /// </summary>
-public class ThreadDumperEp : IThreadDumper
+internal class ThreadDumperEp : IThreadDumper
 {
     private static readonly StackTraceElement UnknownStackTraceElement = new()
     {

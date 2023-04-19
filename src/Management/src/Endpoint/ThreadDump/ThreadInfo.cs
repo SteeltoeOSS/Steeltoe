@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class ThreadInfo
+public sealed class ThreadInfo
 {
     [JsonPropertyName("blockedCount")]
     public long BlockedCount { get; set; } // Not available

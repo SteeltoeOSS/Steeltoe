@@ -49,7 +49,7 @@ public static class ManagementWebApplicationBuilderExtensions
     public static WebApplicationBuilder AddEnvActuator(this WebApplicationBuilder applicationBuilder)
     {
         ArgumentGuard.NotNull(applicationBuilder);
-        applicationBuilder.Services.AddEnvActuator();
+        applicationBuilder.Services.AddEnvironmentActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }

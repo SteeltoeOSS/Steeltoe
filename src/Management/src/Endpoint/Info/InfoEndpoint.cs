@@ -9,7 +9,7 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-public class InfoEndpoint : IInfoEndpoint
+internal class InfoEndpoint : IInfoEndpoint
 {
     private readonly IList<IInfoContributor> _contributors;
     private readonly IOptionsMonitor<InfoEndpointOptions> _options;

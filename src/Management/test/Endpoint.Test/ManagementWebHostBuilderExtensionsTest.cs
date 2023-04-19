@@ -88,7 +88,7 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
         });
 
         IWebHost host = hostBuilder.AddEnvActuator().Build();
-        IEnumerable<EnvEndpoint> managementEndpoint = host.Services.GetServices<EnvEndpoint>();
+        IEnumerable<EnvironmentEndpoint> managementEndpoint = host.Services.GetServices<EnvironmentEndpoint>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(managementEndpoint);

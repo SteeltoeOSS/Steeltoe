@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public class CloudFoundryEndpoint : ICloudFoundryEndpoint
+internal class CloudFoundryEndpoint : ICloudFoundryEndpoint
 {
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;

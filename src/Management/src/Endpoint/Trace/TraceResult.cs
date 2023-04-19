@@ -7,7 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class TraceResult
+public sealed class TraceResult
 {
     [JsonPropertyName("timestamp")]
     public long TimeStamp { get; }

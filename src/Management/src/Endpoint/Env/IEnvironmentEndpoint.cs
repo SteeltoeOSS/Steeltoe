@@ -2,11 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.HealthChecks;
-using Steeltoe.Management.Endpoint.Security;
+namespace Steeltoe.Management.Endpoint.Env;
 
-namespace Steeltoe.Management.Endpoint.Health;
-
-public interface IHealthEndpoint : IEndpoint<HealthEndpointResponse, ISecurityContext>
+public interface IEnvironmentEndpoint : IEndpoint<EnvironmentDescriptor>
 {
 }

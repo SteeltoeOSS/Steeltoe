@@ -8,7 +8,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class ThreadDumpEndpoint : IThreadDumpEndpoint
+internal class ThreadDumpEndpoint : IThreadDumpEndpoint
 {
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
     private readonly ILogger<ThreadDumpEndpoint> _logger;
