@@ -8,11 +8,9 @@ namespace Steeltoe.Configuration;
 
 internal abstract class ConfigurationDictionaryMapper
 {
-    public string BindingKey { get; }
-
-    public string ToPrefix { get; }
-
-    public IDictionary<string, string> ConfigurationData { get; }
+    protected string BindingKey { get; }
+    protected string ToPrefix { get; }
+    protected IDictionary<string, string> ConfigurationData { get; }
 
     protected ConfigurationDictionaryMapper(IDictionary<string, string> configurationData, string bindingKey, params string[] toPrefix)
     {
@@ -25,7 +23,7 @@ internal abstract class ConfigurationDictionaryMapper
         }
     }
 
-    public void MapFromTo(string fromKey, string toKey)
+    public string MapFromTo(string fromKey, string toKey)
     {
         string value = GetFromValue(fromKey);
 
@@ -33,9 +31,11 @@ internal abstract class ConfigurationDictionaryMapper
         {
             SetToValue(toKey, value);
         }
+
+        return value;
     }
 
-    public void MapFromTo(string fromKey, params string[] toKeySegments)
+    public string MapFromTo(string fromKey, params string[] toKeySegments)
     {
         string value = GetFromValue(fromKey);
 
@@ -44,9 +44,11 @@ internal abstract class ConfigurationDictionaryMapper
             string toKey = string.Join(ConfigurationPath.KeyDelimiter, toKeySegments);
             SetToValue(toKey, value);
         }
+
+        return value;
     }
 
-    public void MapFromAppendTo(string fromKey, string appendToKey, string separator)
+    public string MapFromAppendTo(string fromKey, string appendToKey, string separator)
     {
         string valueToAppend = GetFromValue(fromKey);
 
@@ -58,11 +60,15 @@ internal abstract class ConfigurationDictionaryMapper
             {
                 string newValue = $"{existingValue}{separator}{valueToAppend}";
                 SetToValue(appendToKey, newValue);
+
+                return newValue;
             }
         }
+
+        return null;
     }
 
-    public void MapFromToFile(string fromKey, string toKey)
+    public string MapFromToFile(string fromKey, string toKey)
     {
         string value = GetFromValue(fromKey);
 
@@ -76,7 +82,10 @@ internal abstract class ConfigurationDictionaryMapper
             }
 
             SetToValue(toKey, tempPath);
+            return tempPath;
         }
+
+        return null;
     }
 
     public void SetToValue(string toKey, string value)

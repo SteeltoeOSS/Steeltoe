@@ -28,34 +28,51 @@ internal static class BaseWebApplicationBuilderExtensions
         where TOptions : ConnectionStringOptions
     {
         string key = ConfigurationPath.Combine(ConnectionStringPostProcessor.ServiceBindingsConfigurationKey, bindingType);
-        IConfigurationSection section = builder.Configuration.GetSection(key);
-        bool registerDefaultHealthContributor = ShouldRegisterDefaultHealthContributor(section);
+        IConfigurationSection[] childSections = builder.Configuration.GetSection(key).GetChildren().ToArray();
 
-        foreach (IConfigurationSection child in section.GetChildren())
+        bool registerDefaultHealthContributor = !ContainsNamedServiceBindings(childSections);
+        bool defaultHealthContributorRegistered = false;
+
+        foreach (IConfigurationSection childSection in childSections)
         {
-            string bindingName = child.Key;
+            string bindingName = childSection.Key;
 
             if (bindingName == ConnectionStringPostProcessor.DefaultBindingName)
             {
-                builder.Services.Configure<TOptions>(child);
+                builder.Services.Configure<TOptions>(childSection);
 
                 if (registerDefaultHealthContributor)
                 {
                     RegisterHealthContributor(builder.Services, string.Empty, createHealthContributor);
+                    defaultHealthContributorRegistered = true;
                 }
             }
             else
             {
-                builder.Services.Configure<TOptions>(bindingName, child);
+                builder.Services.Configure<TOptions>(bindingName, childSection);
                 RegisterHealthContributor(builder.Services, bindingName, createHealthContributor);
             }
         }
+
+        if (registerDefaultHealthContributor && !defaultHealthContributorRegistered)
+        {
+            RegisterHealthContributor(builder.Services, string.Empty, createHealthContributor);
+        }
     }
 
-    private static bool ShouldRegisterDefaultHealthContributor(IConfigurationSection section)
+    private static bool ContainsNamedServiceBindings(IConfigurationSection[] sections)
     {
-        IConfigurationSection[] childSections = section.GetChildren().ToArray();
-        return childSections.Length == 1 && childSections[0].Key == ConnectionStringPostProcessor.DefaultBindingName;
+        if (sections.Length == 0)
+        {
+            return false;
+        }
+
+        if (sections.Length == 1 && sections[0].Key == ConnectionStringPostProcessor.DefaultBindingName)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private static void RegisterHealthContributor(IServiceCollection services, string bindingName,

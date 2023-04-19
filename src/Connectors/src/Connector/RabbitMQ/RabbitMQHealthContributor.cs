@@ -18,14 +18,28 @@ public class RabbitMQHealthContributor : IHealthContributor
 {
     private readonly ILogger<RabbitMQHealthContributor> _logger;
     private readonly object _connFactory;
+    private readonly string _hostName;
     private object _connection;
 
-    public string Id => "RabbitMQ";
+    public string Id { get; } = "RabbitMQ";
 
     public RabbitMQHealthContributor(RabbitMQProviderConnectorFactory factory, ILogger<RabbitMQHealthContributor> logger = null)
     {
         _logger = logger;
         _connFactory = factory.Create(null);
+    }
+
+    internal RabbitMQHealthContributor(object connection, string serviceName, string hostName, ILogger<RabbitMQHealthContributor> logger)
+    {
+        ArgumentGuard.NotNull(connection);
+        ArgumentGuard.NotNull(serviceName);
+        ArgumentGuard.NotNull(hostName);
+        ArgumentGuard.NotNull(logger);
+
+        _connection = connection;
+        Id = serviceName;
+        _hostName = hostName;
+        _logger = logger;
     }
 
     public static IHealthContributor GetRabbitMQContributor(IConfiguration configuration, ILogger<RabbitMQHealthContributor> logger = null)
@@ -45,6 +59,11 @@ public class RabbitMQHealthContributor : IHealthContributor
     {
         _logger?.LogTrace("Checking RabbitMQ connection health");
         var result = new HealthCheckResult();
+
+        if (_hostName != null)
+        {
+            result.Details.Add("host", _hostName);
+        }
 
         try
         {
