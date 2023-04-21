@@ -78,7 +78,7 @@ public class RabbitMQHealthContributorTest
             { "version", Encoding.UTF8.GetBytes("test") }
         });
 
-        var mockConnFactory = new Mock<ConnectionFactory>();
+        var mockConnFactory = new Mock<IConnectionFactory>();
         mockConnFactory.Setup(s => s.CreateConnection()).Returns(mockConnection.Object);
 
         var mockProviderFactory =

@@ -37,6 +37,7 @@
     <EFCoreOracleTestVersion>6.21.*</EFCoreOracleTestVersion>
     <NerdbankGitVersioningVersion>3.5.*</NerdbankGitVersioningVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
+    <RabbitClientTestVersion>6.4.*</RabbitClientTestVersion>
 
     <!--
       Exposed dependencies, observable by Steeltoe consumers.

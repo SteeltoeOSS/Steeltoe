@@ -85,14 +85,6 @@ public sealed class ConnectionProvider<TOptions, TConnection> : IDisposable
     private (object Connection, TOptions OptionsSnapshot) CreateConnectionFromOptions()
     {
         TOptions optionsSnapshot = _optionsMonitor.Get(_name);
-
-        if (optionsSnapshot.ConnectionString == null)
-        {
-            throw new InvalidOperationException(_name == string.Empty
-                ? "Connection string for default service binding not found."
-                : $"Connection string for service binding '{_name}' not found.");
-        }
-
         object connection = _createConnection(optionsSnapshot, _name);
 
         if (connection == null)
