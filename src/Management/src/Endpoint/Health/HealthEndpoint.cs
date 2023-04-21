@@ -13,7 +13,7 @@ using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-internal class HealthEndpoint : IHealthEndpoint
+internal sealed class HealthEndpoint : IHealthEndpoint
 {
     private readonly IOptionsMonitor<HealthCheckServiceOptions> _serviceOptions;
     private readonly IServiceProvider _provider;

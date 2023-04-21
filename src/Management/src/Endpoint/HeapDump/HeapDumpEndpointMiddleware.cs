@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-internal class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
+internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 {
     public HeapDumpEndpointMiddleware(IHeapDumpEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<HeapDumpEndpointMiddleware> logger)

@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class EnvEndpointOptions : EndpointOptionsBase
+public sealed class EnvironmentEndpointOptions : EndpointOptionsBase
 {
     public string[] KeysToSanitize { get; set; }
 }

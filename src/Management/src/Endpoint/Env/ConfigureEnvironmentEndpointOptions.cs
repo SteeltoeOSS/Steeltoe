@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-internal class ConfigureEnvEndpointOptions : IConfigureOptions<EnvEndpointOptions>
+internal sealed class ConfigureEnvironmentEndpointOptions : IConfigureOptions<EnvironmentEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:env";
 
@@ -23,12 +23,12 @@ internal class ConfigureEnvEndpointOptions : IConfigureOptions<EnvEndpointOption
 
     private readonly IConfiguration _configuration;
 
-    public ConfigureEnvEndpointOptions(IConfiguration configuration)
+    public ConfigureEnvironmentEndpointOptions(IConfiguration configuration)
     {
         _configuration = configuration;
     }
 
-    public void Configure(EnvEndpointOptions options)
+    public void Configure(EnvironmentEndpointOptions options)
     {
         _configuration.GetSection(ManagementInfoPrefix).Bind(options);
 

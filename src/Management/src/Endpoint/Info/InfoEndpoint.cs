@@ -9,7 +9,7 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-internal class InfoEndpoint : IInfoEndpoint
+internal sealed class InfoEndpoint : IInfoEndpoint
 {
     private readonly IList<IInfoContributor> _contributors;
     private readonly IOptionsMonitor<InfoEndpointOptions> _options;
@@ -27,12 +27,12 @@ internal class InfoEndpoint : IInfoEndpoint
         _logger = loggerFactory.CreateLogger<InfoEndpoint>();
     }
 
-    public virtual Dictionary<string, object> Invoke()
+    public Dictionary<string, object> Invoke()
     {
         return BuildInfo(_contributors);
     }
 
-    protected virtual Dictionary<string, object> BuildInfo(IList<IInfoContributor> infoContributors)
+    Dictionary<string, object> BuildInfo(IList<IInfoContributor> infoContributors)
     {
         ArgumentGuard.NotNull(infoContributors);
 

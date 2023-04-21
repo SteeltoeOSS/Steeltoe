@@ -15,7 +15,7 @@ using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-internal class HttpClientCoreObserver : MetricsObserver
+internal sealed class HttpClientCoreObserver : MetricsObserver
 {
     private const string StatusTagKey = "status";
     private const string UriTagKey = "uri";
@@ -115,7 +115,7 @@ internal class HttpClientCoreObserver : MetricsObserver
         };
     }
 
-    protected internal string GetStatusCode(HttpResponseMessage response, TaskStatus taskStatus)
+    internal string GetStatusCode(HttpResponseMessage response, TaskStatus taskStatus)
     {
         if (response != null)
         {

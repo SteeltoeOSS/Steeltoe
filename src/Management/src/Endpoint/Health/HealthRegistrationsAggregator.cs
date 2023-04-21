@@ -9,7 +9,7 @@ using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-internal class HealthRegistrationsAggregator : DefaultHealthAggregator, IHealthRegistrationsAggregator
+internal sealed class HealthRegistrationsAggregator : DefaultHealthAggregator, IHealthRegistrationsAggregator
 {
     public HealthCheckResult Aggregate(IList<IHealthContributor> contributors, ICollection<HealthCheckRegistration> healthCheckRegistrations,
         IServiceProvider serviceProvider)

@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-internal class CloudFoundryEndpoint : ICloudFoundryEndpoint
+internal sealed class CloudFoundryEndpoint : ICloudFoundryEndpoint
 {
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
@@ -33,7 +33,7 @@ internal class CloudFoundryEndpoint : ICloudFoundryEndpoint
         _logger = loggerFactory.CreateLogger<CloudFoundryEndpoint>();
     }
 
-    public virtual Links Invoke(string baseUrl)
+    public Links Invoke(string baseUrl)
     {
         var hypermediaService = new HypermediaService(_managementOptions, _options, _endpointOptions, _logger);
         return hypermediaService.Invoke(baseUrl);

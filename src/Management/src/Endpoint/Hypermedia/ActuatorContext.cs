@@ -6,7 +6,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
-internal class ActuatorContext : IContextName
+internal sealed class ActuatorContext : IContextName
 {
     public const string Name = "Actuator";
 

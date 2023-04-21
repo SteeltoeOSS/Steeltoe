@@ -16,7 +16,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-internal class MappingsEndpoint : IMappingsEndpoint
+internal sealed class MappingsEndpoint : IMappingsEndpoint
 {
     private readonly IOptionsMonitor<MappingsEndpointOptions> _options;
     private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
@@ -42,13 +42,13 @@ internal class MappingsEndpoint : IMappingsEndpoint
         _logger = loggerFactory.CreateLogger<MappingsEndpoint>();
     }
 
-    public virtual ApplicationMappings Invoke()
+    public ApplicationMappings Invoke()
     {
         _logger.LogTrace("Fetching application mappings");
         return GetApplicationMappings();
     }
 
-    protected internal ApplicationMappings GetApplicationMappings()
+    internal ApplicationMappings GetApplicationMappings()
     {
         IDictionary<string, IList<MappingDescription>> desc = new Dictionary<string, IList<MappingDescription>>();
 

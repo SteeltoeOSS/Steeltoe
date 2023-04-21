@@ -7,7 +7,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
-internal class ConfigureHypermediaEndpointOptions : ConfigureEndpointOptions<HypermediaEndpointOptions>
+internal sealed class ConfigureHypermediaEndpointOptions : ConfigureEndpointOptions<HypermediaEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:actuator";
 

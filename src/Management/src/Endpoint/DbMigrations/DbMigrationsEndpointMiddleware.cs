@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-internal class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
+internal sealed class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
 {
     public DbMigrationsEndpointMiddleware(IDbMigrationsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<DbMigrationsEndpointMiddleware> logger)
@@ -30,7 +30,7 @@ internal class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<st
         return Task.CompletedTask;
     }
 
-    protected internal Task HandleEntityFrameworkRequestAsync(HttpContext context)
+    internal Task HandleEntityFrameworkRequestAsync(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
         string serialInfo = HandleRequest();

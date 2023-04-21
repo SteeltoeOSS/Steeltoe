@@ -54,7 +54,7 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
 
             options.Exposure = new Exposure(_configuration);
 
-            options.EndpointOptions = new List<IEndpointOptions>(_endpoints.Where(e => e.GetType() != typeof(CloudFoundryEndpointOptions)));
+            options.EndpointOptions = new List<IEndpointOptions>(_endpoints.Where(e => e is not CloudFoundryEndpointOptions));
         }
         else if (name == CFContext.Name)
         {
@@ -71,7 +71,7 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
             }
 
             options.Exposure = new Exposure(true);
-            options.EndpointOptions = new List<IEndpointOptions>(_endpoints.Where(e => e.GetType() != typeof(HypermediaEndpointOptions)));
+            options.EndpointOptions = new List<IEndpointOptions>(_endpoints.Where(e => e is not HypermediaEndpointOptions));
         }
     }
 

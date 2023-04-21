@@ -4,9 +4,6 @@ const Steeltoe.Management.Endpoint.ActuatorMediaTypes.AppJson = "application/jso
 const Steeltoe.Management.Endpoint.ActuatorMediaTypes.V1Json = "application/vnd.spring-boot.actuator.v1+json" -> string
 const Steeltoe.Management.Endpoint.ActuatorMediaTypes.V2Json = "application/vnd.spring-boot.actuator.v2+json" -> string
 const Steeltoe.Management.Endpoint.ActuatorMediaTypes.V3Json = "application/vnd.spring-boot.actuator.v3+json" -> string
-const Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.ManagementPortKey = "management:endpoints:port" -> string
-const Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.ManagementSSLKey = "management:endpoints:sslenabled" -> string
-const Steeltoe.Management.Endpoint.Mappings.MappingDescription.AllHttpMethods = "GET || PUT || POST || DELETE || HEAD || OPTIONS" -> string
 override abstract Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TResult, TRequest>.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext context, Microsoft.AspNetCore.Http.RequestDelegate next) -> System.Threading.Tasks.Task
 override Steeltoe.Management.Endpoint.Health.HealthEndpointOptions.ExactMatch.get -> bool
 override Steeltoe.Management.Endpoint.HeapDump.HeapDumpEndpointOptions.DefaultEnabled.get -> bool
@@ -196,14 +193,14 @@ Steeltoe.Management.Endpoint.EndpointCollectionConventionBuilder.AddConventionBu
 Steeltoe.Management.Endpoint.EndpointCollectionConventionBuilder.EndpointCollectionConventionBuilder() -> void
 Steeltoe.Management.Endpoint.EndPointExtensions
 Steeltoe.Management.Endpoint.Env.EndpointServiceCollectionExtensions
-Steeltoe.Management.Endpoint.Env.EnvEndpointOptions
-Steeltoe.Management.Endpoint.Env.EnvEndpointOptions.EnvEndpointOptions() -> void
-Steeltoe.Management.Endpoint.Env.EnvEndpointOptions.KeysToSanitize.get -> string[]
-Steeltoe.Management.Endpoint.Env.EnvEndpointOptions.KeysToSanitize.set -> void
 Steeltoe.Management.Endpoint.Env.EnvironmentDescriptor
 Steeltoe.Management.Endpoint.Env.EnvironmentDescriptor.ActiveProfiles.get -> System.Collections.Generic.IList<string>
 Steeltoe.Management.Endpoint.Env.EnvironmentDescriptor.EnvironmentDescriptor(System.Collections.Generic.IList<string> activeProfiles, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Env.PropertySourceDescriptor> sources) -> void
 Steeltoe.Management.Endpoint.Env.EnvironmentDescriptor.PropertySources.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Env.PropertySourceDescriptor>
+Steeltoe.Management.Endpoint.Env.EnvironmentEndpointOptions
+Steeltoe.Management.Endpoint.Env.EnvironmentEndpointOptions.EnvironmentEndpointOptions() -> void
+Steeltoe.Management.Endpoint.Env.EnvironmentEndpointOptions.KeysToSanitize.get -> string[]
+Steeltoe.Management.Endpoint.Env.EnvironmentEndpointOptions.KeysToSanitize.set -> void
 Steeltoe.Management.Endpoint.Env.GenericHostingEnvironment
 Steeltoe.Management.Endpoint.Env.GenericHostingEnvironment.ApplicationName.get -> string
 Steeltoe.Management.Endpoint.Env.GenericHostingEnvironment.ApplicationName.set -> void

@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-internal class ThreadDumpEndpointMiddleware : EndpointMiddleware<IList<ThreadInfo>>
+internal sealed class ThreadDumpEndpointMiddleware : EndpointMiddleware<IList<ThreadInfo>>
 {
     public ThreadDumpEndpointMiddleware(IThreadDumpEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<ThreadDumpEndpointMiddleware> logger)

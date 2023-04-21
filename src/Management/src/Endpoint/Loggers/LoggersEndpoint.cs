@@ -10,7 +10,7 @@ using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-internal class LoggersEndpoint : ILoggersEndpoint
+internal sealed class LoggersEndpoint : ILoggersEndpoint
 {
     private static readonly List<string> Levels = new()
     {
@@ -40,7 +40,7 @@ internal class LoggersEndpoint : ILoggersEndpoint
         _logger = loggerFactory.CreateLogger<LoggersEndpoint>();
     }
 
-    public virtual Dictionary<string, object> Invoke(LoggersChangeRequest request)
+    public Dictionary<string, object> Invoke(LoggersChangeRequest request)
     {
         _logger.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
 

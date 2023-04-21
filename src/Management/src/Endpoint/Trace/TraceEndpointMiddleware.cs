@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-internal class TraceEndpointMiddleware : EndpointMiddleware<IList<TraceResult>>
+internal sealed class TraceEndpointMiddleware : EndpointMiddleware<IList<TraceResult>>
 {
     public TraceEndpointMiddleware(ITraceEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<TraceEndpointMiddleware> logger)
@@ -30,7 +30,7 @@ internal class TraceEndpointMiddleware : EndpointMiddleware<IList<TraceResult>>
         return Task.CompletedTask;
     }
 
-    protected internal Task HandleTraceRequestAsync(HttpContext context)
+    internal Task HandleTraceRequestAsync(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
 

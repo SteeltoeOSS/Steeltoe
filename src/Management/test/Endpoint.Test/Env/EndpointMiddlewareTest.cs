@@ -42,7 +42,7 @@ public class EndpointMiddlewareTest : BaseTest
         configurationBuilder.AddInMemoryCollection(AppSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        IOptionsMonitor<EnvEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<EnvEndpointOptions, ConfigureEnvEndpointOptions>();
+        IOptionsMonitor<EnvironmentEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
         var managementOptions = new TestOptionsMonitor<ManagementEndpointOptions>(new ManagementEndpointOptions());
 
         var ep = new EnvironmentEndpoint(optionsMonitor, configurationRoot, _host, NullLoggerFactory.Instance);
@@ -97,7 +97,7 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<EnvEndpointOptions>();
+        var options = GetOptionsFromSettings<EnvironmentEndpointOptions>();
 
         IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);

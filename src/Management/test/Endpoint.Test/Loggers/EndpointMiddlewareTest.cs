@@ -37,26 +37,6 @@ public class EndpointMiddlewareTest : BaseTest
     };
 
     [Fact]
-    public async Task HandleLoggersRequestAsync_ReturnsExpected()
-    {
-        IOptionsMonitor<LoggersEndpointOptions> opts = GetOptionsMonitorFromSettings<LoggersEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        IOptionsMonitor<LoggerFilterOptions> loggerOpts = new TestOptionsMonitor<LoggerFilterOptions>(new LoggerFilterOptions());
-        IOptionsMonitor<ConsoleLoggerOptions> consoleLoggerOpts = new TestOptionsMonitor<ConsoleLoggerOptions>(new ConsoleLoggerOptions());
-
-        var ep = new TestLoggersEndpoint(opts, NullLoggerFactory.Instance,
-            new DynamicConsoleLoggerProvider(loggerOpts, new ConsoleLoggerProvider(consoleLoggerOpts)));
-
-        var middle = new LoggersEndpointMiddleware(ep, managementOptions, NullLogger<LoggersEndpointMiddleware>.Instance);
-        HttpContext context = CreateRequest("GET", "/loggers");
-        await middle.HandleLoggersRequestAsync(context);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
-        Assert.Equal("{}", json);
-    }
-
-    [Fact]
     public async Task LoggersActuator_ReturnsExpectedData()
     {
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
@@ -197,18 +177,4 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.Equal("INFO", loggers.GetProperty("Steeltoe.Management").GetProperty("effectiveLevel").GetString());
     }
 
-    private HttpContext CreateRequest(string method, string path)
-    {
-        HttpContext context = new DefaultHttpContext
-        {
-            TraceIdentifier = Guid.NewGuid().ToString()
-        };
-
-        context.Response.Body = new MemoryStream();
-        context.Request.Method = method;
-        context.Request.Path = new PathString(path);
-        context.Request.Scheme = "http";
-        context.Request.Host = new HostString("localhost");
-        return context;
-    }
 }

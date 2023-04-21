@@ -14,7 +14,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint;
 
-internal class ActuatorEndpointMapper
+internal sealed class ActuatorEndpointMapper
 {
     private readonly IEnumerable<IContextName> _contextNames;
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
@@ -41,8 +41,8 @@ internal class ActuatorEndpointMapper
 
             foreach (IEndpointMiddleware middleware in _middlewares)
             {
-                if ((name is ActuatorContext && middleware.GetType() == typeof(CloudFoundryEndpointMiddleware)) ||
-                    (name is CFContext && middleware.GetType() == typeof(ActuatorHypermediaEndpointMiddleware)))
+                if ((name is ActuatorContext && (middleware is CloudFoundryEndpointMiddleware)) ||
+                    (name is CFContext && (middleware is ActuatorHypermediaEndpointMiddleware)))
                 {
                     continue;
                 }

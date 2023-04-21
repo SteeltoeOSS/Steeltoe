@@ -7,7 +7,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-internal class ConfigureInfoEndpointOptions : ConfigureEndpointOptions<InfoEndpointOptions>
+internal sealed class ConfigureInfoEndpointOptions : ConfigureEndpointOptions<InfoEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:info";
 

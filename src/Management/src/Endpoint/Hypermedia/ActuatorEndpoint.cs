@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 /// <summary>
 /// Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators.
 /// </summary>
-internal class ActuatorEndpoint : IActuatorEndpoint
+internal sealed class ActuatorEndpoint : IActuatorEndpoint
 {
     private readonly ILogger<ActuatorEndpoint> _logger;
     private readonly IOptionsMonitor<HypermediaEndpointOptions> _options;
@@ -34,7 +34,7 @@ internal class ActuatorEndpoint : IActuatorEndpoint
         _logger = loggerFactory.CreateLogger<ActuatorEndpoint>();
     }
 
-    public virtual Links Invoke(string baseUrl)
+    public Links Invoke(string baseUrl)
     {
         var service = new HypermediaService(_managementOption, _options, _endpointOptions, _logger);
         return service.Invoke(baseUrl);

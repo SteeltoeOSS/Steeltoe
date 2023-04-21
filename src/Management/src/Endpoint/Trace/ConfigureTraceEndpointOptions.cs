@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-internal class ConfigureTraceEndpointOptions : IConfigureNamedOptions<TraceEndpointOptions>
+internal sealed class ConfigureTraceEndpointOptions : IConfigureNamedOptions<TraceEndpointOptions>
 {
     private const string ManagementInfoPrefixV1 = "management:endpoints:trace";
     private const string ManagementInfoPrefix = "management:endpoints:httptrace";

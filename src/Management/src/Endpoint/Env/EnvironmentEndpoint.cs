@@ -11,9 +11,9 @@ using Steeltoe.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-internal class EnvironmentEndpoint : IEnvironmentEndpoint
+internal sealed class EnvironmentEndpoint : IEnvironmentEndpoint
 {
-    private readonly IOptionsMonitor<EnvEndpointOptions> _options;
+    private readonly IOptionsMonitor<EnvironmentEndpointOptions> _options;
     private readonly IConfiguration _configuration;
     private readonly Sanitizer _sanitizer;
 
@@ -22,7 +22,7 @@ internal class EnvironmentEndpoint : IEnvironmentEndpoint
 
     public IEndpointOptions Options => _options.CurrentValue;
 
-    public EnvironmentEndpoint(IOptionsMonitor<EnvEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILoggerFactory loggerFactory)
+    public EnvironmentEndpoint(IOptionsMonitor<EnvironmentEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(env);
@@ -36,7 +36,7 @@ internal class EnvironmentEndpoint : IEnvironmentEndpoint
         _logger = loggerFactory.CreateLogger<EnvironmentEndpoint>();
     }
 
-    public virtual EnvironmentDescriptor Invoke()
+    public EnvironmentDescriptor Invoke()
     {
         return DoInvoke(_configuration);
     }
@@ -81,7 +81,7 @@ internal class EnvironmentEndpoint : IEnvironmentEndpoint
         return results;
     }
 
-    public virtual PropertySourceDescriptor GetPropertySourceDescriptor(IConfigurationProvider provider)
+    public PropertySourceDescriptor GetPropertySourceDescriptor(IConfigurationProvider provider)
     {
         ArgumentGuard.NotNull(provider);
         var properties = new Dictionary<string, PropertyValueDescriptor>();
@@ -104,7 +104,7 @@ internal class EnvironmentEndpoint : IEnvironmentEndpoint
         return new PropertySourceDescriptor(sourceName, properties);
     }
 
-    public virtual string GetPropertySourceName(IConfigurationProvider provider)
+    public string GetPropertySourceName(IConfigurationProvider provider)
     {
         ArgumentGuard.NotNull(provider);
         return provider is FileConfigurationProvider fileProvider ? $"{provider.GetType().Name}: [{fileProvider.Source.Path}]" : provider.GetType().Name;

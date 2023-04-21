@@ -10,7 +10,7 @@ using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-internal class MetricsEndpoint : IMetricsEndpoint
+internal sealed class MetricsEndpoint : IMetricsEndpoint
 {
     private readonly IOptionsMonitor<MetricsEndpointOptions> _options;
     private readonly ISteeltoeExporter _exporter;
@@ -29,7 +29,7 @@ internal class MetricsEndpoint : IMetricsEndpoint
         _logger = loggerFactory.CreateLogger<MetricsEndpoint>();
     }
 
-    public virtual IMetricsResponse Invoke(MetricsRequest request)
+    public IMetricsResponse Invoke(MetricsRequest request)
     {
         (MetricsCollection<List<MetricSample>> measurements, MetricsCollection<List<MetricTag>> availTags) = GetMetrics();
 

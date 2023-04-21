@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Mappings;
 
 public sealed class MappingDescription
 {
-    public const string AllHttpMethods = "GET || PUT || POST || DELETE || HEAD || OPTIONS";
+    internal const string AllHttpMethods = "GET || PUT || POST || DELETE || HEAD || OPTIONS";
 
     [JsonPropertyName("handler")]
     public string Handler { get; }

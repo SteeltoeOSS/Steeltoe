@@ -7,7 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor;
 
-public class DiskSpaceContributorOptions
+public sealed class DiskSpaceContributorOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:health:diskspace";
     private const long DefaultThreshold = 10 * 1024 * 1024;

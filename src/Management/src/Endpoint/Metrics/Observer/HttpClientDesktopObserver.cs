@@ -16,7 +16,7 @@ using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-internal class HttpClientDesktopObserver : MetricsObserver
+internal sealed class HttpClientDesktopObserver : MetricsObserver
 {
     private const string StatusTagKey = "status";
     private const string UriTagKey = "uri";

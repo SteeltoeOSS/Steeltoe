@@ -9,7 +9,7 @@ using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Diagnostics;
 
-internal class DiagnosticServices : IHostedService
+internal sealed class DiagnosticServices : IHostedService
 {
     private readonly ILogger<DiagnosticServices> _logger;
     private readonly IDiagnosticsManager _observerManager;

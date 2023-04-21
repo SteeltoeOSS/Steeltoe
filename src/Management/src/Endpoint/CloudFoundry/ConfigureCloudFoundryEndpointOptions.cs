@@ -8,7 +8,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-internal class ConfigureCloudFoundryEndpointOptions : ConfigureEndpointOptions<CloudFoundryEndpointOptions>
+internal sealed class ConfigureCloudFoundryEndpointOptions : ConfigureEndpointOptions<CloudFoundryEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:cloudfoundry";
     private const string VcapApplicationIdKey = "vcap:application:application_id";

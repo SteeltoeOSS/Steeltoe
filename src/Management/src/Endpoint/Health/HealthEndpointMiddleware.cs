@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-internal class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointResponse, ISecurityContext>
+internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointResponse, ISecurityContext>
 {
     public HealthEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IHealthEndpoint endpoint,
         ILogger<HealthEndpointMiddleware> logger)

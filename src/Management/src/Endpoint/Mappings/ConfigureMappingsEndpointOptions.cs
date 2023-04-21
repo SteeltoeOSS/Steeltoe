@@ -7,7 +7,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-internal class ConfigureMappingsEndpointOptions : ConfigureEndpointOptions<MappingsEndpointOptions>
+internal sealed class ConfigureMappingsEndpointOptions : ConfigureEndpointOptions<MappingsEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:mappings";
 

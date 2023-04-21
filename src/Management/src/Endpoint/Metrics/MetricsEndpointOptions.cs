@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsEndpointOptions : EndpointOptionsBase
+public sealed class MetricsEndpointOptions : EndpointOptionsBase
 {
     public string IngressIgnorePattern { get; set; }
 

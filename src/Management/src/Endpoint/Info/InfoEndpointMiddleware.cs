@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-internal class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>>
+internal sealed class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>>
 {
     public InfoEndpointMiddleware(IInfoEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<InfoEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)

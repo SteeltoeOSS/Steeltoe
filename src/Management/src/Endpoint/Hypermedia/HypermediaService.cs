@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
-internal class HypermediaService
+internal sealed class HypermediaService
 {
     private readonly IEnumerable<IEndpointOptions> _endpointOptions;
     private readonly ILogger _logger;

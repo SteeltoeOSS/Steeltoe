@@ -12,7 +12,7 @@ public class EnvEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        EnvEndpointOptions opts = GetOptionsFromSettings<EnvEndpointOptions, ConfigureEnvEndpointOptions>();
+        EnvironmentEndpointOptions opts = GetOptionsFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
         Assert.Equal("env", opts.Id);
 
         Assert.Equal(new[]

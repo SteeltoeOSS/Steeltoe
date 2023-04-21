@@ -13,7 +13,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-internal class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>
+internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>
 {
     public MetricsEndpointMiddleware(IMetricsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<MetricsEndpointMiddleware> logger)
@@ -90,7 +90,7 @@ internal class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, 
         return metricName;
     }
 
-    protected internal IList<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
+    internal IList<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
     {
         var results = new List<KeyValuePair<string, string>>();
 

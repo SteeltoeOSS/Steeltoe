@@ -8,7 +8,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
-public class SpringBootAdminClientOptions
+public sealed class SpringBootAdminClientOptions
 {
     private const string Prefix = "spring:boot:admin:client";
     private const string Urls = "URLS";

@@ -9,7 +9,7 @@ using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-internal class ConfigureHealthEndpointOptions : IConfigureOptions<HealthEndpointOptions>
+internal sealed class ConfigureHealthEndpointOptions : IConfigureOptions<HealthEndpointOptions>
 {
     private const string HealthOptionsPrefix = "management:endpoints:health";
     private readonly IConfiguration _configuration;

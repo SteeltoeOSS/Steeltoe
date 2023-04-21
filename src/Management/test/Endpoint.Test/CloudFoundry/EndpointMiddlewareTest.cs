@@ -52,23 +52,6 @@ public class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
-    {
-        IOptionsMonitor<CloudFoundryEndpointOptions> opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        var ep = new TestCloudFoundryEndpoint(opts, managementOptions, NullLoggerFactory.Instance);
-
-        var middle = new CloudFoundryEndpointMiddleware(ep, managementOptions, NullLogger<CloudFoundryEndpointMiddleware>.Instance);
-
-        HttpContext context = CreateRequest("GET", "/");
-        await middle.HandleCloudFoundryRequestAsync(context);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
-        Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
-    }
-
-    [Fact]
     public async Task CloudFoundryEndpointMiddleware_ReturnsExpectedData()
     {
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
@@ -140,18 +123,4 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.DoesNotContain("2017-06-08T12:47:02Z", response, StringComparison.Ordinal);
     }
 
-    private HttpContext CreateRequest(string method, string path)
-    {
-        HttpContext context = new DefaultHttpContext
-        {
-            TraceIdentifier = Guid.NewGuid().ToString()
-        };
-
-        context.Response.Body = new MemoryStream();
-        context.Request.Method = method;
-        context.Request.Path = new PathString(path);
-        context.Request.Scheme = "http";
-        context.Request.Host = new HostString("localhost");
-        return context;
-    }
 }

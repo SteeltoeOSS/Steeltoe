@@ -8,7 +8,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-internal class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
+internal sealed class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
 {
     public override HealthEndpointResponse Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

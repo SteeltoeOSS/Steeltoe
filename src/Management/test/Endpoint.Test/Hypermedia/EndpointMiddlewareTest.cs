@@ -31,21 +31,6 @@ public class EndpointMiddlewareTest : BaseTest
         ["info:NET:ASPNET:version"] = "2.0.0"
     };
 
-    [Fact]
-    public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
-    {
-        IOptionsMonitor<HypermediaEndpointOptions> opts = GetOptionsMonitorFromSettings<HypermediaEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        var ep = new TestHypermediaEndpoint(opts, managementOptions, NullLoggerFactory.Instance);
-        var middle = new ActuatorHypermediaEndpointMiddleware(ep, managementOptions, NullLogger<ActuatorHypermediaEndpointMiddleware>.Instance);
-        HttpContext context = CreateRequest("GET", "/");
-        await middle.InvokeAsync(context, null);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
-        Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
-    }
-
     [Theory]
     [InlineData("http://somehost:1234", "https://somehost:1234", "https")]
     [InlineData("http://somehost:443", "https://somehost", "https")]
@@ -117,18 +102,4 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.Contains("Get", options.AllowedVerbs);
     }
 
-    private HttpContext CreateRequest(string method, string path)
-    {
-        HttpContext context = new DefaultHttpContext
-        {
-            TraceIdentifier = Guid.NewGuid().ToString()
-        };
-
-        context.Response.Body = new MemoryStream();
-        context.Request.Method = method;
-        context.Request.Path = new PathString(path);
-        context.Request.Scheme = "http";
-        context.Request.Host = new HostString("localhost");
-        return context;
-    }
 }

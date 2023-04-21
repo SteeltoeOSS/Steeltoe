@@ -7,7 +7,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-internal class ConfigureHeapDumpEndpointOptions : ConfigureEndpointOptions<HeapDumpEndpointOptions>
+internal sealed class ConfigureHeapDumpEndpointOptions : ConfigureEndpointOptions<HeapDumpEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:heapdump";
 

@@ -8,7 +8,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-internal class TraceEndpoint : ITraceEndpoint
+internal sealed class TraceEndpoint : ITraceEndpoint
 {
     private readonly ITraceRepository _traceRepo;
     private readonly ILogger<TraceEndpoint> _logger;
@@ -25,7 +25,7 @@ internal class TraceEndpoint : ITraceEndpoint
         _logger = logger;
     }
 
-    public virtual IList<TraceResult> Invoke()
+    public IList<TraceResult> Invoke()
     {
         _logger.LogTrace("Fetching Traces");
         return DoInvoke(_traceRepo);

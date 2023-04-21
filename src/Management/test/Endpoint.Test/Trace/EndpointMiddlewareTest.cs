@@ -33,40 +33,6 @@ public class EndpointMiddlewareTest : BaseTest
     };
 
     [Fact]
-    public async Task HandleTraceRequestAsync_ReturnsExpected()
-    {
-        IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-
-        var obs = new TraceDiagnosticObserver(opts, NullLogger<TraceDiagnosticObserver>.Instance);
-        var ep = new TestTraceEndpoint(opts, obs, NullLogger<TraceEndpoint>.Instance);
-        var middle = new TraceEndpointMiddleware(ep, managementOptions, NullLogger<TraceEndpointMiddleware>.Instance);
-        HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/httptrace");
-        await middle.HandleTraceRequestAsync(context);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
-        Assert.Equal("[]", json);
-    }
-
-    [Fact]
-    public async Task HandleTraceRequestAsync_OtherPathReturnsExpected()
-    {
-        IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-
-        var obs = new TraceDiagnosticObserver(opts, NullLogger<TraceDiagnosticObserver>.Instance);
-        var ep = new TestTraceEndpoint(opts, obs, NullLogger<TraceEndpoint>.Instance);
-        var middle = new TraceEndpointMiddleware(ep, managementOptions, NullLogger<TraceEndpointMiddleware>.Instance);
-        HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/trace");
-        await middle.HandleTraceRequestAsync(context);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
-        Assert.Equal("[]", json);
-    }
-
-    [Fact]
     public async Task TraceActuator_ReturnsExpectedData()
     {
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
@@ -109,18 +75,4 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.Contains("Get", options.AllowedVerbs);
     }
 
-    private HttpContext CreateRequest(string method, string path)
-    {
-        HttpContext context = new DefaultHttpContext
-        {
-            TraceIdentifier = Guid.NewGuid().ToString()
-        };
-
-        context.Response.Body = new MemoryStream();
-        context.Request.Method = method;
-        context.Request.Path = new PathString(path);
-        context.Request.Scheme = "http";
-        context.Request.Host = new HostString("localhost");
-        return context;
-    }
 }

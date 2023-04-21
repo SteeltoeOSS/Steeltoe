@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ManagementPort;
 
-internal class ManagementPortMiddleware
+internal sealed class ManagementPortMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
@@ -27,7 +27,7 @@ internal class ManagementPortMiddleware
         _logger = logger;
     }
 
-    public virtual async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
         ManagementEndpointOptions mgmtOptions = _managementOptions.Get(ActuatorContext.Name);

@@ -40,27 +40,6 @@ public class EndpointMiddlewareTest : BaseTest
     };
 
     [Fact]
-    public async Task HandleInfoRequestAsync_ReturnsExpected()
-    {
-        IOptionsMonitor<InfoEndpointOptions> opts = GetOptionsMonitorFromSettings<InfoEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-
-        var contributors = new List<IInfoContributor>
-        {
-            new GitInfoContributor(NullLogger<GitInfoContributor>.Instance)
-        };
-
-        var ep = new TestInfoEndpoint(opts, contributors, NullLoggerFactory.Instance);
-        var middle = new InfoEndpointMiddleware(ep, managementOptions, NullLogger<InfoEndpointMiddleware>.Instance);
-        HttpContext context = CreateRequest("GET", "/loggers");
-        await middle.HandleInfoRequestAsync(context);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
-        Assert.Equal("{}", json);
-    }
-
-    [Fact]
     public async Task InfoActuator_ReturnsExpectedData()
     {
         // Note: This test pulls in from git.properties and appsettings created
@@ -140,18 +119,4 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.Contains("Get", options.AllowedVerbs);
     }
 
-    private HttpContext CreateRequest(string method, string path)
-    {
-        HttpContext context = new DefaultHttpContext
-        {
-            TraceIdentifier = Guid.NewGuid().ToString()
-        };
-
-        context.Response.Body = new MemoryStream();
-        context.Request.Method = method;
-        context.Request.Path = new PathString(path);
-        context.Request.Scheme = "http";
-        context.Request.Host = new HostString("localhost");
-        return context;
-    }
 }

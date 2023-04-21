@@ -27,8 +27,8 @@ namespace Steeltoe.Management.Endpoint;
 
 public static class ManagementWebHostBuilderExtensions
 {
-    public const string ManagementPortKey = "management:endpoints:port";
-    public const string ManagementSSLKey = "management:endpoints:sslenabled";
+    private const string ManagementPortKey = "management:endpoints:port";
+    private const string ManagementSSLKey = "management:endpoints:sslenabled";
 
     /// <summary>
     /// Adds the Database Migrations actuator to the application.

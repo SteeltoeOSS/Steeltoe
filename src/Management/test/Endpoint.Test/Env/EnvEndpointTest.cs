@@ -28,7 +28,7 @@ public class EnvEndpointTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfNulls()
     {
-        IOptionsMonitor<EnvEndpointOptions> options = GetOptionsMonitorFromSettings<EnvEndpointOptions>();
+        IOptionsMonitor<EnvironmentEndpointOptions> options = GetOptionsMonitorFromSettings<EnvironmentEndpointOptions>();
         IConfiguration configuration = null;
         const IHostEnvironment env = null;
 

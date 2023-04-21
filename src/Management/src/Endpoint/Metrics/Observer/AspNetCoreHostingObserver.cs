@@ -17,7 +17,7 @@ using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-internal class AspNetCoreHostingObserver : MetricsObserver
+internal sealed class AspNetCoreHostingObserver : MetricsObserver
 {
     private const string DefaultObserverName = "AspNetCoreHostingObserver";
     private const string DiagnosticName = "Microsoft.AspNetCore";
@@ -70,7 +70,7 @@ internal class AspNetCoreHostingObserver : MetricsObserver
         }
     }
 
-    protected internal void HandleStopEvent(Activity current, HttpContext arg)
+    internal void HandleStopEvent(Activity current, HttpContext arg)
     {
         ArgumentGuard.NotNull(current);
         ArgumentGuard.NotNull(arg);
@@ -90,7 +90,7 @@ internal class AspNetCoreHostingObserver : MetricsObserver
         }
     }
 
-    protected internal IEnumerable<KeyValuePair<string, object>> GetLabelSets(HttpContext arg)
+    internal IEnumerable<KeyValuePair<string, object>> GetLabelSets(HttpContext arg)
     {
         ArgumentGuard.NotNull(arg);
         string uri = arg.Request.Path.ToString();

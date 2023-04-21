@@ -12,7 +12,7 @@ using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-internal class DbMigrationsEndpoint : IDbMigrationsEndpoint
+internal sealed class DbMigrationsEndpoint : IDbMigrationsEndpoint
 {
     internal static readonly Type DbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
 
@@ -54,7 +54,7 @@ internal class DbMigrationsEndpoint : IDbMigrationsEndpoint
         _logger = loggerFactory.CreateLogger<DbMigrationsEndpoint>();
     }
 
-    public virtual Dictionary<string, DbMigrationsDescriptor> Invoke()
+    public Dictionary<string, DbMigrationsDescriptor> Invoke()
     {
         return DoInvoke();
     }

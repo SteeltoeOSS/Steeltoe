@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-internal class SecurityUtils
+internal sealed class SecurityUtils
 {
     public const int DefaultGetPermissionsTimeout = 5000; // Milliseconds
     public const string ApplicationIdMissingMessage = "Application id is not available";

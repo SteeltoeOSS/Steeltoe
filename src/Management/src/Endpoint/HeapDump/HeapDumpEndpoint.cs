@@ -8,7 +8,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-internal class HeapDumpEndpoint : IHeapDumpEndpoint
+internal sealed class HeapDumpEndpoint : IHeapDumpEndpoint
 {
     private readonly IHeapDumper _heapDumper;
     private readonly ILogger<HeapDumpEndpoint> _logger;
@@ -27,7 +27,7 @@ internal class HeapDumpEndpoint : IHeapDumpEndpoint
         _logger = loggerFactory.CreateLogger<HeapDumpEndpoint>();
     }
 
-    public virtual string Invoke()
+    public string Invoke()
     {
         _logger.LogTrace("Invoking the heap dumper");
         return _heapDumper.DumpHeap();

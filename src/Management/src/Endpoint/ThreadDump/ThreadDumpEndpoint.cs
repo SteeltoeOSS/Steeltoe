@@ -8,7 +8,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-internal class ThreadDumpEndpoint : IThreadDumpEndpoint
+internal sealed class ThreadDumpEndpoint : IThreadDumpEndpoint
 {
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
     private readonly ILogger<ThreadDumpEndpoint> _logger;
@@ -27,7 +27,7 @@ internal class ThreadDumpEndpoint : IThreadDumpEndpoint
         _logger = loggerFactory.CreateLogger<ThreadDumpEndpoint>();
     }
 
-    public virtual IList<ThreadInfo> Invoke()
+    public IList<ThreadInfo> Invoke()
     {
         _logger.LogTrace("Invoking ThreadDumper");
         return _threadDumper.DumpThreads();

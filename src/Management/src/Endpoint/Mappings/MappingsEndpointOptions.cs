@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-public class MappingsEndpointOptions : EndpointOptionsBase
+public sealed class MappingsEndpointOptions : EndpointOptionsBase
 {
 }

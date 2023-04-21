@@ -8,7 +8,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
-internal class ConfigureTestManagementOptions : ConfigureManagementEndpointOptions
+internal sealed class ConfigureTestManagementOptions : ConfigureManagementEndpointOptions
 {
     public ConfigureTestManagementOptions(IConfiguration configuration, IEnumerable<IContextName> contextNames,
         IEnumerable<IEndpointOptions> endpointsCollection)

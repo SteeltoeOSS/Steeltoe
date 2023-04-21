@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-internal class MetricCollectionHostedService : IHostedService
+internal sealed class MetricCollectionHostedService : IHostedService
 {
     private readonly AggregationManager _aggregationManager;
 

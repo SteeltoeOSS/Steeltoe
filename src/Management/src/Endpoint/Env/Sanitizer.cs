@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-internal class Sanitizer
+internal sealed class Sanitizer
 {
     private readonly string[] _regexParts =
     {

@@ -9,7 +9,7 @@ using Steeltoe.Management.Endpoint.Hypermedia;
 namespace Steeltoe.Management.Endpoint.Options;
 
 [SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "Allow in Options")]
-public class ManagementEndpointOptions
+public sealed class ManagementEndpointOptions
 {
     public bool? Enabled { get; set; }
 

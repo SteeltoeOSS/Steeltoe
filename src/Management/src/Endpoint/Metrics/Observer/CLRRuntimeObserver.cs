@@ -11,7 +11,7 @@ using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-internal class ClrRuntimeObserver : IRuntimeDiagnosticSource
+internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
 {
     private const string GenerationTagValueName = "gen";
     private const string GenerationKey = "generation";

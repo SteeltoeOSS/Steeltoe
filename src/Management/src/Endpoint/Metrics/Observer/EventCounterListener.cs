@@ -14,7 +14,7 @@ using Steeltoe.Management.MetricCollectors;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-internal class EventCounterListener : EventListener
+internal sealed class EventCounterListener : EventListener
 {
     private const string EventSourceName = "System.Runtime";
     private const string EventName = "EventCounters";

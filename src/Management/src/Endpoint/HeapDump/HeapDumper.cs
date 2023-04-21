@@ -12,7 +12,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-internal class HeapDumper : IHeapDumper
+internal sealed class HeapDumper : IHeapDumper
 {
     private readonly string _basePathOverride;
     private readonly IOptionsMonitor<HeapDumpEndpointOptions> _options;
