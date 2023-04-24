@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public sealed class CloudFoundryEndpointOptions: EndpointOptionsBase
+public sealed class CloudFoundryEndpointOptions : EndpointOptionsBase
 {
     private const bool DefaultValidateCertificates = true;
 

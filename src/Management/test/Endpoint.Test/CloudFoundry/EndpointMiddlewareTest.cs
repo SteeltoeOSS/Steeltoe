@@ -5,10 +5,8 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -122,5 +120,4 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.Contains("1496926022000", response, StringComparison.Ordinal);
         Assert.DoesNotContain("2017-06-08T12:47:02Z", response, StringComparison.Ordinal);
     }
-
 }

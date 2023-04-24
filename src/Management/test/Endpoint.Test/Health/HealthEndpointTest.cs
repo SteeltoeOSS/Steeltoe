@@ -130,7 +130,7 @@ public class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var ep = (HealthEndpoint) tc.GetService<IHealthEndpoint>() ;
+        var ep = (HealthEndpoint)tc.GetService<IHealthEndpoint>();
 
         Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult
         {
