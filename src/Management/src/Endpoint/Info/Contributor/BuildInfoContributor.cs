@@ -8,7 +8,7 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
-public class BuildInfoContributor : IInfoContributor
+public sealed class BuildInfoContributor : IInfoContributor
 {
     private readonly Assembly _application;
     private readonly Assembly _steeltoe;

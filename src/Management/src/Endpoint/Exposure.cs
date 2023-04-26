@@ -7,7 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint;
 
-public class Exposure
+public sealed class Exposure
 {
     private const string ExposurePrefix = "management:endpoints:actuator:exposure";
     private const string ExposureSecondChancePrefix = "management:endpoints:web:exposure";

@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class HttpTrace
+public sealed class HttpTrace
 {
     public long Timestamp { get; }
 

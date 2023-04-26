@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.MetricCollectors;
 
-public class MetricSample
+public sealed class MetricSample
 {
     [JsonPropertyName("statistic")]
     public MetricStatistic Statistic { get; }

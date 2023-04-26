@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class GenericHostingEnvironment : IHostEnvironment
+public sealed class GenericHostingEnvironment : IHostEnvironment
 {
     public string EnvironmentName { get; set; }
 

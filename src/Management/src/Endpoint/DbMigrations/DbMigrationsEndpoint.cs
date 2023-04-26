@@ -108,7 +108,7 @@ internal sealed class DbMigrationsEndpoint : IDbMigrationsEndpoint
     /// <summary>
     /// Hacky class to allow mocking migration methods in unit tests.
     /// </summary>
-    public class DbMigrationsEndpointHelper
+    internal class DbMigrationsEndpointHelper
     {
         internal virtual Assembly ScanRootAssembly => Assembly.GetEntryAssembly();
 

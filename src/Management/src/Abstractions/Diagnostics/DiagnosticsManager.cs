@@ -11,7 +11,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Diagnostics;
 
-public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
+public sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
 {
     private static readonly Lazy<DiagnosticsManager> AsSingleton = new(() => new DiagnosticsManager(NullLogger<DiagnosticsManager>.Instance));
     private readonly IEnumerable<IRuntimeDiagnosticSource> _runtimeSources;
@@ -118,7 +118,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
         GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing)
+    void Dispose(bool disposing)
     {
         if (disposing && !_isDisposed)
         {

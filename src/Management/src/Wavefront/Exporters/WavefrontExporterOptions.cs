@@ -8,7 +8,7 @@ using Steeltoe.Common.Net;
 
 namespace Steeltoe.Management.Wavefront.Exporters;
 
-public class WavefrontExporterOptions : IWavefrontExporterOptions
+public sealed class WavefrontExporterOptions : IWavefrontExporterOptions
 {
     // Note: this key is shared between tracing and metrics to mirror the Spring boot configuration settings.
     public const string WavefrontPrefix = "management:metrics:export:wavefront";

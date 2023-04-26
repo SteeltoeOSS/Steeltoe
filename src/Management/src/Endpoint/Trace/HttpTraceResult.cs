@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class HttpTraceResult
+public sealed class HttpTraceResult
 {
     [JsonPropertyName("traces")]
     public IList<HttpTrace> Traces { get; }

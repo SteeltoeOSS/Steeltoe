@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.MetricCollectors;
 
-public class MetricTag
+public sealed class MetricTag
 {
     [JsonPropertyName("tag")]
     public string Tag { get; }

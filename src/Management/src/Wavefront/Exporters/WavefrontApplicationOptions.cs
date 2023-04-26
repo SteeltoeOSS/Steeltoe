@@ -7,7 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Wavefront.Exporters;
 
-public class WavefrontApplicationOptions
+public sealed class WavefrontApplicationOptions
 {
     internal const string WavefrontPrefix = "wavefront:application";
 

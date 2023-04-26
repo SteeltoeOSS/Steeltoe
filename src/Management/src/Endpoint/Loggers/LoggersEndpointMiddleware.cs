@@ -49,7 +49,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<
             response.StatusCode = (int)HttpStatusCode.BadRequest;
             return;
         }
-
+        
         // GET request
         string serialInfo = HandleRequest(null);
         Logger.LogDebug("Returning: {info}", serialInfo);

@@ -7,7 +7,7 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
-public class AppSettingsInfoContributor : AbstractConfigurationContributor, IInfoContributor
+public sealed class AppSettingsInfoContributor : AbstractConfigurationContributor, IInfoContributor
 {
     private const string AppsettingsPrefix = "info";
 

@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class Session
+public sealed class Session
 {
     public string Id { get; }
 

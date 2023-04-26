@@ -9,7 +9,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-public class EpochSecondsDateTimeConverter : JsonConverter<DateTime>
+public sealed class EpochSecondsDateTimeConverter : JsonConverter<DateTime>
 {
     private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 

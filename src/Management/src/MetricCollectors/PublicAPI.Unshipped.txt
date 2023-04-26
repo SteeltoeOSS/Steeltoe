@@ -10,15 +10,6 @@ Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.AddMet
 Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.Collect.get -> System.Action?
 Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.Collect.set -> void
 Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.Export() -> (Steeltoe.Management.MetricCollectors.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.MetricSample!>!>! MetricSamples, Steeltoe.Management.MetricCollectors.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.MetricTag!>!>! AvailableTags)
-Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.SteeltoeCollectionResponse
-Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.SteeltoeCollectionResponse.AvailableTags.get -> Steeltoe.Management.MetricCollectors.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.MetricTag!>!>!
-Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.SteeltoeCollectionResponse.AvailableTags.set -> void
-Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.SteeltoeCollectionResponse.GeneratedAtUtc.get -> System.DateTime
-Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.SteeltoeCollectionResponse.GeneratedAtUtc.set -> void
-Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.SteeltoeCollectionResponse.MetricSamples.get -> Steeltoe.Management.MetricCollectors.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.MetricSample!>!>!
-Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.SteeltoeCollectionResponse.MetricSamples.set -> void
-Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.SteeltoeCollectionResponse.SteeltoeCollectionResponse() -> void
-Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.SteeltoeCollectionResponse.SteeltoeCollectionResponse(Steeltoe.Management.MetricCollectors.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.MetricSample!>!>! MetricSamples, Steeltoe.Management.MetricCollectors.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.MetricTag!>!>! AvailableTags, System.DateTime GeneratedAtUtc) -> void
 Steeltoe.Management.MetricCollectors.Metrics.MetricLabelExtensions
 Steeltoe.Management.MetricCollectors.MetricSample
 Steeltoe.Management.MetricCollectors.MetricSample.MetricSample(Steeltoe.Management.MetricCollectors.MetricStatistic statistic, double value, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string!, string!>>? tags) -> void

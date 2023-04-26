@@ -95,7 +95,6 @@ virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.Dispose(bool disposin
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnCompleted() -> void
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnError(System.Exception error) -> void
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnNext(System.Collections.Generic.KeyValuePair<string, object> event) -> void
-virtual Steeltoe.Management.Diagnostics.DiagnosticsManager.Dispose(bool disposing) -> void
 virtual Steeltoe.Management.EndpointOptionsBase.AllowedVerbs.get -> System.Collections.Generic.IEnumerable<string>
 virtual Steeltoe.Management.EndpointOptionsBase.DefaultEnabled.get -> bool
 virtual Steeltoe.Management.EndpointOptionsBase.Enabled.get -> bool?

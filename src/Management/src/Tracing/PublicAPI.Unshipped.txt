@@ -14,6 +14,5 @@ Steeltoe.Management.Tracing.TracingBaseServiceCollectionExtensions
 Steeltoe.Management.Tracing.TracingCoreServiceCollectionExtensions
 Steeltoe.Management.Tracing.TracingHostBuilderExtensions
 Steeltoe.Management.Tracing.TracingLogProcessor
-Steeltoe.Management.Tracing.TracingLogProcessor.GetCurrentSpan() -> OpenTelemetry.Trace.TelemetrySpan
 Steeltoe.Management.Tracing.TracingLogProcessor.Process(string inputLogMessage) -> string
 Steeltoe.Management.Tracing.TracingLogProcessor.TracingLogProcessor(Steeltoe.Common.ITracingOptions options) -> void

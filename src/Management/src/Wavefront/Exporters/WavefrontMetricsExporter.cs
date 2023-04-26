@@ -11,7 +11,7 @@ using Wavefront.SDK.CSharp.Entities.Metrics;
 
 namespace Steeltoe.Management.Wavefront.Exporters;
 
-public class WavefrontMetricsExporter : BaseExporter<Metric>
+public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
 {
     private readonly ILogger<WavefrontMetricsExporter> _logger;
     private readonly IWavefrontMetricSender _wavefrontSender;

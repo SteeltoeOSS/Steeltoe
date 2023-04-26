@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsListNamesResponse : IMetricsResponse
+public sealed class MetricsListNamesResponse : IMetricsResponse
 {
     [JsonPropertyName("names")]
     public ISet<string> Names { get; }

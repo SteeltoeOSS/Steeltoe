@@ -15,7 +15,7 @@ using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepository
+internal sealed class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepository
 {
     private const string DiagnosticName = "Microsoft.AspNetCore";
     private const string DefaultObserverName = "HttpTraceDiagnosticObserver";
@@ -97,7 +97,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
         return sessionFeature == null ? null : context.Session.Id;
     }
 
-    protected internal string GetTimeTaken(TimeSpan duration)
+    internal string GetTimeTaken(TimeSpan duration)
     {
         long timeInMilliseconds = (long)duration.TotalMilliseconds;
         return timeInMilliseconds.ToString(CultureInfo.InvariantCulture);

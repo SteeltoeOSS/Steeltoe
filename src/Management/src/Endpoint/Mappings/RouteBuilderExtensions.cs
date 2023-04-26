@@ -7,7 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-public static class RouteBuilderExtensions
+internal static class RouteBuilderExtensions
 {
     /// <summary>
     /// Add routes from RouteBuilder to mappings actuator.

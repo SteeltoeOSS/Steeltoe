@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Steeltoe.Management.Diagnostics;
 
 [SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "Allow in Options")]
-public class MetricsObserverOptions
+public sealed class MetricsObserverOptions
 {
     /// <summary>
     /// Gets or sets a regex pattern for requests coming into this application where metrics should not be captured.

@@ -30,7 +30,7 @@ public static class ActuatorRouteBuilderExtensions
     }
 }
 
-public class ActuatorConventionBuilder : IEndpointConventionBuilder
+public sealed class ActuatorConventionBuilder : IEndpointConventionBuilder
 {
     private readonly List<IEndpointConventionBuilder> _builders = new();
 

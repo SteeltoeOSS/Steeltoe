@@ -13,7 +13,7 @@ using Steeltoe.Management.Endpoint.ManagementPort;
 
 namespace Steeltoe.Management.Endpoint;
 
-public class AllActuatorsStartupFilter : IStartupFilter
+public sealed class AllActuatorsStartupFilter : IStartupFilter
 {
     private readonly ActuatorConventionBuilder _conventionBuilder;
 

@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class Request
+public sealed class Request
 {
     public string Method { get; }
 

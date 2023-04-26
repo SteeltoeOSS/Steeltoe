@@ -15,7 +15,7 @@ using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
+internal sealed class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 {
     private const string DiagnosticName = "Microsoft.AspNetCore";
     private const string DefaultObserverName = "TraceDiagnosticObserver";
@@ -74,7 +74,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         }
     }
 
-    protected internal TraceResult MakeTrace(HttpContext context, TimeSpan duration)
+    internal TraceResult MakeTrace(HttpContext context, TimeSpan duration)
     {
         ArgumentGuard.NotNull(context);
         HttpRequest request = context.Request;
@@ -161,7 +161,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         return timeInMilliseconds.ToString(CultureInfo.InvariantCulture);
     }
 
-    protected internal string GetAuthType(HttpRequest request)
+    internal string GetAuthType(HttpRequest request)
     {
         return string.Empty;
     }
@@ -204,12 +204,12 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         return context?.User?.Identity?.Name;
     }
 
-    protected internal string GetRemoteAddress(HttpContext context)
+    internal string GetRemoteAddress(HttpContext context)
     {
         return context?.Connection?.RemoteIpAddress?.ToString();
     }
 
-    protected internal Dictionary<string, object> GetHeaders(int status, IHeaderDictionary headers)
+    internal Dictionary<string, object> GetHeaders(int status, IHeaderDictionary headers)
     {
         Dictionary<string, object> result = GetHeaders(headers);
         result.Add("status", status.ToString(CultureInfo.InvariantCulture));
@@ -253,7 +253,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         return result;
     }
 
-    protected internal HttpContext GetHttpContextPropertyValue(object obj)
+    internal HttpContext GetHttpContextPropertyValue(object obj)
     {
         return DiagnosticHelpers.GetProperty<HttpContext>(obj, "HttpContext");
     }

@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint;
 
-public static class EndPointExtensions
+internal static class EndPointExtensions
 {
     public static bool IsEnabled(this IEndpointOptions options, ManagementEndpointOptions managementOptions)
     {
