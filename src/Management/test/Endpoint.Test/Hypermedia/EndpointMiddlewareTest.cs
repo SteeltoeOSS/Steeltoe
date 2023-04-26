@@ -4,10 +4,8 @@
 
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
@@ -101,5 +99,4 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.Equal("/actuator", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
         Assert.Contains("Get", options.AllowedVerbs);
     }
-
 }

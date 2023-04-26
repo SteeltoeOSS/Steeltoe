@@ -23,7 +23,7 @@
     <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />
     <PackageReference Include="MySql.Data" Version="$(MySqlV8)" />
     <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
-    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
+    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientTestVersion)" />
   </ItemGroup>
 
   <ItemGroup>

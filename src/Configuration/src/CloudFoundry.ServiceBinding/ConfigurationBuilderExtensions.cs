@@ -101,6 +101,7 @@ public static class ConfigurationBuilderExtensions
         source.RegisterPostProcessor(new SqlServerPostProcessor());
         source.RegisterPostProcessor(new MongoDbPostProcessor());
         source.RegisterPostProcessor(new CosmosDbPostProcessor());
+        source.RegisterPostProcessor(new RabbitMQPostProcessor());
 
         builder.Add(source);
         return builder;

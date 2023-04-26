@@ -5,23 +5,17 @@
 using System.Net;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Security;
 using Xunit;
-using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 

@@ -89,7 +89,6 @@ internal static class EndPointExtensions
             options.Add(managementOptions.Get(name));
         }
 
-
         foreach (ManagementEndpointOptions opt in options)
         {
             if (path.StartsWithSegments(new PathString(opt.Path)))

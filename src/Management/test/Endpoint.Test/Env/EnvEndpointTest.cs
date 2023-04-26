@@ -74,7 +74,7 @@ public class EnvEndpointTest : BaseTest
                 configuration.AddJsonFile("foobar", true);
             };
 
-            var ep = (EnvironmentEndpoint) tc.GetService<IEnvironmentEndpoint>();
+            var ep = (EnvironmentEndpoint)tc.GetService<IEnvironmentEndpoint>();
 
             IConfigurationProvider provider = tc.Configuration.Providers.Single();
             string name = ep.GetPropertySourceName(provider);

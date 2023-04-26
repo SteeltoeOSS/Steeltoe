@@ -42,7 +42,9 @@ public class EndpointMiddlewareTest : BaseTest
         configurationBuilder.AddInMemoryCollection(AppSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        IOptionsMonitor<EnvironmentEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
+        IOptionsMonitor<EnvironmentEndpointOptions> optionsMonitor =
+            GetOptionsMonitorFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
+
         var managementOptions = new TestOptionsMonitor<ManagementEndpointOptions>(new ManagementEndpointOptions());
 
         var ep = new EnvironmentEndpoint(optionsMonitor, configurationRoot, _host, NullLoggerFactory.Instance);

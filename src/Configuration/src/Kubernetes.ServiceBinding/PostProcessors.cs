@@ -437,16 +437,14 @@ internal sealed class RabbitMQPostProcessor : IConfigurationPostProcessor
         configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingType).ForEach(
             bindingNameKey =>
             {
-                // Spring -> spring.rabbitmq....
-                // Steeltoe -> steeltoe:service-bindings:rabbitmq:binding-name:....
                 var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingType,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
-                mapper.MapFromTo("addresses", "addresses");
+                // See RabbitMQ connection string parameters at: https://www.rabbitmq.com/uri-spec.html
                 mapper.MapFromTo("host", "host");
-                mapper.MapFromTo("password", "password");
                 mapper.MapFromTo("port", "port");
                 mapper.MapFromTo("username", "username");
+                mapper.MapFromTo("password", "password");
                 mapper.MapFromTo("virtual-host", "virtualHost");
             });
     }

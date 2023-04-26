@@ -41,8 +41,8 @@ internal sealed class ActuatorEndpointMapper
 
             foreach (IEndpointMiddleware middleware in _middlewares)
             {
-                if ((name is ActuatorContext && (middleware is CloudFoundryEndpointMiddleware)) ||
-                    (name is CFContext && (middleware is ActuatorHypermediaEndpointMiddleware)))
+                if ((name is ActuatorContext && middleware is CloudFoundryEndpointMiddleware) ||
+                    (name is CFContext && middleware is ActuatorHypermediaEndpointMiddleware))
                 {
                     continue;
                 }

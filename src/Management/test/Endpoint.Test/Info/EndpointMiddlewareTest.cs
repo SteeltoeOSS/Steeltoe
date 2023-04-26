@@ -5,17 +5,13 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Info;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Info;
@@ -118,5 +114,4 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
     }
-
 }

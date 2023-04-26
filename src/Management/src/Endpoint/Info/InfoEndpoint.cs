@@ -32,7 +32,7 @@ internal sealed class InfoEndpoint : IInfoEndpoint
         return BuildInfo(_contributors);
     }
 
-    Dictionary<string, object> BuildInfo(IList<IInfoContributor> infoContributors)
+    private Dictionary<string, object> BuildInfo(IList<IInfoContributor> infoContributors)
     {
         ArgumentGuard.NotNull(infoContributors);
 
