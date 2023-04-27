@@ -27,9 +27,9 @@ internal sealed class HeapDumpEndpoint : IHeapDumpEndpoint
         _logger = loggerFactory.CreateLogger<HeapDumpEndpoint>();
     }
 
-    public string Invoke()
+    public Task<string> InvokeAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Invoking the heap dumper");
-        return _heapDumper.DumpHeap();
+        return Task.Run(()=>_heapDumper.DumpHeap(), cancellationToken);
     }
 }

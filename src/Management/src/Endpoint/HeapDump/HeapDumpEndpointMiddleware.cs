@@ -31,7 +31,7 @@ internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 
     internal async Task HandleHeapDumpRequestAsync(HttpContext context)
     {
-        string fileName = Endpoint.Invoke();
+        string fileName = await Endpoint.InvokeAsync(context.RequestAborted);
         Logger.LogDebug("Returning: {fileName}", fileName);
         context.Response.Headers.Add("Content-Type", "application/octet-stream");
 

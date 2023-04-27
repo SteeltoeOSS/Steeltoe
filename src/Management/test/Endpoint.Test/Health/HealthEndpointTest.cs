@@ -3,9 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Security;
@@ -13,11 +16,15 @@ using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
+using MicrosoftHealth = Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
 public class HealthEndpointTest : BaseTest
 {
+    private readonly IOptionsMonitor<HealthEndpointOptions> _options = new TestOptionsMonitor<HealthEndpointOptions>(new HealthEndpointOptions());
+    private readonly IHealthAggregator _aggregator = new DefaultHealthAggregator();
+    private readonly ServiceProvider _provider = new ServiceCollection().BuildServiceProvider();
     private readonly ITestOutputHelper _output;
 
     public HealthEndpointTest(ITestOutputHelper output)
@@ -26,7 +33,34 @@ public class HealthEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Invoke_NoContributors_ReturnsExpectedHealth()
+    public void Constructor_ThrowsOnNulls()
+    {
+        var contributors = new List<IHealthContributor>();
+        var nullLoggerFactory = NullLoggerFactory.Instance;
+
+        var optionsEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpoint(null, _aggregator, contributors, ServiceOptions(), _provider, nullLoggerFactory));
+
+        var aggregatorEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpoint(_options, null, contributors, ServiceOptions(), _provider, nullLoggerFactory));
+
+        var contribEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpoint(_options, _aggregator, null, ServiceOptions(), _provider, nullLoggerFactory));
+
+        var svcOptsEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(_options, _aggregator, contributors, null, _provider, nullLoggerFactory));
+
+        var providerEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpoint(_options, _aggregator, contributors, ServiceOptions(), null, nullLoggerFactory));
+
+        Assert.Equal("options", optionsEx.ParamName);
+        Assert.Equal("aggregator", aggregatorEx.ParamName);
+        Assert.Equal("contributors", contribEx.ParamName);
+        Assert.Equal("serviceOptions", svcOptsEx.ParamName);
+        Assert.Equal("provider", providerEx.ParamName);
+    }
+
+    [Fact]
+    public async Task Invoke_NoContributors_ReturnsExpectedHealth()
     {
         using var tc = new TestContext(_output);
 
@@ -39,13 +73,13 @@ public class HealthEndpointTest : BaseTest
 
         var ep = tc.GetService<IHealthEndpoint>();
 
-        HealthEndpointResponse health = ep.Invoke(null);
+        HealthEndpointResponse health = await ep.InvokeAsync(CancellationToken.None, null);
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
     }
 
     [Fact]
-    public void Invoke_CallsAllContributors()
+    public async Task Invoke_CallsAllContributors()
     {
         using var tc = new TestContext(_output);
 
@@ -64,7 +98,7 @@ public class HealthEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IHealthEndpoint>();
-        ep.Invoke(null);
+        await ep.InvokeAsync(CancellationToken.None, null);
 
         foreach (IHealthContributor contrib in contributors)
         {
@@ -74,7 +108,7 @@ public class HealthEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Invoke_HandlesExceptions_ReturnsExpectedHealth()
+    public async Task Invoke_HandlesExceptions_ReturnsExpectedHealth()
     {
         using var tc = new TestContext(_output);
 
@@ -94,7 +128,7 @@ public class HealthEndpointTest : BaseTest
 
         var ep = tc.GetService<IHealthEndpoint>();
 
-        HealthEndpointResponse info = ep.Invoke(null);
+        HealthEndpointResponse info = await ep.InvokeAsync(CancellationToken.None, null);
 
         foreach (IHealthContributor contrib in contributors)
         {
@@ -154,7 +188,7 @@ public class HealthEndpointTest : BaseTest
     }
 
     [Fact]
-    public void InvokeWithLivenessGroupReturnsGroupResults()
+    public async Task InvokeWithLivenessGroupReturnsGroupResults()
     {
         using var tc = new TestContext(_output);
         var appAvailability = new ApplicationAvailability();
@@ -185,7 +219,7 @@ public class HealthEndpointTest : BaseTest
 
         appAvailability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, null);
 
-        HealthEndpointResponse result = ep.Invoke(context);
+        HealthEndpointResponse result = await ep.InvokeAsync(CancellationToken.None, context);
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.True(result.Details.Keys.Count == 1);
@@ -193,7 +227,7 @@ public class HealthEndpointTest : BaseTest
     }
 
     [Fact]
-    public void InvokeWithReadinessGroupReturnsGroupResults()
+    public async Task InvokeWithReadinessGroupReturnsGroupResults()
     {
         using var tc = new TestContext(_output);
         var appAvailability = new ApplicationAvailability();
@@ -225,15 +259,48 @@ public class HealthEndpointTest : BaseTest
 
         appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
-        HealthEndpointResponse result = ep.Invoke(context);
+        HealthEndpointResponse result = await ep.InvokeAsync(CancellationToken.None, context);
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.True(result.Details.Keys.Count == 1);
         Assert.True(result.Groups.Count() == 2);
     }
+    [Fact]
+    public  async Task InvokeWithReadinessGroupReturnsGroupResults2()
+    {
+        var appAvailability = new ApplicationAvailability();
+
+        var contributors = new List<IHealthContributor>
+        {
+            new UnknownContributor(),
+            new UpContributor(),
+            new ReadinessHealthContributor(appAvailability)
+        };
+
+        IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
+
+        var ep = new HealthEndpoint(options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), _provider, NullLoggerFactory.Instance);
+
+        var context = Substitute.For<ISecurityContext>();
+
+        context.GetRequestComponents().Returns(new[]
+        {
+            "actuator",
+            "health",
+            "readiness"
+        });
+
+        appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
+
+        HealthEndpointResponse result = await ep.InvokeAsync(CancellationToken.None, context);
+
+        Assert.Equal(HealthStatus.Up, result.Status);
+        Assert.Single(result.Details.Keys);
+        Assert.Equal(2, result.Groups.Count());
+    }
 
     [Fact]
-    public void InvokeWithInvalidGroupReturnsAllContributors()
+    public async Task InvokeWithInvalidGroupReturnsAllContributors()
     {
         using var tc = new TestContext(_output);
 
@@ -262,10 +329,60 @@ public class HealthEndpointTest : BaseTest
             "iNvAlId"
         });
 
-        HealthEndpointResponse result = ep.Invoke(context);
+        HealthEndpointResponse result = await ep.InvokeAsync(CancellationToken.None, context);
 
         Assert.Equal(HealthStatus.OutOfService, result.Status);
         Assert.True(result.Details.Keys.Count == 4);
         Assert.True(result.Groups.Count() == 2);
+    }
+    [Fact]
+    public async Task InvokeWithGroupFiltersMicrosoftResults()
+    {
+        IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
+
+        options.CurrentValue.Groups.Add("msft", new HealthGroupOptions
+        {
+            Include = "up,privatememory"
+        });
+
+        var contributors = new List<IHealthContributor>
+        {
+            new UnknownContributor(),
+            new UpContributor()
+        };
+
+        var ep = new HealthEndpoint(options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider,
+            NullLoggerFactory.Instance);
+
+        var context = Substitute.For<ISecurityContext>();
+
+        context.GetRequestComponents().Returns(new[]
+        {
+            "actuator",
+            "health",
+            "msft"
+        });
+
+        HealthEndpointResponse result = await ep.InvokeAsync(CancellationToken.None, context);
+
+        Assert.Equal(2, result.Details.Keys.Count);
+        Assert.Contains("Up", result.Details.Keys);
+        Assert.Contains("privatememory", result.Details.Keys);
+        Assert.Equal(3, result.Groups.Count());
+    }
+
+    private IOptionsMonitor<MicrosoftHealth.HealthCheckServiceOptions> ServiceOptions()
+    {
+        var options = Substitute.For<IOptionsMonitor<MicrosoftHealth.HealthCheckServiceOptions>>();
+        options.CurrentValue.Returns(new MicrosoftHealth.HealthCheckServiceOptions());
+        return options;
+    }
+
+    private IOptionsMonitor<MicrosoftHealth.HealthCheckServiceOptions> ServiceProviderWithMicrosoftHealth()
+    {
+        var services = new ServiceCollection();
+        services.AddHealthChecks().AddPrivateMemoryHealthCheck(133_824_512).AddWorkingSetHealthCheck(133_824_512);
+
+        return services.BuildServiceProvider().GetRequiredService<IOptionsMonitor<MicrosoftHealth.HealthCheckServiceOptions>>();
     }
 }

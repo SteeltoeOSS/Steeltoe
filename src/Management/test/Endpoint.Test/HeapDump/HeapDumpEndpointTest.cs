@@ -32,7 +32,7 @@ public class HeapDumpEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Invoke_CreatesDump()
+    public async Task Invoke_CreatesDump()
     {
         IOptionsMonitor<HeapDumpEndpointOptions> options = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions>();
 
@@ -49,7 +49,7 @@ public class HeapDumpEndpointTest : BaseTest
 
             var ep = tc.GetService<IHeapDumpEndpoint>();
 
-            string result = ep.Invoke();
+            string result = await ep.InvokeAsync(CancellationToken.None);
             Assert.NotNull(result);
             Assert.True(File.Exists(result));
             File.Delete(result);
@@ -69,7 +69,7 @@ public class HeapDumpEndpointTest : BaseTest
 
                 var ep = tc.GetService<IHeapDumpEndpoint>();
 
-                string result = ep.Invoke();
+                string result = await ep.InvokeAsync(CancellationToken.None);
                 Assert.NotNull(result);
                 Assert.True(File.Exists(result));
                 File.Delete(result);

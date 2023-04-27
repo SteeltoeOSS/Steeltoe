@@ -28,12 +28,12 @@ internal sealed class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<Thread
         return Task.CompletedTask;
     }
 
-    internal Task HandleThreadDumpRequestAsync(HttpContext context)
+    internal async Task HandleThreadDumpRequestAsync(HttpContext context)
     {
-        string serialInfo = HandleRequest();
+        string serialInfo = await HandleRequestAsync(context.RequestAborted);
 
         Logger.LogDebug("Returning: {info}", serialInfo);
         context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-        return context.Response.WriteAsync(serialInfo);
+        await context.Response.WriteAsync(serialInfo);
     }
 }

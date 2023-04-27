@@ -31,9 +31,9 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsRes
         return Task.CompletedTask;
     }
 
-    public override string HandleRequest(MetricsRequest arg)
+    public override async Task<string> HandleRequestAsync(CancellationToken cancellationToken, MetricsRequest arg)
     {
-        IMetricsResponse result = Endpoint.Invoke(arg);
+        IMetricsResponse result = await Endpoint.InvokeAsync(cancellationToken, arg);
         return result == null ? null : Serialize(result);
     }
 
@@ -51,7 +51,7 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsRes
             // GET /metrics/{metricName}?tag=key:value&tag=key:value
             IList<KeyValuePair<string, string>> tags = ParseTags(request.Query);
             var metricRequest = new MetricsRequest(metricName, tags);
-            string serialInfo = HandleRequest(metricRequest);
+            string serialInfo = await HandleRequestAsync(context.RequestAborted, metricRequest);
 
             if (serialInfo != null)
             {
@@ -66,7 +66,7 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsRes
         else
         {
             // GET /metrics
-            string serialInfo = HandleRequest(null);
+            string serialInfo = await HandleRequestAsync(context.RequestAborted, null);
             Logger.LogDebug("Returning: {info}", serialInfo);
 
             context.HandleContentNegotiation(Logger);

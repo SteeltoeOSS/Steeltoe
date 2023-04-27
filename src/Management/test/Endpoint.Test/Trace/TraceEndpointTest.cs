@@ -29,7 +29,7 @@ public class TraceEndpointTest : BaseTest
     }
 
     [Fact]
-    public void DoInvoke_CallsTraceRepo()
+    public async Task DoInvoke_CallsTraceRepo()
     {
         using var tc = new TestContext(_output);
         var repo = new TestTraceRepo();
@@ -41,7 +41,7 @@ public class TraceEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<ITraceEndpoint>();
-        IList<TraceResult> result = ep.Invoke();
+        IList<TraceResult> result = await ep.InvokeAsync(CancellationToken.None);
         Assert.NotNull(result);
         Assert.True(repo.GetTracesCalled);
     }

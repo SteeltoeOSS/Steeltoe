@@ -200,7 +200,15 @@ public class ContentNegotiationTests
             }
 
             // send the request
-            HttpResponseMessage result = await client.GetAsync(new Uri(epPath));
+            HttpResponseMessage result;
+            if (epName == EndpointNames.Refresh)
+            {
+                result = await client.PostAsync(new Uri(epPath), null);
+            }
+            else
+            {
+                result = await client.GetAsync(new Uri(epPath));
+            }
 
             IEnumerable<string> contentHeaders = result.Content.Headers.GetValues("Content-Type");
             Assert.Contains(contentHeaders, header => header.StartsWith(contentType, StringComparison.Ordinal));

@@ -38,10 +38,10 @@ public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
         Endpoint = endpoint;
     }
 
-    public virtual string HandleRequest()
+    public virtual async Task<string> HandleRequestAsync(CancellationToken cancellationToken)
     {
-        TResult result = Endpoint.Invoke();
-        return Serialize(result);
+        TResult result = await Endpoint.InvokeAsync(cancellationToken);
+        return await Task.Run(()=>Serialize(result), cancellationToken);
     }
 
     public virtual string Serialize(TResult result)
@@ -118,9 +118,9 @@ public abstract class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware
     {
     }
 
-    public virtual string HandleRequest(TRequest arg)
+    public virtual async Task<string> HandleRequestAsync(CancellationToken cancellationToken, TRequest arg)
     {
-        TResult result = Endpoint.Invoke(arg);
+        TResult result = await Endpoint.InvokeAsync(cancellationToken, arg);
         return Serialize(result);
     }
 

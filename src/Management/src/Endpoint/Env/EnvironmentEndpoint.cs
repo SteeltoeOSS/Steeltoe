@@ -36,9 +36,9 @@ internal sealed class EnvironmentEndpoint : IEnvironmentEndpoint
         _logger = loggerFactory.CreateLogger<EnvironmentEndpoint>();
     }
 
-    public EnvironmentDescriptor Invoke()
+    public Task<EnvironmentDescriptor> InvokeAsync(CancellationToken cancellationToken)
     {
-        return DoInvoke(_configuration);
+        return Task.Run(() => DoInvoke(_configuration), cancellationToken);
     }
 
     private EnvironmentDescriptor DoInvoke(IConfiguration configuration)

@@ -27,10 +27,10 @@ internal sealed class HttpTraceEndpoint : IHttpTraceEndpoint
         _logger = loggerFactory.CreateLogger<HttpTraceEndpoint>();
     }
 
-    public HttpTraceResult Invoke()
+    public Task<HttpTraceResult> InvokeAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Fetching Traces");
-        return DoInvoke(_traceRepo);
+        return Task.Run(()=>DoInvoke(_traceRepo), cancellationToken);
     }
 
     private HttpTraceResult DoInvoke(IHttpTraceRepository repo)

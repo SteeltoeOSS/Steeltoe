@@ -25,13 +25,13 @@ internal sealed class ThreadDumpEndpointV2 : IThreadDumpEndpointV2
         _logger = logger;
     }
 
-    public ThreadDumpResult Invoke()
+    public Task<ThreadDumpResult> InvokeAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Dumping Thread info");
 
-        return new ThreadDumpResult
+        return Task.Run(() => new ThreadDumpResult
         {
             Threads = _threadDumper.DumpThreads()
-        };
+        }, cancellationToken);
     }
 }

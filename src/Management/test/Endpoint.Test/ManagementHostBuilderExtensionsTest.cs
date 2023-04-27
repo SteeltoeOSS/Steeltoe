@@ -413,7 +413,7 @@ public class ManagementHostBuilderExtensionsTest
         using IHost host = await hostBuilder.AddRefreshActuator().StartAsync();
 
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().PostAsync(requestUri, null);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 

@@ -8,7 +8,7 @@ internal sealed class TestEndpoint : IEndpoint<int>
 {
     public IEndpointOptions Options => throw new NotImplementedException();
 
-    public int Invoke()
+    public Task<int> InvokeAsync(CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

@@ -29,14 +29,14 @@ internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<Applicatio
         return Task.CompletedTask;
     }
 
-    internal Task HandleMappingsRequestAsync(HttpContext context)
+    internal async Task HandleMappingsRequestAsync(HttpContext context)
     {
-        ApplicationMappings result = Endpoint.Invoke();
+        ApplicationMappings result = await Endpoint.InvokeAsync(context.RequestAborted);
         string serialInfo = Serialize(result);
 
         Logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(Logger);
-        return context.Response.WriteAsync(serialInfo);
+        await context.Response.WriteAsync(serialInfo);
     }
 }

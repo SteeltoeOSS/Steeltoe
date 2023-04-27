@@ -54,9 +54,9 @@ internal sealed class DbMigrationsEndpoint : IDbMigrationsEndpoint
         _logger = loggerFactory.CreateLogger<DbMigrationsEndpoint>();
     }
 
-    public Dictionary<string, DbMigrationsDescriptor> Invoke()
+    public Task<Dictionary<string, DbMigrationsDescriptor>> InvokeAsync(CancellationToken cancellationToken)
     {
-        return DoInvoke();
+        return Task.Run(() => DoInvoke(), cancellationToken);
     }
 
     private Dictionary<string, DbMigrationsDescriptor> DoInvoke()

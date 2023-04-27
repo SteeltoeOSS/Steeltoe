@@ -4,6 +4,7 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -23,21 +24,18 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public override async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         ArgumentGuard.NotNull(context);
         Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
         if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
         {
-            string serialInfo = HandleRequest(Endpoint, GetRequestUri(context.Request), Logger);
-            Logger.LogDebug("Returning: {info}", serialInfo);
-
             context.HandleContentNegotiation(Logger);
-            return context.Response.WriteAsync(serialInfo);
+            await HandleRequestAsync(context.RequestAborted, context.Response.Body, GetRequestUri(context.Request), Logger);
+            Logger.LogDebug("Returning serialized response");
+          
         }
-
-        return Task.CompletedTask;
     }
 
     private static string GetRequestUri(HttpRequest request)
@@ -59,13 +57,13 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
         return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
     }
 
-    private static string HandleRequest(IEndpoint<Links, string> endpoint, string requestUri, ILogger logger)
+    private async Task HandleRequestAsync(CancellationToken cancellationToken, Stream responseStream, string requestUri, ILogger logger)
     {
-        Links result = endpoint.Invoke(requestUri);
-        return Serialize(result, logger);
+        Links result = await Endpoint.InvokeAsync(cancellationToken, requestUri);
+        await SerializeAsync(result, responseStream, logger);
     }
 
-    private static string Serialize<TResult>(TResult result, ILogger logger)
+    private static async Task SerializeAsync<TResult>(TResult result, Stream responseStream, ILogger logger)
     {
         try
         {
@@ -75,13 +73,11 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
 
-            return JsonSerializer.Serialize(result, serializeOptions);
+            await JsonSerializer.SerializeAsync(responseStream, result, serializeOptions);
         }
         catch (Exception e)
         {
             logger.LogError(e, "Error serializing {MiddlewareResponse}", result);
         }
-
-        return string.Empty;
     }
 }

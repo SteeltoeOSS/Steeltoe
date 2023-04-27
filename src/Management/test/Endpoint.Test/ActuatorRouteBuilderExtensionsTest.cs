@@ -83,8 +83,15 @@ public class ActuatorRouteBuilderExtensionsTest
             string path = options.GetContextPath(GetManagementContext(host.Services));
 
             Assert.NotNull(path);
-
-            HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri(path, UriKind.RelativeOrAbsolute));
+            HttpResponseMessage response;
+            if (options.AllowedVerbs.Contains("Get"))
+            {
+                response = await server.CreateClient().GetAsync(new Uri(path, UriKind.RelativeOrAbsolute));
+            }
+            else
+            {
+                response = await server.CreateClient().PostAsync(new Uri(path, UriKind.RelativeOrAbsolute), null);
+            }
 
             Assert.True(expectedSuccess == response.IsSuccessStatusCode,
                 $"Expected {(expectedSuccess ? "success" : "failure")}, but got {response.StatusCode} for {path} and type {options}");

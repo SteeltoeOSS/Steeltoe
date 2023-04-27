@@ -34,9 +34,9 @@ internal sealed class ActuatorEndpoint : IActuatorEndpoint
         _logger = loggerFactory.CreateLogger<ActuatorEndpoint>();
     }
 
-    public Links Invoke(string baseUrl)
+    public Task<Links> InvokeAsync(CancellationToken cancellationToken, string baseUrl)
     {
         var service = new HypermediaService(_managementOption, _options, _endpointOptions, _logger);
-        return service.Invoke(baseUrl);
+        return Task.Run(() => service.Invoke(baseUrl), cancellationToken);
     }
 }

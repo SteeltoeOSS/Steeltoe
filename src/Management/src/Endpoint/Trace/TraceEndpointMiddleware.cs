@@ -30,15 +30,15 @@ internal sealed class TraceEndpointMiddleware : EndpointMiddleware<IList<TraceRe
         return Task.CompletedTask;
     }
 
-    internal Task HandleTraceRequestAsync(HttpContext context)
+    internal async Task HandleTraceRequestAsync(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
 
-        string serialInfo = HandleRequest();
+        string serialInfo = await HandleRequestAsync(context.RequestAborted);
 
         Logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(Logger);
-        return context.Response.WriteAsync(serialInfo);
+        await context.Response.WriteAsync(serialInfo);
     }
 }

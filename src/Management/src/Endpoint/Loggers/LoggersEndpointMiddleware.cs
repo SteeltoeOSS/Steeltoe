@@ -40,7 +40,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<
                 ? Endpoint.Options.Path
                 : $"{mgmtOptions.Path}/{Endpoint.Options.Path}".Replace("//", "/", StringComparison.Ordinal);
 
-            if (ChangeLoggerLevel(request, path))
+            if (await ChangeLoggerLevelAsync(context, path))
             {
                 response.StatusCode = (int)HttpStatusCode.OK;
                 return;
@@ -51,17 +51,17 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<
         }
         
         // GET request
-        string serialInfo = HandleRequest(null);
+        string serialInfo = await HandleRequestAsync(context.RequestAborted, null);
         Logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(Logger);
         await context.Response.WriteAsync(serialInfo);
     }
 
-    private bool ChangeLoggerLevel(HttpRequest request, string path)
+    private async Task<bool> ChangeLoggerLevelAsync(HttpContext context, string path)
     {
         var epPath = new PathString(path);
-
+        var request = context.Request;
         if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
         {
             string loggerName = remaining.Value.TrimStart('/');
@@ -81,7 +81,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<
                 else
                 {
                     var changeReq = new LoggersChangeRequest(loggerName, level);
-                    HandleRequest(changeReq);
+                    await HandleRequestAsync(context.RequestAborted, changeReq);
                     return true;
                 }
             }

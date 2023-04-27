@@ -21,7 +21,7 @@ public class HypermediaEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Invoke_ReturnsExpectedLinks()
+    public async Task Invoke_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
 
@@ -33,7 +33,7 @@ public class HypermediaEndpointTest : BaseTest
 
         var ep = tc.GetService<IActuatorEndpoint>();
 
-        Links info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = await ep.InvokeAsync(CancellationToken.None, "http://localhost:5000/foobar");
         Assert.NotNull(info);
         Assert.NotNull(info.LinkCollection);
         Assert.True(info.LinkCollection.ContainsKey("self"));
@@ -44,7 +44,7 @@ public class HypermediaEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Invoke_OnlyActuatorHypermediaEndpoint_ReturnsExpectedLinks()
+    public async Task Invoke_OnlyActuatorHypermediaEndpoint_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
 
@@ -55,7 +55,7 @@ public class HypermediaEndpointTest : BaseTest
 
         var ep = tc.GetService<IActuatorEndpoint>();
 
-        Links info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = await ep.InvokeAsync(CancellationToken.None, "http://localhost:5000/foobar");
         Assert.NotNull(info);
         Assert.NotNull(info.LinkCollection);
         Assert.True(info.LinkCollection.ContainsKey("self"));
@@ -64,7 +64,7 @@ public class HypermediaEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
+    public async Task Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
 
@@ -84,7 +84,7 @@ public class HypermediaEndpointTest : BaseTest
 
         var ep = tc.GetService<IActuatorEndpoint>();
 
-        Links info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = await ep.InvokeAsync(CancellationToken.None, "http://localhost:5000/foobar");
         Assert.NotNull(info);
         Assert.NotNull(info.LinkCollection);
         Assert.True(info.LinkCollection.ContainsKey("self"));
@@ -94,7 +94,7 @@ public class HypermediaEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Invoke_CloudFoundryDisable_ReturnsExpectedLinks()
+    public async Task Invoke_CloudFoundryDisable_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
 
@@ -115,7 +115,7 @@ public class HypermediaEndpointTest : BaseTest
 
         var ep = tc.GetService<IActuatorEndpoint>();
 
-        Links info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = await ep.InvokeAsync(CancellationToken.None, "http://localhost:5000/foobar");
         Assert.NotNull(info);
         Assert.NotNull(info.LinkCollection);
         Assert.Empty(info.LinkCollection);

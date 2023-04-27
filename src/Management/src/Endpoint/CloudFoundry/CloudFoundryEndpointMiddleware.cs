@@ -40,12 +40,12 @@ internal sealed class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links,
         return Task.CompletedTask;
     }
 
-    internal Task HandleCloudFoundryRequestAsync(HttpContext context)
+    internal async Task HandleCloudFoundryRequestAsync(HttpContext context)
     {
-        string serialInfo = HandleRequest(GetRequestUri(context.Request));
+        string serialInfo = await HandleRequestAsync(context.RequestAborted, GetRequestUri(context.Request));
         Logger.LogDebug("Returning: {info}", serialInfo);
         context.HandleContentNegotiation(Logger);
-        return context.Response.WriteAsync(serialInfo);
+        await context.Response.WriteAsync(serialInfo);
     }
 
     private string GetRequestUri(HttpRequest request)

@@ -35,7 +35,7 @@ public class RefreshEndpointTest : BaseTest
     }
 
     [Fact]
-    public void DoInvoke_ReturnsExpected()
+    public async Task DoInvoke_ReturnsExpected()
     {
         var appsettings = new Dictionary<string, string>
         {
@@ -60,7 +60,7 @@ public class RefreshEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IRefreshEndpoint>();
-        IList<string> result = ep.Invoke();
+        IList<string> result = await ep.InvokeAsync(CancellationToken.None);
         Assert.NotNull(result);
 
         Assert.Contains("management:endpoints:loggers:enabled", result);

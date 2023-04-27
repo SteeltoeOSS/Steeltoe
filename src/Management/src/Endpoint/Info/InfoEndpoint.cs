@@ -27,9 +27,9 @@ internal sealed class InfoEndpoint : IInfoEndpoint
         _logger = loggerFactory.CreateLogger<InfoEndpoint>();
     }
 
-    public Dictionary<string, object> Invoke()
+    public Task<Dictionary<string, object>> InvokeAsync(CancellationToken cancellationToken)
     {
-        return BuildInfo(_contributors);
+        return Task.Run(()=>BuildInfo(_contributors), cancellationToken);
     }
 
     private Dictionary<string, object> BuildInfo(IList<IInfoContributor> infoContributors)

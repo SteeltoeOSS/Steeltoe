@@ -29,7 +29,12 @@ internal sealed class MetricsEndpoint : IMetricsEndpoint
         _logger = loggerFactory.CreateLogger<MetricsEndpoint>();
     }
 
-    public IMetricsResponse Invoke(MetricsRequest request)
+    public Task<IMetricsResponse> InvokeAsync(CancellationToken cancellationToken, MetricsRequest request)
+    {
+        return Task.Run(() => DoInvoke(request), cancellationToken);
+    }
+
+    private IMetricsResponse DoInvoke(MetricsRequest request)
     {
         (MetricsCollection<List<MetricSample>> measurements, MetricsCollection<List<MetricTag>> availTags) = GetMetrics();
 

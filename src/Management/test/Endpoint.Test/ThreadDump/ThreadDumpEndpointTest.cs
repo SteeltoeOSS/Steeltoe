@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Formats.Asn1;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -29,7 +30,7 @@ public class ThreadDumpEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Invoke_CallsDumpThreads()
+    public async Task Invoke_CallsDumpThreads()
     {
         using var tc = new TestContext(_output);
         var dumper = new TestThreadDumper();
@@ -41,7 +42,7 @@ public class ThreadDumpEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IThreadDumpEndpoint>();
-        IList<ThreadInfo> result = ep.Invoke();
+        IList<ThreadInfo> result = await ep.InvokeAsync(CancellationToken.None);
         Assert.NotNull(result);
         Assert.True(dumper.DumpThreadsCalled);
     }

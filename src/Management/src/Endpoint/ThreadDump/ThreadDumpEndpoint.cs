@@ -27,9 +27,9 @@ internal sealed class ThreadDumpEndpoint : IThreadDumpEndpoint
         _logger = loggerFactory.CreateLogger<ThreadDumpEndpoint>();
     }
 
-    public IList<ThreadInfo> Invoke()
+    public Task<IList<ThreadInfo>> InvokeAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Invoking ThreadDumper");
-        return _threadDumper.DumpThreads();
+        return Task.Run(()=>_threadDumper.DumpThreads(), cancellationToken);
     }
 }

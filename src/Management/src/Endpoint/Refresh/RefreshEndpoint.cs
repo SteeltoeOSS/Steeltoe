@@ -29,9 +29,9 @@ internal sealed class RefreshEndpoint : IRefreshEndpoint
         _logger = loggerFactory.CreateLogger<RefreshEndpoint>();
     }
 
-    public IList<string> Invoke()
+    public Task<IList<string>> InvokeAsync(CancellationToken cancellationToken)
     {
-        return DoInvoke(_configuration);
+        return Task.Run(()=>DoInvoke(_configuration), cancellationToken);
     }
 
     public IList<string> DoInvoke(IConfiguration configuration)

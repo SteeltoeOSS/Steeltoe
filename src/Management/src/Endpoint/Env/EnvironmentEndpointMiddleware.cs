@@ -28,12 +28,12 @@ internal sealed class EnvironmentEndpointMiddleware : EndpointMiddleware<Environ
         return Task.CompletedTask;
     }
 
-    internal Task HandleEnvRequestAsync(HttpContext context)
+    internal async Task HandleEnvRequestAsync(HttpContext context)
     {
-        string serialInfo = HandleRequest();
+        string serialInfo = await HandleRequestAsync(context.RequestAborted);
         Logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(Logger);
-        return context.Response.WriteAsync(serialInfo);
+        await context.Response.WriteAsync(serialInfo);
     }
 }

@@ -43,7 +43,7 @@ public class DbMigrationsEndpointTests : BaseTest
     }
 
     [Fact]
-    public void Invoke_WhenExistingDatabase_ReturnsExpected()
+    public async Task Invoke_WhenExistingDatabase_ReturnsExpected()
     {
         using var tc = new TestContext(_output);
         var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
@@ -67,7 +67,7 @@ public class DbMigrationsEndpointTests : BaseTest
         };
 
         var sut = tc.GetService<IDbMigrationsEndpoint>();
-        Dictionary<string, DbMigrationsDescriptor> result = sut.Invoke();
+        Dictionary<string, DbMigrationsDescriptor> result = await sut.InvokeAsync(CancellationToken.None);
 
         const string contextName = nameof(MockDbContext);
         result.Should().ContainKey(contextName);
@@ -76,7 +76,7 @@ public class DbMigrationsEndpointTests : BaseTest
     }
 
     [Fact]
-    public void Invoke_NonExistingDatabase_ReturnsExpected()
+    public async Task Invoke_NonExistingDatabase_ReturnsExpected()
     {
         using var tc = new TestContext(_output);
         var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
@@ -96,7 +96,7 @@ public class DbMigrationsEndpointTests : BaseTest
         };
 
         var sut = tc.GetService<IDbMigrationsEndpoint>();
-        Dictionary<string, DbMigrationsDescriptor> result = sut.Invoke();
+        Dictionary<string, DbMigrationsDescriptor> result = await sut.InvokeAsync(CancellationToken.None);
 
         const string contextName = nameof(MockDbContext);
         result.Should().ContainKey(contextName);
@@ -105,7 +105,7 @@ public class DbMigrationsEndpointTests : BaseTest
     }
 
     [Fact]
-    public void Invoke_NonContainerRegistered_ReturnsExpected()
+    public async Task Invoke_NonContainerRegistered_ReturnsExpected()
     {
         using var tc = new TestContext(_output);
         var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
@@ -118,7 +118,7 @@ public class DbMigrationsEndpointTests : BaseTest
         };
 
         var sut = tc.GetService<IDbMigrationsEndpoint>();
-        Dictionary<string, DbMigrationsDescriptor> result = sut.Invoke();
+        Dictionary<string, DbMigrationsDescriptor> result = await sut.InvokeAsync(CancellationToken.None);
 
         result.Should().BeEmpty();
     }

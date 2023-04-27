@@ -604,7 +604,7 @@ Steeltoe.Management.Endpoint.Trace.TraceResult.TimeStamp.get -> long
 Steeltoe.Management.Endpoint.Trace.TraceResult.TraceResult(long timestamp, System.Collections.Generic.Dictionary<string, object> info) -> void
 virtual Steeltoe.Management.Endpoint.Info.Contributor.GitInfoContributor.Contribute(Steeltoe.Management.Info.IInfoBuilder builder) -> void
 virtual Steeltoe.Management.Endpoint.Info.Contributor.GitInfoContributor.ReadGitProperties(string propFile) -> Microsoft.Extensions.Configuration.IConfiguration
-virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TResult, TRequest>.HandleRequest(TRequest arg) -> string
+virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TResult, TRequest>.HandleRequestAsync(System.Threading.CancellationToken cancellationToken, TRequest arg) -> System.Threading.Tasks.Task<string>
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TResult>.EndpointOptions.get -> Steeltoe.Management.IEndpointOptions
-virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TResult>.HandleRequest() -> string
+virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TResult>.HandleRequestAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<string>
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TResult>.Serialize(TResult result) -> string

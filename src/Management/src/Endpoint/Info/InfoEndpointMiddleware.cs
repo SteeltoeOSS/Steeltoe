@@ -34,12 +34,12 @@ internal sealed class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<str
         return Task.CompletedTask;
     }
 
-    internal Task HandleInfoRequestAsync(HttpContext context)
+    internal async Task HandleInfoRequestAsync(HttpContext context)
     {
-        string serialInfo = HandleRequest();
+        string serialInfo = await HandleRequestAsync(context.RequestAborted);
         Logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(Logger);
-        return context.Response.WriteAsync(serialInfo);
+        await context.Response.WriteAsync(serialInfo);
     }
 }

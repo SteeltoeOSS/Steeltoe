@@ -76,7 +76,7 @@ public class EndpointMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/refresh"));
+            HttpResponseMessage result = await client.PostAsync(new Uri("http://localhost/actuator/refresh"),null);
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             string json = await result.Content.ReadAsStringAsync();
 
@@ -97,7 +97,7 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator/refresh", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
         Assert.Equal("/cloudfoundryapplication/refresh", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
-        Assert.Contains("Get", options.AllowedVerbs);
+        Assert.Contains("Post", options.AllowedVerbs);
     }
 
     private HttpContext CreateRequest(string method, string path)

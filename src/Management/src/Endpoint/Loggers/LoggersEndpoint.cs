@@ -40,11 +40,11 @@ internal sealed class LoggersEndpoint : ILoggersEndpoint
         _logger = loggerFactory.CreateLogger<LoggersEndpoint>();
     }
 
-    public Dictionary<string, object> Invoke(LoggersChangeRequest request)
+    public Task<Dictionary<string, object>> InvokeAsync(CancellationToken cancellationToken, LoggersChangeRequest request)
     {
         _logger.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
 
-        return DoInvoke(_dynamicLoggerProvider, request);
+        return Task.Run(() => DoInvoke(_dynamicLoggerProvider, request), cancellationToken);
     }
 
     private Dictionary<string, object> DoInvoke(IDynamicLoggerProvider provider, LoggersChangeRequest request)

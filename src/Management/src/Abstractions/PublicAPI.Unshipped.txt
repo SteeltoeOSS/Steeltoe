@@ -60,9 +60,9 @@ Steeltoe.Management.EndpointOptionsBase.RequiredPermissions.set -> void
 Steeltoe.Management.IEndpoint
 Steeltoe.Management.IEndpoint.Options.get -> Steeltoe.Management.IEndpointOptions
 Steeltoe.Management.IEndpoint<TResult, TRequest>
-Steeltoe.Management.IEndpoint<TResult, TRequest>.Invoke(TRequest arg) -> TResult
+Steeltoe.Management.IEndpoint<TResult, TRequest>.InvokeAsync(System.Threading.CancellationToken cancellationToken, TRequest arg) -> System.Threading.Tasks.Task<TResult>
 Steeltoe.Management.IEndpoint<TResult>
-Steeltoe.Management.IEndpoint<TResult>.Invoke() -> TResult
+Steeltoe.Management.IEndpoint<TResult>.InvokeAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>
 Steeltoe.Management.IEndpointOptions
 Steeltoe.Management.IEndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IEnumerable<string>
 Steeltoe.Management.IEndpointOptions.Enabled.get -> bool?

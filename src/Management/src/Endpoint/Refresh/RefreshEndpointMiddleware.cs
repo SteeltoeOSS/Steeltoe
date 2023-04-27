@@ -29,12 +29,12 @@ internal sealed class RefreshEndpointMiddleware : EndpointMiddleware<IList<strin
         return Task.CompletedTask;
     }
 
-    internal Task HandleRefreshRequestAsync(HttpContext context)
+    internal async Task HandleRefreshRequestAsync(HttpContext context)
     {
-        string serialInfo = HandleRequest();
+        string serialInfo = await HandleRequestAsync(context.RequestAborted);
         Logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(Logger);
-        return context.Response.WriteAsync(serialInfo);
+        await context.Response.WriteAsync(serialInfo);
     }
 }

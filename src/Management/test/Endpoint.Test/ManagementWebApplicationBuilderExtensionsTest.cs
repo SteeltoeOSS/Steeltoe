@@ -258,7 +258,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
 
         Assert.Single(host.Services.GetServices<IRefreshEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-        HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/refresh", UriKind.Relative));
+        HttpResponseMessage response = await host.GetTestClient().PostAsync(new Uri("/actuator/refresh", UriKind.Relative), null);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 

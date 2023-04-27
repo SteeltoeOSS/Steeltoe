@@ -222,7 +222,7 @@ public class EnvEndpointTest : BaseTest
     }
 
     [Fact]
-    public void DoInvoke_ReturnsExpected()
+    public async Task DoInvoke_ReturnsExpected()
     {
         var appsettings = new Dictionary<string, string>
         {
@@ -248,7 +248,7 @@ public class EnvEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IEnvironmentEndpoint>();
-        EnvironmentDescriptor result = ep.Invoke();
+        EnvironmentDescriptor result = await ep.InvokeAsync(CancellationToken.None);
         Assert.NotNull(result);
         Assert.Single(result.ActiveProfiles);
         Assert.Equal("EnvironmentName", result.ActiveProfiles[0]);
@@ -268,7 +268,7 @@ public class EnvEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Sanitized_ReturnsExpected()
+    public async Task Sanitized_ReturnsExpected()
     {
         var appsettings = new Dictionary<string, string>
         {
@@ -296,7 +296,7 @@ public class EnvEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IEnvironmentEndpoint>();
-        EnvironmentDescriptor result = ep.Invoke();
+        EnvironmentDescriptor result = await ep.InvokeAsync(CancellationToken.None);
         Assert.NotNull(result);
 
         PropertySourceDescriptor desc = result.PropertySources[0];
@@ -315,7 +315,7 @@ public class EnvEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Sanitized_NonDefault_WhenSet()
+    public async Task Sanitized_NonDefault_WhenSet()
     {
         var appsettings = new Dictionary<string, string>
         {
@@ -337,7 +337,7 @@ public class EnvEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IEnvironmentEndpoint>();
-        EnvironmentDescriptor result = ep.Invoke();
+        EnvironmentDescriptor result = await ep.InvokeAsync(CancellationToken.None);
         Assert.NotNull(result);
 
         PropertySourceDescriptor desc = result.PropertySources[0];

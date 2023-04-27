@@ -31,18 +31,18 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
         return Task.CompletedTask;
     }
 
-    internal Task HandleHealthRequestAsync(HttpContext context)
+    internal async Task HandleHealthRequestAsync(HttpContext context)
     {
-        string serialInfo = DoRequest(context);
+        string serialInfo = await DoRequestAsync(context);
         Logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(Logger);
-        return context.Response.WriteAsync(serialInfo);
+        await context.Response.WriteAsync(serialInfo);
     }
 
-    internal string DoRequest(HttpContext context)
+    internal async Task<string> DoRequestAsync(HttpContext context)
     {
-        HealthEndpointResponse result = ((HealthEndpoint)Endpoint).Invoke(new CoreSecurityContext(context));
+        HealthEndpointResponse result = await ((HealthEndpoint)Endpoint).InvokeAsync(context.RequestAborted, new CoreSecurityContext(context));
 
         ManagementEndpointOptions currentOptions = ManagementOptions.CurrentValue;
 

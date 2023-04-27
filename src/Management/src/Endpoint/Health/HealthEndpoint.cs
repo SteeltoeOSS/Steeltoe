@@ -41,9 +41,9 @@ internal sealed class HealthEndpoint : IHealthEndpoint
         _logger = loggerFactory.CreateLogger<HealthEndpoint>();
     }
 
-    public HealthEndpointResponse Invoke(ISecurityContext securityContext)
+    public Task<HealthEndpointResponse> InvokeAsync(CancellationToken cancellationToken, ISecurityContext securityContext)
     {
-        return BuildHealth(securityContext);
+        return Task.Run(()=> BuildHealth(securityContext), cancellationToken);
     }
 
     public int GetStatusCode(HealthCheckResult health)

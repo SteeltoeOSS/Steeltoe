@@ -9,12 +9,12 @@ public interface IEndpoint
     IEndpointOptions Options { get; }
 }
 
-public interface IEndpoint<out TResult> : IEndpoint
+public interface IEndpoint<TResult> : IEndpoint
 {
-    TResult Invoke();
+    Task<TResult> InvokeAsync(CancellationToken cancellationToken);
 }
 
-public interface IEndpoint<out TResult, in TRequest> : IEndpoint
+public interface IEndpoint<TResult, in TRequest> : IEndpoint
 {
-    TResult Invoke(TRequest arg);
+    Task<TResult> InvokeAsync(CancellationToken cancellationToken, TRequest arg);
 }

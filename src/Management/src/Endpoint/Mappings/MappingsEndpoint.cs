@@ -42,10 +42,10 @@ internal sealed class MappingsEndpoint : IMappingsEndpoint
         _logger = loggerFactory.CreateLogger<MappingsEndpoint>();
     }
 
-    public ApplicationMappings Invoke()
+    public Task<ApplicationMappings> InvokeAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Fetching application mappings");
-        return GetApplicationMappings();
+        return Task.Run(() => GetApplicationMappings(), cancellationToken);
     }
 
     internal ApplicationMappings GetApplicationMappings()
