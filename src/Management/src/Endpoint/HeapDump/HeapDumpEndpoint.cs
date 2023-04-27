@@ -30,6 +30,6 @@ internal sealed class HeapDumpEndpoint : IHeapDumpEndpoint
     public Task<string> InvokeAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Invoking the heap dumper");
-        return Task.Run(()=>_heapDumper.DumpHeap(), cancellationToken);
+        return Task.Run(() => _heapDumper.DumpHeap(), cancellationToken);
     }
 }

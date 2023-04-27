@@ -84,6 +84,7 @@ public class ActuatorRouteBuilderExtensionsTest
 
             Assert.NotNull(path);
             HttpResponseMessage response;
+
             if (options.AllowedVerbs.Contains("Get"))
             {
                 response = await server.CreateClient().GetAsync(new Uri(path, UriKind.RelativeOrAbsolute));

@@ -118,7 +118,7 @@ public sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposa
         GC.SuppressFinalize(this);
     }
 
-    void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (disposing && !_isDisposed)
         {

@@ -265,8 +265,9 @@ public class HealthEndpointTest : BaseTest
         Assert.True(result.Details.Keys.Count == 1);
         Assert.True(result.Groups.Count() == 2);
     }
+
     [Fact]
-    public  async Task InvokeWithReadinessGroupReturnsGroupResults2()
+    public async Task InvokeWithReadinessGroupReturnsGroupResults2()
     {
         var appAvailability = new ApplicationAvailability();
 
@@ -335,6 +336,7 @@ public class HealthEndpointTest : BaseTest
         Assert.True(result.Details.Keys.Count == 4);
         Assert.True(result.Groups.Count() == 2);
     }
+
     [Fact]
     public async Task InvokeWithGroupFiltersMicrosoftResults()
     {

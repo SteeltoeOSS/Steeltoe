@@ -41,7 +41,7 @@ public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
     public virtual async Task<string> HandleRequestAsync(CancellationToken cancellationToken)
     {
         TResult result = await Endpoint.InvokeAsync(cancellationToken);
-        return await Task.Run(()=>Serialize(result), cancellationToken);
+        return await Task.Run(() => Serialize(result), cancellationToken);
     }
 
     public virtual string Serialize(TResult result)

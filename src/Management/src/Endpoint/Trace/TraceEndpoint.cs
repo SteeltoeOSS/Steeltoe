@@ -28,7 +28,7 @@ internal sealed class TraceEndpoint : ITraceEndpoint
     public Task<IList<TraceResult>> InvokeAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Fetching Traces");
-        return Task.Run(()=> DoInvoke(_traceRepo), cancellationToken);
+        return Task.Run(() => DoInvoke(_traceRepo), cancellationToken);
     }
 
     private IList<TraceResult> DoInvoke(ITraceRepository repo)

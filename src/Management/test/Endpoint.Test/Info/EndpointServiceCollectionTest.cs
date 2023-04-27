@@ -47,8 +47,8 @@ public class EndpointServiceCollectionTest : BaseTest
         Assert.Equal(4, listOfContributors.Count);
 
         Assert.Contains(contributors,
-            item => item.GetType() == typeof(GitInfoContributor) || (item is AppSettingsInfoContributor) ||
-(item is BuildInfoContributor) || item is TestInfoContributor);
+            item => item.GetType() == typeof(GitInfoContributor) || item is AppSettingsInfoContributor || item is BuildInfoContributor ||
+                item is TestInfoContributor);
 
         var ep = serviceProvider.GetService<IInfoEndpoint>();
         Assert.NotNull(ep);

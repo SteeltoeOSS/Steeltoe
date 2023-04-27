@@ -49,7 +49,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<
             response.StatusCode = (int)HttpStatusCode.BadRequest;
             return;
         }
-        
+
         // GET request
         string serialInfo = await HandleRequestAsync(context.RequestAborted, null);
         Logger.LogDebug("Returning: {info}", serialInfo);
@@ -61,7 +61,8 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<
     private async Task<bool> ChangeLoggerLevelAsync(HttpContext context, string path)
     {
         var epPath = new PathString(path);
-        var request = context.Request;
+        HttpRequest request = context.Request;
+
         if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
         {
             string loggerName = remaining.Value.TrimStart('/');

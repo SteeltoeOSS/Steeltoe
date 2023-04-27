@@ -4,7 +4,6 @@
 
 using System.Text.Json.Serialization;
 
-
 namespace Steeltoe.Management.MetricCollectors;
 
 public sealed class MetricTag

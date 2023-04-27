@@ -36,6 +36,6 @@ internal sealed class CloudFoundryEndpoint : ICloudFoundryEndpoint
     public Task<Links> InvokeAsync(CancellationToken cancellationToken, string baseUrl)
     {
         var hypermediaService = new HypermediaService(_managementOptions, _options, _endpointOptions, _logger);
-        return Task.Run(()=>hypermediaService.Invoke(baseUrl), cancellationToken);
+        return Task.Run(() => hypermediaService.Invoke(baseUrl), cancellationToken);
     }
 }

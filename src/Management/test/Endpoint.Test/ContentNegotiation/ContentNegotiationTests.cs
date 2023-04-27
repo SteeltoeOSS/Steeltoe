@@ -201,6 +201,7 @@ public class ContentNegotiationTests
 
             // send the request
             HttpResponseMessage result;
+
             if (epName == EndpointNames.Refresh)
             {
                 result = await client.PostAsync(new Uri(epPath), null);

@@ -76,7 +76,7 @@ public class EndpointMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.PostAsync(new Uri("http://localhost/actuator/refresh"),null);
+            HttpResponseMessage result = await client.PostAsync(new Uri("http://localhost/actuator/refresh"), null);
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             string json = await result.Content.ReadAsStringAsync();
 

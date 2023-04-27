@@ -29,7 +29,7 @@ internal sealed class InfoEndpoint : IInfoEndpoint
 
     public Task<Dictionary<string, object>> InvokeAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(()=>BuildInfo(_contributors), cancellationToken);
+        return Task.Run(() => BuildInfo(_contributors), cancellationToken);
     }
 
     private Dictionary<string, object> BuildInfo(IList<IInfoContributor> infoContributors)

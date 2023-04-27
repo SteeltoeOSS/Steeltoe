@@ -4,7 +4,6 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -34,7 +33,6 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
             context.HandleContentNegotiation(Logger);
             await HandleRequestAsync(context.RequestAborted, context.Response.Body, GetRequestUri(context.Request), Logger);
             Logger.LogDebug("Returning serialized response");
-          
         }
     }
 

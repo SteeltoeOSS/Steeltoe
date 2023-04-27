@@ -31,7 +31,7 @@ internal sealed class RefreshEndpoint : IRefreshEndpoint
 
     public Task<IList<string>> InvokeAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(()=>DoInvoke(_configuration), cancellationToken);
+        return Task.Run(() => DoInvoke(_configuration), cancellationToken);
     }
 
     public IList<string> DoInvoke(IConfiguration configuration)
