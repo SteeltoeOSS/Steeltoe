@@ -22,7 +22,7 @@ public class TraceStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddHypermediaActuator(Configuration);
+        services.AddHypermediaActuator();
         services.AddTraceActuator(Configuration);
     }
 
@@ -32,8 +32,7 @@ public class TraceStartup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.Map<ActuatorEndpoint>();
-            endpoints.Map<HttpTraceEndpoint>();
+            endpoints.MapAllActuators();
         });
     }
 }

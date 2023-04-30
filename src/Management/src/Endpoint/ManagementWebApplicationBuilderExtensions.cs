@@ -33,7 +33,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddDbMigrationsActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddDbMigrationsActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddDbMigrationsActuator();
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
     }
@@ -46,7 +46,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddEnvActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddEnvActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddEnvActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -59,7 +59,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddHealthActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -75,7 +75,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, Type[] contributors)
     {
-        applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration, contributors);
+        applicationBuilder.Services.AddHealthActuator(contributors);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -94,7 +94,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, IHealthAggregator aggregator, Type[] contributors)
     {
-        applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration, aggregator, contributors);
+        applicationBuilder.Services.AddHealthActuator(aggregator, contributors);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -107,7 +107,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHeapDumpActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddHeapDumpActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddHeapDumpActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -120,7 +120,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHypermediaActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddHypermediaActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddHypermediaActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -133,7 +133,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddInfoActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddInfoActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -149,7 +149,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder, IInfoContributor[] contributors)
     {
-        applicationBuilder.Services.AddInfoActuator(applicationBuilder.Configuration, contributors);
+        applicationBuilder.Services.AddInfoActuator(contributors);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -163,7 +163,7 @@ public static class ManagementWebApplicationBuilderExtensions
     public static WebApplicationBuilder AddLoggersActuator(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.Logging.AddDynamicConsole();
-        applicationBuilder.Services.AddLoggersActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddLoggersActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -176,7 +176,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddMappingsActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddMappingsActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddMappingsActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -189,7 +189,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddMetricsActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddMetricsActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddMetricsActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -202,7 +202,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddRefreshActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddRefreshActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddRefreshActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -219,7 +219,7 @@ public static class ManagementWebApplicationBuilderExtensions
     public static WebApplicationBuilder AddThreadDumpActuator(this WebApplicationBuilder applicationBuilder,
         MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
-        applicationBuilder.Services.AddThreadDumpActuator(applicationBuilder.Configuration, mediaTypeVersion);
+        applicationBuilder.Services.AddThreadDumpActuator(mediaTypeVersion);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -235,7 +235,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder applicationBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
-        applicationBuilder.Services.AddTraceActuator(applicationBuilder.Configuration, mediaTypeVersion);
+        applicationBuilder.Services.AddTraceActuator(mediaTypeVersion);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -248,7 +248,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddCloudFoundryActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddCloudFoundryActuator(applicationBuilder.Configuration);
+        applicationBuilder.Services.AddCloudFoundryActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -269,7 +269,7 @@ public static class ManagementWebApplicationBuilderExtensions
         Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
         applicationBuilder.Logging.AddDynamicConsole();
-        applicationBuilder.Services.AddAllActuators(applicationBuilder.Configuration, mediaTypeVersion);
+        applicationBuilder.Services.AddAllActuators(mediaTypeVersion);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }

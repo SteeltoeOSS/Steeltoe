@@ -4,7 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-public interface IDbMigrationsEndpoint
+public interface IDbMigrationsEndpoint : IEndpoint<Dictionary<string, DbMigrationsDescriptor>>
 {
-    Dictionary<string, DbMigrationsDescriptor> Invoke();
 }

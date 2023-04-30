@@ -17,6 +17,4 @@ public interface IEndpointOptions
     IEnumerable<string> AllowedVerbs { get; }
 
     bool ExactMatch { get; }
-
-    bool IsAccessAllowed(Permissions permissions);
 }

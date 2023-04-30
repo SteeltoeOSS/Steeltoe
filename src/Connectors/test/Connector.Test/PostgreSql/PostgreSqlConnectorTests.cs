@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Npgsql;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connector.PostgreSql;
 using Xunit;
 
@@ -186,8 +187,8 @@ public sealed class PostgreSqlConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
-            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
         });
 
         builder.AddPostgreSql();
@@ -228,7 +229,7 @@ public sealed class PostgreSqlConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne"] = "Include Error Detail=true;Log Parameters=true;host=localhost"
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "Include Error Detail=true;Log Parameters=true;host=localhost"
         });
 
         builder.AddPostgreSql();
@@ -348,14 +349,55 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     }
 
     [Fact]
+    public async Task Binds_options_with_Kubernetes_service_bindings()
+    {
+        try
+        {
+            string rootDir = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
+            Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", rootDir);
+
+            WebApplicationBuilder builder = WebApplication.CreateBuilder();
+            builder.Configuration.AddEnvironmentVariables();
+            builder.Configuration.AddKubernetesServiceBindings();
+
+            builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["Steeltoe:Client:PostgreSql:customer-profiles:ConnectionString"] = "Include Error Detail=true;Log Parameters=true;host=localhost"
+            });
+
+            builder.AddPostgreSql();
+
+            await using WebApplication app = builder.Build();
+            var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
+
+            PostgreSqlOptions customerProfilesOptions = optionsMonitor.Get("customer-profiles");
+            customerProfilesOptions.Should().NotBeNull();
+
+            ExtractConnectionStringParameters(customerProfilesOptions.ConnectionString).Should().BeEquivalentTo(new List<string>
+            {
+                "Include Error Detail=True",
+                "Log Parameters=True",
+                "Host=10.194.59.205",
+                "Database=steeltoe",
+                "Username=testrolee93ccf859894dc60dcd53218492b37b4",
+                "Password=Qp!1mB1$Zk2T!$!D85_E"
+            }, options => options.WithoutStrictOrdering());
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", null);
+        }
+    }
+
+    [Fact]
     public async Task Registers_ConnectionFactory()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
-            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
         });
 
         builder.AddPostgreSql();
@@ -364,10 +406,10 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        await using NpgsqlConnection connectionOne = connectionFactory.GetConnection("myPostgreSqlServiceOne");
+        await using NpgsqlConnection connectionOne = connectionFactory.GetNamed("myPostgreSqlServiceOne").CreateConnection();
         connectionOne.ConnectionString.Should().Be("Host=localhost;Database=db1;Username=user1;Password=pass1");
 
-        await using NpgsqlConnection connectionTwo = connectionFactory.GetConnection("myPostgreSqlServiceTwo");
+        await using NpgsqlConnection connectionTwo = connectionFactory.GetNamed("myPostgreSqlServiceTwo").CreateConnection();
         connectionTwo.ConnectionString.Should().Be("Host=localhost;Database=db2;Username=user2;Password=pass2");
     }
 
@@ -382,7 +424,9 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
-        ""examplePostgreSqlService"": ""SERVER=localhost;DB=db1""
+        ""examplePostgreSqlService"": {
+            ""ConnectionString"": ""SERVER=localhost;DB=db1""
+        }
       }
     }
   }
@@ -398,14 +442,16 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
             var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-            string connectionString = connectionFactory.GetConnectionString("examplePostgreSqlService");
+            string connectionString = connectionFactory.GetNamed("examplePostgreSqlService").Options.ConnectionString;
             connectionString.Should().Be("Host=localhost;Database=db1");
 
             await File.WriteAllTextAsync(tempJsonPath, @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
-        ""examplePostgreSqlService"": ""SERVER=remote.com;DB=other""
+        ""examplePostgreSqlService"": {
+            ""ConnectionString"": ""SERVER=remote.com;DB=other""
+        }
       }
     }
   }
@@ -414,7 +460,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
             await Task.Delay(TimeSpan.FromSeconds(2));
 
-            connectionString = connectionFactory.GetConnectionString("examplePostgreSqlService");
+            connectionString = connectionFactory.GetNamed("examplePostgreSqlService").Options.ConnectionString;
             connectionString.Should().Be("Host=remote.com;Database=other");
         }
         finally
@@ -430,8 +476,8 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
-            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
         });
 
         builder.AddPostgreSql();
@@ -439,6 +485,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         await using WebApplication app = builder.Build();
 
         IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
+        healthContributors.Should().AllBeOfType<RelationalDbHealthContributor>();
 
         healthContributors.Should().HaveCount(2);
         healthContributors[0].Id.Should().Be("PostgreSQL-myPostgreSqlServiceOne");
@@ -453,7 +500,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:Default"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass;Log Parameters=True"
+            ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass;Log Parameters=True"
         });
 
         builder.AddPostgreSql();
@@ -461,7 +508,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         await using WebApplication app = builder.Build();
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
 
         ExtractConnectionStringParameters(defaultConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -473,7 +520,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
             "Port=5432"
         }, options => options.WithoutStrictOrdering());
 
-        string namedConnectionString = connectionFactory.GetConnectionString("myPostgreSqlServiceAzureOne");
+        string namedConnectionString = connectionFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -491,10 +538,10 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNull();
 
-        string namedConnectionString = connectionFactory.GetConnectionString("myPostgreSqlServiceAzureOne");
+        string namedConnectionString = connectionFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -507,7 +554,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:Default"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass"
+            ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass"
         });
 
         builder.AddPostgreSql();
@@ -516,7 +563,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -529,7 +576,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne"] = "host=localhost"
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "host=localhost"
         });
 
         builder.AddPostgreSql();
@@ -538,10 +585,10 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString = connectionFactory.GetConnectionString("myPostgreSqlServiceAzureOne");
+        string namedConnectionString = connectionFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -554,8 +601,8 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne"] = "host=localhost",
-            ["Steeltoe:Client:PostgreSql:Default"] = "host=ignored"
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "host=localhost",
+            ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "host=ignored"
         });
 
         builder.AddPostgreSql();
@@ -564,10 +611,10 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString = connectionFactory.GetConnectionString("myPostgreSqlServiceAzureOne");
+        string namedConnectionString = connectionFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -581,7 +628,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:Default"] = "host=ignored"
+            ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "host=ignored"
         });
 
         builder.AddPostgreSql();
@@ -590,10 +637,10 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString = connectionFactory.GetConnectionString("myPostgreSqlServiceAzureOne");
+        string namedConnectionString = connectionFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(3);
@@ -607,8 +654,8 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne"] = "host=localhost",
-            ["Steeltoe:Client:PostgreSql:Default"] = "host=ignored"
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "host=localhost",
+            ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "host=ignored"
         });
 
         builder.AddPostgreSql();
@@ -617,10 +664,10 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString = connectionFactory.GetConnectionString("myPostgreSqlServiceAzureOne");
+        string namedConnectionString = connectionFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -634,8 +681,8 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:alternatePostgreSqlService"] = "host=localhost",
-            ["Steeltoe:Client:PostgreSql:Default"] = "host=ignored"
+            ["Steeltoe:Client:PostgreSql:alternatePostgreSqlService:ConnectionString"] = "host=localhost",
+            ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "host=ignored"
         });
 
         builder.AddPostgreSql();
@@ -644,13 +691,13 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefaultConnectionString();
+        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString1 = connectionFactory.GetConnectionString("myPostgreSqlServiceAzureOne");
+        string namedConnectionString1 = connectionFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString1.Should().NotBeNull();
 
-        string namedConnectionString2 = connectionFactory.GetConnectionString("alternatePostgreSqlService");
+        string namedConnectionString2 = connectionFactory.GetNamed("alternatePostgreSqlService").Options.ConnectionString;
         namedConnectionString2.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(2);

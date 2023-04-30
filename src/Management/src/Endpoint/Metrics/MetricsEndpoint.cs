@@ -3,26 +3,31 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest>, IMetricsEndpoint
+public class MetricsEndpoint : IMetricsEndpoint
 {
+    private readonly IOptionsMonitor<MetricsEndpointOptions> _options;
     private readonly SteeltoeExporter _exporter;
     private readonly ILogger<MetricsEndpoint> _logger;
 
-    public new IMetricsEndpointOptions Options => options as IMetricsEndpointOptions;
+    public IEndpointOptions Options => _options.CurrentValue;
 
-    public MetricsEndpoint(IMetricsEndpointOptions options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
-        : base(options)
+    public MetricsEndpoint(IOptionsMonitor<MetricsEndpointOptions> options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger)
     {
+        ArgumentGuard.NotNull(logger);
+
+        _options = options;
         _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter), $"Exporters must contain a single {nameof(SteeltoeExporter)}.");
         _logger = logger;
     }
 
-    public override IMetricsResponse Invoke(MetricsRequest request)
+    public IMetricsResponse Invoke(MetricsRequest request)
     {
         (MetricsCollection<List<MetricSample>> measurements, MetricsCollection<List<MetricTag>> availTags) = GetMetrics();
 
@@ -35,7 +40,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
 
         if (metricNames.Contains(request.MetricName))
         {
-            _logger?.LogTrace("Fetching metrics for " + request.MetricName);
+            _logger.LogTrace("Fetching metrics for " + request.MetricName);
             List<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
 
             return GetMetric(request, sampleList, availTags[request.MetricName]);
@@ -115,7 +120,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
         catch (Exception ex)
         {
             // Nothing we can do , log and move on 
-            _logger?.LogError(ex, "Error transforming metrics.");
+            _logger.LogError(ex, "Error transforming metrics.");
         }
 
         return sampleList;

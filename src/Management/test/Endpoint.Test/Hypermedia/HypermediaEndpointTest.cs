@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
@@ -22,29 +21,14 @@ public class HypermediaEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Constructor_ThrowsOptionsNull()
-    {
-        Assert.Throws<ArgumentNullException>(() => new ActuatorEndpoint(null, null));
-    }
-
-    [Fact]
     public void Invoke_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddHypermediaActuatorServices(configuration);
-            services.AddInfoActuatorServices(configuration);
-
-            services.AddSingleton(sp =>
-            {
-                var options = new ActuatorManagementOptions();
-                options.EndpointOptions.Add(sp.GetRequiredService<IInfoOptions>());
-                options.EndpointOptions.Add(sp.GetRequiredService<IActuatorHypermediaOptions>());
-
-                return options;
-            });
+            services.AddHypermediaActuatorServices();
+            services.AddInfoActuatorServices();
         };
 
         var ep = tc.GetService<IActuatorEndpoint>();
@@ -66,15 +50,7 @@ public class HypermediaEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddHypermediaActuatorServices(configuration);
-
-            services.AddSingleton(sp =>
-            {
-                var options = new ActuatorManagementOptions();
-                options.EndpointOptions.Add(sp.GetRequiredService<IActuatorHypermediaOptions>());
-
-                return options;
-            });
+            services.AddHypermediaActuatorServices();
         };
 
         var ep = tc.GetService<IActuatorEndpoint>();
@@ -94,17 +70,8 @@ public class HypermediaEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddHypermediaActuatorServices(configuration);
-            services.AddInfoActuatorServices(configuration);
-
-            services.AddSingleton(sp =>
-            {
-                var options = new ActuatorManagementOptions();
-                options.EndpointOptions.Add(sp.GetRequiredService<IInfoOptions>());
-                options.EndpointOptions.Add(sp.GetRequiredService<IActuatorHypermediaOptions>());
-
-                return options;
-            });
+            services.AddHypermediaActuatorServices();
+            services.AddInfoActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>
@@ -133,17 +100,8 @@ public class HypermediaEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddHypermediaActuatorServices(configuration);
-            services.AddInfoActuatorServices(configuration);
-
-            services.AddSingleton(sp =>
-            {
-                var options = new ActuatorManagementOptions();
-                options.EndpointOptions.Add(sp.GetRequiredService<IInfoOptions>());
-                options.EndpointOptions.Add(sp.GetRequiredService<IActuatorHypermediaOptions>());
-
-                return options;
-            });
+            services.AddHypermediaActuatorServices();
+            services.AddInfoActuatorServices();
         };
 
         tc.AdditionalConfiguration = configuration =>

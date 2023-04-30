@@ -67,22 +67,39 @@ public static class RabbitMQTypeLocator
     /// <summary>
     /// Gets the CreateConnection method of ConnectionFactory.
     /// </summary>
-    public static MethodInfo CreateConnectionMethod => FindMethodOrThrow(ConnectionFactory, "CreateConnection", Array.Empty<Type>());
+    public static MethodInfo CreateConnectionMethod => FindMethodOrThrow(ConnectionFactoryInterface, "CreateConnection", Array.Empty<Type>());
 
     /// <summary>
     /// Gets the Close method for IConnection.
     /// </summary>
     public static MethodInfo CloseConnectionMethod => FindMethodOrThrow(ConnectionInterface, "Close", Array.Empty<Type>());
 
+    /// <summary>
+    /// Gets the Url property for IConnectionFactory.
+    /// </summary>
+    public static MethodInfo ConnectionFactoryUrlPropertySetter => FindPropertyOrThrow(ConnectionFactoryInterface, "Url").GetSetMethod();
+
     private static MethodInfo FindMethodOrThrow(Type type, string methodName, Type[] parameters = null)
     {
-        MethodInfo returnType = ReflectionHelpers.FindMethod(type, methodName, parameters);
+        MethodInfo method = ReflectionHelpers.FindMethod(type, methodName, parameters);
 
-        if (returnType == null)
+        if (method == null)
         {
-            throw new ConnectorException("Unable to find required RabbitMQ type, are you missing the RabbitMQ.Client Nuget package?");
+            throw new ConnectorException("Unable to find required RabbitMQ method, are you missing the RabbitMQ.Client Nuget package?");
         }
 
-        return returnType;
+        return method;
+    }
+
+    private static PropertyInfo FindPropertyOrThrow(Type type, string propertyName)
+    {
+        PropertyInfo property = ReflectionHelpers.FindProperty(type, propertyName);
+
+        if (property == null)
+        {
+            throw new ConnectorException("Unable to find required RabbitMQ property, are you missing the RabbitMQ.Client Nuget package?");
+        }
+
+        return property;
     }
 }

@@ -6,7 +6,6 @@ using Steeltoe.Management.Endpoint.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public interface ICloudFoundryEndpoint
+public interface ICloudFoundryEndpoint : IEndpoint<Links, string>
 {
-    Links Invoke(string baseUrl);
 }

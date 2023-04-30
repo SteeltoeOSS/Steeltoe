@@ -214,7 +214,7 @@ internal sealed class EurekaPostProcessor : IConfigurationPostProcessor
                 var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingType,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
-                mapper.AddKeyValue("region", "default");
+                mapper.SetToValue("region", "default");
                 mapper.MapFromTo("client-id", "oauth2", "clientId");
                 mapper.MapFromTo("client-secret", "oauth2", "clientSecret");
                 mapper.MapFromTo("access-token-uri", "oauth2", "accessTokenUri");
@@ -295,19 +295,17 @@ internal sealed class MongoDbPostProcessor : IConfigurationPostProcessor
         configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingType).ForEach(
             bindingNameKey =>
             {
-                // Spring -> spring.data.mongodb....
-                // Steeltoe -> steeltoe:service-bindings:mongodb....
                 var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingType,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
+                // See MongoDB connection string parameters at: https://www.mongodb.com/docs/manual/reference/connection-string/
+                mapper.MapFromTo("uri", "url");
+                mapper.MapFromTo("username", "username");
+                mapper.MapFromTo("password", "password");
+                mapper.MapFromTo("host", "server");
+                mapper.MapFromTo("port", "port");
                 mapper.MapFromTo("authentication-database", "authenticationDatabase");
                 mapper.MapFromTo("database", "database");
-                mapper.MapFromTo("grid-fs-database", "gridfsDatabase");
-                mapper.MapFromTo("host", "host");
-                mapper.MapFromTo("password", "password");
-                mapper.MapFromTo("port", "port");
-                mapper.MapFromTo("uri", "uri");
-                mapper.MapFromTo("username", "username");
             });
     }
 }
@@ -326,21 +324,15 @@ internal sealed class MySqlPostProcessor : IConfigurationPostProcessor
         configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingType).ForEach(
             bindingNameKey =>
             {
-                // Spring -> spring.datasource....
-                // Steeltoe -> steeltoe:service-bindings:mysql:binding-name....
                 var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingType,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
-                mapper.MapFromTo("username", "username");
-                mapper.MapFromTo("password", "password");
+                // See MySQL connection string parameters at: https://dev.mysql.com/doc/refman/8.0/en/connecting-using-uri-or-key-value-pairs.html#connection-parameters-base
                 mapper.MapFromTo("host", "host");
                 mapper.MapFromTo("port", "port");
                 mapper.MapFromTo("database", "database");
-
-                // Spring indicates this takes precedence over above
-                mapper.MapFromTo("jdbc-url", "jdbcUrl");
-
-                // Note: Spring also adds spring.r2dbc.... properties as well
+                mapper.MapFromTo("username", "username");
+                mapper.MapFromTo("password", "password");
             });
     }
 }
@@ -418,27 +410,15 @@ internal sealed class PostgreSqlPostProcessor : IConfigurationPostProcessor
         configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingType).ForEach(
             bindingNameKey =>
             {
-                // Spring -> spring.datasource....
-                // Steeltoe -> steeltoe:service-bindings:postgresql:binding-name....
                 var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingType,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
-                mapper.MapFromTo("username", "username");
-                mapper.MapFromTo("password", "password");
+                // See PostgreSQL connection string parameters at: https://www.npgsql.org/doc/connection-string-parameters.html
                 mapper.MapFromTo("host", "host");
                 mapper.MapFromTo("port", "port");
                 mapper.MapFromTo("database", "database");
-
-                // Note, look at the Spring PostgreSqlBindingsPropertiesProcessor for format
-                // of the below key values
-                mapper.MapFromTo("sslmode", "sslmode");
-                mapper.MapFromTo("sslrootcert", "sslrootcert");
-                mapper.MapFromTo("options", "options");
-
-                // Spring indicates this takes precedence over above
-                mapper.MapFromTo("jdbc-url", "jdbcUrl");
-
-                // Note: Spring also adds spring.r2dbc.... properties as well
+                mapper.MapFromTo("username", "username");
+                mapper.MapFromTo("password", "password");
             });
     }
 }
@@ -457,16 +437,14 @@ internal sealed class RabbitMQPostProcessor : IConfigurationPostProcessor
         configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingType).ForEach(
             bindingNameKey =>
             {
-                // Spring -> spring.rabbitmq....
-                // Steeltoe -> steeltoe:service-bindings:rabbitmq:binding-name:....
                 var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingType,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
-                mapper.MapFromTo("addresses", "addresses");
+                // See RabbitMQ connection string parameters at: https://www.rabbitmq.com/uri-spec.html
                 mapper.MapFromTo("host", "host");
-                mapper.MapFromTo("password", "password");
                 mapper.MapFromTo("port", "port");
                 mapper.MapFromTo("username", "username");
+                mapper.MapFromTo("password", "password");
                 mapper.MapFromTo("virtual-host", "virtualHost");
             });
     }
@@ -566,7 +544,7 @@ internal sealed class SpringSecurityOAuth2PostProcessor : IConfigurationPostProc
                     return;
                 }
 
-                mapper.AddKeyValue("registration:provider", bindingProvider);
+                mapper.SetToValue("registration:provider", bindingProvider);
 
                 mapper.MapFromTo("client-id", "registration", "clientId");
                 mapper.MapFromTo("client-secret", "registration", "clientSecret");
@@ -608,21 +586,15 @@ internal sealed class SqlServerPostProcessor : IConfigurationPostProcessor
         configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingType).ForEach(
             bindingNameKey =>
             {
-                // Spring -> spring.datasource....
-                // Steeltoe -> steeltoe:service-bindings:sqlserver:binding-name:....
                 var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingType,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
-                mapper.MapFromTo("username", "username");
-                mapper.MapFromTo("password", "password");
-                mapper.MapFromTo("host", "host");
-                mapper.MapFromTo("port", "port");
-                mapper.MapFromTo("database", "database");
-
-                // Spring indicates this takes precedence over above
-                mapper.MapFromTo("jdbc-url", "jdbcUrl");
-
-                // Note: Spring also adds spring.r2dbc.... properties as well
+                // See SQL Server connection string parameters at: https://learn.microsoft.com/en-us/dotnet/api/system.data.sqlclient.sqlconnection.connectionstring#remarks
+                mapper.MapFromTo("host", "Data Source");
+                mapper.MapFromAppendTo("port", "Data Source", ",");
+                mapper.MapFromTo("database", "Initial Catalog");
+                mapper.MapFromTo("username", "User ID");
+                mapper.MapFromTo("password", "Password");
             });
     }
 }
@@ -648,7 +620,7 @@ internal sealed class VaultPostProcessor : IConfigurationPostProcessor
 
                 mapper.MapFromTo("uri", "uri");
                 mapper.MapFromTo("namespace", "namespace");
-                string authenticationMethod = mapper.Get("authentication-method");
+                string authenticationMethod = mapper.GetFromValue("authentication-method");
 
                 if (authenticationMethod == null)
                 {
@@ -656,7 +628,7 @@ internal sealed class VaultPostProcessor : IConfigurationPostProcessor
                     return;
                 }
 
-                mapper.AddKeyValue("authentication", authenticationMethod);
+                mapper.SetToValue("authentication", authenticationMethod);
 
                 switch (authenticationMethod.ToUpperInvariant())
                 {

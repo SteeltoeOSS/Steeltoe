@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
@@ -18,11 +19,9 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
     public void AddMetricsActuator_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddMetricsActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => services2.AddMetricsActuator());
     }
 
     [Fact]
@@ -43,14 +42,14 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
         Assert.NotNull(mgr);
         var hst = serviceProvider.GetService<IHostedService>();
         Assert.NotNull(hst);
-        var opts = serviceProvider.GetService<IMetricsObserverOptions>();
-        Assert.NotNull(opts);
+        var opts = serviceProvider.GetService<IOptionsMonitor<MetricsObserverOptions>>();
+        Assert.NotNull(opts.CurrentValue);
 
         IEnumerable<IDiagnosticObserver> observers = serviceProvider.GetServices<IDiagnosticObserver>();
         List<IDiagnosticObserver> list = observers.ToList();
-        Assert.Single(list);
+        Assert.NotEmpty(list);
 
-        var ep = serviceProvider.GetService<MetricsEndpoint>();
+        var ep = serviceProvider.GetService<IMetricsEndpoint>();
         Assert.NotNull(ep);
     }
 

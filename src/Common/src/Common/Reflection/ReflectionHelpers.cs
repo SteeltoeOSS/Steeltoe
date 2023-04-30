@@ -202,7 +202,7 @@ public static class ReflectionHelpers
     /// List of suitable types.
     /// </param>
     /// <returns>
-    /// An appropriate type.
+    /// An appropriate type, or <c>null</c> when not found.
     /// </returns>
     /// <remarks>
     /// Great for finding an implementation type that could have one or more names in one or more assemblies.
@@ -240,7 +240,7 @@ public static class ReflectionHelpers
     /// The name of the type to retrieve.
     /// </param>
     /// <returns>
-    /// The type.
+    /// The type, or <c>null</c> when not found.
     /// </returns>
     public static Type FindType(Assembly assembly, string typeName)
     {
@@ -293,6 +293,32 @@ public static class ReflectionHelpers
     }
 
     /// <summary>
+    /// Find a property within a type.
+    /// </summary>
+    /// <param name="type">
+    /// The type to search.
+    /// </param>
+    /// <param name="propertyName">
+    /// The name of the property.
+    /// </param>
+    /// <returns>
+    /// The property you're searching for, or <c>null</c> when not found.
+    /// </returns>
+    public static PropertyInfo FindProperty(Type type, string propertyName)
+    {
+        try
+        {
+            return type.GetProperty(propertyName);
+        }
+        catch (Exception)
+        {
+            // Sometimes dependencies are missing... Should be handled later in framework code
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// Find a method within a type.
     /// </summary>
     /// <param name="type">
@@ -305,7 +331,7 @@ public static class ReflectionHelpers
     /// (Optional) The parameters in the signature.
     /// </param>
     /// <returns>
-    /// The method you're searching for.
+    /// The method you're searching for, or <c>null</c> when not found.
     /// </returns>
     public static MethodInfo FindMethod(Type type, string methodName, Type[] parameters = null)
     {

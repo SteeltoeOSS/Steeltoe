@@ -22,17 +22,13 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddCloudFoundryActuator(Configuration);
-        services.AddHeapDumpActuator(Configuration);
+        services.AddCloudFoundryActuator();
+        services.AddHeapDumpActuator();
     }
 
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<HeapDumpEndpoint>();
-        });
+        app.UseEndpoints(endpoints => endpoints.MapAllActuators());
     }
 }

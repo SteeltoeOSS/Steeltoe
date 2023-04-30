@@ -17,11 +17,9 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddLoggersActuator_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddLoggersActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => services2.AddLoggersActuator());
     }
 
     [Fact]
@@ -46,13 +44,11 @@ public class EndpointServiceCollectionTest : BaseTest
             builder.AddDynamicConsole();
         });
 
-        services.AddLoggersActuator(configurationRoot);
+        services.AddLoggersActuator();
+        services.AddSingleton<IConfiguration>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-        var options = serviceProvider.GetService<ILoggersOptions>();
         var ep = serviceProvider.GetService<LoggersEndpoint>();
-
-        Assert.NotNull(options);
         Assert.NotNull(ep);
     }
 }

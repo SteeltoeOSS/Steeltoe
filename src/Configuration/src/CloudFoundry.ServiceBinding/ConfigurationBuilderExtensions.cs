@@ -97,6 +97,11 @@ public static class ConfigurationBuilderExtensions
     private static IConfigurationBuilder RegisterPostProcessors(IConfigurationBuilder builder, ServiceBindingConfigurationSource source)
     {
         source.RegisterPostProcessor(new PostgreSqlPostProcessor());
+        source.RegisterPostProcessor(new MySqlPostProcessor());
+        source.RegisterPostProcessor(new SqlServerPostProcessor());
+        source.RegisterPostProcessor(new MongoDbPostProcessor());
+        source.RegisterPostProcessor(new CosmosDbPostProcessor());
+        source.RegisterPostProcessor(new RabbitMQPostProcessor());
 
         builder.Add(source);
         return builder;

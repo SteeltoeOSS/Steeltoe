@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
@@ -17,81 +18,68 @@ namespace Steeltoe.Connector;
 /// <typeparam name="TConnection">
 /// The connection type.
 /// </typeparam>
-public sealed class ConnectionFactory<TOptions, TConnection>
+public sealed class ConnectionFactory<TOptions, TConnection> : IDisposable
     where TOptions : ConnectionStringOptions
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly Func<string, object> _createConnection;
+    private readonly Func<TOptions, string, object> _createConnection;
+    private readonly bool _useSingletonConnection;
+    private readonly ConcurrentDictionary<string, ConnectionProvider<TOptions, TConnection>> _namedConnectionProviders = new();
 
-    public ConnectionFactory(IServiceProvider serviceProvider, Func<string, object> createConnection)
+    private IOptionsMonitor<TOptions> OptionsMonitor => _serviceProvider.GetRequiredService<IOptionsMonitor<TOptions>>();
+
+    public ConnectionFactory(IServiceProvider serviceProvider, Func<TOptions, string, object> createConnection, bool useSingletonConnection)
     {
         ArgumentGuard.NotNull(createConnection);
         ArgumentGuard.NotNull(serviceProvider);
 
         _serviceProvider = serviceProvider;
         _createConnection = createConnection;
+        _useSingletonConnection = useSingletonConnection;
     }
 
     /// <summary>
-    /// Creates a new connection for the default service binding, in case only one binding exists.
+    /// Gets a connection provider for the default service binding. Only use this if a single binding exists.
     /// </summary>
     /// <returns>
-    /// A new connection. Throws when the connection string is unavailable.
+    /// The connection provider.
     /// </returns>
-    public TConnection GetDefaultConnection()
+    public ConnectionProvider<TOptions, TConnection> GetDefault()
     {
-        return GetConnection(string.Empty);
+        return GetCachedConnectionProvider(string.Empty);
     }
 
     /// <summary>
-    /// Creates a new connection for the specified service binding name.
+    /// Gets a connection provider for the specified service binding name.
     /// </summary>
     /// <param name="name">
     /// The service binding name.
     /// </param>
     /// <returns>
-    /// A new connection. Throws when the connection string is unavailable.
+    /// The connection provider.
     /// </returns>
-    public TConnection GetConnection(string name)
+    public ConnectionProvider<TOptions, TConnection> GetNamed(string name)
     {
-        string connectionString = GetConnectionString(name);
+        return GetCachedConnectionProvider(name);
+    }
 
-        if (connectionString == null)
+    private ConnectionProvider<TOptions, TConnection> GetCachedConnectionProvider(string name)
+    {
+        return _namedConnectionProviders.GetOrAdd(name,
+            _ => new ConnectionProvider<TOptions, TConnection>(OptionsMonitor, name, _createConnection, _useSingletonConnection));
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_useSingletonConnection)
         {
-            throw name == string.Empty
-                ? new InvalidOperationException("Default connection string not found.")
-                : new InvalidOperationException($"Connection string for '{name}' not found.");
+            foreach (ConnectionProvider<TOptions, TConnection> connectionProvider in _namedConnectionProviders.Values)
+            {
+                connectionProvider.Dispose();
+
+                // Don't clear the collection, so that allocated providers will throw when reused after dispose.
+            }
         }
-
-        object connection = _createConnection(connectionString);
-        return (TConnection)connection;
-    }
-
-    /// <summary>
-    /// Gets the connection string for the default service binding, in case only one binding exists.
-    /// </summary>
-    /// <returns>
-    /// The connection string, or <c>null</c> if not found.
-    /// </returns>
-    public string GetDefaultConnectionString()
-    {
-        return GetConnectionString(string.Empty);
-    }
-
-    /// <summary>
-    /// Gets the connection string for the specified service binding name.
-    /// </summary>
-    /// <param name="name">
-    /// The service binding name.
-    /// </param>
-    /// <returns>
-    /// The connection string, or <c>null</c> if not found.
-    /// </returns>
-    public string GetConnectionString(string name)
-    {
-        var optionsMonitor = _serviceProvider.GetRequiredService<IOptionsMonitor<TOptions>>();
-        TOptions options = optionsMonitor.Get(name);
-
-        return options.ConnectionString;
     }
 }

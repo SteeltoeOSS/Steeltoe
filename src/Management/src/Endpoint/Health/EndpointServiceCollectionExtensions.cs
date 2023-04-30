@@ -2,15 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Management.Endpoint.Extensions;
 using Steeltoe.Management.Endpoint.Health.Contributor;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
@@ -30,13 +28,9 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add health to.
     /// </param>
-    /// <param name="configuration">
-    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
-    /// management:endpoints:health).
-    /// </param>
-    public static void AddHealthActuator(this IServiceCollection services, IConfiguration configuration = null)
+    public static void AddHealthActuator(this IServiceCollection services)
     {
-        services.AddHealthActuator(configuration, new HealthRegistrationsAggregator(), DefaultHealthContributors);
+        services.AddHealthActuator(new HealthRegistrationsAggregator(), DefaultHealthContributors);
     }
 
     /// <summary>
@@ -44,19 +38,15 @@ public static class EndpointServiceCollectionExtensions
     /// </summary>
     /// <param name="services">
     /// Service collection to add health to.
-    /// </param>
-    /// <param name="configuration">
-    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
-    /// management:endpoints:health).
     /// </param>
     /// <param name="contributors">
     /// Contributors to application health.
     /// </param>
-    public static void AddHealthActuator(this IServiceCollection services, IConfiguration configuration = null, params Type[] contributors)
+    public static void AddHealthActuator(this IServiceCollection services, params Type[] contributors)
     {
         ArgumentGuard.NotNull(services);
 
-        services.AddHealthActuator(configuration, new HealthRegistrationsAggregator(), contributors);
+        services.AddHealthActuator(new HealthRegistrationsAggregator(), contributors);
     }
 
     /// <summary>
@@ -64,10 +54,6 @@ public static class EndpointServiceCollectionExtensions
     /// </summary>
     /// <param name="services">
     /// Service collection to add health to.
-    /// </param>
-    /// <param name="configuration">
-    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
-    /// management:endpoints:health).
     /// </param>
     /// <param name="aggregator">
     /// Custom health aggregator.
@@ -75,23 +61,21 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="contributors">
     /// Contributors to application health.
     /// </param>
-    public static void AddHealthActuator(this IServiceCollection services, IConfiguration configuration, IHealthAggregator aggregator,
-        params Type[] contributors)
+    public static void AddHealthActuator(this IServiceCollection services, IHealthAggregator aggregator, params Type[] contributors)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(aggregator);
 
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-
-        services.AddActuatorManagementOptions(configuration);
-        services.AddHealthActuatorServices(configuration);
+        services.AddCommonActuatorServices();
+        services.AddHealthActuatorServices();
 
         AddHealthContributors(services, contributors);
 
         services.TryAddSingleton(aggregator);
-        services.TryAddScoped<HealthEndpointCore>();
-        services.AddActuatorEndpointMapping<HealthEndpointCore>();
+        services.TryAddScoped<IEndpoint<HealthEndpointResponse, ISecurityContext>, HealthEndpointCore>();
         services.TryAddSingleton<ApplicationAvailability>();
+
+        services.AddCommonActuatorServices();
     }
 
     public static void AddHealthContributors(this IServiceCollection services, params Type[] contributors)

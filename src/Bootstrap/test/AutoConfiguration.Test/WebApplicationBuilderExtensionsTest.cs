@@ -137,7 +137,7 @@ public class WebApplicationBuilderExtensionsTest
         webApp.UseRouting();
         await webApp.StartAsync();
 
-        IEnumerable<ActuatorEndpoint> managementEndpoint = webApp.Services.GetServices<ActuatorEndpoint>();
+        IEnumerable<IActuatorEndpoint> managementEndpoint = webApp.Services.GetServices<IActuatorEndpoint>();
         IStartupFilter filter = webApp.Services.GetServices<IStartupFilter>().FirstOrDefault();
         Assert.Single(managementEndpoint);
         Assert.NotNull(filter);
@@ -152,7 +152,7 @@ public class WebApplicationBuilderExtensionsTest
         webApp.UseRouting();
         await webApp.StartAsync();
 
-        IEnumerable<ActuatorEndpoint> managementEndpoint = webApp.Services.GetServices<ActuatorEndpoint>();
+        IEnumerable<IActuatorEndpoint> managementEndpoint = webApp.Services.GetServices<IActuatorEndpoint>();
         IStartupFilter filter = webApp.Services.GetServices<IStartupFilter>().FirstOrDefault(f => f is AllActuatorsStartupFilter);
 
         Assert.Single(managementEndpoint);

@@ -21,6 +21,7 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
     public WavefrontMetricsExporter(IWavefrontExporterOptions options, ILogger<WavefrontMetricsExporter> logger)
     {
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(logger);
 
         if (options is not WavefrontExporterOptions exporterOptions)
         {
@@ -32,10 +33,12 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
 
         string token = string.Empty;
         string uri = Options.Uri;
-        if(string.IsNullOrEmpty(uri))
+
+        if (string.IsNullOrEmpty(uri))
         {
             throw new ArgumentException("management:metrics:export:wavefront:uri cannot be null or empty");
         }
+
         if (uri.StartsWith("proxy://", StringComparison.Ordinal))
         {
             uri = $"http{Options.Uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
@@ -106,18 +109,18 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error sending metrics to wavefront: {message}", ex.Message);
+                _logger.LogError(ex, "Error sending metrics to wavefront: {message}", ex.Message);
             }
         }
 
-        _logger?.LogTrace("Exported {MetricCount} metrics to {Uri}", metricCount, Options.Uri);
+        _logger.LogTrace("Exported {MetricCount} metrics to {Uri}", metricCount, Options.Uri);
         return ExportResult.Success;
     }
 
     private IDictionary<string, string> GetTags(ReadOnlyTagCollection inputTags)
     {
         IDictionary<string, string> tags = inputTags.AsDictionary();
-        
+
         tags.Add("application", Options.Name.ToLowerInvariant());
         tags.Add("service", Options.Service.ToLowerInvariant());
 

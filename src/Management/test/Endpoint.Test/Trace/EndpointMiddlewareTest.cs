@@ -8,9 +8,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
 
@@ -25,19 +28,19 @@ public class EndpointMiddlewareTest : BaseTest
         ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
         ["management:endpoints:enabled"] = "true",
-        ["management:endpoints:trace:enabled"] = "true"
+        ["management:endpoints:trace:enabled"] = "true",
+        ["management:endpoints:actuator:exposure:include:0"] = "httptrace"
     };
 
     [Fact]
     public async Task HandleTraceRequestAsync_ReturnsExpected()
     {
-        var opts = new TraceEndpointOptions();
-        var managementOptions = new CloudFoundryManagementOptions();
-        managementOptions.EndpointOptions.Add(opts);
+        IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(opts);
-        var ep = new TestTraceEndpoint(opts, obs);
-        var middle = new TraceEndpointMiddleware(null, ep, managementOptions);
+        var obs = new TraceDiagnosticObserver(opts, NullLogger<TraceDiagnosticObserver>.Instance);
+        var ep = new TestTraceEndpoint(opts, obs, NullLogger<TraceEndpoint>.Instance);
+        var middle = new TraceEndpointMiddleware(ep, managementOptions, NullLogger<TraceEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/httptrace");
         await middle.HandleTraceRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -49,13 +52,12 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleTraceRequestAsync_OtherPathReturnsExpected()
     {
-        var opts = new TraceEndpointOptions();
-        var managementOptions = new CloudFoundryManagementOptions();
-        managementOptions.EndpointOptions.Add(opts);
+        IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(opts);
-        var ep = new TestTraceEndpoint(opts, obs);
-        var middle = new TraceEndpointMiddleware(null, ep, managementOptions);
+        var obs = new TraceDiagnosticObserver(opts, NullLogger<TraceDiagnosticObserver>.Instance);
+        var ep = new TestTraceEndpoint(opts, obs, NullLogger<TraceEndpoint>.Instance);
+        var middle = new TraceEndpointMiddleware(ep, managementOptions, NullLogger<TraceEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/trace");
         await middle.HandleTraceRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -77,7 +79,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/httptrace"));
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/httptrace"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
         Assert.NotNull(json);
@@ -86,21 +88,25 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = new HttpTraceEndpointOptions();
+        var options = GetOptionsFromSettings<TraceEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/httptrace", options.GetContextPath(new ActuatorManagementOptions()));
-        Assert.Equal("/cloudfoundryapplication/httptrace", options.GetContextPath(new CloudFoundryManagementOptions()));
-        Assert.Null(options.AllowedVerbs);
+        Assert.Equal("/actuator/httptrace", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/httptrace", options.GetContextPath(managementOptions.Get(CFContext.Name)));
+        Assert.Contains("Get", options.AllowedVerbs);
     }
 
     [Fact]
     public void RoutesByPathAndVerbTrace()
     {
-        var options = new TraceEndpointOptions();
+        TraceEndpointOptions options = GetOptionsMonitorFromSettings<TraceEndpointOptions>()
+            .Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
+
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/trace", options.GetContextPath(new ActuatorManagementOptions()));
-        Assert.Equal("/cloudfoundryapplication/trace", options.GetContextPath(new CloudFoundryManagementOptions()));
-        Assert.Null(options.AllowedVerbs);
+        Assert.Equal("/actuator/trace", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/trace", options.GetContextPath(managementOptions.Get(CFContext.Name)));
+        Assert.Contains("Get", options.AllowedVerbs);
     }
 
     private HttpContext CreateRequest(string method, string path)

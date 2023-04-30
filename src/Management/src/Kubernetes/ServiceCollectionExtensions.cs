@@ -64,7 +64,7 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.AddKubernetesInfoContributor(podUtilities);
-        services.AddAllActuators(configuration, version);
+        services.AddAllActuators(version);
         return services;
     }
 }

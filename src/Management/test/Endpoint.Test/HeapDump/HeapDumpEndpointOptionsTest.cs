@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Xunit;
@@ -14,16 +13,9 @@ public class HeapDumpEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new HeapDumpEndpointOptions();
+        var opts = GetOptionsFromSettings<HeapDumpEndpointOptions>();
         Assert.Null(opts.Enabled);
         Assert.Equal("heapdump", opts.Id);
-    }
-
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpointOptions(configuration));
     }
 
     [Fact]
@@ -40,12 +32,8 @@ public class HeapDumpEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var opts = new HeapDumpEndpointOptions(configurationRoot);
-        var cloudOpts = new CloudFoundryEndpointOptions(configurationRoot);
+        var opts = GetOptionsFromSettings<HeapDumpEndpointOptions>(appsettings);
+        var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);
 
         Assert.True(cloudOpts.Enabled);
         Assert.Equal(string.Empty, cloudOpts.Id);

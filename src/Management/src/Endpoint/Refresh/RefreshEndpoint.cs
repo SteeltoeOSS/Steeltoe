@@ -4,25 +4,29 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-public class RefreshEndpoint : AbstractEndpoint<IList<string>>, IRefreshEndpoint
+public class RefreshEndpoint : IRefreshEndpoint
 {
+    private readonly IOptionsMonitor<RefreshEndpointOptions> _options;
+
     private readonly IConfiguration _configuration;
 
-    public new IRefreshOptions Options => options as IRefreshOptions;
+    public IEndpointOptions Options => _options.CurrentValue;
 
-    public RefreshEndpoint(IRefreshOptions options, IConfiguration configuration, ILogger<RefreshEndpoint> logger = null)
-        : base(options)
+    public RefreshEndpoint(IOptionsMonitor<RefreshEndpointOptions> options, IConfiguration configuration, ILogger<RefreshEndpoint> logger)
     {
         ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(logger);
 
+        _options = options;
         _configuration = configuration;
     }
 
-    public override IList<string> Invoke()
+    public IList<string> Invoke()
     {
         return DoInvoke(_configuration);
     }
@@ -34,7 +38,7 @@ public class RefreshEndpoint : AbstractEndpoint<IList<string>>, IRefreshEndpoint
             root.Reload();
         }
 
-        if (!Options.ReturnConfiguration)
+        if (!_options.CurrentValue.ReturnConfiguration)
         {
             return new List<string>();
         }

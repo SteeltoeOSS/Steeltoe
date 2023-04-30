@@ -17,9 +17,9 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
     protected abstract string BindingType { get; }
 
-    protected virtual DbConnectionStringBuilder CreateConnectionStringBuilder()
+    protected virtual IConnectionStringBuilder CreateConnectionStringBuilder()
     {
-        return new DbConnectionStringBuilder();
+        return new DbConnectionStringBuilderWrapper(new DbConnectionStringBuilder());
     }
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
@@ -117,15 +117,30 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
     private void SetConnectionString(IDictionary<string, string> configurationData, string bindingName, BindingInfo bindingInfo)
     {
-        DbConnectionStringBuilder connectionStringBuilder = CreateConnectionStringBuilder();
+        Dictionary<string, string> separateSecrets = new();
+        IConnectionStringBuilder connectionStringBuilder = CreateConnectionStringBuilder();
 
         if (bindingInfo.ClientBindingSection != null)
         {
-            string existingConnectionString = bindingInfo.ClientBindingSection.Value;
-
-            if (!string.IsNullOrEmpty(existingConnectionString))
+            foreach (IConfigurationSection secretSection in bindingInfo.ClientBindingSection.GetChildren())
             {
-                connectionStringBuilder.ConnectionString = existingConnectionString;
+                string secretName = secretSection.Key;
+                string secretValue = secretSection.Value;
+
+                if (string.Equals(secretName, "ConnectionString", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(secretValue))
+                {
+                    // Take the connection string from appsettings.json as baseline, then merge cloud-provided secrets into it.
+                    connectionStringBuilder.ConnectionString = secretValue;
+                }
+                else
+                {
+                    // Never merge separately-defined secrets from appsettings.json into the connection string.
+                    // Earlier Steeltoe versions used to do that, which raised the question what takes precedence.
+                    if (!IsPartOfConnectionString(secretName))
+                    {
+                        separateSecrets[secretName] = secretValue;
+                    }
+                }
             }
         }
 
@@ -136,12 +151,30 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
                 string secretName = secretSection.Key;
                 string secretValue = secretSection.Value;
 
-                connectionStringBuilder[secretName] = secretValue;
+                if (IsPartOfConnectionString(secretName))
+                {
+                    connectionStringBuilder[secretName] = secretValue;
+                }
+                else
+                {
+                    separateSecrets[secretName] = secretValue;
+                }
             }
         }
 
         string connectionStringKey = ConfigurationPath.Combine(ServiceBindingsConfigurationKey, BindingType, bindingName, "ConnectionString");
         configurationData[connectionStringKey] = connectionStringBuilder.ConnectionString;
+
+        foreach ((string secretName, string secretValue) in separateSecrets)
+        {
+            string key = ConfigurationPath.Combine(ServiceBindingsConfigurationKey, BindingType, bindingName, secretName);
+            configurationData[key] = secretValue;
+        }
+    }
+
+    protected virtual bool IsPartOfConnectionString(string secretName)
+    {
+        return true;
     }
 
     private sealed class BindingInfo

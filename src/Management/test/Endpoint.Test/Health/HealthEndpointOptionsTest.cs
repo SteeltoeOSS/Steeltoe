@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Security.Claims;
-using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using Xunit;
 
@@ -15,7 +13,8 @@ public class HealthEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new HealthEndpointOptions();
+        HealthEndpointOptions opts = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
+
         Assert.Null(opts.Enabled);
         Assert.Equal("health", opts.Id);
         Assert.Equal(ShowDetails.Always, opts.ShowDetails);
@@ -23,39 +22,18 @@ public class HealthEndpointOptionsTest : BaseTest
     }
 
     [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new HealthEndpointOptions(configuration));
-    }
-
-    [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
         var appsettings = new Dictionary<string, string>
         {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:health:enabled"] = "true",
             ["management:endpoints:health:requiredPermissions"] = "NONE",
-            ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
-            ["management:endpoints:cloudfoundry:enabled"] = "true",
             ["management:endpoints:health:groups:custom:include"] = "diskSpace",
             ["management:endpoints:health:groups:lIveness:include"] = "diskSpace",
             ["management:endpoints:health:groups:rEadinEss:include"] = "diskSpace"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var opts = new HealthEndpointOptions(configurationRoot);
-        var cloudOpts = new CloudFoundryEndpointOptions(configurationRoot);
-
-        Assert.True(cloudOpts.Enabled);
-        Assert.Equal(string.Empty, cloudOpts.Id);
-        Assert.Equal(string.Empty, cloudOpts.Path);
-        Assert.True(cloudOpts.ValidateCertificates);
+        HealthEndpointOptions opts = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appsettings);
 
         Assert.True(opts.Enabled);
         Assert.Equal("health", opts.Id);
@@ -77,11 +55,7 @@ public class HealthEndpointOptionsTest : BaseTest
             ["management:endpoints:health:role"] = "roleclaimvalue"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var opts = new HealthEndpointOptions(configurationRoot);
+        HealthEndpointOptions opts = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appsettings);
         Assert.NotNull(opts.Claim);
         Assert.Equal("claimtype", opts.Claim.Type);
         Assert.Equal("claimvalue", opts.Claim.Value);
@@ -95,11 +69,7 @@ public class HealthEndpointOptionsTest : BaseTest
             ["management:endpoints:health:role"] = "roleclaimvalue"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var opts = new HealthEndpointOptions(configurationRoot);
+        HealthEndpointOptions opts = GetOptionsFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>(appsettings);
         Assert.NotNull(opts.Claim);
         Assert.Equal(ClaimTypes.Role, opts.Claim.Type);
         Assert.Equal("roleclaimvalue", opts.Claim.Value);

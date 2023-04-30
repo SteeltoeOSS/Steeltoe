@@ -30,8 +30,9 @@ public class EndpointServiceCollectionTest : BaseTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        services.AddInfoActuator(configurationRoot);
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddLogging();
+        services.AddInfoActuator();
 
         IInfoContributor extra = new TestInfoContributor();
         services.AddSingleton(extra);
@@ -39,8 +40,6 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddSingleton(logger);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IInfoOptions>();
-        Assert.NotNull(options);
         IEnumerable<IInfoContributor> contributors = serviceProvider.GetServices<IInfoContributor>();
 
         Assert.NotNull(contributors);
@@ -51,7 +50,7 @@ public class EndpointServiceCollectionTest : BaseTest
             item => item.GetType() == typeof(GitInfoContributor) || item.GetType() == typeof(AppSettingsInfoContributor) ||
                 item.GetType() == typeof(BuildInfoContributor) || item is TestInfoContributor);
 
-        var ep = serviceProvider.GetService<InfoEndpoint>();
+        var ep = serviceProvider.GetService<IInfoEndpoint>();
         Assert.NotNull(ep);
     }
 }

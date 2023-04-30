@@ -3,7 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.Metrics;
-using Steeltoe.Management.Endpoint.Metrics;
+using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common.TestResources;
+using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Exporters;
@@ -45,7 +47,13 @@ public class EventCounterListenerTest : BaseTest
     [Fact]
     public async Task EventCounterListenerGetsMetricsTest()
     {
-        using var listener = new EventCounterListener(new MetricsObserverOptions());
+        var options = new MetricsObserverOptions
+        {
+            EventCounterEvents = true
+        };
+
+        var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
+        using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
         var exporter = new SteeltoeExporter(_exporterOptions);
@@ -78,10 +86,12 @@ public class EventCounterListenerTest : BaseTest
 
         var options = new MetricsObserverOptions
         {
-            ExcludedMetrics = exclusions
+            ExcludedMetrics = exclusions,
+            EventCounterEvents = true
         };
 
-        using var listener = new EventCounterListener(options);
+        var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
+        using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
 
         var exporter = new SteeltoeExporter(_exporterOptions);
         AggregationManager aggregationManager = GetTestMetrics(exporter);
@@ -116,10 +126,13 @@ public class EventCounterListenerTest : BaseTest
             "cpu-usage"
         };
 
-        using var listener = new EventCounterListener(new MetricsObserverOptions
+        var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(new MetricsObserverOptions
         {
-            IncludedMetrics = inclusions
+            IncludedMetrics = inclusions,
+            EventCounterEvents = true
         });
+
+        using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
 
         var exporter = new SteeltoeExporter(_exporterOptions);
         AggregationManager aggregationManager = GetTestMetrics(exporter);

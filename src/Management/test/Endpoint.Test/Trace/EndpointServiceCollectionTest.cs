@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
 
@@ -16,11 +17,9 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddTraceActuator_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddTraceActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => services2.AddTraceActuator());
     }
 
     [Fact]
@@ -39,14 +38,17 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         var listener = new DiagnosticListener("Test");
+
+        services.AddLogging();
+        services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddSingleton(listener);
 
         services.AddTraceActuator(configurationRoot);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<ITraceOptions>();
+        var options = serviceProvider.GetService<IOptionsMonitor<TraceEndpointOptions>>();
         Assert.NotNull(options);
-        var ep = serviceProvider.GetService<HttpTraceEndpoint>();
+        var ep = serviceProvider.GetService<IHttpTraceEndpoint>();
         Assert.NotNull(ep);
         listener.Dispose();
     }

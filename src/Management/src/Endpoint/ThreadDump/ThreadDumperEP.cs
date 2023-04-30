@@ -11,6 +11,7 @@ using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Etlx;
 using Microsoft.Diagnostics.Tracing.Stacks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
@@ -34,12 +35,13 @@ public class ThreadDumperEp : IThreadDumper
         IsNativeMethod = true
     };
 
+    private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
     private readonly ILogger<ThreadDumperEp> _logger;
-    private readonly IThreadDumpOptions _options;
 
-    public ThreadDumperEp(IThreadDumpOptions options, ILogger<ThreadDumperEp> logger = null)
+    public ThreadDumperEp(IOptionsMonitor<ThreadDumpEndpointOptions> options, ILogger<ThreadDumperEp> logger)
     {
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(logger);
 
         _options = options;
         _logger = logger;
@@ -57,7 +59,7 @@ public class ThreadDumperEp : IThreadDumper
 
         try
         {
-            _logger?.LogDebug("Starting thread dump");
+            _logger.LogDebug("Starting thread dump");
 
             var client = new DiagnosticsClient(Process.GetCurrentProcess().Id);
 
@@ -71,12 +73,12 @@ public class ThreadDumperEp : IThreadDumper
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Unable to dump threads");
+            _logger.LogError(e, "Unable to dump threads");
         }
         finally
         {
             long totalMemory = GC.GetTotalMemory(true);
-            _logger?.LogDebug("Total Memory {memory}", totalMemory);
+            _logger.LogDebug("Total Memory {memory}", totalMemory);
         }
 
         return results;
@@ -138,7 +140,7 @@ public class ThreadDumperEp : IThreadDumper
 
                 foreach ((int threadId, List<StackSourceSample> samples) in samplesForThread)
                 {
-                    _logger?.LogDebug("Found {stacks} stacks for thread {thread}", samples.Count, threadId);
+                    _logger.LogDebug("Found {stacks} stacks for thread {thread}", samples.Count, threadId);
 
                     var threadInfo = new ThreadInfo
                     {
@@ -160,7 +162,7 @@ public class ThreadDumperEp : IThreadDumper
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Error processing trace file for thread dump");
+            _logger.LogError(e, "Error processing trace file for thread dump");
             results.Clear();
         }
         finally
@@ -171,7 +173,7 @@ public class ThreadDumperEp : IThreadDumper
             }
         }
 
-        _logger?.LogTrace("Finished thread walk");
+        _logger.LogTrace("Finished thread walk");
     }
 
     private bool IsThreadInNative(List<StackTraceElement> frames)
@@ -197,7 +199,7 @@ public class ThreadDumperEp : IThreadDumper
     private List<StackTraceElement> GetStackTrace(int threadId, StackSourceSample stackSourceSample, TraceEventStackSource stackSource,
         SymbolReader symbolReader)
     {
-        _logger?.LogDebug("Processing thread with ID: {thread}", threadId);
+        _logger.LogDebug("Processing thread with ID: {thread}", threadId);
 
         var result = new List<StackTraceElement>();
 
@@ -356,7 +358,7 @@ public class ThreadDumperEp : IThreadDumper
 
         if (moduleFile == null)
         {
-            _logger?.LogTrace("GetSourceLine: Could not find moduleFile {0:x}.", log.CodeAddresses.Address(codeAddressIndex));
+            _logger.LogTrace("GetSourceLine: Could not find moduleFile {0:x}.", log.CodeAddresses.Address(codeAddressIndex));
             return null;
         }
 
@@ -364,7 +366,7 @@ public class ThreadDumperEp : IThreadDumper
 
         if (methodIndex == MethodIndex.Invalid)
         {
-            _logger?.LogTrace("GetSourceLine: Could not find method for {0:x}", log.CodeAddresses.Address(codeAddressIndex));
+            _logger.LogTrace("GetSourceLine: Could not find method for {0:x}", log.CodeAddresses.Address(codeAddressIndex));
             return null;
         }
 
@@ -372,7 +374,7 @@ public class ThreadDumperEp : IThreadDumper
 
         if (methodToken == 0)
         {
-            _logger?.LogTrace("GetSourceLine: Could not find method for {0:x}", log.CodeAddresses.Address(codeAddressIndex));
+            _logger.LogTrace("GetSourceLine: Could not find method for {0:x}", log.CodeAddresses.Address(codeAddressIndex));
             return null;
         }
 
@@ -411,7 +413,7 @@ public class ThreadDumperEp : IThreadDumper
             {
                 if (moduleFile.PdbSignature != Guid.Empty && symbolReaderModule.PdbGuid != moduleFile.PdbSignature)
                 {
-                    _logger?.LogTrace("ERROR: the PDB we opened does not match the PDB desired. PDB GUID = {pdbGuid}, DESIRED GUID = {desiredGuid}",
+                    _logger.LogTrace("ERROR: the PDB we opened does not match the PDB desired. PDB GUID = {pdbGuid}, DESIRED GUID = {desiredGuid}",
                         symbolReaderModule.PdbGuid, moduleFile.PdbSignature);
 
                     return null;
@@ -434,7 +436,7 @@ public class ThreadDumperEp : IThreadDumper
             await using (FileStream fs = File.OpenWrite(tempNetTraceFilename))
             {
                 Task copyTask = session.EventStream.CopyToAsync(fs);
-                await Task.Delay(_options.Duration);
+                await Task.Delay(_options.CurrentValue.Duration);
                 session.Stop();
 
                 // check if rundown is taking more than 5 seconds and log
@@ -443,7 +445,7 @@ public class ThreadDumperEp : IThreadDumper
 
                 if (completedTask == timeoutTask)
                 {
-                    _logger?.LogInformation("Sufficiently large applications can cause this command to take non-trivial amounts of time");
+                    _logger.LogInformation("Sufficiently large applications can cause this command to take non-trivial amounts of time");
                 }
 
                 await copyTask;
@@ -454,7 +456,7 @@ public class ThreadDumperEp : IThreadDumper
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Error creating trace file for thread dump");
+            _logger.LogError(e, "Error creating trace file for thread dump");
             return null;
         }
         finally

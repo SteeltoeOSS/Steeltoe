@@ -4,6 +4,9 @@
 
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Xunit;
@@ -15,9 +18,8 @@ public class AspNetCoreHostingObserverTest : BaseTest
     [Fact]
     public void ShouldIgnore_ReturnsExpected()
     {
-        var options = new MetricsObserverOptions();
-
-        var observer = new AspNetCoreHostingObserver(options, null);
+        IOptionsMonitor<MetricsObserverOptions> options = GetOptionsMonitorFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
+        var observer = new AspNetCoreHostingObserver(options, NullLogger<AspNetCoreHostingObserver>.Instance);
 
         Assert.True(observer.ShouldIgnoreRequest("/cloudfoundryapplication/info"));
         Assert.True(observer.ShouldIgnoreRequest("/cloudfoundryapplication/health"));
@@ -37,8 +39,8 @@ public class AspNetCoreHostingObserverTest : BaseTest
     [Fact]
     public void GetException_ReturnsExpected()
     {
-        var options = new MetricsObserverOptions();
-        var observer = new AspNetCoreHostingObserver(options, null);
+        IOptionsMonitor<MetricsObserverOptions> options = GetOptionsMonitorFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
+        var observer = new AspNetCoreHostingObserver(options, NullLogger<AspNetCoreHostingObserver>.Instance);
 
         HttpContext context = GetHttpRequestMessage();
         string exception = observer.GetException(context);
@@ -59,8 +61,8 @@ public class AspNetCoreHostingObserverTest : BaseTest
     [Fact]
     public void GetLabelSets_ReturnsExpected()
     {
-        var options = new MetricsObserverOptions();
-        var observer = new AspNetCoreHostingObserver(options, null);
+        IOptionsMonitor<MetricsObserverOptions> options = GetOptionsMonitorFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
+        var observer = new AspNetCoreHostingObserver(options, NullLogger<AspNetCoreHostingObserver>.Instance);
 
         HttpContext context = GetHttpRequestMessage();
 
