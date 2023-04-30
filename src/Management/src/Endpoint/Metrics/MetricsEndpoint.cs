@@ -29,7 +29,7 @@ internal sealed class MetricsEndpoint : IMetricsEndpoint
         _logger = loggerFactory.CreateLogger<MetricsEndpoint>();
     }
 
-    public Task<IMetricsResponse> InvokeAsync(CancellationToken cancellationToken, MetricsRequest request)
+    public Task<IMetricsResponse> InvokeAsync(MetricsRequest request, CancellationToken cancellationToken)
     {
         return Task.Run(() => DoInvoke(request), cancellationToken);
     }

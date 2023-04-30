@@ -31,7 +31,7 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
         if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
         {
             context.HandleContentNegotiation(Logger);
-            await HandleRequestAsync(context.RequestAborted, context.Response.Body, GetRequestUri(context.Request), Logger);
+            await HandleRequestAsync(context.Response.Body, GetRequestUri(context.Request), Logger, context.RequestAborted);
             Logger.LogDebug("Returning serialized response");
         }
     }
@@ -55,9 +55,9 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
         return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
     }
 
-    private async Task HandleRequestAsync(CancellationToken cancellationToken, Stream responseStream, string requestUri, ILogger logger)
+    private async Task HandleRequestAsync(Stream responseStream, string requestUri, ILogger logger, CancellationToken cancellationToken)
     {
-        Links result = await Endpoint.InvokeAsync(cancellationToken, requestUri);
+        Links result = await Endpoint.InvokeAsync(requestUri, cancellationToken);
         await SerializeAsync(result, responseStream, logger);
     }
 

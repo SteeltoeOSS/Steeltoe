@@ -16,5 +16,5 @@ public interface IEndpoint<TResult> : IEndpoint
 
 public interface IEndpoint<TResult, in TRequest> : IEndpoint
 {
-    Task<TResult> InvokeAsync(CancellationToken cancellationToken, TRequest arg);
+    Task<TResult> InvokeAsync(TRequest arg, CancellationToken cancellationToken);
 }

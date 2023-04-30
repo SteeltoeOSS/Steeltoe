@@ -33,7 +33,7 @@ internal sealed class CloudFoundryEndpoint : ICloudFoundryEndpoint
         _logger = loggerFactory.CreateLogger<CloudFoundryEndpoint>();
     }
 
-    public Task<Links> InvokeAsync(CancellationToken cancellationToken, string baseUrl)
+    public Task<Links> InvokeAsync(string baseUrl, CancellationToken cancellationToken)
     {
         var hypermediaService = new HypermediaService(_managementOptions, _options, _endpointOptions, _logger);
         return Task.Run(() => hypermediaService.Invoke(baseUrl), cancellationToken);

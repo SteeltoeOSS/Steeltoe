@@ -51,7 +51,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<
         }
 
         // GET request
-        string serialInfo = await HandleRequestAsync(context.RequestAborted, null);
+        string serialInfo = await HandleRequestAsync(null, context.RequestAborted);
         Logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(Logger);
@@ -82,7 +82,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<
                 else
                 {
                     var changeReq = new LoggersChangeRequest(loggerName, level);
-                    await HandleRequestAsync(context.RequestAborted, changeReq);
+                    await HandleRequestAsync(changeReq, context.RequestAborted);
                     return true;
                 }
             }

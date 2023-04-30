@@ -33,7 +33,7 @@ public class HypermediaEndpointTest : BaseTest
 
         var ep = tc.GetService<IActuatorEndpoint>();
 
-        Links info = await ep.InvokeAsync(CancellationToken.None, "http://localhost:5000/foobar");
+        Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
         Assert.NotNull(info.LinkCollection);
         Assert.True(info.LinkCollection.ContainsKey("self"));
@@ -55,7 +55,7 @@ public class HypermediaEndpointTest : BaseTest
 
         var ep = tc.GetService<IActuatorEndpoint>();
 
-        Links info = await ep.InvokeAsync(CancellationToken.None, "http://localhost:5000/foobar");
+        Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
         Assert.NotNull(info.LinkCollection);
         Assert.True(info.LinkCollection.ContainsKey("self"));
@@ -84,7 +84,7 @@ public class HypermediaEndpointTest : BaseTest
 
         var ep = tc.GetService<IActuatorEndpoint>();
 
-        Links info = await ep.InvokeAsync(CancellationToken.None, "http://localhost:5000/foobar");
+        Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
         Assert.NotNull(info.LinkCollection);
         Assert.True(info.LinkCollection.ContainsKey("self"));
@@ -115,7 +115,7 @@ public class HypermediaEndpointTest : BaseTest
 
         var ep = tc.GetService<IActuatorEndpoint>();
 
-        Links info = await ep.InvokeAsync(CancellationToken.None, "http://localhost:5000/foobar");
+        Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
         Assert.NotNull(info.LinkCollection);
         Assert.Empty(info.LinkCollection);

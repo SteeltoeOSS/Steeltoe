@@ -42,7 +42,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
     internal async Task<string> DoRequestAsync(HttpContext context)
     {
-        HealthEndpointResponse result = await ((HealthEndpoint)Endpoint).InvokeAsync(context.RequestAborted, new CoreSecurityContext(context));
+        HealthEndpointResponse result = await ((HealthEndpoint)Endpoint).InvokeAsync(new CoreSecurityContext(context), context.RequestAborted);
 
         ManagementEndpointOptions currentOptions = ManagementOptions.CurrentValue;
 

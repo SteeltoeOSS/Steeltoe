@@ -73,7 +73,7 @@ public class HealthEndpointTest : BaseTest
 
         var ep = tc.GetService<IHealthEndpoint>();
 
-        HealthEndpointResponse health = await ep.InvokeAsync(CancellationToken.None, null);
+        HealthEndpointResponse health = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
     }
@@ -98,7 +98,7 @@ public class HealthEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IHealthEndpoint>();
-        await ep.InvokeAsync(CancellationToken.None, null);
+        await ep.InvokeAsync(null, CancellationToken.None);
 
         foreach (IHealthContributor contrib in contributors)
         {
@@ -128,7 +128,7 @@ public class HealthEndpointTest : BaseTest
 
         var ep = tc.GetService<IHealthEndpoint>();
 
-        HealthEndpointResponse info = await ep.InvokeAsync(CancellationToken.None, null);
+        HealthEndpointResponse info = await ep.InvokeAsync(null, CancellationToken.None);
 
         foreach (IHealthContributor contrib in contributors)
         {
@@ -219,7 +219,7 @@ public class HealthEndpointTest : BaseTest
 
         appAvailability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, null);
 
-        HealthEndpointResponse result = await ep.InvokeAsync(CancellationToken.None, context);
+        HealthEndpointResponse result = await ep.InvokeAsync(context, CancellationToken.None);
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.True(result.Details.Keys.Count == 1);
@@ -259,7 +259,7 @@ public class HealthEndpointTest : BaseTest
 
         appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
-        HealthEndpointResponse result = await ep.InvokeAsync(CancellationToken.None, context);
+        HealthEndpointResponse result = await ep.InvokeAsync(context, CancellationToken.None);
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.True(result.Details.Keys.Count == 1);
@@ -293,7 +293,7 @@ public class HealthEndpointTest : BaseTest
 
         appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
-        HealthEndpointResponse result = await ep.InvokeAsync(CancellationToken.None, context);
+        HealthEndpointResponse result = await ep.InvokeAsync(context, CancellationToken.None);
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Single(result.Details.Keys);
@@ -330,7 +330,7 @@ public class HealthEndpointTest : BaseTest
             "iNvAlId"
         });
 
-        HealthEndpointResponse result = await ep.InvokeAsync(CancellationToken.None, context);
+        HealthEndpointResponse result = await ep.InvokeAsync(context, CancellationToken.None);
 
         Assert.Equal(HealthStatus.OutOfService, result.Status);
         Assert.True(result.Details.Keys.Count == 4);
@@ -365,7 +365,7 @@ public class HealthEndpointTest : BaseTest
             "msft"
         });
 
-        HealthEndpointResponse result = await ep.InvokeAsync(CancellationToken.None, context);
+        HealthEndpointResponse result = await ep.InvokeAsync(context, CancellationToken.None);
 
         Assert.Equal(2, result.Details.Keys.Count);
         Assert.Contains("Up", result.Details.Keys);

@@ -118,9 +118,9 @@ public abstract class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware
     {
     }
 
-    public virtual async Task<string> HandleRequestAsync(CancellationToken cancellationToken, TRequest arg)
+    public virtual async Task<string> HandleRequestAsync(TRequest arg, CancellationToken cancellationToken)
     {
-        TResult result = await Endpoint.InvokeAsync(cancellationToken, arg);
+        TResult result = await Endpoint.InvokeAsync(arg, cancellationToken);
         return Serialize(result);
     }
 
