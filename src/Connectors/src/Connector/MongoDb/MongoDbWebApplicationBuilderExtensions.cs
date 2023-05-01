@@ -43,7 +43,11 @@ public static class MongoDbWebApplicationBuilderExtensions
 
     private static string GetHostNameFromConnectionString(string connectionString)
     {
-        var uri = new Uri(connectionString);
-        return uri.Host;
+        var builder = new MongoDbConnectionStringBuilder
+        {
+            ConnectionString = connectionString
+        };
+
+        return (string)builder["server"];
     }
 }

@@ -2,22 +2,31 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using Steeltoe.Common;
 
 namespace Steeltoe.Connector;
 
+/// <summary>
+/// Wraps an existing <see cref="DbConnectionStringBuilder" />.
+/// </summary>
 internal sealed class DbConnectionStringBuilderWrapper : IConnectionStringBuilder
 {
     private readonly DbConnectionStringBuilder _innerBuilder;
 
+    /// <inheritdoc />
+    [AllowNull]
     public string ConnectionString
     {
         get => _innerBuilder.ConnectionString;
         set => _innerBuilder.ConnectionString = value;
     }
 
-    public object this[string keyword]
+    /// <inheritdoc />
+    public object? this[string keyword]
     {
         get => _innerBuilder[keyword];
         set => _innerBuilder[keyword] = value;

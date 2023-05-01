@@ -12,7 +12,7 @@ internal sealed class PostgreSqlConnectionStringPostProcessor : ConnectionString
 
     protected override IConnectionStringBuilder CreateConnectionStringBuilder()
     {
-        var dbConnectionStringBuilder = (DbConnectionStringBuilder)Activator.CreateInstance(PostgreSqlTypeLocator.NpgsqlConnectionStringBuilderType);
+        var dbConnectionStringBuilder = (DbConnectionStringBuilder)Activator.CreateInstance(PostgreSqlTypeLocator.NpgsqlConnectionStringBuilderType)!;
         return new DbConnectionStringBuilderWrapper(dbConnectionStringBuilder);
     }
 }

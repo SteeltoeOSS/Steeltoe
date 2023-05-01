@@ -42,7 +42,7 @@ public static class RabbitMQWebApplicationBuilderExtensions
         // In RabbitMQ, connections are long-lived and auto-recover from network failures. Channels are multiplexed over a single connection.
         object factory = Activator.CreateInstance(RabbitMQTypeLocator.ConnectionFactory, null);
 
-        if (options.ConnectionString != null)
+        if (!string.IsNullOrEmpty(options.ConnectionString))
         {
             RabbitMQTypeLocator.ConnectionFactoryUrlPropertySetter.Invoke(factory, new object[]
             {
@@ -66,12 +66,11 @@ public static class RabbitMQWebApplicationBuilderExtensions
 
     private static string GetHostNameFromConnectionString(string connectionString)
     {
-        if (connectionString == null)
+        var builder = new RabbitMQConnectionStringBuilder
         {
-            return "localhost";
-        }
+            ConnectionString = connectionString
+        };
 
-        var uri = new Uri(connectionString);
-        return uri.Host;
+        return (string)builder["host"] ?? "localhost";
     }
 }

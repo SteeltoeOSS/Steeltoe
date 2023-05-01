@@ -12,7 +12,7 @@ internal sealed class SqlServerConnectionStringPostProcessor : ConnectionStringP
 
     protected override IConnectionStringBuilder CreateConnectionStringBuilder()
     {
-        var dbConnectionStringBuilder = (DbConnectionStringBuilder)Activator.CreateInstance(SqlServerTypeLocator.SqlConnectionStringBuilderType);
+        var dbConnectionStringBuilder = (DbConnectionStringBuilder)Activator.CreateInstance(SqlServerTypeLocator.SqlConnectionStringBuilderType)!;
         return new DbConnectionStringBuilderWrapper(dbConnectionStringBuilder);
     }
 }
