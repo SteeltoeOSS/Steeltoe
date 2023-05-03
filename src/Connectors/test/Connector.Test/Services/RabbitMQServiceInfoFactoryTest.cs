@@ -132,44 +132,6 @@ public class RabbitMQServiceInfoFactoryTest
     }
 
     [Fact]
-    public void Accept_RejectsHystrixServiceBinding()
-    {
-        var s = new Service
-        {
-            Label = "p-circuit-breaker-dashboard",
-            Tags = new[]
-            {
-                "circuit-breaker",
-                "hystrix-amqp",
-                "spring-cloud"
-            },
-            Name = "myHystrixService",
-            Plan = "standard",
-            Credentials =
-            {
-                { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
-                { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
-                {
-                    "amqp", new Credential
-                    {
-                        { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
-                        { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
-                        {
-                            "uri",
-                            new Credential(
-                                "amqp://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120")
-                        },
-                        { "ssl", new Credential("false") }
-                    }
-                }
-            }
-        };
-
-        var factory = new RabbitMQServiceInfoFactory();
-        Assert.False(factory.Accepts(s));
-    }
-
-    [Fact]
     public void Create_CreatesValidServiceBinding()
     {
         Service s = CreateRabbitMQService();

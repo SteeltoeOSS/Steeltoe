@@ -8,10 +8,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Info;
 using Xunit;
 
@@ -39,17 +42,16 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleInfoRequestAsync_ReturnsExpected()
     {
-        var opts = new InfoEndpointOptions();
-        var managementOptions = new ActuatorManagementOptions();
-        managementOptions.EndpointOptions.Add(opts);
+        IOptionsMonitor<InfoEndpointOptions> opts = GetOptionsMonitorFromSettings<InfoEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var contributors = new List<IInfoContributor>
         {
-            new GitInfoContributor()
+            new GitInfoContributor(NullLogger<GitInfoContributor>.Instance)
         };
 
-        var ep = new TestInfoEndpoint(opts, contributors);
-        var middle = new InfoEndpointMiddleware(null, ep, managementOptions);
+        var ep = new TestInfoEndpoint(opts, contributors, NullLogger<InfoEndpoint>.Instance);
+        var middle = new InfoEndpointMiddleware(ep, managementOptions, NullLogger<InfoEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/loggers");
         await middle.HandleInfoRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -117,7 +119,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        string response = await client.GetStringAsync("http://localhost/actuator/info");
+        string response = await client.GetStringAsync(new Uri("http://localhost/actuator/info"));
 
         Assert.Contains("1499884839000", response, StringComparison.Ordinal);
         Assert.DoesNotContain("2017-07-12T18:40:39Z", response, StringComparison.Ordinal);
@@ -128,11 +130,14 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = new InfoEndpointOptions();
+        var options = GetOptionsFromSettings<InfoEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/info", options.GetContextPath(new ActuatorManagementOptions()));
-        Assert.Equal("/cloudfoundryapplication/info", options.GetContextPath(new CloudFoundryManagementOptions()));
-        Assert.Null(options.AllowedVerbs);
+        Assert.Equal("/actuator/info", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/info", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
+        Assert.Single(options.AllowedVerbs);
+        Assert.Contains("Get", options.AllowedVerbs);
     }
 
     private HttpContext CreateRequest(string method, string path)

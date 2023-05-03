@@ -24,7 +24,6 @@ public class PollyRetryTemplate : RetryTemplate
     private readonly BinaryExceptionClassifier _retryableExceptions;
     private readonly int _maxAttempts;
     private readonly int _backOffInitialInterval;
-    private readonly int _backOffMaxInterval;
     private readonly double _backOffMultiplier;
     private readonly ILogger _logger;
 
@@ -39,7 +38,6 @@ public class PollyRetryTemplate : RetryTemplate
         _retryableExceptions = new BinaryExceptionClassifier(retryableExceptions, defaultRetryable);
         _maxAttempts = maxAttempts;
         _backOffInitialInterval = backOffInitialInterval;
-        _backOffMaxInterval = backOffMaxInterval;
         _backOffMultiplier = backOffMultiplier;
         _logger = logger;
     }

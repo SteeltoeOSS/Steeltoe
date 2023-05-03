@@ -215,7 +215,7 @@ public static class MySqlDbContextOptionsExtensions
         return factory.CreateConnectionString();
     }
 
-    private static DbContextOptionsBuilder DoUseMySql(DbContextOptionsBuilder builder, string connection, object mySqlOptionsAction = null,
+    internal static DbContextOptionsBuilder DoUseMySql(DbContextOptionsBuilder builder, string connection, object mySqlOptionsAction = null,
         object serverVersion = null)
     {
         Type extensionType = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;

@@ -11,6 +11,7 @@
     <NpgsqlVersion>6.0.*</NpgsqlVersion>
     <OracleVersion>3.21.*</OracleVersion>
     <SqlClientVersion>4.8.*</SqlClientVersion>
+    <MicrosoftSqlClientVersion>5.0.*</MicrosoftSqlClientVersion>
     <MicrosoftAzureCosmosVersion>3.28.*</MicrosoftAzureCosmosVersion>
     <StackExchangeVersion>2.6.*</StackExchangeVersion>
     <CoverletVersion>3.2.*</CoverletVersion>
@@ -36,6 +37,7 @@
     <EFCoreOracleTestVersion>6.21.*</EFCoreOracleTestVersion>
     <NerdbankGitVersioningVersion>3.5.*</NerdbankGitVersioningVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
+    <RabbitClientTestVersion>6.4.*</RabbitClientTestVersion>
 
     <!--
       Exposed dependencies, observable by Steeltoe consumers.
@@ -50,12 +52,12 @@
     <JwtTokensVersion>6.20.*</JwtTokensVersion>
     <SymReaderVersion>1.4.*</SymReaderVersion>
     <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
-    <KubernetesClientVersion>6.0.*</KubernetesClientVersion>
+    <KubernetesClientVersion>9.0.*</KubernetesClientVersion>
     <BouncyCastleVersion>1.9.*</BouncyCastleVersion>
     <ConsulVersion>1.6.10.*</ConsulVersion>
     <HdrHistogramVersion>2.5.*</HdrHistogramVersion>
     <JsonNetVersion>13.0.*</JsonNetVersion>
-    <OpenTelemetryVersion>1.3.*</OpenTelemetryVersion>
+    <OpenTelemetryVersion>1.4.0-rc.3</OpenTelemetryVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
     <SerilogExtensionsLoggingVersion>3.1.*</SerilogExtensionsLoggingVersion>

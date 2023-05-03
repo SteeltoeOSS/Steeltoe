@@ -162,6 +162,20 @@ public static class ConfigurationExtensions
     }
 
     /// <summary>
+    /// Evaluate whether an IConfiguration contains Kubernetes service bindings.
+    /// </summary>
+    /// <param name="configuration">
+    /// Application Configuration.
+    /// </param>
+    /// <returns>
+    /// true if k8s:bindings found in configuration, otherwise false.
+    /// </returns>
+    public static bool HasKubernetesServiceBindings(this IConfiguration configuration)
+    {
+        return configuration.GetSection("k8s:bindings").GetChildren().Any();
+    }
+
+    /// <summary>
     /// Adds a configuration provider that uses Connector logic to fulfill requests for GetConnectionString("serviceType") or
     /// GetConnectionString("serviceBindingName").
     /// </summary>

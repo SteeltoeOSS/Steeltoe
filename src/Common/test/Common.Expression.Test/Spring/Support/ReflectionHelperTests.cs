@@ -166,7 +166,6 @@ public class ReflectionHelperTests : AbstractExpressionTests
         }, tc, ArgumentsMatchKind.Close);
 
         // Passing (int,Sub,boolean) on call to foo(Integer,Super,Boolean) requires boxing conversion of arguments zero and two
-        // TODO CheckMatch(new Type[] {Integer.TYPE, typeof(Sub), Boolean.TYPE}, new Type[] {typeof(int), typeof(Super), Boolean.class}, tc, ArgsMatchKind.REQUIRES_CONVERSION);
     }
 
     [Fact]

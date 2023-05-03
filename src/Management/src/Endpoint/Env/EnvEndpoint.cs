@@ -5,34 +5,37 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
+public class EnvEndpoint : IEnvEndpoint
 {
-    private readonly ILogger<EnvEndpoint> _logger;
+    private readonly IOptionsMonitor<EnvEndpointOptions> _options;
     private readonly IConfiguration _configuration;
     private readonly Sanitizer _sanitizer;
 
     private readonly IHostEnvironment _env;
+    private readonly ILogger<EnvEndpoint> _logger;
 
-    public new IEnvOptions Options => options as IEnvOptions;
+    public IEndpointOptions Options => _options.CurrentValue;
 
-    public EnvEndpoint(IEnvOptions options, IConfiguration configuration, IHostEnvironment env, ILogger<EnvEndpoint> logger = null)
-        : base(options)
+    public EnvEndpoint(IOptionsMonitor<EnvEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILogger<EnvEndpoint> logger)
     {
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(env);
+        ArgumentGuard.NotNull(logger);
 
+        _options = options;
         _configuration = configuration;
         _env = env;
+        _sanitizer = new Sanitizer(options.CurrentValue.KeysToSanitize);
         _logger = logger;
-        _sanitizer = new Sanitizer(options.KeysToSanitize);
     }
 
-    public override EnvironmentDescriptor Invoke()
+    public EnvironmentDescriptor Invoke()
     {
         return DoInvoke(_configuration);
     }
@@ -44,6 +47,7 @@ public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
             _env.EnvironmentName
         };
 
+        _logger.LogTrace("Fetching property sources");
         IList<PropertySourceDescriptor> propertySources = GetPropertySources(configuration);
         return new EnvironmentDescriptor(activeProfiles, propertySources);
     }

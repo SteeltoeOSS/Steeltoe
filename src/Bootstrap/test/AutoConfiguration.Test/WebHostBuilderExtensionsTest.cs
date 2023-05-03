@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data.SqlClient;
 using System.Net;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MySql.Data.MySqlClient;
 using Npgsql;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Oracle.ManagedDataAccess.Client;
 using RabbitMQ.Client;
@@ -36,7 +37,7 @@ using Steeltoe.Logging;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
+using Steeltoe.Management.Wavefront.Exporters;
 using Xunit;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
@@ -214,7 +215,7 @@ public class WebHostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeManagementEndpoint
+            SteeltoeAssemblies.SteeltoeWavefront
         });
 
         IWebHost host = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.WavefrontConfiguration))
@@ -222,9 +223,9 @@ public class WebHostBuilderExtensionsTest
             {
             }).Build();
 
-        var exporter = host.Services.GetService<WavefrontMetricsExporter>();
+        var meterProvider = host.Services.GetService<MeterProvider>();
 
-        Assert.NotNull(exporter);
+        Assert.NotNull(meterProvider);
     }
 
     [Fact]
@@ -264,16 +265,16 @@ public class WebHostBuilderExtensionsTest
         IWebHost host = hostBuilder.AddSteeltoe(exclusions).Start();
         HttpClient testClient = host.GetTestServer().CreateClient();
 
-        HttpResponseMessage response = await testClient.GetAsync("/actuator");
+        HttpResponseMessage response = await testClient.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await testClient.GetAsync("/actuator/info");
+        response = await testClient.GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await testClient.GetAsync("/actuator/health");
+        response = await testClient.GetAsync(new Uri("/actuator/health", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = await testClient.GetAsync("/actuator/health/liveness");
+        response = await testClient.GetAsync(new Uri("/actuator/health/liveness", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("\"LivenessState\":\"CORRECT\"", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
-        response = await testClient.GetAsync("/actuator/health/readiness");
+        response = await testClient.GetAsync(new Uri("/actuator/health/readiness", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
     }
@@ -291,7 +292,7 @@ public class WebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddSteeltoe(exclusions).Build();
-        IEnumerable<ActuatorEndpoint> managementEndpoint = host.Services.GetServices<ActuatorEndpoint>();
+        IEnumerable<IActuatorEndpoint> managementEndpoint = host.Services.GetServices<IActuatorEndpoint>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(managementEndpoint);

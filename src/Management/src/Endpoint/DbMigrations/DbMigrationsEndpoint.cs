@@ -6,10 +6,12 @@ using System.Data.Common;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-public class DbMigrationsEndpoint : AbstractEndpoint<Dictionary<string, DbMigrationsDescriptor>>, IDbMigrationsEndpoint
+public class DbMigrationsEndpoint : IDbMigrationsEndpoint
 {
     internal static readonly Type DbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
 
@@ -25,26 +27,30 @@ public class DbMigrationsEndpoint : AbstractEndpoint<Dictionary<string, DbMigrat
         MigrationsExtensionsType?.GetMethod("GetAppliedMigrations", BindingFlags.Static | BindingFlags.Public);
 
     internal static readonly MethodInfo GetMigrationsMethod = MigrationsExtensionsType?.GetMethod("GetMigrations", BindingFlags.Static | BindingFlags.Public);
-
+    private readonly IOptionsMonitor<DbMigrationsEndpointOptions> _options;
     private readonly IServiceProvider _container;
     private readonly DbMigrationsEndpointHelper _endpointHelper;
     private readonly ILogger<DbMigrationsEndpoint> _logger;
 
-    public DbMigrationsEndpoint(IDbMigrationsOptions options, IServiceProvider container, ILogger<DbMigrationsEndpoint> logger = null)
+    public IEndpointOptions Options => _options.CurrentValue;
+
+    public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, ILogger<DbMigrationsEndpoint> logger)
         : this(options, container, new DbMigrationsEndpointHelper(), logger)
     {
     }
 
-    public DbMigrationsEndpoint(IDbMigrationsOptions options, IServiceProvider container, DbMigrationsEndpointHelper endpointHelper,
-        ILogger<DbMigrationsEndpoint> logger = null)
-        : base(options)
+    public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, DbMigrationsEndpointHelper endpointHelper,
+        ILogger<DbMigrationsEndpoint> logger)
     {
+        ArgumentGuard.NotNull(logger);
+
+        _options = options;
         _container = container;
         _endpointHelper = endpointHelper;
         _logger = logger;
     }
 
-    public override Dictionary<string, DbMigrationsDescriptor> Invoke()
+    public Dictionary<string, DbMigrationsDescriptor> Invoke()
     {
         return DoInvoke();
     }
@@ -55,7 +61,7 @@ public class DbMigrationsEndpoint : AbstractEndpoint<Dictionary<string, DbMigrat
 
         if (DbContextType is null)
         {
-            _logger?.LogCritical("DbMigrations endpoint invoked but no DbContext was found.");
+            _logger.LogCritical("DbMigrations endpoint invoked but no DbContext was found.");
         }
         else
         {
@@ -86,8 +92,7 @@ public class DbMigrationsEndpoint : AbstractEndpoint<Dictionary<string, DbMigrat
                 }
                 catch (DbException e) when (e.Message.Contains("exist", StringComparison.Ordinal))
                 {
-                    // todo: maybe improve detection logic when database is new. hard to do generically across all providers
-                    _logger?.LogWarning(e, "Encountered exception loading migrations: {exception}", e.Message);
+                    _logger.LogWarning(e, "Encountered exception loading migrations: {exception}", e.Message);
                     descriptor.PendingMigrations = _endpointHelper.GetMigrations(dbContext).ToList();
                 }
             }

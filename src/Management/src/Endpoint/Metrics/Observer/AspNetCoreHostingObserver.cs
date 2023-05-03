@@ -9,9 +9,10 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.OpenTelemetry.Metrics;
+using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
@@ -27,39 +28,15 @@ public class AspNetCoreHostingObserver : MetricsObserver
 
     private readonly Histogram<double> _responseTime;
     private readonly Histogram<double> _serverCount;
-    private readonly IViewRegistry _viewRegistry;
 
-    public AspNetCoreHostingObserver(IMetricsObserverOptions options, IViewRegistry viewRegistry, ILogger<AspNetCoreHostingObserver> logger)
-        : base(DefaultObserverName, DiagnosticName, options, logger)
+    public AspNetCoreHostingObserver(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILogger<AspNetCoreHostingObserver> logger)
+        : base(DefaultObserverName, DiagnosticName, logger)
     {
-        ArgumentGuard.NotNull(viewRegistry);
+        SetPathMatcher(new Regex(optionsMonitor.CurrentValue.IngressIgnorePattern));
+        Meter meter = SteeltoeMetrics.Meter;
 
-        SetPathMatcher(new Regex(options.IngressIgnorePattern));
-        Meter meter = OpenTelemetryMetrics.Meter;
-
-        _viewRegistry = viewRegistry;
         _responseTime = meter.CreateHistogram<double>("http.server.requests.seconds", "s", "measures the duration of the inbound request in seconds");
         _serverCount = meter.CreateHistogram<double>("http.server.requests.count", "total", "number of requests");
-
-        /*
-        //var view = View.Create(
-        //        ViewName.Create("http.server.request.time"),
-        //        "Total request time",
-        //        responseTimeMeasure,
-        //        Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })),
-        //        new List<ITagKey>() { statusTagKey, exceptionTagKey, methodTagKey, uriTagKey });
-
-        //ViewManager.RegisterView(view);
-
-        //view = View.Create(
-        //        ViewName.Create("http.server.request.count"),
-        //        "Total request counts",
-        //        serverCountMeasure,
-        //        Sum.Create(),
-        //        new List<ITagKey>() { statusTagKey, exceptionTagKey, methodTagKey, uriTagKey });
-
-        //ViewManager.RegisterView(view);
-        */
     }
 
     public override void ProcessEvent(string eventName, object value)
@@ -78,7 +55,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
 
         if (eventName == StopEvent)
         {
-            Logger?.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
+            Logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
             var context = DiagnosticHelpers.GetProperty<HttpContext>(value, "HttpContext");
 
@@ -87,7 +64,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
                 HandleStopEvent(current, context);
             }
 
-            Logger?.LogTrace("HandleStopEvent finish {thread}", Thread.CurrentThread.ManagedThreadId);
+            Logger.LogTrace("HandleStopEvent finish {thread}", Thread.CurrentThread.ManagedThreadId);
         }
     }
 
@@ -95,7 +72,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
     {
         if (ShouldIgnoreRequest(arg.Request.Path))
         {
-            Logger?.LogDebug("HandleStopEvent: Ignoring path: {path}", arg.Request.Path);
+            Logger.LogDebug("HandleStopEvent: Ignoring path: {path}", arg.Request.Path);
             return;
         }
 

@@ -14,7 +14,7 @@ using Steeltoe.Connector.Services;
 using Steeltoe.Connector.SqlServer;
 using Steeltoe.Connector.Test.MongoDb;
 using Steeltoe.Connector.Test.MySql;
-using Steeltoe.Connector.Test.PostgreSQL;
+using Steeltoe.Connector.Test.PostgreSql;
 using Steeltoe.Connector.Test.Redis;
 using Steeltoe.Connector.Test.SqlServer;
 using Xunit;
@@ -30,7 +30,7 @@ public class ConnectionStringManagerTest
         Connection connInfo = cm.Get<MySqlConnectionInfo>();
 
         Assert.NotNull(connInfo);
-        Assert.Equal("Server=localhost;Port=3306;", connInfo.ConnectionString);
+        Assert.Equal("Server=localhost;Port=3306", connInfo.ConnectionString);
         Assert.Equal("MySql", connInfo.Name);
     }
 
@@ -55,7 +55,7 @@ public class ConnectionStringManagerTest
         Connection connInfo = cm.Get<PostgreSqlConnectionInfo>();
 
         Assert.NotNull(connInfo);
-        Assert.Equal("Host=localhost;Port=5432;Timeout=15;Command Timeout=30;", connInfo.ConnectionString);
+        Assert.Equal("Host=localhost;Port=5432;Timeout=15;Command Timeout=30", connInfo.ConnectionString);
         Assert.Equal("Postgres", connInfo.Name);
     }
 

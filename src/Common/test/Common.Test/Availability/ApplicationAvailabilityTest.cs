@@ -3,15 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Availability;
-using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Common.Test.Availability;
 
 public class ApplicationAvailabilityTest
 {
-    private readonly ILogger<ApplicationAvailability> _logger = TestHelpers.GetLoggerFactory().CreateLogger<ApplicationAvailability>();
+    private readonly ILogger<ApplicationAvailability> _logger = NullLogger<ApplicationAvailability>.Instance;
 
     private int _livenessChanges;
     private LivenessState _lastLivenessState;

@@ -2,9 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
@@ -14,15 +13,8 @@ public class CloudfoundryManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new CloudFoundryManagementOptions();
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(CFContext.Name);
         Assert.Equal("/cloudfoundryapplication", opts.Path);
-    }
-
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new CloudFoundryManagementOptions(configuration));
     }
 
     [Fact]
@@ -30,17 +22,13 @@ public class CloudfoundryManagementOptionsTest : BaseTest
     {
         var appsettings = new Dictionary<string, string>
         {
-            ["management:endpoints:enabled"] = "false",
+            ["management:cloudfoundry:enabled"] = "false",
             ["management:endpoints:path"] = "/management"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(CFContext.Name);
 
-        var opts = new ActuatorManagementOptions(configurationRoot);
-
-        Assert.Equal("/management", opts.Path);
+        Assert.Equal("/cloudfoundryapplication", opts.Path);
         Assert.False(opts.Enabled);
     }
 
@@ -55,11 +43,7 @@ public class CloudfoundryManagementOptionsTest : BaseTest
             ["management:endpoints:path"] = "/management"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var opts = new CloudFoundryManagementOptions(configurationRoot);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(CFContext.Name);
 
         Assert.Equal("/cloudfoundryapplication", opts.Path);
         Assert.False(opts.Enabled);

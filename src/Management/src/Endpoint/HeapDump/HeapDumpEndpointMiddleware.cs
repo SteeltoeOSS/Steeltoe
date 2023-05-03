@@ -4,24 +4,24 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
 public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 {
-    private readonly RequestDelegate _next;
-
-    public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IManagementOptions managementOptions,
-        ILogger<HeapDumpEndpointMiddleware> logger = null)
+    public HeapDumpEndpointMiddleware(IHeapDumpEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILogger<HeapDumpEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
-        _next = next;
+        Endpoint = endpoint;
     }
 
-    public Task InvokeAsync(HttpContext context)
+    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.ShouldInvoke(managementOptions, logger))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleHeapDumpRequestAsync(context);
         }
@@ -32,7 +32,7 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
     protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)
     {
         string fileName = Endpoint.Invoke();
-        logger?.LogDebug("Returning: {fileName}", fileName);
+        logger.LogDebug("Returning: {fileName}", fileName);
         context.Response.Headers.Add("Content-Type", "application/octet-stream");
 
         if (!File.Exists(fileName))
@@ -42,7 +42,7 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
         }
 
         string gzFileName = $"{fileName}.gz";
-        Stream result = await Utils.CompressFileAsync(fileName, gzFileName);
+        Stream result = await Utils.CompressFileAsync(fileName, gzFileName, logger);
 
         if (result != null)
         {

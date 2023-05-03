@@ -22,8 +22,8 @@ public class DbMigrationsStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddHypermediaActuator(Configuration);
-        services.AddDbMigrationsActuator(Configuration);
+        services.AddHypermediaActuator();
+        services.AddDbMigrationsActuator();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -32,8 +32,7 @@ public class DbMigrationsStartup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.Map<ActuatorEndpoint>();
-            endpoints.Map<DbMigrationsEndpoint>();
+            endpoints.MapAllActuators();
         });
     }
 }

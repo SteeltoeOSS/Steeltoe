@@ -9,16 +9,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.ManagementPort;
 
 namespace Steeltoe.Management.Endpoint;
 
 public class AllActuatorsStartupFilter : IStartupFilter
 {
-    private readonly Action<IEndpointConventionBuilder> _configureConventions;
+    private readonly ActuatorConventionBuilder _conventionBuilder;
 
-    public AllActuatorsStartupFilter(Action<IEndpointConventionBuilder> configureConventions = null)
+    public AllActuatorsStartupFilter(ActuatorConventionBuilder conventionBuilder)
     {
-        _configureConventions = configureConventions;
+        _conventionBuilder = conventionBuilder;
     }
 
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
@@ -35,11 +36,12 @@ public class AllActuatorsStartupFilter : IStartupFilter
                 app.UseCloudFoundrySecurity();
             }
 
+            app.UseMiddleware<ManagementPortMiddleware>();
             next(app);
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapAllActuators(_configureConventions);
+                endpoints.MapAllActuators(_conventionBuilder);
             });
 
             app.ApplicationServices.InitializeAvailability();

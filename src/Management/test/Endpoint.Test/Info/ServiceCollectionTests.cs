@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Info;
 using Xunit;
@@ -15,13 +14,8 @@ public class ServiceCollectionTests
     public void AddInfoActuatorServices_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
-        const IConfigurationRoot configuration = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddInfoActuatorServices(configuration));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddInfoActuatorServices());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddInfoActuatorServices(configuration));
-        Assert.Contains(nameof(configuration), ex2.Message, StringComparison.Ordinal);
     }
 }

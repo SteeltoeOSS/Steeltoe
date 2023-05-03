@@ -18,7 +18,6 @@ public abstract class AbstractConnectionFactoryTest
         var mockConnection = new Mock<RC.IConnection>();
         mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
 
-        // var mockLogger = new Mock<ILoggerFactory>();
         AbstractConnectionFactory connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
         var listener = new IncrementConnectionListener();
 
@@ -30,7 +29,6 @@ public abstract class AbstractConnectionFactoryTest
         IConnection con = connectionFactory.CreateConnection();
         Assert.Equal(1, listener.Called);
 
-        // mockLogger.Verify((l) => l.Log(LogLevel.Information, 0, It.IsAny<It.IsAnyType>(), null, (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.AtLeast(2));
         con.Close();
         Assert.Equal(1, listener.Called);
         mockConnection.Verify(c => c.Close(It.IsAny<int>()), Times.Never);
@@ -45,7 +43,6 @@ public abstract class AbstractConnectionFactoryTest
         con = connectionFactory.CreateConnection();
         Assert.Equal(1, listener.Called);
 
-        // mockLogger.Verify((l) => l.Log(LogLevel.Information, 0, It.IsAny<It.IsAnyType>(), null, (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.AtLeast(4));
         con.Close();
         connectionFactory.Destroy();
         Assert.Equal(0, listener.Called);

@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Xunit;
 
@@ -15,11 +16,9 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddThreadDumpActuator_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddThreadDumpActuator());
+        var ex = Assert.Throws<ArgumentNullException>(services.AddThreadDumpActuator);
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => services2.AddThreadDumpActuator());
     }
 
     [Fact]
@@ -38,10 +37,12 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        services.AddThreadDumpActuator(configurationRoot);
+        services.AddLogging();
+        services.AddThreadDumpActuator();
 
+        services.AddSingleton<IConfiguration>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IThreadDumpOptions>();
+        var options = serviceProvider.GetService<IOptionsMonitor<ThreadDumpEndpointOptions>>();
         Assert.NotNull(options);
         var repo = serviceProvider.GetService<IThreadDumper>();
         Assert.NotNull(repo);

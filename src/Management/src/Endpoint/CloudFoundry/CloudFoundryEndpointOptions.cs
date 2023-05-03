@@ -2,15 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public class CloudFoundryEndpointOptions : AbstractEndpointOptions, ICloudFoundryOptions
+public class CloudFoundryEndpointOptions : EndpointOptionsBase
 {
-    private const string ManagementInfoPrefix = "management:endpoints:cloudfoundry";
-    private const string VcapApplicationIdKey = "vcap:application:application_id";
-    private const string VcapApplicationCloudfoundryApiKey = "vcap:application:cf_api";
     private const bool DefaultValidateCertificates = true;
 
     public bool ValidateCertificates { get; set; } = DefaultValidateCertificates;
@@ -18,17 +13,4 @@ public class CloudFoundryEndpointOptions : AbstractEndpointOptions, ICloudFoundr
     public string ApplicationId { get; set; }
 
     public string CloudFoundryApi { get; set; }
-
-    public CloudFoundryEndpointOptions()
-    {
-        Id = string.Empty;
-    }
-
-    public CloudFoundryEndpointOptions(IConfiguration configuration)
-        : base(ManagementInfoPrefix, configuration)
-    {
-        Id = string.Empty;
-        ApplicationId = configuration[VcapApplicationIdKey];
-        CloudFoundryApi = configuration[VcapApplicationCloudfoundryApiKey];
-    }
 }

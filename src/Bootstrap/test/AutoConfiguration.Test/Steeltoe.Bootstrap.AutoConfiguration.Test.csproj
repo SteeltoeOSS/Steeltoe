@@ -25,8 +25,8 @@
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="$(OracleVersion)" />
     <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
-    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
+    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientTestVersion)" />
     <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />
-    <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="$(MicrosoftSqlClientVersion)" />
   </ItemGroup>
 </Project>

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Data;
+using System.Data.Common;
 using Steeltoe.Common.Reflection;
 
 // ReSharper disable once CheckNamespace
@@ -22,7 +24,7 @@ public static class MySqlTypeLocator
     };
 
     /// <summary>
-    /// Gets a list of MySQL types that implement IDbConnection.
+    /// Gets a list of MySQL types that implement <see cref="IDbConnection" />.
     /// </summary>
     public static string[] ConnectionTypeNames { get; internal set; } =
     {
@@ -31,10 +33,22 @@ public static class MySqlTypeLocator
     };
 
     /// <summary>
-    /// Gets MySqlConnection from a MySQL Library.
+    /// Gets a list of MySQL types that implement <see cref="DbConnectionStringBuilder" />.
     /// </summary>
-    /// <exception cref="ConnectorException">
-    /// When type is not found.
-    /// </exception>
-    public static Type MySqlConnection => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "MySqlConnection", "a MySql ADO.NET assembly");
+    public static string[] ConnectionStringBuilderTypeNames { get; internal set; } =
+    {
+        "MySql.Data.MySqlClient.MySqlConnectionStringBuilder",
+        "MySqlConnector.MySqlConnectionStringBuilder"
+    };
+
+    /// <summary>
+    /// Gets MySqlConnection type from a MySQL Library.
+    /// </summary>
+    public static Type MySqlConnection => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "MySqlConnection", "a MySQL ADO.NET assembly");
+
+    /// <summary>
+    /// Gets MySqlConnectionStringBuilder type from a MySQL Library.
+    /// </summary>
+    public static Type MySqlConnectionStringBuilderType =>
+        ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionStringBuilderTypeNames, "MySqlConnectionStringBuilder", "a MySQL ADO.NET assembly");
 }

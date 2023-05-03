@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Xunit;
@@ -14,16 +13,9 @@ public class HypermediaEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new HypermediaEndpointOptions();
+        var opts = GetOptionsFromSettings<HypermediaEndpointOptions>();
         Assert.Equal(string.Empty, opts.Id);
         Assert.Equal(string.Empty, opts.Path);
-    }
-
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new HypermediaEndpointOptions(configuration));
     }
 
     [Fact]
@@ -41,11 +33,7 @@ public class HypermediaEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var opts = new InfoEndpointOptions(configurationRoot);
+        InfoEndpointOptions opts = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appsettings);
 
         Assert.Equal("info", opts.Id);
         Assert.Equal("infopath", opts.Path);

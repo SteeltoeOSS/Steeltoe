@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Metrics;
 using Xunit;
 
@@ -13,16 +12,9 @@ public class MetricsEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new MetricsEndpointOptions();
+        var opts = GetOptionsFromSettings<MetricsEndpointOptions>();
         Assert.Null(opts.Enabled);
         Assert.Equal("metrics", opts.Id);
-    }
-
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new MetricsEndpointOptions(configuration));
     }
 
     [Fact]
@@ -36,11 +28,7 @@ public class MetricsEndpointOptionsTest : BaseTest
             ["management:endpoints:metrics:id"] = "metricsmanagement"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var opts = new MetricsEndpointOptions(configurationRoot);
+        MetricsEndpointOptions opts = GetOptionsFromSettings<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>(appsettings);
         Assert.False(opts.Enabled);
         Assert.Equal("metricsmanagement", opts.Id);
     }

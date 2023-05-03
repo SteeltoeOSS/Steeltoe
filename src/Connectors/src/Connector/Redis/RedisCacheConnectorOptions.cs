@@ -16,7 +16,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     private const string DefaultHost = "localhost";
     private const int DefaultPort = 6379;
     private const string RedisClientSectionPrefix = "redis:client";
-    private readonly bool _cloudFoundryConfigFound;
+    private readonly bool _bindingsFound;
 
     // Configure either a single Host/Port or optionally provide
     // a list of endpoints (ie. host1:port1,host2:port2)
@@ -75,16 +75,12 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         IConfigurationSection section = configuration.GetSection(RedisClientSectionPrefix);
         section.Bind(this);
 
-        _cloudFoundryConfigFound = configuration.HasCloudFoundryServiceConfigurations();
+        _bindingsFound = configuration.HasCloudFoundryServiceConfigurations() || configuration.HasKubernetesServiceBindings();
     }
 
-    // TODO: Add back in when https://github.com/aspnet/Caching updates to new StackExchange
-    // public bool HighPrioritySocketThreads { get; set; }
-    // public int ResponseTimeout { get; set; }
-    // public int? DefaultDatabase { get; set; }
     public override string ToString()
     {
-        if (!string.IsNullOrEmpty(ConnectionString) && !_cloudFoundryConfigFound)
+        if (!string.IsNullOrEmpty(ConnectionString) && !_bindingsFound)
         {
             return ConnectionString;
         }
@@ -140,8 +136,6 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
             AddKeyValue(sb, "syncTimeout", SyncTimeout);
         }
 
-        // Trim ending ','
-        sb.Remove(sb.Length - 1, 1);
         return sb.ToString();
     }
 
@@ -206,31 +200,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         return configuration;
     }
 
-    // internal void AddEndPoints(EndPointCollection result, string endpoints)
-    // {
-    //    if (string.IsNullOrEmpty(endpoints))
-    //    {
-    //        return;
-    //    }
-    //    endpoints = endpoints.Trim();
-    //    if (!string.IsNullOrEmpty(endpoints))
-    //    {
-    //        string[] points = endpoints.Split(comma);
-    //        if (points.Length > 0)
-    //        {
-    //            foreach (string point in points)
-    //            {
-    //                EndPoint p = TryParseEndPoint(point);
-    //                if (p != null)
-    //                {
-    //                    result.Add(p);
-    //                }
-    //            }
-    //        }
-    //    }
-    // }
-
-    // Note: The code below lifted from StackExchange.Redis.Format {}
+    // Note: The code below lifted from StackExchange.Redis.Format
     internal static EndPoint TryParseEndPoint(string endpoint)
     {
         if (string.IsNullOrWhiteSpace(endpoint))

@@ -181,12 +181,10 @@ public class Applications
                 {
                     case ActionType.Added:
                     case ActionType.Modified:
-                        // logger.debug("Added instance {} to the existing apps in region {}", instance.getId(), instanceRegion);
                         existingApp.Add(instance);
                         AddInstanceToVip(instance);
                         break;
                     case ActionType.Deleted:
-                        // logger.debug("Deleted instance {} to the existing apps ", instance.getId());
                         existingApp.Remove(instance);
                         RemoveInstanceFromVip(instance);
                         break;
@@ -194,7 +192,6 @@ public class Applications
             }
         }
 
-        // logger.debug(The total number of instances fetched by the delta processor : {}", deltaCount);
         Version = delta.Version;
     }
 

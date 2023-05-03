@@ -467,12 +467,12 @@ public class MimeType : IComparable<MimeType>
 
             if (key == ParamCharset)
             {
-                if (!ObjectUtils.NullSafeEquals(Encoding, other.Encoding))
+                if (!Equals(Encoding, other.Encoding))
                 {
                     return false;
                 }
             }
-            else if (!ObjectUtils.NullSafeEquals(entry.Value, other.Parameters[key]))
+            else if (entry.Value != other.Parameters[key])
             {
                 return false;
             }

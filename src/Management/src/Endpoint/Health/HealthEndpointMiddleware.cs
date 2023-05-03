@@ -4,28 +4,26 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
-using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
 public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointResponse, ISecurityContext>
 {
-    private readonly RequestDelegate _next;
-
-    public HealthEndpointMiddleware(RequestDelegate next, IManagementOptions managementOptions, ILogger<InfoEndpointMiddleware> logger = null)
+    public HealthEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IHealthEndpoint endpoint,
+        ILogger<HealthEndpointMiddleware> logger)
         : base(managementOptions, logger)
     {
-        _next = next;
+        Endpoint = endpoint;
     }
 
-    public Task InvokeAsync(HttpContext context, HealthEndpointCore endpoint)
+    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        Endpoint = endpoint;
-
-        if (Endpoint.ShouldInvoke(managementOptions))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleHealthRequestAsync(context);
         }
@@ -36,7 +34,7 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
     protected internal Task HandleHealthRequestAsync(HttpContext context)
     {
         string serialInfo = DoRequest(context);
-        logger?.LogDebug("Returning: {info}", serialInfo);
+        logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
@@ -44,11 +42,13 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
 
     protected internal string DoRequest(HttpContext context)
     {
-        HealthEndpointResponse result = Endpoint.Invoke(new CoreSecurityContext(context));
+        HealthEndpointResponse result = ((HealthEndpointCore)Endpoint).Invoke(new CoreSecurityContext(context));
 
-        if (managementOptions.UseStatusCodeFromResponse)
+        ManagementEndpointOptions currentOptions = managementOptions.CurrentValue;
+
+        if (currentOptions.UseStatusCodeFromResponse)
         {
-            context.Response.StatusCode = ((HealthEndpoint)Endpoint).GetStatusCode(result);
+            context.Response.StatusCode = ((HealthEndpointCore)Endpoint).GetStatusCode(result);
         }
 
         return Serialize(result);

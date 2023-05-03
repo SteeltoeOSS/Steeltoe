@@ -29,7 +29,7 @@ public class ServiceCollectionExtensionsTest
 
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configuration);
-
+        services.AddLogging();
         services.AddSpringBootAdminClient();
         ServiceProvider serviceProvider = services.BuildServiceProvider();
 

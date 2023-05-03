@@ -14,38 +14,6 @@ namespace Steeltoe.Connector.Test.Redis;
 [Collection("Redis")]
 public class RedisCacheConfigurerTest
 {
-    // [Fact]
-    // public void UpdateOptions_FromConfig_WithConnectionString_ReturnsExpected()
-    // {
-    //    RedisCacheConfigurer configurer = new RedisCacheConfigurer();
-    //    RedisCacheOptions redisOptions = new RedisCacheOptions();
-    //    RedisCacheConnectorOptions options = new RedisCacheConnectorOptions()
-    //    {
-    //        ConnectionString = "foobar",
-    //        InstanceName = "instanceId"
-    //    };
-    //    configurer.UpdateOptions(options, redisOptions);
-    //    Assert.Equal("foobar", redisOptions.Configuration);
-    //    Assert.Equal("instanceId", redisOptions.InstanceName);
-    // }
-
-    // [Fact]
-    // public void UpdateOptions_FromConfig_WithOutConnectionString_ReturnsExpected()
-    // {
-    //    RedisCacheConfigurer configurer = new RedisCacheConfigurer();
-    //    RedisCacheOptions redisOptions = new RedisCacheOptions();
-    //    RedisCacheConnectorOptions options = new RedisCacheConnectorOptions()
-    //    {
-    //        Host = "localhost",
-    //        Port = 1234,
-    //        Password = "password",
-    //        InstanceName = "instanceId"
-    //    };
-    //    configurer.UpdateOptions(options, redisOptions);
-    //    Assert.Equal("localhost:1234,password=password,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", redisOptions.Configuration);
-    //    Assert.Equal("instanceId", redisOptions.InstanceName);
-    //// }
-
     [Fact]
     public void UpdateOptions_FromServiceInfo_ReturnsExpected()
     {

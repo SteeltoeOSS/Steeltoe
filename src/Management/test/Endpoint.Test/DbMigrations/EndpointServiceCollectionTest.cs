@@ -5,6 +5,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Xunit;
 
@@ -16,13 +17,10 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddEntityFrameworkActuator_ThrowsOnNulls()
     {
         const ServiceCollection nullServices = null;
-        var services = new ServiceCollection();
 
         Action action1 = () => nullServices.AddDbMigrationsActuator();
-        Action action2 = () => services.AddDbMigrationsActuator();
 
         action1.Should().ThrowExactly<ArgumentNullException>().Where(exception => exception.ParamName == "services");
-        action2.Should().ThrowExactly<InvalidOperationException>();
     }
 
     [Fact]
@@ -40,13 +38,14 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddLogging();
 
-        services.AddDbMigrationsActuator(configurationRoot);
+        services.AddDbMigrationsActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IDbMigrationsOptions>();
-        options.Should().NotBeNull();
-        var ep = serviceProvider.GetService<DbMigrationsEndpoint>();
+        var options = serviceProvider.GetService<IOptionsMonitor<DbMigrationsEndpointOptions>>();
+        options.CurrentValue.Id.Should().Be("dbmigrations");
+        var ep = serviceProvider.GetService<IDbMigrationsEndpoint>();
         ep.Should().NotBeNull();
     }
 }

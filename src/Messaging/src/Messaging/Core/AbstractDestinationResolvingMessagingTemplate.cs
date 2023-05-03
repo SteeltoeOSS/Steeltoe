@@ -9,6 +9,7 @@ namespace Steeltoe.Messaging.Core;
 public abstract class AbstractDestinationResolvingMessagingTemplate<TDestination>
     : AbstractMessagingTemplate<TDestination>, IDestinationResolvingMessageSendingOperations<TDestination>,
         IDestinationResolvingMessageReceivingOperations<TDestination>, IDestinationResolvingMessageRequestReplyOperations<TDestination>
+    where TDestination : class
 {
     private IDestinationResolver<TDestination> _destinationResolver;
 

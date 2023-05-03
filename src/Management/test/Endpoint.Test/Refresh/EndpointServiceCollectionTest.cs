@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Xunit;
 
@@ -15,11 +16,8 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddRefreshActuator_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
-
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddRefreshActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => services2.AddRefreshActuator());
     }
 
     [Fact]
@@ -37,13 +35,13 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         services.AddSingleton<IConfiguration>(configurationRoot);
-
-        services.AddRefreshActuator(configurationRoot);
+        services.AddLogging();
+        services.AddRefreshActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IRefreshOptions>();
+        var options = serviceProvider.GetService<IOptionsMonitor<RefreshEndpointOptions>>();
         Assert.NotNull(options);
-        var ep = serviceProvider.GetService<RefreshEndpoint>();
+        var ep = serviceProvider.GetService<IRefreshEndpoint>();
         Assert.NotNull(ep);
     }
 }

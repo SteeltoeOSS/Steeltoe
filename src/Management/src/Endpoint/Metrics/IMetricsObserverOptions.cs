@@ -19,7 +19,17 @@ public interface IMetricsObserverOptions
     string EgressIgnorePattern { get; }
 
     /// <summary>
-    /// Gets a list of metrics that should not be captured.
+    /// Gets allow list of metrics that should be captured.
+    /// </summary>
+    /// <remarks>
+    /// Currently only applies to System.Runtime metrics captured by <see cref="EventCounterListener" />.
+    /// <para />
+    /// See this list for values to choose from: <see href="https://docs.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters" />.
+    /// </remarks>
+    List<string> IncludedMetrics { get; }
+
+    /// <summary>
+    /// Gets a list of metrics that should not be captured. Entries in <see cref="IncludedMetrics" /> take precedence in case of conflict.
     /// </summary>
     /// <remarks>
     /// Currently only applies to System.Runtime metrics captured by <see cref="EventCounterListener" />.

@@ -166,7 +166,7 @@ public abstract class Operator : SpelNode
             return leftBool == rightBool;
         }
 
-        if (ObjectUtils.NullSafeEquals(left, right))
+        if (ObjectEquality.ObjectOrCollectionEquals(left, right))
         {
             return true;
         }
@@ -401,13 +401,13 @@ public abstract class Operator : SpelNode
             bool rightNumeric = CodeFlow.IsPrimitiveOrUnboxableSupportedNumberOrBoolean(rd);
 
             // If the declared descriptors aren't providing the information, try the actual descriptors
-            if (!leftNumeric && !ObjectUtils.NullSafeEquals(ld, leftActualDescriptor))
+            if (!leftNumeric && !Equals(ld, leftActualDescriptor))
             {
                 ld = leftActualDescriptor;
                 leftNumeric = CodeFlow.IsPrimitiveOrUnboxableSupportedNumberOrBoolean(ld);
             }
 
-            if (!rightNumeric && !ObjectUtils.NullSafeEquals(rd, rightActualDescriptor))
+            if (!rightNumeric && !Equals(rd, rightActualDescriptor))
             {
                 rd = rightActualDescriptor;
                 rightNumeric = CodeFlow.IsPrimitiveOrUnboxableSupportedNumberOrBoolean(rd);

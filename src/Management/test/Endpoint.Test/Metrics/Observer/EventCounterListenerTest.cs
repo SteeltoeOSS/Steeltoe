@@ -2,21 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using OpenTelemetry.Metrics;
-using Steeltoe.Management.Endpoint.Metrics;
+using System.Diagnostics.Metrics;
+using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common.TestResources;
+using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
-using Steeltoe.Management.OpenTelemetry.Exporters;
-using Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
-using Steeltoe.Management.OpenTelemetry.Metrics;
+using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Exporters;
+using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics.Observer;
 
 public class EventCounterListenerTest : BaseTest
 {
-    private readonly PullMetricsExporterOptions _scraperOptions = new()
+    private readonly MetricsExporterOptions _exporterOptions = new()
     {
-        ScrapeResponseCacheDurationMilliseconds = 500
+        CacheDurationMilliseconds = 500
     };
 
     private readonly string[] _metrics =
@@ -43,28 +45,37 @@ public class EventCounterListenerTest : BaseTest
     };
 
     [Fact]
-    public void EventCounterListenerGetsMetricsTest()
+    public async Task EventCounterListenerGetsMetricsTest()
     {
-        using var listener = new EventCounterListener(new MetricsObserverOptions());
-        OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
+        var options = new MetricsObserverOptions
+        {
+            EventCounterEvents = true
+        };
 
-        var exporter = new SteeltoeExporter(_scraperOptions);
-        using MeterProvider metrics = GetTestMetrics(null, exporter, null);
-        Task.Delay(2000).Wait();
+        var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
+        using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
+        SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
-        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollectAsync().Result;
+        var exporter = new SteeltoeExporter(_exporterOptions);
+        AggregationManager aggregationManager = GetTestMetrics(exporter);
+        aggregationManager.Start();
+        await Task.Delay(2000);
+
+        (MetricsCollection<List<MetricSample>> metricSamples, _) = exporter.Export();
 
         foreach (string metric in _metrics)
         {
-            List<KeyValuePair<string, List<MetricSample>>> summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
-            Assert.NotNull(summary);
-            Assert.True(summary.Count > 0);
+            List<KeyValuePair<string, List<MetricSample>>> summary = metricSamples.Where(x => x.Key == metric).ToList();
+            Assert.True(summary != null, $"Summary was null for {metric}");
+            Assert.True(summary.Count > 0, $"Summary was empty for {metric}");
         }
     }
 
-    [Fact(Skip = "See https://github.com/SteeltoeOSS/Steeltoe/issues/985")]
-    public void EventCounterListenerGetsMetricsWithExclusionsTest()
+    [Fact]
+    public async Task EventCounterListenerGetsMetricsWithExclusionsTest()
     {
+        SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
+
         var exclusions = new List<string>
         {
             "alloc-rate",
@@ -75,22 +86,66 @@ public class EventCounterListenerTest : BaseTest
 
         var options = new MetricsObserverOptions
         {
-            ExcludedMetrics = exclusions
+            ExcludedMetrics = exclusions,
+            EventCounterEvents = true
         };
 
-        using var listener = new EventCounterListener(options);
+        var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
+        using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
 
-        var exporter = new SteeltoeExporter(_scraperOptions);
-        using MeterProvider metrics = GetTestMetrics(null, exporter, null);
-        Task.Delay(2000).Wait();
+        var exporter = new SteeltoeExporter(_exporterOptions);
+        AggregationManager aggregationManager = GetTestMetrics(exporter);
+        aggregationManager.Start();
+        await Task.Delay(2000);
 
-        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollectAsync().Result;
+        (MetricsCollection<List<MetricSample>> metricSamples, _) = exporter.Export();
 
         foreach (string metric in _metrics)
         {
-            List<KeyValuePair<string, List<MetricSample>>> summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
+            List<KeyValuePair<string, List<MetricSample>>> summary = metricSamples.Where(x => x.Key == metric).ToList();
 
             if (!exclusions.Contains(metric.Replace("System.Runtime.", string.Empty, StringComparison.Ordinal)))
+            {
+                Assert.NotNull(summary);
+                Assert.True(summary.Count > 0, $"Expected metrics for {metric}");
+            }
+            else
+            {
+                Assert.True(summary == null || summary.Count == 0, $"Expected no metrics for {metric}");
+            }
+        }
+    }
+
+    [Fact]
+    public async Task EventCounterListenerGetsMetricsWithInclusionsTest()
+    {
+        SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
+
+        var inclusions = new List<string>
+        {
+            "cpu-usage"
+        };
+
+        var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(new MetricsObserverOptions
+        {
+            IncludedMetrics = inclusions,
+            EventCounterEvents = true
+        });
+
+        using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
+
+        var exporter = new SteeltoeExporter(_exporterOptions);
+        AggregationManager aggregationManager = GetTestMetrics(exporter);
+        aggregationManager.Start();
+        await Task.Delay(2000);
+
+        (MetricsCollection<List<MetricSample>> metricSamples, _) = exporter.Export();
+
+        foreach (string metric in _metrics)
+        {
+            List<KeyValuePair<string, List<MetricSample>>> summary = metricSamples.Where(x => x.Key == metric).ToList();
+
+            if (inclusions.Contains(metric.Substring("System.Runtime.".Length)))
             {
                 Assert.NotNull(summary);
                 Assert.True(summary.Count > 0, $"Expected metrics for {metric}");

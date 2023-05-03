@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
 using Xunit;
 
@@ -13,23 +13,16 @@ public class MetricsObserverOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new MetricsObserverOptions();
-        Assert.Equal(MetricsObserverOptions.DefaultIngressIgnorePattern, opts.IngressIgnorePattern);
-        Assert.Equal(MetricsObserverOptions.DefaultEgressIgnorePattern, opts.EgressIgnorePattern);
+        MetricsObserverOptions opts = GetOptionsFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
+
+        Assert.Equal(ConfigureMetricsObserverOptions.DefaultIngressIgnorePattern, opts.IngressIgnorePattern);
+        Assert.Equal(ConfigureMetricsObserverOptions.DefaultEgressIgnorePattern, opts.EgressIgnorePattern);
         Assert.True(opts.AspNetCoreHosting);
         Assert.True(opts.GCEvents);
         Assert.False(opts.EventCounterEvents);
         Assert.True(opts.ThreadPoolEvents);
         Assert.False(opts.HttpClientCore);
         Assert.False(opts.HttpClientDesktop);
-        Assert.False(opts.HystrixEvents);
-    }
-
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new MetricsObserverOptions(configuration));
     }
 
     [Fact]
@@ -44,15 +37,11 @@ public class MetricsObserverOptionsTest : BaseTest
             ["management:metrics:observer:eventCounterEvents"] = "true",
             ["management:metrics:observer:threadPoolEvents"] = "false",
             ["management:metrics:observer:httpClientCore"] = "true",
-            ["management:metrics:observer:httpClientDesktop"] = "true",
-            ["management:metrics:observer:hystrixEvents"] = "true"
+            ["management:metrics:observer:httpClientDesktop"] = "true"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        MetricsObserverOptions opts = GetOptionsFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>(appsettings);
 
-        var opts = new MetricsObserverOptions(configurationRoot);
         Assert.Equal("pattern", opts.IngressIgnorePattern);
         Assert.Equal("pattern", opts.EgressIgnorePattern);
         Assert.False(opts.AspNetCoreHosting);
@@ -61,6 +50,5 @@ public class MetricsObserverOptionsTest : BaseTest
         Assert.False(opts.ThreadPoolEvents);
         Assert.True(opts.HttpClientCore);
         Assert.True(opts.HttpClientDesktop);
-        Assert.True(opts.HystrixEvents);
     }
 }

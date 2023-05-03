@@ -133,6 +133,6 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
             DefaultSettings.ClientCertificate = options.Certificate;
         }
 
-        return new ConfigServerConfigurationProvider(this, NullLoggerFactory.Instance);
+        return new ConfigServerConfigurationProvider(this, LoggerFactory);
     }
 }

@@ -43,7 +43,7 @@ public class ResourceHolderSynchronization<THolder, TKey> : ITransactionSynchron
 
     public virtual void BeforeCommit(bool readOnly)
     {
-        // Nothing to do
+        // Intentionally left empty.
     }
 
     public virtual void BeforeCompletion()

@@ -4,7 +4,6 @@
 
 using System.Text;
 using Steeltoe.Common;
-using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 
 namespace Steeltoe.Integration.Support;
@@ -78,7 +77,7 @@ public class MutableMessage : IMessage
         string thisId = InnerHeaders.Id;
         string otherId = other.InnerHeaders.Id;
 
-        return ObjectUtils.NullSafeEquals(thisId, otherId) && InnerHeaders.Equals(other.InnerHeaders) && InnerPayload.Equals(other.InnerPayload);
+        return thisId == otherId && InnerHeaders.Equals(other.InnerHeaders) && InnerPayload.Equals(other.InnerPayload);
     }
 }
 
@@ -121,6 +120,6 @@ public class MutableMessage<T> : MutableMessage, IMessage<T>
         string thisId = InnerHeaders.Id;
         string otherId = other.InnerHeaders.Id;
 
-        return ObjectUtils.NullSafeEquals(thisId, otherId) && InnerHeaders.Equals(other.InnerHeaders) && InnerPayload.Equals(other.InnerPayload);
+        return thisId == otherId && InnerHeaders.Equals(other.InnerHeaders) && InnerPayload.Equals(other.InnerPayload);
     }
 }

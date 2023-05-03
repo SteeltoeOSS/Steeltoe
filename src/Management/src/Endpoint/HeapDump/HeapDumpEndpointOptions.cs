@@ -2,31 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-public class HeapDumpEndpointOptions : AbstractEndpointOptions, IHeapDumpOptions
+public class HeapDumpEndpointOptions : EndpointOptionsBase
 {
-    private const string ManagementInfoPrefix = "management:endpoints:heapdump";
-
     public string HeapDumpType { get; set; }
 
     // Default to disabled on Linux + Cloud Foundry until PTRACE is allowed
     public override bool DefaultEnabled { get; } = !(Platform.IsCloudFoundry && Platform.IsLinux);
-
-    public HeapDumpEndpointOptions()
-    {
-        Id = "heapdump";
-    }
-
-    public HeapDumpEndpointOptions(IConfiguration configuration)
-        : base(ManagementInfoPrefix, configuration)
-    {
-        if (string.IsNullOrEmpty(Id))
-        {
-            Id = "heapdump";
-        }
-    }
 }

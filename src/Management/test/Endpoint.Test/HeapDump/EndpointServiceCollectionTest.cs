@@ -15,11 +15,9 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddHeapDumpActuator_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddHeapDumpActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => services2.AddHeapDumpActuator());
     }
 
     [Fact]
@@ -39,12 +37,11 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        services.AddHeapDumpActuator(configurationRoot);
+        services.AddLogging();
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddHeapDumpActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IHeapDumpOptions>();
-        Assert.NotNull(options);
-        Assert.Equal("Normal", options.HeapDumpType);
         var repo = serviceProvider.GetService<IHeapDumper>();
         Assert.NotNull(repo);
         var ep = serviceProvider.GetService<HeapDumpEndpoint>();

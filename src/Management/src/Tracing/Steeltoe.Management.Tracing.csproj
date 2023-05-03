@@ -13,7 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="$(OpenTelemetryInstrumentationVersion)" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="$(OpenTelemetryVersion)" />
+    <PackageReference Include="OpenTelemetry.Extensions.Propagators" Version="$(OpenTelemetryVersion)" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="$(OpenTelemetryInstrumentationVersion)" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="$(OpenTelemetryInstrumentationVersion)" />
     <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="$(OpenTelemetryVersion)" PrivateAssets="all" />
@@ -25,6 +26,7 @@
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\Abstractions\Steeltoe.Logging.Abstractions.csproj" />
-    <ProjectReference Include="..\OpenTelemetry\Steeltoe.Management.OpenTelemetry.csproj" />
+    <ProjectReference Include="..\MetricCollectors\Steeltoe.Management.MetricCollectors.csproj" />
+    <ProjectReference Include="..\Wavefront\Steeltoe.Management.Wavefront.csproj" />
   </ItemGroup>
 </Project>

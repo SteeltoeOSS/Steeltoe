@@ -4,10 +4,10 @@
 
 using System.Net;
 using k8s;
+using k8s.Autorest;
 using k8s.Models;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
 using Steeltoe.Common.Kubernetes;
 
 namespace Steeltoe.Configuration.Kubernetes;
@@ -26,8 +26,8 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
     {
         try
         {
-            HttpOperationResponse<V1ConfigMap> configMapResponse =
-                KubernetesClient.ReadNamespacedConfigMapWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
+            HttpOperationResponse<V1ConfigMap> configMapResponse = KubernetesClient.CoreV1
+                .ReadNamespacedConfigMapWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
 
             ProcessData(configMapResponse.Body);
             EnableReloading();
@@ -96,28 +96,27 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
 
     private void EnableEventReloading()
     {
-        _configMapWatcher = KubernetesClient.WatchNamespacedConfigMapAsync(Settings.Name, Settings.Namespace, onEvent: (eventType, item) =>
-                {
-                    Logger.LogInformation("Received {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(), Settings.Name,
-                        item?.Data?.Count);
+        Task<HttpOperationResponse<V1ConfigMapList>> resp =
+            KubernetesClient.CoreV1.ListNamespacedConfigMapWithHttpMessagesAsync(Settings.Namespace, watch: true);
 
-                    switch (eventType)
-                    {
-                        case WatchEventType.Added:
-                        case WatchEventType.Modified:
-                        case WatchEventType.Deleted:
-                            ProcessData(item);
-                            break;
-                        default:
-                            Logger.LogDebug("Event type {eventType} is not supported, no action has been taken", eventType);
-                            break;
-                    }
-                },
-                onError: exception => Logger.LogCritical(exception, "ConfigMap watcher on {namespace}.{name} encountered an error!", Settings.Namespace,
-                    Settings.Name),
-                onClosed: () => Logger.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name))
-            .GetAwaiter()
-            .GetResult();
+        _configMapWatcher = resp.Watch<V1ConfigMap, V1ConfigMapList>((eventType, item) =>
+            {
+                Logger.LogInformation("Received {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(), Settings.Name,
+                    item?.Data?.Count);
+
+                switch (eventType)
+                {
+                    case WatchEventType.Added:
+                    case WatchEventType.Modified:
+                    case WatchEventType.Deleted:
+                        ProcessData(item);
+                        break;
+                    default:
+                        Logger.LogDebug("Event type {eventType} is not supported, no action has been taken", eventType);
+                        break;
+                }
+            }, exception => Logger.LogCritical(exception, "ConfigMap watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name),
+            () => Logger.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name));
     }
 
     private void ProcessData(V1ConfigMap item)

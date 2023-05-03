@@ -27,7 +27,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddLoggersActuatorServices(configuration);
+            services.AddLoggersActuatorServices();
         };
 
         var ep = tc.GetService<ILoggersEndpoint>();
@@ -50,24 +50,6 @@ public class LoggersEndpointTest : BaseTest
         Assert.Contains("TRACE", levels);
     }
 
-    // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
-    [Fact]
-#pragma warning disable S2699 // Tests should include assertions
-    public void SetLogLevel_NullProvider()
-#pragma warning restore S2699 // Tests should include assertions
-    {
-        using var tc = new TestContext(_output);
-
-        tc.AdditionalServices = (services, configuration) =>
-        {
-            services.AddLoggersActuatorServices(configuration);
-        };
-
-        var ep = tc.GetService<ILoggersEndpoint>();
-
-        ep.SetLogLevel(null, null, null);
-    }
-
     [Fact]
     public void SetLogLevel_ThrowsIfNullName()
     {
@@ -75,7 +57,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddLoggersActuatorServices(configuration);
+            services.AddLoggersActuatorServices();
         };
 
         var ep = tc.GetService<ILoggersEndpoint>();
@@ -90,7 +72,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddLoggersActuatorServices(configuration);
+            services.AddLoggersActuatorServices();
         };
 
         var ep = tc.GetService<ILoggersEndpoint>();
@@ -108,7 +90,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddLoggersActuatorServices(configuration);
+            services.AddLoggersActuatorServices();
         };
 
         var ep = tc.GetService<ILoggersEndpoint>();
@@ -123,7 +105,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddLoggersActuatorServices(configuration);
+            services.AddLoggersActuatorServices();
         };
 
         var ep = tc.GetService<ILoggersEndpoint>();
@@ -140,7 +122,7 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddLoggersActuatorServices(configuration);
+            services.AddLoggersActuatorServices();
         };
 
         var ep = tc.GetService<ILoggersEndpoint>();

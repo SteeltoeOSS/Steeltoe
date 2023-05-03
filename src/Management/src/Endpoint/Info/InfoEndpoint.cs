@@ -3,25 +3,29 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-public class InfoEndpoint : AbstractEndpoint<Dictionary<string, object>>, IInfoEndpoint
+public class InfoEndpoint : IInfoEndpoint
 {
     private readonly IList<IInfoContributor> _contributors;
+    private readonly IOptionsMonitor<InfoEndpointOptions> _options;
     private readonly ILogger<InfoEndpoint> _logger;
+    public IEndpointOptions Options => _options.CurrentValue;
 
-    public new IInfoOptions Options => options as IInfoOptions;
-
-    public InfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
-        : base(options)
+    public InfoEndpoint(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger)
     {
+        ArgumentGuard.NotNull(logger);
+
+        _options = options;
         _logger = logger;
         _contributors = contributors.ToList();
     }
 
-    public override Dictionary<string, object> Invoke()
+    public virtual Dictionary<string, object> Invoke()
     {
         return BuildInfo(_contributors);
     }
@@ -38,7 +42,7 @@ public class InfoEndpoint : AbstractEndpoint<Dictionary<string, object>>, IInfoE
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "Operation failed.");
+                _logger.LogError(e, "Operation failed.");
             }
         }
 

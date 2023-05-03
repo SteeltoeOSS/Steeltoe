@@ -28,7 +28,7 @@ public class SerilogDynamicLoggerFactory : ILoggerFactory
 
     public void AddProvider(ILoggerProvider provider)
     {
-        // noop
+        // Intentionally left empty.
     }
 
     protected virtual void Dispose(bool disposing)

@@ -57,7 +57,7 @@ public class CloudFoundryServiceInfoCreatorTest
         var inst = CloudFoundryServiceInfoCreator.Instance(configuration);
         Assert.NotNull(inst);
         Assert.NotNull(inst.Factories);
-        Assert.Equal(12, inst.Factories.Count);
+        Assert.Equal(11, inst.Factories.Count);
     }
 
     [Fact]

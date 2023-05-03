@@ -9,10 +9,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Mappings;
+using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
@@ -21,7 +24,7 @@ public class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string> AppSettings = new()
     {
-        ["Logging:IncludeScopes"] = "false",
+        ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
         ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
@@ -31,24 +34,25 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = new MappingsEndpointOptions();
+        var options = GetOptionsFromSettings<MappingsEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/mappings", options.GetContextPath(new ActuatorManagementOptions()));
-        Assert.Equal("/cloudfoundryapplication/mappings", options.GetContextPath(new CloudFoundryManagementOptions()));
-        Assert.Null(options.AllowedVerbs);
+        Assert.Equal("/actuator/mappings", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
+        Assert.Equal("/cloudfoundryapplication/mappings", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
+        Assert.Single(options.AllowedVerbs);
+        Assert.Contains("Get", options.AllowedVerbs);
     }
 
     [Fact]
     public async Task HandleMappingsRequestAsync_MVCNotUsed_NoRoutes_ReturnsExpected()
     {
-        var opts = new MappingsEndpointOptions();
-        var managementOptions = new CloudFoundryManagementOptions();
-        managementOptions.EndpointOptions.Add(opts);
+        IOptionsMonitor<MappingsEndpointOptions> opts = GetOptionsMonitorFromSettings<MappingsEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
-        var ep = new MappingsEndpoint(opts);
-        var middle = new MappingsEndpointMiddleware(null, opts, managementOptions, ep);
+        var ep = new MappingsEndpoint(opts, NullLogger<MappingsEndpoint>.Instance);
+        var middle = new MappingsEndpointMiddleware(opts, managementOptions, ep, NullLogger<MappingsEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
         await middle.HandleMappingsRequestAsync(context);
@@ -62,8 +66,12 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task MappingsActuator_ReturnsExpectedData()
     {
+        var appSettings = new Dictionary<string, string>(AppSettings);
+
+        appSettings.Add("management:endpoints:actuator:exposure:include:0", "*");
+
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
                 {
                     loggingBuilder.AddConfiguration(webHostContext.Configuration);
@@ -72,7 +80,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/mappings");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/mappings"));
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
 

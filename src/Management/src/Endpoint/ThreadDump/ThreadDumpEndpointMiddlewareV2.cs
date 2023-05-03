@@ -4,24 +4,23 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
 public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResult>
 {
-    private readonly RequestDelegate _next;
-
-    public ThreadDumpEndpointMiddlewareV2(RequestDelegate next, ThreadDumpEndpointV2 endpoint, IManagementOptions managementOptions,
-        ILogger<ThreadDumpEndpointMiddlewareV2> logger = null)
+    public ThreadDumpEndpointMiddlewareV2(IThreadDumpEndpointV2 endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILogger<ThreadDumpEndpointMiddlewareV2> logger)
         : base(endpoint, managementOptions, logger)
     {
-        _next = next;
     }
 
-    public Task InvokeAsync(HttpContext context)
+    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.ShouldInvoke(managementOptions, logger))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             return HandleThreadDumpRequestAsync(context);
         }
@@ -32,7 +31,8 @@ public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResul
     protected internal Task HandleThreadDumpRequestAsync(HttpContext context)
     {
         string serialInfo = HandleRequest();
-        logger?.LogDebug("Returning: {info}", serialInfo);
+
+        logger.LogDebug("Returning: {info}", serialInfo);
         context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
         return context.Response.WriteAsync(serialInfo);
     }

@@ -41,14 +41,10 @@ public class ApplicationJsonMessageMarshallingConverter : NewtonJsonMessageConve
                  */
                 conversionHint = null;
             }
-
-            // TODO: Look at Java code that uses  (ConvertParameterizedType) below
         }
 
         object result;
 
-        // if (result == null)
-        // {
         if (message.Payload is byte[] v && targetClass.IsAssignableFrom(typeof(string)))
         {
             result = EncodingUtils.Utf8.GetString(v);
@@ -58,42 +54,6 @@ public class ApplicationJsonMessageMarshallingConverter : NewtonJsonMessageConve
             result = base.ConvertFromInternal(message, targetClass, conversionHint);
         }
 
-        // }
         return result;
     }
-
-    // private object ConvertParameterizedType(IMessage message, Type targetClass, ParameterizedTypeReference conversionHint)
-    // {
-    //    ObjectMapper objectMapper = this.getObjectMapper();
-    //    object payload = message.Payload;
-    //    try
-    //    {
-    //        JavaType type = this.typeCache.get(conversionHint);
-
-    // if (type == null)
-    //        {
-    //            type = objectMapper.getTypeFactory().constructType((conversionHint).getType());
-    //            this.typeCache.put(conversionHint, type);
-    //        }
-
-    // if (payload is byte[])
-    //        {
-    //            return objectMapper.readValue((byte[])payload, type);
-    //        }
-
-    // else if (payload is String)
-    //        {
-    //            return objectMapper.readValue((String)payload, type);
-    //        }
-
-    // else
-    //        {
-    //            return null;
-    //        }
-    //    }
-    //    catch (IOException e)
-    //    {
-    //        throw new MessageConversionException("Cannot parse payload ", e);
-    //    }
-    // }
 }

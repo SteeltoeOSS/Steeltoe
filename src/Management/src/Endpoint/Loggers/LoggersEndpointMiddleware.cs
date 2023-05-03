@@ -5,30 +5,24 @@
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
 public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>, LoggersChangeRequest>
 {
-    private readonly RequestDelegate _next;
-
-    public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, IManagementOptions managementOptions,
-        ILogger<LoggersEndpointMiddleware> logger = null)
+    public LoggersEndpointMiddleware(LoggersEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILogger<LoggersEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
-        _next = next;
     }
 
-    public Task InvokeAsync(HttpContext context)
+    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.ShouldInvoke(managementOptions, logger))
-        {
-            return HandleLoggersRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
+        return Endpoint.Options.ShouldInvoke(managementOptions, context, logger) ? HandleLoggersRequestAsync(context) : Task.CompletedTask;
     }
 
     protected internal async Task HandleLoggersRequestAsync(HttpContext context)
@@ -39,17 +33,17 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         if (context.Request.Method == "POST")
         {
             // POST - change a logger level
-            var paths = new List<string>();
-            logger?.LogDebug("Incoming path: {path}", request.Path.Value);
-            paths.Add(managementOptions == null ? Endpoint.Path : $"{managementOptions.Path}/{Endpoint.Path}".Replace("//", "/", StringComparison.Ordinal));
+            logger.LogDebug("Incoming path: {path}", request.Path.Value);
+            ManagementEndpointOptions mgmtOptions = managementOptions.GetFromContextPath(request.Path);
 
-            foreach (string path in paths.Distinct())
+            string path = managementOptions == null
+                ? Endpoint.Options.Path
+                : $"{mgmtOptions.Path}/{Endpoint.Options.Path}".Replace("//", "/", StringComparison.Ordinal);
+
+            if (ChangeLoggerLevel(request, path))
             {
-                if (ChangeLoggerLevel(request, path))
-                {
-                    response.StatusCode = (int)HttpStatusCode.OK;
-                    return;
-                }
+                response.StatusCode = (int)HttpStatusCode.OK;
+                return;
             }
 
             response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -58,7 +52,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
 
         // GET request
         string serialInfo = HandleRequest(null);
-        logger?.LogDebug("Returning: {info}", serialInfo);
+        logger.LogDebug("Returning: {info}", serialInfo);
 
         context.HandleContentNegotiation(logger);
         await context.Response.WriteAsync(serialInfo);
@@ -76,13 +70,13 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
 
             change.TryGetValue("configuredLevel", out string level);
 
-            logger?.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
+            logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
 
             if (!string.IsNullOrEmpty(loggerName))
             {
                 if (!string.IsNullOrEmpty(level) && LoggerLevels.MapLogLevel(level) == null)
                 {
-                    logger?.LogDebug("Invalid LogLevel specified: {level}", level);
+                    logger.LogDebug("Invalid LogLevel specified: {level}", level);
                 }
                 else
                 {

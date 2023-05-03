@@ -28,7 +28,7 @@ public class InfoEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddInfoActuatorServices(configuration);
+            services.AddInfoActuatorServices();
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
@@ -53,7 +53,7 @@ public class InfoEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddInfoActuatorServices(configuration);
+            services.AddInfoActuatorServices();
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
@@ -82,7 +82,7 @@ public class InfoEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddInfoActuatorServices(configuration);
+            services.AddInfoActuatorServices();
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 

@@ -6,31 +6,30 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
 public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>
 {
-    private readonly RequestDelegate _next;
-
-    public ActuatorHypermediaEndpointMiddleware(RequestDelegate next, ActuatorEndpoint endpoint, ActuatorManagementOptions managementOptions,
-        ILogger<ActuatorHypermediaEndpointMiddleware> logger = null)
+    public ActuatorHypermediaEndpointMiddleware(IActuatorEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILogger<ActuatorHypermediaEndpointMiddleware> logger)
         : base(endpoint, managementOptions, logger)
     {
-        _next = next;
     }
 
-    public Task InvokeAsync(HttpContext context)
+    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        logger?.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
+        logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
-        if (Endpoint.ShouldInvoke(managementOptions, logger))
+        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
         {
             string serialInfo = HandleRequest(Endpoint, GetRequestUri(context.Request), logger);
-            logger?.LogDebug("Returning: {info}", serialInfo);
+            logger.LogDebug("Returning: {info}", serialInfo);
 
             context.HandleContentNegotiation(logger);
             return context.Response.WriteAsync(serialInfo);
@@ -78,7 +77,7 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
         }
         catch (Exception e)
         {
-            logger?.LogError(e, "Error serializing {MiddlewareResponse}", result);
+            logger.LogError(e, "Error serializing {MiddlewareResponse}", result);
         }
 
         return string.Empty;

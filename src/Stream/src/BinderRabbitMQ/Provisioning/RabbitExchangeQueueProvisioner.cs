@@ -216,7 +216,6 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
             baseQueueName = GetGroupedName(name, anonymous ? anonQueueNameGenerator.GenerateName() : group);
         }
 
-        // logger.info("declaring queue for inbound: " + baseQueueName + ", bound to: " + name);
         string prefix = consumerProperties.Prefix;
         string exchangeName = ApplyPrefix(prefix, name);
         IExchange exchange = BuildExchange(consumerProperties, exchangeName);
@@ -722,10 +721,6 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         }
     }
 
-    // public void onApplicationEvent(DeclarationExceptionEvent event)
-    // {
-    //    this.notOurAdminException = true; // our admin doesn't have an event publisher
-    // }
     private sealed class RabbitProducerDestination : IProducerDestination
     {
         public IExchange Exchange { get; }

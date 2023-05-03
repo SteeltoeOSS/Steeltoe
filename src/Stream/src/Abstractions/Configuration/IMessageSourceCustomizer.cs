@@ -4,9 +4,6 @@
 
 namespace Steeltoe.Stream.Configuration;
 
-/// <summary>
-/// TODO: Look at making internal.
-/// </summary>
 public interface IMessageSourceCustomizer
 {
     void Configure(object source, string destinationName, string group);

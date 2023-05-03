@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Loggers;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;
@@ -22,17 +21,12 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddCloudFoundryActuator(Configuration);
-        services.AddLoggersActuator(Configuration);
+        services.AddLoggersActuator();
     }
 
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<LoggersEndpoint>();
-        });
+        app.UseEndpoints(endpoints => endpoints.MapAllActuators());
     }
 }

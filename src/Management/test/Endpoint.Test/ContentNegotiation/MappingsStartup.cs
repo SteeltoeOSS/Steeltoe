@@ -22,8 +22,8 @@ public class MappingsStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddHypermediaActuator(Configuration);
-        services.AddMappingsActuator(Configuration);
+        services.AddHypermediaActuator();
+        services.AddMappingsActuator();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -32,8 +32,7 @@ public class MappingsStartup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.Map<ActuatorEndpoint>();
-            endpoints.Map<MappingsEndpoint>();
+            endpoints.MapAllActuators();
         });
     }
 }

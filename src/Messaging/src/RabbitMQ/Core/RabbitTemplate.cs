@@ -1533,10 +1533,6 @@ public class RabbitTemplate
                     container.MessageListener = this;
                     container.ServiceName = $"{ServiceName}#{Interlocked.Increment(ref _containerInstance)}";
 
-                    // if (this.taskExecutor != null)
-                    // {
-                    //    container.setTaskExecutor(this.taskExecutor);
-                    // }
                     if (AfterReceivePostProcessors != null)
                     {
                         container.SetAfterReceivePostProcessors(AfterReceivePostProcessors.ToArray());
@@ -1733,9 +1729,6 @@ public class RabbitTemplate
         if (DefaultSendDestination != null)
         {
             return DefaultSendDestination.RoutingKey;
-
-            // var dest = ParseDestination(DefaultSendDestination);
-            // return dest.Item2;
         }
 
         return DefaultRoutingKey;
@@ -2264,11 +2257,11 @@ public class RabbitTemplate
             throw new InvalidOperationException($"'receiveAndReplyCallback' can't handle received object of type '{message.GetType()}'.");
         }
 
-        TReply reply = receiveAndReplyCallback(messageAsTReceive);
+        object reply = receiveAndReplyCallback(messageAsTReceive);
 
-        if (reply != null)
+        if (reply is TReply)
         {
-            DoSendReply(replyToAddressCallback, channel, receiveMessage, reply);
+            DoSendReply(replyToAddressCallback, channel, receiveMessage, (TReply)reply);
         }
         else if (IsChannelLocallyTransacted(channel))
         {

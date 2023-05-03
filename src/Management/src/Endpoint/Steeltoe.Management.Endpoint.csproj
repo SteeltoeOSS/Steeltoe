@@ -28,10 +28,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Common.Hosting\Steeltoe.Common.Hosting.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Logging.DynamicLogger.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
-    <ProjectReference Include="..\OpenTelemetry\Steeltoe.Management.OpenTelemetry.csproj" />
+    <ProjectReference Include="..\MetricCollectors\Steeltoe.Management.MetricCollectors.csproj" />
   </ItemGroup>
+
 </Project>

@@ -9,8 +9,6 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
-using Steeltoe.Management.Endpoint.Extensions;
-using Steeltoe.Management.Endpoint.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -28,7 +26,7 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddTraceActuator(this IServiceCollection services, IConfiguration configuration = null)
     {
-        services.AddTraceActuator(configuration, MediaTypeVersion.V2);
+        services.AddTraceActuator(MediaTypeVersion.V2);
     }
 
     /// <summary>
@@ -37,38 +35,29 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add trace to.
     /// </param>
-    /// <param name="configuration">
-    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
-    /// management:endpoints:trace).
-    /// </param>
     /// <param name="version">
     /// <see cref="MediaTypeVersion" /> to use in responses.
     /// </param>
-    public static void AddTraceActuator(this IServiceCollection services, IConfiguration configuration, MediaTypeVersion version)
+    public static void AddTraceActuator(this IServiceCollection services, MediaTypeVersion version)
     {
         ArgumentGuard.NotNull(services);
 
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
-        services.AddActuatorManagementOptions(configuration);
-        services.AddTraceActuatorServices(configuration, version);
+        services.AddCommonActuatorServices();
+        services.AddTraceActuatorServices(version);
 
         switch (version)
         {
             case MediaTypeVersion.V1:
+
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, TraceDiagnosticObserver>());
-                services.TryAddSingleton<ITraceRepository>(p => p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
-                services.AddActuatorEndpointMapping<TraceEndpoint>();
+                services.TryAddSingleton<ITraceRepository, TraceDiagnosticObserver>();
                 break;
             default:
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpTraceDiagnosticObserver>());
+                services.TryAddSingleton<IHttpTraceRepository, HttpTraceDiagnosticObserver>();
 
-                services.TryAddSingleton(p =>
-                    new HttpTraceEndpoint(p.GetService<ITraceOptions>(), p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
-
-                services.AddActuatorEndpointMapping<HttpTraceEndpoint>();
                 break;
         }
     }

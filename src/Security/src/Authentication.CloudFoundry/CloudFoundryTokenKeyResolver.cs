@@ -74,7 +74,7 @@ public class CloudFoundryTokenKeyResolver
 
     public virtual async Task<JsonWebKeySet> FetchKeySetAsync()
     {
-        var requestMessage = new HttpRequestMessage(HttpMethod.Get, _jwtKeyUrl);
+        var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(_jwtKeyUrl));
         requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
         HttpClient client = GetHttpClient();

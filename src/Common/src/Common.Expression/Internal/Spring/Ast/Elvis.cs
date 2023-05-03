@@ -4,7 +4,6 @@
 
 using System.Reflection;
 using System.Reflection.Emit;
-using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
@@ -96,11 +95,11 @@ public class Elvis : SpelNode
         gen.Emit(OpCodes.Ldc_I4_0);
         gen.Emit(OpCodes.Stloc, ifResult);
 
-        // Fall thru to check if results;
+        // Fall thru to check if results
         // Mark Check if Results
         gen.MarkLabel(loadCheckIfResults);
 
-        // Load if results;
+        // Load if results
         gen.Emit(OpCodes.Ldloc, ifResult);
         Label callChild2 = gen.DefineLabel();
 
@@ -151,7 +150,7 @@ public class Elvis : SpelNode
             TypeDescriptor conditionDescriptor = children[0].ExitDescriptor;
             TypeDescriptor ifNullValueDescriptor = children[1].ExitDescriptor;
 
-            if (ObjectUtils.NullSafeEquals(conditionDescriptor, ifNullValueDescriptor))
+            if (Equals(conditionDescriptor, ifNullValueDescriptor))
             {
                 exitTypeDescriptor = conditionDescriptor;
             }

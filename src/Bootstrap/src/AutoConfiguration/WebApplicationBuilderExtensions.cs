@@ -26,6 +26,7 @@ using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Kubernetes;
 using Steeltoe.Management.Tracing;
+using Steeltoe.Management.Wavefront;
 using Steeltoe.Security.Authentication.CloudFoundry;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration;
@@ -109,7 +110,7 @@ public static class WebApplicationBuilderExtensions
             webApplicationBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.SteeltoeManagementEndpoint);
         }
 
-        webApplicationBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeManagementEndpoint);
+        webApplicationBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeWavefront);
 
         webApplicationBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblies.SteeltoeManagementTracing);
 
@@ -269,7 +270,7 @@ public static class WebApplicationBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireAllActuators(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddAllActuators(webApplicationBuilder.Configuration);
+        webApplicationBuilder.Services.AddAllActuators();
         webApplicationBuilder.Services.ActivateActuatorEndpoints();
         Log(LogMessages.WireAllActuators);
     }

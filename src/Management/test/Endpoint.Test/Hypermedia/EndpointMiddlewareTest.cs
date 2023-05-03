@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
@@ -31,12 +34,12 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
     {
-        var opts = new HypermediaEndpointOptions();
-        var managementOptions = new ActuatorManagementOptions();
-        var ep = new TestHypermediaEndpoint(opts, managementOptions);
-        var middle = new ActuatorHypermediaEndpointMiddleware(null, ep, managementOptions);
+        IOptionsMonitor<HypermediaEndpointOptions> opts = GetOptionsMonitorFromSettings<HypermediaEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        var ep = new TestHypermediaEndpoint(opts, managementOptions, NullLogger<ActuatorEndpoint>.Instance);
+        var middle = new ActuatorHypermediaEndpointMiddleware(ep, managementOptions, NullLogger<ActuatorHypermediaEndpointMiddleware>.Instance);
         HttpContext context = CreateRequest("GET", "/");
-        await middle.InvokeAsync(context);
+        await middle.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var rdr = new StreamReader(context.Response.Body);
         string json = await rdr.ReadToEndAsync();
@@ -75,11 +78,11 @@ public class EndpointMiddlewareTest : BaseTest
         HttpClient client = server.CreateClient();
 
         // send the request
-        HttpResponseMessage result = await client.GetAsync("http://localhost/actuator");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator"));
         string json = await result.Content.ReadAsStringAsync();
 
         Assert.Equal(
-            "{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/actuator\",\"templated\":false},\"info\":{\"href\":\"http://localhost/actuator/info\",\"templated\":false}}}",
+            "{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/actuator/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/actuator\",\"templated\":false}}}",
             json);
     }
 
@@ -96,21 +99,22 @@ public class EndpointMiddlewareTest : BaseTest
         HttpClient client = server.CreateClient();
 
         // send the request
-        HttpResponseMessage result = await client.GetAsync("http://localhost/");
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
         string json = await result.Content.ReadAsStringAsync();
 
         Assert.Equal(
-            "{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/\",\"templated\":false},\"info\":{\"href\":\"http://localhost/info\",\"templated\":false}}}",
+            "{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/\",\"templated\":false}}}",
             json);
     }
 
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = new HypermediaEndpointOptions();
+        HypermediaEndpointOptions options = GetOptionsFromSettings<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator", options.GetContextPath(new ActuatorManagementOptions()));
-        Assert.Null(options.AllowedVerbs);
+        Assert.Equal("/actuator", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
+        Assert.Contains("Get", options.AllowedVerbs);
     }
 
     private HttpContext CreateRequest(string method, string path)
