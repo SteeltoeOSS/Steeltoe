@@ -18,6 +18,7 @@ public class RedisHealthContributor : IHealthContributor
     private readonly RedisServiceConnectorFactory _factory;
     private readonly Type _implType;
     private readonly ILogger<RedisHealthContributor> _logger;
+    private readonly string _hostName;
     private object _connector;
     private object _database;
     private object _flags;
@@ -26,12 +27,22 @@ public class RedisHealthContributor : IHealthContributor
 
     private bool IsMicrosoftImplementation => _implType.FullName.Contains("Microsoft", StringComparison.Ordinal);
 
-    public string Id => IsMicrosoftImplementation ? "Redis-Cache" : "Redis";
+    public string Id { get; }
 
     public RedisHealthContributor(RedisServiceConnectorFactory factory, Type implType, ILogger<RedisHealthContributor> logger = null)
     {
         _factory = factory;
         _implType = implType;
+        _logger = logger;
+        Id = IsMicrosoftImplementation ? "Redis-Cache" : "Redis";
+    }
+
+    internal RedisHealthContributor(object redisClient, string serviceName, string hostName, ILogger<RedisHealthContributor> logger)
+    {
+        _connector = redisClient;
+        _implType = redisClient.GetType();
+        Id = serviceName;
+        _hostName = hostName;
         _logger = logger;
     }
 
@@ -53,6 +64,11 @@ public class RedisHealthContributor : IHealthContributor
     {
         _logger?.LogTrace("Checking Redis connection health");
         var result = new HealthCheckResult();
+
+        if (_hostName != null)
+        {
+            result.Details.Add("host", _hostName);
+        }
 
         try
         {
@@ -117,7 +133,10 @@ public class RedisHealthContributor : IHealthContributor
             {
                 throw new ConnectorException("Unable to connect to Redis");
             }
+        }
 
+        if (_database == null)
+        {
             if (IsMicrosoftImplementation)
             {
                 _getMethod = _connector.GetType().GetMethod("Get");

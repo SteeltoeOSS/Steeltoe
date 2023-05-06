@@ -464,22 +464,16 @@ internal sealed class RedisPostProcessor : IConfigurationPostProcessor
         configurationData.Filter(ServiceBindingConfigurationProvider.InputKeyPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingType).ForEach(
             bindingNameKey =>
             {
-                // Spring -> spring.redis....
-                // Steeltoe -> steeltoe:service-bindings:redis:binding-name:....
                 var mapper = new ServiceBindingMapper(configurationData, bindingNameKey, ServiceBindingConfigurationProvider.OutputKeyPrefix, BindingType,
                     ConfigurationPath.GetSectionKey(bindingNameKey));
 
-                mapper.MapFromTo("client-name", "clientName");
-                mapper.MapFromTo("cluster.max-redirects", "clusterMaxRedirects");
-                mapper.MapFromTo("cluster.nodes", "clusterNodes");
-                mapper.MapFromTo("database", "database");
+                // See Redis connection string parameters at: https://stackexchange.github.io/StackExchange.Redis/Configuration.html
                 mapper.MapFromTo("host", "host");
-                mapper.MapFromTo("password", "password");
                 mapper.MapFromTo("port", "port");
-                mapper.MapFromTo("sentinel.master", "sentinelMaster");
-                mapper.MapFromTo("sentinel.nodes", "sentinelNodes");
                 mapper.MapFromTo("ssl", "ssl");
-                mapper.MapFromTo("url", "url");
+                mapper.MapFromTo("password", "password");
+                mapper.MapFromTo("database", "defaultDatabase");
+                mapper.MapFromTo("client-name", "name");
             });
     }
 }
