@@ -90,7 +90,7 @@ public static class RedisWebApplicationBuilderExtensions
         string serviceName = $"Redis-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connectionString);
 
-        object redisClient = ConnectionFactoryInvoker.CreateConnection<RedisOptions>(serviceProvider, bindingName,
+        object redisClient = ConnectionFactoryInvoker.GetConnection<RedisOptions>(serviceProvider, bindingName,
             stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type);
 
         var logger = serviceProvider.GetRequiredService<ILogger<RedisHealthContributor>>();

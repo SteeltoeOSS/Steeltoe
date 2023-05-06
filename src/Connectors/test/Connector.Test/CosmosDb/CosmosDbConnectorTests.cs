@@ -208,13 +208,13 @@ public sealed class CosmosDbConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<CosmosDbOptions, CosmosClient>>();
 
-        CosmosClient connectionOne = connectionFactory.GetNamed("myCosmosDbServiceOne").CreateConnection();
+        CosmosClient connectionOne = connectionFactory.GetNamed("myCosmosDbServiceOne").GetConnection();
         connectionOne.ClientOptions.ConsistencyLevel.Should().Be(ConsistencyLevel.Eventual);
 
-        CosmosClient connectionTwo = connectionFactory.GetNamed("myCosmosDbServiceTwo").CreateConnection();
+        CosmosClient connectionTwo = connectionFactory.GetNamed("myCosmosDbServiceTwo").GetConnection();
         connectionTwo.ClientOptions.ConsistencyLevel.Should().BeNull();
 
-        CosmosClient connectionOneAgain = connectionFactory.GetNamed("myCosmosDbServiceOne").CreateConnection();
+        CosmosClient connectionOneAgain = connectionFactory.GetNamed("myCosmosDbServiceOne").GetConnection();
         connectionOneAgain.Should().BeSameAs(connectionOne);
     }
 

@@ -406,10 +406,10 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        await using NpgsqlConnection connectionOne = connectionFactory.GetNamed("myPostgreSqlServiceOne").CreateConnection();
+        await using NpgsqlConnection connectionOne = connectionFactory.GetNamed("myPostgreSqlServiceOne").GetConnection();
         connectionOne.ConnectionString.Should().Be("Host=localhost;Database=db1;Username=user1;Password=pass1");
 
-        await using NpgsqlConnection connectionTwo = connectionFactory.GetNamed("myPostgreSqlServiceTwo").CreateConnection();
+        await using NpgsqlConnection connectionTwo = connectionFactory.GetNamed("myPostgreSqlServiceTwo").GetConnection();
         connectionTwo.ConnectionString.Should().Be("Host=localhost;Database=db2;Username=user2;Password=pass2");
     }
 

@@ -230,10 +230,10 @@ public sealed class SqlServerConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<SqlServerOptions, SqlConnection>>();
 
-        await using SqlConnection connectionOne = connectionFactory.GetNamed("mySqlServerServiceOne").CreateConnection();
+        await using SqlConnection connectionOne = connectionFactory.GetNamed("mySqlServerServiceOne").GetConnection();
         connectionOne.ConnectionString.Should().Be("Data Source=localhost;Initial Catalog=db1;User ID=user1;Password=pass1");
 
-        await using SqlConnection connectionTwo = connectionFactory.GetNamed("mySqlServerServiceTwo").CreateConnection();
+        await using SqlConnection connectionTwo = connectionFactory.GetNamed("mySqlServerServiceTwo").GetConnection();
         connectionTwo.ConnectionString.Should().Be("Data Source=localhost;Initial Catalog=db2;User ID=user2;Password=pass2");
     }
 

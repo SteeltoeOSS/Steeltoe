@@ -184,12 +184,12 @@ public sealed class MongoDbConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MongoDbOptions, IMongoClient>>();
 
-        IMongoClient connectionOne = connectionFactory.GetNamed("myMongoDbServiceOne").CreateConnection();
+        IMongoClient connectionOne = connectionFactory.GetNamed("myMongoDbServiceOne").GetConnection();
         connectionOne.Settings.Credential.Should().BeNull();
         connectionOne.Settings.Server.Host.Should().Be("localhost");
         connectionOne.Settings.Server.Port.Should().Be(27017);
 
-        IMongoClient connectionTwo = connectionFactory.GetNamed("myMongoDbServiceTwo").CreateConnection();
+        IMongoClient connectionTwo = connectionFactory.GetNamed("myMongoDbServiceTwo").GetConnection();
         connectionTwo.Settings.Credential.Username.Should().Be("user");
         connectionTwo.Settings.Credential.Evidence.Should().Be(new PasswordEvidence("pass"));
         connectionTwo.Settings.Server.Host.Should().Be("localhost");

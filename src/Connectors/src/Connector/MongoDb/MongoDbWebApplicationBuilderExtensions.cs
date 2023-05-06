@@ -35,7 +35,7 @@ public static class MongoDbWebApplicationBuilderExtensions
         string connectionString = ConnectionFactoryInvoker.GetConnectionString<MongoDbOptions>(serviceProvider, bindingName, ConnectionInterface);
         string serviceName = $"MongoDB-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connectionString);
-        object mongoClient = ConnectionFactoryInvoker.CreateConnection<MongoDbOptions>(serviceProvider, bindingName, ConnectionInterface);
+        object mongoClient = ConnectionFactoryInvoker.GetConnection<MongoDbOptions>(serviceProvider, bindingName, ConnectionInterface);
         var logger = serviceProvider.GetRequiredService<ILogger<MongoDbHealthContributor>>();
 
         return new MongoDbHealthContributor(mongoClient, serviceName, hostName, logger);

@@ -46,7 +46,7 @@ public static class CosmosDbWebApplicationBuilderExtensions
         string connectionString = ConnectionFactoryInvoker.GetConnectionString<CosmosDbOptions>(serviceProvider, bindingName, ConnectionType);
         string serviceName = $"CosmosDB-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connectionString);
-        object cosmosClient = ConnectionFactoryInvoker.CreateConnection<CosmosDbOptions>(serviceProvider, bindingName, ConnectionType);
+        object cosmosClient = ConnectionFactoryInvoker.GetConnection<CosmosDbOptions>(serviceProvider, bindingName, ConnectionType);
         var logger = serviceProvider.GetRequiredService<ILogger<CosmosDbHealthContributor>>();
 
         return new CosmosDbHealthContributor(cosmosClient, serviceName, hostName, logger);

@@ -21,7 +21,7 @@ internal static class ConnectionFactoryInvoker
         return InvokeGetConnectionString<TOptions>(connectionProvider, connectionProviderType);
     }
 
-    public static object CreateConnection<TOptions>(IServiceProvider serviceProvider, string serviceBindingName, Type connectionType)
+    public static object GetConnection<TOptions>(IServiceProvider serviceProvider, string serviceBindingName, Type connectionType)
         where TOptions : ConnectionStringOptions
     {
         Type connectionFactoryType = MakeConnectionFactoryType<TOptions>(connectionType);
@@ -30,7 +30,7 @@ internal static class ConnectionFactoryInvoker
         Type connectionProviderType = MakeConnectionProviderType<TOptions>(connectionType);
         object connectionProvider = InvokeConnectionFactoryGetNamed<TOptions>(connectionFactory, connectionFactoryType, serviceBindingName);
 
-        return InvokeCreateConnection<TOptions>(connectionProvider, connectionProviderType);
+        return InvokeGetConnection<TOptions>(connectionProvider, connectionProviderType);
     }
 
     public static Type MakeConnectionFactoryType<TOptions>(Type connectionType)
@@ -66,10 +66,10 @@ internal static class ConnectionFactoryInvoker
         return (string)connectionStringProperty.GetMethod!.Invoke(options, null);
     }
 
-    private static object InvokeCreateConnection<TOptions>(object connectionProvider, Type connectionProviderType)
+    private static object InvokeGetConnection<TOptions>(object connectionProvider, Type connectionProviderType)
         where TOptions : ConnectionStringOptions
     {
-        MethodInfo createConnectionMethod = connectionProviderType.GetMethod(nameof(ConnectionProvider<TOptions, object>.CreateConnection))!;
+        MethodInfo createConnectionMethod = connectionProviderType.GetMethod(nameof(ConnectionProvider<TOptions, object>.GetConnection))!;
 
         return createConnectionMethod.Invoke(connectionProvider, null);
     }

@@ -160,13 +160,13 @@ public sealed class RedisConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<RedisOptions, IConnectionMultiplexer>>();
 
-        IConnectionMultiplexer connectionOne = connectionFactory.GetNamed("myRedisServiceOne").CreateConnection();
+        IConnectionMultiplexer connectionOne = connectionFactory.GetNamed("myRedisServiceOne").GetConnection();
         connectionOne.Configuration.Should().Be("server1:6380,keepAlive=30");
 
-        IConnectionMultiplexer connectionTwo = connectionFactory.GetNamed("myRedisServiceTwo").CreateConnection();
+        IConnectionMultiplexer connectionTwo = connectionFactory.GetNamed("myRedisServiceTwo").GetConnection();
         connectionTwo.Configuration.Should().Be("server2:6380,allowAdmin=true");
 
-        IConnectionMultiplexer connectionOneAgain = connectionFactory.GetNamed("myRedisServiceOne").CreateConnection();
+        IConnectionMultiplexer connectionOneAgain = connectionFactory.GetNamed("myRedisServiceOne").GetConnection();
         connectionOneAgain.Should().BeSameAs(connectionOne);
     }
 
@@ -187,15 +187,15 @@ public sealed class RedisConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<RedisOptions, IDistributedCache>>();
 
-        var connectionOne = (RedisCache)connectionFactory.GetNamed("myRedisServiceOne").CreateConnection();
+        var connectionOne = (RedisCache)connectionFactory.GetNamed("myRedisServiceOne").GetConnection();
         FakeConnectionMultiplexer connectionMultiplexerOne = await ExtractUnderlyingMultiplexerFromRedisCacheAsync(connectionOne);
         connectionMultiplexerOne.Configuration.Should().Be("server1:6380,keepAlive=30");
 
-        var connectionTwo = (RedisCache)connectionFactory.GetNamed("myRedisServiceTwo").CreateConnection();
+        var connectionTwo = (RedisCache)connectionFactory.GetNamed("myRedisServiceTwo").GetConnection();
         FakeConnectionMultiplexer connectionMultiplexerTwo = await ExtractUnderlyingMultiplexerFromRedisCacheAsync(connectionTwo);
         connectionMultiplexerTwo.Configuration.Should().Be("server2:6380,allowAdmin=true");
 
-        IDistributedCache connectionOneAgain = connectionFactory.GetNamed("myRedisServiceOne").CreateConnection();
+        IDistributedCache connectionOneAgain = connectionFactory.GetNamed("myRedisServiceOne").GetConnection();
         connectionOneAgain.Should().BeSameAs(connectionOne);
     }
 

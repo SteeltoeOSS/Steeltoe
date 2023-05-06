@@ -199,10 +199,10 @@ public sealed class MySqlConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MySqlOptions, MySqlConnection>>();
 
-        await using MySqlConnection connectionOne = connectionFactory.GetNamed("myMySqlServiceOne").CreateConnection();
+        await using MySqlConnection connectionOne = connectionFactory.GetNamed("myMySqlServiceOne").GetConnection();
         connectionOne.ConnectionString.Should().Be("server=localhost;database=db1;user id=user1;password=pass1");
 
-        await using MySqlConnection connectionTwo = connectionFactory.GetNamed("myMySqlServiceTwo").CreateConnection();
+        await using MySqlConnection connectionTwo = connectionFactory.GetNamed("myMySqlServiceTwo").GetConnection();
         connectionTwo.ConnectionString.Should().Be("server=localhost;database=db2;user id=user2;password=pass2");
     }
 

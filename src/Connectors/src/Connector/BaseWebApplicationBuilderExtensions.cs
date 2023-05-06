@@ -85,7 +85,7 @@ internal static class BaseWebApplicationBuilderExtensions
         string healthDisplayName, string healthHostNameKey)
         where TOptions : ConnectionStringOptions
     {
-        var connection = (IDbConnection)ConnectionFactoryInvoker.CreateConnection<TOptions>(serviceProvider, bindingName, connectionType);
+        var connection = (IDbConnection)ConnectionFactoryInvoker.GetConnection<TOptions>(serviceProvider, bindingName, connectionType);
         string serviceName = $"{healthDisplayName}-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connection.ConnectionString, healthHostNameKey);
         var logger = serviceProvider.GetRequiredService<ILogger<RelationalDbHealthContributor>>();

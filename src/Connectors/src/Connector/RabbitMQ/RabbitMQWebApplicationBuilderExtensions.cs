@@ -58,7 +58,7 @@ public static class RabbitMQWebApplicationBuilderExtensions
         string connectionString = ConnectionFactoryInvoker.GetConnectionString<RabbitMQOptions>(serviceProvider, bindingName, ConnectionInterface);
         string serviceName = $"RabbitMQ-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connectionString);
-        object connection = ConnectionFactoryInvoker.CreateConnection<RabbitMQOptions>(serviceProvider, bindingName, ConnectionInterface);
+        object connection = ConnectionFactoryInvoker.GetConnection<RabbitMQOptions>(serviceProvider, bindingName, ConnectionInterface);
         var logger = serviceProvider.GetRequiredService<ILogger<RabbitMQHealthContributor>>();
 
         return new RabbitMQHealthContributor(connection, serviceName, hostName, logger);

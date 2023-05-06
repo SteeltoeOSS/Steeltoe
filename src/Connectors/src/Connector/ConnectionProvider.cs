@@ -57,12 +57,12 @@ public sealed class ConnectionProvider<TOptions, TConnection> : IDisposable
     }
 
     /// <summary>
-    /// Creates a new connection for this service binding.
+    /// Gets a connection for this service binding. Depending on the connector type, this either creates a new connection or returns a cached instance.
     /// </summary>
     /// <returns>
-    /// A new connection. Throws when the connection string is unavailable.
+    /// The connection. Throws when the connection string is unavailable.
     /// </returns>
-    public TConnection CreateConnection()
+    public TConnection GetConnection()
     {
         if (_singletonConnectionWithOptions != null)
         {

@@ -250,13 +250,13 @@ public sealed class RabbitMQConnectorTests
 
         var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<RabbitMQOptions, IConnection>>();
 
-        var connectionOne = (FakeConnection)connectionFactory.GetNamed("myRabbitMQServiceOne").CreateConnection();
+        var connectionOne = (FakeConnection)connectionFactory.GetNamed("myRabbitMQServiceOne").GetConnection();
         connectionOne.ConnectionString.Should().Be("amqp://user1:pass1@host1:5672/virtual-host-1");
 
-        var connectionTwo = (FakeConnection)connectionFactory.GetNamed("myRabbitMQServiceTwo").CreateConnection();
+        var connectionTwo = (FakeConnection)connectionFactory.GetNamed("myRabbitMQServiceTwo").GetConnection();
         connectionTwo.ConnectionString.Should().Be("amqps://user2:pass2@host2:5672/virtual-host-2");
 
-        IConnection connectionOneAgain = connectionFactory.GetNamed("myRabbitMQServiceOne").CreateConnection();
+        IConnection connectionOneAgain = connectionFactory.GetNamed("myRabbitMQServiceOne").GetConnection();
         connectionOneAgain.Should().BeSameAs(connectionOne);
     }
 
@@ -339,7 +339,7 @@ public sealed class RabbitMQConnectorTests
         RabbitMQOptions defaultOptions = connectionFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().BeNull();
 
-        var connection = (FakeConnection)connectionFactory.GetDefault().CreateConnection();
+        var connection = (FakeConnection)connectionFactory.GetDefault().GetConnection();
         connection.ConnectionString.Should().BeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
