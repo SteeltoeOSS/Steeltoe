@@ -41,7 +41,7 @@ public class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<RefreshEndpointOptions>>();
         Assert.NotNull(options);
-        var ep = serviceProvider.GetService<IRefreshEndpoint>();
+        var ep = serviceProvider.GetService<IServicesEndpoint>();
         Assert.NotNull(ep);
     }
 }

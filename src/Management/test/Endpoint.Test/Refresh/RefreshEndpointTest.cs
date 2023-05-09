@@ -59,7 +59,7 @@ public class RefreshEndpointTest : BaseTest
             configuration.AddInMemoryCollection(appsettings);
         };
 
-        var ep = tc.GetService<IRefreshEndpoint>();
+        var ep = tc.GetService<IServicesEndpoint>();
         IList<string> result = ep.Invoke();
         Assert.NotNull(result);
 

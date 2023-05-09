@@ -19,6 +19,7 @@ using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.Endpoint.Services;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 
@@ -81,6 +82,7 @@ public static class ActuatorServiceCollectionExtensions
         services.AddMappingsActuator();
         services.AddMetricsActuator();
         services.AddRefreshActuator();
+        services.AddServicesActuator();
         return services;
     }
 

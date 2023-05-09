@@ -21,6 +21,7 @@ using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.Endpoint.Services;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Info;
@@ -268,6 +269,20 @@ public static class ManagementHostBuilderExtensions
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddTraceActuator(mediaTypeVersion);
+            ActivateActuatorEndpoints(collection);
+        });
+    }
+    /// <summary>
+    /// Adds the Services actuator to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    public static IHostBuilder AddServicesActuator(this IHostBuilder hostBuilder)
+    {
+        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        {
+            collection.AddServicesActuator();
             ActivateActuatorEndpoints(collection);
         });
     }

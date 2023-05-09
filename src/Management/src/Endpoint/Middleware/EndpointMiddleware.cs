@@ -11,6 +11,7 @@ using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Services;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
@@ -86,6 +87,11 @@ public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
         if (serializerOptions.Converters?.Any(c => c is MetricsResponseConverter) != true)
         {
             serializerOptions.Converters.Add(new MetricsResponseConverter());
+        }
+
+        if(serializerOptions.Converters?.Any(c=> c is ServiceDescriptorConverter) != true)
+        {
+            serializerOptions.Converters.Add(new ServiceDescriptorConverter());
         }
 
         return serializerOptions;
