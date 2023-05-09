@@ -32,9 +32,9 @@ internal class ServiceDescriptorConverter : JsonConverter<ServiceContextDescript
              
                 writer.WritePropertyName(name);
                 writer.WriteStartObject();
-                writer.WriteString("resource", key);
                 writer.WriteString("scope", serviceDescriptor.Lifetime.ToString());
-                writer.WriteString("type", serviceDescriptor.ServiceType.FullName);
+                writer.WriteString("type", key);
+                writer.WriteString("resource", serviceDescriptor.ServiceType.AssemblyQualifiedName);
                 writer.WritePropertyName("dependencies");
                 
                 writer.WriteStartArray();
