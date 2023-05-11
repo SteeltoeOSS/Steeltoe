@@ -39,15 +39,7 @@ internal abstract class PackageResolver
         _packageNames = packageNames;
     }
 
-    protected TypeAccessor ResolveType(string typeName)
-    {
-        return ResolveType(new List<string>
-        {
-            typeName
-        });
-    }
-
-    protected TypeAccessor ResolveType(IReadOnlyList<string> typeNames)
+    protected TypeAccessor ResolveType(params string[] typeNames)
     {
         ArgumentGuard.NotNull(typeNames);
         ArgumentGuard.ElementsNotNullOrEmpty(typeNames);

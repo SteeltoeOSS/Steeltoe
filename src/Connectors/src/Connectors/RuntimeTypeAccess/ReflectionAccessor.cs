@@ -85,32 +85,31 @@ internal abstract class ReflectionAccessor
         return propertyInfo;
     }
 
-    protected object? InvokeMethodOverload(string name, Type[] parameterTypes, object? instance, BindingFlags? bindingFlags, object?[] arguments)
+    protected object? InvokeMethod(string name, bool isPublic, object? instance, object?[] arguments)
+    {
+        ArgumentGuard.NotNullOrEmpty(name);
+        ArgumentGuard.NotNull(arguments);
+
+        MethodInfo methodInfo = GetMethod(name, isPublic, instance == null, null);
+        return methodInfo.Invoke(instance, arguments);
+    }
+
+    protected object? InvokeMethodOverload(string name, bool isPublic, Type[] parameterTypes, object? instance, object?[] arguments)
     {
         ArgumentGuard.NotNullOrEmpty(name);
         ArgumentGuard.NotNull(parameterTypes);
         ArgumentGuard.ElementsNotNull(parameterTypes);
         ArgumentGuard.NotNull(arguments);
 
-        MethodInfo methodInfo = GetMethod(name, instance == null, parameterTypes, bindingFlags);
+        MethodInfo methodInfo = GetMethod(name, isPublic, instance == null, parameterTypes);
         return methodInfo.Invoke(instance, arguments);
     }
 
-    protected object? InvokeMethod(string name, object? instance, BindingFlags? bindingFlags, object?[] arguments)
+    private MethodInfo GetMethod(string name, bool isPublic, bool isStatic, Type[]? parameterTypes)
     {
-        ArgumentGuard.NotNullOrEmpty(name);
-        ArgumentGuard.NotNull(arguments);
+        BindingFlags bindingFlags = CreateBindingFlags(isPublic, isStatic);
 
-        MethodInfo methodInfo = GetMethod(name, instance == null, null, bindingFlags);
-        return methodInfo.Invoke(instance, arguments);
-    }
-
-    private MethodInfo GetMethod(string name, bool isStatic, Type[]? parameterTypes, BindingFlags? bindingFlags)
-    {
-        bindingFlags ??= BindingFlags.Public;
-        bindingFlags |= isStatic ? BindingFlags.Static : BindingFlags.Instance;
-
-        MethodInfo? methodInfo = parameterTypes == null ? _type.GetMethod(name, bindingFlags.Value) : _type.GetMethod(name, bindingFlags.Value, parameterTypes);
+        MethodInfo? methodInfo = parameterTypes == null ? _type.GetMethod(name, bindingFlags) : _type.GetMethod(name, bindingFlags, parameterTypes);
 
         if (methodInfo == null)
         {
@@ -118,5 +117,13 @@ internal abstract class ReflectionAccessor
         }
 
         return methodInfo;
+    }
+
+    private static BindingFlags CreateBindingFlags(bool isPublic, bool isStatic)
+    {
+        BindingFlags bindingFlags = default;
+        bindingFlags |= isPublic ? BindingFlags.Public : BindingFlags.NonPublic;
+        bindingFlags |= isStatic ? BindingFlags.Static : BindingFlags.Instance;
+        return bindingFlags;
     }
 }

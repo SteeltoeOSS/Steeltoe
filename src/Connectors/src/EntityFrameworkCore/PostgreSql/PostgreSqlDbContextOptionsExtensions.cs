@@ -90,7 +90,7 @@ public static class PostgreSqlDbContextOptionsExtensions
         return factory.CreateConnectionString();
     }
 
-    internal static DbContextOptionsBuilder DoUseNpgsql(DbContextOptionsBuilder builder, string connection, object npgsqlOptionsAction = null)
+    private static DbContextOptionsBuilder DoUseNpgsql(DbContextOptionsBuilder builder, string connection, object npgsqlOptionsAction = null)
     {
         Type extensionType = EntityFrameworkCoreTypeLocator.PostgreSqlDbContextOptionsType;
 

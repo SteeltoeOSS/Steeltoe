@@ -20,11 +20,11 @@ internal sealed class ConnectionMultiplexerShim : Shim
     {
         ArgumentGuard.NotNull(packageResolver);
 
-        object instance = packageResolver.ConnectionMultiplexerClass.InvokeMethodOverload("Connect", new[]
+        object instance = packageResolver.ConnectionMultiplexerClass.InvokeMethodOverload("Connect", true, new[]
         {
             typeof(string),
             typeof(TextWriter)
-        }, null, configuration, null)!;
+        }, configuration, null)!;
 
         return new ConnectionMultiplexerShim(packageResolver, instance);
     }

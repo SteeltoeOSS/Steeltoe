@@ -16,7 +16,7 @@ internal abstract class Shim
     protected InstanceAccessor InstanceAccessor { get; }
 
     public Type DeclaredType => InstanceAccessor.DeclaredTypeAccessor.Type;
-    public object Instance => InstanceAccessor.Instance;
+    public virtual object Instance => InstanceAccessor.Instance;
 
     protected Shim(InstanceAccessor instanceAccessor)
     {

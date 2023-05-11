@@ -2,17 +2,28 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data.Common;
+#nullable enable
+
+using Steeltoe.Common;
+using Steeltoe.Connectors.PostgreSql.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.PostgreSql;
 
 internal sealed class PostgreSqlConnectionStringPostProcessor : ConnectionStringPostProcessor
 {
+    private readonly PostgreSqlPackageResolver _packageResolver;
+
     protected override string BindingType => "postgresql";
+
+    public PostgreSqlConnectionStringPostProcessor(PostgreSqlPackageResolver packageResolver)
+    {
+        ArgumentGuard.NotNull(packageResolver);
+        _packageResolver = packageResolver;
+    }
 
     protected override IConnectionStringBuilder CreateConnectionStringBuilder()
     {
-        var dbConnectionStringBuilder = (DbConnectionStringBuilder)Activator.CreateInstance(PostgreSqlTypeLocator.NpgsqlConnectionStringBuilderType)!;
-        return new DbConnectionStringBuilderWrapper(dbConnectionStringBuilder);
+        var npgsqlConnectionStringBuilderShim = NpgsqlConnectionStringBuilderShim.CreateInstance(_packageResolver);
+        return new DbConnectionStringBuilderWrapper(npgsqlConnectionStringBuilderShim.Instance);
     }
 }

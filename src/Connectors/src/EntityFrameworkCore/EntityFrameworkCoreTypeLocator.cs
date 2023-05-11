@@ -66,7 +66,6 @@ public static class EntityFrameworkCoreTypeLocator
     /// </summary>
     public static string[] PostgreSqlEntityTypeNames { get; internal set; } =
     {
-        "Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsExtensions",
         "Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsBuilderExtensions"
     };
 

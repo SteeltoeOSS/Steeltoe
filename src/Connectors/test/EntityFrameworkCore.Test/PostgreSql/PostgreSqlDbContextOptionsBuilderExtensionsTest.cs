@@ -11,7 +11,7 @@ using Steeltoe.Connectors.EntityFrameworkCore.PostgreSql;
 using Steeltoe.Connectors.PostgreSql;
 using Xunit;
 
-namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
+namespace Steeltoe.Connectors.EntityFrameworkCore.Test.PostgreSql;
 
 public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
 {

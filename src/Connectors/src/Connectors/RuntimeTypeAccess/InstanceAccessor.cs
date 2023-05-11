@@ -4,7 +4,6 @@
 
 #nullable enable
 
-using System.Reflection;
 using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.RuntimeTypeAccess;
@@ -47,13 +46,13 @@ internal sealed class InstanceAccessor : ReflectionAccessor
         SetPropertyValue(name, Instance, value);
     }
 
-    public object? InvokeMethodOverload(string name, Type[] parameterTypes, BindingFlags? bindingFlags, params object?[] arguments)
+    public object? InvokeMethod(string name, bool isPublic, params object?[] arguments)
     {
-        return base.InvokeMethodOverload(name, parameterTypes, Instance, bindingFlags, arguments);
+        return base.InvokeMethod(name, isPublic, Instance, arguments);
     }
 
-    public object? InvokeMethod(string name, BindingFlags? bindingFlags, params object?[] arguments)
+    public object? InvokeMethodOverload(string name, bool isPublic, Type[] parameterTypes, params object?[] arguments)
     {
-        return base.InvokeMethod(name, Instance, bindingFlags, arguments);
+        return base.InvokeMethodOverload(name, isPublic, parameterTypes, Instance, arguments);
     }
 }
