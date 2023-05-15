@@ -5,10 +5,10 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.CosmosDb;
+using Steeltoe.Connectors.CosmosDb;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.CosmosDb;
+namespace Steeltoe.Connectors.Test.CosmosDb;
 
 public class CosmosDbConnectorOptionsTest
 {

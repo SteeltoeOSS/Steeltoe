@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data.SqlClient;
-using Steeltoe.Connector.Services;
-using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connectors.Services;
+using Steeltoe.Connectors.SqlServer;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.SqlServer;
+namespace Steeltoe.Connectors.Test.SqlServer;
 
 public class SqlServerProviderConnectorFactoryTest
 {

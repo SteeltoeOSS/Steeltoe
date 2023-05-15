@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Connector.MySql;
-using Steeltoe.Connector.MySql.EntityFramework6;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.MySql;
+using Steeltoe.Connectors.MySql.EntityFramework6;
+using Steeltoe.Connectors.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.EntityFramework6.Test;
+namespace Steeltoe.Connectors.EntityFramework6.Test;
 
 public class MySqlDbContextConnectorFactoryTest
 {

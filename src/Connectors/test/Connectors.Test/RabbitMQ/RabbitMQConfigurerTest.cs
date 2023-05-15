@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Connector.RabbitMQ;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.RabbitMQ;
+using Steeltoe.Connectors.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.RabbitMQ;
+namespace Steeltoe.Connectors.Test.RabbitMQ;
 
 public class RabbitMQConfigurerTest
 {

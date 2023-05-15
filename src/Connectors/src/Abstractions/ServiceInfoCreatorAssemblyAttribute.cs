@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.Attributes;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 /// <summary>
 /// Identify assemblies containing ServiceInfoCreators.
@@ -16,7 +16,7 @@ public sealed class ServiceInfoCreatorAssemblyAttribute : AssemblyContainsTypeAt
     /// Initializes a new instance of the <see cref="ServiceInfoCreatorAssemblyAttribute" /> class. Used to override the default ServiceInfoCreator.
     /// </summary>
     /// <param name="creatorType">
-    /// The type of your info creator that inherits from Steeltoe.Connector.ServiceInfoCreator.
+    /// The type of your info creator that inherits from Steeltoe.Connectors.ServiceInfoCreator.
     /// </param>
     public ServiceInfoCreatorAssemblyAttribute(Type creatorType)
         : base(creatorType)

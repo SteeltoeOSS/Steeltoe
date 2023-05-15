@@ -8,10 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connectors.SqlServer;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.SqlServer;
+namespace Steeltoe.Connectors.Test.SqlServer;
 
 /// <summary>
 /// Tests for the extension method that adds both the DbConnection and the health check.

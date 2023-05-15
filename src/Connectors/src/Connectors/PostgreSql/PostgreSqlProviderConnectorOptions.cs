@@ -6,7 +6,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.PostgreSql;
+namespace Steeltoe.Connectors.PostgreSql;
 
 public class PostgreSqlProviderConnectorOptions : AbstractServiceConnectorOptions
 {

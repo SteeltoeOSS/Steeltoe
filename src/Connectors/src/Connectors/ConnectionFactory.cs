@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 /// <summary>
 /// Provides access to named connections, whose connection strings originate from merging appsettings.json with cloud service bindings.

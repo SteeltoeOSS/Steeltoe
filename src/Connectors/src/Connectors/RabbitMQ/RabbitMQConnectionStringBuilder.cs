@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.RabbitMQ;
+namespace Steeltoe.Connectors.RabbitMQ;
 
 /// <summary>
 /// Provides a connection string builder for RabbitMQ URLs. The format is defined at: https://www.rabbitmq.com/uri-spec.html.

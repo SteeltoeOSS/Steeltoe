@@ -4,9 +4,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 public static class ConfigurationExtensions
 {

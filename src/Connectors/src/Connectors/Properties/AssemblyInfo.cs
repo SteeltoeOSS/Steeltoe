@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
-using Steeltoe.Connector;
+using Steeltoe.Connectors;
 
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors.Test")]

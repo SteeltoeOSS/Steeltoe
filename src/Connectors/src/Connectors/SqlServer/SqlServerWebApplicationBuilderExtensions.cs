@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
-namespace Steeltoe.Connector.SqlServer;
+namespace Steeltoe.Connectors.SqlServer;
 
 public static class SqlServerWebApplicationBuilderExtensions
 {

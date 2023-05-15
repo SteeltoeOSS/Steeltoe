@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using FluentAssertions;
-using Steeltoe.Connector.MongoDb;
+using Steeltoe.Connectors.MongoDb;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.MongoDb;
+namespace Steeltoe.Connectors.Test.MongoDb;
 
 public sealed class MongoDbConnectionStringBuilderTests
 {

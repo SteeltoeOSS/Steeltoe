@@ -4,7 +4,7 @@
 
 using Steeltoe.Configuration;
 
-namespace Steeltoe.Connector.Services;
+namespace Steeltoe.Connectors.Services;
 
 public class RabbitMQServiceInfoFactory : ServiceInfoFactory
 {

@@ -4,9 +4,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using Steeltoe.Common;
-using Steeltoe.Connector.MySql;
+using Steeltoe.Connectors.MySql;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.MySql;
+namespace Steeltoe.Connectors.EntityFrameworkCore.MySql;
 
 public static class MySqlDbContextOptionsBuilderExtensions
 {

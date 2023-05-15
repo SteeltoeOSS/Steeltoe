@@ -4,9 +4,9 @@
 
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector.SqlServer.EntityFramework6;
+namespace Steeltoe.Connectors.SqlServer.EntityFramework6;
 
 public class SqlServerDbContextConnectorFactory : SqlServerProviderConnectorFactory
 {

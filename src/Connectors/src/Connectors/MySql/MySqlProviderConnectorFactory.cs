@@ -4,9 +4,9 @@
 
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector.MySql;
+namespace Steeltoe.Connectors.MySql;
 
 public class MySqlProviderConnectorFactory
 {

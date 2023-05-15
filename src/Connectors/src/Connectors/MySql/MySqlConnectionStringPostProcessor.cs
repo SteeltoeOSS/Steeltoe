@@ -4,7 +4,7 @@
 
 using System.Data.Common;
 
-namespace Steeltoe.Connector.MySql;
+namespace Steeltoe.Connectors.MySql;
 
 internal sealed class MySqlConnectionStringPostProcessor : ConnectionStringPostProcessor
 {

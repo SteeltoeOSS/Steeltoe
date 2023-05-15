@@ -4,10 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration;
-using Steeltoe.Connector;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors;
+using Steeltoe.Connectors.Services;
 
-namespace External.Connector.Test;
+namespace External.Connectors.Test;
 
 internal sealed class TestServiceInfoCreator : ServiceInfoCreator
 {

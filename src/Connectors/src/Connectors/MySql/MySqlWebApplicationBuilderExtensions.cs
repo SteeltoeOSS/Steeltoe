@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
-namespace Steeltoe.Connector.MySql;
+namespace Steeltoe.Connectors.MySql;
 
 public static class MySqlWebApplicationBuilderExtensions
 {

@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector.Redis;
+namespace Steeltoe.Connectors.Redis;
 
 public class RedisConnectionInfo : IConnectionInfo
 {

@@ -4,9 +4,9 @@
 
 #nullable enable
 
-using Steeltoe.Connector.RuntimeTypeAccess;
+using Steeltoe.Connectors.RuntimeTypeAccess;
 
-namespace Steeltoe.Connector.Redis.RuntimeTypeAccess;
+namespace Steeltoe.Connectors.Redis.RuntimeTypeAccess;
 
 /// <summary>
 /// Provides access to types in the Microsoft.Extensions.Caching.StackExchangeRedis NuGet package, without referencing it.

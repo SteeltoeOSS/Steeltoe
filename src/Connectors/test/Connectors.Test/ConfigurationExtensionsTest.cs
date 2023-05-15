@@ -6,12 +6,12 @@ using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.Services;
-using Steeltoe.Connector.Test.MySql;
-using Steeltoe.Connector.Test.Redis;
+using Steeltoe.Connectors.Services;
+using Steeltoe.Connectors.Test.MySql;
+using Steeltoe.Connectors.Test.Redis;
 using Xunit;
 
-namespace Steeltoe.Connector.Test;
+namespace Steeltoe.Connectors.Test;
 
 public class ConfigurationExtensionsTest
 {

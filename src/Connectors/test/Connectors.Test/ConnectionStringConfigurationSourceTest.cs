@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Xunit;
 
-namespace Steeltoe.Connector.Test;
+namespace Steeltoe.Connectors.Test;
 
 public class ConnectionStringConfigurationSourceTest
 {

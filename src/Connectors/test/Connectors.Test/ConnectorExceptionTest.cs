@@ -4,7 +4,7 @@
 
 using Xunit;
 
-namespace Steeltoe.Connector.Test;
+namespace Steeltoe.Connectors.Test;
 
 public class ConnectorExceptionTest
 {

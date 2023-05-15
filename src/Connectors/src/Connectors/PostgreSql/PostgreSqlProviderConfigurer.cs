@@ -5,9 +5,9 @@
 using System.Globalization;
 using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector.PostgreSql;
+namespace Steeltoe.Connectors.PostgreSql;
 
 public class PostgreSqlProviderConfigurer
 {

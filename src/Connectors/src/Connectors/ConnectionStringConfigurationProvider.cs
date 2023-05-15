@@ -5,9 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 internal sealed class ConnectionStringConfigurationProvider : ConfigurationProvider
 {

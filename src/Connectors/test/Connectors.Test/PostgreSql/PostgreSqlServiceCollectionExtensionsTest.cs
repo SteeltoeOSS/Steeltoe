@@ -6,10 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.PostgreSql;
+using Steeltoe.Connectors.PostgreSql;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.PostgreSql;
+namespace Steeltoe.Connectors.Test.PostgreSql;
 
 /// <summary>
 /// Tests for the extension method that adds just the health check.

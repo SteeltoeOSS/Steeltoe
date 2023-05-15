@@ -4,9 +4,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 /// <summary>
 /// Useful for getting connection information from <see cref="IConfiguration" />.

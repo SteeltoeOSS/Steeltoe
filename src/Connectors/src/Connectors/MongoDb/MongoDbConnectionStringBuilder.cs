@@ -11,7 +11,7 @@ using System.Web;
 using Microsoft.AspNetCore.Http;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.MongoDb;
+namespace Steeltoe.Connectors.MongoDb;
 
 /// <summary>
 /// Provides a connection string builder for MongoDB URLs. The format is defined at: https://www.mongodb.com/docs/manual/reference/connection-string/.

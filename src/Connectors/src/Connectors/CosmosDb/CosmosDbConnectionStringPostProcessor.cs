@@ -4,7 +4,7 @@
 
 using System.Data.Common;
 
-namespace Steeltoe.Connector.CosmosDb;
+namespace Steeltoe.Connectors.CosmosDb;
 
 internal sealed class CosmosDbConnectionStringPostProcessor : ConnectionStringPostProcessor
 {

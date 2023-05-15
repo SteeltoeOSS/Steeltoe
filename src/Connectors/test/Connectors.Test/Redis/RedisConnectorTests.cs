@@ -15,10 +15,10 @@ using StackExchange.Redis;
 using StackExchange.Redis.Profiling;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Connector.Redis;
+using Steeltoe.Connectors.Redis;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.Redis;
+namespace Steeltoe.Connectors.Test.Redis;
 
 public sealed class RedisConnectorTests
 {

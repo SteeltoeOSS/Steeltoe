@@ -7,9 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.Redis.RuntimeTypeAccess;
+using Steeltoe.Connectors.Redis.RuntimeTypeAccess;
 
-namespace Steeltoe.Connector.Redis;
+namespace Steeltoe.Connectors.Redis;
 
 public delegate object CreateConnectionMultiplexer(RedisOptions options, string serviceBindingName);
 

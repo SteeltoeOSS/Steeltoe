@@ -30,7 +30,7 @@ using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Kubernetes;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
-using Steeltoe.Connector;
+using Steeltoe.Connectors;
 using Steeltoe.Discovery;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Logging;
@@ -96,7 +96,7 @@ public class WebApplicationBuilderExtensionsTest
     [Fact]
     public void Connectors_AreAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeConnector);
+        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeConnectors);
         var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
         IServiceProvider services = host.Services;
 

@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Configuration;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.Services;
+namespace Steeltoe.Connectors.Test.Services;
 
 public class MySqlServiceInfoFactoryTest
 {

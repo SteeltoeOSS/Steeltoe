@@ -6,9 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector.CloudFoundry;
+namespace Steeltoe.Connectors.CloudFoundry;
 
 public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
 {

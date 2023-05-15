@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 internal static class ServiceInfoCreatorFactory
 {

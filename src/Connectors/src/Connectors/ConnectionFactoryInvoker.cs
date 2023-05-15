@@ -5,7 +5,7 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 internal static class ConnectionFactoryInvoker
 {

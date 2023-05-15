@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
-namespace Steeltoe.Connector.CosmosDb;
+namespace Steeltoe.Connectors.CosmosDb;
 
 public delegate object CreateCosmosClient(CosmosDbOptions options, string serviceBindingName);
 

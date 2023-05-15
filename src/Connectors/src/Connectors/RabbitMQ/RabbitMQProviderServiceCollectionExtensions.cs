@@ -8,9 +8,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector.RabbitMQ;
+namespace Steeltoe.Connectors.RabbitMQ;
 
 public static class RabbitMQProviderServiceCollectionExtensions
 {

@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Azure.Cosmos;
-using Steeltoe.Connector.CosmosDb;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.CosmosDb;
+using Steeltoe.Connectors.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.CosmosDb;
+namespace Steeltoe.Connectors.Test.CosmosDb;
 
 public class CosmosDbConnectorFactoryTest
 {

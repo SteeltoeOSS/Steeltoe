@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Connector.MongoDb;
+using Steeltoe.Connectors.MongoDb;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.MongoDb;
+namespace Steeltoe.Connectors.Test.MongoDb;
 
 public class MongoDbTypeLocatorTest
 {

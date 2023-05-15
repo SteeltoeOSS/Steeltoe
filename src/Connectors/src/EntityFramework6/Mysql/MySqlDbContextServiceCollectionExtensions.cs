@@ -8,11 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.MySql;
-using Steeltoe.Connector.MySql.EntityFramework6;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.MySql;
+using Steeltoe.Connectors.MySql.EntityFramework6;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector.EntityFramework6.Mysql;
+namespace Steeltoe.Connectors.EntityFramework6.Mysql;
 
 public static class MySqlDbContextServiceCollectionExtensions
 {

@@ -5,10 +5,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Utils.IO;
-using Steeltoe.Connector.Test.Redis;
+using Steeltoe.Connectors.Test.Redis;
 using Xunit;
 
-namespace Steeltoe.Connector.Test;
+namespace Steeltoe.Connectors.Test;
 
 public class ConnectionStringConfigurationProviderTest
 {

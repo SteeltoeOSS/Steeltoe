@@ -5,10 +5,10 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connectors.SqlServer;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.SqlServer;
+namespace Steeltoe.Connectors.Test.SqlServer;
 
 public class SqlServerProviderConnectorOptionsTest
 {

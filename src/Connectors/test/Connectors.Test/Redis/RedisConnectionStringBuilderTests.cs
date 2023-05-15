@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using FluentAssertions;
-using Steeltoe.Connector.MongoDb;
-using Steeltoe.Connector.Redis;
+using Steeltoe.Connectors.MongoDb;
+using Steeltoe.Connectors.Redis;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.Redis;
+namespace Steeltoe.Connectors.Test.Redis;
 
 public sealed class RedisConnectionStringBuilderTests
 {

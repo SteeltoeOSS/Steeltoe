@@ -6,7 +6,7 @@
 
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.RuntimeTypeAccess;
+namespace Steeltoe.Connectors.RuntimeTypeAccess;
 
 /// <summary>
 /// Building block to provide statically-typed access to a <see cref="Type" /> that is dynamically loaded at runtime.

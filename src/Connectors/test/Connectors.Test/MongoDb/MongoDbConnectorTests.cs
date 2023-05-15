@@ -10,10 +10,10 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Connector.MongoDb;
+using Steeltoe.Connectors.MongoDb;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.MongoDb;
+namespace Steeltoe.Connectors.Test.MongoDb;
 
 public sealed class MongoDbConnectorTests
 {

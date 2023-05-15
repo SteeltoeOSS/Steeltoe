@@ -5,21 +5,21 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.MongoDb;
-using Steeltoe.Connector.MySql;
-using Steeltoe.Connector.PostgreSql;
-using Steeltoe.Connector.RabbitMQ;
-using Steeltoe.Connector.Redis;
-using Steeltoe.Connector.Services;
-using Steeltoe.Connector.SqlServer;
-using Steeltoe.Connector.Test.MongoDb;
-using Steeltoe.Connector.Test.MySql;
-using Steeltoe.Connector.Test.PostgreSql;
-using Steeltoe.Connector.Test.Redis;
-using Steeltoe.Connector.Test.SqlServer;
+using Steeltoe.Connectors.MongoDb;
+using Steeltoe.Connectors.MySql;
+using Steeltoe.Connectors.PostgreSql;
+using Steeltoe.Connectors.RabbitMQ;
+using Steeltoe.Connectors.Redis;
+using Steeltoe.Connectors.Services;
+using Steeltoe.Connectors.SqlServer;
+using Steeltoe.Connectors.Test.MongoDb;
+using Steeltoe.Connectors.Test.MySql;
+using Steeltoe.Connectors.Test.PostgreSql;
+using Steeltoe.Connectors.Test.Redis;
+using Steeltoe.Connectors.Test.SqlServer;
 using Xunit;
 
-namespace Steeltoe.Connector.Test;
+namespace Steeltoe.Connectors.Test;
 
 public class ConnectionStringManagerTest
 {

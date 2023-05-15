@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors;
+using Steeltoe.Connectors.Services;
 using Xunit;
 
-namespace External.Connector.Test;
+namespace External.Connectors.Test;
 
 public class ExternalConnectorTest
 {

@@ -10,10 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Connector.CosmosDb;
+using Steeltoe.Connectors.CosmosDb;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.CosmosDb;
+namespace Steeltoe.Connectors.Test.CosmosDb;
 
 public sealed class CosmosDbConnectorTests
 {

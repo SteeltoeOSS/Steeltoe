@@ -6,7 +6,7 @@ using System.Reflection;
 using Steeltoe.Common.Reflection;
 
 // ReSharper disable once CheckNamespace
-namespace Steeltoe.Connector.MongoDb;
+namespace Steeltoe.Connectors.MongoDb;
 
 /// <summary>
 /// Assemblies and types used for interacting with MongoDB.

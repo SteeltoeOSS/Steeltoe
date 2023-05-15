@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Configuration;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace External.Connector.Test;
+namespace External.Connectors.Test;
 
 internal sealed class TestServiceInfoFactory : ServiceInfoFactory
 {

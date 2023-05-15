@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 public class ConnectionStringConfigurationSource : IConfigurationSource
 {

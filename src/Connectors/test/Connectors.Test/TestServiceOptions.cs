@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Connector.Test;
+namespace Steeltoe.Connectors.Test;
 
 internal sealed class TestServiceOptions : AbstractServiceConnectorOptions
 {

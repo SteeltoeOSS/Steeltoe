@@ -8,7 +8,7 @@ using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 /// <summary>
 /// Wraps an existing <see cref="DbConnectionStringBuilder" />.

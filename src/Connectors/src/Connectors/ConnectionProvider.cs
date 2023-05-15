@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 public sealed class ConnectionProvider<TOptions, TConnection> : IDisposable
     where TOptions : ConnectionStringOptions

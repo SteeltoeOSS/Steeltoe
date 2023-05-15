@@ -10,10 +10,10 @@ using StackExchange.Redis;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.Redis;
+using Steeltoe.Connectors.Redis;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.Redis;
+namespace Steeltoe.Connectors.Test.Redis;
 
 public class RedisCacheServiceCollectionExtensionsTest
 {

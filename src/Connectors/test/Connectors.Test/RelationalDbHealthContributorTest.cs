@@ -6,14 +6,14 @@ using System.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.MySql;
-using Steeltoe.Connector.Oracle;
-using Steeltoe.Connector.PostgreSql;
-using Steeltoe.Connector.Services;
-using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connectors.MySql;
+using Steeltoe.Connectors.Oracle;
+using Steeltoe.Connectors.PostgreSql;
+using Steeltoe.Connectors.Services;
+using Steeltoe.Connectors.SqlServer;
 using Xunit;
 
-namespace Steeltoe.Connector.Test;
+namespace Steeltoe.Connectors.Test;
 
 public class RelationalDbHealthContributorTest
 {

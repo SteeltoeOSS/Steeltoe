@@ -4,7 +4,7 @@
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.Test;
+namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
 
 internal sealed class GoodDbContext : DbContext
 {

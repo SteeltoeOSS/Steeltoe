@@ -6,7 +6,7 @@ using System.Reflection;
 using Steeltoe.Common.Reflection;
 
 // ReSharper disable once CheckNamespace
-namespace Steeltoe.Connector.RabbitMQ;
+namespace Steeltoe.Connectors.RabbitMQ;
 
 /// <summary>
 /// Assemblies and types used for interacting with RabbitMQ.

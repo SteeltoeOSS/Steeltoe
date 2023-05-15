@@ -7,7 +7,7 @@ using System.Data.Common;
 using Steeltoe.Common.Reflection;
 
 // ReSharper disable once CheckNamespace
-namespace Steeltoe.Connector.PostgreSql;
+namespace Steeltoe.Connectors.PostgreSql;
 
 /// <summary>
 /// Assemblies and types used for interacting with PostgreSQL.

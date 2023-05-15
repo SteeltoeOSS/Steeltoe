@@ -10,10 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connectors.SqlServer;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.SqlServer;
+namespace Steeltoe.Connectors.Test.SqlServer;
 
 public sealed class SqlServerConnectorTests
 {

@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace Steeltoe.Connector.Test;
+namespace Steeltoe.Connectors.Test;
 
 public class AbstractServiceConfigurationTest
 {

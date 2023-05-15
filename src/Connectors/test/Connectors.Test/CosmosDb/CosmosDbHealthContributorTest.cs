@@ -5,10 +5,10 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.CosmosDb;
+using Steeltoe.Connectors.CosmosDb;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.CosmosDb;
+namespace Steeltoe.Connectors.Test.CosmosDb;
 
 public sealed class CosmosDbHealthContributorTest
 {

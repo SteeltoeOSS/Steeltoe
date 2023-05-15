@@ -5,9 +5,9 @@
 #nullable enable
 
 using Steeltoe.Common;
-using Steeltoe.Connector.RuntimeTypeAccess;
+using Steeltoe.Connectors.RuntimeTypeAccess;
 
-namespace Steeltoe.Connector.Redis.RuntimeTypeAccess;
+namespace Steeltoe.Connectors.Redis.RuntimeTypeAccess;
 
 internal sealed class ConnectionMultiplexerShim : Shim
 {

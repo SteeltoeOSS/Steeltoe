@@ -13,7 +13,7 @@ using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka.Transport;
 using static Steeltoe.Discovery.Client.DiscoveryServiceCollectionExtensions;

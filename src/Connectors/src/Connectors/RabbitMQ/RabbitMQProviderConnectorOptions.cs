@@ -4,9 +4,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector.RabbitMQ;
+namespace Steeltoe.Connectors.RabbitMQ;
 
 public class RabbitMQProviderConnectorOptions : AbstractServiceConnectorOptions
 {

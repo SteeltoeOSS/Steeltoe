@@ -6,7 +6,7 @@ using System.Globalization;
 using Steeltoe.Common;
 using Steeltoe.Configuration;
 
-namespace Steeltoe.Connector.Services;
+namespace Steeltoe.Connectors.Services;
 
 [ServiceInfoFactory]
 public abstract class ServiceInfoFactory : IServiceInfoFactory

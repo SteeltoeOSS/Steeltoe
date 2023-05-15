@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
-namespace Steeltoe.Connector.MongoDb;
+namespace Steeltoe.Connectors.MongoDb;
 
 public static class MongoDbWebApplicationBuilderExtensions
 {

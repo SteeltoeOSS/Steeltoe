@@ -6,10 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.EntityFramework6.Mysql;
+using Steeltoe.Connectors.EntityFramework6.Mysql;
 using Xunit;
 
-namespace Steeltoe.Connector.EntityFramework6.Test;
+namespace Steeltoe.Connectors.EntityFramework6.Test;
 
 public class MySqlDbContextServiceCollectionExtensionsTest
 {

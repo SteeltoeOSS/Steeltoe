@@ -7,7 +7,7 @@ using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 using Steeltoe.Configuration;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 internal sealed class ConnectionStringConfigurationSource2 : PostProcessorConfigurationSource, IConfigurationSource
 {

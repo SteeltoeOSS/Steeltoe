@@ -6,7 +6,7 @@ using System.Reflection;
 using Steeltoe.Common.Reflection;
 
 // ReSharper disable once CheckNamespace
-namespace Steeltoe.Connector.Redis;
+namespace Steeltoe.Connectors.Redis;
 
 public static class RedisTypeLocator
 {

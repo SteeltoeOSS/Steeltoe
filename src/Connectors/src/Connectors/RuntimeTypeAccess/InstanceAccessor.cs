@@ -7,7 +7,7 @@
 using System.Reflection;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.RuntimeTypeAccess;
+namespace Steeltoe.Connectors.RuntimeTypeAccess;
 
 /// <summary>
 /// Provides reflection-based access to the members of an object instance.

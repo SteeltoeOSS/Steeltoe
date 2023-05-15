@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Connector.MySql;
+using Steeltoe.Connectors.MySql;
 using Xunit;
-using SteeltoeExtensions = Steeltoe.Connector.EntityFrameworkCore.MySql.MySqlDbContextOptionsBuilderExtensions;
+using SteeltoeExtensions = Steeltoe.Connectors.EntityFrameworkCore.MySql.MySqlDbContextOptionsBuilderExtensions;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.Test;
+namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
 
 public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 {

@@ -7,7 +7,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.MongoDb;
+namespace Steeltoe.Connectors.MongoDb;
 
 public class MongoDbConnectorOptions : AbstractServiceConnectorOptions
 {

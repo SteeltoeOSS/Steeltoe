@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
-namespace Steeltoe.Connector.RabbitMQ;
+namespace Steeltoe.Connectors.RabbitMQ;
 
 public delegate object CreateRabbitConnection(RabbitMQOptions options, string serviceBindingName);
 

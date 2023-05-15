@@ -6,7 +6,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.CosmosDb;
+namespace Steeltoe.Connectors.CosmosDb;
 
 public class CosmosDbConnectorOptions : AbstractServiceConnectorOptions
 {

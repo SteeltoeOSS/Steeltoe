@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.Attributes;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 /// <summary>
 /// Identifies an assembly that contains one or more <see cref="IConnectionInfo" />.

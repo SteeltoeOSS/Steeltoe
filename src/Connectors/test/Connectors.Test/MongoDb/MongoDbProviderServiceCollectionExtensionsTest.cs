@@ -8,10 +8,10 @@ using MongoDB.Driver;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.MongoDb;
+using Steeltoe.Connectors.MongoDb;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.MongoDb;
+namespace Steeltoe.Connectors.Test.MongoDb;
 
 public class MongoDbProviderServiceCollectionExtensionsTest
 {

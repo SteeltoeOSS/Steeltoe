@@ -9,13 +9,13 @@ using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
-using Steeltoe.Connector.MySql;
-using Steeltoe.Connector.Oracle;
-using Steeltoe.Connector.PostgreSql;
-using Steeltoe.Connector.Services;
-using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connectors.MySql;
+using Steeltoe.Connectors.Oracle;
+using Steeltoe.Connectors.PostgreSql;
+using Steeltoe.Connectors.Services;
+using Steeltoe.Connectors.SqlServer;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 public class RelationalDbHealthContributor : IHealthContributor
 {

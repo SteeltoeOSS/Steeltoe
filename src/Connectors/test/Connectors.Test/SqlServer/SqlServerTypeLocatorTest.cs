@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using FluentAssertions;
-using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connectors.SqlServer;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.SqlServer;
+namespace Steeltoe.Connectors.Test.SqlServer;
 
 public class SqlServerTypeLocatorTest
 {

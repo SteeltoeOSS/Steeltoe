@@ -11,10 +11,10 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Connector.RabbitMQ;
+using Steeltoe.Connectors.RabbitMQ;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.RabbitMQ;
+namespace Steeltoe.Connectors.Test.RabbitMQ;
 
 public sealed class RabbitMQConnectorTests
 {

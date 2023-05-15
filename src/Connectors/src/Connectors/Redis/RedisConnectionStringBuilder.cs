@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.Redis;
+namespace Steeltoe.Connectors.Redis;
 
 /// <summary>
 /// Provides a connection string builder for Redis. The format is defined at: https://stackexchange.github.io/StackExchange.Redis/Configuration.html.

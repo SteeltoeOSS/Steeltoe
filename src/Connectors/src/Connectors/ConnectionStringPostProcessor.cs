@@ -6,7 +6,7 @@ using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 internal abstract class ConnectionStringPostProcessor : IConfigurationPostProcessor
 {

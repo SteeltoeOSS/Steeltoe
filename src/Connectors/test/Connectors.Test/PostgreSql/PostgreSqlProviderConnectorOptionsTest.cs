@@ -6,10 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
-using Steeltoe.Connector.PostgreSql;
+using Steeltoe.Connectors.PostgreSql;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.PostgreSql;
+namespace Steeltoe.Connectors.Test.PostgreSql;
 
 public class PostgreSqlProviderConnectorOptionsTest
 {

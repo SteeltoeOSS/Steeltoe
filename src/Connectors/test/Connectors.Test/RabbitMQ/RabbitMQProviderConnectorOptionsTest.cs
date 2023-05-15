@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector.RabbitMQ;
+using Steeltoe.Connectors.RabbitMQ;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.RabbitMQ;
+namespace Steeltoe.Connectors.Test.RabbitMQ;
 
 public class RabbitMQProviderConnectorOptionsTest
 {

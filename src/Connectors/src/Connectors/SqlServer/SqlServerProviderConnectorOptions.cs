@@ -6,7 +6,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.SqlServer;
+namespace Steeltoe.Connectors.SqlServer;
 
 public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
 {

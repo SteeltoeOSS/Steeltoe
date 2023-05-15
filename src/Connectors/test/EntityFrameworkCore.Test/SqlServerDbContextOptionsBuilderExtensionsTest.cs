@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Connector.EntityFrameworkCore.SqlServer;
-using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connectors.EntityFrameworkCore.SqlServer;
+using Steeltoe.Connectors.SqlServer;
 using Xunit;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.Test;
+namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
 
 public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
 {

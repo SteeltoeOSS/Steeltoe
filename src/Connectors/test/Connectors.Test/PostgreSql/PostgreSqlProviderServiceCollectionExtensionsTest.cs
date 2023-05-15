@@ -11,10 +11,10 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
-using Steeltoe.Connector.PostgreSql;
+using Steeltoe.Connectors.PostgreSql;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.PostgreSql;
+namespace Steeltoe.Connectors.Test.PostgreSql;
 
 /// <summary>
 /// Tests for the extension method that adds both the DbConnection and the health check.

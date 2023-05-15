@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.Oracle;
+namespace Steeltoe.Connectors.Oracle;
 
 public class OracleProviderConnectorOptions : AbstractServiceConnectorOptions
 {

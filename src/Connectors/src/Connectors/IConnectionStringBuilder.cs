@@ -6,7 +6,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 /// <summary>
 /// Provides an interface for connection string builders.

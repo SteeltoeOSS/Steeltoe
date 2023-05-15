@@ -4,9 +4,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using Steeltoe.Common;
-using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connectors.SqlServer;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.SqlServer;
+namespace Steeltoe.Connectors.EntityFrameworkCore.SqlServer;
 
 public static class SqlServerDbContextOptionsBuilderExtensions
 {

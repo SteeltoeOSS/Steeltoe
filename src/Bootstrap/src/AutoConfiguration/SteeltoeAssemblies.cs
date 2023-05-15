@@ -13,7 +13,7 @@ public static class SteeltoeAssemblies
     public const string SteeltoeExtensionsConfigurationKubernetes = "Steeltoe.Configuration.Kubernetes";
     public const string SteeltoeExtensionsConfigurationRandomValue = "Steeltoe.Configuration.RandomValue";
     public const string SteeltoeExtensionsConfigurationPlaceholder = "Steeltoe.Configuration.Placeholder";
-    public const string SteeltoeConnector = "Steeltoe.Connector";
+    public const string SteeltoeConnectors = "Steeltoe.Connectors";
     public const string SteeltoeDiscoveryClient = "Steeltoe.Discovery.Client";
     public const string SteeltoeExtensionsLoggingDynamicSerilog = "Steeltoe.Logging.DynamicSerilog";
     public const string SteeltoeManagementEndpoint = "Steeltoe.Management.Endpoint";

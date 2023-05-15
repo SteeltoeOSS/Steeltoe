@@ -7,7 +7,7 @@ using System.Data.Common;
 using Steeltoe.Common.Reflection;
 
 // ReSharper disable once CheckNamespace
-namespace Steeltoe.Connector.SqlServer;
+namespace Steeltoe.Connectors.SqlServer;
 
 /// <summary>
 /// Assemblies and types used for interacting with Microsoft SQL Server.

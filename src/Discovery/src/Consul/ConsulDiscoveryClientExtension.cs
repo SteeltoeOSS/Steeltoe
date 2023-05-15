@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Net;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;

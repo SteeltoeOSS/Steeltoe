@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Options;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 public class ConnectorOptions<T> : IOptions<T>
     where T : class, new()

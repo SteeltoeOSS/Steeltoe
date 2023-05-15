@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using MySqlConnector;
-using Steeltoe.Connector.MySql;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.MySql;
+using Steeltoe.Connectors.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.MySql;
+namespace Steeltoe.Connectors.Test.MySql;
 
 public class MySqlProviderConnectorFactoryTest
 {

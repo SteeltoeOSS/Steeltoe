@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.RabbitMQ;
+using Steeltoe.Connectors.RabbitMQ;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;

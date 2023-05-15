@@ -9,7 +9,7 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
 
-namespace Steeltoe.Connector.CosmosDb;
+namespace Steeltoe.Connectors.CosmosDb;
 
 internal sealed class CosmosDbHealthContributor : IHealthContributor
 {

@@ -8,11 +8,11 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using RabbitMQ.Client;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.RabbitMQ;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.RabbitMQ;
+using Steeltoe.Connectors.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.RabbitMQ;
+namespace Steeltoe.Connectors.Test.RabbitMQ;
 
 public class RabbitMQHealthContributorTest
 {

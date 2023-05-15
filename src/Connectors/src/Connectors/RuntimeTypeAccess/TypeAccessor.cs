@@ -6,7 +6,7 @@
 
 using System.Reflection;
 
-namespace Steeltoe.Connector.RuntimeTypeAccess;
+namespace Steeltoe.Connectors.RuntimeTypeAccess;
 
 /// <summary>
 /// Provides reflection-based access to static members of a <see cref="System.Type" />.

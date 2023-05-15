@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector.Oracle;
+using Steeltoe.Connectors.Oracle;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.Oracle;
+namespace Steeltoe.Connectors.Test.Oracle;
 
 public class OracleProviderConnectorOptionsTest
 {

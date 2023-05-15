@@ -4,9 +4,9 @@
 
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector.Oracle;
+namespace Steeltoe.Connectors.Oracle;
 
 public class OracleProviderConnectorFactory
 {

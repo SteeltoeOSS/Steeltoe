@@ -7,9 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Configuration;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 public class ServiceInfoCreator
 {

@@ -7,7 +7,7 @@
 using System.Reflection;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.RuntimeTypeAccess;
+namespace Steeltoe.Connectors.RuntimeTypeAccess;
 
 /// <summary>
 /// Base type for reflection-based type/member access.

@@ -6,7 +6,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.MySql;
+namespace Steeltoe.Connectors.MySql;
 
 /// <summary>
 /// Currently enabling properties supported by BOTH of these connectors: https://dev.mysql.com/doc/connector-net/en/connector-net-connection-options.html

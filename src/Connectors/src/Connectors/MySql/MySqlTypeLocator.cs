@@ -7,7 +7,7 @@ using System.Data.Common;
 using Steeltoe.Common.Reflection;
 
 // ReSharper disable once CheckNamespace
-namespace Steeltoe.Connector.MySql;
+namespace Steeltoe.Connectors.MySql;
 
 /// <summary>
 /// Assemblies and types used for interacting with MySQL.

@@ -8,10 +8,10 @@ using RabbitMQ.Client;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.RabbitMQ;
+using Steeltoe.Connectors.RabbitMQ;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.RabbitMQ;
+namespace Steeltoe.Connectors.Test.RabbitMQ;
 
 public class RabbitMQServiceCollectionExtensionsTest
 {

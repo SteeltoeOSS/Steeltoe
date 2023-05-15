@@ -8,11 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.Oracle;
-using Steeltoe.Connector.Oracle.EntityFramework6;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Oracle;
+using Steeltoe.Connectors.Oracle.EntityFramework6;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector.EntityFramework6.Oracle;
+namespace Steeltoe.Connectors.EntityFramework6.Oracle;
 
 public static class OracleDbContextServiceCollectionExtensions
 {

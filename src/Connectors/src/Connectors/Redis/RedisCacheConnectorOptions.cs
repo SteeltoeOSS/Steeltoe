@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 
-namespace Steeltoe.Connector.Redis;
+namespace Steeltoe.Connectors.Redis;
 
 public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
 {

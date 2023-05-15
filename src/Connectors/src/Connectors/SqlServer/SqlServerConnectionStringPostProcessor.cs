@@ -4,7 +4,7 @@
 
 using System.Data.Common;
 
-namespace Steeltoe.Connector.SqlServer;
+namespace Steeltoe.Connectors.SqlServer;
 
 internal sealed class SqlServerConnectionStringPostProcessor : ConnectionStringPostProcessor
 {

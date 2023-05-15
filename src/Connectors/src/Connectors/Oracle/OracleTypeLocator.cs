@@ -5,7 +5,7 @@
 using Steeltoe.Common.Reflection;
 
 // ReSharper disable once CheckNamespace
-namespace Steeltoe.Connector.Oracle;
+namespace Steeltoe.Connectors.Oracle;
 
 /// <summary>
 /// Assemblies and types used for interacting with Oracle.

@@ -6,7 +6,7 @@ using System.Reflection;
 using Steeltoe.Common.Reflection;
 
 // ReSharper disable once CheckNamespace
-namespace Steeltoe.Connector.CosmosDb;
+namespace Steeltoe.Connectors.CosmosDb;
 
 /// <summary>
 /// Assemblies and types used for interacting with CosmosDB.

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
 
-namespace Steeltoe.Connector.OAuth;
+namespace Steeltoe.Connectors.OAuth;
 
 public class OAuthConnectorOptions : AbstractServiceConnectorOptions
 {

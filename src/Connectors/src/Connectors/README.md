@@ -1,10 +1,10 @@
-﻿# .NET Service Connectors
+# .NET Service Connectors
 
 This project contains base types used in creating Steeltoe Connectors. Steeltoe Connectors simplify connecting to services on platforms that support service binding. 
 
 ## Connector Package Name and Feeds
 
-`Steeltoe.Connector`
+`Steeltoe.Connectors`
 
 [Development feed (Less Stable)](https://www.myget.org/gallery/steeltoedev) - https://www.myget.org/gallery/steeltoedev
 

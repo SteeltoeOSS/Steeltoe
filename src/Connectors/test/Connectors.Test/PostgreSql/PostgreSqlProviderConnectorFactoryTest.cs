@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Npgsql;
-using Steeltoe.Connector.PostgreSql;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.PostgreSql;
+using Steeltoe.Connectors.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.PostgreSql;
+namespace Steeltoe.Connectors.Test.PostgreSql;
 
 public class PostgreSqlProviderConnectorFactoryTest
 {

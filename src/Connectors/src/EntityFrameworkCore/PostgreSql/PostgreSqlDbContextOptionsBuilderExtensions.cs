@@ -4,9 +4,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using Steeltoe.Common;
-using Steeltoe.Connector.PostgreSql;
+using Steeltoe.Connectors.PostgreSql;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.PostgreSql;
+namespace Steeltoe.Connectors.EntityFrameworkCore.PostgreSql;
 
 public static class PostgreSqlDbContextOptionsBuilderExtensions
 {

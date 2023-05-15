@@ -7,7 +7,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 public abstract class AbstractServiceConnectorOptions
 {

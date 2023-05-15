@@ -7,7 +7,7 @@
 using System.Reflection;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.RuntimeTypeAccess;
+namespace Steeltoe.Connectors.RuntimeTypeAccess;
 
 /// <summary>
 /// Dynamically loads <see cref="Type" />s at runtime from a list of candidates.

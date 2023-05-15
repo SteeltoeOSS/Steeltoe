@@ -5,10 +5,10 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.Services;
+namespace Steeltoe.Connectors.Test.Services;
 
 public class RabbitMQServiceInfoFactoryTest
 {

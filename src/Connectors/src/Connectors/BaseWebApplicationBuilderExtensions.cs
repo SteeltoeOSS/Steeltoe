@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 internal static class BaseWebApplicationBuilderExtensions
 {

@@ -10,10 +10,10 @@ using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Connector.MySql;
+using Steeltoe.Connectors.MySql;
 using Xunit;
 
-namespace Steeltoe.Connector.Test.MySql;
+namespace Steeltoe.Connectors.Test.MySql;
 
 public sealed class MySqlConnectorTests
 {

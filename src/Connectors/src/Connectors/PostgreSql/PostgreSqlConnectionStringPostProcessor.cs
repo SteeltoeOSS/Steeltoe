@@ -4,7 +4,7 @@
 
 using System.Data.Common;
 
-namespace Steeltoe.Connector.PostgreSql;
+namespace Steeltoe.Connectors.PostgreSql;
 
 internal sealed class PostgreSqlConnectionStringPostProcessor : ConnectionStringPostProcessor
 {

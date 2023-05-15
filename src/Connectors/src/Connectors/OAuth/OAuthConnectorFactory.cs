@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector.OAuth;
+namespace Steeltoe.Connectors.OAuth;
 
 public class OAuthConnectorFactory
 {

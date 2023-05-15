@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
-namespace Steeltoe.Connector.PostgreSql;
+namespace Steeltoe.Connectors.PostgreSql;
 
 public static class PostgreSqlWebApplicationBuilderExtensions
 {
