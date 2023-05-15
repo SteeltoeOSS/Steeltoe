@@ -27,7 +27,7 @@ internal sealed class LoggersEndpoint : ILoggersEndpoint
     private readonly IOptionsMonitor<LoggersEndpointOptions> _options;
     private readonly IDynamicLoggerProvider _dynamicLoggerProvider;
 
-    public IEndpointOptions Options => _options.CurrentValue;
+    public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
     public LoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, ILoggerFactory loggerFactory, IDynamicLoggerProvider dynamicLoggerProvider)
     {

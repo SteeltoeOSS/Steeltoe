@@ -14,7 +14,7 @@ internal sealed class TraceEndpoint : ITraceEndpoint
     private readonly ILogger<TraceEndpoint> _logger;
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
 
-    public IEndpointOptions Options => _options.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
+    public IHttpMiddlewareOptions Options => _options.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
 
     public TraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger)
     {

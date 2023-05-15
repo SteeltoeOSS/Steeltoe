@@ -39,14 +39,14 @@ public static class ActuatorServiceCollectionExtensions
         services.ConfigureOptions<ConfigureManagementEndpointOptions>();
     }
 
-    public static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
-        where TOptions : class, IEndpointOptions
+    public static void ConfigureMiddlewaretOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
+        where TOptions : class, IHttpMiddlewareOptions
         where TConfigureOptions : class
     {
         services.ConfigureOptions<TConfigureOptions>();
 
         services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<IEndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
+            ServiceDescriptor.Singleton<IHttpMiddlewareOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
     }
 
     public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy)

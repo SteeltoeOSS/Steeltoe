@@ -14,14 +14,15 @@ namespace Steeltoe.Management.Endpoint.Mappings;
 internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings>
 {
     public MappingsEndpointMiddleware(IOptionsMonitor<MappingsEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
         IMappingsEndpoint endpoint, ILogger<MappingsEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+        : base(endpoint, managementOptions, endpointOptions, logger)
     {
     }
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
+        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
         {
             return HandleMappingsRequestAsync(context);
         }

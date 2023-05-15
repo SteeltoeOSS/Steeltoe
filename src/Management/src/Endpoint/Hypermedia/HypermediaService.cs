@@ -12,13 +12,13 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 
 internal sealed class HypermediaService
 {
-    private readonly IEnumerable<IEndpointOptions> _endpointOptions;
+    private readonly IEnumerable<IHttpMiddlewareOptions> _endpointOptions;
     private readonly ILogger _logger;
     private readonly ManagementEndpointOptions _managementOptions;
-    private readonly EndpointOptionsBase _options;
+    private readonly IHttpMiddlewareOptions  _options;
 
-    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HypermediaEndpointOptions> options,
-        IEnumerable<IEndpointOptions> endpointOptions, ILogger logger)
+    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HypermediaHttpMiddlewareOptions> options,
+        IEnumerable<IHttpMiddlewareOptions> endpointOptions, ILogger logger)
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);
@@ -30,8 +30,8 @@ internal sealed class HypermediaService
         _options = options.CurrentValue;
     }
 
-    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options,
-        IEnumerable<IEndpointOptions> endpointOptions, ILogger logger)
+    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryHttpMiddlewareOptions> options,
+        IEnumerable<IHttpMiddlewareOptions> endpointOptions, ILogger logger)
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);
@@ -57,7 +57,7 @@ internal sealed class HypermediaService
 
         Link selfLink = null;
 
-        foreach (IEndpointOptions opt in _endpointOptions)
+        foreach (IHttpMiddlewareOptions opt in _endpointOptions)
         {
             if (!opt.IsEnabled(_managementOptions) || !opt.IsExposed(_managementOptions))
             {

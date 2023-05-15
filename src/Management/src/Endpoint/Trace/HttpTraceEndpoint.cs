@@ -14,7 +14,7 @@ internal sealed class HttpTraceEndpoint : IHttpTraceEndpoint
     private readonly IHttpTraceRepository _traceRepo;
     private readonly ILogger<HttpTraceEndpoint> _logger;
 
-    public IEndpointOptions Options => _options.CurrentValue;
+    public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
     public HttpTraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, IHttpTraceRepository traceRepository, ILoggerFactory loggerFactory)
     {

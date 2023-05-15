@@ -14,15 +14,13 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 internal sealed class TraceEndpointMiddleware : EndpointMiddleware<IList<TraceResult>>
 {
-    public TraceEndpointMiddleware(ITraceEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<TraceEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    public TraceEndpointMiddleware(ITraceEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<TraceEndpointMiddleware> logger) : base(endpoint, managementOptions, endpointOptions, logger)
     {
     }
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
+        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
         {
             return HandleTraceRequestAsync(context);
         }

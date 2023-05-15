@@ -18,8 +18,9 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>
 {
     public ActuatorHypermediaEndpointMiddleware(IActuatorEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IOptionsMonitor<HypermediaHttpMiddlewareOptions> endpointOptions,
         ILogger<ActuatorHypermediaEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+        : base(endpoint, managementOptions, endpointOptions, logger)
     {
     }
 
@@ -28,7 +29,7 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
         ArgumentGuard.NotNull(context);
         Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
-        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
+        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
         {
             context.HandleContentNegotiation(Logger);
             await HandleRequestAsync(context.Response.Body, GetRequestUri(context.Request), Logger, context.RequestAborted);

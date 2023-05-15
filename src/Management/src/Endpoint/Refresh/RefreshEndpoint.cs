@@ -16,7 +16,7 @@ internal sealed class RefreshEndpoint : IRefreshEndpoint
     private readonly IConfiguration _configuration;
     private readonly ILogger<RefreshEndpoint> _logger;
 
-    public IEndpointOptions Options => _options.CurrentValue;
+    public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
     public RefreshEndpoint(IOptionsMonitor<RefreshEndpointOptions> options, IConfiguration configuration, ILoggerFactory loggerFactory)
     {

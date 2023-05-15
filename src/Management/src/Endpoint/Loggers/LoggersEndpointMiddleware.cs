@@ -14,15 +14,13 @@ namespace Steeltoe.Management.Endpoint.Loggers;
 
 internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>, LoggersChangeRequest>
 {
-    public LoggersEndpointMiddleware(LoggersEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<LoggersEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    public LoggersEndpointMiddleware(LoggersEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<LoggersEndpointMiddleware> logger) : base(endpoint, managementOptions, endpointOptions, logger)
     {
     }
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        return Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger) ? HandleLoggersRequestAsync(context) : Task.CompletedTask;
+        return EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger) ? HandleLoggersRequestAsync(context) : Task.CompletedTask;
     }
 
     internal async Task HandleLoggersRequestAsync(HttpContext context)
@@ -37,8 +35,8 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<
             ManagementEndpointOptions mgmtOptions = ManagementOptions.GetFromContextPath(request.Path);
 
             string path = ManagementOptions == null
-                ? Endpoint.Options.Path
-                : $"{mgmtOptions.Path}/{Endpoint.Options.Path}".Replace("//", "/", StringComparison.Ordinal);
+                ? EndpointOptions.CurrentValue.Path
+                : $"{mgmtOptions.Path}/{EndpointOptions.CurrentValue.Path}".Replace("//", "/", StringComparison.Ordinal);
 
             if (await ChangeLoggerLevelAsync(context, path))
             {

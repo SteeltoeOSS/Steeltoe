@@ -14,8 +14,7 @@ namespace Steeltoe.Management.Endpoint.Info;
 
 internal sealed class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>>
 {
-    public InfoEndpointMiddleware(IInfoEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<InfoEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    public InfoEndpointMiddleware(IInfoEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<InfoEndpointMiddleware> logger) : base(endpoint, managementOptions, endpointOptions, logger)
     {
     }
 
@@ -26,7 +25,7 @@ internal sealed class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<str
 
         Logger.LogDebug("Info middleware InvokeAsync({path})", context.Request.Path.Value);
 
-        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
+        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
         {
             return HandleInfoRequestAsync(context);
         }

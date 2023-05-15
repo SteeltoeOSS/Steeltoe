@@ -16,7 +16,7 @@ internal sealed class MetricsEndpoint : IMetricsEndpoint
     private readonly ISteeltoeExporter _exporter;
     private readonly ILogger<MetricsEndpoint> _logger;
 
-    public IEndpointOptions Options => _options.CurrentValue;
+    public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
     public MetricsEndpoint(IOptionsMonitor<MetricsEndpointOptions> options, ISteeltoeExporter exporter, ILoggerFactory loggerFactory)
     {

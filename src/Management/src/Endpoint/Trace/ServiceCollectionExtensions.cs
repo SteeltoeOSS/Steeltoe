@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddTraceActuatorServices(this IServiceCollection services, MediaTypeVersion version)
     {
         ArgumentGuard.NotNull(services);
-        services.ConfigureEndpointOptions<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
+   //     services.ConfigureEndpointOptions<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
         switch (version)
         {

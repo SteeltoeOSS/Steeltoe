@@ -12,15 +12,13 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 internal sealed class CloudFoundryEndpoint : ICloudFoundryEndpoint
 {
-    private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
+    private readonly IOptionsMonitor<CloudFoundryHttpMiddlewareOptions> _options;
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
-    private readonly IEnumerable<IEndpointOptions> _endpointOptions;
+    private readonly IEnumerable<IHttpMiddlewareOptions> _endpointOptions;
     private readonly ILogger<CloudFoundryEndpoint> _logger;
 
-    public IEndpointOptions Options => _options.CurrentValue;
-
-    public CloudFoundryEndpoint(IOptionsMonitor<CloudFoundryEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IEnumerable<IEndpointOptions> endpointOptions, ILoggerFactory loggerFactory)
+    public CloudFoundryEndpoint(IOptionsMonitor<CloudFoundryHttpMiddlewareOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IEnumerable<IHttpMiddlewareOptions> endpointOptions, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(managementOptions);

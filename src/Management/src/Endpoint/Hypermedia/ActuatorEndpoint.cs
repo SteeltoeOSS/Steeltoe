@@ -15,14 +15,14 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 internal sealed class ActuatorEndpoint : IActuatorEndpoint
 {
     private readonly ILogger<ActuatorEndpoint> _logger;
-    private readonly IOptionsMonitor<HypermediaEndpointOptions> _options;
+    private readonly IOptionsMonitor<HypermediaHttpMiddlewareOptions> _options;
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOption;
-    private readonly IEnumerable<IEndpointOptions> _endpointOptions;
+    private readonly IEnumerable<IHttpMiddlewareOptions> _endpointOptions;
 
-    public IEndpointOptions Options => _options.CurrentValue;
+    public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public ActuatorEndpoint(IOptionsMonitor<HypermediaEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IEnumerable<IEndpointOptions> endpointOptions, ILoggerFactory loggerFactory)
+    public ActuatorEndpoint(IOptionsMonitor<HypermediaHttpMiddlewareOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IEnumerable<IHttpMiddlewareOptions> endpointOptions, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(managementOptions);

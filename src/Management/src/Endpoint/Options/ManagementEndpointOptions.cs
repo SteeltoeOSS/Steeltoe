@@ -19,7 +19,7 @@ public sealed class ManagementEndpointOptions
 
     public string Port { get; set; }
 
-    public IList<IEndpointOptions> EndpointOptions { get; set; }
+    public IList<IHttpMiddlewareOptions> EndpointOptions { get; set; }
 
     public HashSet<string> ContextNames { get; set; } = new()
     {

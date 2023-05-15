@@ -24,17 +24,17 @@ internal sealed class SecurityUtils
     public const string AuthorizationHeader = "Authorization";
     public const string Bearer = "bearer";
     public const string ReadSensitiveData = "read_sensitive_data";
-
+    private readonly CloudFoundryHttpMiddlewareOptions _middlewareOptions;
     private readonly CloudFoundryEndpointOptions _options;
     private readonly ManagementEndpointOptions _managementOptions;
 
     private readonly ILogger _logger;
     private HttpClient _httpClient;
 
-    internal SecurityUtils(CloudFoundryEndpointOptions options, ManagementEndpointOptions managementOptions, ILogger logger, HttpClient httpClient = null)
+    internal SecurityUtils(CloudFoundryHttpMiddlewareOptions middlewareOptions, CloudFoundryEndpointOptions options, ManagementEndpointOptions managementOptions, ILogger logger, HttpClient httpClient = null)
     {
         ArgumentGuard.NotNull(logger);
-
+        _middlewareOptions = middlewareOptions;
         _options = options;
         _managementOptions = managementOptions;
         _logger = logger;
@@ -43,7 +43,7 @@ internal sealed class SecurityUtils
 
     internal bool IsCloudFoundryRequest(string requestPath)
     {
-        string optionsPath = _options.Path;
+        string optionsPath = _middlewareOptions.Path;
 
         string contextPath = _managementOptions == null ? optionsPath : _managementOptions.Path;
         return requestPath.StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);

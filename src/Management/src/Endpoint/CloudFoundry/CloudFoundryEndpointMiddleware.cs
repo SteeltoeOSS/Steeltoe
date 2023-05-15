@@ -21,8 +21,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 internal sealed class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 {
     public CloudFoundryEndpointMiddleware(ICloudFoundryEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
         ILogger<CloudFoundryEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+        : base(endpoint, managementOptions, endpointOptions, logger)
     {
     }
 
@@ -32,7 +33,7 @@ internal sealed class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links,
 
         Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
-        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
+        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
         {
             return HandleCloudFoundryRequestAsync(context);
         }

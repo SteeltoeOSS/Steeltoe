@@ -20,7 +20,7 @@ internal sealed class EnvironmentEndpoint : IEnvironmentEndpoint
     private readonly IHostEnvironment _env;
     private readonly ILogger<EnvironmentEndpoint> _logger;
 
-    public IEndpointOptions Options => _options.CurrentValue;
+    public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
     public EnvironmentEndpoint(IOptionsMonitor<EnvironmentEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILoggerFactory loggerFactory)
     {

@@ -24,7 +24,7 @@ internal sealed class MappingsEndpoint : IMappingsEndpoint
     private readonly IRouteMappings _routeMappings;
     private readonly ILogger<MappingsEndpoint> _logger;
 
-    public IEndpointOptions Options => _options.CurrentValue;
+    public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
     public MappingsEndpoint(IOptionsMonitor<MappingsEndpointOptions> options, ILoggerFactory loggerFactory, IRouteMappings routeMappings,
         IActionDescriptorCollectionProvider actionDescriptorCollectionProvider, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders)

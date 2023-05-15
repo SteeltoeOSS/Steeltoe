@@ -291,6 +291,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.Clou
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test", "Configuration\test\CloudFoundry.ServiceBinding.Test\Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test.csproj", "{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Actuators", "..\..\Samples\Management\src\AllActuators\Actuators\Steeltoe.Actuators.csproj", "{5D54EB75-2420-4EDE-B7F2-60B70669C22F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -713,6 +715,10 @@ Global
 		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D54EB75-2420-4EDE-B7F2-60B70669C22F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D54EB75-2420-4EDE-B7F2-60B70669C22F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D54EB75-2420-4EDE-B7F2-60B70669C22F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D54EB75-2420-4EDE-B7F2-60B70669C22F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

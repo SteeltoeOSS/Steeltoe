@@ -13,11 +13,11 @@ namespace Steeltoe.Management.Endpoint;
 
 internal static class EndPointExtensions
 {
-    public static bool IsEnabled(this IEndpointOptions options, ManagementEndpointOptions managementOptions)
+    public static bool IsEnabled(this IHttpMiddlewareOptions options, ManagementEndpointOptions managementOptions)
     {
         ArgumentGuard.NotNull(managementOptions);
 
-        var endpointOptions = (EndpointOptionsBase)options;
+        var endpointOptions = (HttpMiddlewareOptions)options;
 
         if (endpointOptions.Enabled.HasValue)
         {
@@ -32,7 +32,7 @@ internal static class EndPointExtensions
         return endpointOptions.DefaultEnabled;
     }
 
-    public static bool IsExposed(this IEndpointOptions options, ManagementEndpointOptions mgmtOptions)
+    public static bool IsExposed(this IHttpMiddlewareOptions options, ManagementEndpointOptions mgmtOptions)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(mgmtOptions);
@@ -59,7 +59,7 @@ internal static class EndPointExtensions
         return true;
     }
 
-    public static bool ShouldInvoke(this IEndpointOptions endpoint, ManagementEndpointOptions options, ILogger logger)
+    public static bool ShouldInvoke(this IHttpMiddlewareOptions endpoint, ManagementEndpointOptions options, ILogger logger)
     {
         ArgumentGuard.NotNull(logger);
         ArgumentGuard.NotNull(endpoint);
@@ -71,7 +71,7 @@ internal static class EndPointExtensions
         return enabled && exposed;
     }
 
-    public static bool ShouldInvoke(this IEndpointOptions endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context,
+    public static bool ShouldInvoke(this IHttpMiddlewareOptions endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context,
         ILogger logger)
     {
         ArgumentGuard.NotNull(context);
@@ -100,7 +100,7 @@ internal static class EndPointExtensions
         return managementOptions.Get(ActuatorContext.Name);
     }
 
-    public static string GetContextPath(this IEndpointOptions options, ManagementEndpointOptions managementOptions)
+    public static string GetContextPath(this IHttpMiddlewareOptions options, ManagementEndpointOptions managementOptions)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(managementOptions);
@@ -128,7 +128,7 @@ internal static class EndPointExtensions
     }
 
     // Only used by Cloudfoundry security
-    public static bool IsAccessAllowed(this IEndpointOptions options, Permissions permissions)
+    public static bool IsAccessAllowed(this IHttpMiddlewareOptions options, Permissions permissions)
     {
         ArgumentGuard.NotNull(options);
         return permissions >= options.RequiredPermissions;

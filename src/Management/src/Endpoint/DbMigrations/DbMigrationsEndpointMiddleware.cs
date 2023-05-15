@@ -14,15 +14,13 @@ namespace Steeltoe.Management.Endpoint.DbMigrations;
 
 internal sealed class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
 {
-    public DbMigrationsEndpointMiddleware(IDbMigrationsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<DbMigrationsEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    public DbMigrationsEndpointMiddleware(IDbMigrationsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<DbMigrationsEndpointMiddleware> logger) : base(endpoint, managementOptions, endpointOptions, logger)
     {
     }
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
+        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
         {
             return HandleEntityFrameworkRequestAsync(context);
         }

@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services.ConfigureEndpointOptions<InfoEndpointOptions, ConfigureInfoEndpointOptions>();
+   //     services.ConfigureEndpointOptions<InfoEndpointOptions, ConfigureInfoEndpointOptions>();
         services.TryAddSingleton<IInfoEndpoint, InfoEndpoint>();
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, InfoEndpointMiddleware>());

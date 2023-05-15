@@ -21,7 +21,7 @@ public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
 
     public IEndpoint<TResult> Endpoint { get; set; }
 
-    public virtual IEndpointOptions EndpointOptions => Endpoint.Options;
+    public virtual IOptionsMonitor<HttpMiddlewareOptions> EndpointOptions { get; }
 
     protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
     {
@@ -30,12 +30,13 @@ public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
         ManagementOptions = managementOptions;
     }
 
-    protected EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
+    protected EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger logger)
         : this(managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpoint);
         ArgumentGuard.NotNull(logger);
         Endpoint = endpoint;
+        EndpointOptions = endpointOptions;
     }
 
     public virtual async Task<string> HandleRequestAsync(CancellationToken cancellationToken)
@@ -96,27 +97,28 @@ public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
 
 public interface IEndpointMiddleware : IMiddleware
 {
-    public IEndpointOptions EndpointOptions { get; }
+    public IOptionsMonitor<HttpMiddlewareOptions> EndpointOptions { get; }
 }
 
 public abstract class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
 {
     public new IEndpoint<TResult, TRequest> Endpoint { get; set; }
 
-    public override IEndpointOptions EndpointOptions => Endpoint.Options;
+    public override IOptionsMonitor<HttpMiddlewareOptions> EndpointOptions { get; }
 
-    protected EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
+    protected EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger logger)
         : base(managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpoint);
 
         Endpoint = endpoint;
+        EndpointOptions = endpointOptions;
     }
 
-    protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
-        : base(managementOptions, logger)
-    {
-    }
+    //protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
+    //    : base(managementOptions, logger)
+    //{
+    //}
 
     public virtual async Task<string> HandleRequestAsync(TRequest arg, CancellationToken cancellationToken)
     {

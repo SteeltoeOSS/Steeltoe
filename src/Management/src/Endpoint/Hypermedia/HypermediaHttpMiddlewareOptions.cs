@@ -2,9 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Management.Endpoint.Env;
+namespace Steeltoe.Management.Endpoint.Hypermedia;
 
-public sealed class EnvironmentEndpointOptions : HttpMiddlewareOptions
+public sealed class HypermediaHttpMiddlewareOptions : HttpMiddlewareOptions
 {
-    public string[] KeysToSanitize { get; set; }
 }

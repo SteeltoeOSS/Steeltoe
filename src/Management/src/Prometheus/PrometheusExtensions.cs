@@ -28,7 +28,7 @@ public static class PrometheusExtensions
     public static IServiceCollection AddPrometheusActuator(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        services.ConfigureEndpointOptions<PrometheusEndpointOptions, ConfigurePrometheusEndpointOptions>();
+     //   services.ConfigureEndpointOptions<PrometheusEndpointOptions, ConfigurePrometheusEndpointOptions>();
 
         services.AddOpenTelemetry().WithMetrics(builder =>
         {
@@ -44,7 +44,7 @@ public static class PrometheusExtensions
         ManagementEndpointOptions? managementOptions = app.ApplicationServices.GetService<IOptionsMonitor<ManagementEndpointOptions>>()?.CurrentValue;
 
         PrometheusEndpointOptions? prometheusOptions =
-            app.ApplicationServices.GetService<IEnumerable<IEndpointOptions>>()?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
+            app.ApplicationServices.GetService<IEnumerable<IHttpMiddlewareOptions>>()?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
 
         string root = managementOptions?.Path ?? "/actuator";
         string id = prometheusOptions?.Id ?? "prometheus";

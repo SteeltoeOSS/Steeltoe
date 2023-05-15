@@ -14,7 +14,7 @@ internal sealed class InfoEndpoint : IInfoEndpoint
     private readonly IList<IInfoContributor> _contributors;
     private readonly IOptionsMonitor<InfoEndpointOptions> _options;
     private readonly ILogger<InfoEndpoint> _logger;
-    public IEndpointOptions Options => _options.CurrentValue;
+    public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
     public InfoEndpoint(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILoggerFactory loggerFactory)
     {

@@ -13,8 +13,7 @@ internal sealed class HeapDumpEndpoint : IHeapDumpEndpoint
     private readonly IHeapDumper _heapDumper;
     private readonly ILogger<HeapDumpEndpoint> _logger;
 
-    IEndpointOptions IEndpoint.Options => Options.CurrentValue;
-
+   
     public IOptionsMonitor<HeapDumpEndpointOptions> Options { get; }
 
     public HeapDumpEndpoint(IOptionsMonitor<HeapDumpEndpointOptions> options, IHeapDumper heapDumper, ILoggerFactory loggerFactory)

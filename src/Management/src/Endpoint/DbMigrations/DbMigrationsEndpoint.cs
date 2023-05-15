@@ -33,7 +33,7 @@ internal sealed class DbMigrationsEndpoint : IDbMigrationsEndpoint
     private readonly DbMigrationsEndpointHelper _endpointHelper;
     private readonly ILogger<DbMigrationsEndpoint> _logger;
 
-    public IEndpointOptions Options => _options.CurrentValue;
+    public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
     public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, ILoggerFactory loggerFactory)
         : this(options, container, new DbMigrationsEndpointHelper(), loggerFactory)

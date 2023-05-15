@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddEnvActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        services.ConfigureEndpointOptions<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
+   //     services.ConfigureEndpointOptions<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
         services.TryAddSingleton<EnvironmentEndpoint>();
         services.TryAddSingleton<IEnvironmentEndpoint>(provider => provider.GetRequiredService<EnvironmentEndpoint>());
 

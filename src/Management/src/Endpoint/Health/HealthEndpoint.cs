@@ -21,7 +21,7 @@ internal sealed class HealthEndpoint : IHealthEndpoint
     private readonly IHealthAggregator _aggregator;
     private readonly IList<IHealthContributor> _contributors;
     private readonly ILogger<HealthEndpoint> _logger;
-    public IEndpointOptions Options => _options.CurrentValue;
+    public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
     public HealthEndpoint(IOptionsMonitor<HealthEndpointOptions> options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
         IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILoggerFactory loggerFactory)

@@ -14,7 +14,7 @@ internal sealed class ThreadDumpEndpointV2 : IThreadDumpEndpointV2
     private readonly IThreadDumper _threadDumper;
     private readonly ILogger<ThreadDumpEndpointV2> _logger;
 
-    public IEndpointOptions Options => _options.CurrentValue;
+    public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
     public ThreadDumpEndpointV2(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpointV2> logger)
     {

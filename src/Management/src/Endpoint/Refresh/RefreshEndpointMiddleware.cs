@@ -14,14 +14,15 @@ namespace Steeltoe.Management.Endpoint.Refresh;
 internal sealed class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
 {
     public RefreshEndpointMiddleware(IRefreshEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
         ILogger<RefreshEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+        : base(endpoint, managementOptions, endpointOptions, logger)
     {
     }
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
+        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
         {
             return HandleRefreshRequestAsync(context);
         }

@@ -16,14 +16,14 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>
 {
     public MetricsEndpointMiddleware(IMetricsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<MetricsEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+        IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<MetricsEndpointMiddleware> logger)
+        : base(endpoint, managementOptions, endpointOptions, logger)
     {
     }
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
+        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
         {
             return HandleMetricsRequestAsync(context);
         }
@@ -81,10 +81,10 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsRes
 
         if (mgmtOptions == null)
         {
-            return GetMetricName(request, Endpoint.Options.Path);
+            return GetMetricName(request, EndpointOptions.CurrentValue.Path);
         }
 
-        string path = $"{mgmtOptions.Path}/{Endpoint.Options.Id}".Replace("//", "/", StringComparison.Ordinal);
+        string path = $"{mgmtOptions.Path}/{EndpointOptions.CurrentValue.Id}".Replace("//", "/", StringComparison.Ordinal);
         string metricName = GetMetricName(request, path);
 
         return metricName;

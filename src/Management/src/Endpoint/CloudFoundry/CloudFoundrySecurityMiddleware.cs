@@ -15,6 +15,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 public sealed class CloudFoundrySecurityMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly IOptionsMonitor<CloudFoundryHttpMiddlewareOptions> _middewareOptions;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
 
@@ -22,7 +23,7 @@ public sealed class CloudFoundrySecurityMiddleware
 
     private readonly SecurityUtils _base;
 
-    public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options,
+    public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryHttpMiddlewareOptions> middewareOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options,
         IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger)
     {
         ArgumentGuard.NotNull(logger);
@@ -30,23 +31,25 @@ public sealed class CloudFoundrySecurityMiddleware
         ArgumentGuard.NotNull(managementOptions);
 
         _next = next;
+        _middewareOptions = middewareOptions;
         _logger = logger;
         _options = options;
         _managementOptions = managementOptions.Get(CFContext.Name);
 
-        _base = new SecurityUtils(options.CurrentValue, managementOptions.Get(CFContext.Name), logger);
+        _base = new SecurityUtils(_middewareOptions.CurrentValue, options.CurrentValue, managementOptions.Get(CFContext.Name), logger);
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
-        CloudFoundryEndpointOptions cfOptions = _options.CurrentValue;
+
         CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
+        CloudFoundryHttpMiddlewareOptions middlewareOptions = _middewareOptions.CurrentValue;
         _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);
 
-        if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptions) && _base.IsCloudFoundryRequest(context.Request.Path))
+        if (Platform.IsCloudFoundry && middlewareOptions.IsEnabled(_managementOptions) && _base.IsCloudFoundryRequest(context.Request.Path))
         {
-            if (string.IsNullOrEmpty(cfOptions.ApplicationId))
+            if (string.IsNullOrEmpty(endpointOptions.ApplicationId))
             {
                 _logger.LogCritical(
                     "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
@@ -56,14 +59,14 @@ public sealed class CloudFoundrySecurityMiddleware
                 return;
             }
 
-            if (string.IsNullOrEmpty(cfOptions.CloudFoundryApi))
+            if (string.IsNullOrEmpty(endpointOptions.CloudFoundryApi))
             {
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityUtils.CloudfoundryApiMissingMessage));
 
                 return;
             }
 
-            IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
+            IHttpMiddlewareOptions target = FindTargetEndpoint(context.Request.Path);
 
             if (target == null)
             {
@@ -113,13 +116,11 @@ public sealed class CloudFoundrySecurityMiddleware
         return _base.GetPermissionsAsync(token);
     }
 
-    private IEndpointOptions FindTargetEndpoint(PathString path)
+    private IHttpMiddlewareOptions FindTargetEndpoint(PathString path)
     {
-        IList<IEndpointOptions> configEndpoints;
+        IList<IHttpMiddlewareOptions> configEndpoints = _managementOptions.EndpointOptions;
 
-        configEndpoints = _managementOptions.EndpointOptions;
-
-        foreach (IEndpointOptions ep in configEndpoints)
+        foreach (IHttpMiddlewareOptions ep in configEndpoints)
         {
             string contextPath = _managementOptions.Path;
 
