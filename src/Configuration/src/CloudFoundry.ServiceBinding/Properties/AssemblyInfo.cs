@@ -5,4 +5,4 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Connector.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Connectors.Test")]

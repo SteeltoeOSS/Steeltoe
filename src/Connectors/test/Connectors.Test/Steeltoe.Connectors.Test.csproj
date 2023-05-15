@@ -31,8 +31,8 @@
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry.ServiceBinding\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Configuration.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\Kubernetes.ServiceBinding\Steeltoe.Configuration.Kubernetes.ServiceBinding.csproj" />
-    <ProjectReference Include="..\..\src\Connector\Steeltoe.Connector.csproj" />
-    <ProjectReference Include="..\..\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
+    <ProjectReference Include="..\..\src\Connectors\Steeltoe.Connectors.csproj" />
+    <ProjectReference Include="..\..\src\CloudFoundry\Steeltoe.Connectors.CloudFoundry.csproj" />
   </ItemGroup>
 
   <ItemGroup>

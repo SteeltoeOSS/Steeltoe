@@ -1,9 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <RootNamespace>Steeltoe.Connector</RootNamespace>
-    <Description>Abstractions for working with backing services</Description>
-    <PackageTags></PackageTags>
+    <Description>Connector Extensions for Entity Framework</Description>
+    <PackageTags>connectors;EntityFramework;aspnetcore;services</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -14,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\Connectors\Steeltoe.Connectors.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
   </ItemGroup>
 </Project>
