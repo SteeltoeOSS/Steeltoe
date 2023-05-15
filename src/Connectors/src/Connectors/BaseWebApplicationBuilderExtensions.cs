@@ -85,7 +85,7 @@ internal static class BaseWebApplicationBuilderExtensions
         string healthDisplayName, string healthHostNameKey)
         where TOptions : ConnectionStringOptions
     {
-        var connection = (IDbConnection)ConnectionFactoryInvoker.GetConnection<TOptions>(serviceProvider, bindingName, connectionType);
+        var connection = (IDbConnection)ConnectorFactoryInvoker.GetConnection<TOptions>(serviceProvider, bindingName, connectionType);
         string serviceName = $"{healthDisplayName}-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connection.ConnectionString, healthHostNameKey);
         var logger = serviceProvider.GetRequiredService<ILogger<RelationalDbHealthContributor>>();
@@ -103,17 +103,16 @@ internal static class BaseWebApplicationBuilderExtensions
         return (string)builder[healthHostNameKey];
     }
 
-    public static void RegisterConnectionFactory<TOptions>(IServiceCollection services, Type connectionType, bool useSingletonConnection,
+    public static void RegisterConnectorFactory<TOptions>(IServiceCollection services, Type connectionType, bool useSingletonConnection,
         Func<TOptions, string, object> createConnection)
         where TOptions : ConnectionStringOptions
     {
-        Type connectionFactoryType = ConnectionFactoryInvoker.MakeConnectionFactoryType<TOptions>(connectionType);
+        Type connectorFactoryType = ConnectorFactoryInvoker.MakeConnectorFactoryType<TOptions>(connectionType);
 
         createConnection = WrapCreateConnection(createConnection, connectionType);
 
-        services.AddSingleton(connectionFactoryType,
-            serviceProvider =>
-                ConnectionFactoryInvoker.CreateConnectionFactory(serviceProvider, connectionFactoryType, useSingletonConnection, createConnection));
+        services.AddSingleton(connectorFactoryType,
+            serviceProvider => ConnectorFactoryInvoker.CreateConnectorFactory(serviceProvider, connectorFactoryType, useSingletonConnection, createConnection));
     }
 
     private static Func<TOptions, string, object> WrapCreateConnection<TOptions>(Func<TOptions, string, object> createConnection, Type connectionType)

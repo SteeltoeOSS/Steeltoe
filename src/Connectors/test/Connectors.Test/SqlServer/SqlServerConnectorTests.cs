@@ -214,7 +214,7 @@ public sealed class SqlServerConnectorTests
     }
 
     [Fact]
-    public async Task Registers_ConnectionFactory()
+    public async Task Registers_ConnectorFactory()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -228,12 +228,12 @@ public sealed class SqlServerConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<SqlServerOptions, SqlConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<SqlServerOptions, SqlConnection>>();
 
-        await using SqlConnection connectionOne = connectionFactory.GetNamed("mySqlServerServiceOne").GetConnection();
+        await using SqlConnection connectionOne = connectorFactory.GetNamed("mySqlServerServiceOne").GetConnection();
         connectionOne.ConnectionString.Should().Be("Data Source=localhost;Initial Catalog=db1;User ID=user1;Password=pass1");
 
-        await using SqlConnection connectionTwo = connectionFactory.GetNamed("mySqlServerServiceTwo").GetConnection();
+        await using SqlConnection connectionTwo = connectorFactory.GetNamed("mySqlServerServiceTwo").GetConnection();
         connectionTwo.ConnectionString.Should().Be("Data Source=localhost;Initial Catalog=db2;User ID=user2;Password=pass2");
     }
 
@@ -270,12 +270,12 @@ public sealed class SqlServerConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<SqlServerOptions, SqlConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<SqlServerOptions, SqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
+        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNull();
 
-        string namedConnectionString = connectionFactory.GetNamed("mySqlServerService").Options.ConnectionString;
+        string namedConnectionString = connectorFactory.GetNamed("mySqlServerService").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -295,9 +295,9 @@ public sealed class SqlServerConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<SqlServerOptions, SqlConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<SqlServerOptions, SqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
+        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);

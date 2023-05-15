@@ -55,13 +55,13 @@ public static class RedisWebApplicationBuilderExtensions
         BaseWebApplicationBuilderExtensions.RegisterNamedOptions<RedisOptions>(builder, "redis",
             (serviceProvider, bindingName) => CreateHealthContributor(serviceProvider, bindingName, stackExchangeRedisPackageResolver));
 
-        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory(builder.Services, stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type,
+        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type,
             true, nativeCreateConnection);
 
         Func<RedisOptions, string, object> microsoftCreateConnection = (options, serviceBindingName) => CreateMicrosoftConnection(nativeCreateConnection,
             options, serviceBindingName, stackExchangeRedisPackageResolver, microsoftRedisPackageResolver);
 
-        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory(builder.Services, microsoftRedisPackageResolver.DistributedCacheInterface.Type, true,
+        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, microsoftRedisPackageResolver.DistributedCacheInterface.Type, true,
             microsoftCreateConnection);
 
         return builder;
@@ -84,13 +84,13 @@ public static class RedisWebApplicationBuilderExtensions
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName,
         StackExchangeRedisPackageResolver stackExchangeRedisPackageResolver)
     {
-        string connectionString = ConnectionFactoryInvoker.GetConnectionString<RedisOptions>(serviceProvider, bindingName,
+        string connectionString = ConnectorFactoryInvoker.GetConnectionString<RedisOptions>(serviceProvider, bindingName,
             stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type);
 
         string serviceName = $"Redis-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connectionString);
 
-        object redisClient = ConnectionFactoryInvoker.GetConnection<RedisOptions>(serviceProvider, bindingName,
+        object redisClient = ConnectorFactoryInvoker.GetConnection<RedisOptions>(serviceProvider, bindingName,
             stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type);
 
         var logger = serviceProvider.GetRequiredService<ILogger<RedisHealthContributor>>();

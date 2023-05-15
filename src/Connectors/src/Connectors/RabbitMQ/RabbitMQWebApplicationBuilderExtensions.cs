@@ -32,7 +32,7 @@ public static class RabbitMQWebApplicationBuilderExtensions
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
         BaseWebApplicationBuilderExtensions.RegisterNamedOptions<RabbitMQOptions>(builder, "rabbitmq", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory(builder.Services, ConnectionInterface, true, createConnection);
+        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, ConnectionInterface, true, createConnection);
 
         return builder;
     }
@@ -55,10 +55,10 @@ public static class RabbitMQWebApplicationBuilderExtensions
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
     {
-        string connectionString = ConnectionFactoryInvoker.GetConnectionString<RabbitMQOptions>(serviceProvider, bindingName, ConnectionInterface);
+        string connectionString = ConnectorFactoryInvoker.GetConnectionString<RabbitMQOptions>(serviceProvider, bindingName, ConnectionInterface);
         string serviceName = $"RabbitMQ-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connectionString);
-        object connection = ConnectionFactoryInvoker.GetConnection<RabbitMQOptions>(serviceProvider, bindingName, ConnectionInterface);
+        object connection = ConnectorFactoryInvoker.GetConnection<RabbitMQOptions>(serviceProvider, bindingName, ConnectionInterface);
         var logger = serviceProvider.GetRequiredService<ILogger<RabbitMQHealthContributor>>();
 
         return new RabbitMQHealthContributor(connection, serviceName, hostName, logger);

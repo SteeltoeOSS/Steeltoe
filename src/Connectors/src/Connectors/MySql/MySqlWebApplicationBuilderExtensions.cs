@@ -20,7 +20,7 @@ public static class MySqlWebApplicationBuilderExtensions
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
         BaseWebApplicationBuilderExtensions.RegisterNamedOptions<MySqlOptions>(builder, "mysql", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory<MySqlOptions>(builder.Services, ConnectionType, false, null);
+        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory<MySqlOptions>(builder.Services, ConnectionType, false, null);
 
         return builder;
     }

@@ -183,7 +183,7 @@ public sealed class MySqlConnectorTests
     }
 
     [Fact]
-    public async Task Registers_ConnectionFactory()
+    public async Task Registers_ConnectorFactory()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -197,12 +197,12 @@ public sealed class MySqlConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MySqlOptions, MySqlConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();
 
-        await using MySqlConnection connectionOne = connectionFactory.GetNamed("myMySqlServiceOne").GetConnection();
+        await using MySqlConnection connectionOne = connectorFactory.GetNamed("myMySqlServiceOne").GetConnection();
         connectionOne.ConnectionString.Should().Be("server=localhost;database=db1;user id=user1;password=pass1");
 
-        await using MySqlConnection connectionTwo = connectionFactory.GetNamed("myMySqlServiceTwo").GetConnection();
+        await using MySqlConnection connectionTwo = connectorFactory.GetNamed("myMySqlServiceTwo").GetConnection();
         connectionTwo.ConnectionString.Should().Be("server=localhost;database=db2;user id=user2;password=pass2");
     }
 
@@ -239,12 +239,12 @@ public sealed class MySqlConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MySqlOptions, MySqlConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
+        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNull();
 
-        string namedConnectionString = connectionFactory.GetNamed("myMySqlServiceOne").Options.ConnectionString;
+        string namedConnectionString = connectorFactory.GetNamed("myMySqlServiceOne").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -264,9 +264,9 @@ public sealed class MySqlConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<MySqlOptions, MySqlConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
+        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);

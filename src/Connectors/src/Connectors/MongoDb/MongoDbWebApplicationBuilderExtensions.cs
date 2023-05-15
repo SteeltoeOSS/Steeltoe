@@ -25,17 +25,17 @@ public static class MongoDbWebApplicationBuilderExtensions
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
         BaseWebApplicationBuilderExtensions.RegisterNamedOptions<MongoDbOptions>(builder, "mongodb", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory(builder.Services, ConnectionInterface, false, createMongoClient);
+        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, ConnectionInterface, false, createMongoClient);
 
         return builder;
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
     {
-        string connectionString = ConnectionFactoryInvoker.GetConnectionString<MongoDbOptions>(serviceProvider, bindingName, ConnectionInterface);
+        string connectionString = ConnectorFactoryInvoker.GetConnectionString<MongoDbOptions>(serviceProvider, bindingName, ConnectionInterface);
         string serviceName = $"MongoDB-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connectionString);
-        object mongoClient = ConnectionFactoryInvoker.GetConnection<MongoDbOptions>(serviceProvider, bindingName, ConnectionInterface);
+        object mongoClient = ConnectorFactoryInvoker.GetConnection<MongoDbOptions>(serviceProvider, bindingName, ConnectionInterface);
         var logger = serviceProvider.GetRequiredService<ILogger<MongoDbHealthContributor>>();
 
         return new MongoDbHealthContributor(mongoClient, serviceName, hostName, logger);

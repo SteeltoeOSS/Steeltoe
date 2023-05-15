@@ -390,7 +390,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     }
 
     [Fact]
-    public async Task Registers_ConnectionFactory()
+    public async Task Registers_ConnectorFactory()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -404,12 +404,12 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        await using NpgsqlConnection connectionOne = connectionFactory.GetNamed("myPostgreSqlServiceOne").GetConnection();
+        await using NpgsqlConnection connectionOne = connectorFactory.GetNamed("myPostgreSqlServiceOne").GetConnection();
         connectionOne.ConnectionString.Should().Be("Host=localhost;Database=db1;Username=user1;Password=pass1");
 
-        await using NpgsqlConnection connectionTwo = connectionFactory.GetNamed("myPostgreSqlServiceTwo").GetConnection();
+        await using NpgsqlConnection connectionTwo = connectorFactory.GetNamed("myPostgreSqlServiceTwo").GetConnection();
         connectionTwo.ConnectionString.Should().Be("Host=localhost;Database=db2;Username=user2;Password=pass2");
     }
 
@@ -440,9 +440,9 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
             await using WebApplication app = builder.Build();
 
-            var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
+            var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-            string connectionString = connectionFactory.GetNamed("examplePostgreSqlService").Options.ConnectionString;
+            string connectionString = connectorFactory.GetNamed("examplePostgreSqlService").Options.ConnectionString;
             connectionString.Should().Be("Host=localhost;Database=db1");
 
             await File.WriteAllTextAsync(tempJsonPath, @"{
@@ -460,7 +460,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
             await Task.Delay(TimeSpan.FromSeconds(2));
 
-            connectionString = connectionFactory.GetNamed("examplePostgreSqlService").Options.ConnectionString;
+            connectionString = connectorFactory.GetNamed("examplePostgreSqlService").Options.ConnectionString;
             connectionString.Should().Be("Host=remote.com;Database=other");
         }
         finally
@@ -507,8 +507,8 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
-        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
+        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
 
         ExtractConnectionStringParameters(defaultConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -520,7 +520,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
             "Port=5432"
         }, options => options.WithoutStrictOrdering());
 
-        string namedConnectionString = connectionFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -536,12 +536,12 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
+        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNull();
 
-        string namedConnectionString = connectionFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -561,9 +561,9 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
+        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -583,12 +583,12 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
+        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString = connectionFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -609,12 +609,12 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
+        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString = connectionFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -635,12 +635,12 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
+        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString = connectionFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(3);
@@ -662,12 +662,12 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
+        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString = connectionFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -689,15 +689,15 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<PostgreSqlOptions, NpgsqlConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectionFactory.GetDefault().Options.ConnectionString;
+        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString1 = connectionFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string namedConnectionString1 = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString1.Should().NotBeNull();
 
-        string namedConnectionString2 = connectionFactory.GetNamed("alternatePostgreSqlService").Options.ConnectionString;
+        string namedConnectionString2 = connectorFactory.GetNamed("alternatePostgreSqlService").Options.ConnectionString;
         namedConnectionString2.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(2);

@@ -234,7 +234,7 @@ public sealed class RabbitMQConnectorTests
     }
 
     [Fact]
-    public async Task Registers_ConnectionFactory()
+    public async Task Registers_ConnectorFactory()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -248,15 +248,15 @@ public sealed class RabbitMQConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<RabbitMQOptions, IConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        var connectionOne = (FakeConnection)connectionFactory.GetNamed("myRabbitMQServiceOne").GetConnection();
+        var connectionOne = (FakeConnection)connectorFactory.GetNamed("myRabbitMQServiceOne").GetConnection();
         connectionOne.ConnectionString.Should().Be("amqp://user1:pass1@host1:5672/virtual-host-1");
 
-        var connectionTwo = (FakeConnection)connectionFactory.GetNamed("myRabbitMQServiceTwo").GetConnection();
+        var connectionTwo = (FakeConnection)connectorFactory.GetNamed("myRabbitMQServiceTwo").GetConnection();
         connectionTwo.ConnectionString.Should().Be("amqps://user2:pass2@host2:5672/virtual-host-2");
 
-        IConnection connectionOneAgain = connectionFactory.GetNamed("myRabbitMQServiceOne").GetConnection();
+        IConnection connectionOneAgain = connectorFactory.GetNamed("myRabbitMQServiceOne").GetConnection();
         connectionOneAgain.Should().BeSameAs(connectionOne);
     }
 
@@ -293,12 +293,12 @@ public sealed class RabbitMQConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<RabbitMQOptions, IConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        RabbitMQOptions defaultOptions = connectionFactory.GetDefault().Options;
+        RabbitMQOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNull();
 
-        RabbitMQOptions namedOptions = connectionFactory.GetNamed("myRabbitMQService").Options;
+        RabbitMQOptions namedOptions = connectorFactory.GetNamed("myRabbitMQService").Options;
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -318,9 +318,9 @@ public sealed class RabbitMQConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<RabbitMQOptions, IConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        RabbitMQOptions defaultOptions = connectionFactory.GetDefault().Options;
+        RabbitMQOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -334,12 +334,12 @@ public sealed class RabbitMQConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<RabbitMQOptions, IConnection>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        RabbitMQOptions defaultOptions = connectionFactory.GetDefault().Options;
+        RabbitMQOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().BeNull();
 
-        var connection = (FakeConnection)connectionFactory.GetDefault().GetConnection();
+        var connection = (FakeConnection)connectorFactory.GetDefault().GetConnection();
         connection.ConnectionString.Should().BeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);

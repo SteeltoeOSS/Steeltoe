@@ -144,7 +144,7 @@ public sealed class RedisConnectorTests
     }
 
     [Fact]
-    public async Task Registers_ConnectionFactory_for_IConnectionMultiplexer()
+    public async Task Registers_ConnectorFactory_for_IConnectionMultiplexer()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -158,20 +158,20 @@ public sealed class RedisConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<RedisOptions, IConnectionMultiplexer>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RedisOptions, IConnectionMultiplexer>>();
 
-        IConnectionMultiplexer connectionOne = connectionFactory.GetNamed("myRedisServiceOne").GetConnection();
+        IConnectionMultiplexer connectionOne = connectorFactory.GetNamed("myRedisServiceOne").GetConnection();
         connectionOne.Configuration.Should().Be("server1:6380,keepAlive=30");
 
-        IConnectionMultiplexer connectionTwo = connectionFactory.GetNamed("myRedisServiceTwo").GetConnection();
+        IConnectionMultiplexer connectionTwo = connectorFactory.GetNamed("myRedisServiceTwo").GetConnection();
         connectionTwo.Configuration.Should().Be("server2:6380,allowAdmin=true");
 
-        IConnectionMultiplexer connectionOneAgain = connectionFactory.GetNamed("myRedisServiceOne").GetConnection();
+        IConnectionMultiplexer connectionOneAgain = connectorFactory.GetNamed("myRedisServiceOne").GetConnection();
         connectionOneAgain.Should().BeSameAs(connectionOne);
     }
 
     [Fact]
-    public async Task Registers_ConnectionFactory_for_IDistributedCache()
+    public async Task Registers_ConnectorFactory_for_IDistributedCache()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -185,17 +185,17 @@ public sealed class RedisConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<RedisOptions, IDistributedCache>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RedisOptions, IDistributedCache>>();
 
-        var connectionOne = (RedisCache)connectionFactory.GetNamed("myRedisServiceOne").GetConnection();
+        var connectionOne = (RedisCache)connectorFactory.GetNamed("myRedisServiceOne").GetConnection();
         FakeConnectionMultiplexer connectionMultiplexerOne = await ExtractUnderlyingMultiplexerFromRedisCacheAsync(connectionOne);
         connectionMultiplexerOne.Configuration.Should().Be("server1:6380,keepAlive=30");
 
-        var connectionTwo = (RedisCache)connectionFactory.GetNamed("myRedisServiceTwo").GetConnection();
+        var connectionTwo = (RedisCache)connectorFactory.GetNamed("myRedisServiceTwo").GetConnection();
         FakeConnectionMultiplexer connectionMultiplexerTwo = await ExtractUnderlyingMultiplexerFromRedisCacheAsync(connectionTwo);
         connectionMultiplexerTwo.Configuration.Should().Be("server2:6380,allowAdmin=true");
 
-        IDistributedCache connectionOneAgain = connectionFactory.GetNamed("myRedisServiceOne").GetConnection();
+        IDistributedCache connectionOneAgain = connectorFactory.GetNamed("myRedisServiceOne").GetConnection();
         connectionOneAgain.Should().BeSameAs(connectionOne);
     }
 
@@ -232,12 +232,12 @@ public sealed class RedisConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<RedisOptions, IConnectionMultiplexer>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RedisOptions, IConnectionMultiplexer>>();
 
-        RedisOptions defaultOptions = connectionFactory.GetDefault().Options;
+        RedisOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
 
-        RedisOptions namedOptions = connectionFactory.GetNamed("myRedisService").Options;
+        RedisOptions namedOptions = connectorFactory.GetNamed("myRedisService").Options;
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -257,9 +257,9 @@ public sealed class RedisConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<RedisOptions, IConnectionMultiplexer>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RedisOptions, IConnectionMultiplexer>>();
 
-        RedisOptions defaultOptions = connectionFactory.GetDefault().Options;
+        RedisOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);

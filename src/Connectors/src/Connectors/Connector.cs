@@ -7,7 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Connectors;
 
-public sealed class ConnectionProvider<TOptions, TConnection> : IDisposable
+public sealed class Connector<TOptions, TConnection> : IDisposable
     where TOptions : ConnectionStringOptions
 {
     private readonly IOptionsMonitor<TOptions> _optionsMonitor;
@@ -38,8 +38,7 @@ public sealed class ConnectionProvider<TOptions, TConnection> : IDisposable
         }
     }
 
-    internal ConnectionProvider(IOptionsMonitor<TOptions> optionsMonitor, string name, Func<TOptions, string, object> createConnection,
-        bool useSingletonConnection)
+    internal Connector(IOptionsMonitor<TOptions> optionsMonitor, string name, Func<TOptions, string, object> createConnection, bool useSingletonConnection)
     {
         ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(name);
@@ -60,7 +59,7 @@ public sealed class ConnectionProvider<TOptions, TConnection> : IDisposable
     /// Gets a connection for this service binding. Depending on the connector type, this either creates a new connection or returns a cached instance.
     /// </summary>
     /// <returns>
-    /// The connection. Throws when the connection string is unavailable.
+    /// The connection.
     /// </returns>
     public TConnection GetConnection()
     {

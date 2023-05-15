@@ -36,17 +36,17 @@ public static class CosmosDbWebApplicationBuilderExtensions
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
         BaseWebApplicationBuilderExtensions.RegisterNamedOptions<CosmosDbOptions>(builder, "cosmosdb", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory(builder.Services, ConnectionType, true, createConnection);
+        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, ConnectionType, true, createConnection);
 
         return builder;
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
     {
-        string connectionString = ConnectionFactoryInvoker.GetConnectionString<CosmosDbOptions>(serviceProvider, bindingName, ConnectionType);
+        string connectionString = ConnectorFactoryInvoker.GetConnectionString<CosmosDbOptions>(serviceProvider, bindingName, ConnectionType);
         string serviceName = $"CosmosDB-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connectionString);
-        object cosmosClient = ConnectionFactoryInvoker.GetConnection<CosmosDbOptions>(serviceProvider, bindingName, ConnectionType);
+        object cosmosClient = ConnectorFactoryInvoker.GetConnection<CosmosDbOptions>(serviceProvider, bindingName, ConnectionType);
         var logger = serviceProvider.GetRequiredService<ILogger<CosmosDbHealthContributor>>();
 
         return new CosmosDbHealthContributor(cosmosClient, serviceName, hostName, logger);

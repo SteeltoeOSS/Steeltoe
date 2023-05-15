@@ -20,7 +20,7 @@ public static class PostgreSqlWebApplicationBuilderExtensions
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
         BaseWebApplicationBuilderExtensions.RegisterNamedOptions<PostgreSqlOptions>(builder, "postgresql", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory<PostgreSqlOptions>(builder.Services, ConnectionType, false, null);
+        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory<PostgreSqlOptions>(builder.Services, ConnectionType, false, null);
 
         return builder;
     }

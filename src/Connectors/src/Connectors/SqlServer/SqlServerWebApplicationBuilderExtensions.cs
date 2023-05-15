@@ -20,7 +20,7 @@ public static class SqlServerWebApplicationBuilderExtensions
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
         BaseWebApplicationBuilderExtensions.RegisterNamedOptions<SqlServerOptions>(builder, "sqlserver", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectionFactory<SqlServerOptions>(builder.Services, ConnectionType, false, null);
+        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory<SqlServerOptions>(builder.Services, ConnectionType, false, null);
 
         return builder;
     }

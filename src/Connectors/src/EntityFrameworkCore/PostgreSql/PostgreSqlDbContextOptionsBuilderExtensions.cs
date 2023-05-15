@@ -19,7 +19,7 @@ public static class PostgreSqlDbContextOptionsBuilderExtensions
         Type connectionType = PostgreSqlTypeLocator.NpgsqlConnection;
 
         string optionName = serviceBindingName ?? string.Empty;
-        string connectionString = ConnectionFactoryInvoker.GetConnectionString<PostgreSqlOptions>(serviceProvider, optionName, connectionType);
+        string connectionString = ConnectorFactoryInvoker.GetConnectionString<PostgreSqlOptions>(serviceProvider, optionName, connectionType);
 
         if (connectionString == null)
         {

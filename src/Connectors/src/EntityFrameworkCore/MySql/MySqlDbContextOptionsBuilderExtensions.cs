@@ -19,7 +19,7 @@ public static class MySqlDbContextOptionsBuilderExtensions
         Type connectionType = MySqlTypeLocator.MySqlConnection;
 
         string optionName = serviceBindingName ?? string.Empty;
-        string connectionString = ConnectionFactoryInvoker.GetConnectionString<MySqlOptions>(serviceProvider, optionName, connectionType);
+        string connectionString = ConnectorFactoryInvoker.GetConnectionString<MySqlOptions>(serviceProvider, optionName, connectionType);
 
         if (connectionString == null)
         {

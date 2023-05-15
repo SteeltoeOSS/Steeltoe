@@ -10,25 +10,25 @@ using Steeltoe.Common;
 namespace Steeltoe.Connectors;
 
 /// <summary>
-/// Provides access to named connections, whose connection strings originate from merging appsettings.json with cloud service bindings.
+/// Provides access to connectors, whose connection strings originate from merging appsettings.json with cloud service bindings.
 /// </summary>
 /// <typeparam name="TOptions">
 /// The options type, which provides the connection string.
 /// </typeparam>
 /// <typeparam name="TConnection">
-/// The connection type.
+/// The driver-specific connection type.
 /// </typeparam>
-public sealed class ConnectionFactory<TOptions, TConnection> : IDisposable
+public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
     where TOptions : ConnectionStringOptions
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly Func<TOptions, string, object> _createConnection;
     private readonly bool _useSingletonConnection;
-    private readonly ConcurrentDictionary<string, ConnectionProvider<TOptions, TConnection>> _namedConnectionProviders = new();
+    private readonly ConcurrentDictionary<string, Connector<TOptions, TConnection>> _namedConnectors = new();
 
     private IOptionsMonitor<TOptions> OptionsMonitor => _serviceProvider.GetRequiredService<IOptionsMonitor<TOptions>>();
 
-    public ConnectionFactory(IServiceProvider serviceProvider, Func<TOptions, string, object> createConnection, bool useSingletonConnection)
+    public ConnectorFactory(IServiceProvider serviceProvider, Func<TOptions, string, object> createConnection, bool useSingletonConnection)
     {
         ArgumentGuard.NotNull(createConnection);
         ArgumentGuard.NotNull(serviceProvider);
@@ -39,34 +39,33 @@ public sealed class ConnectionFactory<TOptions, TConnection> : IDisposable
     }
 
     /// <summary>
-    /// Gets a connection provider for the default service binding. Only use this if a single binding exists.
+    /// Gets a connector for the default service binding. Only use this if a single binding exists.
     /// </summary>
     /// <returns>
-    /// The connection provider.
+    /// The connector.
     /// </returns>
-    public ConnectionProvider<TOptions, TConnection> GetDefault()
+    public Connector<TOptions, TConnection> GetDefault()
     {
-        return GetCachedConnectionProvider(string.Empty);
+        return GetCachedConnector(string.Empty);
     }
 
     /// <summary>
-    /// Gets a connection provider for the specified service binding name.
+    /// Gets a connector for the specified service binding name.
     /// </summary>
     /// <param name="name">
     /// The service binding name.
     /// </param>
     /// <returns>
-    /// The connection provider.
+    /// The connector.
     /// </returns>
-    public ConnectionProvider<TOptions, TConnection> GetNamed(string name)
+    public Connector<TOptions, TConnection> GetNamed(string name)
     {
-        return GetCachedConnectionProvider(name);
+        return GetCachedConnector(name);
     }
 
-    private ConnectionProvider<TOptions, TConnection> GetCachedConnectionProvider(string name)
+    private Connector<TOptions, TConnection> GetCachedConnector(string name)
     {
-        return _namedConnectionProviders.GetOrAdd(name,
-            _ => new ConnectionProvider<TOptions, TConnection>(OptionsMonitor, name, _createConnection, _useSingletonConnection));
+        return _namedConnectors.GetOrAdd(name, _ => new Connector<TOptions, TConnection>(OptionsMonitor, name, _createConnection, _useSingletonConnection));
     }
 
     /// <inheritdoc />
@@ -74,9 +73,9 @@ public sealed class ConnectionFactory<TOptions, TConnection> : IDisposable
     {
         if (_useSingletonConnection)
         {
-            foreach (ConnectionProvider<TOptions, TConnection> connectionProvider in _namedConnectionProviders.Values)
+            foreach (Connector<TOptions, TConnection> connector in _namedConnectors.Values)
             {
-                connectionProvider.Dispose();
+                connector.Dispose();
 
                 // Don't clear the collection, so that allocated providers will throw when reused after dispose.
             }

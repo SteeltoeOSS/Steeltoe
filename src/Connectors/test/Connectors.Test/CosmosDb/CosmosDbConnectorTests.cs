@@ -179,7 +179,7 @@ public sealed class CosmosDbConnectorTests
     }
 
     [Fact]
-    public async Task Registers_ConnectionFactory()
+    public async Task Registers_ConnectorFactory()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -206,15 +206,15 @@ public sealed class CosmosDbConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<CosmosDbOptions, CosmosClient>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<CosmosDbOptions, CosmosClient>>();
 
-        CosmosClient connectionOne = connectionFactory.GetNamed("myCosmosDbServiceOne").GetConnection();
+        CosmosClient connectionOne = connectorFactory.GetNamed("myCosmosDbServiceOne").GetConnection();
         connectionOne.ClientOptions.ConsistencyLevel.Should().Be(ConsistencyLevel.Eventual);
 
-        CosmosClient connectionTwo = connectionFactory.GetNamed("myCosmosDbServiceTwo").GetConnection();
+        CosmosClient connectionTwo = connectorFactory.GetNamed("myCosmosDbServiceTwo").GetConnection();
         connectionTwo.ClientOptions.ConsistencyLevel.Should().BeNull();
 
-        CosmosClient connectionOneAgain = connectionFactory.GetNamed("myCosmosDbServiceOne").GetConnection();
+        CosmosClient connectionOneAgain = connectorFactory.GetNamed("myCosmosDbServiceOne").GetConnection();
         connectionOneAgain.Should().BeSameAs(connectionOne);
     }
 
@@ -253,13 +253,13 @@ public sealed class CosmosDbConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<CosmosDbOptions, CosmosClient>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<CosmosDbOptions, CosmosClient>>();
 
-        CosmosDbOptions defaultOptions = connectionFactory.GetDefault().Options;
+        CosmosDbOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNull();
         defaultOptions.Database.Should().NotBeNull();
 
-        CosmosDbOptions namedOptions = connectionFactory.GetNamed("myCosmosDbService").Options;
+        CosmosDbOptions namedOptions = connectorFactory.GetNamed("myCosmosDbService").Options;
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
         namedOptions.Database.Should().Be(defaultOptions.Database);
 
@@ -282,9 +282,9 @@ public sealed class CosmosDbConnectorTests
 
         await using WebApplication app = builder.Build();
 
-        var connectionFactory = app.Services.GetRequiredService<ConnectionFactory<CosmosDbOptions, CosmosClient>>();
+        var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<CosmosDbOptions, CosmosClient>>();
 
-        CosmosDbOptions defaultOptions = connectionFactory.GetDefault().Options;
+        CosmosDbOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNull();
         defaultOptions.Database.Should().Be("db");
 
