@@ -765,17 +765,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         var secrets = new[]
         {
-            Tuple.Create("client-name", "test-client-name"),
-            Tuple.Create("cluster.max-redirects", "test-cluster-max-redirects"),
-            Tuple.Create("cluster.nodes", "test-cluster-nodes"),
-            Tuple.Create("database", "test-database"),
-            Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
-            Tuple.Create("port", "test-port"),
-            Tuple.Create("sentinel.master", "test-sentinel-master"),
-            Tuple.Create("sentinel.nodes", "test-sentinel-nodes"),
-            Tuple.Create("ssl", "test-ssl"),
-            Tuple.Create("url", "test-url")
+            Tuple.Create("host", "test-host")
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RedisPostProcessor.BindingType, secrets);
@@ -784,7 +774,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:clientName");
+        configurationData.Should().NotContainKey($"{keyPrefix}:host");
     }
 
     [Fact]
@@ -794,17 +784,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         var secrets = new[]
         {
-            Tuple.Create("client-name", "test-client-name"),
-            Tuple.Create("cluster.max-redirects", "test-cluster-max-redirects"),
-            Tuple.Create("cluster.nodes", "test-cluster-nodes"),
-            Tuple.Create("database", "test-database"),
             Tuple.Create("host", "test-host"),
-            Tuple.Create("password", "test-password"),
             Tuple.Create("port", "test-port"),
-            Tuple.Create("sentinel.master", "test-sentinel-master"),
-            Tuple.Create("sentinel.nodes", "test-sentinel-nodes"),
             Tuple.Create("ssl", "test-ssl"),
-            Tuple.Create("url", "test-url")
+            Tuple.Create("password", "test-password"),
+            Tuple.Create("database", "test-database"),
+            Tuple.Create("client-name", "test-client-name")
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RedisPostProcessor.BindingType, secrets);
@@ -813,17 +798,12 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:clientName"].Should().Be("test-client-name");
-        configurationData[$"{keyPrefix}:clusterMaxRedirects"].Should().Be("test-cluster-max-redirects");
-        configurationData[$"{keyPrefix}:clusterNodes"].Should().Be("test-cluster-nodes");
-        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
         configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:sentinelMaster"].Should().Be("test-sentinel-master");
-        configurationData[$"{keyPrefix}:sentinelNodes"].Should().Be("test-sentinel-nodes");
         configurationData[$"{keyPrefix}:ssl"].Should().Be("test-ssl");
-        configurationData[$"{keyPrefix}:url"].Should().Be("test-url");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+        configurationData[$"{keyPrefix}:defaultDatabase"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:name"].Should().Be("test-client-name");
     }
 
     [Fact]

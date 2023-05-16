@@ -30,7 +30,7 @@ using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Kubernetes;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
-using Steeltoe.Connector;
+using Steeltoe.Connectors;
 using Steeltoe.Discovery;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Logging;
@@ -138,7 +138,7 @@ public class HostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeConnector
+            SteeltoeAssemblies.SteeltoeConnectors
         });
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));

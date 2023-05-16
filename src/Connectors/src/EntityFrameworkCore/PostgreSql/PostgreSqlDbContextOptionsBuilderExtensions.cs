@@ -4,9 +4,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using Steeltoe.Common;
-using Steeltoe.Connector.PostgreSql;
+using Steeltoe.Connectors.PostgreSql;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.PostgreSql;
+namespace Steeltoe.Connectors.EntityFrameworkCore.PostgreSql;
 
 public static class PostgreSqlDbContextOptionsBuilderExtensions
 {
@@ -19,7 +19,7 @@ public static class PostgreSqlDbContextOptionsBuilderExtensions
         Type connectionType = PostgreSqlTypeLocator.NpgsqlConnection;
 
         string optionName = serviceBindingName ?? string.Empty;
-        string connectionString = ConnectionFactoryInvoker.GetConnectionString<PostgreSqlOptions>(serviceProvider, optionName, connectionType);
+        string connectionString = ConnectorFactoryInvoker.GetConnectionString<PostgreSqlOptions>(serviceProvider, optionName, connectionType);
 
         if (connectionString == null)
         {

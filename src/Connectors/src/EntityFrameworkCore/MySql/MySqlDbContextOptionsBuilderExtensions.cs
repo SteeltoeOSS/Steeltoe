@@ -4,9 +4,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using Steeltoe.Common;
-using Steeltoe.Connector.MySql;
+using Steeltoe.Connectors.MySql;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.MySql;
+namespace Steeltoe.Connectors.EntityFrameworkCore.MySql;
 
 public static class MySqlDbContextOptionsBuilderExtensions
 {
@@ -19,7 +19,7 @@ public static class MySqlDbContextOptionsBuilderExtensions
         Type connectionType = MySqlTypeLocator.MySqlConnection;
 
         string optionName = serviceBindingName ?? string.Empty;
-        string connectionString = ConnectionFactoryInvoker.GetConnectionString<MySqlOptions>(serviceProvider, optionName, connectionType);
+        string connectionString = ConnectorFactoryInvoker.GetConnectionString<MySqlOptions>(serviceProvider, optionName, connectionType);
 
         if (connectionString == null)
         {

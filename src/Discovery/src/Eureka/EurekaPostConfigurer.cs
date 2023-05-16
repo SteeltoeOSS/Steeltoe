@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 using Steeltoe.Discovery.Client;
 
 namespace Steeltoe.Discovery.Eureka;

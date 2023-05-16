@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.Reflection;
 
-namespace Steeltoe.Connector.EntityFrameworkCore;
+namespace Steeltoe.Connectors.EntityFrameworkCore;
 
 /// <summary>
 /// Assemblies and types for interacting with Entity Framework Core.

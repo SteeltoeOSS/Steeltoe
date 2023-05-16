@@ -4,9 +4,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using Steeltoe.Common;
-using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connectors.SqlServer;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.SqlServer;
+namespace Steeltoe.Connectors.EntityFrameworkCore.SqlServer;
 
 public static class SqlServerDbContextOptionsBuilderExtensions
 {
@@ -19,7 +19,7 @@ public static class SqlServerDbContextOptionsBuilderExtensions
         Type connectionType = SqlServerTypeLocator.SqlConnection;
 
         string optionName = serviceBindingName ?? string.Empty;
-        string connectionString = ConnectionFactoryInvoker.GetConnectionString<SqlServerOptions>(serviceProvider, optionName, connectionType);
+        string connectionString = ConnectorFactoryInvoker.GetConnectionString<SqlServerOptions>(serviceProvider, optionName, connectionType);
 
         if (connectionString == null)
         {

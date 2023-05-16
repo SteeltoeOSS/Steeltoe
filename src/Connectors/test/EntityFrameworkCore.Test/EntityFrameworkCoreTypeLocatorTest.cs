@@ -4,7 +4,7 @@
 
 using Xunit;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.Test;
+namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
 
 public class EntityFrameworkCoreTypeLocatorTest
 {

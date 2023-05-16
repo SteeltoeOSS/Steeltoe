@@ -4,7 +4,7 @@
 
 using System.Net;
 
-namespace Steeltoe.Connector.Services;
+namespace Steeltoe.Connectors.Services;
 
 public abstract class UriServiceInfo : ServiceInfo
 {

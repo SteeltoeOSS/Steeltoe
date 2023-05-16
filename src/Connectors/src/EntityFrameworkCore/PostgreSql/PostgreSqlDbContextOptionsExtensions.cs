@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.PostgreSql;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.PostgreSql;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.PostgreSql;
+namespace Steeltoe.Connectors.EntityFrameworkCore.PostgreSql;
 
 public static class PostgreSqlDbContextOptionsExtensions
 {

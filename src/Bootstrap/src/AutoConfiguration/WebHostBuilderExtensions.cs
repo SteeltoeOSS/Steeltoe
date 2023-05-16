@@ -14,14 +14,14 @@ using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Kubernetes;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
-using Steeltoe.Connector;
-using Steeltoe.Connector.MongoDb;
-using Steeltoe.Connector.MySql;
-using Steeltoe.Connector.Oracle;
-using Steeltoe.Connector.PostgreSql;
-using Steeltoe.Connector.RabbitMQ;
-using Steeltoe.Connector.Redis;
-using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connectors;
+using Steeltoe.Connectors.MongoDb;
+using Steeltoe.Connectors.MySql;
+using Steeltoe.Connectors.Oracle;
+using Steeltoe.Connectors.PostgreSql;
+using Steeltoe.Connectors.RabbitMQ;
+using Steeltoe.Connectors.Redis;
+using Steeltoe.Connectors.SqlServer;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
@@ -78,7 +78,7 @@ public static class WebHostBuilderExtensions
 
         hostBuilder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholder);
 
-        if (hostBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.SteeltoeConnector))
+        if (hostBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.SteeltoeConnectors))
         {
             hostBuilder.WireIfAnyLoaded(WireMySqlConnection, MySqlTypeLocator.Assemblies);
             hostBuilder.WireIfAnyLoaded(WireMongoClient, MongoDbTypeLocator.Assemblies);

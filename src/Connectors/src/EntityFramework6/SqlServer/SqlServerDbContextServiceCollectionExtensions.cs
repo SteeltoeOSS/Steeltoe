@@ -8,11 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.Services;
-using Steeltoe.Connector.SqlServer;
-using Steeltoe.Connector.SqlServer.EntityFramework6;
+using Steeltoe.Connectors.Services;
+using Steeltoe.Connectors.SqlServer;
+using Steeltoe.Connectors.SqlServer.EntityFramework6;
 
-namespace Steeltoe.Connector.EntityFramework6.SqlServer;
+namespace Steeltoe.Connectors.EntityFramework6.SqlServer;
 
 public static class SqlServerDbContextServiceCollectionExtensions
 {

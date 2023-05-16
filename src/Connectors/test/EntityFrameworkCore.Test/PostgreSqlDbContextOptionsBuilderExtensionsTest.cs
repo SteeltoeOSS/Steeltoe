@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Connector.EntityFrameworkCore.PostgreSql;
-using Steeltoe.Connector.PostgreSql;
+using Steeltoe.Connectors.EntityFrameworkCore.PostgreSql;
+using Steeltoe.Connectors.PostgreSql;
 using Xunit;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.Test;
+namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
 
 public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
 {

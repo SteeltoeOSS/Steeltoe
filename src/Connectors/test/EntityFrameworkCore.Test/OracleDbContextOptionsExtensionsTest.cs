@@ -4,10 +4,10 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector.EntityFrameworkCore.Oracle;
+using Steeltoe.Connectors.EntityFrameworkCore.Oracle;
 using Xunit;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.Test;
+namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
 
 public class OracleDbContextOptionsExtensionsTest
 {

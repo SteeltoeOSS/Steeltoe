@@ -11,10 +11,10 @@ using Npgsql;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
-using Steeltoe.Connector.EntityFrameworkCore.PostgreSql;
+using Steeltoe.Connectors.EntityFrameworkCore.PostgreSql;
 using Xunit;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.Test;
+namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
 
 public class PostgreSqlDbContextOptionsExtensionsTest
 {

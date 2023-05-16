@@ -102,6 +102,7 @@ public static class ConfigurationBuilderExtensions
         source.RegisterPostProcessor(new MongoDbPostProcessor());
         source.RegisterPostProcessor(new CosmosDbPostProcessor());
         source.RegisterPostProcessor(new RabbitMQPostProcessor());
+        source.RegisterPostProcessor(new RedisPostProcessor());
 
         builder.Add(source);
         return builder;

@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="$(MoqVersion)" />
+    <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="$(HealthChecksVersion)" />
+    <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="$(HealthChecksVersion)" />
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="$(HealthChecksVersion)" />
+    <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="$(HealthChecksRabbitVersion)" />
+    <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="$(HealthChecksVersion)" />
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="$(HealthChecksVersion)" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="$(MicrosoftAzureCosmosVersion)" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="$(OracleVersion)" />
+    <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="$(MicrosoftSqlClientVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />
+    <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />
+    <PackageReference Include="MySql.Data" Version="$(MySqlV8)" />
+    <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
+    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientTestVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry.ServiceBinding\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Configuration.CloudFoundry.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\Kubernetes.ServiceBinding\Steeltoe.Configuration.Kubernetes.ServiceBinding.csproj" />
+    <ProjectReference Include="..\..\src\Connectors\Steeltoe.Connectors.csproj" />
+    <ProjectReference Include="..\..\src\CloudFoundry\Steeltoe.Connectors.CloudFoundry.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="resources\bindings\customer-profiles\database">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\bindings\customer-profiles\host">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\bindings\customer-profiles\password">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\bindings\customer-profiles\provider">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\bindings\customer-profiles\type">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\bindings\customer-profiles\username">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

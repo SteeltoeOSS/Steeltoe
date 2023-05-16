@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Connector.CloudFoundry;
+namespace Steeltoe.Connectors.CloudFoundry;
 
 public static class CloudFoundryConnector
 {
     /// <summary>
-    /// Use this method to ensure Steeltoe.Connector.CloudFoundry is loaded.
+    /// Use this method to ensure Steeltoe.Connectors.CloudFoundry is loaded.
     /// </summary>
     public static void EnsureAssemblyIsLoaded()
     {
