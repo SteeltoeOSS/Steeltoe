@@ -2,17 +2,28 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data.Common;
+#nullable enable
+
+using Steeltoe.Common;
+using Steeltoe.Connectors.MySql.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.MySql;
 
 internal sealed class MySqlConnectionStringPostProcessor : ConnectionStringPostProcessor
 {
+    private readonly MySqlPackageResolver _packageResolver;
+
     protected override string BindingType => "mysql";
+
+    public MySqlConnectionStringPostProcessor(MySqlPackageResolver packageResolver)
+    {
+        ArgumentGuard.NotNull(packageResolver);
+        _packageResolver = packageResolver;
+    }
 
     protected override IConnectionStringBuilder CreateConnectionStringBuilder()
     {
-        var dbConnectionStringBuilder = (DbConnectionStringBuilder)Activator.CreateInstance(MySqlTypeLocator.MySqlConnectionStringBuilderType)!;
-        return new DbConnectionStringBuilderWrapper(dbConnectionStringBuilder);
+        var mySqlConnectionStringBuilderShim = MySqlConnectionStringBuilderShim.CreateInstance(_packageResolver);
+        return new DbConnectionStringBuilderWrapper(mySqlConnectionStringBuilderShim.Instance);
     }
 }

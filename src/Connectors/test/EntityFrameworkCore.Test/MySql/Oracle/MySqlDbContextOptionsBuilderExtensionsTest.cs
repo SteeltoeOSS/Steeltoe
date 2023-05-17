@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Connectors.EntityFrameworkCore.MySql.RuntimeTypeAccess;
 using Steeltoe.Connectors.MySql;
+using Steeltoe.Connectors.MySql.RuntimeTypeAccess;
 using Xunit;
 using SteeltoeExtensions = Steeltoe.Connectors.EntityFrameworkCore.MySql.MySqlDbContextOptionsBuilderExtensions;
 
-namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
+namespace Steeltoe.Connectors.EntityFrameworkCore.Test.MySql.Oracle;
 
 public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 {
@@ -25,11 +27,11 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
             ["Steeltoe:Client:MySql:Default:ConnectionString"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;connect timeout=15"
         });
 
-        builder.AddMySql();
+        builder.AddMySql(MySqlPackageResolver.CreateForOnlyOracle());
         builder.Services.Configure<MySqlOptions>(options => options.ConnectionString += ";Use Compression=false");
 
-        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) =>
-            SteeltoeExtensions.UseMySql(options, serviceProvider, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
+            MySqlEntityFrameworkCorePackageResolver.CreateForOnlyOracle()));
 
         await using WebApplication app = builder.Build();
 
@@ -49,11 +51,11 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
             ["Steeltoe:Client:MySql:myMySqlService:ConnectionString"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;connect timeout=15"
         });
 
-        builder.AddMySql();
+        builder.AddMySql(MySqlPackageResolver.CreateForOnlyOracle());
         builder.Services.Configure<MySqlOptions>("myMySqlService", options => options.ConnectionString += ";Use Compression=false");
 
-        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) =>
-            SteeltoeExtensions.UseMySql(options, serviceProvider, "myMySqlService", MySqlServerVersion.LatestSupportedServerVersion));
+        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
+            MySqlEntityFrameworkCorePackageResolver.CreateForOnlyOracle(), "myMySqlService"));
 
         await using WebApplication app = builder.Build();
 
@@ -67,8 +69,10 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
     public async Task Throws_for_unknown_service_binding()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.AddMySql();
-        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider, "unknownService"));
+        builder.AddMySql(MySqlPackageResolver.CreateForOnlyOracle());
+
+        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
+            MySqlEntityFrameworkCorePackageResolver.CreateForOnlyOracle(), "unknownService"));
 
         await using WebApplication app = builder.Build();
 

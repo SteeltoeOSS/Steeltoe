@@ -2,8 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.EntityFrameworkCore;
 using Steeltoe.Common;
+using Steeltoe.Connectors.EntityFrameworkCore.MySql.RuntimeTypeAccess;
 using Steeltoe.Connectors.MySql;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.MySql;
@@ -11,22 +14,30 @@ namespace Steeltoe.Connectors.EntityFrameworkCore.MySql;
 public static class MySqlDbContextOptionsBuilderExtensions
 {
     public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,
-        string serviceBindingName = null, object serverVersion = null, Action<object> mySqlOptionsAction = null)
+        string? serviceBindingName = null, object? serverVersion = null, Action<object>? mySqlOptionsAction = null)
+    {
+        return UseMySql(optionsBuilder, serviceProvider, new MySqlEntityFrameworkCorePackageResolver(), serviceBindingName, serverVersion, mySqlOptionsAction);
+    }
+
+    internal static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,
+        MySqlEntityFrameworkCorePackageResolver packageResolver, string? serviceBindingName = null, object? serverVersion = null,
+        Action<object>? mySqlOptionsAction = null)
     {
         ArgumentGuard.NotNull(optionsBuilder);
         ArgumentGuard.NotNull(serviceProvider);
-
-        Type connectionType = MySqlTypeLocator.MySqlConnection;
+        ArgumentGuard.NotNull(packageResolver);
 
         string optionName = serviceBindingName ?? string.Empty;
-        string connectionString = ConnectorFactoryInvoker.GetConnectionString<MySqlOptions>(serviceProvider, optionName, connectionType);
+
+        string connectionString =
+            ConnectorFactoryInvoker.GetConnectionString<MySqlOptions>(serviceProvider, optionName, packageResolver.MySqlConnectionClass.Type);
 
         if (connectionString == null)
         {
             throw new InvalidOperationException($"Connection string for service binding '{serviceBindingName}' not found.");
         }
 
-        MySqlDbContextOptionsExtensions.DoUseMySql(optionsBuilder, connectionString, mySqlOptionsAction, serverVersion);
+        MySqlDbContextOptionsExtensionsShim.UseMySql(packageResolver, optionsBuilder, connectionString, serverVersion, mySqlOptionsAction);
 
         return optionsBuilder;
     }

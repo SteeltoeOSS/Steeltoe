@@ -26,8 +26,6 @@ public static class EntityFrameworkCoreTypeLocator
     /// </summary>
     public static string[] MySqlEntityTypeNames { get; internal set; } =
     {
-        "MySQL.Data.EntityFrameworkCore.Extensions.MySQLDbContextOptionsExtensions",
-        "Microsoft.EntityFrameworkCore.MySqlDbContextOptionsExtensions",
         "Microsoft.EntityFrameworkCore.MySQLDbContextOptionsExtensions",
         "Microsoft.EntityFrameworkCore.MySqlDbContextOptionsBuilderExtensions"
     };
