@@ -2,51 +2,57 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Data.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connectors.CosmosDb.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.CosmosDb;
 
-public delegate object CreateCosmosClient(CosmosDbOptions options, string serviceBindingName);
+public delegate IDisposable CreateCosmosClient(CosmosDbOptions options, string serviceBindingName);
 
 public static class CosmosDbWebApplicationBuilderExtensions
 {
-    private static readonly Type ConnectionType = CosmosDbTypeLocator.CosmosClient;
-
-    public static WebApplicationBuilder AddCosmosDb(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddCosmosDb(this WebApplicationBuilder builder, CreateCosmosClient? createCosmosClient = null)
     {
-        // CosmosClient has no constructor with only connection string parameter, so pass null for CosmosClientOptions parameter.
-        CreateCosmosClient createCosmosClient = (options, _) => Activator.CreateInstance(ConnectionType, options.ConnectionString, null);
-
-        return AddCosmosDb(builder, createCosmosClient);
+        return AddCosmosDb(builder, new CosmosDbPackageResolver(), createCosmosClient);
     }
 
-    public static WebApplicationBuilder AddCosmosDb(this WebApplicationBuilder builder, CreateCosmosClient createCosmosClient)
+    private static WebApplicationBuilder AddCosmosDb(this WebApplicationBuilder builder, CosmosDbPackageResolver packageResolver,
+        CreateCosmosClient? createCosmosClient)
     {
         ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(createCosmosClient);
+        ArgumentGuard.NotNull(packageResolver);
 
         var connectionStringPostProcessor = new CosmosDbConnectionStringPostProcessor();
 
-        Func<CosmosDbOptions, string, object> createConnection = (options, serviceBindingName) => createCosmosClient(options, serviceBindingName);
+        Func<CosmosDbOptions, string, object> createConnection = (options, serviceBindingName) => createCosmosClient != null
+            ? createCosmosClient(options, serviceBindingName)
+            : CosmosClientShim.CreateInstance(packageResolver, options.ConnectionString).Instance;
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<CosmosDbOptions>(builder, "cosmosdb", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, ConnectionType, true, createConnection);
+
+        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<CosmosDbOptions>(builder, "cosmosdb",
+            (serviceProvider, bindingName) => CreateHealthContributor(serviceProvider, bindingName, packageResolver));
+
+        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, packageResolver.CosmosClientClass.Type, true, createConnection);
 
         return builder;
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
+    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName, CosmosDbPackageResolver packageResolver)
     {
-        string connectionString = ConnectorFactoryInvoker.GetConnectionString<CosmosDbOptions>(serviceProvider, bindingName, ConnectionType);
+        string connectionString =
+            ConnectorFactoryInvoker.GetConnectionString<CosmosDbOptions>(serviceProvider, bindingName, packageResolver.CosmosClientClass.Type);
+
         string serviceName = $"CosmosDB-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connectionString);
-        object cosmosClient = ConnectorFactoryInvoker.GetConnection<CosmosDbOptions>(serviceProvider, bindingName, ConnectionType);
+        object cosmosClient = ConnectorFactoryInvoker.GetConnection<CosmosDbOptions>(serviceProvider, bindingName, packageResolver.CosmosClientClass.Type);
         var logger = serviceProvider.GetRequiredService<ILogger<CosmosDbHealthContributor>>();
 
         return new CosmosDbHealthContributor(cosmosClient, serviceName, hostName, logger);

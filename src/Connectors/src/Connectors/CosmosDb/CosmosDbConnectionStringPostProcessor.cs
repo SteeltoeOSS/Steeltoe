@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Data.Common;
 
 namespace Steeltoe.Connectors.CosmosDb;
@@ -18,7 +20,7 @@ internal sealed class CosmosDbConnectionStringPostProcessor : ConnectionStringPo
 
     protected override bool IsPartOfConnectionString(string secretName)
     {
-        return string.Equals(secretName, "accountEndpoint", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(secretName, "accountKey", StringComparison.OrdinalIgnoreCase);
+        return string.Equals(secretName, "AccountEndpoint", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(secretName, "AccountKey", StringComparison.OrdinalIgnoreCase);
     }
 }
