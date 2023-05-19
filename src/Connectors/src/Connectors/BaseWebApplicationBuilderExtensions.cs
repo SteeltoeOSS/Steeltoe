@@ -4,7 +4,6 @@
 
 using System.Data;
 using System.Data.Common;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -109,30 +108,23 @@ internal static class BaseWebApplicationBuilderExtensions
     {
         Type connectorFactoryType = ConnectorFactoryInvoker.MakeConnectorFactoryType<TOptions>(connectionType);
 
-        createConnection = WrapCreateConnection(createConnection, connectionType);
+        createConnection = InvokeCreateConnection(createConnection, connectionType);
 
         services.AddSingleton(connectorFactoryType,
             serviceProvider => ConnectorFactoryInvoker.CreateConnectorFactory(serviceProvider, connectorFactoryType, useSingletonConnection, createConnection));
     }
 
-    private static Func<TOptions, string, object> WrapCreateConnection<TOptions>(Func<TOptions, string, object> createConnection, Type connectionType)
+    private static Func<TOptions, string, object> InvokeCreateConnection<TOptions>(Func<TOptions, string, object> createConnection, Type connectionType)
         where TOptions : ConnectionStringOptions
     {
         return (options, serviceBindingName) =>
         {
-            try
+            if (createConnection != null)
             {
-                if (createConnection != null)
-                {
-                    return createConnection(options, serviceBindingName);
-                }
+                return createConnection(options, serviceBindingName);
+            }
 
-                return Activator.CreateInstance(connectionType, options.ConnectionString);
-            }
-            catch (TargetInvocationException exception)
-            {
-                throw exception.InnerException ?? exception;
-            }
+            return Activator.CreateInstance(connectionType, options.ConnectionString);
         };
     }
 }
