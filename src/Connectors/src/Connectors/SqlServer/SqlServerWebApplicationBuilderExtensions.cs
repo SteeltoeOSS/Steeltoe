@@ -2,32 +2,42 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.SqlServer;
 
 public static class SqlServerWebApplicationBuilderExtensions
 {
-    private static readonly Type ConnectionType = SqlServerTypeLocator.SqlConnection;
-
     public static WebApplicationBuilder AddSqlServer(this WebApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        return AddSqlServer(builder, new SqlServerPackageResolver());
+    }
 
-        var connectionStringPostProcessor = new SqlServerConnectionStringPostProcessor();
+    internal static WebApplicationBuilder AddSqlServer(this WebApplicationBuilder builder, SqlServerPackageResolver packageResolver)
+    {
+        ArgumentGuard.NotNull(builder);
+        ArgumentGuard.NotNull(packageResolver);
+
+        var connectionStringPostProcessor = new SqlServerConnectionStringPostProcessor(packageResolver);
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<SqlServerOptions>(builder, "sqlserver", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory<SqlServerOptions>(builder.Services, ConnectionType, false, null);
+
+        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<SqlServerOptions>(builder, "sqlserver",
+            (serviceProvider, bindingName) => CreateHealthContributor(serviceProvider, bindingName, packageResolver));
+
+        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory<SqlServerOptions>(builder.Services, packageResolver.SqlConnectionClass.Type, false, null);
 
         return builder;
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
+    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName, SqlServerPackageResolver packageResolver)
     {
-        return BaseWebApplicationBuilderExtensions.CreateRelationalHealthContributor<SqlServerOptions>(serviceProvider, bindingName, ConnectionType,
-            "SqlServer", "Data Source");
+        return BaseWebApplicationBuilderExtensions.CreateRelationalHealthContributor<SqlServerOptions>(serviceProvider, bindingName,
+            packageResolver.SqlConnectionClass.Type, "SqlServer", "Data Source");
     }
 }

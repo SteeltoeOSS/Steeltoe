@@ -9,9 +9,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Connectors.EntityFrameworkCore.SqlServer;
 using Steeltoe.Connectors.SqlServer;
+using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 using Xunit;
 
-namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
+namespace Steeltoe.Connectors.EntityFrameworkCore.Test.SqlServer;
 
 public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
 {
@@ -25,7 +26,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
             ["Steeltoe:Client:SqlServer:Default:ConnectionString"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;Max Pool Size=50"
         });
 
-        builder.AddSqlServer();
+        builder.AddSqlServer(SqlServerPackageResolver.CreateForOnlyMicrosoftData());
         builder.Services.Configure<SqlServerOptions>(options => options.ConnectionString += ";Encrypt=false");
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseSqlServer(serviceProvider));
@@ -48,7 +49,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
             ["Steeltoe:Client:SqlServer:mySqlServerService:ConnectionString"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;Max Pool Size=50"
         });
 
-        builder.AddSqlServer();
+        builder.AddSqlServer(SqlServerPackageResolver.CreateForOnlyMicrosoftData());
         builder.Services.Configure<SqlServerOptions>("mySqlServerService", options => options.ConnectionString += ";Encrypt=false");
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseSqlServer(serviceProvider, "mySqlServerService"));
@@ -65,7 +66,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
     public async Task Throws_for_unknown_service_binding()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.AddSqlServer();
+        builder.AddSqlServer(SqlServerPackageResolver.CreateForOnlyMicrosoftData());
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseSqlServer(serviceProvider, "unknownService"));
 

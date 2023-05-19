@@ -91,7 +91,7 @@ public static class SqlServerDbContextOptionsExtensions
         return factory.CreateConnectionString();
     }
 
-    internal static DbContextOptionsBuilder DoUseSqlServer(DbContextOptionsBuilder builder, string connection, object sqlServerOptionsAction = null)
+    private static DbContextOptionsBuilder DoUseSqlServer(DbContextOptionsBuilder builder, string connection, object sqlServerOptionsAction = null)
     {
         Type extensionType = EntityFrameworkCoreTypeLocator.SqlServerDbContextOptionsType;
 
