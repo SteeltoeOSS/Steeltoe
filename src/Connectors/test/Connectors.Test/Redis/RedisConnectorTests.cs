@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Net;
 using System.Reflection;
 using FluentAssertions;
@@ -135,11 +137,9 @@ public sealed class RedisConnectorTests
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<RedisOptions>>();
 
         RedisOptions optionsOne = optionsMonitor.Get("myRedisServiceOne");
-        optionsOne.Should().NotBeNull();
         optionsOne.ConnectionString.Should().Be("10.0.4.17:34029,keepAlive=30,password=36c5b850-3b44-4bcb-8b2f-510eeb9b1c6e");
 
         RedisOptions optionsTwo = optionsMonitor.Get("myRedisServiceTwo");
-        optionsTwo.Should().NotBeNull();
         optionsTwo.ConnectionString.Should().Be("10.0.4.17:44369,password=aa786395-98c3-4e7e-aee4-ca02e5a8590a");
     }
 
@@ -269,12 +269,12 @@ public sealed class RedisConnectorTests
     {
         _ = await redisCache.GetAsync("ignored");
         FieldInfo connectionField = typeof(RedisCache).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        return (FakeConnectionMultiplexer)connectionField.GetValue(redisCache);
+        return (FakeConnectionMultiplexer)connectionField.GetValue(redisCache)!;
     }
 
     private sealed class FakeConnectionMultiplexer : IConnectionMultiplexer
     {
-        public string Configuration { get; }
+        public string? Configuration { get; }
         public string ClientName => "FakeClientName";
 
         public int TimeoutMilliseconds => throw new NotImplementedException();
@@ -343,7 +343,7 @@ public sealed class RedisConnectorTests
             remove => throw new NotImplementedException();
         }
 
-        public FakeConnectionMultiplexer(string connectionString)
+        public FakeConnectionMultiplexer(string? connectionString)
         {
             Configuration = connectionString;
         }
@@ -387,22 +387,22 @@ public sealed class RedisConnectorTests
             throw new NotImplementedException();
         }
 
-        public ISubscriber GetSubscriber(object asyncState = null)
+        public ISubscriber GetSubscriber(object? asyncState = null)
         {
             throw new NotImplementedException();
         }
 
-        public IDatabase GetDatabase(int db = -1, object asyncState = null)
+        public IDatabase GetDatabase(int db = -1, object? asyncState = null)
         {
             return new FakeDatabase();
         }
 
-        public IServer GetServer(string host, int port, object asyncState = null)
+        public IServer GetServer(string host, int port, object? asyncState = null)
         {
             throw new NotImplementedException();
         }
 
-        public IServer GetServer(string hostAndPort, object asyncState = null)
+        public IServer GetServer(string hostAndPort, object? asyncState = null)
         {
             throw new NotImplementedException();
         }
@@ -412,17 +412,17 @@ public sealed class RedisConnectorTests
             throw new NotImplementedException();
         }
 
-        public IServer GetServer(EndPoint endpoint, object asyncState = null)
+        public IServer GetServer(EndPoint endpoint, object? asyncState = null)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> ConfigureAsync(TextWriter log = null)
+        public Task<bool> ConfigureAsync(TextWriter? log = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool Configure(TextWriter log = null)
+        public bool Configure(TextWriter? log = null)
         {
             throw new NotImplementedException();
         }
@@ -918,24 +918,24 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public Task<RedisResult> ScriptEvaluateAsync(string script, RedisKey[] keys = null, RedisValue[] values = null,
+            public Task<RedisResult> ScriptEvaluateAsync(string script, RedisKey[]? keys = null, RedisValue[]? values = null,
                 CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<RedisResult> ScriptEvaluateAsync(byte[] hash, RedisKey[] keys = null, RedisValue[] values = null,
+            public Task<RedisResult> ScriptEvaluateAsync(byte[] hash, RedisKey[]? keys = null, RedisValue[]? values = null,
                 CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<RedisResult> ScriptEvaluateAsync(LuaScript script, object parameters = null, CommandFlags flags = CommandFlags.None)
+            public Task<RedisResult> ScriptEvaluateAsync(LuaScript script, object? parameters = null, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<RedisResult> ScriptEvaluateAsync(LoadedLuaScript script, object parameters = null, CommandFlags flags = CommandFlags.None)
+            public Task<RedisResult> ScriptEvaluateAsync(LoadedLuaScript script, object? parameters = null, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1028,13 +1028,13 @@ public sealed class RedisConnectorTests
             }
 
             public Task<RedisValue[]> SortAsync(RedisKey key, long skip = 0, long take = -1, Order order = Order.Ascending,
-                SortType sortType = SortType.Numeric, RedisValue by = default, RedisValue[] get = null, CommandFlags flags = CommandFlags.None)
+                SortType sortType = SortType.Numeric, RedisValue by = default, RedisValue[]? get = null, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
 
             public Task<long> SortAndStoreAsync(RedisKey destination, RedisKey key, long skip = 0, long take = -1, Order order = Order.Ascending,
-                SortType sortType = SortType.Numeric, RedisValue by = default, RedisValue[] get = null, CommandFlags flags = CommandFlags.None)
+                SortType sortType = SortType.Numeric, RedisValue by = default, RedisValue[]? get = null, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1065,7 +1065,7 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public Task<long> SortedSetCombineAndStoreAsync(SetOperation operation, RedisKey destination, RedisKey[] keys, double[] weights = null,
+            public Task<long> SortedSetCombineAndStoreAsync(SetOperation operation, RedisKey destination, RedisKey[] keys, double[]? weights = null,
                 Aggregate aggregate = Aggregate.Sum, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
@@ -1480,12 +1480,12 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public IBatch CreateBatch(object asyncState = null)
+            public IBatch CreateBatch(object? asyncState = null)
             {
                 throw new NotImplementedException();
             }
 
-            public ITransaction CreateTransaction(object asyncState = null)
+            public ITransaction CreateTransaction(object? asyncState = null)
             {
                 throw new NotImplementedException();
             }
@@ -1895,22 +1895,22 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public RedisResult ScriptEvaluate(string script, RedisKey[] keys = null, RedisValue[] values = null, CommandFlags flags = CommandFlags.None)
+            public RedisResult ScriptEvaluate(string script, RedisKey[]? keys = null, RedisValue[]? values = null, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
 
-            public RedisResult ScriptEvaluate(byte[] hash, RedisKey[] keys = null, RedisValue[] values = null, CommandFlags flags = CommandFlags.None)
+            public RedisResult ScriptEvaluate(byte[] hash, RedisKey[]? keys = null, RedisValue[]? values = null, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
 
-            public RedisResult ScriptEvaluate(LuaScript script, object parameters = null, CommandFlags flags = CommandFlags.None)
+            public RedisResult ScriptEvaluate(LuaScript script, object? parameters = null, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
 
-            public RedisResult ScriptEvaluate(LoadedLuaScript script, object parameters = null, CommandFlags flags = CommandFlags.None)
+            public RedisResult ScriptEvaluate(LoadedLuaScript script, object? parameters = null, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -2008,13 +2008,13 @@ public sealed class RedisConnectorTests
             }
 
             public RedisValue[] Sort(RedisKey key, long skip = 0, long take = -1, Order order = Order.Ascending, SortType sortType = SortType.Numeric,
-                RedisValue by = default, RedisValue[] get = null, CommandFlags flags = CommandFlags.None)
+                RedisValue by = default, RedisValue[]? get = null, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
 
             public long SortAndStore(RedisKey destination, RedisKey key, long skip = 0, long take = -1, Order order = Order.Ascending,
-                SortType sortType = SortType.Numeric, RedisValue by = default, RedisValue[] get = null, CommandFlags flags = CommandFlags.None)
+                SortType sortType = SortType.Numeric, RedisValue by = default, RedisValue[]? get = null, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -2045,7 +2045,7 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public long SortedSetCombineAndStore(SetOperation operation, RedisKey destination, RedisKey[] keys, double[] weights = null,
+            public long SortedSetCombineAndStore(SetOperation operation, RedisKey destination, RedisKey[] keys, double[]? weights = null,
                 Aggregate aggregate = Aggregate.Sum, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();

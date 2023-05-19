@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
@@ -13,7 +15,7 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
     private readonly IOptionsMonitor<TOptions> _optionsMonitor;
     private readonly string _name;
     private readonly Func<TOptions, string, object> _createConnection;
-    private readonly Lazy<(object Connection, TOptions OptionsSnapshot)> _singletonConnectionWithOptions;
+    private readonly Lazy<(object Connection, TOptions OptionsSnapshot)>? _singletonConnectionWithOptions;
     private bool _hasDisposedSingleton;
 
     /// <summary>

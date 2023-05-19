@@ -4,19 +4,11 @@
 
 #nullable enable
 
-using System.Data.Common;
-
 namespace Steeltoe.Connectors.CosmosDb;
 
 internal sealed class CosmosDbConnectionStringPostProcessor : ConnectionStringPostProcessor
 {
     protected override string BindingType => "cosmosdb";
-
-    protected override IConnectionStringBuilder CreateConnectionStringBuilder()
-    {
-        var dbConnectionStringBuilder = new DbConnectionStringBuilder();
-        return new DbConnectionStringBuilderWrapper(dbConnectionStringBuilder);
-    }
 
     protected override bool IsPartOfConnectionString(string secretName)
     {

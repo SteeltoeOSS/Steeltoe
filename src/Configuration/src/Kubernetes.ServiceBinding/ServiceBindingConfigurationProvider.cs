@@ -7,7 +7,6 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
@@ -24,7 +23,6 @@ internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigu
     public ServiceBindingConfigurationProvider(ServiceBindingConfigurationSource source)
         : base(source)
     {
-        ArgumentGuard.NotNull(source);
         _source = source;
 
         if (source.ReloadOnChange && _source.FileProvider != null)

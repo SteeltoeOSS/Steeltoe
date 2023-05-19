@@ -2,8 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 using Steeltoe.Configuration;
 
@@ -17,20 +18,5 @@ internal sealed class ConnectionStringConfigurationSource2 : PostProcessorConfig
 
         ParentConfiguration ??= GetParentConfiguration(builder);
         return new ConnectionStringConfigurationProvider2(this);
-    }
-}
-
-internal sealed class ConnectionStringConfigurationProvider2 : PostProcessorConfigurationProvider
-{
-    public ConnectionStringConfigurationProvider2(PostProcessorConfigurationSource source)
-        : base(source)
-    {
-        ArgumentGuard.NotNull(source);
-        ChangeToken.OnChange(() => source.ParentConfiguration.GetReloadToken(), _ => Load(), 0);
-    }
-
-    public override void Load()
-    {
-        PostProcessConfiguration();
     }
 }

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Data.SqlClient;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
@@ -151,7 +153,6 @@ public sealed class SqlServerConnectorTests
         var optionsSnapshot = app.Services.GetRequiredService<IOptionsSnapshot<SqlServerOptions>>();
 
         SqlServerOptions optionsOne = optionsSnapshot.Get("mySqlServerServiceOne");
-        optionsOne.ConnectionString.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsOne.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -163,7 +164,6 @@ public sealed class SqlServerConnectorTests
         }, options => options.WithoutStrictOrdering());
 
         SqlServerOptions optionsTwo = optionsSnapshot.Get("mySqlServerServiceTwo");
-        optionsTwo.ConnectionString.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsTwo.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -191,7 +191,6 @@ public sealed class SqlServerConnectorTests
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<SqlServerOptions>>();
 
         SqlServerOptions optionsOne = optionsMonitor.Get("mySqlServerServiceOne");
-        optionsOne.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsOne.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -203,7 +202,6 @@ public sealed class SqlServerConnectorTests
         }, options => options.WithoutStrictOrdering());
 
         SqlServerOptions optionsTwo = optionsMonitor.Get("mySqlServerServiceTwo");
-        optionsTwo.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsTwo.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -273,10 +271,10 @@ public sealed class SqlServerConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<SqlServerOptions, SqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().NotBeNull();
+        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        defaultConnectionString.Should().NotBeNullOrEmpty();
 
-        string namedConnectionString = connectorFactory.GetNamed("mySqlServerService").Options.ConnectionString;
+        string? namedConnectionString = connectorFactory.GetNamed("mySqlServerService").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -298,13 +296,13 @@ public sealed class SqlServerConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<SqlServerOptions, SqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().NotBeNull();
+        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        defaultConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
 
-    private static IEnumerable<string> ExtractConnectionStringParameters(string connectionString)
+    private static IEnumerable<string> ExtractConnectionStringParameters(string? connectionString)
     {
         List<string> entries = new();
 

@@ -33,7 +33,7 @@ public static class CosmosDbWebApplicationBuilderExtensions
 
         Func<CosmosDbOptions, string, object> createConnection = (options, serviceBindingName) => createCosmosClient != null
             ? createCosmosClient(options, serviceBindingName)
-            : CosmosClientShim.CreateInstance(packageResolver, options.ConnectionString).Instance;
+            : CosmosClientShim.CreateInstance(packageResolver, options.ConnectionString!).Instance;
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
 

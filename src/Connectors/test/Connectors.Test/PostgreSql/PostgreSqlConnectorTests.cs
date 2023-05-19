@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -198,7 +200,6 @@ public sealed class PostgreSqlConnectorTests
         var optionsSnapshot = app.Services.GetRequiredService<IOptionsSnapshot<PostgreSqlOptions>>();
 
         PostgreSqlOptions optionsOne = optionsSnapshot.Get("myPostgreSqlServiceOne");
-        optionsOne.ConnectionString.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsOne.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -210,7 +211,6 @@ public sealed class PostgreSqlConnectorTests
         }, options => options.WithoutStrictOrdering());
 
         PostgreSqlOptions optionsTwo = optionsSnapshot.Get("myPostgreSqlServiceTwo");
-        optionsTwo.ConnectionString.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsTwo.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -238,7 +238,6 @@ public sealed class PostgreSqlConnectorTests
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
 
         PostgreSqlOptions optionsAzureOne = optionsMonitor.Get("myPostgreSqlServiceAzureOne");
-        optionsAzureOne.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsAzureOne.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -252,7 +251,6 @@ public sealed class PostgreSqlConnectorTests
         }, options => options.WithoutStrictOrdering());
 
         PostgreSqlOptions optionsAzureTwo = optionsMonitor.Get("myPostgreSqlServiceAzureTwo");
-        optionsAzureTwo.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsAzureTwo.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -264,7 +262,6 @@ public sealed class PostgreSqlConnectorTests
         }, options => options.WithoutStrictOrdering());
 
         PostgreSqlOptions optionsGoogle = optionsMonitor.Get("myPostgreSqlServiceGoogle");
-        optionsGoogle.ConnectionString.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsGoogle.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -371,7 +368,6 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
             var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
 
             PostgreSqlOptions customerProfilesOptions = optionsMonitor.Get("customer-profiles");
-            customerProfilesOptions.Should().NotBeNull();
 
             ExtractConnectionStringParameters(customerProfilesOptions.ConnectionString).Should().BeEquivalentTo(new List<string>
             {
@@ -442,7 +438,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
             var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-            string connectionString = connectorFactory.GetNamed("examplePostgreSqlService").Options.ConnectionString;
+            string? connectionString = connectorFactory.GetNamed("examplePostgreSqlService").Options.ConnectionString;
             connectionString.Should().Be("Host=localhost;Database=db1");
 
             await File.WriteAllTextAsync(tempJsonPath, @"{
@@ -508,7 +504,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
 
         ExtractConnectionStringParameters(defaultConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -520,7 +516,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
             "Port=5432"
         }, options => options.WithoutStrictOrdering());
 
-        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string? namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -538,10 +534,10 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().NotBeNull();
+        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        defaultConnectionString.Should().NotBeNullOrEmpty();
 
-        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string? namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -563,8 +559,8 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().NotBeNull();
+        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        defaultConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
@@ -585,11 +581,11 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
-        namedConnectionString.Should().NotBeNull();
+        string? namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        namedConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
@@ -611,11 +607,11 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
-        namedConnectionString.Should().NotBeNull();
+        string? namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        namedConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
@@ -637,11 +633,11 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
-        namedConnectionString.Should().NotBeNull();
+        string? namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        namedConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(3);
     }
@@ -664,11 +660,11 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
-        namedConnectionString.Should().NotBeNull();
+        string? namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        namedConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
@@ -691,19 +687,19 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().BeNull();
 
-        string namedConnectionString1 = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
-        namedConnectionString1.Should().NotBeNull();
+        string? namedConnectionString1 = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        namedConnectionString1.Should().NotBeNullOrEmpty();
 
-        string namedConnectionString2 = connectorFactory.GetNamed("alternatePostgreSqlService").Options.ConnectionString;
-        namedConnectionString2.Should().NotBeNull();
+        string? namedConnectionString2 = connectorFactory.GetNamed("alternatePostgreSqlService").Options.ConnectionString;
+        namedConnectionString2.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(2);
     }
 
-    private static IEnumerable<string> ExtractConnectionStringParameters(string connectionString)
+    private static IEnumerable<string> ExtractConnectionStringParameters(string? connectionString)
     {
         List<string> entries = new();
 
@@ -733,19 +729,22 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         return entries;
     }
 
-    private static void CleanupTempFiles(params string[] connectionStrings)
+    private static void CleanupTempFiles(params string?[] connectionStrings)
     {
-        foreach (string connectionString in connectionStrings)
+        foreach (string? connectionString in connectionStrings)
         {
-            foreach (string entry in connectionString.Split(';').ToArray())
+            if (!string.IsNullOrEmpty(connectionString))
             {
-                string[] pair = entry.Split('=', 2);
-                string key = pair[0];
-                string value = pair[1];
-
-                if (TempFileKeys.Contains(key) && File.Exists(value))
+                foreach (string entry in connectionString.Split(';').ToArray())
                 {
-                    File.Delete(value);
+                    string[] pair = entry.Split('=', 2);
+                    string key = pair[0];
+                    string value = pair[1];
+
+                    if (TempFileKeys.Contains(key) && File.Exists(value))
+                    {
+                        File.Delete(value);
+                    }
                 }
             }
         }

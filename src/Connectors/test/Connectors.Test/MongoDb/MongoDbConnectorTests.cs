@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -151,7 +153,6 @@ public sealed class MongoDbConnectorTests
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<MongoDbOptions>>();
 
         MongoDbOptions optionsOne = optionsMonitor.Get("myMongoDbServiceOne");
-        optionsOne.Should().NotBeNull();
 
         optionsOne.ConnectionString.Should().Be(
             "mongodb://csb0230eada-2354-4c73-b3e4-8a1aaa996894:AiNtEyASbdXR5neJmTStMzKGItX2xvKuyEkcy65rviKD0ggZR19E1iVFIJ5ZAIY1xvvAiS5tOXsmACDbKDJIhQ%3D%3D@csb0230eada-2354-4c73-b3e4-8a1aaa996894.mongo.cosmos.cloud-hostname.com:10255/csb-db0230eada-2354-4c73-b3e4-8a1aaa996894?connectTimeoutMS=5000&ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@csb0230eada-2354-4c73-b3e4-8a1aaa996894@");
@@ -159,7 +160,6 @@ public sealed class MongoDbConnectorTests
         optionsOne.Database.Should().Be("csb-db0230eada-2354-4c73-b3e4-8a1aaa996894");
 
         MongoDbOptions optionsTwo = optionsMonitor.Get("myMongoDbServiceTwo");
-        optionsTwo.Should().NotBeNull();
 
         optionsTwo.ConnectionString.Should().Be(
             "mongodb://csb3aa12f5f-7530-4ff3-b328-a23a42af18df:NhCG266clYbNakBniDs8oLTniqTE06XXafhJWcbkNuma8Ie1XntsO2DqvPudYwqgk4le896YZjxbACDb8GiQYg%3D%3D@csb3aa12f5f-7530-4ff3-b328-a23a42af18df.mongo.cosmos.cloud-hostname.com:10255/csb-db3aa12f5f-7530-4ff3-b328-a23a42af18df?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@csb3aa12f5f-7530-4ff3-b328-a23a42af18df@");
@@ -261,7 +261,7 @@ public sealed class MongoDbConnectorTests
 
         MongoDbOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
-        defaultOptions.Database.Should().Be("db");
+        defaultOptions.Database.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }

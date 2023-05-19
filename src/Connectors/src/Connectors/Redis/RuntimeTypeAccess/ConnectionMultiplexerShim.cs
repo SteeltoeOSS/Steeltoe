@@ -9,8 +9,10 @@ using Steeltoe.Connectors.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.Redis.RuntimeTypeAccess;
 
-internal sealed class ConnectionMultiplexerShim : Shim
+internal sealed class ConnectionMultiplexerShim : Shim, IDisposable
 {
+    public override IDisposable Instance => (IDisposable)base.Instance;
+
     public ConnectionMultiplexerShim(StackExchangeRedisPackageResolver packageResolver, object instance)
         : base(new InstanceAccessor(packageResolver.ConnectionMultiplexerClass, instance))
     {
@@ -27,5 +29,10 @@ internal sealed class ConnectionMultiplexerShim : Shim
         }, configuration, null)!;
 
         return new ConnectionMultiplexerShim(packageResolver, instance);
+    }
+
+    public void Dispose()
+    {
+        Instance.Dispose();
     }
 }

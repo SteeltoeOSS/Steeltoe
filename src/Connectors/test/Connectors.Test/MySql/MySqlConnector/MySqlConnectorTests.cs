@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -118,7 +120,6 @@ public sealed class MySqlConnectorTests
         var optionsSnapshot = app.Services.GetRequiredService<IOptionsSnapshot<MySqlOptions>>();
 
         MySqlOptions optionsOne = optionsSnapshot.Get("myMySqlServiceOne");
-        optionsOne.ConnectionString.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsOne.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -130,7 +131,6 @@ public sealed class MySqlConnectorTests
         }, options => options.WithoutStrictOrdering());
 
         MySqlOptions optionsTwo = optionsSnapshot.Get("myMySqlServiceTwo");
-        optionsTwo.ConnectionString.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsTwo.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -158,7 +158,6 @@ public sealed class MySqlConnectorTests
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<MySqlOptions>>();
 
         MySqlOptions optionsOne = optionsMonitor.Get("myMySqlServiceOne");
-        optionsOne.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsOne.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -171,7 +170,6 @@ public sealed class MySqlConnectorTests
         }, options => options.WithoutStrictOrdering());
 
         MySqlOptions optionsTwo = optionsMonitor.Get("myMySqlServiceTwo");
-        optionsTwo.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsTwo.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -242,10 +240,10 @@ public sealed class MySqlConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().NotBeNull();
+        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        defaultConnectionString.Should().NotBeNullOrEmpty();
 
-        string namedConnectionString = connectorFactory.GetNamed("myMySqlServiceOne").Options.ConnectionString;
+        string? namedConnectionString = connectorFactory.GetNamed("myMySqlServiceOne").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -267,13 +265,13 @@ public sealed class MySqlConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().NotBeNull();
+        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        defaultConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
 
-    private static IEnumerable<string> ExtractConnectionStringParameters(string connectionString)
+    private static IEnumerable<string> ExtractConnectionStringParameters(string? connectionString)
     {
         List<string> entries = new();
 

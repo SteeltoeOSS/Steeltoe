@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -221,13 +223,11 @@ public sealed class RabbitMQConnectorTests
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
 
         RabbitMQOptions optionsOne = optionsMonitor.Get("myRabbitMQServiceOne");
-        optionsOne.Should().NotBeNull();
 
         optionsOne.ConnectionString.Should().Be(
             "amqp://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh:5672/377d9d72-e951-4a1c-82e8-99c3c4933368");
 
         RabbitMQOptions optionsTwo = optionsMonitor.Get("myRabbitMQServiceTwo");
-        optionsTwo.Should().NotBeNull();
 
         optionsTwo.ConnectionString.Should().Be(
             "amqp://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh:5672/eda94023-757e-4ef4-9315-dcba2e96efb5");
@@ -296,7 +296,7 @@ public sealed class RabbitMQConnectorTests
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
         RabbitMQOptions defaultOptions = connectorFactory.GetDefault().Options;
-        defaultOptions.ConnectionString.Should().NotBeNull();
+        defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
 
         RabbitMQOptions namedOptions = connectorFactory.GetNamed("myRabbitMQService").Options;
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
@@ -321,7 +321,7 @@ public sealed class RabbitMQConnectorTests
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
         RabbitMQOptions defaultOptions = connectorFactory.GetDefault().Options;
-        defaultOptions.ConnectionString.Should().NotBeNull();
+        defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
@@ -347,7 +347,7 @@ public sealed class RabbitMQConnectorTests
 
     private sealed class FakeConnection : IConnection
     {
-        public string ConnectionString { get; }
+        public string? ConnectionString { get; }
 
         public int LocalPort => throw new NotImplementedException();
         public int RemotePort => throw new NotImplementedException();
@@ -388,7 +388,7 @@ public sealed class RabbitMQConnectorTests
             remove => throw new NotImplementedException();
         }
 
-        public FakeConnection(string connectionString)
+        public FakeConnection(string? connectionString)
         {
             ConnectionString = connectionString;
         }

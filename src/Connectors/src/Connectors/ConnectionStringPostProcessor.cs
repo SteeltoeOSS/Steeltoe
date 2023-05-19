@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration;
@@ -28,10 +30,10 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
         if (ShouldSetDefault(bindingsByName))
         {
-            bindingsByName.TryGetValue(DefaultBindingName, out BindingInfo defaultBinding);
+            bindingsByName.TryGetValue(DefaultBindingName, out BindingInfo? defaultBinding);
 
-            string alternateBindingName = bindingsByName.Keys.SingleOrDefault(bindingName => bindingName != DefaultBindingName);
-            BindingInfo alternateBinding = alternateBindingName == null ? null : bindingsByName[alternateBindingName];
+            string? alternateBindingName = bindingsByName.Keys.SingleOrDefault(bindingName => bindingName != DefaultBindingName);
+            BindingInfo? alternateBinding = alternateBindingName == null ? null : bindingsByName[alternateBindingName];
 
             var bindingInfo = new BindingInfo
             {
@@ -69,7 +71,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
             return binding.IsServerOnly;
         }
 
-        if (bindingsByName.Count == 2 && bindingsByName.TryGetValue(DefaultBindingName, out BindingInfo defaultBinding) && defaultBinding.IsClientOnly)
+        if (bindingsByName.Count == 2 && bindingsByName.TryGetValue(DefaultBindingName, out BindingInfo? defaultBinding) && defaultBinding.IsClientOnly)
         {
             BindingInfo alternateBinding = bindingsByName.Single(binding => binding.Key != DefaultBindingName).Value;
 
@@ -179,8 +181,8 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
     private sealed class BindingInfo
     {
-        public IConfigurationSection ServerBindingSection { get; set; }
-        public IConfigurationSection ClientBindingSection { get; set; }
+        public IConfigurationSection? ServerBindingSection { get; set; }
+        public IConfigurationSection? ClientBindingSection { get; set; }
 
         public bool IsServerOnly => ServerBindingSection != null && ClientBindingSection == null;
         public bool IsClientOnly => ServerBindingSection == null && ClientBindingSection != null;

@@ -28,7 +28,7 @@ public static class MongoDbWebApplicationBuilderExtensions
         var connectionStringPostProcessor = new MongoDbConnectionStringPostProcessor();
 
         Func<MongoDbOptions, string, object> createMongoClient = (options, _) =>
-            MongoClientShim.CreateInstance(packageResolver, options.ConnectionString).Instance;
+            MongoClientShim.CreateInstance(packageResolver, options.ConnectionString!).Instance;
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
 

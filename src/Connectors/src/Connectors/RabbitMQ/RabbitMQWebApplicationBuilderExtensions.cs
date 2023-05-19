@@ -78,6 +78,6 @@ public static class RabbitMQWebApplicationBuilderExtensions
             ConnectionString = connectionString
         };
 
-        return (string)builder["host"] ?? "localhost";
+        return (string?)builder["host"] ?? "localhost";
     }
 }

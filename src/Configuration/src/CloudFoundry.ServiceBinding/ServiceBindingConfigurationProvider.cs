@@ -17,9 +17,7 @@ internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigu
     public ServiceBindingConfigurationProvider(PostProcessorConfigurationSource source, IServiceBindingsReader serviceBindingsReader)
         : base(source)
     {
-        ArgumentGuard.NotNull(source);
         ArgumentGuard.NotNull(serviceBindingsReader);
-
         _serviceBindingsReader = serviceBindingsReader;
     }
 

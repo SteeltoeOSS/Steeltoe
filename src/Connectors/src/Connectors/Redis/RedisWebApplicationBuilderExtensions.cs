@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,44 +13,27 @@ using Steeltoe.Connectors.Redis.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.Redis;
 
-public delegate object CreateConnectionMultiplexer(RedisOptions options, string serviceBindingName);
+public delegate IDisposable CreateConnectionMultiplexer(RedisOptions options, string serviceBindingName);
 
 public static class RedisWebApplicationBuilderExtensions
 {
-    public static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder, CreateConnectionMultiplexer? createConnectionMultiplexer = null)
     {
-        return AddRedis(builder, new StackExchangeRedisPackageResolver());
+        return AddRedis(builder, new StackExchangeRedisPackageResolver(), new MicrosoftRedisPackageResolver(), createConnectionMultiplexer);
     }
 
-    private static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder, StackExchangeRedisPackageResolver stackExchangeRedisPackageResolver)
-    {
-        CreateConnectionMultiplexer createConnectionMultiplexer = (options, _) =>
-        {
-            ConnectionMultiplexerShim connectionMultiplexerShim =
-                ConnectionMultiplexerShim.Connect(stackExchangeRedisPackageResolver, options.ConnectionString);
-
-            return connectionMultiplexerShim.Instance;
-        };
-
-        return AddRedis(builder, createConnectionMultiplexer);
-    }
-
-    public static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder, CreateConnectionMultiplexer createConnectionMultiplexer)
-    {
-        return AddRedis(builder, createConnectionMultiplexer, new StackExchangeRedisPackageResolver(), new MicrosoftRedisPackageResolver());
-    }
-
-    private static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder, CreateConnectionMultiplexer createConnectionMultiplexer,
-        StackExchangeRedisPackageResolver stackExchangeRedisPackageResolver, MicrosoftRedisPackageResolver microsoftRedisPackageResolver)
+    private static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder, StackExchangeRedisPackageResolver stackExchangeRedisPackageResolver,
+        MicrosoftRedisPackageResolver microsoftRedisPackageResolver, CreateConnectionMultiplexer? createConnectionMultiplexer)
     {
         ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(createConnectionMultiplexer);
         ArgumentGuard.NotNull(stackExchangeRedisPackageResolver);
         ArgumentGuard.NotNull(microsoftRedisPackageResolver);
 
         var connectionStringPostProcessor = new RedisConnectionStringPostProcessor();
 
-        Func<RedisOptions, string, object> nativeCreateConnection = (options, serviceBindingName) => createConnectionMultiplexer(options, serviceBindingName);
+        Func<RedisOptions, string, object> stackExchangeCreateConnection = (options, serviceBindingName) => createConnectionMultiplexer != null
+            ? createConnectionMultiplexer(options, serviceBindingName)
+            : ConnectionMultiplexerShim.Connect(stackExchangeRedisPackageResolver, options.ConnectionString!).Instance;
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
 
@@ -56,9 +41,9 @@ public static class RedisWebApplicationBuilderExtensions
             (serviceProvider, bindingName) => CreateHealthContributor(serviceProvider, bindingName, stackExchangeRedisPackageResolver));
 
         BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type,
-            true, nativeCreateConnection);
+            true, stackExchangeCreateConnection);
 
-        Func<RedisOptions, string, object> microsoftCreateConnection = (options, serviceBindingName) => CreateMicrosoftConnection(nativeCreateConnection,
+        Func<RedisOptions, string, object> microsoftCreateConnection = (options, serviceBindingName) => CreateMicrosoftConnection(stackExchangeCreateConnection,
             options, serviceBindingName, stackExchangeRedisPackageResolver, microsoftRedisPackageResolver);
 
         BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, microsoftRedisPackageResolver.DistributedCacheInterface.Type, true,
@@ -105,6 +90,6 @@ public static class RedisWebApplicationBuilderExtensions
             ConnectionString = connectionString
         };
 
-        return (string)builder["host"];
+        return (string)builder["host"]!;
     }
 }

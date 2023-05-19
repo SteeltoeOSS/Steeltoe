@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Collections.Concurrent;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -30,8 +32,8 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
 
     public ConnectorFactory(IServiceProvider serviceProvider, Func<TOptions, string, object> createConnection, bool useSingletonConnection)
     {
-        ArgumentGuard.NotNull(createConnection);
         ArgumentGuard.NotNull(serviceProvider);
+        ArgumentGuard.NotNull(createConnection);
 
         _serviceProvider = serviceProvider;
         _createConnection = createConnection;

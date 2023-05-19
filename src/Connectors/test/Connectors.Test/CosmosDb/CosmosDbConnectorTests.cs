@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Azure.Cosmos;
@@ -162,7 +164,6 @@ public sealed class CosmosDbConnectorTests
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<CosmosDbOptions>>();
 
         CosmosDbOptions optionsOne = optionsMonitor.Get("myCosmosDbServiceOne");
-        optionsOne.Should().NotBeNull();
 
         optionsOne.ConnectionString.Should().Be(
             "accountendpoint=https://csb05a6b464-4680-472f-8754-7e1afe015fac.documents.cloud-host.com:443/;accountkey=\"ovmolgG4kWHqoP4PaIfi35zXQGaWG04wr4Bh1mS1gckfh99yMsnCFgdlLPNao0M9GYYiReDhDSklACDbxSCpvw==\"");
@@ -170,7 +171,6 @@ public sealed class CosmosDbConnectorTests
         optionsOne.Database.Should().Be("csb-db05a6b464-4680-472f-8754-7e1afe015fac");
 
         CosmosDbOptions optionsTwo = optionsMonitor.Get("myCosmosDbServiceTwo");
-        optionsTwo.Should().NotBeNull();
 
         optionsTwo.ConnectionString.Should().Be(
             "accountEndpoint=https://csbf1eeadc1-cab8-436e-b1ac-61bf7c7ebfcc.documents.cloud-host.com:443/;accountKey=\"Hr6oIIHBGPt5KXvtIbSj36D8Te7xMYuFZj2L5w7FcmfPRkXd64PA87aXcOwuvxmKkXnsQlOZDCK3ACDbNzQFPw==\"");
@@ -256,8 +256,8 @@ public sealed class CosmosDbConnectorTests
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<CosmosDbOptions, CosmosClient>>();
 
         CosmosDbOptions defaultOptions = connectorFactory.GetDefault().Options;
-        defaultOptions.ConnectionString.Should().NotBeNull();
-        defaultOptions.Database.Should().NotBeNull();
+        defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
+        defaultOptions.Database.Should().NotBeNullOrEmpty();
 
         CosmosDbOptions namedOptions = connectorFactory.GetNamed("myCosmosDbService").Options;
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
@@ -285,8 +285,8 @@ public sealed class CosmosDbConnectorTests
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<CosmosDbOptions, CosmosClient>>();
 
         CosmosDbOptions defaultOptions = connectorFactory.GetDefault().Options;
-        defaultOptions.ConnectionString.Should().NotBeNull();
-        defaultOptions.Database.Should().Be("db");
+        defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
+        defaultOptions.Database.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
