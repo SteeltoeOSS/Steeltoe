@@ -2,63 +2,70 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connectors.RabbitMQ.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.RabbitMQ;
 
-public delegate object CreateRabbitConnection(RabbitMQOptions options, string serviceBindingName);
+public delegate IDisposable CreateRabbitConnection(RabbitMQOptions options, string serviceBindingName);
 
 public static class RabbitMQWebApplicationBuilderExtensions
 {
-    private static readonly Type ConnectionInterface = RabbitMQTypeLocator.ConnectionInterface;
-
-    public static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder, CreateRabbitConnection? createRabbitConnection = null)
     {
-        return AddRabbitMQ(builder, CreateDefaultRabbitConnection);
+        return AddRabbitMQ(builder, new RabbitMQPackageResolver(), createRabbitConnection);
     }
 
-    public static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder, CreateRabbitConnection createRabbitConnection)
+    private static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder, RabbitMQPackageResolver packageResolver,
+        CreateRabbitConnection? createRabbitConnection)
     {
         ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(createRabbitConnection);
+        ArgumentGuard.NotNull(packageResolver);
 
         var connectionStringPostProcessor = new RabbitMQConnectionStringPostProcessor();
 
-        Func<RabbitMQOptions, string, object> createConnection = (options, serviceBindingName) => createRabbitConnection(options, serviceBindingName);
+        Func<RabbitMQOptions, string, object> createConnection = (options, serviceBindingName) => createRabbitConnection != null
+            ? createRabbitConnection(options, serviceBindingName)
+            : CreateDefaultRabbitConnection(options, packageResolver);
 
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<RabbitMQOptions>(builder, "rabbitmq", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, ConnectionInterface, true, createConnection);
+
+        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<RabbitMQOptions>(builder, "rabbitmq",
+            (serviceProvider, bindingName) => CreateHealthContributor(serviceProvider, bindingName, packageResolver));
+
+        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, packageResolver.ConnectionInterface.Type, true, createConnection);
 
         return builder;
     }
 
-    private static object CreateDefaultRabbitConnection(RabbitMQOptions options, string serviceBindingName)
+    private static IDisposable CreateDefaultRabbitConnection(RabbitMQOptions options, RabbitMQPackageResolver packageResolver)
     {
         // In RabbitMQ, connections are long-lived and auto-recover from network failures. Channels are multiplexed over a single connection.
-        object factory = Activator.CreateInstance(RabbitMQTypeLocator.ConnectionFactory, null);
+        var connectionFactoryShim = ConnectionFactoryShim.CreateInstance(packageResolver);
 
         if (!string.IsNullOrEmpty(options.ConnectionString))
         {
-            RabbitMQTypeLocator.ConnectionFactoryUrlPropertySetter.Invoke(factory, new object[]
-            {
-                new Uri(options.ConnectionString)
-            });
+            connectionFactoryShim.Uri = new Uri(options.ConnectionString);
         }
 
-        return RabbitMQTypeLocator.CreateConnectionMethod.Invoke(factory, Array.Empty<object>());
+        ConnectionInterfaceShim connectionInterfaceShim = connectionFactoryShim.CreateConnection();
+        return connectionInterfaceShim.Instance;
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
+    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName, RabbitMQPackageResolver packageResolver)
     {
-        string connectionString = ConnectorFactoryInvoker.GetConnectionString<RabbitMQOptions>(serviceProvider, bindingName, ConnectionInterface);
+        string connectionString =
+            ConnectorFactoryInvoker.GetConnectionString<RabbitMQOptions>(serviceProvider, bindingName, packageResolver.ConnectionInterface.Type);
+
         string serviceName = $"RabbitMQ-{bindingName}";
         string hostName = GetHostNameFromConnectionString(connectionString);
-        object connection = ConnectorFactoryInvoker.GetConnection<RabbitMQOptions>(serviceProvider, bindingName, ConnectionInterface);
+        object connection = ConnectorFactoryInvoker.GetConnection<RabbitMQOptions>(serviceProvider, bindingName, packageResolver.ConnectionInterface.Type);
         var logger = serviceProvider.GetRequiredService<ILogger<RabbitMQHealthContributor>>();
 
         return new RabbitMQHealthContributor(connection, serviceName, hostName, logger);

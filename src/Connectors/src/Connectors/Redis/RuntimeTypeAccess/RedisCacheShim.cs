@@ -13,7 +13,7 @@ namespace Steeltoe.Connectors.Redis.RuntimeTypeAccess;
 internal sealed class RedisCacheShim : Shim
 {
     public RedisCacheShim(MicrosoftRedisPackageResolver packageResolver, object instance)
-        : base(new InstanceAccessor(packageResolver.RedisCacheClass, instance))
+        : this(new InstanceAccessor(packageResolver.RedisCacheClass, instance))
     {
     }
 
