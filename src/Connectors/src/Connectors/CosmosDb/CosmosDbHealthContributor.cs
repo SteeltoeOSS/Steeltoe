@@ -24,7 +24,6 @@ internal sealed class CosmosDbHealthContributor : IHealthContributor
     {
         ArgumentGuard.NotNull(cosmosClient);
         ArgumentGuard.NotNull(serviceName);
-        ArgumentGuard.NotNull(hostName);
         ArgumentGuard.NotNull(logger);
 
         _cosmosClient = cosmosClient;
@@ -39,7 +38,7 @@ internal sealed class CosmosDbHealthContributor : IHealthContributor
         _logger.LogTrace("Checking CosmosDB connection health");
         var result = new HealthCheckResult();
 
-        if (_hostName != null)
+        if (!string.IsNullOrEmpty(_hostName))
         {
             result.Details.Add("host", _hostName);
         }

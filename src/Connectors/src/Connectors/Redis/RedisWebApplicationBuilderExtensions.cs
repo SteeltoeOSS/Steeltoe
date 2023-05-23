@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.Redis.RuntimeTypeAccess;
+using Steeltoe.Connectors.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.Redis;
 
@@ -30,26 +31,57 @@ public static class RedisWebApplicationBuilderExtensions
         ArgumentGuard.NotNull(microsoftRedisPackageResolver);
 
         var connectionStringPostProcessor = new RedisConnectionStringPostProcessor();
+        BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
+
+        Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
+            CreateHealthContributor(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver);
+
+        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<RedisOptions>(builder, "redis", createHealthContributor);
 
         Func<RedisOptions, string, object> stackExchangeCreateConnection = (options, serviceBindingName) => createConnectionMultiplexer != null
             ? createConnectionMultiplexer(options, serviceBindingName)
             : ConnectionMultiplexerShim.Connect(stackExchangeRedisPackageResolver, options.ConnectionString!).Instance;
 
-        BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
-
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<RedisOptions>(builder, "redis",
-            (serviceProvider, bindingName) => CreateHealthContributor(serviceProvider, bindingName, stackExchangeRedisPackageResolver));
-
-        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type,
-            true, stackExchangeCreateConnection);
+        ConnectorFactoryShim<RedisOptions>.Register(builder.Services, stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type, true,
+            stackExchangeCreateConnection);
 
         Func<RedisOptions, string, object> microsoftCreateConnection = (options, serviceBindingName) => CreateMicrosoftConnection(stackExchangeCreateConnection,
             options, serviceBindingName, stackExchangeRedisPackageResolver, microsoftRedisPackageResolver);
 
-        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, microsoftRedisPackageResolver.DistributedCacheInterface.Type, true,
+        ConnectorFactoryShim<RedisOptions>.Register(builder.Services, microsoftRedisPackageResolver.DistributedCacheInterface.Type, true,
             microsoftCreateConnection);
 
         return builder;
+    }
+
+    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
+        StackExchangeRedisPackageResolver packageResolver)
+    {
+        ConnectorFactoryShim<RedisOptions> connectorFactoryShim =
+            ConnectorFactoryShim<RedisOptions>.FromServiceProvider(serviceProvider, packageResolver.ConnectionMultiplexerInterface.Type);
+
+        ConnectorShim<RedisOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
+
+        object redisClient = connectorShim.GetConnection();
+        string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);
+        var logger = serviceProvider.GetRequiredService<ILogger<RedisHealthContributor>>();
+
+        return new RedisHealthContributor(redisClient, $"Redis-{serviceBindingName}", hostName, logger);
+    }
+
+    private static string GetHostNameFromConnectionString(string? connectionString)
+    {
+        if (connectionString == null)
+        {
+            return string.Empty;
+        }
+
+        var builder = new RedisConnectionStringBuilder
+        {
+            ConnectionString = connectionString
+        };
+
+        return (string)builder["host"]!;
     }
 
     private static object CreateMicrosoftConnection(Func<RedisOptions, string, object> nativeCreateConnection, RedisOptions options, string serviceBindingName,
@@ -64,32 +96,5 @@ public static class RedisWebApplicationBuilderExtensions
 
         var redisCacheShim = RedisCacheShim.CreateInstance(microsoftRedisPackageResolver, redisCacheOptionsShim);
         return redisCacheShim.Instance;
-    }
-
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName,
-        StackExchangeRedisPackageResolver stackExchangeRedisPackageResolver)
-    {
-        string connectionString = ConnectorFactoryInvoker.GetConnectionString<RedisOptions>(serviceProvider, bindingName,
-            stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type);
-
-        string serviceName = $"Redis-{bindingName}";
-        string hostName = GetHostNameFromConnectionString(connectionString);
-
-        object redisClient = ConnectorFactoryInvoker.GetConnection<RedisOptions>(serviceProvider, bindingName,
-            stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type);
-
-        var logger = serviceProvider.GetRequiredService<ILogger<RedisHealthContributor>>();
-
-        return new RedisHealthContributor(redisClient, serviceName, hostName, logger);
-    }
-
-    private static string GetHostNameFromConnectionString(string connectionString)
-    {
-        var builder = new RedisConnectionStringBuilder
-        {
-            ConnectionString = connectionString
-        };
-
-        return (string)builder["host"]!;
     }
 }

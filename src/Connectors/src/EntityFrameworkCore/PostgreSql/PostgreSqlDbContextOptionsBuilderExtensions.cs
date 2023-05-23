@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Steeltoe.Common;
 using Steeltoe.Connectors.EntityFrameworkCore.PostgreSql.RuntimeTypeAccess;
 using Steeltoe.Connectors.PostgreSql;
+using Steeltoe.Connectors.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.PostgreSql;
 
@@ -27,17 +28,27 @@ public static class PostgreSqlDbContextOptionsBuilderExtensions
         ArgumentGuard.NotNull(packageResolver);
 
         string optionName = serviceBindingName ?? string.Empty;
+        string connectionString = GetConnectionString(serviceProvider, optionName, packageResolver);
 
-        string connectionString =
-            ConnectorFactoryInvoker.GetConnectionString<PostgreSqlOptions>(serviceProvider, optionName, packageResolver.NpgsqlConnectionClass.Type);
+        NpgsqlDbContextOptionsBuilderExtensionsShim.UseNpgsql(packageResolver, optionsBuilder, connectionString, npgsqlOptionsAction);
+
+        return optionsBuilder;
+    }
+
+    private static string GetConnectionString(IServiceProvider serviceProvider, string serviceBindingName,
+        PostgreSqlEntityFrameworkCorePackageResolver packageResolver)
+    {
+        ConnectorFactoryShim<PostgreSqlOptions> connectorFactoryShim =
+            ConnectorFactoryShim<PostgreSqlOptions>.FromServiceProvider(serviceProvider, packageResolver.NpgsqlConnectionClass.Type);
+
+        ConnectorShim<PostgreSqlOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
+        string? connectionString = connectorShim.Options.ConnectionString;
 
         if (connectionString == null)
         {
             throw new InvalidOperationException($"Connection string for service binding '{serviceBindingName}' not found.");
         }
 
-        NpgsqlDbContextOptionsBuilderExtensionsShim.UseNpgsql(packageResolver, optionsBuilder, connectionString, npgsqlOptionsAction);
-
-        return optionsBuilder;
+        return connectionString;
     }
 }

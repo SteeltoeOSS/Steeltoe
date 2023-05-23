@@ -65,7 +65,7 @@ public class RedisHealthContributor : IHealthContributor
         _logger?.LogTrace("Checking Redis connection health");
         var result = new HealthCheckResult();
 
-        if (_hostName != null)
+        if (!string.IsNullOrEmpty(_hostName))
         {
             result.Details.Add("host", _hostName);
         }

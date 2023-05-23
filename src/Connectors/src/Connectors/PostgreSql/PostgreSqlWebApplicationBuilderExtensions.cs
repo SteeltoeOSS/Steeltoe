@@ -4,10 +4,14 @@
 
 #nullable enable
 
+using System.Data.Common;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.PostgreSql.RuntimeTypeAccess;
+using Steeltoe.Connectors.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.PostgreSql;
 
@@ -24,21 +28,40 @@ public static class PostgreSqlWebApplicationBuilderExtensions
         ArgumentGuard.NotNull(packageResolver);
 
         var connectionStringPostProcessor = new PostgreSqlConnectionStringPostProcessor(packageResolver);
-
         BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
 
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<PostgreSqlOptions>(builder, "postgresql",
-            (serviceProvider, bindingName) => CreateHealthContributor(serviceProvider, bindingName, packageResolver));
+        Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
+            CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver);
 
-        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory<PostgreSqlOptions>(builder.Services, packageResolver.NpgsqlConnectionClass.Type, false,
-            null);
+        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<PostgreSqlOptions>(builder, "postgresql", createHealthContributor);
+
+        Func<PostgreSqlOptions, string, object> createConnection = (options, _) =>
+            NpgsqlConnectionShim.CreateInstance(packageResolver, options.ConnectionString).Instance;
+
+        ConnectorFactoryShim<PostgreSqlOptions>.Register(builder.Services, packageResolver.NpgsqlConnectionClass.Type, false, createConnection);
 
         return builder;
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName, PostgreSqlPackageResolver packageResolver)
+    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
+        PostgreSqlPackageResolver packageResolver)
     {
-        return BaseWebApplicationBuilderExtensions.CreateRelationalHealthContributor<PostgreSqlOptions>(serviceProvider, bindingName,
-            packageResolver.NpgsqlConnectionClass.Type, "PostgreSQL", "host");
+        ConnectorFactoryShim<PostgreSqlOptions> connectorFactoryShim =
+            ConnectorFactoryShim<PostgreSqlOptions>.FromServiceProvider(serviceProvider, packageResolver.NpgsqlConnectionClass.Type);
+
+        ConnectorShim<PostgreSqlOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
+
+        var connection = (DbConnection)connectorShim.GetConnection();
+        string hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);
+        var logger = serviceProvider.GetRequiredService<ILogger<RelationalDbHealthContributor>>();
+
+        return new RelationalDbHealthContributor(connection, $"PostgreSQL-{serviceBindingName}", hostName, logger);
+    }
+
+    private static string GetHostNameFromConnectionString(PostgreSqlPackageResolver packageResolver, string? connectionString)
+    {
+        var connectionStringBuilderShim = NpgsqlConnectionStringBuilderShim.CreateInstance(packageResolver);
+        connectionStringBuilderShim.Instance.ConnectionString = connectionString;
+        return (string)connectionStringBuilderShim.Instance["host"];
     }
 }

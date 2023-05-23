@@ -24,4 +24,9 @@ internal abstract class Shim
 
         InstanceAccessor = instanceAccessor;
     }
+
+    public override string? ToString()
+    {
+        return InstanceAccessor.Instance.ToString();
+    }
 }

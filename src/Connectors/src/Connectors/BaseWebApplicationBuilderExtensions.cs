@@ -2,12 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
-using System.Data.Common;
+#nullable enable
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Connectors;
@@ -66,7 +65,7 @@ internal static class BaseWebApplicationBuilderExtensions
             return false;
         }
 
-        if (sections.Length == 1 && sections[0].Key == ConnectionStringPostProcessor.DefaultBindingName)
+        if (sections is [{ Key: ConnectionStringPostProcessor.DefaultBindingName }])
         {
             return false;
         }
@@ -74,57 +73,9 @@ internal static class BaseWebApplicationBuilderExtensions
         return true;
     }
 
-    private static void RegisterHealthContributor(IServiceCollection services, string bindingName,
+    private static void RegisterHealthContributor(IServiceCollection services, string serviceBindingName,
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor)
     {
-        services.AddSingleton(typeof(IHealthContributor), serviceProvider => createHealthContributor(serviceProvider, bindingName));
-    }
-
-    public static IHealthContributor CreateRelationalHealthContributor<TOptions>(IServiceProvider serviceProvider, string bindingName, Type connectionType,
-        string healthDisplayName, string healthHostNameKey)
-        where TOptions : ConnectionStringOptions
-    {
-        var connection = (IDbConnection)ConnectorFactoryInvoker.GetConnection<TOptions>(serviceProvider, bindingName, connectionType);
-        string serviceName = $"{healthDisplayName}-{bindingName}";
-        string hostName = GetHostNameFromConnectionString(connection.ConnectionString, healthHostNameKey);
-        var logger = serviceProvider.GetRequiredService<ILogger<RelationalDbHealthContributor>>();
-
-        return new RelationalDbHealthContributor(connection, serviceName, hostName, logger);
-    }
-
-    private static string GetHostNameFromConnectionString(string connectionString, string healthHostNameKey)
-    {
-        var builder = new DbConnectionStringBuilder
-        {
-            ConnectionString = connectionString
-        };
-
-        return (string)builder[healthHostNameKey];
-    }
-
-    public static void RegisterConnectorFactory<TOptions>(IServiceCollection services, Type connectionType, bool useSingletonConnection,
-        Func<TOptions, string, object> createConnection)
-        where TOptions : ConnectionStringOptions
-    {
-        Type connectorFactoryType = ConnectorFactoryInvoker.MakeConnectorFactoryType<TOptions>(connectionType);
-
-        createConnection = InvokeCreateConnection(createConnection, connectionType);
-
-        services.AddSingleton(connectorFactoryType,
-            serviceProvider => ConnectorFactoryInvoker.CreateConnectorFactory(serviceProvider, connectorFactoryType, useSingletonConnection, createConnection));
-    }
-
-    private static Func<TOptions, string, object> InvokeCreateConnection<TOptions>(Func<TOptions, string, object> createConnection, Type connectionType)
-        where TOptions : ConnectionStringOptions
-    {
-        return (options, serviceBindingName) =>
-        {
-            if (createConnection != null)
-            {
-                return createConnection(options, serviceBindingName);
-            }
-
-            return Activator.CreateInstance(connectionType, options.ConnectionString);
-        };
+        services.AddSingleton(typeof(IHealthContributor), serviceProvider => createHealthContributor(serviceProvider, serviceBindingName));
     }
 }

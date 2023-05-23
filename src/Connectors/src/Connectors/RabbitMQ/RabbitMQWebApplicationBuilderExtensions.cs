@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.RabbitMQ.RuntimeTypeAccess;
+using Steeltoe.Connectors.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.RabbitMQ;
 
@@ -29,19 +30,45 @@ public static class RabbitMQWebApplicationBuilderExtensions
         ArgumentGuard.NotNull(packageResolver);
 
         var connectionStringPostProcessor = new RabbitMQConnectionStringPostProcessor();
+        BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
+
+        Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
+            CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver);
+
+        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<RabbitMQOptions>(builder, "rabbitmq", createHealthContributor);
 
         Func<RabbitMQOptions, string, object> createConnection = (options, serviceBindingName) => createRabbitConnection != null
             ? createRabbitConnection(options, serviceBindingName)
             : CreateDefaultRabbitConnection(options, packageResolver);
 
-        BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
-
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<RabbitMQOptions>(builder, "rabbitmq",
-            (serviceProvider, bindingName) => CreateHealthContributor(serviceProvider, bindingName, packageResolver));
-
-        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, packageResolver.ConnectionInterface.Type, true, createConnection);
+        ConnectorFactoryShim<RabbitMQOptions>.Register(builder.Services, packageResolver.ConnectionInterface.Type, true, createConnection);
 
         return builder;
+    }
+
+    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
+        RabbitMQPackageResolver packageResolver)
+    {
+        ConnectorFactoryShim<RabbitMQOptions> connectorFactoryShim =
+            ConnectorFactoryShim<RabbitMQOptions>.FromServiceProvider(serviceProvider, packageResolver.ConnectionInterface.Type);
+
+        ConnectorShim<RabbitMQOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
+
+        object connection = connectorShim.GetConnection();
+        string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);
+        var logger = serviceProvider.GetRequiredService<ILogger<RabbitMQHealthContributor>>();
+
+        return new RabbitMQHealthContributor(connection, $"RabbitMQ-{serviceBindingName}", hostName, logger);
+    }
+
+    private static string GetHostNameFromConnectionString(string? connectionString)
+    {
+        var builder = new RabbitMQConnectionStringBuilder
+        {
+            ConnectionString = connectionString
+        };
+
+        return (string?)builder["host"] ?? "localhost";
     }
 
     private static IDisposable CreateDefaultRabbitConnection(RabbitMQOptions options, RabbitMQPackageResolver packageResolver)
@@ -56,28 +83,5 @@ public static class RabbitMQWebApplicationBuilderExtensions
 
         ConnectionInterfaceShim connectionInterfaceShim = connectionFactoryShim.CreateConnection();
         return connectionInterfaceShim.Instance;
-    }
-
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName, RabbitMQPackageResolver packageResolver)
-    {
-        string connectionString =
-            ConnectorFactoryInvoker.GetConnectionString<RabbitMQOptions>(serviceProvider, bindingName, packageResolver.ConnectionInterface.Type);
-
-        string serviceName = $"RabbitMQ-{bindingName}";
-        string hostName = GetHostNameFromConnectionString(connectionString);
-        object connection = ConnectorFactoryInvoker.GetConnection<RabbitMQOptions>(serviceProvider, bindingName, packageResolver.ConnectionInterface.Type);
-        var logger = serviceProvider.GetRequiredService<ILogger<RabbitMQHealthContributor>>();
-
-        return new RabbitMQHealthContributor(connection, serviceName, hostName, logger);
-    }
-
-    private static string GetHostNameFromConnectionString(string connectionString)
-    {
-        var builder = new RabbitMQConnectionStringBuilder
-        {
-            ConnectionString = connectionString
-        };
-
-        return (string?)builder["host"] ?? "localhost";
     }
 }

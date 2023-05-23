@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data;
+using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
@@ -33,7 +34,7 @@ public class RelationalDbHealthContributor : IHealthContributor
         Id = GetDbName(connection);
     }
 
-    internal RelationalDbHealthContributor(IDbConnection connection, string serviceName, string hostName, ILogger<RelationalDbHealthContributor> logger = null)
+    internal RelationalDbHealthContributor(DbConnection connection, string serviceName, string hostName, ILogger<RelationalDbHealthContributor> logger = null)
     {
         Id = serviceName;
         HostName = hostName;
@@ -94,7 +95,7 @@ public class RelationalDbHealthContributor : IHealthContributor
         _logger?.LogTrace("Checking {DbConnection} health", Id);
         var result = new HealthCheckResult();
 
-        if (HostName != null)
+        if (!string.IsNullOrEmpty(HostName))
         {
             result.Details.Add("host", HostName);
         }

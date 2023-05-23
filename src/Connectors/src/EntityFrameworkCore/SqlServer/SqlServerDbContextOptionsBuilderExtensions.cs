@@ -7,6 +7,7 @@
 using Microsoft.EntityFrameworkCore;
 using Steeltoe.Common;
 using Steeltoe.Connectors.EntityFrameworkCore.SqlServer.RuntimeTypeAccess;
+using Steeltoe.Connectors.RuntimeTypeAccess;
 using Steeltoe.Connectors.SqlServer;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.SqlServer;
@@ -27,17 +28,27 @@ public static class SqlServerDbContextOptionsBuilderExtensions
         ArgumentGuard.NotNull(packageResolver);
 
         string optionName = serviceBindingName ?? string.Empty;
+        string connectionString = GetConnectionString(serviceProvider, optionName, packageResolver);
 
-        string connectionString =
-            ConnectorFactoryInvoker.GetConnectionString<SqlServerOptions>(serviceProvider, optionName, packageResolver.SqlConnectionClass.Type);
+        SqlServerDbContextOptionsExtensionsShim.UseSqlServer(packageResolver, optionsBuilder, connectionString, sqlServerOptionsAction);
+
+        return optionsBuilder;
+    }
+
+    private static string GetConnectionString(IServiceProvider serviceProvider, string serviceBindingName,
+        SqlServerEntityFrameworkCorePackageResolver packageResolver)
+    {
+        ConnectorFactoryShim<SqlServerOptions> connectorFactoryShim =
+            ConnectorFactoryShim<SqlServerOptions>.FromServiceProvider(serviceProvider, packageResolver.SqlConnectionClass.Type);
+
+        ConnectorShim<SqlServerOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
+        string? connectionString = connectorShim.Options.ConnectionString;
 
         if (connectionString == null)
         {
             throw new InvalidOperationException($"Connection string for service binding '{serviceBindingName}' not found.");
         }
 
-        SqlServerDbContextOptionsExtensionsShim.UseSqlServer(packageResolver, optionsBuilder, connectionString, sqlServerOptionsAction);
-
-        return optionsBuilder;
+        return connectionString;
     }
 }

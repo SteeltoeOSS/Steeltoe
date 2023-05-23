@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.CosmosDb.RuntimeTypeAccess;
+using Steeltoe.Connectors.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.CosmosDb;
 
@@ -30,36 +31,44 @@ public static class CosmosDbWebApplicationBuilderExtensions
         ArgumentGuard.NotNull(packageResolver);
 
         var connectionStringPostProcessor = new CosmosDbConnectionStringPostProcessor();
+        BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
+
+        Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
+            CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver);
+
+        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<CosmosDbOptions>(builder, "cosmosdb", createHealthContributor);
 
         Func<CosmosDbOptions, string, object> createConnection = (options, serviceBindingName) => createCosmosClient != null
             ? createCosmosClient(options, serviceBindingName)
             : CosmosClientShim.CreateInstance(packageResolver, options.ConnectionString!).Instance;
 
-        BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
-
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<CosmosDbOptions>(builder, "cosmosdb",
-            (serviceProvider, bindingName) => CreateHealthContributor(serviceProvider, bindingName, packageResolver));
-
-        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory(builder.Services, packageResolver.CosmosClientClass.Type, true, createConnection);
+        ConnectorFactoryShim<CosmosDbOptions>.Register(builder.Services, packageResolver.CosmosClientClass.Type, true, createConnection);
 
         return builder;
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName, CosmosDbPackageResolver packageResolver)
+    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
+        CosmosDbPackageResolver packageResolver)
     {
-        string connectionString =
-            ConnectorFactoryInvoker.GetConnectionString<CosmosDbOptions>(serviceProvider, bindingName, packageResolver.CosmosClientClass.Type);
+        ConnectorFactoryShim<CosmosDbOptions> connectorFactoryShim =
+            ConnectorFactoryShim<CosmosDbOptions>.FromServiceProvider(serviceProvider, packageResolver.CosmosClientClass.Type);
 
-        string serviceName = $"CosmosDB-{bindingName}";
-        string hostName = GetHostNameFromConnectionString(connectionString);
-        object cosmosClient = ConnectorFactoryInvoker.GetConnection<CosmosDbOptions>(serviceProvider, bindingName, packageResolver.CosmosClientClass.Type);
+        ConnectorShim<CosmosDbOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
+
+        object cosmosClient = connectorShim.GetConnection();
+        string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<CosmosDbHealthContributor>>();
 
-        return new CosmosDbHealthContributor(cosmosClient, serviceName, hostName, logger);
+        return new CosmosDbHealthContributor(cosmosClient, $"CosmosDB-{serviceBindingName}", hostName, logger);
     }
 
-    private static string GetHostNameFromConnectionString(string connectionString)
+    private static string GetHostNameFromConnectionString(string? connectionString)
     {
+        if (connectionString == null)
+        {
+            return string.Empty;
+        }
+
         var builder = new DbConnectionStringBuilder
         {
             ConnectionString = connectionString

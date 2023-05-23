@@ -4,6 +4,8 @@
 
 #nullable enable
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Connectors.RuntimeTypeAccess;
 
 /// <summary>
@@ -17,6 +19,14 @@ internal sealed class TypeAccessor : ReflectionAccessor
         : base(type)
     {
         Type = type;
+    }
+
+    public static TypeAccessor MakeGenericAccessor(Type openType, params Type[] typeArguments)
+    {
+        ArgumentGuard.NotNull(openType);
+
+        Type constructedType = openType.MakeGenericType(typeArguments);
+        return new TypeAccessor(constructedType);
     }
 
     public InstanceAccessor CreateInstance(params object?[]? arguments)
