@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
+using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
@@ -69,7 +69,7 @@ public class SqlServerProviderServiceCollectionExtensionsTest
 
         services.AddSqlServerConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
     }
 
@@ -113,7 +113,7 @@ public class SqlServerProviderServiceCollectionExtensionsTest
 
         services.AddSqlServerConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
         Assert.Contains("de5aa3a747c134b3d8780f8cc80be519e", connString, StringComparison.Ordinal);
@@ -137,7 +137,7 @@ public class SqlServerProviderServiceCollectionExtensionsTest
 
         services.AddSqlServerConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
         Assert.Contains("Initial Catalog=testdb", connString, StringComparison.Ordinal);
@@ -159,7 +159,7 @@ public class SqlServerProviderServiceCollectionExtensionsTest
 
         services.AddSqlServerConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
         Assert.Contains("f1egl8ify4;", connString, StringComparison.Ordinal); // database

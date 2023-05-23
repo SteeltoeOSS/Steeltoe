@@ -21,7 +21,7 @@ public static class OracleTypeLocator
     };
 
     /// <summary>
-    /// Gets a list of Oracle types that implement IDbConnection.
+    /// Gets a list of Oracle types that implement DbConnection.
     /// </summary>
     public static string[] ConnectionTypeNames { get; internal set; } =
     {

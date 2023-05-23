@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
 using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -22,12 +21,12 @@ public class RelationalDbHealthContributor : IHealthContributor
 {
     private readonly ILogger<RelationalDbHealthContributor> _logger;
 
-    public readonly IDbConnection Connection;
+    public readonly DbConnection Connection;
 
     public string Id { get; }
     public string HostName { get; }
 
-    public RelationalDbHealthContributor(IDbConnection connection, ILogger<RelationalDbHealthContributor> logger = null)
+    public RelationalDbHealthContributor(DbConnection connection, ILogger<RelationalDbHealthContributor> logger = null)
     {
         Connection = connection;
         _logger = logger;
@@ -50,7 +49,7 @@ public class RelationalDbHealthContributor : IHealthContributor
         Type mySqlConnection = ReflectionHelpers.FindType(MySqlTypeLocator.Assemblies, MySqlTypeLocator.ConnectionTypeNames);
         var options = new MySqlProviderConnectorOptions(configuration);
         var factory = new MySqlProviderConnectorFactory(info, options, mySqlConnection);
-        var connection = factory.Create(null) as IDbConnection;
+        var connection = factory.Create(null) as DbConnection;
         return new RelationalDbHealthContributor(connection, logger);
     }
 
@@ -62,7 +61,7 @@ public class RelationalDbHealthContributor : IHealthContributor
         Type postgreSqlConnection = ReflectionHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
         var options = new PostgreSqlProviderConnectorOptions(configuration);
         var factory = new PostgreSqlProviderConnectorFactory(info, options, postgreSqlConnection);
-        var connection = factory.Create(null) as IDbConnection;
+        var connection = factory.Create(null) as DbConnection;
         return new RelationalDbHealthContributor(connection, logger);
     }
 
@@ -74,7 +73,7 @@ public class RelationalDbHealthContributor : IHealthContributor
         Type sqlServerConnection = SqlServerTypeLocator.SqlConnection;
         var options = new SqlServerProviderConnectorOptions(configuration);
         var factory = new SqlServerProviderConnectorFactory(info, options, sqlServerConnection);
-        var connection = factory.Create(null) as IDbConnection;
+        var connection = factory.Create(null) as DbConnection;
         return new RelationalDbHealthContributor(connection, logger);
     }
 
@@ -86,7 +85,7 @@ public class RelationalDbHealthContributor : IHealthContributor
         Type oracleConnection = ReflectionHelpers.FindType(OracleTypeLocator.Assemblies, OracleTypeLocator.ConnectionTypeNames);
         var options = new OracleProviderConnectorOptions(configuration);
         var factory = new OracleProviderConnectorFactory(info, options, oracleConnection);
-        var connection = factory.Create(null) as IDbConnection;
+        var connection = factory.Create(null) as DbConnection;
         return new RelationalDbHealthContributor(connection, logger);
     }
 
@@ -103,9 +102,9 @@ public class RelationalDbHealthContributor : IHealthContributor
         try
         {
             Connection.Open();
-            IDbCommand cmd = Connection.CreateCommand();
-            cmd.CommandText = Id.IndexOf("Oracle", StringComparison.OrdinalIgnoreCase) != -1 ? "SELECT 1 FROM dual" : "SELECT 1;";
-            cmd.ExecuteScalar();
+            DbCommand command = Connection.CreateCommand();
+            command.CommandText = Id.IndexOf("Oracle", StringComparison.OrdinalIgnoreCase) != -1 ? "SELECT 1 FROM dual" : "SELECT 1;";
+            command.ExecuteScalar();
             result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Up;
             _logger?.LogTrace("{DbConnection} up!", Id);
@@ -126,7 +125,7 @@ public class RelationalDbHealthContributor : IHealthContributor
         return result;
     }
 
-    private string GetDbName(IDbConnection connection)
+    private string GetDbName(DbConnection connection)
     {
         string result = "db";
 

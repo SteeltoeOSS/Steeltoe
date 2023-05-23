@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
+using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -35,7 +35,7 @@ public static class MySqlProviderServiceCollectionExtensions
     /// IServiceCollection for chaining.
     /// </returns>
     /// <remarks>
-    /// MySqlConnection is retrievable as both MySqlConnection and IDbConnection.
+    /// MySqlConnection is retrievable as both MySqlConnection and DbConnection.
     /// </remarks>
     public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
@@ -71,7 +71,7 @@ public static class MySqlProviderServiceCollectionExtensions
     /// IServiceCollection for chaining.
     /// </returns>
     /// <remarks>
-    /// MySqlConnection is retrievable as both MySqlConnection and IDbConnection.
+    /// MySqlConnection is retrievable as both MySqlConnection and DbConnection.
     /// </remarks>
     public static IServiceCollection AddMySqlConnection(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
@@ -92,13 +92,13 @@ public static class MySqlProviderServiceCollectionExtensions
         Type mySqlConnection = ReflectionHelpers.FindType(MySqlTypeLocator.Assemblies, MySqlTypeLocator.ConnectionTypeNames);
         var options = new MySqlProviderConnectorOptions(configuration);
         var factory = new MySqlProviderConnectorFactory(info, options, mySqlConnection);
-        services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
+        services.Add(new ServiceDescriptor(typeof(DbConnection), factory.Create, contextLifetime));
         services.Add(new ServiceDescriptor(mySqlConnection, factory.Create, contextLifetime));
 
         if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
         {
             services.Add(new ServiceDescriptor(typeof(IHealthContributor),
-                ctx => new RelationalDbHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),
+                ctx => new RelationalDbHealthContributor((DbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),
                 ServiceLifetime.Singleton));
         }
     }

@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
+using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
@@ -118,7 +118,7 @@ public class RelationalDbHealthContributorTest
 
         var factory = new LoggerFactory();
         var connFactory = new SqlServerProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((DbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
 
@@ -140,7 +140,7 @@ public class RelationalDbHealthContributorTest
         var sInfo = new SqlServerServiceInfo("MyId", string.Empty);
         var factory = new LoggerFactory();
         var connFactory = new SqlServerProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((DbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
 
@@ -160,7 +160,7 @@ public class RelationalDbHealthContributorTest
         var sInfo = new MySqlServiceInfo("MyId", "mysql://localhost:80;databaseName=invalidDatabaseName");
         var factory = new LoggerFactory();
         var connFactory = new MySqlProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((DbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
 
@@ -181,7 +181,7 @@ public class RelationalDbHealthContributorTest
         var sInfo = new MySqlServiceInfo("MyId", "mysql://steeltoe:steeltoe@localhost:3306");
         var factory = new LoggerFactory();
         var connFactory = new MySqlProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((DbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
 
@@ -201,7 +201,7 @@ public class RelationalDbHealthContributorTest
         var sInfo = new PostgreSqlServiceInfo("MyId", "postgres://localhost:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
         var factory = new LoggerFactory();
         var connFactory = new PostgreSqlProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((DbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
 
@@ -217,7 +217,7 @@ public class RelationalDbHealthContributorTest
         var sInfo = new PostgreSqlServiceInfo("MyId", "postgres://steeltoe:steeltoe@localhost:5432/postgres");
         var factory = new LoggerFactory();
         var connFactory = new PostgreSqlProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((DbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
 
@@ -237,7 +237,7 @@ public class RelationalDbHealthContributorTest
         var sInfo = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/someService");
         var factory = new LoggerFactory();
         var connFactory = new OracleProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((DbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
 
@@ -253,7 +253,7 @@ public class RelationalDbHealthContributorTest
         var sInfo = new OracleServiceInfo("MyId", "oracle://hr:hr@localhost:1521/orclpdb1");
         var factory = new LoggerFactory();
         var connFactory = new OracleProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((DbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
 

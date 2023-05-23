@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
+using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -78,7 +78,7 @@ public static class MySqlServiceCollectionExtensions
         var factory = new MySqlProviderConnectorFactory(info, options, MySqlTypeLocator.MySqlConnection);
 
         services.Add(new ServiceDescriptor(typeof(IHealthContributor),
-            ctx => new RelationalDbHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),
+            ctx => new RelationalDbHealthContributor((DbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),
             contextLifetime));
     }
 }

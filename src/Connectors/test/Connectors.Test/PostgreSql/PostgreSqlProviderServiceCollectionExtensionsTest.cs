@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
+using System.Data.Common;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -72,7 +72,7 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
 
         services.AddPostgreSqlConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
     }
 
@@ -114,7 +114,7 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
 
         services.AddPostgreSqlConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
         Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString, StringComparison.Ordinal);
@@ -140,7 +140,7 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
 
         services.AddPostgreSqlConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
         Assert.Contains("Host=2980cfbe-e198-46fd-8f81-966584bb4678.postgres.database.azure.com;", connString, StringComparison.Ordinal);
@@ -169,7 +169,7 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
 
         services.AddPostgreSqlConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
         Assert.Contains("Host=10.194.45.174;", connString, StringComparison.Ordinal);
@@ -252,7 +252,7 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
             services.AddPostgreSqlConnection(configurationRoot);
             using ServiceProvider built = services.BuildServiceProvider();
 
-            using var connection = built.GetService<IDbConnection>();
+            using var connection = built.GetService<DbConnection>();
             connection.Should().BeOfType<NpgsqlConnection>().And.Subject.Should().NotBeNull();
 
             connection.ConnectionString.Should().Contain("Host=10.194.59.205");

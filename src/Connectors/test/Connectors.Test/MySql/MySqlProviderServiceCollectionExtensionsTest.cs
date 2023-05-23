@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
+using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
@@ -69,7 +69,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
 
         services.AddMySqlConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
     }
 
@@ -111,7 +111,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         services.AddMySqlConnection(configurationRoot, "spring-cloud-broker-db");
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
         Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString, StringComparison.OrdinalIgnoreCase);
@@ -132,7 +132,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
 
         services.AddMySqlConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
         Assert.Contains("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString, StringComparison.Ordinal);
@@ -156,7 +156,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
 
         services.AddMySqlConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
         Assert.Contains("ub6oyk1kkh", connString, StringComparison.Ordinal); // database
