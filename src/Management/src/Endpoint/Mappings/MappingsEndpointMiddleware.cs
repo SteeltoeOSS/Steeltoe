@@ -11,12 +11,12 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings>
+internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<object, ApplicationMappings>
 {
     public MappingsEndpointMiddleware(IOptionsMonitor<MappingsEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
-        IMappingsEndpoint endpoint, ILogger<MappingsEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, endpointOptions, logger)
+        IMappingsEndpointHandler endpointHandler, ILogger<MappingsEndpointMiddleware> logger)
+        : base(endpointHandler, managementOptions, endpointOptions, logger)
     {
     }
 
@@ -30,14 +30,24 @@ internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<Applicatio
         return Task.CompletedTask;
     }
 
+    public override bool ShouldInvoke(HttpContext context)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override async Task<ApplicationMappings> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    {
+        return await EndpointHandler.InvokeAsync(null, context.RequestAborted);
+    }
+
     internal async Task HandleMappingsRequestAsync(HttpContext context)
     {
-        ApplicationMappings result = await Endpoint.InvokeAsync(context.RequestAborted);
-        string serialInfo = Serialize(result);
+        //ApplicationMappings result = await Endpoint.InvokeAsync(context.RequestAborted);
+        //string serialInfo = Serialize(result);
 
-        Logger.LogDebug("Returning: {info}", serialInfo);
+        //Logger.LogDebug("Returning: {info}", serialInfo);
 
-        context.HandleContentNegotiation(Logger);
-        await context.Response.WriteAsync(serialInfo);
+        //context.HandleContentNegotiation(Logger);
+        //await context.Response.WriteAsync(serialInfo);
     }
 }

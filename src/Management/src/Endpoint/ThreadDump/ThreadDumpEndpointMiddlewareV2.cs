@@ -10,31 +10,42 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-internal sealed class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResult>
+internal sealed class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<object, ThreadDumpResult>
 {
-    public ThreadDumpEndpointMiddlewareV2(IThreadDumpEndpointV2 endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public ThreadDumpEndpointMiddlewareV2(IThreadDumpEndpointV2Handler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         IOptionsMonitor<HttpMiddlewareOptions> enddpointOptions, 
         ILogger<ThreadDumpEndpointMiddlewareV2> logger)
-        : base(endpoint, managementOptions, enddpointOptions, logger)
+        : base(endpointHandler, managementOptions, enddpointOptions, logger)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleThreadDumpRequestAsync(context);
-        }
+    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    //{
+    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
+    //    {
+    //        return HandleThreadDumpRequestAsync(context);
+    //    }
 
-        return Task.CompletedTask;
+    //    return Task.CompletedTask;
+    //}
+
+    public override bool ShouldInvoke(HttpContext context)
+    {
+        throw new NotImplementedException();
     }
 
-    internal async Task HandleThreadDumpRequestAsync(HttpContext context)
+    protected override async Task<ThreadDumpResult> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        string serialInfo = await HandleRequestAsync(context.RequestAborted);
-
-        Logger.LogDebug("Returning: {info}", serialInfo);
-        context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-        await context.Response.WriteAsync(serialInfo);
+        Logger.LogDebug("Executing ThreadDumpV2 handler");
+        return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
+
+    //internal async Task HandleThreadDumpRequestAsync(HttpContext context)
+    //{
+    //    string serialInfo = await HandleRequestAsync(context.RequestAborted);
+
+    //    Logger.LogDebug("Returning: {info}", serialInfo);
+    //    context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
+    //    await context.Response.WriteAsync(serialInfo);
+    //}
 }

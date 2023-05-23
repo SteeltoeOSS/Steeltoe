@@ -12,7 +12,7 @@ using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-internal sealed class DbMigrationsEndpoint : IDbMigrationsEndpoint
+internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 {
     internal static readonly Type DbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
 
@@ -31,16 +31,16 @@ internal sealed class DbMigrationsEndpoint : IDbMigrationsEndpoint
     private readonly IOptionsMonitor<DbMigrationsEndpointOptions> _options;
     private readonly IServiceProvider _container;
     private readonly DbMigrationsEndpointHelper _endpointHelper;
-    private readonly ILogger<DbMigrationsEndpoint> _logger;
+    private readonly ILogger<DbMigrationsEndpointHandler> _logger;
 
     public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, ILoggerFactory loggerFactory)
+    public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, ILoggerFactory loggerFactory)
         : this(options, container, new DbMigrationsEndpointHelper(), loggerFactory)
     {
     }
 
-    public DbMigrationsEndpoint(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, DbMigrationsEndpointHelper endpointHelper,
+    public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, DbMigrationsEndpointHelper endpointHelper,
         ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(loggerFactory);
@@ -51,7 +51,7 @@ internal sealed class DbMigrationsEndpoint : IDbMigrationsEndpoint
         _options = options;
         _container = container;
         _endpointHelper = endpointHelper;
-        _logger = loggerFactory.CreateLogger<DbMigrationsEndpoint>();
+        _logger = loggerFactory.CreateLogger<DbMigrationsEndpointHandler>();
     }
 
     public Task<Dictionary<string, DbMigrationsDescriptor>> InvokeAsync(CancellationToken cancellationToken)

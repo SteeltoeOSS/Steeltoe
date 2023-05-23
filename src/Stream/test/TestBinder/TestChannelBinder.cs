@@ -51,27 +51,27 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
         ISubscribableChannel siBinderInputChannel = ((SpringIntegrationConsumerDestination)destination).Channel;
 
         var messageListenerContainer = new TestMessageListeningContainer();
-        var endpoint = new TestMessageProducerSupportEndpoint(ApplicationContext, messageListenerContainer, _logger);
+        var endpointHandler = new TestMessageProducerSupportEndpoint(ApplicationContext, messageListenerContainer, _logger);
 
         string groupName = !string.IsNullOrEmpty(group) ? group : "anonymous";
         ErrorInfrastructure errorInfrastructure = RegisterErrorInfrastructure(destination, groupName, consumerOptions, _logger);
 
         if (consumerOptions.MaxAttempts > 1)
         {
-            endpoint.RetryTemplate = BuildRetryTemplate(consumerOptions);
-            endpoint.RecoveryCallback = errorInfrastructure.Recoverer;
+            endpointHandler.RetryTemplate = BuildRetryTemplate(consumerOptions);
+            endpointHandler.RecoveryCallback = errorInfrastructure.Recoverer;
         }
         else
         {
-            endpoint.ErrorMessageStrategy = errorMessageStrategy;
-            endpoint.ErrorChannel = errorInfrastructure.ErrorChannel;
+            endpointHandler.ErrorMessageStrategy = errorMessageStrategy;
+            endpointHandler.ErrorChannel = errorInfrastructure.ErrorChannel;
         }
 
-        endpoint.Init();
+        endpointHandler.Init();
 
         siBinderInputChannel.Subscribe(messageListenerContainer);
 
-        return endpoint;
+        return endpointHandler;
     }
 
     protected override IMessageHandler GetErrorMessageHandler(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)

@@ -12,80 +12,152 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>, LoggersChangeRequest>
+internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersRequest, Dictionary<string, object>>
 {
-    public LoggersEndpointMiddleware(LoggersEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<LoggersEndpointMiddleware> logger) : base(endpoint, managementOptions, endpointOptions, logger)
+    private readonly IEnumerable<IContextName> _contextNames;
+
+    public LoggersEndpointMiddleware(LoggersEndpointHandler endpointHandler,
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
+        IEnumerable<IContextName> contextNames,
+        ILogger<LoggersEndpointMiddleware> logger)
+        : base(endpointHandler, managementOptions, endpointOptions, logger)
     {
+        _contextNames = contextNames;
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public override bool ShouldInvoke(HttpContext context)
     {
-        return EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger) ? HandleLoggersRequestAsync(context) : Task.CompletedTask;
+        throw new NotImplementedException();
     }
 
-    internal async Task HandleLoggersRequestAsync(HttpContext context)
+    protected override async Task<Dictionary<string, object>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    {
+        var loggersRequest = await GetLoggersChangeRequestAsync(context);
+        if(loggersRequest is ErrorLoggersRequest)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        }
+        return await  EndpointHandler.InvokeAsync(loggersRequest, cancellationToken);
+    }
+
+    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    //{
+    //    return EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger) ? HandleLoggersRequestAsync(context) : Task.CompletedTask;
+    //}
+
+    //internal async Task HandleLoggersRequestAsync(HttpContext context)
+    //{
+    //    HttpRequest request = context.Request;
+    //    HttpResponse response = context.Response;
+
+    //    if (context.Request.Method == "POST")
+    //    {
+    //        // POST - change a logger level
+    //        Logger.LogDebug("Incoming path: {path}", request.Path.Value);
+    //        ManagementEndpointOptions mgmtOptions = ManagementOptions.GetFromContextPath(request.Path);
+
+    //        string path = ManagementOptions == null
+    //            ? EndpointOptions.CurrentValue.Path
+    //            : $"{mgmtOptions.Path}/{EndpointOptions.CurrentValue.Path}".Replace("//", "/", StringComparison.Ordinal);
+
+    //        if (await ChangeLoggerLevelAsync(context, path))
+    //        {
+    //            response.StatusCode = (int)HttpStatusCode.OK;
+    //            return;
+    //        }
+
+    //        response.StatusCode = (int)HttpStatusCode.BadRequest;
+    //        return;
+    //    }
+
+    //    // GET request
+    //    string serialInfo = await HandleRequestAsync(null, context.RequestAborted);
+    //    Logger.LogDebug("Returning: {info}", serialInfo);
+
+    //    context.HandleContentNegotiation(Logger);
+    //    await context.Response.WriteAsync(serialInfo);
+    //}
+    private async Task<ILoggersRequest> GetLoggersChangeRequestAsync(HttpContext context)
     {
         HttpRequest request = context.Request;
-        HttpResponse response = context.Response;
 
         if (context.Request.Method == "POST")
         {
             // POST - change a logger level
             Logger.LogDebug("Incoming path: {path}", request.Path.Value);
-            ManagementEndpointOptions mgmtOptions = ManagementOptions.GetFromContextPath(request.Path);
 
-            string path = ManagementOptions == null
-                ? EndpointOptions.CurrentValue.Path
-                : $"{mgmtOptions.Path}/{EndpointOptions.CurrentValue.Path}".Replace("//", "/", StringComparison.Ordinal);
 
-            if (await ChangeLoggerLevelAsync(context, path))
+            //var optionsPath =
+            foreach (var contextName in _contextNames)
             {
-                response.StatusCode = (int)HttpStatusCode.OK;
-                return;
-            }
+                var mgmtOption = ManagementEndpointOptions.Get(contextName.Name);
+                string path = EndpointOptions.CurrentValue.Path;
 
-            response.StatusCode = (int)HttpStatusCode.BadRequest;
-            return;
-        }
-
-        // GET request
-        string serialInfo = await HandleRequestAsync(null, context.RequestAborted);
-        Logger.LogDebug("Returning: {info}", serialInfo);
-
-        context.HandleContentNegotiation(Logger);
-        await context.Response.WriteAsync(serialInfo);
-    }
-
-    private async Task<bool> ChangeLoggerLevelAsync(HttpContext context, string path)
-    {
-        var epPath = new PathString(path);
-        HttpRequest request = context.Request;
-
-        if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
-        {
-            string loggerName = remaining.Value.TrimStart('/');
-
-            Dictionary<string, string> change = ((LoggersEndpoint)Endpoint).DeserializeRequest(request.Body);
-
-            change.TryGetValue("configuredLevel", out string level);
-
-            Logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
-
-            if (!string.IsNullOrEmpty(loggerName))
-            {
-                if (!string.IsNullOrEmpty(level) && LoggerLevels.MapLogLevel(level) == null)
+                if (mgmtOption.Path != null)
                 {
-                    Logger.LogDebug("Invalid LogLevel specified: {level}", level);
+                    path = mgmtOption.Path + "/" + path;
                 }
-                else
+                var epPath = new PathString(path);
+
+                if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
                 {
-                    var changeReq = new LoggersChangeRequest(loggerName, level);
-                    await HandleRequestAsync(changeReq, context.RequestAborted);
-                    return true;
+                    string loggerName = remaining.Value.TrimStart('/');
+
+                    Dictionary<string, string> change = await ((LoggersEndpointHandler)EndpointHandler).DeserializeRequestAsync(request.Body);
+
+                    change.TryGetValue("configuredLevel", out string level);
+
+                    Logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
+
+                    if (!string.IsNullOrEmpty(loggerName))
+                    {
+                        if (!string.IsNullOrEmpty(level) && LoggerLevels.MapLogLevel(level) == null)
+                        {
+                            Logger.LogDebug("Invalid LogLevel specified: {level}", level);
+                            return new ErrorLoggersRequest();
+                        }
+                        else
+                        {
+                            return new LoggersChangeRequest(loggerName, level);
+                        }
+                    }
                 }
             }
+        
         }
-
-        return false;
+        return new DefaultLoggersRequest();
     }
+    //private async Task<bool> ChangeLoggerLevelAsync(HttpContext context, string configuredPath)
+    //{
+    //    var epPath = new PathString(configuredPath);
+    //    HttpRequest request = context.Request;
+
+    //    if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
+    //    {
+    //        string loggerName = remaining.Value.TrimStart('/');
+
+    //        Dictionary<string, string> change = await ((LoggersEndpointHandler)EndpointHandler).DeserializeRequestAsync(request.Body);
+
+    //        change.TryGetValue("configuredLevel", out string level);
+
+    //        Logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
+
+    //        if (!string.IsNullOrEmpty(loggerName))
+    //        {
+    //            if (!string.IsNullOrEmpty(level) && LoggerLevels.MapLogLevel(level) == null)
+    //            {
+    //                Logger.LogDebug("Invalid LogLevel specified: {level}", level);
+    //            }
+    //            else
+    //            {
+    //                var changeReq = new LoggersChangeRequest(loggerName, level);
+    //                await HandleRequestAsync(changeReq, context.RequestAborted);
+    //                return true;
+    //            }
+    //        }
+    //    }
+
+    //    return false;
+    //}
 }

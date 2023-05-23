@@ -5,35 +5,23 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-internal sealed class CloudFoundryEndpoint : ICloudFoundryEndpoint
+internal sealed class CloudFoundryEndpoint : ICloudFoundryEndpointHandler
 {
-    private readonly IOptionsMonitor<CloudFoundryHttpMiddlewareOptions> _options;
-    private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
-    private readonly IEnumerable<IHttpMiddlewareOptions> _endpointOptions;
-    private readonly ILogger<CloudFoundryEndpoint> _logger;
+    private HypermediaService _hypermediaService;
 
-    public CloudFoundryEndpoint(IOptionsMonitor<CloudFoundryHttpMiddlewareOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IEnumerable<IHttpMiddlewareOptions> endpointOptions, ILoggerFactory loggerFactory)
+    public CloudFoundryEndpoint(HypermediaService hypermediaService)
     {
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(managementOptions);
-        ArgumentGuard.NotNull(endpointOptions);
-        ArgumentGuard.NotNull(loggerFactory);
-
-        _options = options;
-        _managementOptions = managementOptions;
-        _endpointOptions = endpointOptions;
-        _logger = loggerFactory.CreateLogger<CloudFoundryEndpoint>();
+        ArgumentGuard.NotNull(hypermediaService);
+        _hypermediaService = hypermediaService;
     }
 
     public Task<Links> InvokeAsync(string baseUrl, CancellationToken cancellationToken)
     {
-        var hypermediaService = new HypermediaService(_managementOptions, _options, _endpointOptions, _logger);
-        return Task.Run(() => hypermediaService.Invoke(baseUrl), cancellationToken);
+        return Task.Run(() => _hypermediaService.Invoke(baseUrl), cancellationToken);
     }
 }

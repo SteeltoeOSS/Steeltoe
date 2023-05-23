@@ -24,7 +24,7 @@ public interface IRabbitListenerEndpointRegistrar : IServiceNameAware
 
     void Initialize();
 
-    void RegisterEndpoint(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory);
+    void RegisterEndpoint(IRabbitListenerEndpoint endpointHandler, IRabbitListenerContainerFactory factory);
 
-    void RegisterEndpoint(IRabbitListenerEndpoint endpoint);
+    void RegisterEndpoint(IRabbitListenerEndpoint endpointHandler);
 }

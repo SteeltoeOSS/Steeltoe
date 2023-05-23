@@ -4,7 +4,7 @@
 
 using Steeltoe.Common;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia;
+namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 public sealed class Link
 {

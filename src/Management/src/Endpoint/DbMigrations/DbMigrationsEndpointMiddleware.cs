@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations;
 
 internal sealed class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
 {
-    public DbMigrationsEndpointMiddleware(IDbMigrationsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<DbMigrationsEndpointMiddleware> logger) : base(endpoint, managementOptions, endpointOptions, logger)
+    public DbMigrationsEndpointMiddleware(IDbMigrationsEndpoint endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<DbMigrationsEndpointMiddleware> logger) : base(endpointHandler, managementOptions, endpointOptions, logger)
     {
     }
 

@@ -57,17 +57,17 @@ public sealed class KubernetesDiscoveryClientTest
 
         mockHttpMessageHandler.Expect(HttpMethod.Get, "/api/v1/endpoints?fieldSelector=metadata.name%3Dendpoint").Respond(HttpStatusCode.OK,
             new StringContent(
-                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpoint\",\"namespace\":\"test\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip1\", \"targetRef\": {\"uid\":\"uid1\"}}],\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\"}]}]},{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpoint\",\"namespace\":\"test2\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip2\",\"targetRef\": {\"uid\":\"uid2\"}}],\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\"}]}]}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
+                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpointHandler\",\"namespace\":\"test\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip1\", \"targetRef\": {\"uid\":\"uid1\"}}],\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\"}]}]},{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpointHandler\",\"namespace\":\"test2\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip2\",\"targetRef\": {\"uid\":\"uid2\"}}],\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\"}]}]}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
         mockHttpMessageHandler.When(HttpMethod.Get, "/api/v1/namespaces/test/services").WithQueryString("fieldSelector=metadata.name%3Dendpoint").Respond(
             HttpStatusCode.OK,
             new StringContent(
-                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
+                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpointHandler\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
         mockHttpMessageHandler.When(HttpMethod.Get, "/api/v1/namespaces/test2/services").WithQueryString("fieldSelector=metadata.name%3Dendpoint").Respond(
             HttpStatusCode.OK,
             new StringContent(
-                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test2\",\"uid\":\"uids2\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
+                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpointHandler\",\"namespace\":\"test2\",\"uid\":\"uids2\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
         using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
 
@@ -83,7 +83,7 @@ public sealed class KubernetesDiscoveryClientTest
 
         IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(new DefaultIsServicePortSecureResolver(options.CurrentValue), client, options);
 
-        IList<IServiceInstance>? genericInstances = discoveryClient.GetInstances("endpoint");
+        IList<IServiceInstance>? genericInstances = discoveryClient.GetInstances("endpointHandler");
         List<KubernetesServiceInstance> instances = genericInstances.Select(s => (KubernetesServiceInstance)s).ToList();
 
         Assert.NotNull(instances);
@@ -103,12 +103,12 @@ public sealed class KubernetesDiscoveryClientTest
         mockHttpMessageHandler.Expect(HttpMethod.Get, "/api/v1/namespaces/test/endpoints").WithQueryString("fieldSelector=metadata.name%3Dendpoint").Respond(
             HttpStatusCode.OK,
             new StringContent(
-                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpoint\",\"namespace\":\"test\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip1\", \"targetRef\": {\"uid\":\"uid1\"}}],\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\"}]}]}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
+                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpointHandler\",\"namespace\":\"test\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip1\", \"targetRef\": {\"uid\":\"uid1\"}}],\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\"}]}]}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
         mockHttpMessageHandler.When(HttpMethod.Get, "/api/v1/namespaces/test/services").WithQueryString("fieldSelector=metadata.name%3Dendpoint").Respond(
             HttpStatusCode.OK,
             new StringContent(
-                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
+                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpointHandler\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
         using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
 
@@ -124,7 +124,7 @@ public sealed class KubernetesDiscoveryClientTest
 
         IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(new DefaultIsServicePortSecureResolver(options.CurrentValue), client, options);
 
-        IList<IServiceInstance>? genericInstances = discoveryClient.GetInstances("endpoint");
+        IList<IServiceInstance>? genericInstances = discoveryClient.GetInstances("endpointHandler");
         List<KubernetesServiceInstance> instances = genericInstances.Select(s => (KubernetesServiceInstance)s).ToList();
 
         Assert.NotNull(instances);
@@ -141,12 +141,12 @@ public sealed class KubernetesDiscoveryClientTest
         mockHttpMessageHandler.Expect(HttpMethod.Get, "/api/v1/namespaces/test/endpoints").WithQueryString("fieldSelector=metadata.name%3Dendpoint").Respond(
             HttpStatusCode.OK,
             new StringContent(
-                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpoint\",\"namespace\":\"test\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip1\", \"targetRef\": {\"uid\":\"uid1\"}}],\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\"},{\"name\":\"mgmt\",\"port\":9000,\"protocol\":\"TCP\"}]}]}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
+                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpointHandler\",\"namespace\":\"test\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip1\", \"targetRef\": {\"uid\":\"uid1\"}}],\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\"},{\"name\":\"mgmt\",\"port\":9000,\"protocol\":\"TCP\"}]}]}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
         mockHttpMessageHandler.When(HttpMethod.Get, "/api/v1/namespaces/test/services").WithQueryString("fieldSelector=metadata.name%3Dendpoint").Respond(
             HttpStatusCode.OK,
             new StringContent(
-                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
+                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpointHandler\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
         using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
 
@@ -162,7 +162,7 @@ public sealed class KubernetesDiscoveryClientTest
 
         IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(new DefaultIsServicePortSecureResolver(options.CurrentValue), client, options);
 
-        IList<IServiceInstance>? genericInstances = discoveryClient.GetInstances("endpoint");
+        IList<IServiceInstance>? genericInstances = discoveryClient.GetInstances("endpointHandler");
         List<KubernetesServiceInstance> instances = genericInstances.Select(s => (KubernetesServiceInstance)s).ToList();
 
         Assert.NotNull(instances);
@@ -180,12 +180,12 @@ public sealed class KubernetesDiscoveryClientTest
         mockHttpMessageHandler.Expect(HttpMethod.Get, "/api/v1/namespaces/test/endpoints").WithQueryString("fieldSelector=metadata.name%3Dendpoint").Respond(
             HttpStatusCode.OK,
             new StringContent(
-                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpoint\",\"namespace\":\"test\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip1\", \"targetRef\": {\"uid\":\"uid1\"}},{\"ip\":\"ip2\", \"targetRef\": {\"uid\":\"uid2\"}}],\"ports\":[{\"name\":\"https\",\"port\":443,\"protocol\":\"TCP\"}]}]}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
+                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpointHandler\",\"namespace\":\"test\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip1\", \"targetRef\": {\"uid\":\"uid1\"}},{\"ip\":\"ip2\", \"targetRef\": {\"uid\":\"uid2\"}}],\"ports\":[{\"name\":\"https\",\"port\":443,\"protocol\":\"TCP\"}]}]}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
         mockHttpMessageHandler.When(HttpMethod.Get, "/api/v1/namespaces/test/services").WithQueryString("fieldSelector=metadata.name%3Dendpoint").Respond(
             HttpStatusCode.OK,
             new StringContent(
-                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
+                "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpointHandler\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
         using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
 
@@ -201,7 +201,7 @@ public sealed class KubernetesDiscoveryClientTest
 
         IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(new DefaultIsServicePortSecureResolver(options.CurrentValue), client, options);
 
-        IList<IServiceInstance>? instances = discoveryClient.GetInstances("endpoint");
+        IList<IServiceInstance>? instances = discoveryClient.GetInstances("endpointHandler");
 
         Assert.NotNull(instances);
         Assert.Equal(2, instances.Count);

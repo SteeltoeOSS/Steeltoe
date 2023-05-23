@@ -6,6 +6,6 @@ using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public interface IHealthEndpoint : IEndpoint<HealthEndpointResponse, ISecurityContext>
+public interface IHealthEndpointHandler : IEndpointHandler<HealthEndpointResponse, HealthEndpointRequest>
 {
 }

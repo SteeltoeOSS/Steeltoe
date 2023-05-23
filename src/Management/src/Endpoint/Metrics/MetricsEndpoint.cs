@@ -10,7 +10,7 @@ using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-internal sealed class MetricsEndpoint : IMetricsEndpoint
+internal sealed class MetricsEndpoint : IMetricsEndpointHandler
 {
     private readonly IOptionsMonitor<MetricsEndpointOptions> _options;
     private readonly ISteeltoeExporter _exporter;
@@ -53,7 +53,7 @@ internal sealed class MetricsEndpoint : IMetricsEndpoint
             return GetMetric(request, sampleList, availTags[request.MetricName]);
         }
 
-        return null;
+        return new MetricsEmptyResponse();
     }
 
     internal IList<MetricSample> GetMetricSamplesByTags(MetricsCollection<List<MetricSample>> measurements, string metricName,

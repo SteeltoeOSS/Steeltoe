@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
         services.ConfigureMiddlewaretOptions<CloudFoundryHttpMiddlewareOptions, ConfigureCloudFoundryHttpMiddleWareOptions>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, CloudFoundryEndpointMiddleware>());
         services.AddSingleton<CloudFoundryEndpointMiddleware>();
-        services.TryAddSingleton<ICloudFoundryEndpoint, CloudFoundryEndpoint>();
+        services.TryAddSingleton<ICloudFoundryEndpointHandler, CloudFoundryEndpoint>();
         return services;
     }
 }

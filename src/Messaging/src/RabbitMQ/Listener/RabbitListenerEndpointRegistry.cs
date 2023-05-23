@@ -51,33 +51,33 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
         return new List<IMessageListenerContainer>(_listenerContainers.Values);
     }
 
-    public void RegisterListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory)
+    public void RegisterListenerContainer(IRabbitListenerEndpoint endpointHandler, IRabbitListenerContainerFactory factory)
     {
-        RegisterListenerContainer(endpoint, factory, false);
+        RegisterListenerContainer(endpointHandler, factory, false);
     }
 
-    public void RegisterListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory, bool startImmediately)
+    public void RegisterListenerContainer(IRabbitListenerEndpoint endpointHandler, IRabbitListenerContainerFactory factory, bool startImmediately)
     {
-        ArgumentGuard.NotNull(endpoint);
+        ArgumentGuard.NotNull(endpointHandler);
         ArgumentGuard.NotNull(factory);
 
-        if (string.IsNullOrEmpty(endpoint.Id))
+        if (string.IsNullOrEmpty(endpointHandler.Id))
         {
-            throw new ArgumentException($"{nameof(endpoint.Id)} in {nameof(endpoint)} must not be null or empty.", nameof(endpoint));
+            throw new ArgumentException($"{nameof(endpointHandler.Id)} in {nameof(endpointHandler)} must not be null or empty.", nameof(endpointHandler));
         }
 
         lock (_listenerContainers)
         {
-            if (_listenerContainers.ContainsKey(endpoint.Id))
+            if (_listenerContainers.ContainsKey(endpointHandler.Id))
             {
-                throw new InvalidOperationException($"Another endpoint is already registered with id '{endpoint.Id}'");
+                throw new InvalidOperationException($"Another endpointHandler is already registered with id '{endpointHandler.Id}'");
             }
 
-            IMessageListenerContainer container = CreateListenerContainer(endpoint, factory);
-            _listenerContainers.TryAdd(endpoint.Id, container);
+            IMessageListenerContainer container = CreateListenerContainer(endpointHandler, factory);
+            _listenerContainers.TryAdd(endpointHandler.Id, container);
 
-            if (!string.IsNullOrEmpty(endpoint.Group) && ApplicationContext != null &&
-                ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) is MessageListenerContainerCollection containerCollection)
+            if (!string.IsNullOrEmpty(endpointHandler.Group) && ApplicationContext != null &&
+                ApplicationContext.GetService<IMessageListenerContainerCollection>(endpointHandler.Group) is MessageListenerContainerCollection containerCollection)
             {
                 containerCollection.AddContainer(container);
             }
@@ -186,9 +186,9 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
         }
     }
 
-    protected IMessageListenerContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory)
+    protected IMessageListenerContainer CreateListenerContainer(IRabbitListenerEndpoint endpointHandler, IRabbitListenerContainerFactory factory)
     {
-        IMessageListenerContainer listenerContainer = factory.CreateListenerContainer(endpoint);
+        IMessageListenerContainer listenerContainer = factory.CreateListenerContainer(endpointHandler);
 
         try
         {

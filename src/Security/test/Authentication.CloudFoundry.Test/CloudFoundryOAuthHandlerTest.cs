@@ -79,7 +79,7 @@ public class CloudFoundryOAuthHandlerTest
 
         Assert.NotNull(resp);
         Assert.NotNull(resp.Error);
-        Assert.Contains("OAuth token endpoint failure", resp.Error.Message, StringComparison.Ordinal);
+        Assert.Contains("OAuth token endpointHandler failure", resp.Error.Message, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -70,10 +70,10 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         DirectChannel moduleInputChannel = CreateBindableChannel("input", GetDefaultBindingOptions());
         IBinding producerBinding = binder.BindProducer("bad.0", moduleOutputChannel, GetProducerOptions("output", bindingsOptions));
 
-        var endpoint = GetFieldValue<RabbitOutboundEndpoint>(producerBinding, "Lifecycle");
+        var endpointHandler = GetFieldValue<RabbitOutboundEndpoint>(producerBinding, "Lifecycle");
 
-        Assert.True(endpoint.HeadersMappedLast);
-        Assert.Contains("PassThrough", endpoint.Template.MessageConverter.GetType().Name, StringComparison.Ordinal);
+        Assert.True(endpointHandler.HeadersMappedLast);
+        Assert.Contains("PassThrough", endpointHandler.Template.MessageConverter.GetType().Name, StringComparison.Ordinal);
 
         ConsumerOptions consumerProps = GetConsumerOptions("input", bindingsOptions);
         RabbitConsumerOptions rabbitConsumerOptions = bindingsOptions.GetRabbitConsumerOptions("input");
@@ -162,9 +162,9 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.Equal(312, exception.ReplyCode);
         Assert.Equal("NO_ROUTE", exception.ReplyText);
 
-        var endpoint = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
-        Assert.NotNull(endpoint);
-        var expression = GetPropertyValue<SpelExpression>(endpoint, "ConfirmCorrelationExpression");
+        var endpointHandler = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
+        Assert.NotNull(endpointHandler);
+        var expression = GetPropertyValue<SpelExpression>(endpointHandler, "ConfirmCorrelationExpression");
         Assert.NotNull(expression);
         Assert.Equal("#root", GetPropertyValue<string>(expression, "ExpressionString"));
         var template = new RabbitTemplate();
@@ -172,7 +172,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         CorrelationData correlationData = accessor.GetWrapper(message);
 
         latch.Reset(2);
-        endpoint.Confirm(correlationData, false, "Mock Nack");
+        endpointHandler.Confirm(correlationData, false, "Mock Nack");
 
         Assert.IsAssignableFrom<ErrorMessage>(errorMessage.Value);
 
@@ -274,9 +274,9 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         IBinding consumerBinding = binder.BindConsumer("props.0", null, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
 
-        var endpoint = ExtractEndpoint(consumerBinding) as RabbitInboundChannelAdapter;
-        Assert.NotNull(endpoint);
-        var container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
+        var endpointHandler = ExtractEndpoint(consumerBinding) as RabbitInboundChannelAdapter;
+        Assert.NotNull(endpointHandler);
+        var container = GetPropertyValue<DirectMessageListenerContainer>(endpointHandler, "MessageListenerContainer");
         Assert.NotNull(container);
         Assert.Equal(AcknowledgeMode.Auto, container.AcknowledgeMode);
         Assert.StartsWith(rabbitConsumerOptions.Prefix, container.GetQueueNames()[0], StringComparison.Ordinal);
@@ -288,13 +288,13 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.True(container.MissingQueuesFatal);
         Assert.Equal(1500L, container.FailedDeclarationRetryInterval);
 
-        RetryTemplate retry = endpoint.RetryTemplate;
+        RetryTemplate retry = endpointHandler.RetryTemplate;
         Assert.NotNull(retry);
         Assert.Equal(3, GetFieldValue<int>(retry, "_maxAttempts"));
         Assert.Equal(1000, GetFieldValue<int>(retry, "_backOffInitialInterval"));
         Assert.Equal(2.0, GetFieldValue<double>(retry, "_backOffMultiplier"));
         consumerBinding.UnbindAsync();
-        Assert.False(endpoint.IsRunning);
+        Assert.False(endpointHandler.IsRunning);
 
         bindingsOptions.Bindings.Remove("input");
 
@@ -324,13 +324,13 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         properties.InstanceIndex = 0;
         consumerBinding = binder.BindConsumer("props.0", "test", CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
 
-        endpoint = ExtractEndpoint(consumerBinding) as RabbitInboundChannelAdapter;
-        container = VerifyContainer(endpoint);
+        endpointHandler = ExtractEndpoint(consumerBinding) as RabbitInboundChannelAdapter;
+        container = VerifyContainer(endpointHandler);
 
         Assert.Equal("foo.props.0.test", container.GetQueueNames()[0]);
 
         consumerBinding.UnbindAsync();
-        Assert.False(endpoint.IsRunning);
+        Assert.False(endpointHandler.IsRunning);
     }
 
     [Fact]
@@ -426,8 +426,8 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         IBinding consumerBinding = binder.BindConsumer("propsUser1", "infra", CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
 
-        ILifecycle endpoint = ExtractEndpoint(consumerBinding);
-        var container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
+        ILifecycle endpointHandler = ExtractEndpoint(consumerBinding);
+        var container = GetPropertyValue<DirectMessageListenerContainer>(endpointHandler, "MessageListenerContainer");
 
         Assert.False(container.MissingQueuesFatal);
         Assert.True(container.IsRunning);
@@ -461,8 +461,8 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         rabbitConsumerOptions.QueueNameGroupOnly = true;
 
         IBinding consumerBinding = binder.BindConsumer("amq.topic", null, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
-        ILifecycle endpoint = ExtractEndpoint(consumerBinding);
-        var container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
+        ILifecycle endpointHandler = ExtractEndpoint(consumerBinding);
+        var container = GetPropertyValue<DirectMessageListenerContainer>(endpointHandler, "MessageListenerContainer");
 
         string queueName = container.GetQueueNames()[0];
 
@@ -485,8 +485,8 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         rabbitConsumerOptions.AnonymousGroupPrefix = "customPrefix.";
 
         IBinding consumerBinding = binder.BindConsumer("amq.topic", null, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
-        ILifecycle endpoint = ExtractEndpoint(consumerBinding);
-        var container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
+        ILifecycle endpointHandler = ExtractEndpoint(consumerBinding);
+        var container = GetPropertyValue<DirectMessageListenerContainer>(endpointHandler, "MessageListenerContainer");
 
         string queueName = container.GetQueueNames()[0];
         Assert.StartsWith("customPrefix.", queueName, StringComparison.Ordinal);
@@ -514,8 +514,8 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         // exchange plugin; tested locally
         const string group = "infra";
         IBinding consumerBinding = binder.BindConsumer("propsUser2", group, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
-        ILifecycle endpoint = ExtractEndpoint(consumerBinding);
-        var container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
+        ILifecycle endpointHandler = ExtractEndpoint(consumerBinding);
+        var container = GetPropertyValue<DirectMessageListenerContainer>(endpointHandler, "MessageListenerContainer");
 
         Assert.True(container.IsRunning);
         await consumerBinding.UnbindAsync();
@@ -607,8 +607,8 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         extProps.Exclusive = true;
 
         IBinding consumerBinding = binder.BindConsumer("propsUser3", "infra", CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
-        ILifecycle endpoint = ExtractEndpoint(consumerBinding);
-        var container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
+        ILifecycle endpointHandler = ExtractEndpoint(consumerBinding);
+        var container = GetPropertyValue<DirectMessageListenerContainer>(endpointHandler, "MessageListenerContainer");
 
         Assert.True(container.IsRunning);
 
@@ -742,8 +742,8 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         const string group = "bindingArgs";
         IBinding consumerBinding = binder.BindConsumer("propsHeader", group, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
-        ILifecycle endpoint = ExtractEndpoint(consumerBinding);
-        var container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
+        ILifecycle endpointHandler = ExtractEndpoint(consumerBinding);
+        var container = GetPropertyValue<DirectMessageListenerContainer>(endpointHandler, "MessageListenerContainer");
 
         Assert.True(container.IsRunning);
         await consumerBinding.UnbindAsync();
@@ -796,10 +796,10 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         ProducerOptions producerOptions = GetProducerOptions("input", rabbitBindingsOptions);
         IBinding producerBinding = binder.BindProducer("props.0", CreateBindableChannel("input", bindingOptions), producerOptions);
 
-        var endpoint = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
-        Assert.Equal(MessageDeliveryMode.Persistent, endpoint.DefaultDeliveryMode);
+        var endpointHandler = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
+        Assert.Equal(MessageDeliveryMode.Persistent, endpointHandler.DefaultDeliveryMode);
 
-        var mapper = GetPropertyValue<DefaultRabbitHeaderMapper>(endpoint, "HeaderMapper");
+        var mapper = GetPropertyValue<DefaultRabbitHeaderMapper>(endpointHandler, "HeaderMapper");
         Assert.NotNull(mapper);
         Assert.NotNull(mapper.RequestHeaderMatcher);
 
@@ -810,9 +810,9 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.Equal(4, matchers.Count);
 
         producerBinding.UnbindAsync();
-        Assert.False(endpoint.IsRunning);
+        Assert.False(endpointHandler.IsRunning);
 
-        Assert.False(endpoint.Template.IsChannelTransacted);
+        Assert.False(endpointHandler.Template.IsChannelTransacted);
 
         rabbitBindingsOptions.Bindings.Remove("input");
         ProducerOptions producerProperties = GetProducerOptions("input", rabbitBindingsOptions);
@@ -846,15 +846,15 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         producerBinding = binder.BindProducer("props.0", channel, producerProperties);
 
-        endpoint = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
-        Assert.Same(GetResource(), endpoint.Template.ConnectionFactory);
+        endpointHandler = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
+        Assert.Same(GetResource(), endpointHandler.Template.ConnectionFactory);
 
-        Assert.Equal($"'props.0-' + Headers['{BinderHeaders.PartitionHeader}']", endpoint.RoutingKeyExpression.ExpressionString);
-        Assert.Equal("42", endpoint.DelayExpression.ExpressionString);
-        Assert.Equal(MessageDeliveryMode.NonPersistent, endpoint.DefaultDeliveryMode);
-        Assert.True(endpoint.Template.IsChannelTransacted);
+        Assert.Equal($"'props.0-' + Headers['{BinderHeaders.PartitionHeader}']", endpointHandler.RoutingKeyExpression.ExpressionString);
+        Assert.Equal("42", endpointHandler.DelayExpression.ExpressionString);
+        Assert.Equal(MessageDeliveryMode.NonPersistent, endpointHandler.DefaultDeliveryMode);
+        Assert.True(endpointHandler.Template.IsChannelTransacted);
 
-        mapper = GetPropertyValue<DefaultRabbitHeaderMapper>(endpoint, "HeaderMapper");
+        mapper = GetPropertyValue<DefaultRabbitHeaderMapper>(endpointHandler, "HeaderMapper");
         Assert.NotNull(mapper);
         Assert.NotNull(mapper.RequestHeaderMatcher);
         matchers = GetPropertyValue<List<Integration.Mapping.AbstractHeaderMapper<IMessageHeaders>.IHeaderMatcher>>(mapper.RequestHeaderMatcher, "Matchers");
@@ -869,7 +869,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         Assert.Equal(42, received.Headers[RabbitMessageHeaders.ReceivedDelay]);
         producerBinding.UnbindAsync();
-        Assert.False(endpoint.IsRunning);
+        Assert.False(endpointHandler.IsRunning);
     }
 
     [Fact]
@@ -974,8 +974,8 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         consumerProperties.Multiplex = true;
         IBinding consumerBinding = binder.BindConsumer("dlqtest,dlqtest2", "default", moduleInputChannel, consumerProperties);
 
-        ILifecycle endpoint = ExtractEndpoint(consumerBinding);
-        var container = GetPropertyValue<AbstractMessageListenerContainer>(endpoint, "MessageListenerContainer");
+        ILifecycle endpointHandler = ExtractEndpoint(consumerBinding);
+        var container = GetPropertyValue<AbstractMessageListenerContainer>(endpointHandler, "MessageListenerContainer");
         Assert.Equal(2, container.GetQueueNames().Length);
 
         var template = new RabbitTemplate(GetResource());
@@ -2008,15 +2008,15 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     }
 
     // TestCustomBatchingStrategy - Test not ported because CustomBatching Strategy is not yet supported in Steeltoe
-    protected override string GetEndpointRouting(object endpoint)
+    protected override string GetEndpointRouting(object endpointHandler)
     {
-        var spelExp = GetPropertyValue<SpelExpression>(endpoint, "RoutingKeyExpression");
+        var spelExp = GetPropertyValue<SpelExpression>(endpointHandler, "RoutingKeyExpression");
         return spelExp.ExpressionString;
     }
 
-    protected override void CheckRkExpressionForPartitionedModuleSpel(object endpoint)
+    protected override void CheckRkExpressionForPartitionedModuleSpel(object endpointHandler)
     {
-        string routingExpression = GetEndpointRouting(endpoint);
+        string routingExpression = GetEndpointRouting(endpointHandler);
         string delimiter = GetDestinationNameDelimiter();
         string dest = $"{GetExpectedRoutingBaseDestination($"'part{delimiter}0'", "test")} + '-' + Headers['{BinderHeaders.PartitionHeader}']";
 

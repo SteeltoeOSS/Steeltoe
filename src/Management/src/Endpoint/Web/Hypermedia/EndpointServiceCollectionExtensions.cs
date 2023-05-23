@@ -5,7 +5,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia;
+namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 public static class EndpointServiceCollectionExtensions
 {

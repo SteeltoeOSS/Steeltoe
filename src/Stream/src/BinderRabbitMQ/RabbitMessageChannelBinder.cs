@@ -140,7 +140,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         string destinationName = string.IsNullOrEmpty(prefix) ? exchangeName : exchangeName[prefix.Length..];
         RabbitTemplate template = BuildRabbitTemplate(extendedProperties, errorChannel != null || extendedProperties.UseConfirmHeader.GetValueOrDefault());
 
-        var endpoint = new RabbitOutboundEndpoint(ApplicationContext, template, logger)
+        var endpointHandler = new RabbitOutboundEndpoint(ApplicationContext, template, logger)
         {
             ExchangeName = exchangeName
         };
@@ -150,22 +150,22 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
         if (!producerProperties.IsPartitioned)
         {
-            UpdateRoutingKeyExpressionForNonPartitioned(endpoint, destinationName, expressionInterceptorNeeded, routingKeyExpression);
+            UpdateRoutingKeyExpressionForNonPartitioned(endpointHandler, destinationName, expressionInterceptorNeeded, routingKeyExpression);
         }
         else
         {
-            UpdateRoutingKeyExpressionForPartitioned(destinationName, endpoint, expressionInterceptorNeeded, routingKeyExpression);
+            UpdateRoutingKeyExpressionForPartitioned(destinationName, endpointHandler, expressionInterceptorNeeded, routingKeyExpression);
         }
 
         if (extendedProperties.DelayExpression != null)
         {
             if (expressionInterceptorNeeded)
             {
-                endpoint.SetDelayExpressionString($"Headers['{RabbitExpressionEvaluatingInterceptor.DelayHeader}']");
+                endpointHandler.SetDelayExpressionString($"Headers['{RabbitExpressionEvaluatingInterceptor.DelayHeader}']");
             }
             else
             {
-                endpoint.DelayExpression = ExpressionParser.ParseExpression(extendedProperties.DelayExpression);
+                endpointHandler.DelayExpression = ExpressionParser.ParseExpression(extendedProperties.DelayExpression);
             }
         }
 
@@ -181,18 +181,18 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         headerPatterns.AddRange(extendedProperties.HeaderPatterns);
 
         mapper.SetRequestHeaderNames(headerPatterns.ToArray());
-        endpoint.HeaderMapper = mapper;
+        endpointHandler.HeaderMapper = mapper;
 
-        endpoint.DefaultDeliveryMode = extendedProperties.DeliveryMode.Value;
+        endpointHandler.DefaultDeliveryMode = extendedProperties.DeliveryMode.Value;
 
         if (errorChannel != null)
         {
             CheckConnectionFactoryIsErrorCapable();
-            endpoint.ReturnChannel = errorChannel;
+            endpointHandler.ReturnChannel = errorChannel;
 
             if (!extendedProperties.UseConfirmHeader.GetValueOrDefault())
             {
-                endpoint.ConfirmNackChannel = errorChannel;
+                endpointHandler.ConfirmNackChannel = errorChannel;
 
                 string ackChannelBeanName = !string.IsNullOrEmpty(extendedProperties.ConfirmAckChannel)
                     ? extendedProperties.ConfirmAckChannel
@@ -205,8 +205,8 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
                     ApplicationContext.Register(ackChannelBeanName, ackChannel);
                 }
 
-                endpoint.ConfirmAckChannelName = ackChannelBeanName;
-                endpoint.SetConfirmCorrelationExpressionString("#root");
+                endpointHandler.ConfirmAckChannelName = ackChannelBeanName;
+                endpointHandler.SetConfirmCorrelationExpressionString("#root");
             }
             else
             {
@@ -216,12 +216,12 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
                 }
             }
 
-            endpoint.ErrorMessageStrategy = new DefaultErrorMessageStrategy();
+            endpointHandler.ErrorMessageStrategy = new DefaultErrorMessageStrategy();
         }
 
-        endpoint.HeadersMappedLast = true;
-        endpoint.Initialize();
-        return endpoint;
+        endpointHandler.HeadersMappedLast = true;
+        endpointHandler.Initialize();
+        return endpointHandler;
     }
 
     protected override void PostProcessOutputChannel(IMessageChannel outputChannel, IProducerOptions producerOptions)
@@ -410,37 +410,37 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         return properties.DeadLetterExchange;
     }
 
-    private void UpdateRoutingKeyExpressionForPartitioned(string destinationName, RabbitOutboundEndpoint endpoint, bool expressionInterceptorNeeded,
+    private void UpdateRoutingKeyExpressionForPartitioned(string destinationName, RabbitOutboundEndpoint endpointHandler, bool expressionInterceptorNeeded,
         string routingKeyExpression)
     {
         if (routingKeyExpression == null)
         {
-            endpoint.RoutingKeyExpression = BuildPartitionRoutingExpression(destinationName, false);
+            endpointHandler.RoutingKeyExpression = BuildPartitionRoutingExpression(destinationName, false);
         }
         else
         {
-            endpoint.RoutingKeyExpression = expressionInterceptorNeeded
+            endpointHandler.RoutingKeyExpression = expressionInterceptorNeeded
                 ? BuildPartitionRoutingExpression($"Headers['{RabbitExpressionEvaluatingInterceptor.RoutingKeyHeader}']", true)
                 : BuildPartitionRoutingExpression(routingKeyExpression, true);
         }
     }
 
-    private void UpdateRoutingKeyExpressionForNonPartitioned(RabbitOutboundEndpoint endpoint, string destinationName, bool expressionInterceptorNeeded,
+    private void UpdateRoutingKeyExpressionForNonPartitioned(RabbitOutboundEndpoint endpointHandler, string destinationName, bool expressionInterceptorNeeded,
         string routingKeyExpression)
     {
         if (routingKeyExpression == null)
         {
-            endpoint.RoutingKey = destinationName;
+            endpointHandler.RoutingKey = destinationName;
         }
         else
         {
             if (expressionInterceptorNeeded)
             {
-                endpoint.SetRoutingKeyExpressionString($"Headers['{RabbitExpressionEvaluatingInterceptor.RoutingKeyHeader}']");
+                endpointHandler.SetRoutingKeyExpressionString($"Headers['{RabbitExpressionEvaluatingInterceptor.RoutingKeyHeader}']");
             }
             else
             {
-                endpoint.RoutingKeyExpression = ExpressionParser.ParseExpression(routingKeyExpression);
+                endpointHandler.RoutingKeyExpression = ExpressionParser.ParseExpression(routingKeyExpression);
             }
         }
     }

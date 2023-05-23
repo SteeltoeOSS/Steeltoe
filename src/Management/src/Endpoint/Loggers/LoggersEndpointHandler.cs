@@ -10,7 +10,7 @@ using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-internal sealed class LoggersEndpoint : ILoggersEndpoint
+internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
 {
     private static readonly List<string> Levels = new()
     {
@@ -23,13 +23,13 @@ internal sealed class LoggersEndpoint : ILoggersEndpoint
         LoggerLevels.MapLogLevel(LogLevel.Trace)
     };
 
-    private readonly ILogger<LoggersEndpoint> _logger;
+    private readonly ILogger<LoggersEndpointHandler> _logger;
     private readonly IOptionsMonitor<LoggersEndpointOptions> _options;
     private readonly IDynamicLoggerProvider _dynamicLoggerProvider;
 
     public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public LoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, ILoggerFactory loggerFactory, IDynamicLoggerProvider dynamicLoggerProvider)
+    public LoggersEndpointHandler(IOptionsMonitor<LoggersEndpointOptions> options, ILoggerFactory loggerFactory, IDynamicLoggerProvider dynamicLoggerProvider)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(loggerFactory);
@@ -37,23 +37,23 @@ internal sealed class LoggersEndpoint : ILoggersEndpoint
 
         _options = options;
         _dynamicLoggerProvider = dynamicLoggerProvider;
-        _logger = loggerFactory.CreateLogger<LoggersEndpoint>();
+        _logger = loggerFactory.CreateLogger<LoggersEndpointHandler>();
     }
 
-    public Task<Dictionary<string, object>> InvokeAsync(LoggersChangeRequest request, CancellationToken cancellationToken)
+    public Task<Dictionary<string, object>> InvokeAsync(ILoggersRequest request, CancellationToken cancellationToken)
     {
         _logger.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
 
         return Task.Run(() => DoInvoke(_dynamicLoggerProvider, request), cancellationToken);
     }
 
-    private Dictionary<string, object> DoInvoke(IDynamicLoggerProvider provider, LoggersChangeRequest request)
+    private Dictionary<string, object> DoInvoke(IDynamicLoggerProvider provider, ILoggersRequest request)
     {
         var result = new Dictionary<string, object>();
 
-        if (request != null)
+        if (request is LoggersChangeRequest changeRequest)
         {
-            SetLogLevel(provider, request.Name, request.Level);
+            SetLogLevel(provider, changeRequest.Name, changeRequest.Level);
         }
         else
         {
@@ -104,11 +104,11 @@ internal sealed class LoggersEndpoint : ILoggersEndpoint
         provider.SetLogLevel(name, LoggerLevels.MapLogLevel(level));
     }
 
-    internal Dictionary<string, string> DeserializeRequest(Stream stream)
+    internal async Task<Dictionary<string, string>> DeserializeRequestAsync(Stream stream)
     {
         try
         {
-            return (Dictionary<string, string>)JsonSerializer.DeserializeAsync(stream, typeof(Dictionary<string, string>)).GetAwaiter().GetResult();
+            return await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream);
         }
         catch (Exception e)
         {

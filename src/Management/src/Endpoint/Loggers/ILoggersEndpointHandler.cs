@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public interface ILoggersEndpoint : IEndpoint<Dictionary<string, object>, LoggersChangeRequest>
+public interface ILoggersEndpointHandler : IEndpointHandler<ILoggersRequest, Dictionary<string, object>>
 {
 }

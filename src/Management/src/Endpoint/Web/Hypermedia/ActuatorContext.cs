@@ -4,7 +4,7 @@
 
 using Steeltoe.Management.Endpoint.Options;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia;
+namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 internal sealed class ActuatorContext : IContextName
 {

@@ -188,17 +188,17 @@ public class EnableRabbitTest
         Assert.Single(simpleFactory.ListenerContainers);
 
         MessageListenerTestContainer testContainer = simpleFactory.GetListenerContainers()[0];
-        var endpoint = testContainer.Endpoint as AbstractRabbitListenerEndpoint;
-        Assert.Equal("listener1", endpoint.Id);
-        AssertQueues(endpoint, "queue1", "queue2");
-        Assert.Empty(endpoint.Queues);
-        Assert.True(endpoint.Exclusive);
-        Assert.Equal(34, endpoint.Priority);
+        var endpointHandler = testContainer.Endpoint as AbstractRabbitListenerEndpoint;
+        Assert.Equal("listener1", endpointHandler.Id);
+        AssertQueues(endpointHandler, "queue1", "queue2");
+        Assert.Empty(endpointHandler.Queues);
+        Assert.True(endpointHandler.Exclusive);
+        Assert.Equal(34, endpointHandler.Priority);
         IRabbitAdmin admin = context.GetRabbitAdmin();
-        Assert.Same(endpoint.Admin, admin);
+        Assert.Same(endpointHandler.Admin, admin);
 
         var container = new DirectMessageListenerContainer(context);
-        endpoint.SetupListenerContainer(container);
+        endpointHandler.SetupListenerContainer(container);
         var listener = container.MessageListener as MessagingMessageListenerAdapter;
 
         var accessor = new RabbitHeaderAccessor
@@ -219,9 +219,9 @@ public class EnableRabbitTest
         Assert.Single(defaultFactory.ListenerContainers);
         Assert.Single(customFactory.ListenerContainers);
         MessageListenerTestContainer testContainer = defaultFactory.GetListenerContainers()[0];
-        IRabbitListenerEndpoint endpoint = testContainer.Endpoint;
-        Assert.IsType<SimpleRabbitListenerEndpoint>(endpoint);
-        var simpleEndpoint = endpoint as SimpleRabbitListenerEndpoint;
+        IRabbitListenerEndpoint endpointHandler = testContainer.Endpoint;
+        Assert.IsType<SimpleRabbitListenerEndpoint>(endpointHandler);
+        var simpleEndpoint = endpointHandler as SimpleRabbitListenerEndpoint;
         Assert.IsType<MessageListenerAdapter>(simpleEndpoint.MessageListener);
         var customRegistry = context.GetService<IRabbitListenerEndpointRegistry>();
         Assert.IsType<CustomRabbitListenerEndpointRegistry>(customRegistry);
@@ -243,9 +243,9 @@ public class EnableRabbitTest
         Assert.Single(defaultFactory.GetListenerContainers());
     }
 
-    private void AssertQueues(AbstractRabbitListenerEndpoint endpoint, params string[] queues)
+    private void AssertQueues(AbstractRabbitListenerEndpoint endpointHandler, params string[] queues)
     {
-        List<string> actualQueues = endpoint.QueueNames;
+        List<string> actualQueues = endpointHandler.QueueNames;
 
         foreach (string expectedQueue in queues)
         {
@@ -576,14 +576,14 @@ public class EnableRabbitTest
         {
             registrar.EndpointRegistry = _registry;
 
-            var endpoint = new SimpleRabbitListenerEndpoint(_context)
+            var endpointHandler = new SimpleRabbitListenerEndpoint(_context)
             {
                 Id = "myCustomEndpointId"
             };
 
-            endpoint.SetQueueNames("myQueue");
-            endpoint.MessageListener = new MessageListenerAdapter(_context);
-            registrar.RegisterEndpoint(endpoint);
+            endpointHandler.SetQueueNames("myQueue");
+            endpointHandler.MessageListener = new MessageListenerAdapter(_context);
+            registrar.RegisterEndpoint(endpointHandler);
         }
     }
 

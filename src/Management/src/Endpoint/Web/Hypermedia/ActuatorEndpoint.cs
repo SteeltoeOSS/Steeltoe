@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia;
+namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 /// <summary>
 /// Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators.

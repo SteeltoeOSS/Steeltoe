@@ -7,23 +7,22 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Management.Endpoint.Security;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-internal sealed class HealthEndpoint : IHealthEndpoint
+internal sealed class HealthEndpointHandler : IHealthEndpoint
 {
     private readonly IOptionsMonitor<HealthCheckServiceOptions> _serviceOptions;
     private readonly IServiceProvider _provider;
     private readonly IOptionsMonitor<HealthEndpointOptions> _options;
     private readonly IHealthAggregator _aggregator;
     private readonly IList<IHealthContributor> _contributors;
-    private readonly ILogger<HealthEndpoint> _logger;
+    private readonly ILogger<HealthEndpointHandler> _logger;
     public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public HealthEndpoint(IOptionsMonitor<HealthEndpointOptions> options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
+    public HealthEndpointHandler(IOptionsMonitor<HealthEndpointOptions> options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
         IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
@@ -38,12 +37,12 @@ internal sealed class HealthEndpoint : IHealthEndpoint
         _serviceOptions = serviceOptions;
         _provider = provider;
         _contributors = contributors.ToList();
-        _logger = loggerFactory.CreateLogger<HealthEndpoint>();
+        _logger = loggerFactory.CreateLogger<HealthEndpointHandler>();
     }
 
-    public Task<HealthEndpointResponse> InvokeAsync(ISecurityContext securityContext, CancellationToken cancellationToken)
+    public Task<HealthEndpointResponse> InvokeAsync(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)
     {
-        return Task.Run(()=> BuildHealth(securityContext), cancellationToken);
+        return Task.Run(()=> BuildHealth(healthRequest), cancellationToken);
     }
 
     public int GetStatusCode(HealthCheckResult health)
@@ -52,9 +51,9 @@ internal sealed class HealthEndpoint : IHealthEndpoint
         return health.Status == HealthStatus.Down || health.Status == HealthStatus.OutOfService ? 503 : 200;
     }
 
-    private HealthEndpointResponse BuildHealth(ISecurityContext securityContext)
+    private HealthEndpointResponse BuildHealth(HealthEndpointRequest healthRequest)
     {
-        string groupName = GetRequestedHealthGroup(securityContext);
+        string groupName = healthRequest.GroupName;
         ICollection<HealthCheckRegistration> healthCheckRegistrations;
         IList<IHealthContributor> filteredContributors;
         var options = Options as HealthEndpointOptions;
@@ -78,7 +77,7 @@ internal sealed class HealthEndpoint : IHealthEndpoint
 
         ShowDetails showDetails = options.ShowDetails;
 
-        if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !securityContext.HasClaim(options.Claim)))
+        if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !healthRequest.HasClaim))
         {
             response.Details = new Dictionary<string, object>();
         }
@@ -114,25 +113,7 @@ internal sealed class HealthEndpoint : IHealthEndpoint
         return svcOptions.CurrentValue.Registrations;
     }
 
-    /// <summary>
-    /// Returns the last value returned by <see cref="ISecurityContext.GetRequestComponents()" />, expected to be the name of a configured health group.
-    /// </summary>
-    /// <param name="securityContext">
-    /// Last value of <see cref="ISecurityContext.GetRequestComponents()" /> is used as group name.
-    /// </param>
-    private string GetRequestedHealthGroup(ISecurityContext securityContext)
-    {
-        string[] requestComponents = securityContext?.GetRequestComponents();
-
-        if (requestComponents != null && requestComponents.Length > 0)
-        {
-            return requestComponents[^1];
-        }
-
-        _logger.LogWarning("Failed to find anything in the request from which to parse health group name.");
-
-        return string.Empty;
-    }
+  
 
     /// <summary>
     /// Filter out health contributors that do not belong to the requested group.

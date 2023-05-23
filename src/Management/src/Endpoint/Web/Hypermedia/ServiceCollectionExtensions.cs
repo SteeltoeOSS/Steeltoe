@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Middleware;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia;
+namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 /// <summary>
 /// Add services used by the Hypermedia actuator.

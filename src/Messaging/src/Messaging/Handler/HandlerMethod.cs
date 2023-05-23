@@ -126,7 +126,7 @@ public class HandlerMethod
         if (!methodDeclaringClass.IsAssignableFrom(targetBeanClass))
         {
             string text =
-                $"The mapped handler method class '{methodDeclaringClass.Name}' is not an instance of the actual endpoint bean class '{targetBeanClass.Name}";
+                $"The mapped handler method class '{methodDeclaringClass.Name}' is not an instance of the actual endpointHandler bean class '{targetBeanClass.Name}";
 
             throw new InvalidOperationException(FormatInvokeError(text, args));
         }

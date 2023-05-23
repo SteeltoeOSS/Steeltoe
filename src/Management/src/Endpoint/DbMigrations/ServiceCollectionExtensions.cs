@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.ConfigureOptions<ConfigureDbMigrationsEndpointOptions>();
-        services.TryAddSingleton<IDbMigrationsEndpoint, DbMigrationsEndpoint>();
+        services.TryAddSingleton<IDbMigrationsEndpoint, DbMigrationsEndpointHandler>();
         services.AddSingleton<DbMigrationsEndpointMiddleware>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, DbMigrationsEndpointMiddleware>());
 

@@ -38,9 +38,9 @@ public class RabbitListenerAttributeProcessorTest
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
-        IRabbitListenerEndpoint endpoint = container.Endpoint;
-        Assert.IsType<MethodRabbitListenerEndpoint>(endpoint);
-        var methodEndpoint = endpoint as MethodRabbitListenerEndpoint;
+        IRabbitListenerEndpoint endpointHandler = container.Endpoint;
+        Assert.IsType<MethodRabbitListenerEndpoint>(endpointHandler);
+        var methodEndpoint = endpointHandler as MethodRabbitListenerEndpoint;
         Assert.NotNull(methodEndpoint.Instance);
         Assert.NotNull(methodEndpoint.Method);
 
@@ -78,9 +78,9 @@ public class RabbitListenerAttributeProcessorTest
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
-        IRabbitListenerEndpoint endpoint = container.Endpoint;
-        Assert.IsType<MethodRabbitListenerEndpoint>(endpoint);
-        var methodEndpoint = endpoint as MethodRabbitListenerEndpoint;
+        IRabbitListenerEndpoint endpointHandler = container.Endpoint;
+        Assert.IsType<MethodRabbitListenerEndpoint>(endpointHandler);
+        var methodEndpoint = endpointHandler as MethodRabbitListenerEndpoint;
         Assert.NotNull(methodEndpoint.Instance);
         Assert.NotNull(methodEndpoint.Method);
 
@@ -111,12 +111,12 @@ public class RabbitListenerAttributeProcessorTest
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
-        var endpoint = container.Endpoint as AbstractRabbitListenerEndpoint;
-        Assert.NotNull(endpoint);
+        var endpointHandler = container.Endpoint as AbstractRabbitListenerEndpoint;
+        Assert.NotNull(endpointHandler);
 
-        Assert.Equal(2, endpoint.QueueNames.Count);
-        Assert.Contains("metaTestQueue", endpoint.QueueNames);
-        Assert.Contains("metaTestQueue2", endpoint.QueueNames);
+        Assert.Equal(2, endpointHandler.QueueNames.Count);
+        Assert.Contains("metaTestQueue", endpointHandler.QueueNames);
+        Assert.Contains("metaTestQueue2", endpointHandler.QueueNames);
     }
 
     [Fact]
@@ -139,12 +139,12 @@ public class RabbitListenerAttributeProcessorTest
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
-        var endpoint = container.Endpoint as AbstractRabbitListenerEndpoint;
-        Assert.NotNull(endpoint);
+        var endpointHandler = container.Endpoint as AbstractRabbitListenerEndpoint;
+        Assert.NotNull(endpointHandler);
 
-        Assert.Equal(2, endpoint.QueueNames.Count);
-        Assert.Contains("metaTestQueue", endpoint.QueueNames);
-        Assert.Contains("metaTestQueue2", endpoint.QueueNames);
+        Assert.Equal(2, endpointHandler.QueueNames.Count);
+        Assert.Contains("metaTestQueue", endpointHandler.QueueNames);
+        Assert.Contains("metaTestQueue2", endpointHandler.QueueNames);
     }
 
     [Fact]
@@ -166,12 +166,12 @@ public class RabbitListenerAttributeProcessorTest
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
-        var endpoint = container.Endpoint as AbstractRabbitListenerEndpoint;
-        Assert.NotNull(endpoint);
+        var endpointHandler = container.Endpoint as AbstractRabbitListenerEndpoint;
+        Assert.NotNull(endpointHandler);
 
-        Assert.Equal(2, endpoint.QueueNames.Count);
-        Assert.Contains("metaTestQueue", endpoint.QueueNames);
-        Assert.Contains("metaTestQueue2", endpoint.QueueNames);
+        Assert.Equal(2, endpointHandler.QueueNames.Count);
+        Assert.Contains("metaTestQueue", endpointHandler.QueueNames);
+        Assert.Contains("metaTestQueue2", endpointHandler.QueueNames);
     }
 
     [Fact]
@@ -205,12 +205,12 @@ public class RabbitListenerAttributeProcessorTest
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
-        var endpoint = container.Endpoint as AbstractRabbitListenerEndpoint;
-        Assert.NotNull(endpoint);
+        var endpointHandler = container.Endpoint as AbstractRabbitListenerEndpoint;
+        Assert.NotNull(endpointHandler);
 
-        Assert.Equal(2, endpoint.QueueNames.Count);
-        Assert.Contains("metaTestQueue", endpoint.QueueNames);
-        Assert.Contains("metaTestQueue2", endpoint.QueueNames);
+        Assert.Equal(2, endpointHandler.QueueNames.Count);
+        Assert.Contains("metaTestQueue", endpointHandler.QueueNames);
+        Assert.Contains("metaTestQueue2", endpointHandler.QueueNames);
     }
 
     [Fact]

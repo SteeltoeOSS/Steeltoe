@@ -11,28 +11,41 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-internal sealed class ThreadDumpEndpointMiddleware : EndpointMiddleware<IList<ThreadInfo>>
+internal sealed class ThreadDumpEndpointMiddleware : EndpointMiddleware<object, IList<ThreadInfo>>
 {
-    public ThreadDumpEndpointMiddleware(IThreadDumpEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<ThreadDumpEndpointMiddleware> logger) : base(endpoint, managementOptions, endpointOptions, logger)
+    
+    public ThreadDumpEndpointMiddleware(IThreadDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<ThreadDumpEndpointMiddleware> logger) : base(endpointHandler, managementOptions, endpointOptions, logger)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleThreadDumpRequestAsync(context);
-        }
+    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    //{
+    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
+    //    {
+    //        return HandleThreadDumpRequestAsync(context);
+    //    }
 
-        return Task.CompletedTask;
+    //    return Task.CompletedTask;
+    //}
+
+    public override bool ShouldInvoke(HttpContext context)
+    {
+        throw new NotImplementedException();
     }
 
-    internal async Task HandleThreadDumpRequestAsync(HttpContext context)
+    protected override async Task<IList<ThreadInfo>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        string serialInfo = await HandleRequestAsync(context.RequestAborted);
-        Logger.LogDebug("Returning: {info}", serialInfo);
+        Logger.LogDebug("Executing ThreadDumpHandler");
 
-        context.HandleContentNegotiation(Logger);
-        await context.Response.WriteAsync(serialInfo);
+        return await EndpointHandler.InvokeAsync(null, cancellationToken);
+        
     }
+
+    //internal async Task HandleThreadDumpRequestAsync(HttpContext context)
+    //{
+    //    string serialInfo = await HandleRequestAsync(context.RequestAborted);
+       
+    //    context.HandleContentNegotiation(Logger);
+    //    await context.Response.WriteAsync(serialInfo);
+    //}
 }

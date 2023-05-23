@@ -146,7 +146,7 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
         BeforeSendReplyPostProcessors = new List<IMessagePostProcessor>(postProcessors);
     }
 
-    public TContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint)
+    public TContainer CreateListenerContainer(IRabbitListenerEndpoint endpointHandler)
     {
         TContainer instance = CreateContainerInstance();
 
@@ -154,9 +154,9 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
         instance.ErrorHandler = ErrorHandler;
         instance.PossibleAuthenticationFailureFatal = PossibleAuthenticationFailureFatal;
 
-        if (MessageConverter != null && endpoint != null)
+        if (MessageConverter != null && endpointHandler != null)
         {
-            endpoint.MessageConverter = MessageConverter;
+            endpointHandler.MessageConverter = MessageConverter;
         }
 
         if (AcknowledgeMode.HasValue)
@@ -242,26 +242,26 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
             instance.IsDeBatchingEnabled = false;
         }
 
-        if (endpoint != null)
+        if (endpointHandler != null)
         {
-            if (endpoint.AutoStartup.HasValue)
+            if (endpointHandler.AutoStartup.HasValue)
             {
-                instance.IsAutoStartup = endpoint.AutoStartup.Value;
+                instance.IsAutoStartup = endpointHandler.AutoStartup.Value;
             }
 
-            if (endpoint.AckMode.HasValue)
+            if (endpointHandler.AckMode.HasValue)
             {
-                instance.AcknowledgeMode = endpoint.AckMode.Value;
+                instance.AcknowledgeMode = endpointHandler.AckMode.Value;
             }
 
             if (BatchingStrategy != null)
             {
-                endpoint.BatchingStrategy = BatchingStrategy;
+                endpointHandler.BatchingStrategy = BatchingStrategy;
             }
 
-            instance.ListenerId = endpoint.Id;
-            endpoint.BatchListener = BatchListener;
-            endpoint.SetupListenerContainer(instance);
+            instance.ListenerId = endpointHandler.Id;
+            endpointHandler.BatchListener = BatchListener;
+            endpointHandler.SetupListenerContainer(instance);
         }
 
         if (instance.MessageListener is AbstractMessageListenerAdapter adapterListener)
@@ -286,27 +286,27 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
                 adapterListener.DefaultRequeueRejected = DefaultRequeueRejected.Value;
             }
 
-            if (endpoint != null && endpoint.ReplyPostProcessor != null)
+            if (endpointHandler != null && endpointHandler.ReplyPostProcessor != null)
             {
-                adapterListener.ReplyPostProcessor = endpoint.ReplyPostProcessor;
+                adapterListener.ReplyPostProcessor = endpointHandler.ReplyPostProcessor;
             }
         }
 
-        InitializeContainer(instance, endpoint);
+        InitializeContainer(instance, endpointHandler);
 
         ContainerCustomizer?.Invoke(instance);
 
         return instance;
     }
 
-    IMessageListenerContainer IRabbitListenerContainerFactory.CreateListenerContainer(IRabbitListenerEndpoint endpoint)
+    IMessageListenerContainer IRabbitListenerContainerFactory.CreateListenerContainer(IRabbitListenerEndpoint endpointHandler)
     {
-        return CreateListenerContainer(endpoint);
+        return CreateListenerContainer(endpointHandler);
     }
 
     protected abstract TContainer CreateContainerInstance();
 
-    protected virtual void InitializeContainer(TContainer instance, IRabbitListenerEndpoint endpoint)
+    protected virtual void InitializeContainer(TContainer instance, IRabbitListenerEndpoint endpointHandler)
     {
     }
 }

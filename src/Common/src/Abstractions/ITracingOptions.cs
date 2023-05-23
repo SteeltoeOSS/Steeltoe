@@ -72,7 +72,7 @@ public interface ITracingOptions
     bool EnableGrpcAspNetCoreSupport { get; }
 
     /// <summary>
-    /// Gets a value representing the endpoint used for exporting traces.
+    /// Gets a value representing the endpointHandler used for exporting traces.
     /// </summary>
     Uri ExporterEndpoint { get; }
 }

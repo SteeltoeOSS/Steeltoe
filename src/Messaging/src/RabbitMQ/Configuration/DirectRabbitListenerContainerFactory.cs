@@ -47,9 +47,9 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
         return new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory, null, LoggerFactory);
     }
 
-    protected override void InitializeContainer(DirectMessageListenerContainer instance, IRabbitListenerEndpoint endpoint)
+    protected override void InitializeContainer(DirectMessageListenerContainer instance, IRabbitListenerEndpoint endpointHandler)
     {
-        base.InitializeContainer(instance, endpoint);
+        base.InitializeContainer(instance, endpointHandler);
 
         if (MonitorInterval.HasValue)
         {
@@ -66,9 +66,9 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
             instance.AckTimeout = AckTimeout.Value;
         }
 
-        if (endpoint != null && endpoint.Concurrency.HasValue)
+        if (endpointHandler != null && endpointHandler.Concurrency.HasValue)
         {
-            instance.ConsumersPerQueue = endpoint.Concurrency.Value;
+            instance.ConsumersPerQueue = endpointHandler.Concurrency.Value;
         }
         else if (ConsumersPerQueue.HasValue)
         {

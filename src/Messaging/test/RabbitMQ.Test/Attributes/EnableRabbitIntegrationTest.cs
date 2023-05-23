@@ -795,9 +795,9 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
                         DirectRabbitListenerContainerFactory;
 
                 var listener = new TestManualContainerListener(ManualContainerLatch, Message);
-                var endpoint = new SimpleRabbitListenerEndpoint(context, listener, loggerFactory);
-                endpoint.SetQueueNames("test.manual.container");
-                DirectMessageListenerContainer container = defFactory.CreateListenerContainer(endpoint);
+                var endpointHandler = new SimpleRabbitListenerEndpoint(context, listener, loggerFactory);
+                endpointHandler.SetQueueNames("test.manual.container");
+                DirectMessageListenerContainer container = defFactory.CreateListenerContainer(endpointHandler);
                 container.ServiceName = "factoryCreatedContainerSimpleListener";
                 container.Initialize();
                 return container;

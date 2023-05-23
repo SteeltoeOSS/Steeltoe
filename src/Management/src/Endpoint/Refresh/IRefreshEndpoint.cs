@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-public interface IRefreshEndpoint : IEndpoint<IList<string>>
+public interface IRefreshEndpointHandler : IEndpointHandler<object, IList<string>>
 {
 }

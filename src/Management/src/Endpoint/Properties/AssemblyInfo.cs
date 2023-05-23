@@ -8,3 +8,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Wavefront")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Prometheus")]
+[assembly: InternalsVisibleTo("Steeltoe.Management.Grpc")]

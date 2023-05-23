@@ -1382,7 +1382,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("authentication-method", "aws_iam"),
             Tuple.Create("aws-iam-server-id", "test-server-id"),
             Tuple.Create("aws-path", "test-aws-path"),
-            Tuple.Create("aws-sts-endpoint-uri", "test-endpoint-uri"),
+            Tuple.Create("aws-sts-endpointHandler-uri", "test-endpointHandler-uri"),
             Tuple.Create("role", "test-role")
         };
 
@@ -1398,7 +1398,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         configurationData[$"{keyPrefix}:awsIam:role"].Should().Be("test-role");
         configurationData[$"{keyPrefix}:awsIam:awsPath"].Should().Be("test-aws-path");
         configurationData[$"{keyPrefix}:awsIam:serverId"].Should().Be("test-server-id");
-        configurationData[$"{keyPrefix}:awsIam:endpointUri"].Should().Be("test-endpoint-uri");
+        configurationData[$"{keyPrefix}:awsIam:endpointUri"].Should().Be("test-endpointHandler-uri");
     }
 
     [Fact]

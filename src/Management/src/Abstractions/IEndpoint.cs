@@ -4,17 +4,8 @@
 
 namespace Steeltoe.Management;
 
-public interface IEndpoint
-{
-  //  IEndpointOptions Options { get; }
-}
 
-public interface IEndpoint<TResult> : IEndpoint
+public interface IEndpointHandler<in TArgument, TResult>
 {
-    Task<TResult> InvokeAsync(CancellationToken cancellationToken);
-}
-
-public interface IEndpoint<TResult, in TRequest> : IEndpoint
-{
-    Task<TResult> InvokeAsync(TRequest arg, CancellationToken cancellationToken);
+    Task<TResult> InvokeAsync(TArgument arg, CancellationToken cancellationToken);
 }

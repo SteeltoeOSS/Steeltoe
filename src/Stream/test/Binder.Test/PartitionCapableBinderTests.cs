@@ -218,8 +218,8 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
 
         try
         {
-            ILifecycle endpoint = ExtractEndpoint(outputBinding);
-            CheckRkExpressionForPartitionedModuleSpel(endpoint);
+            ILifecycle endpointHandler = ExtractEndpoint(outputBinding);
+            CheckRkExpressionForPartitionedModuleSpel(endpointHandler);
         }
         catch (Exception ex)
         {
@@ -278,7 +278,7 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         outputBinding.UnbindAsync();
     }
 
-    protected abstract string GetEndpointRouting(object endpoint);
+    protected abstract string GetEndpointRouting(object endpointHandler);
 
     protected abstract string GetExpectedRoutingBaseDestination(string name, string group);
 
@@ -301,9 +301,9 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         return (TValue)pi.GetValue(current);
     }
 
-    protected virtual void CheckRkExpressionForPartitionedModuleSpel(object endpoint)
+    protected virtual void CheckRkExpressionForPartitionedModuleSpel(object endpointHandler)
     {
-        string routingExpression = GetEndpointRouting(endpoint);
+        string routingExpression = GetEndpointRouting(endpointHandler);
         string delimiter = GetDestinationNameDelimiter();
         string dest = $"{GetExpectedRoutingBaseDestination($"part{delimiter}0", "test")}-' + Headers['partition']";
         Assert.Contains(dest, routingExpression, StringComparison.Ordinal);

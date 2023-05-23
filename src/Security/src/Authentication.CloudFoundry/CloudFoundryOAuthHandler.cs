@@ -83,7 +83,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
             return tokenResponse;
         }
 
-        string error = $"OAuth token endpoint failure: {await DisplayAsync(response)}";
+        string error = $"OAuth token endpointHandler failure: {await DisplayAsync(response)}";
         return OAuthTokenResponse.Failed(new Exception(error));
     }
 

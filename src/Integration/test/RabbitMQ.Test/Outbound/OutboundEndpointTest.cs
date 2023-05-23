@@ -33,33 +33,33 @@ public class OutboundEndpointTest
             ConnectionFactory = connectionFactory.Object
         };
 
-        var endpoint = new RabbitOutboundEndpoint(context, rabbitTemplate, null)
+        var endpointHandler = new RabbitOutboundEndpoint(context, rabbitTemplate, null)
         {
             ExchangeName = "foo",
             RoutingKey = "bar"
         };
 
-        endpoint.SetDelayExpressionString("42");
-        endpoint.Initialize();
+        endpointHandler.SetDelayExpressionString("42");
+        endpointHandler.Initialize();
 
-        endpoint.HandleMessage(Message.Create("foo"));
+        endpointHandler.HandleMessage(Message.Create("foo"));
         Assert.NotNull(rabbitTemplate.SendMessage);
         Assert.Equal("foo", rabbitTemplate.ExchangeName);
         Assert.Equal("bar", rabbitTemplate.RoutingKey);
         Assert.Equal(42, rabbitTemplate.SendMessage.Headers.Delay().Value);
 
-        endpoint.ExpectReply = true;
-        endpoint.OutputChannel = new NullChannel();
-        endpoint.HandleMessage(Message.Create("foo"));
+        endpointHandler.ExpectReply = true;
+        endpointHandler.OutputChannel = new NullChannel();
+        endpointHandler.HandleMessage(Message.Create("foo"));
         Assert.NotNull(rabbitTemplate.SendAndReceiveMessage);
         Assert.Equal("foo", rabbitTemplate.ExchangeName);
         Assert.Equal("bar", rabbitTemplate.RoutingKey);
         Assert.Equal(42, rabbitTemplate.SendAndReceiveMessage.Headers.Delay().Value);
 
-        endpoint.SetDelay(23);
-        endpoint.RoutingKey = "baz";
-        endpoint.Initialize();
-        endpoint.HandleMessage(Message.Create("foo"));
+        endpointHandler.SetDelay(23);
+        endpointHandler.RoutingKey = "baz";
+        endpointHandler.Initialize();
+        endpointHandler.HandleMessage(Message.Create("foo"));
         Assert.NotNull(rabbitTemplate.SendAndReceiveMessage);
         Assert.Equal("foo", rabbitTemplate.ExchangeName);
         Assert.Equal("baz", rabbitTemplate.RoutingKey);

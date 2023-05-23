@@ -36,7 +36,7 @@ using Steeltoe.Discovery.Eureka;
 using Steeltoe.Logging;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Wavefront.Exporters;
 using Xunit;
 

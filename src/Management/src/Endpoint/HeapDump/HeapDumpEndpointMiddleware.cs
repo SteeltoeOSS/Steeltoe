@@ -12,12 +12,12 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 
 internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 {
-    public HeapDumpEndpointMiddleware(IHeapDumpEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public HeapDumpEndpointMiddleware(IHeapDumpEndpoint endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
         ILogger<HeapDumpEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, endpointOptions, logger)
+        : base(endpointHandler, managementOptions, endpointOptions, logger)
     {
-        Endpoint = endpoint;
+        Endpoint = endpointHandler;
     }
 
     public override Task InvokeAsync(HttpContext context, RequestDelegate next)

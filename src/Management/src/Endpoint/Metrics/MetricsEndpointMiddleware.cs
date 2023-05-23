@@ -13,36 +13,71 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>
+internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequest, IMetricsResponse>
 {
-    public MetricsEndpointMiddleware(IMetricsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public MetricsEndpointMiddleware(IMetricsEndpointHandler endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<MetricsEndpointMiddleware> logger)
         : base(endpoint, managementOptions, endpointOptions, logger)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleMetricsRequestAsync(context);
-        }
+    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    //{
+    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
+    //    {
+    //        return HandleMetricsRequestAsync(context);
+    //    }
 
-        return Task.CompletedTask;
-    }
+    //    return Task.CompletedTask;
+    //}
 
-    public override async Task<string> HandleRequestAsync(MetricsRequest arg, CancellationToken cancellationToken)
-    {
-        IMetricsResponse result = await Endpoint.InvokeAsync(arg, cancellationToken);
-        return result == null ? null : Serialize(result);
-    }
+    //public override async Task<string> HandleRequestAsync(MetricsRequest arg, CancellationToken cancellationToken)
+    //{
+    //    IMetricsResponse result = await EndpointHandler.InvokeAsync(arg, cancellationToken);
+    //    return result == null ? null : Serialize(result);
+    //}
 
-    internal async Task HandleMetricsRequestAsync(HttpContext context)
+    //internal async Task HandleMetricsRequestAsync(HttpContext context)
+    //{
+    //    HttpRequest request = context.Request;
+    //    HttpResponse response = context.Response;
+
+    //    Logger.LogDebug("Incoming path: {path}", request.Path.Value);
+
+    //    string metricName = GetMetricName(request);
+
+    //    if (!string.IsNullOrEmpty(metricName))
+    //    {
+    //        // GET /metrics/{metricName}?tag=key:value&tag=key:value
+    //        IList<KeyValuePair<string, string>> tags = ParseTags(request.Query);
+    //        var metricRequest = new MetricsRequest(metricName, tags);
+    //        string serialInfo = await HandleRequestAsync(metricRequest, context.RequestAborted);
+
+    //        if (serialInfo != null)
+    //        {
+    //            response.StatusCode = (int)HttpStatusCode.OK;
+    //            await context.Response.WriteAsync(serialInfo);
+    //        }
+    //        else
+    //        {
+    //            response.StatusCode = (int)HttpStatusCode.NotFound;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        // GET /metrics
+    //        string serialInfo = await HandleRequestAsync(null, context.RequestAborted);
+    //        Logger.LogDebug("Returning: {info}", serialInfo);
+
+    //        context.HandleContentNegotiation(Logger);
+    //        context.Response.StatusCode = (int)HttpStatusCode.OK;
+    //        await context.Response.WriteAsync(serialInfo);
+    //    }
+    //}
+    private MetricsRequest GetMetricsRequest(HttpContext context)
     {
         HttpRequest request = context.Request;
-        HttpResponse response = context.Response;
-
-        Logger.LogDebug("Incoming path: {path}", request.Path.Value);
+        Logger.LogDebug("Handling metrics for path: {path}", request.Path.Value);
 
         string metricName = GetMetricName(request);
 
@@ -50,31 +85,12 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsRes
         {
             // GET /metrics/{metricName}?tag=key:value&tag=key:value
             IList<KeyValuePair<string, string>> tags = ParseTags(request.Query);
-            var metricRequest = new MetricsRequest(metricName, tags);
-            string serialInfo = await HandleRequestAsync(metricRequest, context.RequestAborted);
-
-            if (serialInfo != null)
-            {
-                response.StatusCode = (int)HttpStatusCode.OK;
-                await context.Response.WriteAsync(serialInfo);
-            }
-            else
-            {
-                response.StatusCode = (int)HttpStatusCode.NotFound;
-            }
+            return new MetricsRequest(metricName, tags);
         }
-        else
-        {
-            // GET /metrics
-            string serialInfo = await HandleRequestAsync(null, context.RequestAborted);
-            Logger.LogDebug("Returning: {info}", serialInfo);
 
-            context.HandleContentNegotiation(Logger);
-            context.Response.StatusCode = (int)HttpStatusCode.OK;
-            await context.Response.WriteAsync(serialInfo);
-        }
+        // GET /metrics
+        return null;
     }
-
     internal string GetMetricName(HttpRequest request)
     {
         ManagementEndpointOptions mgmtOptions = ManagementOptions.GetFromContextPath(request.Path);
@@ -143,5 +159,28 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsRes
         }
 
         return null;
+    }
+
+    public override bool ShouldInvoke(HttpContext context)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override async Task<IMetricsResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    {
+        var metricsRequest = GetMetricsRequest(context);
+        var response = await EndpointHandler.InvokeAsync(metricsRequest, cancellationToken);
+
+        if (metricsRequest != null && response is MetricsEmptyResponse)
+        {
+            context.Response.StatusCode = (int) HttpStatusCode.NotFound;
+        }
+        else
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
+        }
+
+        return response;
+        
     }
 }

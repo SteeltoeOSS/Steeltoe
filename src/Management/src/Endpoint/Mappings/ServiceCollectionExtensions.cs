@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.ConfigureOptions<ConfigureMappingsEndpointOptions>();
-        services.TryAddSingleton<IMappingsEndpoint, MappingsEndpoint>();
+        services.TryAddSingleton<IMappingsEndpointHandler, MappingsEndpointHandler>();
         services.AddSingleton<MappingsEndpointMiddleware>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MappingsEndpointMiddleware>());
 

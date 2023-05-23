@@ -27,9 +27,9 @@ public sealed class MessageListenerTestContainer : IMessageListenerContainer
 
     public string ServiceName { get; set; } = nameof(MessageListenerTestContainer);
 
-    public MessageListenerTestContainer(IRabbitListenerEndpoint endpoint)
+    public MessageListenerTestContainer(IRabbitListenerEndpoint endpointHandler)
     {
-        Endpoint = endpoint;
+        Endpoint = endpointHandler;
     }
 
     public void Dispose()
@@ -92,7 +92,7 @@ public sealed class MessageListenerTestContainer : IMessageListenerContainer
     public override string ToString()
     {
         var sb = new StringBuilder("TestContainer{");
-        sb.Append("endpoint=").Append(Endpoint);
+        sb.Append("endpointHandler=").Append(Endpoint);
         sb.Append(", startInvoked=").Append(StartInvoked);
         sb.Append(", initializationInvoked=").Append(InitializationInvoked);
         sb.Append(", stopInvoked=").Append(StopInvoked);

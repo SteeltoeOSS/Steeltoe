@@ -25,18 +25,18 @@ internal class RabbitListenerContainerTestFactory : IRabbitListenerContainerFact
         return new List<MessageListenerTestContainer>(ListenerContainers.Values);
     }
 
-    public MessageListenerTestContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint)
+    public MessageListenerTestContainer CreateListenerContainer(IRabbitListenerEndpoint endpointHandler)
     {
-        var container = new MessageListenerTestContainer(endpoint);
+        var container = new MessageListenerTestContainer(endpointHandler);
 
-        if (endpoint.Id == null && endpoint is AbstractRabbitListenerEndpoint)
+        if (endpointHandler.Id == null && endpointHandler is AbstractRabbitListenerEndpoint)
         {
             int id = Interlocked.Increment(ref _counter);
-            endpoint.Id = $"endpoint#{id}";
+            endpointHandler.Id = $"endpointHandler#{id}";
         }
 
-        Assert.NotNull(endpoint.Id);
-        ListenerContainers.Add(endpoint.Id, container);
+        Assert.NotNull(endpointHandler.Id);
+        ListenerContainers.Add(endpointHandler.Id, container);
         return container;
     }
 
@@ -46,8 +46,8 @@ internal class RabbitListenerContainerTestFactory : IRabbitListenerContainerFact
         return result;
     }
 
-    IMessageListenerContainer IRabbitListenerContainerFactory.CreateListenerContainer(IRabbitListenerEndpoint endpoint)
+    IMessageListenerContainer IRabbitListenerContainerFactory.CreateListenerContainer(IRabbitListenerEndpoint endpointHandler)
     {
-        return CreateListenerContainer(endpoint);
+        return CreateListenerContainer(endpointHandler);
     }
 }

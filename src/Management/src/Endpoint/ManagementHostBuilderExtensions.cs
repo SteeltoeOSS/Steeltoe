@@ -15,7 +15,6 @@ using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
@@ -23,6 +22,7 @@ using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint;
@@ -316,7 +316,7 @@ public static class ManagementHostBuilderExtensions
     /// Your HostBuilder.
     /// </param>
     /// <param name="configureEndpoints">
-    /// Customize endpoint behavior. Useful for tailoring auth requirements.
+    /// Customize endpointHandler behavior. Useful for tailoring auth requirements.
     /// </param>
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
@@ -359,7 +359,7 @@ public static class ManagementHostBuilderExtensions
     /// Your HostBuilder.
     /// </param>
     /// <param name="configureEndpoints">
-    /// Customize endpoint behavior. Useful for tailoring auth requirements.
+    /// Customize endpointHandler behavior. Useful for tailoring auth requirements.
     /// </param>
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
@@ -380,7 +380,7 @@ public static class ManagementHostBuilderExtensions
     /// Your HostBuilder.
     /// </param>
     /// <param name="configureEndpoints">
-    /// Customize endpoint behavior. Useful for tailoring auth requirements.
+    /// Customize endpointHandler behavior. Useful for tailoring auth requirements.
     /// </param>
     /// <remarks>
     /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).

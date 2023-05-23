@@ -13,9 +13,9 @@ using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia;
+namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
-internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>
+internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<string, Links>
 {
     public ActuatorHypermediaEndpointMiddleware(IActuatorEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         IOptionsMonitor<HypermediaHttpMiddlewareOptions> endpointOptions,
@@ -24,18 +24,18 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
     {
     }
 
-    public override async Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        ArgumentGuard.NotNull(context);
-        Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
+    //public override async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    //{
+    //    ArgumentGuard.NotNull(context);
+    //    Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
 
-        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            context.HandleContentNegotiation(Logger);
-            await HandleRequestAsync(context.Response.Body, GetRequestUri(context.Request), Logger, context.RequestAborted);
-            Logger.LogDebug("Returning serialized response");
-        }
-    }
+    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
+    //    {
+    //        context.HandleContentNegotiation(Logger);
+    //        await HandleRequestAsync(context.Response.Body, GetRequestUri(context.Request), Logger, context.RequestAborted);
+    //        Logger.LogDebug("Returning serialized response");
+    //    }
+    //}
 
     private static string GetRequestUri(HttpRequest request)
     {
@@ -58,7 +58,7 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
 
     private async Task HandleRequestAsync(Stream responseStream, string requestUri, ILogger logger, CancellationToken cancellationToken)
     {
-        Links result = await Endpoint.InvokeAsync(requestUri, cancellationToken);
+        Links result = await EndpointHandler.InvokeAsync(requestUri, cancellationToken);
         await SerializeAsync(result, responseStream, logger);
     }
 
@@ -78,5 +78,15 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
         {
             logger.LogError(e, "Error serializing {MiddlewareResponse}", result);
         }
+    }
+
+    public override bool ShouldInvoke(HttpContext context)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

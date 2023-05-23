@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public interface IEnvironmentEndpoint : IEndpoint<EnvironmentDescriptor>
+public interface IEnvironmentEndpointHandler : IEndpointHandler<object, EnvironmentDescriptor>
 {
 }

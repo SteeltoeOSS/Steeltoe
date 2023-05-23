@@ -4,7 +4,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia;
+namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 /// <summary>
 /// A typed collection of links.

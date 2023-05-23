@@ -16,17 +16,17 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-internal sealed class MappingsEndpoint : IMappingsEndpoint
+internal sealed class MappingsEndpointHandler : IMappingsEndpointHandler
 {
     private readonly IOptionsMonitor<MappingsEndpointOptions> _options;
     private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
     private readonly IEnumerable<IApiDescriptionProvider> _apiDescriptionProviders;
     private readonly IRouteMappings _routeMappings;
-    private readonly ILogger<MappingsEndpoint> _logger;
+    private readonly ILogger<MappingsEndpointHandler> _logger;
 
     public IHttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public MappingsEndpoint(IOptionsMonitor<MappingsEndpointOptions> options, ILoggerFactory loggerFactory, IRouteMappings routeMappings,
+    public MappingsEndpointHandler(IOptionsMonitor<MappingsEndpointOptions> options, ILoggerFactory loggerFactory, IRouteMappings routeMappings,
         IActionDescriptorCollectionProvider actionDescriptorCollectionProvider, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders)
     {
         ArgumentGuard.NotNull(options);
@@ -39,13 +39,12 @@ internal sealed class MappingsEndpoint : IMappingsEndpoint
         _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
         _apiDescriptionProviders = apiDescriptionProviders;
         _routeMappings = routeMappings;
-        _logger = loggerFactory.CreateLogger<MappingsEndpoint>();
+        _logger = loggerFactory.CreateLogger<MappingsEndpointHandler>();
     }
 
-    public Task<ApplicationMappings> InvokeAsync(CancellationToken cancellationToken)
+    public Task<ApplicationMappings> InvokeAsync(object arg, CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Fetching application mappings");
-        return Task.Run(() => GetApplicationMappings(), cancellationToken);
+        throw new NotImplementedException();
     }
 
     internal ApplicationMappings GetApplicationMappings()
@@ -274,4 +273,6 @@ internal sealed class MappingsEndpoint : IMappingsEndpoint
 
         return context;
     }
+
+   
 }
