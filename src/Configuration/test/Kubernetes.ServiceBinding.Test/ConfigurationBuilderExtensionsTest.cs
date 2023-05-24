@@ -29,7 +29,7 @@ public sealed class ConfigurationBuilderExtensionsTest
         builder.AddKubernetesServiceBindings();
 
         builder.Sources.Should().HaveCount(1);
-        ServiceBindingConfigurationSource source = builder.Sources[0].Should().BeOfType<ServiceBindingConfigurationSource>().Subject;
+        KubernetesServiceBindingConfigurationSource source = builder.Sources[0].Should().BeOfType<KubernetesServiceBindingConfigurationSource>().Subject;
         source.RegisteredProcessors.Should().NotBeEmpty();
     }
 }

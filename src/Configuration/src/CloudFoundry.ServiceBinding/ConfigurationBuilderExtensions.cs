@@ -4,11 +4,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 
 /// <summary>
-/// Extension methods for registering CloudFoundry <see cref="ServiceBindingConfigurationProvider" /> with <see cref="IConfigurationBuilder" />.
+/// Extension methods for registering CloudFoundry <see cref="CloudFoundryServiceBindingConfigurationProvider" /> with
+/// <see cref="IConfigurationBuilder" />.
 /// </summary>
 public static class ConfigurationBuilderExtensions
 {
@@ -86,7 +88,7 @@ public static class ConfigurationBuilderExtensions
         ArgumentGuard.NotNull(ignoreKeyPredicate);
         ArgumentGuard.NotNull(serviceBindingsReader);
 
-        var source = new ServiceBindingConfigurationSource(serviceBindingsReader)
+        var source = new CloudFoundryServiceBindingConfigurationSource(serviceBindingsReader)
         {
             IgnoreKeyPredicate = ignoreKeyPredicate
         };
@@ -94,15 +96,15 @@ public static class ConfigurationBuilderExtensions
         return RegisterPostProcessors(builder, source);
     }
 
-    private static IConfigurationBuilder RegisterPostProcessors(IConfigurationBuilder builder, ServiceBindingConfigurationSource source)
+    private static IConfigurationBuilder RegisterPostProcessors(IConfigurationBuilder builder, CloudFoundryServiceBindingConfigurationSource source)
     {
-        source.RegisterPostProcessor(new PostgreSqlPostProcessor());
-        source.RegisterPostProcessor(new MySqlPostProcessor());
-        source.RegisterPostProcessor(new SqlServerPostProcessor());
-        source.RegisterPostProcessor(new MongoDbPostProcessor());
-        source.RegisterPostProcessor(new CosmosDbPostProcessor());
-        source.RegisterPostProcessor(new RabbitMQPostProcessor());
-        source.RegisterPostProcessor(new RedisPostProcessor());
+        source.RegisterPostProcessor(new PostgreSqlCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new MySqlCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new SqlServerCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new MongoDbCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new CosmosDbCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new RabbitMQCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new RedisCloudFoundryPostProcessor());
 
         builder.Add(source);
         return builder;

@@ -7,11 +7,11 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 
-internal sealed class ServiceBindingConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
+internal sealed class CloudFoundryServiceBindingConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
 {
     private readonly IServiceBindingsReader _serviceBindingsReader;
 
-    public ServiceBindingConfigurationSource(IServiceBindingsReader serviceBindingsReader)
+    public CloudFoundryServiceBindingConfigurationSource(IServiceBindingsReader serviceBindingsReader)
     {
         ArgumentGuard.NotNull(serviceBindingsReader);
 
@@ -23,6 +23,6 @@ internal sealed class ServiceBindingConfigurationSource : PostProcessorConfigura
         ArgumentGuard.NotNull(builder);
 
         ParentConfiguration ??= GetParentConfiguration(builder);
-        return new ServiceBindingConfigurationProvider(this, _serviceBindingsReader);
+        return new CloudFoundryServiceBindingConfigurationProvider(this, _serviceBindingsReader);
     }
 }

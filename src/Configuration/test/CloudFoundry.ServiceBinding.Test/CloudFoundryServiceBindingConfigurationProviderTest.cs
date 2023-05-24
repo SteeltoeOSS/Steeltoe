@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test;
 
-public sealed class ServiceBindingConfigurationProviderTest
+public sealed class CloudFoundryServiceBindingConfigurationProviderTest
 {
     private const string VcapServicesJson = @"
     {
@@ -85,7 +85,7 @@ public sealed class ServiceBindingConfigurationProviderTest
         var postProcessor = new TestPostProcessor();
 
         var reader = new StringServiceBindingsReader(VcapServicesJson);
-        var source = new ServiceBindingConfigurationSource(reader);
+        var source = new CloudFoundryServiceBindingConfigurationSource(reader);
         source.RegisterPostProcessor(postProcessor);
 
         var builder = new ConfigurationBuilder();
@@ -101,7 +101,7 @@ public sealed class ServiceBindingConfigurationProviderTest
         var postProcessor = new TestPostProcessor();
 
         var reader = new StringServiceBindingsReader(VcapServicesJson);
-        var source = new ServiceBindingConfigurationSource(reader);
+        var source = new CloudFoundryServiceBindingConfigurationSource(reader);
         source.RegisterPostProcessor(postProcessor);
 
         var builder = new ConfigurationBuilder();
@@ -121,7 +121,7 @@ public sealed class ServiceBindingConfigurationProviderTest
     public void Build_CapturesParentConfiguration()
     {
         var reader = new StringServiceBindingsReader(string.Empty);
-        var source = new ServiceBindingConfigurationSource(reader);
+        var source = new CloudFoundryServiceBindingConfigurationSource(reader);
 
         var builder = new ConfigurationBuilder();
         builder.Add(source);
@@ -141,7 +141,7 @@ public sealed class ServiceBindingConfigurationProviderTest
     public void Build_LoadsServiceBindings()
     {
         var reader = new StringServiceBindingsReader(VcapServicesJson);
-        var source = new ServiceBindingConfigurationSource(reader);
+        var source = new CloudFoundryServiceBindingConfigurationSource(reader);
 
         var builder = new ConfigurationBuilder();
         builder.Add(source);

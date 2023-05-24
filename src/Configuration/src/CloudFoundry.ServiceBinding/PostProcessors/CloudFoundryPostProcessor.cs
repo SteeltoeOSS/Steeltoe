@@ -5,9 +5,9 @@
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 
-internal abstract class CloudFoundryConfigurationPostProcessor : IConfigurationPostProcessor
+internal abstract class CloudFoundryPostProcessor : IConfigurationPostProcessor
 {
     private static readonly Regex TagsConfigurationKeyRegex = new(@"^vcap:services:[^:]+:[0-9]+:tags:[0-9]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 

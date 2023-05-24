@@ -4,11 +4,12 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
 /// <summary>
-/// Extension methods for registering Kubernetes <see cref="ServiceBindingConfigurationProvider" /> with <see cref="IConfigurationBuilder" />.
+/// Extension methods for registering Kubernetes <see cref="KubernetesServiceBindingConfigurationProvider" /> with <see cref="IConfigurationBuilder" />.
 /// </summary>
 public static class ConfigurationBuilderExtensions
 {
@@ -95,7 +96,7 @@ public static class ConfigurationBuilderExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(ignoreKeyPredicate);
 
-        var source = new ServiceBindingConfigurationSource
+        var source = new KubernetesServiceBindingConfigurationSource
         {
             Optional = optional,
             ReloadOnChange = reloadOnChange,
@@ -105,12 +106,12 @@ public static class ConfigurationBuilderExtensions
         return RegisterPostProcessors(builder, source);
     }
 
-    private static IConfigurationBuilder RegisterPostProcessors(IConfigurationBuilder builder, ServiceBindingConfigurationSource source)
+    private static IConfigurationBuilder RegisterPostProcessors(IConfigurationBuilder builder, KubernetesServiceBindingConfigurationSource source)
     {
-        source.RegisterPostProcessor(new MySqlPostProcessor());
-        source.RegisterPostProcessor(new PostgreSqlPostProcessor());
-        source.RegisterPostProcessor(new RabbitMQPostProcessor());
-        source.RegisterPostProcessor(new RedisPostProcessor());
+        source.RegisterPostProcessor(new MySqlKubernetesPostProcessor());
+        source.RegisterPostProcessor(new PostgreSqlKubernetesPostProcessor());
+        source.RegisterPostProcessor(new RabbitMQKubernetesPostProcessor());
+        source.RegisterPostProcessor(new RedisKubernetesPostProcessor());
 
         builder.Add(source);
         return builder;

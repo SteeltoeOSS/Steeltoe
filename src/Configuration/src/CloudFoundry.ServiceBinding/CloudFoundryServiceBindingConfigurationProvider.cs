@@ -7,14 +7,14 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 
-internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigurationProvider
+internal sealed class CloudFoundryServiceBindingConfigurationProvider : PostProcessorConfigurationProvider
 {
-    public static readonly string InputKeyPrefix = ConfigurationPath.Combine("vcap", "services");
-    public static readonly string OutputKeyPrefix = ConfigurationPath.Combine("steeltoe", "service-bindings");
+    public static readonly string FromKeyPrefix = ConfigurationPath.Combine("vcap", "services");
+    public static readonly string ToKeyPrefix = ConfigurationPath.Combine("steeltoe", "service-bindings");
 
     private readonly IServiceBindingsReader _serviceBindingsReader;
 
-    public ServiceBindingConfigurationProvider(PostProcessorConfigurationSource source, IServiceBindingsReader serviceBindingsReader)
+    public CloudFoundryServiceBindingConfigurationProvider(PostProcessorConfigurationSource source, IServiceBindingsReader serviceBindingsReader)
         : base(source)
     {
         ArgumentGuard.NotNull(serviceBindingsReader);

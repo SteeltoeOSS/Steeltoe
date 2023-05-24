@@ -50,22 +50,24 @@ public abstract class BasePostProcessorsTest
 
     private string MakeTypeKey(string bindingName)
     {
-        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.InputKeyPrefix, bindingName, ServiceBindingConfigurationProvider.TypeKey);
+        return ConfigurationPath.Combine(KubernetesServiceBindingConfigurationProvider.FromKeyPrefix, bindingName,
+            KubernetesServiceBindingConfigurationProvider.TypeKey);
     }
 
     private string MakeProviderKey(string bindingName)
     {
-        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.InputKeyPrefix, bindingName, ServiceBindingConfigurationProvider.ProviderKey);
+        return ConfigurationPath.Combine(KubernetesServiceBindingConfigurationProvider.FromKeyPrefix, bindingName,
+            KubernetesServiceBindingConfigurationProvider.ProviderKey);
     }
 
     private string MakeSecretKey(string bindingName, string key)
     {
-        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.InputKeyPrefix, bindingName, key);
+        return ConfigurationPath.Combine(KubernetesServiceBindingConfigurationProvider.FromKeyPrefix, bindingName, key);
     }
 
     internal string GetOutputKeyPrefix(string bindingName, string bindingType)
     {
-        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.OutputKeyPrefix, bindingType, bindingName);
+        return ConfigurationPath.Combine(KubernetesServiceBindingConfigurationProvider.ToKeyPrefix, bindingType, bindingName);
     }
 
     internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor, string bindingType, bool isEnabled)

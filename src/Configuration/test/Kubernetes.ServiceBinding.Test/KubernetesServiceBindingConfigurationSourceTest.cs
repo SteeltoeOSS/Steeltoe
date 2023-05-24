@@ -8,13 +8,13 @@ using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 
-public sealed class ServiceBindingConfigurationSourceTest
+public sealed class KubernetesServiceBindingConfigurationSourceTest
 {
     [Fact]
     public void EnvironmentVariableNotSet()
     {
-        Environment.SetEnvironmentVariable(ServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, null);
-        var source = new ServiceBindingConfigurationSource();
+        Environment.SetEnvironmentVariable(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, null);
+        var source = new KubernetesServiceBindingConfigurationSource();
         source.ServiceBindingRoot.Should().BeNull();
     }
 
@@ -22,18 +22,18 @@ public sealed class ServiceBindingConfigurationSourceTest
     public void EnvironmentVariableSet()
     {
         string rootDir = GetK8SResourcesDirectory(null);
-        Environment.SetEnvironmentVariable(ServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDir);
+        Environment.SetEnvironmentVariable(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDir);
 
         try
         {
-            var source = new ServiceBindingConfigurationSource();
+            var source = new KubernetesServiceBindingConfigurationSource();
             source.ServiceBindingRoot.Should().Contain(Path.Combine("resources", "k8s"));
             source.FileProvider.Should().NotBeNull();
             source.FileProvider.GetDirectoryContents("/").Should().NotBeNull();
         }
         finally
         {
-            Environment.SetEnvironmentVariable(ServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, null);
+            Environment.SetEnvironmentVariable(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, null);
         }
     }
 
@@ -41,7 +41,7 @@ public sealed class ServiceBindingConfigurationSourceTest
     public void Build_CapturesParentConfiguration()
     {
         string rootDir = GetK8SResourcesDirectory(null);
-        var source = new ServiceBindingConfigurationSource(rootDir);
+        var source = new KubernetesServiceBindingConfigurationSource(rootDir);
 
         var builder = new ConfigurationBuilder();
         builder.Add(source);

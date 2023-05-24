@@ -10,17 +10,17 @@ using Microsoft.Extensions.Primitives;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
-internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigurationProvider, IDisposable
+internal sealed class KubernetesServiceBindingConfigurationProvider : PostProcessorConfigurationProvider, IDisposable
 {
     public const string ProviderKey = "provider";
     public const string TypeKey = "type";
-    public static readonly string InputKeyPrefix = ConfigurationPath.Combine("k8s", "bindings");
-    public static readonly string OutputKeyPrefix = ConfigurationPath.Combine("steeltoe", "service-bindings");
+    public static readonly string FromKeyPrefix = ConfigurationPath.Combine("k8s", "bindings");
+    public static readonly string ToKeyPrefix = ConfigurationPath.Combine("steeltoe", "service-bindings");
 
     private readonly IDisposable _changeTokenRegistration;
-    private readonly ServiceBindingConfigurationSource _source;
+    private readonly KubernetesServiceBindingConfigurationSource _source;
 
-    public ServiceBindingConfigurationProvider(ServiceBindingConfigurationSource source)
+    public KubernetesServiceBindingConfigurationProvider(KubernetesServiceBindingConfigurationSource source)
         : base(source)
     {
         _source = source;
@@ -107,7 +107,7 @@ internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigu
 
     private void AddBindingType(ServiceBinding binding, Dictionary<string, string> data)
     {
-        string typeKey = ConfigurationPath.Combine(InputKeyPrefix, binding.Name, TypeKey);
+        string typeKey = ConfigurationPath.Combine(FromKeyPrefix, binding.Name, TypeKey);
 
         if (!_source.IgnoreKeyPredicate(typeKey))
         {
@@ -119,7 +119,7 @@ internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigu
     {
         if (!string.IsNullOrEmpty(binding.Provider))
         {
-            string providerKey = ConfigurationPath.Combine(InputKeyPrefix, binding.Name, ProviderKey);
+            string providerKey = ConfigurationPath.Combine(FromKeyPrefix, binding.Name, ProviderKey);
 
             if (!_source.IgnoreKeyPredicate(providerKey))
             {
@@ -130,7 +130,7 @@ internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigu
 
     private void AddBindingSecret(ServiceBinding binding, KeyValuePair<string, string> secretEntry, Dictionary<string, string> data)
     {
-        string secretKey = ConfigurationPath.Combine(InputKeyPrefix, binding.Name, secretEntry.Key);
+        string secretKey = ConfigurationPath.Combine(FromKeyPrefix, binding.Name, secretEntry.Key);
 
         if (!_source.IgnoreKeyPredicate(secretKey))
         {

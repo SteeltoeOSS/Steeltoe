@@ -32,12 +32,12 @@ public abstract class BasePostProcessorsTest
 
     private static string MakeSecretKey(string bindingProvider, string key)
     {
-        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.InputKeyPrefix, bindingProvider, "0", key);
+        return ConfigurationPath.Combine(CloudFoundryServiceBindingConfigurationProvider.FromKeyPrefix, bindingProvider, "0", key);
     }
 
     internal string GetOutputKeyPrefix(string bindingName, string bindingType)
     {
-        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.OutputKeyPrefix, bindingType, bindingName);
+        return ConfigurationPath.Combine(CloudFoundryServiceBindingConfigurationProvider.ToKeyPrefix, bindingType, bindingName);
     }
 
     internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor, string bindingTypeKey, bool isEnabled)

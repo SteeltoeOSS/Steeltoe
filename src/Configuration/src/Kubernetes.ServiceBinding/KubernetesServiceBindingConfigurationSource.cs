@@ -8,7 +8,7 @@ using Microsoft.Extensions.FileProviders.Physical;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
-internal sealed class ServiceBindingConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
+internal sealed class KubernetesServiceBindingConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
 {
     internal const string ServiceBindingRootDirEnvVariable = "SERVICE_BINDING_ROOT";
 
@@ -22,12 +22,12 @@ internal sealed class ServiceBindingConfigurationSource : PostProcessorConfigura
 
     public bool Optional { get; set; } = true;
 
-    public ServiceBindingConfigurationSource()
+    public KubernetesServiceBindingConfigurationSource()
         : this(Environment.GetEnvironmentVariable(ServiceBindingRootDirEnvVariable))
     {
     }
 
-    public ServiceBindingConfigurationSource(string serviceBindingRootDirectory)
+    public KubernetesServiceBindingConfigurationSource(string serviceBindingRootDirectory)
     {
         ServiceBindingRoot = serviceBindingRootDirectory != null ? Path.GetFullPath(serviceBindingRootDirectory) : null;
 
@@ -49,6 +49,6 @@ internal sealed class ServiceBindingConfigurationSource : PostProcessorConfigura
     {
         ParentConfiguration ??= GetParentConfiguration(builder);
 
-        return new ServiceBindingConfigurationProvider(this);
+        return new KubernetesServiceBindingConfigurationProvider(this);
     }
 }

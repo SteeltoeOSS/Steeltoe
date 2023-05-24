@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 
-internal sealed class CosmosDbPostProcessor : CloudFoundryConfigurationPostProcessor
+internal sealed class CosmosDbCloudFoundryPostProcessor : CloudFoundryPostProcessor
 {
     internal const string BindingType = "cosmosdb";
 
