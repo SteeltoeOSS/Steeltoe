@@ -9,7 +9,7 @@ using Steeltoe.Common;
 namespace Steeltoe.Management.Endpoint.Options;
 
 internal class ConfigureEndpointOptions<T> : IConfigureOptions<T>
-    where T : class
+    where T : HttpMiddlewareOptions
 {
     private readonly string _prefix;
     private readonly string _id;
@@ -28,5 +28,14 @@ internal class ConfigureEndpointOptions<T> : IConfigureOptions<T>
 
         Configuration.GetSection(_prefix).Bind(options);
 
+        if (options.Id == null)
+        {
+            options.Id = _id;
+        }
+
+        if (options.RequiredPermissions == Permissions.Undefined)
+        {
+            options.RequiredPermissions = Permissions.Restricted;
+        }
     }
 }

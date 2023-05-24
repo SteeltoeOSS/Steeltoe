@@ -18,6 +18,7 @@ using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
+using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -39,11 +40,12 @@ public class ActuatorRouteBuilderExtensionsTest
 
     private static IHostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction)
     {
+        var appSettings = new Dictionary<string, string>();
+        appSettings.Add("management:endpoints:actuator:exposure:include:0", "*");
+
         return new HostBuilder().AddDynamicLogging().ConfigureServices((context, s) =>
         {
-            s.AddTraceActuator(MediaTypeVersion.V1);
-            s.AddThreadDumpActuator(MediaTypeVersion.V1);
-            s.AddCloudFoundryActuator();
+            
             s.AddAllActuators();
             s.AddRouting();
             s.AddActionDescriptorCollectionProvider();
@@ -62,7 +64,8 @@ public class ActuatorRouteBuilderExtensionsTest
                 endpoints.MapAllActuators().RequireAuthorization("TestAuth");
                 endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
             })).UseTestServer();
-        });
+        })
+        .ConfigureAppConfiguration(configure => configure.AddInMemoryCollection(appSettings));
     }
 
     private static ManagementEndpointOptions GetManagementContext(IServiceProvider services)

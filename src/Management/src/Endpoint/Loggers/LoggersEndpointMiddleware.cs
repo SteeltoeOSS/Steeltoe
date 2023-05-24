@@ -16,7 +16,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
 {
     private readonly IEnumerable<IContextName> _contextNames;
 
-    public LoggersEndpointMiddleware(LoggersEndpointHandler endpointHandler,
+    public LoggersEndpointMiddleware(ILoggersEndpointHandler endpointHandler,
         IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
         IEnumerable<IContextName> contextNames,

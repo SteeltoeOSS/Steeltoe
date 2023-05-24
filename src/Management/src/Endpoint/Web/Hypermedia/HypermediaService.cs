@@ -30,7 +30,7 @@ internal sealed class HypermediaService
         _options = options.CurrentValue;
     }
 
-    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options,  IEnumerable<HttpMiddlewareOptions> endpointOptions, ILogger logger)
+    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options, IEnumerable<HttpMiddlewareOptions> endpointOptions, ILogger logger)
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);

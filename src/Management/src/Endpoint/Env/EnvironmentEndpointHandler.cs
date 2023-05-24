@@ -36,11 +36,6 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         _logger = loggerFactory.CreateLogger<EnvironmentEndpointHandler>();
     }
 
-    public Task<EnvironmentDescriptor> InvokeAsync(CancellationToken cancellationToken)
-    {
-        return Task.Run(() => DoInvoke(_configuration), cancellationToken);
-    }
-
     private EnvironmentDescriptor DoInvoke(IConfiguration configuration)
     {
         IList<string> activeProfiles = new List<string>
@@ -132,8 +127,8 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         return initialKeys;
     }
 
-    public Task<EnvironmentDescriptor> InvokeAsync(object arg, CancellationToken cancellationToken)
+    public async Task<EnvironmentDescriptor> InvokeAsync(object arg, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+       return DoInvoke(_configuration);
     }
 }

@@ -58,7 +58,7 @@ public class EndpointServiceCollectionTest : BaseTest
         List<IHealthContributor> contributorList = contributors.ToList();
         Assert.Single(contributorList);
 
-        var ep = serviceProvider.GetService<IEndpointHandler<HealthEndpointRequest, HealthEndpointResponse>>();
+        var ep = serviceProvider.GetService<IHealthEndpointHandler>();
         Assert.NotNull(ep);
     }
 

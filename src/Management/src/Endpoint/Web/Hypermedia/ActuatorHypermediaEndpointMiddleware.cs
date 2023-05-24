@@ -23,19 +23,6 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
     {
     }
 
-    //public override async Task InvokeAsync(HttpContext context, RequestDelegate next)
-    //{
-    //    ArgumentGuard.NotNull(context);
-    //    Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
-
-    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-    //    {
-    //        context.HandleContentNegotiation(Logger);
-    //        await HandleRequestAsync(context.Response.Body, GetRequestUri(context.Request), Logger, context.RequestAborted);
-    //        Logger.LogDebug("Returning serialized response");
-    //    }
-    //}
-
     private static string GetRequestUri(HttpRequest request)
     {
         string scheme = request.Scheme;
@@ -55,32 +42,12 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
         return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
     }
 
-    private async Task HandleRequestAsync(Stream responseStream, string requestUri, ILogger logger, CancellationToken cancellationToken)
-    {
-        Links result = await EndpointHandler.InvokeAsync(requestUri, cancellationToken);
-        await SerializeAsync(result, responseStream, logger);
-    }
 
-    private static async Task SerializeAsync<TResult>(TResult result, Stream responseStream, ILogger logger)
+    protected override async Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        try
-        {
-            var serializeOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-            };
-
-            await JsonSerializer.SerializeAsync(responseStream, result, serializeOptions);
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Error serializing {MiddlewareResponse}", result);
-        }
-    }
-
-    protected override Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
+        ArgumentGuard.NotNull(context);
+        Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
+        var requestUri = GetRequestUri(context.Request);
+        return await EndpointHandler.InvokeAsync(requestUri, cancellationToken);
     }
 }
