@@ -3,14 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data.Common;
-using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connectors.PostgreSql;
 using Xunit;
 
@@ -229,41 +226,5 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
         Assert.NotNull(healthContributor);
-    }
-
-    [Fact]
-    public void AddPostgreSqlConnectionWithConnectionStringAndCloudNativeBindingsAddsRightPostgreSqlConnection()
-    {
-        string rootDir = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
-        Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", rootDir);
-
-        try
-        {
-            IServiceCollection services = new ServiceCollection();
-
-            var appsettings = new Dictionary<string, string>
-            {
-                { "postgres:client:ConnectionString", "Server=fake;Database=test;User Id=steeltoe;Password=password;" }
-            };
-
-            var configurationBuilder = new ConfigurationBuilder();
-            _ = configurationBuilder.AddInMemoryCollection(appsettings).AddEnvironmentVariables().AddKubernetesServiceBindings(false);
-            IConfigurationRoot configurationRoot = configurationBuilder.Build();
-            services.AddPostgreSqlConnection(configurationRoot);
-            using ServiceProvider built = services.BuildServiceProvider();
-
-            using var connection = built.GetService<DbConnection>();
-            connection.Should().BeOfType<NpgsqlConnection>().And.Subject.Should().NotBeNull();
-
-            connection.ConnectionString.Should().Contain("Host=10.194.59.205");
-            connection.ConnectionString.Should().Contain("Port=5432");
-            connection.ConnectionString.Should().Contain("Username=testrolee93ccf859894dc60dcd53218492b37b4");
-            connection.ConnectionString.Should().Contain("Password=Qp!1mB1$Zk2T!$!D85_E");
-            connection.ConnectionString.Should().Contain("Database=steeltoe");
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", null);
-        }
     }
 }

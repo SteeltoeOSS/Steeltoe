@@ -107,32 +107,10 @@ public static class ConfigurationBuilderExtensions
 
     private static IConfigurationBuilder RegisterPostProcessors(IConfigurationBuilder builder, ServiceBindingConfigurationSource source)
     {
-        source.RegisterPostProcessor(new ArtemisPostProcessor());
-        source.RegisterPostProcessor(new CassandraPostProcessor());
-        source.RegisterPostProcessor(new ConfigServerPostProcessor());
-        source.RegisterPostProcessor(new CouchbasePostProcessor());
-        source.RegisterPostProcessor(new DB2PostProcessor());
-        source.RegisterPostProcessor(new ElasticSearchPostProcessor());
-        source.RegisterPostProcessor(new EurekaPostProcessor());
-        source.RegisterPostProcessor(new KafkaPostProcessor());
-        source.RegisterPostProcessor(new LdapPostProcessor());
-        source.RegisterPostProcessor(new MongoDbPostProcessor());
         source.RegisterPostProcessor(new MySqlPostProcessor());
-        source.RegisterPostProcessor(new Neo4JPostProcessor());
-        source.RegisterPostProcessor(new OraclePostProcessor());
         source.RegisterPostProcessor(new PostgreSqlPostProcessor());
         source.RegisterPostProcessor(new RabbitMQPostProcessor());
         source.RegisterPostProcessor(new RedisPostProcessor());
-        source.RegisterPostProcessor(new SapHanaPostProcessor());
-        source.RegisterPostProcessor(new SpringSecurityOAuth2PostProcessor());
-        source.RegisterPostProcessor(new SqlServerPostProcessor());
-        source.RegisterPostProcessor(new VaultPostProcessor());
-        source.RegisterPostProcessor(new WavefrontPostProcessor());
-
-        // Legacy Connector Post Processors
-        source.RegisterPostProcessor(new RabbitMQLegacyConnectorPostProcessor());
-        source.RegisterPostProcessor(new MySqlLegacyConnectorPostProcessor());
-        source.RegisterPostProcessor(new PostgreSqlLegacyConnectorPostProcessor());
 
         builder.Add(source);
         return builder;

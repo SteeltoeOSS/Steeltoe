@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connectors.PostgreSql;
 using Xunit;
 
@@ -112,36 +111,6 @@ public class PostgreSqlProviderConnectorOptionsTest
         var options = new PostgreSqlProviderConnectorOptions(configurationRoot);
 
         Assert.NotEqual(appsettings["postgres:client:ConnectionString"], options.ToString());
-    }
-
-    [Fact]
-    public void ConnectionStringIgnoredWhenCloudNativeBindingsExist()
-    {
-        // simulate an appsettings file
-        var appsettings = new Dictionary<string, string>
-        {
-            { "postgres:client:ConnectionString", "Server=fake;Database=test;User Id=steeltoe;Password=password;" }
-        };
-
-        // add environment variables as Cloud Foundry would
-        string rootDir = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
-        Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", rootDir);
-
-        // add settings to configuration
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        configurationBuilder.AddEnvironmentVariables();
-        configurationBuilder.AddKubernetesServiceBindings();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var options = new PostgreSqlProviderConnectorOptions(configurationRoot);
-        string connString = options.ToString();
-        Assert.NotEqual(appsettings["postgres:client:ConnectionString"], connString);
-        Assert.Contains("Host=10.194.59.205", connString, StringComparison.Ordinal);
-        Assert.Contains("Port=5432", connString, StringComparison.Ordinal);
-        Assert.Contains("Username=testrolee93ccf859894dc60dcd53218492b37b4", connString, StringComparison.Ordinal);
-        Assert.Contains("Password=Qp!1mB1$Zk2T!$!D85_E", connString, StringComparison.Ordinal);
-        Assert.Contains("Database=steeltoe", connString, StringComparison.Ordinal);
     }
 
     [Fact]
