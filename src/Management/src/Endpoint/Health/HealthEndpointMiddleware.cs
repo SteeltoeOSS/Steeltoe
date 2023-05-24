@@ -94,8 +94,17 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
         return string.Empty;
     }
 
-    protected override Task<HealthEndpointResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<HealthEndpointResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        HealthEndpointResponse result = await ((HealthEndpointHandler)EndpointHandler).InvokeAsync(GetRequest(context), context.RequestAborted);
+
+        ManagementEndpointOptions currentOptions = ManagementEndpointOptions.CurrentValue;
+
+        if (currentOptions.UseStatusCodeFromResponse)
+        {
+            context.Response.StatusCode = ((HealthEndpointHandler)EndpointHandler).GetStatusCode(result);
+        }
+        return result;
+
     }
 }

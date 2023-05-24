@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-      //  services.ConfigureEndpointOptions<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
+        services.ConfigureEndpointOptions<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
         services.TryAddScoped<IHealthEndpointHandler, HealthEndpointHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IEndpointMiddleware, HealthEndpointMiddleware>());
         services.AddScoped<HealthEndpointMiddleware>();

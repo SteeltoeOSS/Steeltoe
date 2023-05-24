@@ -125,6 +125,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         EndpointHandler = endpointHandler;
         Logger = logger;
         ManagementEndpointOptions = managementOptions;
+        EndpointOptions = EndpointHandler.Options;
     }
 
  
@@ -158,11 +159,43 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
 
     protected virtual async Task WriteResponseAsync(TResult result, HttpContext context, CancellationToken cancellationToken)
     {
-        if (result != null)
+        if (EqualityComparer<TResult>.Default.Equals(result, default))
         {
-            var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-            await JsonSerializer.SerializeAsync(context.Response.Body, result, options, cancellationToken);
+            return;
         }
+
+        JsonSerializerOptions serializerOptions = ManagementEndpointOptions.CurrentValue.SerializerOptions;
+        JsonSerializerOptions options = GetSerializerOptions(serializerOptions);
+        await JsonSerializer.SerializeAsync(context.Response.Body, result, options, cancellationToken);
+    }
+    internal static JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
+    {
+        serializerOptions ??= new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
+        if (serializerOptions.DefaultIgnoreCondition != JsonIgnoreCondition.WhenWritingNull)
+        {
+            serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        }
+
+        if (serializerOptions.Converters?.Any(c => c is JsonStringEnumConverter) != true)
+        {
+            serializerOptions.Converters.Add(new JsonStringEnumConverter());
+        }
+
+        if (serializerOptions.Converters?.Any(c => c is HealthConverter or HealthConverterV3) != true)
+        {
+            serializerOptions.Converters.Add(new HealthConverter());
+        }
+
+        if (serializerOptions.Converters?.Any(c => c is MetricsResponseConverter) != true)
+        {
+            serializerOptions.Converters.Add(new MetricsResponseConverter());
+        }
+
+        return serializerOptions;
     }
 
 }

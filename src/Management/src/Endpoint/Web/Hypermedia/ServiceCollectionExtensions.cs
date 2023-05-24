@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services.ConfigureMiddlewareOptions<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
+        services.ConfigureEndpointOptions<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
 
 
         services.TryAddSingleton<IActuatorEndpointHandler, ActuatorEndpointHandler>();

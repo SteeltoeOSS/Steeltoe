@@ -39,7 +39,7 @@ public static class ActuatorServiceCollectionExtensions
         services.ConfigureOptions<ConfigureManagementEndpointOptions>();
     }
 
-    public static void ConfigureMiddlewareOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
+    public static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
         where TOptions : HttpMiddlewareOptions
         where TConfigureOptions : class
     {

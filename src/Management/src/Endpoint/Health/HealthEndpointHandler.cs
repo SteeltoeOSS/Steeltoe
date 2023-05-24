@@ -153,8 +153,4 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         return contributors;
     }
 
-    public Task<HealthEndpointRequest> InvokeAsync(HealthEndpointResponse arg, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
 }

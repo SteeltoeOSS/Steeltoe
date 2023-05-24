@@ -74,9 +74,11 @@ public class HealthEndpointTest : BaseTest
 
         var ep = tc.GetService<IHealthEndpointHandler>();
 
-        HealthEndpointResponse health = await ep.InvokeAsync(null, CancellationToken.None);
-        Assert.NotNull(health);
-        Assert.Equal(HealthStatus.Unknown, health.Status);
+        HealthEndpointRequest healthRequest = GetHealthRequest();
+
+        HealthEndpointResponse result = await ep.InvokeAsync(healthRequest, CancellationToken.None);
+        Assert.NotNull(result);
+        Assert.Equal(HealthStatus.Unknown, result.Status);
     }
 
     [Fact]
@@ -99,7 +101,8 @@ public class HealthEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IHealthEndpointHandler>();
-        await ep.InvokeAsync(null, CancellationToken.None);
+        HealthEndpointRequest healthRequest = GetHealthRequest();
+        await ep.InvokeAsync(healthRequest, CancellationToken.None);
 
         foreach (IHealthContributor contrib in contributors)
         {
@@ -107,6 +110,12 @@ public class HealthEndpointTest : BaseTest
             Assert.True(tcc.Called);
         }
     }
+
+    private static HealthEndpointRequest GetHealthRequest() => new HealthEndpointRequest
+    {
+        GroupName = string.Empty,
+        HasClaim = true
+    };
 
     [Fact]
     public async Task Invoke_HandlesExceptions_ReturnsExpectedHealth()
@@ -129,7 +138,8 @@ public class HealthEndpointTest : BaseTest
 
         var ep = tc.GetService<IHealthEndpointHandler>();
 
-        HealthEndpointResponse info = await ep.InvokeAsync(null, CancellationToken.None);
+        HealthEndpointRequest healthRequest = GetHealthRequest();
+        HealthEndpointResponse info = await ep.InvokeAsync(healthRequest, CancellationToken.None);
 
         foreach (IHealthContributor contrib in contributors)
         {
@@ -208,18 +218,13 @@ public class HealthEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IHealthEndpointHandler>();
-
-        var healthRequest = Substitute.For<HealthEndpointRequest>();
-
-        healthRequest.GroupName.Returns(string.Empty);
-        healthRequest.HasClaim.Returns(true);
-
         appAvailability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, null);
-        var request = new HealthEndpointRequest(); // How to get?
-        HealthEndpointResponse result = await ep.InvokeAsync(request, CancellationToken.None);
+        HealthEndpointRequest healthRequest = new HealthEndpointRequest { GroupName  = "liVeness", HasClaim = true };
+
+        HealthEndpointResponse result = await ep.InvokeAsync(healthRequest, CancellationToken.None);
 
         Assert.Equal(HealthStatus.Up, result.Status);
-        Assert.True(result.Details.Keys.Count == 1);
+        Assert.Single(result.Details.Keys);
         Assert.True(result.Groups.Count() == 2);
     }
 
@@ -244,22 +249,10 @@ public class HealthEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IHealthEndpointHandler>();
-        var healthRequest = Substitute.For<HealthEndpointRequest>();
-
-        //var context = Substitute.For<ISecurityContext>();
-
-        //context.GetRequestComponents().Returns(new[]
-        //{
-        //    "actuator",
-        //    "health",
-        //    "readiness"
-        //});
-        healthRequest.GroupName.Returns(string.Empty);
-        healthRequest.HasClaim.Returns(true);
-
         appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
-        var request = new HealthEndpointRequest();
-        HealthEndpointResponse result = await ep.InvokeAsync(request, CancellationToken.None);
+        HealthEndpointRequest healthRequest = new HealthEndpointRequest { GroupName = "readiness", HasClaim = true };
+
+        HealthEndpointResponse result = await ep.InvokeAsync(healthRequest, CancellationToken.None);
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.True(result.Details.Keys.Count == 1);
@@ -281,23 +274,10 @@ public class HealthEndpointTest : BaseTest
         IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
 
         var ep = new HealthEndpointHandler(options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), _provider, NullLoggerFactory.Instance);
-
-        //var context = Substitute.For<ISecurityContext>();
-
-        //context.GetRequestComponents().Returns(new[]
-        //{
-        //    "actuator",
-        //    "health",
-        //    "readiness"
-        //});
-
-        var healthRequest = Substitute.For<HealthEndpointRequest>();
-        healthRequest.GroupName.Returns(string.Empty);
-        healthRequest.HasClaim.Returns(true);
-
         appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
-        var request = new HealthEndpointRequest();
-        HealthEndpointResponse result = await ep.InvokeAsync(request, CancellationToken.None);
+        HealthEndpointRequest healthRequest = new HealthEndpointRequest { GroupName = "readiness", HasClaim = true };
+
+        HealthEndpointResponse result = await ep.InvokeAsync(healthRequest, CancellationToken.None);
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Single(result.Details.Keys);
@@ -325,13 +305,9 @@ public class HealthEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IHealthEndpointHandler>();
-    
+        HealthEndpointRequest healthRequest = new HealthEndpointRequest { GroupName = "iNvaLid", HasClaim = true };
 
-        var request = Substitute.For<HealthEndpointRequest>();
-        request.GroupName.Returns(string.Empty);
-        request.HasClaim.Returns(true);
-
-        HealthEndpointResponse result = await ep.InvokeAsync(request, CancellationToken.None);
+        HealthEndpointResponse result = await ep.InvokeAsync(healthRequest, CancellationToken.None);
 
         Assert.Equal(HealthStatus.OutOfService, result.Status);
         Assert.True(result.Details.Keys.Count == 4);
@@ -357,16 +333,7 @@ public class HealthEndpointTest : BaseTest
         var ep = new HealthEndpointHandler(options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider,
             NullLoggerFactory.Instance);
 
-        //var context = Substitute.For<ISecurityContext>();
-
-        //context.GetRequestComponents().Returns(new[]
-        //{
-        //    "actuator",
-        //    "health",
-        //    "msft"
-        //});
-        var healthRequest = Substitute.For<HealthEndpointRequest>();
-
+        HealthEndpointRequest healthRequest = new HealthEndpointRequest { GroupName="msft", HasClaim=true };
 
         HealthEndpointResponse result = await ep.InvokeAsync(healthRequest, CancellationToken.None);
 

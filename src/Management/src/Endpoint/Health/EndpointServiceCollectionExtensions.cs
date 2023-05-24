@@ -72,10 +72,8 @@ public static class EndpointServiceCollectionExtensions
         AddHealthContributors(services, contributors);
 
         services.TryAddSingleton(aggregator);
-        services.TryAddScoped<IEndpointHandler<HealthEndpointRequest, HealthEndpointResponse>, HealthEndpointHandler>();
         services.TryAddSingleton<ApplicationAvailability>();
 
-        services.AddCommonActuatorServices();
     }
 
     public static void AddHealthContributors(this IServiceCollection services, params Type[] contributors)
