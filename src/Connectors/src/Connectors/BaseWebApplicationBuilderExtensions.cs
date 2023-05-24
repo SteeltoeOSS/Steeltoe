@@ -13,14 +13,6 @@ namespace Steeltoe.Connectors;
 
 internal static class BaseWebApplicationBuilderExtensions
 {
-    public static void RegisterConfigurationSource(IConfigurationBuilder configurationBuilder, ConnectionStringPostProcessor postProcessor)
-    {
-        var source = new ConnectionStringConfigurationSource2();
-        source.RegisterPostProcessor(postProcessor);
-
-        configurationBuilder.Add(source);
-    }
-
     public static void RegisterNamedOptions<TOptions>(WebApplicationBuilder builder, string bindingType,
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor)
         where TOptions : ConnectionStringOptions

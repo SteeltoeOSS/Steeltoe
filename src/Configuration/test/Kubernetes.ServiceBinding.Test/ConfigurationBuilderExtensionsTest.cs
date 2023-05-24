@@ -23,13 +23,13 @@ public sealed class ConfigurationBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddKubernetesServiceBindings_RegistersProcessors()
+    public void AddKubernetesServiceBindings_RegistersNoProcessors()
     {
         var builder = new ConfigurationBuilder();
         builder.AddKubernetesServiceBindings();
 
         builder.Sources.Should().HaveCount(1);
         KubernetesServiceBindingConfigurationSource source = builder.Sources[0].Should().BeOfType<KubernetesServiceBindingConfigurationSource>().Subject;
-        source.RegisteredProcessors.Should().NotBeEmpty();
+        source.PostProcessors.Should().BeEmpty();
     }
 }

@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 
@@ -88,25 +87,16 @@ public static class ConfigurationBuilderExtensions
         ArgumentGuard.NotNull(ignoreKeyPredicate);
         ArgumentGuard.NotNull(serviceBindingsReader);
 
-        var source = new CloudFoundryServiceBindingConfigurationSource(serviceBindingsReader)
+        if (!builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().Any())
         {
-            IgnoreKeyPredicate = ignoreKeyPredicate
-        };
+            var source = new CloudFoundryServiceBindingConfigurationSource(serviceBindingsReader)
+            {
+                IgnoreKeyPredicate = ignoreKeyPredicate
+            };
 
-        return RegisterPostProcessors(builder, source);
-    }
+            builder.Add(source);
+        }
 
-    private static IConfigurationBuilder RegisterPostProcessors(IConfigurationBuilder builder, CloudFoundryServiceBindingConfigurationSource source)
-    {
-        source.RegisterPostProcessor(new PostgreSqlCloudFoundryPostProcessor());
-        source.RegisterPostProcessor(new MySqlCloudFoundryPostProcessor());
-        source.RegisterPostProcessor(new SqlServerCloudFoundryPostProcessor());
-        source.RegisterPostProcessor(new MongoDbCloudFoundryPostProcessor());
-        source.RegisterPostProcessor(new CosmosDbCloudFoundryPostProcessor());
-        source.RegisterPostProcessor(new RabbitMQCloudFoundryPostProcessor());
-        source.RegisterPostProcessor(new RedisCloudFoundryPostProcessor());
-
-        builder.Add(source);
         return builder;
     }
 }

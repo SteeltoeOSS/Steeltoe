@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
@@ -96,24 +95,18 @@ public static class ConfigurationBuilderExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(ignoreKeyPredicate);
 
-        var source = new KubernetesServiceBindingConfigurationSource
+        if (!builder.Sources.OfType<KubernetesServiceBindingConfigurationSource>().Any())
         {
-            Optional = optional,
-            ReloadOnChange = reloadOnChange,
-            IgnoreKeyPredicate = ignoreKeyPredicate
-        };
+            var source = new KubernetesServiceBindingConfigurationSource
+            {
+                Optional = optional,
+                ReloadOnChange = reloadOnChange,
+                IgnoreKeyPredicate = ignoreKeyPredicate
+            };
 
-        return RegisterPostProcessors(builder, source);
-    }
+            builder.Add(source);
+        }
 
-    private static IConfigurationBuilder RegisterPostProcessors(IConfigurationBuilder builder, KubernetesServiceBindingConfigurationSource source)
-    {
-        source.RegisterPostProcessor(new MySqlKubernetesPostProcessor());
-        source.RegisterPostProcessor(new PostgreSqlKubernetesPostProcessor());
-        source.RegisterPostProcessor(new RabbitMQKubernetesPostProcessor());
-        source.RegisterPostProcessor(new RedisKubernetesPostProcessor());
-
-        builder.Add(source);
         return builder;
     }
 }

@@ -59,14 +59,14 @@ public sealed class ConfigurationBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddCloudFoundryServiceBindings_RegistersProcessors()
+    public void AddCloudFoundryServiceBindings_RegistersNoProcessors()
     {
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundryServiceBindings();
 
         builder.Sources.Should().HaveCount(1);
         CloudFoundryServiceBindingConfigurationSource source = builder.Sources[0].Should().BeOfType<CloudFoundryServiceBindingConfigurationSource>().Subject;
-        source.RegisteredProcessors.Should().NotBeEmpty();
+        source.PostProcessors.Should().BeEmpty();
     }
 
     [Fact]

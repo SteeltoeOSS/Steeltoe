@@ -6,10 +6,13 @@
 
 using System.Data.Common;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 using Steeltoe.Connectors.CosmosDb.RuntimeTypeAccess;
 using Steeltoe.Connectors.RuntimeTypeAccess;
 
@@ -30,8 +33,7 @@ public static class CosmosDbWebApplicationBuilderExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);
 
-        var connectionStringPostProcessor = new CosmosDbConnectionStringPostProcessor();
-        BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
+        RegisterPostProcessors(builder.Configuration);
 
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
             CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver);
@@ -45,6 +47,18 @@ public static class CosmosDbWebApplicationBuilderExtensions
         ConnectorFactoryShim<CosmosDbOptions>.Register(builder.Services, packageResolver.CosmosClientClass.Type, true, createConnection);
 
         return builder;
+    }
+
+    private static void RegisterPostProcessors(IConfigurationBuilder builder)
+    {
+        builder.AddCloudFoundryServiceBindings();
+        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
+        cloudFoundrySource.RegisterPostProcessor(new CosmosDbCloudFoundryPostProcessor());
+
+        var connectionStringPostProcessor = new CosmosDbConnectionStringPostProcessor();
+        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
+        connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
+        builder.Add(connectionStringSource);
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,

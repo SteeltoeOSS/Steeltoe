@@ -5,10 +5,15 @@
 #nullable enable
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 using Steeltoe.Connectors.Redis.RuntimeTypeAccess;
 using Steeltoe.Connectors.RuntimeTypeAccess;
 
@@ -30,8 +35,7 @@ public static class RedisWebApplicationBuilderExtensions
         ArgumentGuard.NotNull(stackExchangeRedisPackageResolver);
         ArgumentGuard.NotNull(microsoftRedisPackageResolver);
 
-        var connectionStringPostProcessor = new RedisConnectionStringPostProcessor();
-        BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
+        RegisterPostProcessors(builder.Configuration);
 
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
             CreateHealthContributor(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver);
@@ -52,6 +56,22 @@ public static class RedisWebApplicationBuilderExtensions
             microsoftCreateConnection);
 
         return builder;
+    }
+
+    private static void RegisterPostProcessors(IConfigurationBuilder builder)
+    {
+        builder.AddCloudFoundryServiceBindings();
+        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
+        cloudFoundrySource.RegisterPostProcessor(new RedisCloudFoundryPostProcessor());
+
+        builder.AddKubernetesServiceBindings();
+        KubernetesServiceBindingConfigurationSource kubernetesSource = builder.Sources.OfType<KubernetesServiceBindingConfigurationSource>().First();
+        kubernetesSource.RegisterPostProcessor(new RedisKubernetesPostProcessor());
+
+        var connectionStringPostProcessor = new RedisConnectionStringPostProcessor();
+        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
+        connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
+        builder.Add(connectionStringSource);
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,

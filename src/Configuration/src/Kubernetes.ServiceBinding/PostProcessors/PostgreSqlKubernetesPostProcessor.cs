@@ -12,11 +12,6 @@ internal sealed class PostgreSqlKubernetesPostProcessor : IConfigurationPostProc
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
     {
-        if (!provider.IsBindingTypeEnabled(BindingType))
-        {
-            return;
-        }
-
         foreach (string bindingKey in configurationData.Filter(KubernetesServiceBindingConfigurationProvider.FromKeyPrefix,
             KubernetesServiceBindingConfigurationProvider.TypeKey, BindingType))
         {

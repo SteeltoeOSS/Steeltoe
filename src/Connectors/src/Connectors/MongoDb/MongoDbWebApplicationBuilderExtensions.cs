@@ -5,10 +5,13 @@
 #nullable enable
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 using Steeltoe.Connectors.MongoDb.RuntimeTypeAccess;
 using Steeltoe.Connectors.RuntimeTypeAccess;
 
@@ -26,8 +29,7 @@ public static class MongoDbWebApplicationBuilderExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);
 
-        var connectionStringPostProcessor = new MongoDbConnectionStringPostProcessor();
-        BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
+        RegisterPostProcessors(builder.Configuration);
 
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
             CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver);
@@ -40,6 +42,18 @@ public static class MongoDbWebApplicationBuilderExtensions
         ConnectorFactoryShim<MongoDbOptions>.Register(builder.Services, packageResolver.MongoClientInterface.Type, false, createMongoClient);
 
         return builder;
+    }
+
+    private static void RegisterPostProcessors(IConfigurationBuilder builder)
+    {
+        builder.AddCloudFoundryServiceBindings();
+        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
+        cloudFoundrySource.RegisterPostProcessor(new MongoDbCloudFoundryPostProcessor());
+
+        var connectionStringPostProcessor = new MongoDbConnectionStringPostProcessor();
+        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
+        connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
+        builder.Add(connectionStringSource);
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,

@@ -9,9 +9,9 @@ using Steeltoe.Configuration;
 
 namespace Steeltoe.Connectors;
 
-internal sealed class ConnectionStringConfigurationProvider2 : PostProcessorConfigurationProvider
+internal sealed class ConnectionStringPostProcessorConfigurationProvider : PostProcessorConfigurationProvider
 {
-    public ConnectionStringConfigurationProvider2(PostProcessorConfigurationSource source)
+    public ConnectionStringPostProcessorConfigurationProvider(PostProcessorConfigurationSource source)
         : base(source)
     {
         ChangeToken.OnChange(() => source.ParentConfiguration.GetReloadToken(), _ => Load(), 0);

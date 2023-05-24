@@ -10,11 +10,6 @@ internal sealed class PostgreSqlCloudFoundryPostProcessor : CloudFoundryPostProc
 
     public override void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
     {
-        if (!provider.IsBindingTypeEnabled(BindingType))
-        {
-            return;
-        }
-
         foreach (string key in FilterKeys(configurationData, BindingType))
         {
             var mapper = ServiceBindingMapper.Create(configurationData, key, BindingType);

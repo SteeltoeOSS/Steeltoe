@@ -10,13 +10,13 @@ using Steeltoe.Configuration;
 
 namespace Steeltoe.Connectors;
 
-internal sealed class ConnectionStringConfigurationSource2 : PostProcessorConfigurationSource, IConfigurationSource
+internal sealed class ConnectionStringPostProcessorConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
 {
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
         ParentConfiguration ??= GetParentConfiguration(builder);
-        return new ConnectionStringConfigurationProvider2(this);
+        return new ConnectionStringPostProcessorConfigurationProvider(this);
     }
 }

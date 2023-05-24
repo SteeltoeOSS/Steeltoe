@@ -21,7 +21,7 @@ internal abstract class PostProcessorConfigurationProvider : ConfigurationProvid
 
     protected virtual void PostProcessConfiguration()
     {
-        foreach (IConfigurationPostProcessor processor in Source.RegisteredProcessors)
+        foreach (IConfigurationPostProcessor processor in Source.PostProcessors)
         {
             processor.PostProcessConfiguration(this, Data);
         }

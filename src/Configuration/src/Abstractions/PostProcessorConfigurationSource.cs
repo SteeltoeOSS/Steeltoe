@@ -9,7 +9,9 @@ namespace Steeltoe.Configuration;
 
 internal abstract class PostProcessorConfigurationSource
 {
-    public IList<IConfigurationPostProcessor> RegisteredProcessors { get; } = new List<IConfigurationPostProcessor>();
+    private readonly List<IConfigurationPostProcessor> _postProcessors = new();
+
+    public IReadOnlyList<IConfigurationPostProcessor> PostProcessors => _postProcessors.AsReadOnly();
     public Predicate<string> IgnoreKeyPredicate { get; set; } = _ => false;
     public IConfigurationRoot ParentConfiguration { get; set; }
 
@@ -17,7 +19,7 @@ internal abstract class PostProcessorConfigurationSource
     {
         ArgumentGuard.NotNull(processor);
 
-        RegisteredProcessors.Add(processor);
+        _postProcessors.Add(processor);
     }
 
     protected IConfigurationRoot GetParentConfiguration(IConfigurationBuilder builder)

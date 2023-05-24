@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Globalization;
 using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test;
@@ -40,16 +39,9 @@ public abstract class BasePostProcessorsTest
         return ConfigurationPath.Combine(CloudFoundryServiceBindingConfigurationProvider.ToKeyPrefix, bindingType, bindingName);
     }
 
-    internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor, string bindingTypeKey, bool isEnabled)
+    internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor)
     {
-        var source = new TestPostProcessorConfigurationSource
-        {
-            ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                { $"steeltoe:cloudfoundry:service-bindings:{bindingTypeKey}:enable", isEnabled.ToString(CultureInfo.InvariantCulture) }
-            }).Build()
-        };
-
+        var source = new TestPostProcessorConfigurationSource();
         source.RegisterPostProcessor(postProcessor);
 
         return new TestPostProcessorConfigurationProvider(source);

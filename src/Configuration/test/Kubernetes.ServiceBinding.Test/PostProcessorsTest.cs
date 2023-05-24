@@ -11,26 +11,7 @@ namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 public sealed class PostProcessorsTest : BasePostProcessorsTest
 {
     [Fact]
-    public void MySqlTest_BindingTypeDisabled()
-    {
-        var postProcessor = new MySqlKubernetesPostProcessor();
-
-        var secrets = new[]
-        {
-            Tuple.Create("username", "test-username")
-        };
-
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MySqlKubernetesPostProcessor.BindingType, false);
-
-        postProcessor.PostProcessConfiguration(provider, configurationData);
-
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlKubernetesPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:username");
-    }
-
-    [Fact]
-    public void MySqlTest_BindingTypeEnabled()
+    public void Processes_MySql_configuration()
     {
         var postProcessor = new MySqlKubernetesPostProcessor();
 
@@ -44,7 +25,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MySqlKubernetesPostProcessor.BindingType, true);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -57,26 +38,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     }
 
     [Fact]
-    public void PostgreSqlTest_BindingTypeDisabled()
-    {
-        var postProcessor = new PostgreSqlKubernetesPostProcessor();
-
-        var secrets = new[]
-        {
-            Tuple.Create("username", "test-username")
-        };
-
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, PostgreSqlKubernetesPostProcessor.BindingType, false);
-
-        postProcessor.PostProcessConfiguration(provider, configurationData);
-
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlKubernetesPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:username");
-    }
-
-    [Fact]
-    public void PostgreSqlTest_BindingTypeEnabled()
+    public void Processes_PostgreSql_configuration()
     {
         var postProcessor = new PostgreSqlKubernetesPostProcessor();
 
@@ -90,7 +52,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, PostgreSqlKubernetesPostProcessor.BindingType, true);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -103,26 +65,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     }
 
     [Fact]
-    public void RabbitMQTest_BindingTypeDisabled()
-    {
-        var postProcessor = new RabbitMQKubernetesPostProcessor();
-
-        var secrets = new[]
-        {
-            Tuple.Create("username", "test-username")
-        };
-
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RabbitMQKubernetesPostProcessor.BindingType, false);
-
-        postProcessor.PostProcessConfiguration(provider, configurationData);
-
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQKubernetesPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:username");
-    }
-
-    [Fact]
-    public void RabbitMQTest_BindingTypeEnabled()
+    public void Processes_RabbitMQ_configuration()
     {
         var postProcessor = new RabbitMQKubernetesPostProcessor();
 
@@ -136,7 +79,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RabbitMQKubernetesPostProcessor.BindingType, true);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
@@ -149,26 +92,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     }
 
     [Fact]
-    public void RedisTest_BindingTypeDisabled()
-    {
-        var postProcessor = new RedisKubernetesPostProcessor();
-
-        var secrets = new[]
-        {
-            Tuple.Create("host", "test-host")
-        };
-
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RedisKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RedisKubernetesPostProcessor.BindingType, false);
-
-        postProcessor.PostProcessConfiguration(provider, configurationData);
-
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisKubernetesPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:host");
-    }
-
-    [Fact]
-    public void RedisTest_BindingTypeEnabled()
+    public void Processes_Redis_configuration()
     {
         var postProcessor = new RedisKubernetesPostProcessor();
 
@@ -183,7 +107,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RedisKubernetesPostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RedisKubernetesPostProcessor.BindingType, true);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 

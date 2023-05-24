@@ -6,10 +6,15 @@
 
 using System.Data.Common;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 using Steeltoe.Connectors.MySql.RuntimeTypeAccess;
 using Steeltoe.Connectors.RuntimeTypeAccess;
 
@@ -27,8 +32,7 @@ public static class MySqlWebApplicationBuilderExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);
 
-        var connectionStringPostProcessor = new MySqlConnectionStringPostProcessor(packageResolver);
-        BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
+        RegisterPostProcessors(builder.Configuration, packageResolver);
 
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
             CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver);
@@ -41,6 +45,22 @@ public static class MySqlWebApplicationBuilderExtensions
         ConnectorFactoryShim<MySqlOptions>.Register(builder.Services, packageResolver.MySqlConnectionClass.Type, false, createConnection);
 
         return builder;
+    }
+
+    private static void RegisterPostProcessors(IConfigurationBuilder builder, MySqlPackageResolver packageResolver)
+    {
+        builder.AddCloudFoundryServiceBindings();
+        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
+        cloudFoundrySource.RegisterPostProcessor(new MySqlCloudFoundryPostProcessor());
+
+        builder.AddKubernetesServiceBindings();
+        KubernetesServiceBindingConfigurationSource kubernetesSource = builder.Sources.OfType<KubernetesServiceBindingConfigurationSource>().First();
+        kubernetesSource.RegisterPostProcessor(new MySqlKubernetesPostProcessor());
+
+        var connectionStringPostProcessor = new MySqlConnectionStringPostProcessor(packageResolver);
+        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
+        connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
+        builder.Add(connectionStringSource);
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName, MySqlPackageResolver packageResolver)
