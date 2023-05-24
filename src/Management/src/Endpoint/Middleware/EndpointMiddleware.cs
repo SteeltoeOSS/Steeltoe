@@ -6,6 +6,8 @@ using System.Diagnostics.Eventing.Reader;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Diagnostics.Tracing.Parsers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
@@ -13,6 +15,7 @@ using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
@@ -32,12 +35,12 @@ namespace Steeltoe.Management.Endpoint.Middleware;
 //        ManagementOptions = managementOptions;
 //    }
 
-//    protected EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger logger)
+//    protected EndpointMiddleware(IEndpoint<TResult> endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger logger)
 //        : this(managementOptions, logger)
 //    {
-//        ArgumentGuard.NotNull(endpoint);
+//        ArgumentGuard.NotNull(endpointHandler);
 //        ArgumentGuard.NotNull(logger);
-//        Endpoint = endpoint;
+//        Endpoint = endpointHandler;
 //        EndpointOptions = endpointOptions;
 //    }
 
@@ -99,22 +102,22 @@ namespace Steeltoe.Management.Endpoint.Middleware;
 
 public interface IEndpointMiddleware : IMiddleware
 {
-    //    public IOptionsMonitor<HttpMiddlewareOptions> EndpointOptions { get; }
+    //  IEndpointHandler EndpointHandler { get; }
+    HttpMiddlewareOptions EndpointOptions { get; }
     bool ShouldInvoke(HttpContext context);
 }
 
 public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddleware
 {
-    protected IEndpointHandler<TArgument, TResult> EndpointHandler { get;  }
+    public IEndpointHandler<TArgument, TResult> EndpointHandler { get;  }
 
     protected ILogger Logger { get;  }
     protected IOptionsMonitor<ManagementEndpointOptions> ManagementEndpointOptions { get;  }
 
-    public IOptionsMonitor<HttpMiddlewareOptions> EndpointOptions { get; }
+    public HttpMiddlewareOptions EndpointOptions { get; }
 
     protected EndpointMiddleware(IEndpointHandler<TArgument, TResult> endpointHandler,
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger logger)
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
       //  : base(managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpointHandler);
@@ -122,23 +125,21 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         EndpointHandler = endpointHandler;
         Logger = logger;
         ManagementEndpointOptions = managementOptions;
-        EndpointOptions = endpointOptions;
     }
 
-    //protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
-    //    : base(managementOptions, logger)
-    //{
-    //}
+ 
+    public virtual bool ShouldInvoke(HttpContext context)
+    {
+        ArgumentGuard.NotNull(context);
+        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptions.GetFromContextPath(context.Request.Path);
+        var endpointOptions = EndpointHandler.Options;
+        bool enabled = endpointOptions.IsEnabled(mgmtOptions);
+        bool exposed = endpointOptions.IsExposed(mgmtOptions);
+        Logger.LogDebug($"endpointHandler: {endpointOptions.Id}, contextPath: {context.Request.Path}, enabled: {enabled}, exposed: {exposed}");
+        return enabled && exposed;
+        //    return ShouldInvoke(endpointHandler, mgmtOptions, logger);
+    }
 
-    //public virtual async Task<string> HandleRequestAsync(TRequest arg, CancellationToken cancellationToken)
-    //{
-    //    TResult result = await Endpoint.InvokeAsync(arg, cancellationToken);
-    //    return Serialize(result);
-    //}
-
-    // public abstract override Task InvokeAsync(HttpContext context, RequestDelegate next);
-
-    public abstract bool ShouldInvoke(HttpContext context);
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -163,4 +164,5 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
             await JsonSerializer.SerializeAsync(context.Response.Body, result, options, cancellationToken);
         }
     }
+
 }

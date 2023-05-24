@@ -33,8 +33,8 @@ public static class ServiceCollectionExtensions
         if (version == MediaTypeVersion.V1)
         {
           //  services.ConfigureEndpointOptions<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
-            services.TryAddSingleton<ThreadDumpEndpoint>();
-            services.TryAddSingleton<IThreadDumpEndpoint>(provider => provider.GetRequiredService<ThreadDumpEndpoint>());
+         //   services.TryAddSingleton<ThreadDumpEndpointHandler>();
+            services.TryAddSingleton<IThreadDumpEndpointHandler, ThreadDumpEndpointHandler>();
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ThreadDumpEndpointMiddleware>());
             services.AddSingleton<ThreadDumpEndpointMiddleware>();
@@ -43,8 +43,8 @@ public static class ServiceCollectionExtensions
         {
         //    services.ConfigureEndpointOptions<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions>();
 
-            services.TryAddSingleton<ThreadDumpEndpointV2>();
-            services.TryAddSingleton<IThreadDumpEndpointV2>(provider => provider.GetRequiredService<ThreadDumpEndpointV2>());
+          //  services.TryAddSingleton<ThreadDumpEndpointV2Handler>();
+            services.TryAddSingleton<IThreadDumpEndpointV2Handler, ThreadDumpEndpointV2Handler>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ThreadDumpEndpointMiddlewareV2>());
             services.AddSingleton<ThreadDumpEndpointMiddlewareV2>();
         }

@@ -15,21 +15,15 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 /// <summary>
-/// CloudFoundry endpoint provides hypermedia: a page is added with links to all the endpoints that are enabled. When deployed to CloudFoundry this
-/// endpoint is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware" /> is added.
+/// CloudFoundry endpointHandler provides hypermedia: a page is added with links to all the endpoints that are enabled. When deployed to CloudFoundry this
+/// endpointHandler is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware" /> is added.
 /// </summary>
 internal sealed class CloudFoundryEndpointMiddleware : EndpointMiddleware<string, Links>
 {
-    public CloudFoundryEndpointMiddleware(ICloudFoundryEndpointHandler endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
+    public CloudFoundryEndpointMiddleware(ICloudFoundryEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<CloudFoundryEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, endpointOptions, logger)
+        : base(endpointHandler, managementOptions, logger)
     {
-    }
-
-    public override bool ShouldInvoke(HttpContext context)
-    {
-        throw new NotImplementedException();
     }
 
     protected override async Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)

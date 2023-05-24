@@ -48,7 +48,7 @@ public class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<TraceEndpointOptions>>();
         Assert.NotNull(options);
-        var ep = serviceProvider.GetService<IHttpTraceEndpoint>();
+        var ep = serviceProvider.GetService<IHttpTraceEndpointHandler>();
         Assert.NotNull(ep);
         listener.Dispose();
     }

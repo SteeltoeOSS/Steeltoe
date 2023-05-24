@@ -13,27 +13,22 @@ namespace Steeltoe.Management.Endpoint.Mappings;
 
 internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<object, ApplicationMappings>
 {
-    public MappingsEndpointMiddleware(IOptionsMonitor<MappingsEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public MappingsEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
         IMappingsEndpointHandler endpointHandler, ILogger<MappingsEndpointMiddleware> logger)
-        : base(endpointHandler, managementOptions, endpointOptions, logger)
+        : base(endpointHandler, managementOptions, logger)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleMappingsRequestAsync(context);
-        }
+    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    //{
+    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
+    //    {
+    //        return HandleMappingsRequestAsync(context);
+    //    }
 
-        return Task.CompletedTask;
-    }
-
-    public override bool ShouldInvoke(HttpContext context)
-    {
-        throw new NotImplementedException();
-    }
+    //    return Task.CompletedTask;
+    //}
 
     protected override async Task<ApplicationMappings> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {

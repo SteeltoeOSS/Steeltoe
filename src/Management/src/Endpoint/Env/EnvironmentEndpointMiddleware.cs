@@ -11,28 +11,35 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-internal sealed class EnvironmentEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
+internal sealed class EnvironmentEndpointMiddleware : EndpointMiddleware<object, EnvironmentDescriptor>
 {
-    public EnvironmentEndpointMiddleware(IEnvironmentEndpoint endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<EnvironmentEndpointMiddleware> logger) : base(endpointHandler, managementOptions, endpointOptions, logger)
+    public EnvironmentEndpointMiddleware(IEnvironmentEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<EnvironmentEndpointMiddleware> logger)
+        : base(endpointHandler, managementOptions,  logger)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleEnvRequestAsync(context);
-        }
+    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    //{
+    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
+    //    {
+    //        return HandleEnvRequestAsync(context);
+    //    }
 
-        return Task.CompletedTask;
+    //    return Task.CompletedTask;
+    //}
+
+
+    protected override Task<EnvironmentDescriptor> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 
-    internal async Task HandleEnvRequestAsync(HttpContext context)
-    {
-        string serialInfo = await HandleRequestAsync(context.RequestAborted);
-        Logger.LogDebug("Returning: {info}", serialInfo);
+    //internal async Task HandleEnvRequestAsync(HttpContext context)
+    //{
+    //    string serialInfo = await HandleRequestAsync(context.RequestAborted);
+    //    Logger.LogDebug("Returning: {info}", serialInfo);
 
-        context.HandleContentNegotiation(Logger);
-        await context.Response.WriteAsync(serialInfo);
-    }
+    //    context.HandleContentNegotiation(Logger);
+    //    await context.Response.WriteAsync(serialInfo);
+    //}
 }

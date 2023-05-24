@@ -12,29 +12,35 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-internal sealed class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
+internal sealed class DbMigrationsEndpointMiddleware : EndpointMiddleware<object, Dictionary<string, DbMigrationsDescriptor>>
 {
-    public DbMigrationsEndpointMiddleware(IDbMigrationsEndpoint endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<DbMigrationsEndpointMiddleware> logger) : base(endpointHandler, managementOptions, endpointOptions, logger)
+    public DbMigrationsEndpointMiddleware(IDbMigrationsEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<DbMigrationsEndpointMiddleware> logger)
+        : base(endpointHandler, managementOptions, logger)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleEntityFrameworkRequestAsync(context);
-        }
+    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    //{
+    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
+    //    {
+    //        return HandleEntityFrameworkRequestAsync(context);
+    //    }
 
-        return Task.CompletedTask;
+    //    return Task.CompletedTask;
+    //}
+
+    protected override Task<Dictionary<string, DbMigrationsDescriptor>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 
-    internal async Task HandleEntityFrameworkRequestAsync(HttpContext context)
-    {
-        ArgumentGuard.NotNull(context);
-        string serialInfo = await HandleRequestAsync(context.RequestAborted);
-        Logger.LogDebug("Returning: {info}", serialInfo);
+    //internal async Task HandleEntityFrameworkRequestAsync(HttpContext context)
+    //{
+    //    ArgumentGuard.NotNull(context);
+    //    //string serialInfo = await HandleRequestAsync(context.RequestAborted);
+    //    //Logger.LogDebug("Returning: {info}", serialInfo);
 
-        context.HandleContentNegotiation(Logger);
-        await context.Response.WriteAsync(serialInfo);
-    }
+    //    //context.HandleContentNegotiation(Logger);
+    //    //await context.Response.WriteAsync(serialInfo);
+    //}
 }

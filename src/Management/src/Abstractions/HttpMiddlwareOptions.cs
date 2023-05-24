@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management;
 
-public class HttpMiddlewareOptions : IHttpMiddlewareOptions
+public class HttpMiddlewareOptions 
 {
     private string _path;
 

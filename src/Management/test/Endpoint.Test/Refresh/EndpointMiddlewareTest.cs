@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Xunit;
@@ -41,11 +41,11 @@ public class EndpointMiddlewareTest : BaseTest
         configurationBuilder.AddInMemoryCollection(AppSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var ep = new RefreshEndpoint(opts, configurationRoot, NullLoggerFactory.Instance);
-        var middle = new RefreshEndpointMiddleware(ep, managementOptions, NullLogger<RefreshEndpointMiddleware>.Instance);
+        var ep = new RefreshEndpointHandler(opts, configurationRoot, NullLoggerFactory.Instance);
+        var middle = new RefreshEndpointMiddleware(ep, managementOptions,NullLogger<RefreshEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/refresh");
-        await middle.HandleRefreshRequestAsync(context);
+        await middle.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string json = await reader.ReadLineAsync();

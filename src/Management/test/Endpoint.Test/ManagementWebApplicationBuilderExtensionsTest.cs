@@ -19,7 +19,7 @@ using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
@@ -45,7 +45,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<IDbMigrationsEndpoint>());
+        Assert.Single(host.Services.GetServices<IDbMigrationsEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/dbmigrations", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -60,7 +60,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<EnvironmentEndpoint>());
+        Assert.Single(host.Services.GetServices<EnvironmentEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/env", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -73,7 +73,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
 
         WebApplication host = hostBuilder.AddHealthActuator().Build();
 
-        Assert.Single(host.Services.GetServices<IHealthEndpoint>());
+        Assert.Single(host.Services.GetServices<IHealthEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
     }
 
@@ -87,7 +87,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
             typeof(DownContributor)
         }).Build();
 
-        Assert.Single(host.Services.GetServices<IHealthEndpoint>());
+        Assert.Single(host.Services.GetServices<IHealthEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
     }
 
@@ -101,7 +101,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
             typeof(DownContributor)
         }).Build();
 
-        Assert.Single(host.Services.GetServices<IHealthEndpoint>());
+        Assert.Single(host.Services.GetServices<IHealthEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
     }
 
@@ -143,7 +143,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
             host.UseRouting();
             await host.StartAsync();
 
-            Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
+            Assert.Single(host.Services.GetServices<HeapDumpEndpointHandler>());
             Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
             HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/heapdump", UriKind.Relative));
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -159,7 +159,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<IActuatorEndpoint>());
+        Assert.Single(host.Services.GetServices<IActuatorEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -178,7 +178,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<IInfoEndpoint>());
+        Assert.Single(host.Services.GetServices<IInfoEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/info", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -193,7 +193,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<LoggersEndpoint>());
+        Assert.Single(host.Services.GetServices<ILoggersEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/loggers", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -240,7 +240,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<IMetricsEndpoint>());
+        Assert.Single(host.Services.GetServices<IMetricsEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/metrics", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -256,7 +256,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<IRefreshEndpoint>());
+        Assert.Single(host.Services.GetServices<IRefreshEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().PostAsync(new Uri("/actuator/refresh", UriKind.Relative), null);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -273,7 +273,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
             host.UseRouting();
             await host.StartAsync();
 
-            Assert.Single(host.Services.GetServices<ThreadDumpEndpointV2>());
+            Assert.Single(host.Services.GetServices<ThreadDumpEndpointV2Handler>());
             Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
             HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/threaddump", UriKind.Relative));
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -289,7 +289,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<IHttpTraceEndpoint>());
+        Assert.Single(host.Services.GetServices<IHttpTraceEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/httptrace", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -302,7 +302,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
 
         WebApplication host = hostBuilder.AddCloudFoundryActuator().Build();
 
-        Assert.NotNull(host.Services.GetService<ICloudFoundryEndpoint>());
+        Assert.NotNull(host.Services.GetService<ICloudFoundryEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
     }
 
@@ -317,7 +317,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         await host.StartAsync();
         HttpClient client = host.GetTestClient();
 
-        Assert.Single(host.Services.GetServices<IActuatorEndpoint>());
+        Assert.Single(host.Services.GetServices<IActuatorEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

@@ -49,11 +49,12 @@ internal sealed class ActuatorEndpointMapper
 
                 Type middlewareType = middleware.GetType();
                 RequestDelegate pipeline = endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middlewareType).Build();
-                string epPath = middleware.EndpointOptions.CurrentValue.GetContextPath(mgmtOption);
+                var endpointOptions = middleware.EndpointOptions;
+                string epPath = endpointOptions.GetContextPath(mgmtOption);
 
                 if (collection.Add(epPath))
                 {
-                    IEndpointConventionBuilder builder = endpointRouteBuilder.MapMethods(epPath, middleware.EndpointOptions.CurrentValue.AllowedVerbs, pipeline);
+                    IEndpointConventionBuilder builder = endpointRouteBuilder.MapMethods(epPath, endpointOptions.AllowedVerbs, pipeline);
                     conventionBuilder.Add(builder);
                 }
                 else

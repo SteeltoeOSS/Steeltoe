@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -15,9 +14,8 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequest, IMetricsResponse>
 {
-    public MetricsEndpointMiddleware(IMetricsEndpointHandler endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<MetricsEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, endpointOptions, logger)
+    public MetricsEndpointMiddleware(IMetricsEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<MetricsEndpointMiddleware> logger)
+        : base(endpointHandler, managementOptions, logger)
     {
     }
 
@@ -93,14 +91,14 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
     }
     internal string GetMetricName(HttpRequest request)
     {
-        ManagementEndpointOptions mgmtOptions = ManagementOptions.GetFromContextPath(request.Path);
+        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptions.GetFromContextPath(request.Path);
 
         if (mgmtOptions == null)
         {
-            return GetMetricName(request, EndpointOptions.CurrentValue.Path);
+            return GetMetricName(request, EndpointOptions.Path);
         }
 
-        string path = $"{mgmtOptions.Path}/{EndpointOptions.CurrentValue.Id}".Replace("//", "/", StringComparison.Ordinal);
+        string path = $"{mgmtOptions.Path}/{EndpointOptions.Id}".Replace("//", "/", StringComparison.Ordinal);
         string metricName = GetMetricName(request, path);
 
         return metricName;
@@ -159,11 +157,6 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
         }
 
         return null;
-    }
-
-    public override bool ShouldInvoke(HttpContext context)
-    {
-        throw new NotImplementedException();
     }
 
     protected override async Task<IMetricsResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)

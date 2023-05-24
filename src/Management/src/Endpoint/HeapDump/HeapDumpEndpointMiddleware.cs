@@ -10,56 +10,60 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
+internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object, string>
 {
-    public HeapDumpEndpointMiddleware(IHeapDumpEndpoint endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
+    public HeapDumpEndpointMiddleware(IHeapDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<HeapDumpEndpointMiddleware> logger)
-        : base(endpointHandler, managementOptions, endpointOptions, logger)
+        : base(endpointHandler, managementOptions, logger)
     {
-        Endpoint = endpointHandler;
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleHeapDumpRequestAsync(context);
-        }
 
-        return Task.CompletedTask;
+    protected override Task<string> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 
-    internal async Task HandleHeapDumpRequestAsync(HttpContext context)
-    {
-        string fileName = await Endpoint.InvokeAsync(context.RequestAborted);
-        Logger.LogDebug("Returning: {fileName}", fileName);
-        context.Response.Headers.Add("Content-Type", "application/octet-stream");
+    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    //{
+    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
+    //    {
+    //        return HandleHeapDumpRequestAsync(context);
+    //    }
 
-        if (!File.Exists(fileName))
-        {
-            context.Response.StatusCode = StatusCodes.Status404NotFound;
-            return;
-        }
+    //    return Task.CompletedTask;
+    //}
 
-        string gzFileName = $"{fileName}.gz";
-        Stream result = await Utils.CompressFileAsync(fileName, gzFileName, Logger);
+    //internal async Task HandleHeapDumpRequestAsync(HttpContext context)
+    //{
+    //    string fileName = await Endpoint.InvokeAsync(context.RequestAborted);
+    //    Logger.LogDebug("Returning: {fileName}", fileName);
+    //    context.Response.Headers.Add("Content-Type", "application/octet-stream");
 
-        if (result != null)
-        {
-            await using (result)
-            {
-                context.Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{Path.GetFileName(gzFileName)}\"");
-                context.Response.StatusCode = StatusCodes.Status200OK;
-                context.Response.ContentLength = result.Length;
-                await result.CopyToAsync(context.Response.Body);
-            }
+    //    if (!File.Exists(fileName))
+    //    {
+    //        context.Response.StatusCode = StatusCodes.Status404NotFound;
+    //        return;
+    //    }
 
-            File.Delete(gzFileName);
-        }
-        else
-        {
-            context.Response.StatusCode = StatusCodes.Status404NotFound;
-        }
-    }
+    //    string gzFileName = $"{fileName}.gz";
+    //    Stream result = await Utils.CompressFileAsync(fileName, gzFileName, Logger);
+
+    //    if (result != null)
+    //    {
+    //        await using (result)
+    //        {
+    //            context.Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{Path.GetFileName(gzFileName)}\"");
+    //            context.Response.StatusCode = StatusCodes.Status200OK;
+    //            context.Response.ContentLength = result.Length;
+    //            await result.CopyToAsync(context.Response.Body);
+    //        }
+
+    //        File.Delete(gzFileName);
+    //    }
+    //    else
+    //    {
+    //        context.Response.StatusCode = StatusCodes.Status404NotFound;
+    //    }
+    //}
 }

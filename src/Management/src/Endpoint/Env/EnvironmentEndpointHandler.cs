@@ -11,18 +11,18 @@ using Steeltoe.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-internal sealed class EnvironmentEndpoint : IEnvironmentEndpoint
+internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 {
     private readonly IOptionsMonitor<EnvironmentEndpointOptions> _options;
     private readonly IConfiguration _configuration;
     private readonly Sanitizer _sanitizer;
 
     private readonly IHostEnvironment _env;
-    private readonly ILogger<EnvironmentEndpoint> _logger;
+    private readonly ILogger<EnvironmentEndpointHandler> _logger;
 
-    public IHttpMiddlewareOptions Options => _options.CurrentValue;
+    public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public EnvironmentEndpoint(IOptionsMonitor<EnvironmentEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILoggerFactory loggerFactory)
+    public EnvironmentEndpointHandler(IOptionsMonitor<EnvironmentEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(env);
@@ -33,7 +33,7 @@ internal sealed class EnvironmentEndpoint : IEnvironmentEndpoint
         _configuration = configuration;
         _env = env;
         _sanitizer = new Sanitizer(options.CurrentValue.KeysToSanitize);
-        _logger = loggerFactory.CreateLogger<EnvironmentEndpoint>();
+        _logger = loggerFactory.CreateLogger<EnvironmentEndpointHandler>();
     }
 
     public Task<EnvironmentDescriptor> InvokeAsync(CancellationToken cancellationToken)
@@ -130,5 +130,10 @@ internal sealed class EnvironmentEndpoint : IEnvironmentEndpoint
         }
 
         return initialKeys;
+    }
+
+    public Task<EnvironmentDescriptor> InvokeAsync(object arg, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

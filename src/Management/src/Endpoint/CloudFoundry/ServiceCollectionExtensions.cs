@@ -27,10 +27,9 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
         services.AddCommonActuatorServices();
-        services.ConfigureMiddlewaretOptions<CloudFoundryHttpMiddlewareOptions, ConfigureCloudFoundryHttpMiddleWareOptions>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, CloudFoundryEndpointMiddleware>());
         services.AddSingleton<CloudFoundryEndpointMiddleware>();
-        services.TryAddSingleton<ICloudFoundryEndpointHandler, CloudFoundryEndpoint>();
+        services.TryAddSingleton<ICloudFoundryEndpointHandler, CloudFoundryEndpointHandler>();
         return services;
     }
 }

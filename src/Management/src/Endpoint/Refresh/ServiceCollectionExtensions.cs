@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
      //   services.ConfigureEndpointOptions<RefreshEndpointOptions, ConfigureRefreshEndpointOptions>();
-        services.TryAddSingleton<IRefreshEndpoint, RefreshEndpoint>();
+        services.TryAddSingleton<IRefreshEndpointHandler, RefreshEndpointHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, RefreshEndpointMiddleware>());
         services.AddSingleton<RefreshEndpointMiddleware>();
 

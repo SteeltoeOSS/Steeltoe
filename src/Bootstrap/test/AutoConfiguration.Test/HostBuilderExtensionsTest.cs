@@ -229,7 +229,7 @@ public class HostBuilderExtensionsTest
         var hostBuilder = new HostBuilder();
 
         IHost host = hostBuilder.AddSteeltoe(exclusions).Build();
-        IEnumerable<IActuatorEndpoint> managementEndpoint = host.Services.GetServices<IActuatorEndpoint>();
+        IEnumerable<IActuatorEndpointHandler> managementEndpoint = host.Services.GetServices<IActuatorEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(managementEndpoint);

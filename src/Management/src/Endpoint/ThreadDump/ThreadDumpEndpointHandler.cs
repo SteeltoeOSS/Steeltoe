@@ -8,15 +8,15 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-internal sealed class ThreadDumpEndpoint : IThreadDumpEndpoint
+internal sealed class ThreadDumpEndpointHandler : IThreadDumpEndpointHandler
 {
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
-    private readonly ILogger<ThreadDumpEndpoint> _logger;
+    private readonly ILogger<ThreadDumpEndpointHandler> _logger;
     private readonly IThreadDumper _threadDumper;
 
-    public IHttpMiddlewareOptions Options => _options.CurrentValue;
+    public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public ThreadDumpEndpoint(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILoggerFactory loggerFactory)
+    public ThreadDumpEndpointHandler(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(threadDumper);
@@ -24,12 +24,17 @@ internal sealed class ThreadDumpEndpoint : IThreadDumpEndpoint
 
         _options = options;
         _threadDumper = threadDumper;
-        _logger = loggerFactory.CreateLogger<ThreadDumpEndpoint>();
+        _logger = loggerFactory.CreateLogger<ThreadDumpEndpointHandler>();
     }
 
     public Task<IList<ThreadInfo>> InvokeAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Invoking ThreadDumper");
         return Task.Run(() => _threadDumper.DumpThreads(), cancellationToken);
+    }
+
+    public Task<IList<ThreadInfo>> InvokeAsync(object arg, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -10,15 +10,19 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-internal sealed class CloudFoundryEndpoint : ICloudFoundryEndpointHandler
+internal sealed class CloudFoundryEndpointHandler : ICloudFoundryEndpointHandler
 {
     private HypermediaService _hypermediaService;
 
-    public CloudFoundryEndpoint(HypermediaService hypermediaService)
+    public CloudFoundryEndpointHandler(HypermediaService hypermediaService, IOptionsMonitor<CloudFoundryEndpointOptions> options)
     {
         ArgumentGuard.NotNull(hypermediaService);
+        ArgumentGuard.NotNull(options);
         _hypermediaService = hypermediaService;
+        Options = options.CurrentValue;
     }
+
+    public HttpMiddlewareOptions Options { get;  }
 
     public Task<Links> InvokeAsync(string baseUrl, CancellationToken cancellationToken)
     {

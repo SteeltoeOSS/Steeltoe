@@ -44,7 +44,7 @@ public class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
         Assert.Equal(string.Empty, options.CurrentValue.Id);
-        var ep = serviceProvider.GetService<ICloudFoundryEndpoint>();
+        var ep = serviceProvider.GetService<ICloudFoundryEndpointHandler>();
         Assert.NotNull(ep);
     }
 }

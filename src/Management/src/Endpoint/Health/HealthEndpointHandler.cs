@@ -12,7 +12,7 @@ using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-internal sealed class HealthEndpointHandler : IHealthEndpoint
+internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 {
     private readonly IOptionsMonitor<HealthCheckServiceOptions> _serviceOptions;
     private readonly IServiceProvider _provider;
@@ -20,7 +20,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpoint
     private readonly IHealthAggregator _aggregator;
     private readonly IList<IHealthContributor> _contributors;
     private readonly ILogger<HealthEndpointHandler> _logger;
-    public IHttpMiddlewareOptions Options => _options.CurrentValue;
+    public HttpMiddlewareOptions Options => _options.CurrentValue;
 
     public HealthEndpointHandler(IOptionsMonitor<HealthEndpointOptions> options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
         IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILoggerFactory loggerFactory)
@@ -151,5 +151,10 @@ internal sealed class HealthEndpointHandler : IHealthEndpoint
         }
 
         return contributors;
+    }
+
+    public Task<HealthEndpointRequest> InvokeAsync(HealthEndpointResponse arg, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

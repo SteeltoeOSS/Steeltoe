@@ -12,17 +12,17 @@ namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 /// <summary>
 /// Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators.
 /// </summary>
-internal sealed class ActuatorEndpoint : IActuatorEndpoint
+internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
 {
-    private readonly ILogger<ActuatorEndpoint> _logger;
-    private readonly IOptionsMonitor<HypermediaHttpMiddlewareOptions> _options;
+    private readonly ILogger<ActuatorEndpointHandler> _logger;
+    private readonly IOptionsMonitor<HypermediaEndpointOptions> _options;
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOption;
-    private readonly IEnumerable<IHttpMiddlewareOptions> _endpointOptions;
+    private readonly IEnumerable<HttpMiddlewareOptions> _endpointOptions;
 
-    public IHttpMiddlewareOptions Options => _options.CurrentValue;
+    public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public ActuatorEndpoint(IOptionsMonitor<HypermediaHttpMiddlewareOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IEnumerable<IHttpMiddlewareOptions> endpointOptions, ILoggerFactory loggerFactory)
+    public ActuatorEndpointHandler(IOptionsMonitor<HypermediaEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IEnumerable<HttpMiddlewareOptions> endpointOptions, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(managementOptions);
@@ -31,7 +31,7 @@ internal sealed class ActuatorEndpoint : IActuatorEndpoint
         _options = options;
         _managementOption = managementOptions;
         _endpointOptions = endpointOptions;
-        _logger = loggerFactory.CreateLogger<ActuatorEndpoint>();
+        _logger = loggerFactory.CreateLogger<ActuatorEndpointHandler>();
     }
 
     public Task<Links> InvokeAsync(string baseUrl, CancellationToken cancellationToken)

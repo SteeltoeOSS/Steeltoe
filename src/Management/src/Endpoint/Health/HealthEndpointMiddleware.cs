@@ -13,14 +13,14 @@ using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointResponse, HealthEndpointRequest>
+internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRequest,HealthEndpointResponse>
 {
     IOptionsMonitor<HealthEndpointOptions> _healthEndpointOptions;
 
-    public HealthEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IHealthEndpointHandler endpoint,
+    public HealthEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IHealthEndpointHandler endpointHandler,
         IOptionsMonitor<HealthEndpointOptions> endpointOptions,
         ILogger<HealthEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, endpointOptions, logger)
+        : base(endpointHandler, managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpointOptions);
         _healthEndpointOptions = endpointOptions;
@@ -48,18 +48,18 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
     //internal async Task<string> DoRequestAsync(HttpContext context)
     //{
-    //    HealthEndpointResponse result = await ((HealthEndpoint)EndpointHandler).InvokeAsync(GetRequest(context), context.RequestAborted);
+    //    HealthEndpointResponse result = await ((HealthEndpointHandler)EndpointHandler).InvokeAsync(GetRequest(context), context.RequestAborted);
 
     //    ManagementEndpointOptions currentOptions = ManagementOptions.CurrentValue;
 
     //    if (currentOptions.UseStatusCodeFromResponse)
     //    {
-    //        context.Response.StatusCode = ((HealthEndpoint)EndpointHandler).GetStatusCode(result);
+    //        context.Response.StatusCode = ((HealthEndpointHandler)EndpointHandler).GetStatusCode(result);
     //    }
 
     //    return Serialize(result);
     //}
-    private HealthEndpointRequest GetRequest(HttpContext context)
+    internal HealthEndpointRequest GetRequest(HttpContext context)
     {
         return new HealthEndpointRequest
         {
@@ -94,12 +94,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
         return string.Empty;
     }
 
-    public override bool ShouldInvoke(HttpContext context)
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override Task<HealthEndpointRequest> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override Task<HealthEndpointResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

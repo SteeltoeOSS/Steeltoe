@@ -8,15 +8,15 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-internal sealed class ThreadDumpEndpointV2 : IThreadDumpEndpointV2
+internal sealed class ThreadDumpEndpointV2Handler : IThreadDumpEndpointV2Handler
 {
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
     private readonly IThreadDumper _threadDumper;
-    private readonly ILogger<ThreadDumpEndpointV2> _logger;
+    private readonly ILogger<ThreadDumpEndpointV2Handler> _logger;
 
-    public IHttpMiddlewareOptions Options => _options.CurrentValue;
+    public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public ThreadDumpEndpointV2(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpointV2> logger)
+    public ThreadDumpEndpointV2Handler(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpointV2Handler> logger)
     {
         ArgumentGuard.NotNull(threadDumper);
         ArgumentGuard.NotNull(logger);
@@ -33,5 +33,10 @@ internal sealed class ThreadDumpEndpointV2 : IThreadDumpEndpointV2
         {
             Threads = _threadDumper.DumpThreads()
         }, cancellationToken);
+    }
+
+    public Task<ThreadDumpResult> InvokeAsync(object arg, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

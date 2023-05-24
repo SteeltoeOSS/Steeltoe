@@ -41,7 +41,7 @@ public static class ServiceCollectionExtensions
                 break;
             default:
 
-                services.TryAddSingleton<IHttpTraceEndpoint, HttpTraceEndpoint>();
+                services.TryAddSingleton<IHttpTraceEndpointHandler, HttpTraceEndpointHandler>();
 
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, HttpTraceEndpointMiddleware>());
                 services.AddSingleton<HttpTraceEndpointMiddleware>();

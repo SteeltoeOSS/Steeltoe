@@ -12,12 +12,12 @@ namespace Steeltoe.Management.Endpoint.Test.Middleware;
 
 internal sealed class TestMiddleware2 : EndpointMiddleware<string, string>
 {
-    public TestMiddleware2(IEndpoint<string, string> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
-        : base(endpoint, managementOptions, logger)
+    public TestMiddleware2(IEndpointHandler<string, string> endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
+        : base(endpointHandler, managementOptions, logger)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override Task<string> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

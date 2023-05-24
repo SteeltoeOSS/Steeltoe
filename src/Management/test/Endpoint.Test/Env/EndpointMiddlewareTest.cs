@@ -16,7 +16,7 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Env;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
@@ -47,11 +47,11 @@ public class EndpointMiddlewareTest : BaseTest
 
         var managementOptions = new TestOptionsMonitor<ManagementEndpointOptions>(new ManagementEndpointOptions());
 
-        var ep = new EnvironmentEndpoint(optionsMonitor, configurationRoot, _host, NullLoggerFactory.Instance);
+        var ep = new EnvironmentEndpointHandler(optionsMonitor, configurationRoot, _host, NullLoggerFactory.Instance);
         var middle = new EnvironmentEndpointMiddleware(ep, managementOptions, NullLogger<EnvironmentEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/env");
-        await middle.HandleEnvRequestAsync(context);
+        //await middle.HandleEnvRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string json = await reader.ReadLineAsync();

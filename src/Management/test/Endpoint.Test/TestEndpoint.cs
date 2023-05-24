@@ -4,11 +4,11 @@
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-internal sealed class TestEndpoint : IEndpoint<int>
+internal sealed class TestEndpointHandler: IEndpointHandler<object, int>
 {
-    public IEndpointOptions Options => throw new NotImplementedException();
+    public HttpMiddlewareOptions Options => throw new NotImplementedException();
 
-    public Task<int> InvokeAsync(CancellationToken cancellationToken)
+    public Task<int> InvokeAsync(object arg, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

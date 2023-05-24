@@ -17,10 +17,9 @@ namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<string, Links>
 {
-    public ActuatorHypermediaEndpointMiddleware(IActuatorEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IOptionsMonitor<HypermediaHttpMiddlewareOptions> endpointOptions,
+    public ActuatorHypermediaEndpointMiddleware(IActuatorEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILogger<ActuatorHypermediaEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, endpointOptions, logger)
+        : base(endpointHandler, managementOptions, logger)
     {
     }
 
@@ -78,11 +77,6 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
         {
             logger.LogError(e, "Error serializing {MiddlewareResponse}", result);
         }
-    }
-
-    public override bool ShouldInvoke(HttpContext context)
-    {
-        throw new NotImplementedException();
     }
 
     protected override Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)

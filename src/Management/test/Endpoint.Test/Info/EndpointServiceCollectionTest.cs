@@ -36,7 +36,7 @@ public class EndpointServiceCollectionTest : BaseTest
 
         IInfoContributor extra = new TestInfoContributor();
         services.AddSingleton(extra);
-        ILogger<InfoEndpoint> logger = new TestLogger();
+        ILogger<InfoEndpointHandler> logger = new TestLogger();
         services.AddSingleton(logger);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -50,7 +50,7 @@ public class EndpointServiceCollectionTest : BaseTest
             item => item.GetType() == typeof(GitInfoContributor) || item is AppSettingsInfoContributor || item is BuildInfoContributor ||
                 item is TestInfoContributor);
 
-        var ep = serviceProvider.GetService<IInfoEndpoint>();
+        var ep = serviceProvider.GetService<IInfoEndpointHandler>();
         Assert.NotNull(ep);
     }
 }

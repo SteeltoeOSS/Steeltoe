@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
@@ -76,9 +76,9 @@ public class ActuatorRouteBuilderExtensionsTest
         using IHost host = await hostBuilder.StartAsync();
         using TestServer server = host.GetTestServer();
 
-        IEnumerable<IEndpointOptions> optionsCollection = host.Services.GetServices<IEndpointOptions>();
+        IEnumerable<HttpMiddlewareOptions> optionsCollection = host.Services.GetServices<HttpMiddlewareOptions>();
 
-        foreach (IEndpointOptions options in optionsCollection)
+        foreach (HttpMiddlewareOptions options in optionsCollection)
         {
             string path = options.GetContextPath(GetManagementContext(host.Services));
 

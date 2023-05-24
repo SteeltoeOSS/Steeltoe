@@ -9,16 +9,16 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-internal sealed class RefreshEndpoint : IRefreshEndpoint
+internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
 {
     private readonly IOptionsMonitor<RefreshEndpointOptions> _options;
 
     private readonly IConfiguration _configuration;
-    private readonly ILogger<RefreshEndpoint> _logger;
+    private readonly ILogger<RefreshEndpointHandler> _logger;
 
-    public IHttpMiddlewareOptions Options => _options.CurrentValue;
+    public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public RefreshEndpoint(IOptionsMonitor<RefreshEndpointOptions> options, IConfiguration configuration, ILoggerFactory loggerFactory)
+    public RefreshEndpointHandler(IOptionsMonitor<RefreshEndpointOptions> options, IConfiguration configuration, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(configuration);
@@ -26,7 +26,7 @@ internal sealed class RefreshEndpoint : IRefreshEndpoint
 
         _options = options;
         _configuration = configuration;
-        _logger = loggerFactory.CreateLogger<RefreshEndpoint>();
+        _logger = loggerFactory.CreateLogger<RefreshEndpointHandler>();
     }
 
     public Task<IList<string>> InvokeAsync(CancellationToken cancellationToken)
@@ -56,5 +56,10 @@ internal sealed class RefreshEndpoint : IRefreshEndpoint
         }
 
         return keys;
+    }
+
+    public Task<IList<string>> InvokeAsync(object arg, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

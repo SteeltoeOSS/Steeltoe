@@ -14,11 +14,11 @@ public interface IHealthGrpc
 
 public class HealthGrpcService : IHealthGrpc
 {
-    private readonly IHealthEndpoint _endpoint;
+    private readonly IHealthEndpointHandler _endpoint;
 
-    public HealthGrpcService(IHealthEndpoint endpoint)
+    public HealthGrpcService(IHealthEndpointHandler endpointHandler)
     {
-        _endpoint = endpoint;
+        _endpoint = endpointHandler;
     }
 
     public async ValueTask<HealthGrpcResult> GetHealth()

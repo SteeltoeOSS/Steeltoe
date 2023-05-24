@@ -24,8 +24,8 @@ public class TraceEndpointTest : BaseTest
     public void Constructor_ThrowsIfNullRepo()
     {
         IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
-        Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(opts, null, null));
-        Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(opts, new TestTraceRepository(), null));
+        Assert.Throws<ArgumentNullException>(() => new TraceEndpointHandler(opts, null, null));
+        Assert.Throws<ArgumentNullException>(() => new TraceEndpointHandler(opts, new TestTraceRepository(), null));
     }
 
     [Fact]
@@ -40,8 +40,8 @@ public class TraceEndpointTest : BaseTest
             services.AddTraceActuatorServices(MediaTypeVersion.V1);
         };
 
-        var ep = tc.GetService<ITraceEndpoint>();
-        IList<TraceResult> result = await ep.InvokeAsync(CancellationToken.None);
+        var ep = tc.GetService<ITraceEndpointHandler>();
+        IList<TraceResult> result = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
         Assert.True(repo.GetTracesCalled);
     }

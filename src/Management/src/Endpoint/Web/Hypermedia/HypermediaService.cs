@@ -12,13 +12,13 @@ namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 internal sealed class HypermediaService
 {
-    private readonly IEnumerable<IHttpMiddlewareOptions> _endpointOptions;
+    private readonly IEnumerable<HttpMiddlewareOptions> _endpointOptions;
     private readonly ILogger _logger;
     private readonly ManagementEndpointOptions _managementOptions;
-    private readonly IHttpMiddlewareOptions  _options;
+    private readonly HttpMiddlewareOptions  _options;
 
-    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HypermediaHttpMiddlewareOptions> options,
-        IEnumerable<IHttpMiddlewareOptions> endpointOptions, ILogger logger)
+    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HypermediaEndpointOptions> options,
+        IEnumerable<HttpMiddlewareOptions> endpointOptions, ILogger logger)
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);
@@ -30,8 +30,7 @@ internal sealed class HypermediaService
         _options = options.CurrentValue;
     }
 
-    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryHttpMiddlewareOptions> options,
-        IEnumerable<IHttpMiddlewareOptions> endpointOptions, ILogger logger)
+    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options,  IEnumerable<HttpMiddlewareOptions> endpointOptions, ILogger logger)
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);
@@ -57,7 +56,7 @@ internal sealed class HypermediaService
 
         Link selfLink = null;
 
-        foreach (IHttpMiddlewareOptions opt in _endpointOptions)
+        foreach (HttpMiddlewareOptions opt in _endpointOptions)
         {
             if (!opt.IsEnabled(_managementOptions) || !opt.IsExposed(_managementOptions))
             {
@@ -79,7 +78,7 @@ internal sealed class HypermediaService
                     }
                     else if (links.LinkCollection.ContainsKey(opt.Id))
                     {
-                        _logger.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", opt.Id);
+                        _logger.LogWarning("Duplicate endpointHandler id detected: {DuplicateEndpointId}", opt.Id);
                     }
                 }
             }

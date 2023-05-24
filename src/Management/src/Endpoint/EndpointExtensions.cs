@@ -13,15 +13,15 @@ namespace Steeltoe.Management.Endpoint;
 
 internal static class EndPointExtensions
 {
-    public static bool IsEnabled(this IHttpMiddlewareOptions options, ManagementEndpointOptions managementOptions)
+    public static bool IsEnabled(this HttpMiddlewareOptions options, ManagementEndpointOptions managementOptions)
     {
+        ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(managementOptions);
 
-        var endpointOptions = (HttpMiddlewareOptions)options;
 
-        if (endpointOptions.Enabled.HasValue)
+        if (options.Enabled.HasValue)
         {
-            return endpointOptions.Enabled.Value;
+            return options.Enabled.Value;
         }
 
         if (managementOptions.Enabled.HasValue)
@@ -29,10 +29,10 @@ internal static class EndPointExtensions
             return managementOptions.Enabled.Value;
         }
 
-        return endpointOptions.DefaultEnabled;
+        return options.DefaultEnabled;
     }
 
-    public static bool IsExposed(this IHttpMiddlewareOptions options, ManagementEndpointOptions mgmtOptions)
+    public static bool IsExposed(this HttpMiddlewareOptions options, ManagementEndpointOptions mgmtOptions)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(mgmtOptions);
@@ -59,27 +59,6 @@ internal static class EndPointExtensions
         return true;
     }
 
-    public static bool ShouldInvoke(this IHttpMiddlewareOptions endpoint, ManagementEndpointOptions options, ILogger logger)
-    {
-        ArgumentGuard.NotNull(logger);
-        ArgumentGuard.NotNull(endpoint);
-        ArgumentGuard.NotNull(options);
-
-        bool enabled = endpoint.IsEnabled(options);
-        bool exposed = endpoint.IsExposed(options);
-        logger.LogDebug($"endpoint: {endpoint.Id}, contextPath: {options.Path}, enabled: {enabled}, exposed: {exposed}");
-        return enabled && exposed;
-    }
-
-    public static bool ShouldInvoke(this IHttpMiddlewareOptions endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context,
-        ILogger logger)
-    {
-        ArgumentGuard.NotNull(context);
-        ManagementEndpointOptions mgmtOptions = managementOptions.GetFromContextPath(context.Request.Path);
-
-        return ShouldInvoke(endpoint, mgmtOptions, logger);
-    }
-
     public static ManagementEndpointOptions GetFromContextPath(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path)
     {
         List<ManagementEndpointOptions> options = new();
@@ -100,7 +79,7 @@ internal static class EndPointExtensions
         return managementOptions.Get(ActuatorContext.Name);
     }
 
-    public static string GetContextPath(this IHttpMiddlewareOptions options, ManagementEndpointOptions managementOptions)
+    public static string GetContextPath(this HttpMiddlewareOptions options, ManagementEndpointOptions managementOptions)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(managementOptions);
@@ -127,10 +106,10 @@ internal static class EndPointExtensions
         return contextPath;
     }
 
-    // Only used by Cloudfoundry security
-    public static bool IsAccessAllowed(this IHttpMiddlewareOptions options, Permissions permissions)
-    {
-        ArgumentGuard.NotNull(options);
-        return permissions >= options.RequiredPermissions;
-    }
+    //// Only used by Cloudfoundry security
+    //public static bool IsAccessAllowed(this HttpMiddlewareOptions options, Permissions permissions)
+    //{
+    //    ArgumentGuard.NotNull(options);
+    //    return permissions >= options.RequiredPermissions;
+    //}
 }

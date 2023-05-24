@@ -12,33 +12,39 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-internal sealed class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>>
+internal sealed class InfoEndpointMiddleware : EndpointMiddleware<object, Dictionary<string, object>>
 {
-    public InfoEndpointMiddleware(IInfoEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<InfoEndpointMiddleware> logger) : base(endpoint, managementOptions, endpointOptions, logger)
+    public InfoEndpointMiddleware(IInfoEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<InfoEndpointMiddleware> logger)
+        : base(endpointHandler, managementOptions, logger)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    //{
+    //    ArgumentGuard.NotNull(context);
+    //    ArgumentGuard.NotNull(next);
+
+    //    Logger.LogDebug("Info middleware InvokeAsync({path})", context.Request.Path.Value);
+
+    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
+    //    {
+    //        return HandleInfoRequestAsync(context);
+    //    }
+
+    //    return Task.CompletedTask;
+    //}
+
+    protected override Task<Dictionary<string, object>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(context);
-        ArgumentGuard.NotNull(next);
-
-        Logger.LogDebug("Info middleware InvokeAsync({path})", context.Request.Path.Value);
-
-        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleInfoRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
+        throw new NotImplementedException();
     }
 
-    internal async Task HandleInfoRequestAsync(HttpContext context)
-    {
-        string serialInfo = await HandleRequestAsync(context.RequestAborted);
-        Logger.LogDebug("Returning: {info}", serialInfo);
+    //internal async Task HandleInfoRequestAsync(HttpContext context)
+    //{
+    //    string serialInfo = await HandleRequestAsync(context.RequestAborted);
+    //    Logger.LogDebug("Returning: {info}", serialInfo);
 
-        context.HandleContentNegotiation(Logger);
-        await context.Response.WriteAsync(serialInfo);
-    }
+    //    context.HandleContentNegotiation(Logger);
+    //    await context.Response.WriteAsync(serialInfo);
+    //}
 }

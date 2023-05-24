@@ -8,27 +8,34 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-internal sealed class HeapDumpEndpoint : IHeapDumpEndpoint
+internal sealed class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
 {
     private readonly IHeapDumper _heapDumper;
-    private readonly ILogger<HeapDumpEndpoint> _logger;
+    private readonly ILogger<HeapDumpEndpointHandler> _logger;
 
    
-    public IOptionsMonitor<HeapDumpEndpointOptions> Options { get; }
+    public HttpMiddlewareOptions Options { get; }
 
-    public HeapDumpEndpoint(IOptionsMonitor<HeapDumpEndpointOptions> options, IHeapDumper heapDumper, ILoggerFactory loggerFactory)
+    public HeapDumpEndpointHandler(IOptionsMonitor<HeapDumpEndpointOptions> options, IHeapDumper heapDumper, ILoggerFactory loggerFactory)
     {
+
+        ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(heapDumper);
         ArgumentGuard.NotNull(loggerFactory);
 
-        Options = options;
+        Options = options.CurrentValue;
         _heapDumper = heapDumper;
-        _logger = loggerFactory.CreateLogger<HeapDumpEndpoint>();
+        _logger = loggerFactory.CreateLogger<HeapDumpEndpointHandler>();
     }
 
     public Task<string> InvokeAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Invoking the heap dumper");
         return Task.Run(() => _heapDumper.DumpHeap(), cancellationToken);
+    }
+
+    public Task<string> InvokeAsync(object arg, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -33,7 +33,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
     private readonly DbMigrationsEndpointHelper _endpointHelper;
     private readonly ILogger<DbMigrationsEndpointHandler> _logger;
 
-    public IHttpMiddlewareOptions Options => _options.CurrentValue;
+    public HttpMiddlewareOptions Options => _options.CurrentValue;
 
     public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, ILoggerFactory loggerFactory)
         : this(options, container, new DbMigrationsEndpointHelper(), loggerFactory)
@@ -65,7 +65,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 
         if (DbContextType is null)
         {
-            _logger.LogCritical("DbMigrations endpoint invoked but no DbContext was found.");
+            _logger.LogCritical("DbMigrations endpointHandler invoked but no DbContext was found.");
         }
         else
         {
@@ -103,6 +103,11 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
         }
 
         return result;
+    }
+
+    public Task<Dictionary<string, DbMigrationsDescriptor>> InvokeAsync(object arg, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>

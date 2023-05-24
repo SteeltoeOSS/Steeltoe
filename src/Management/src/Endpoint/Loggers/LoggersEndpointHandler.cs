@@ -27,7 +27,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
     private readonly IOptionsMonitor<LoggersEndpointOptions> _options;
     private readonly IDynamicLoggerProvider _dynamicLoggerProvider;
 
-    public IHttpMiddlewareOptions Options => _options.CurrentValue;
+    public HttpMiddlewareOptions Options => _options.CurrentValue;
 
     public LoggersEndpointHandler(IOptionsMonitor<LoggersEndpointOptions> options, ILoggerFactory loggerFactory, IDynamicLoggerProvider dynamicLoggerProvider)
     {
@@ -112,7 +112,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Exception deserializing LoggersEndpoint Request.");
+            _logger.LogError(e, "Exception deserializing LoggersEndpointHandler Request.");
         }
 
         return new Dictionary<string, string>();

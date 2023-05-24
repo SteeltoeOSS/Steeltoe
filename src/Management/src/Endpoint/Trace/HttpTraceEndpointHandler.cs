@@ -8,15 +8,15 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-internal sealed class HttpTraceEndpoint : IHttpTraceEndpoint
+internal sealed class HttpTraceEndpointHandler : IHttpTraceEndpointHandler
 {
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
     private readonly IHttpTraceRepository _traceRepo;
-    private readonly ILogger<HttpTraceEndpoint> _logger;
+    private readonly ILogger<HttpTraceEndpointHandler> _logger;
 
-    public IHttpMiddlewareOptions Options => _options.CurrentValue;
+    public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public HttpTraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, IHttpTraceRepository traceRepository, ILoggerFactory loggerFactory)
+    public HttpTraceEndpointHandler(IOptionsMonitor<TraceEndpointOptions> options, IHttpTraceRepository traceRepository, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(traceRepository);
@@ -24,7 +24,7 @@ internal sealed class HttpTraceEndpoint : IHttpTraceEndpoint
 
         _options = options;
         _traceRepo = traceRepository;
-        _logger = loggerFactory.CreateLogger<HttpTraceEndpoint>();
+        _logger = loggerFactory.CreateLogger<HttpTraceEndpointHandler>();
     }
 
     public Task<HttpTraceResult> InvokeAsync(CancellationToken cancellationToken)
@@ -36,5 +36,10 @@ internal sealed class HttpTraceEndpoint : IHttpTraceEndpoint
     private HttpTraceResult DoInvoke(IHttpTraceRepository repo)
     {
         return repo.GetTraces();
+    }
+
+    public Task<HttpTraceResult> InvokeAsync(object arg, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -10,15 +10,15 @@ using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-internal sealed class MetricsEndpoint : IMetricsEndpointHandler
+internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
 {
     private readonly IOptionsMonitor<MetricsEndpointOptions> _options;
     private readonly ISteeltoeExporter _exporter;
-    private readonly ILogger<MetricsEndpoint> _logger;
+    private readonly ILogger<MetricsEndpointHandler> _logger;
 
-    public IHttpMiddlewareOptions Options => _options.CurrentValue;
+    public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public MetricsEndpoint(IOptionsMonitor<MetricsEndpointOptions> options, ISteeltoeExporter exporter, ILoggerFactory loggerFactory)
+    public MetricsEndpointHandler(IOptionsMonitor<MetricsEndpointOptions> options, ISteeltoeExporter exporter, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(exporter);
@@ -26,7 +26,7 @@ internal sealed class MetricsEndpoint : IMetricsEndpointHandler
 
         _options = options;
         _exporter = exporter;
-        _logger = loggerFactory.CreateLogger<MetricsEndpoint>();
+        _logger = loggerFactory.CreateLogger<MetricsEndpointHandler>();
     }
 
     public Task<IMetricsResponse> InvokeAsync(MetricsRequest request, CancellationToken cancellationToken)

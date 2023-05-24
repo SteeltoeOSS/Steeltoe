@@ -9,14 +9,14 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-internal sealed class InfoEndpoint : IInfoEndpoint
+internal sealed class InfoEndpointHandler : IInfoEndpointHandler
 {
     private readonly IList<IInfoContributor> _contributors;
     private readonly IOptionsMonitor<InfoEndpointOptions> _options;
-    private readonly ILogger<InfoEndpoint> _logger;
-    public IHttpMiddlewareOptions Options => _options.CurrentValue;
+    private readonly ILogger<InfoEndpointHandler> _logger;
+    public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public InfoEndpoint(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILoggerFactory loggerFactory)
+    public InfoEndpointHandler(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(contributors);
@@ -24,7 +24,7 @@ internal sealed class InfoEndpoint : IInfoEndpoint
 
         _options = options;
         _contributors = contributors.ToList();
-        _logger = loggerFactory.CreateLogger<InfoEndpoint>();
+        _logger = loggerFactory.CreateLogger<InfoEndpointHandler>();
     }
 
     public Task<Dictionary<string, object>> InvokeAsync(CancellationToken cancellationToken)
@@ -51,5 +51,10 @@ internal sealed class InfoEndpoint : IInfoEndpoint
         }
 
         return builder.Build();
+    }
+
+    public Task<Dictionary<string, object>> InvokeAsync(object arg, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

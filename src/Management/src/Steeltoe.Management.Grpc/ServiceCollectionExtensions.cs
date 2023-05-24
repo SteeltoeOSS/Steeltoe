@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddHealthActuator(new HealthRegistrationsAggregator(), EndpointServiceCollectionExtensions.DefaultHealthContributors);
         services.TryAddScoped<IHealthEndpointHandler, HealthEndpointHandler>();
-        services.TryAddScoped<IEndpointHandler<HealthEndpointRequest, HealthEndpointResponse>, HealthEndpointHandler>();
+      //  services.TryAddScoped<IEndpointHandler<HealthEndpointRequest, HealthEndpointResponse>, HealthEndpointHandler>();
         services.TryAddSingleton<ApplicationAvailability>();
         return services;
 

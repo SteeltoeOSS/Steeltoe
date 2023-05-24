@@ -14,7 +14,7 @@ internal sealed class TraceEndpointHandler : ITraceEndpointHandler
     private readonly ILogger<TraceEndpointHandler> _logger;
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
 
-    public IHttpMiddlewareOptions Options => _options.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
+    public HttpMiddlewareOptions Options => _options.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
 
     public TraceEndpointHandler(IOptionsMonitor<TraceEndpointOptions> options, ITraceRepository traceRepository, ILogger<TraceEndpointHandler> logger)
     {
@@ -34,5 +34,10 @@ internal sealed class TraceEndpointHandler : ITraceEndpointHandler
     private IList<TraceResult> DoInvoke(ITraceRepository repo)
     {
         return repo.GetTraces();
+    }
+
+    public Task<IList<TraceResult>> InvokeAsync(object arg, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
@@ -31,7 +31,7 @@ public class HypermediaEndpointTest : BaseTest
             services.AddInfoActuatorServices();
         };
 
-        var ep = tc.GetService<IActuatorEndpoint>();
+        var ep = tc.GetService<IActuatorEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
@@ -53,7 +53,7 @@ public class HypermediaEndpointTest : BaseTest
             services.AddHypermediaActuatorServices();
         };
 
-        var ep = tc.GetService<IActuatorEndpoint>();
+        var ep = tc.GetService<IActuatorEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
@@ -82,7 +82,7 @@ public class HypermediaEndpointTest : BaseTest
             });
         };
 
-        var ep = tc.GetService<IActuatorEndpoint>();
+        var ep = tc.GetService<IActuatorEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
@@ -113,7 +113,7 @@ public class HypermediaEndpointTest : BaseTest
             });
         };
 
-        var ep = tc.GetService<IActuatorEndpoint>();
+        var ep = tc.GetService<IActuatorEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);

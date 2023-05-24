@@ -21,14 +21,9 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
         IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
         IEnumerable<IContextName> contextNames,
         ILogger<LoggersEndpointMiddleware> logger)
-        : base(endpointHandler, managementOptions, endpointOptions, logger)
+        : base(endpointHandler, managementOptions,  logger)
     {
         _contextNames = contextNames;
-    }
-
-    public override bool ShouldInvoke(HttpContext context)
-    {
-        throw new NotImplementedException();
     }
 
     protected override async Task<Dictionary<string, object>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
@@ -92,7 +87,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
             foreach (var contextName in _contextNames)
             {
                 var mgmtOption = ManagementEndpointOptions.Get(contextName.Name);
-                string path = EndpointOptions.CurrentValue.Path;
+                string path = EndpointOptions.Path;
 
                 if (mgmtOption.Path != null)
                 {

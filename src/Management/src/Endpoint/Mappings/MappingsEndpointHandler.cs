@@ -24,7 +24,7 @@ internal sealed class MappingsEndpointHandler : IMappingsEndpointHandler
     private readonly IRouteMappings _routeMappings;
     private readonly ILogger<MappingsEndpointHandler> _logger;
 
-    public IHttpMiddlewareOptions Options => _options.CurrentValue;
+    public HttpMiddlewareOptions Options => _options.CurrentValue;
 
     public MappingsEndpointHandler(IOptionsMonitor<MappingsEndpointOptions> options, ILoggerFactory loggerFactory, IRouteMappings routeMappings,
         IActionDescriptorCollectionProvider actionDescriptorCollectionProvider, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders)
@@ -42,9 +42,10 @@ internal sealed class MappingsEndpointHandler : IMappingsEndpointHandler
         _logger = loggerFactory.CreateLogger<MappingsEndpointHandler>();
     }
 
-    public Task<ApplicationMappings> InvokeAsync(object arg, CancellationToken cancellationToken)
+    public Task<ApplicationMappings> InvokeAsync(object _, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        _logger.LogTrace("Fetching application mappings");
+        return Task.Run(() => GetApplicationMappings(), cancellationToken);
     }
 
     internal ApplicationMappings GetApplicationMappings()

@@ -5,38 +5,42 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-internal sealed class TraceEndpointMiddleware : EndpointMiddleware<IList<TraceResult>>
+internal sealed class TraceEndpointMiddleware : EndpointMiddleware<object, IList<TraceResult>>
 {
-    public TraceEndpointMiddleware(ITraceEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger<TraceEndpointMiddleware> logger) : base(endpointHandler, managementOptions, endpointOptions, logger)
+    public TraceEndpointMiddleware(ITraceEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<TraceEndpointMiddleware> logger)
+        : base(endpointHandler, managementOptions, logger)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleTraceRequestAsync(context);
-        }
+    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    //{
+    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
+    //    {
+    //        return HandleTraceRequestAsync(context);
+    //    }
 
-        return Task.CompletedTask;
+    //    return Task.CompletedTask;
+    //}
+
+    protected override Task<IList<TraceResult>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 
-    internal async Task HandleTraceRequestAsync(HttpContext context)
-    {
-        ArgumentGuard.NotNull(context);
+    //internal async Task HandleTraceRequestAsync(HttpContext context)
+    //{
+    //    ArgumentGuard.NotNull(context);
 
-        string serialInfo = await HandleRequestAsync(context.RequestAborted);
+    //    string serialInfo = await HandleRequestAsync(context.RequestAborted);
 
-        Logger.LogDebug("Returning: {info}", serialInfo);
+    //    Logger.LogDebug("Returning: {info}", serialInfo);
 
-        context.HandleContentNegotiation(Logger);
-        await context.Response.WriteAsync(serialInfo);
-    }
+    //    context.HandleContentNegotiation(Logger);
+    //    await context.Response.WriteAsync(serialInfo);
+    //}
 }

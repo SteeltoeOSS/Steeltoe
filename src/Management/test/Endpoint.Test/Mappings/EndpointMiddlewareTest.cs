@@ -17,7 +17,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Options;
 using Xunit;
@@ -60,10 +60,10 @@ public class EndpointMiddlewareTest : BaseTest
         var mockActionDescriptorCollectionProvider = new Mock<IActionDescriptorCollectionProvider>();
         var mockApiDescriptionProvider = new Mock<IEnumerable<IApiDescriptionProvider>>();
 
-        var ep = new MappingsEndpoint(opts, NullLoggerFactory.Instance, mockRouteMappings.Object, mockActionDescriptorCollectionProvider.Object,
+        var ep = new MappingsEndpointHandler(opts, NullLoggerFactory.Instance, mockRouteMappings.Object, mockActionDescriptorCollectionProvider.Object,
             mockApiDescriptionProvider.Object);
 
-        var middle = new MappingsEndpointMiddleware(opts, managementOptions, ep, NullLogger<MappingsEndpointMiddleware>.Instance);
+        var middle = new MappingsEndpointMiddleware(managementOptions, opts, ep, NullLogger<MappingsEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
         await middle.HandleMappingsRequestAsync(context);

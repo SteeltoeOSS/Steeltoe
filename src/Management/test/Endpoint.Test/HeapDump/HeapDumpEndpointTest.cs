@@ -28,7 +28,7 @@ public class HeapDumpEndpointTest : BaseTest
     public void Constructor_ThrowsIfNullRepo()
     {
         IOptionsMonitor<HeapDumpEndpointOptions> options = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions>();
-        Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpoint(options, null, NullLoggerFactory.Instance));
+        Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpointHandler(options, null, NullLoggerFactory.Instance));
     }
 
     [Fact]
@@ -47,9 +47,9 @@ public class HeapDumpEndpointTest : BaseTest
                 services.AddSingleton<IHeapDumper>(sp => new HeapDumper(options, sp.GetRequiredService<ILogger<HeapDumper>>()));
             };
 
-            var ep = tc.GetService<IHeapDumpEndpoint>();
+            var ep = tc.GetService<IHeapDumpEndpointHandler>();
 
-            string result = await ep.InvokeAsync(CancellationToken.None);
+            string result = await ep.InvokeAsync(null, CancellationToken.None);
             Assert.NotNull(result);
             Assert.True(File.Exists(result));
             File.Delete(result);
@@ -67,9 +67,9 @@ public class HeapDumpEndpointTest : BaseTest
                     services.AddSingleton<IHeapDumper>(sp => new HeapDumper(options, sp.GetRequiredService<ILogger<HeapDumper>>()));
                 };
 
-                var ep = tc.GetService<IHeapDumpEndpoint>();
+                var ep = tc.GetService<IHeapDumpEndpointHandler>();
 
-                string result = await ep.InvokeAsync(CancellationToken.None);
+                string result = await ep.InvokeAsync(null, CancellationToken.None);
                 Assert.NotNull(result);
                 Assert.True(File.Exists(result));
                 File.Delete(result);

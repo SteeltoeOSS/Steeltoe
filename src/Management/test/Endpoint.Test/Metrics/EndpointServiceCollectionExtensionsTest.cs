@@ -49,7 +49,7 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
         List<IDiagnosticObserver> list = observers.ToList();
         Assert.NotEmpty(list);
 
-        var ep = serviceProvider.GetService<IMetricsEndpoint>();
+        var ep = serviceProvider.GetService<IMetricsEndpointHandler>();
         Assert.NotNull(ep);
     }
 
