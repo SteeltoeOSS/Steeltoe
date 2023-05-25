@@ -63,19 +63,19 @@ public static class WebApplicationBuilderExtensions
         _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
         _logger = _loggerFactory.CreateLogger(LoggerName);
 
-        if (!webApplicationBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServer))
+        if (!webApplicationBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeConfigurationConfigServer))
         {
-            webApplicationBuilder.WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundry);
+            webApplicationBuilder.WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.SteeltoeConfigurationCloudFoundry);
         }
 
-        if (Platform.IsKubernetes && AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetes))
+        if (Platform.IsKubernetes && AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeConfigurationKubernetes))
         {
             WireKubernetesConfiguration(webApplicationBuilder);
         }
 
-        webApplicationBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValue);
+        webApplicationBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.SteeltoeConfigurationRandomValue);
 
-        webApplicationBuilder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholder);
+        webApplicationBuilder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblies.SteeltoeConfigurationPlaceholder);
 
         if (webApplicationBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.SteeltoeConnectors))
         {
@@ -95,7 +95,7 @@ public static class WebApplicationBuilderExtensions
 #pragma warning restore CS0436 // Type conflicts with imported type
         }
 
-        webApplicationBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.SteeltoeExtensionsLoggingDynamicSerilog);
+        webApplicationBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.SteeltoeLoggingDynamicSerilog);
 
         webApplicationBuilder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblies.SteeltoeDiscoveryClient);
 

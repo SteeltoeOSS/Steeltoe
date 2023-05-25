@@ -51,8 +51,8 @@ public class WebHostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServer,
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundry
+            SteeltoeAssemblies.SteeltoeConfigurationConfigServer,
+            SteeltoeAssemblies.SteeltoeConfigurationCloudFoundry
         });
 
         IWebHostBuilder hostBuilder = new WebHostBuilder()
@@ -72,7 +72,7 @@ public class WebHostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundry
+            SteeltoeAssemblies.SteeltoeConfigurationCloudFoundry
         });
 
         IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
@@ -92,7 +92,7 @@ public class WebHostBuilderExtensionsTest
 
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetes
+            SteeltoeAssemblies.SteeltoeConfigurationKubernetes
         });
 
         IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
@@ -111,7 +111,7 @@ public class WebHostBuilderExtensionsTest
     {
         List<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValue
+            SteeltoeAssemblies.SteeltoeConfigurationRandomValue
         }).ToList();
 
         IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
@@ -129,7 +129,7 @@ public class WebHostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholder
+            SteeltoeAssemblies.SteeltoeConfigurationPlaceholder
         });
 
         IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
@@ -174,7 +174,7 @@ public class WebHostBuilderExtensionsTest
     {
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {
-            SteeltoeAssemblies.SteeltoeExtensionsLoggingDynamicSerilog
+            SteeltoeAssemblies.SteeltoeLoggingDynamicSerilog
         });
 
         IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>

@@ -8,14 +8,14 @@ namespace Steeltoe.Bootstrap.AutoConfiguration;
 
 public static class SteeltoeAssemblies
 {
-    public const string SteeltoeExtensionsConfigurationCloudFoundry = "Steeltoe.Configuration.CloudFoundry";
-    public const string SteeltoeExtensionsConfigurationConfigServer = "Steeltoe.Configuration.ConfigServer";
-    public const string SteeltoeExtensionsConfigurationKubernetes = "Steeltoe.Configuration.Kubernetes";
-    public const string SteeltoeExtensionsConfigurationRandomValue = "Steeltoe.Configuration.RandomValue";
-    public const string SteeltoeExtensionsConfigurationPlaceholder = "Steeltoe.Configuration.Placeholder";
+    public const string SteeltoeConfigurationCloudFoundry = "Steeltoe.Configuration.CloudFoundry";
+    public const string SteeltoeConfigurationConfigServer = "Steeltoe.Configuration.ConfigServer";
+    public const string SteeltoeConfigurationKubernetes = "Steeltoe.Configuration.Kubernetes";
+    public const string SteeltoeConfigurationRandomValue = "Steeltoe.Configuration.RandomValue";
+    public const string SteeltoeConfigurationPlaceholder = "Steeltoe.Configuration.Placeholder";
     public const string SteeltoeConnectors = "Steeltoe.Connectors";
     public const string SteeltoeDiscoveryClient = "Steeltoe.Discovery.Client";
-    public const string SteeltoeExtensionsLoggingDynamicSerilog = "Steeltoe.Logging.DynamicSerilog";
+    public const string SteeltoeLoggingDynamicSerilog = "Steeltoe.Logging.DynamicSerilog";
     public const string SteeltoeManagementEndpoint = "Steeltoe.Management.Endpoint";
     public const string SteeltoeManagementKubernetes = "Steeltoe.Management.Kubernetes";
     public const string SteeltoeManagementTracing = "Steeltoe.Management.Tracing";

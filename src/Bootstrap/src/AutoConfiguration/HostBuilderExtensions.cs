@@ -64,19 +64,19 @@ public static class HostBuilderExtensions
         ILogger logger = _loggerFactory.CreateLogger(LoggerName);
         hostBuilder.Properties[LoggerName] = logger;
 
-        if (!hostBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServer))
+        if (!hostBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeConfigurationConfigServer))
         {
-            hostBuilder.WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundry);
+            hostBuilder.WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.SteeltoeConfigurationCloudFoundry);
         }
 
-        if (Platform.IsKubernetes && AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetes))
+        if (Platform.IsKubernetes && AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeConfigurationKubernetes))
         {
             WireKubernetesConfiguration(hostBuilder);
         }
 
-        hostBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValue);
+        hostBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.SteeltoeConfigurationRandomValue);
 
-        hostBuilder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholder);
+        hostBuilder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblies.SteeltoeConfigurationPlaceholder);
 
         if (hostBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.SteeltoeConnectors))
         {
@@ -94,7 +94,7 @@ public static class HostBuilderExtensions
             hostBuilder.WireIfAnyLoaded(WireSqlServerConnection, SqlServerTypeLocator.Assemblies);
         }
 
-        hostBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.SteeltoeExtensionsLoggingDynamicSerilog);
+        hostBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.SteeltoeLoggingDynamicSerilog);
         hostBuilder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblies.SteeltoeDiscoveryClient);
 
         if (AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeManagementKubernetes))
