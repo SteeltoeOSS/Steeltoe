@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connectors.PostgreSql;
@@ -348,41 +349,34 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     [Fact]
     public async Task Binds_options_with_Kubernetes_service_bindings()
     {
-        try
+        string rootDirectory = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
+        using var scope = new EnvironmentVariableScope("SERVICE_BINDING_ROOT", rootDirectory);
+
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Configuration.AddEnvironmentVariables();
+        builder.Configuration.AddKubernetesServiceBindings();
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            string rootDir = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
-            Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", rootDir);
+            ["Steeltoe:Client:PostgreSql:customer-profiles:ConnectionString"] = "Include Error Detail=true;Log Parameters=true;host=localhost"
+        });
 
-            WebApplicationBuilder builder = WebApplication.CreateBuilder();
-            builder.Configuration.AddEnvironmentVariables();
-            builder.Configuration.AddKubernetesServiceBindings();
+        builder.AddPostgreSql();
 
-            builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
-            {
-                ["Steeltoe:Client:PostgreSql:customer-profiles:ConnectionString"] = "Include Error Detail=true;Log Parameters=true;host=localhost"
-            });
+        await using WebApplication app = builder.Build();
+        var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
 
-            builder.AddPostgreSql();
+        PostgreSqlOptions customerProfilesOptions = optionsMonitor.Get("customer-profiles");
 
-            await using WebApplication app = builder.Build();
-            var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
-
-            PostgreSqlOptions customerProfilesOptions = optionsMonitor.Get("customer-profiles");
-
-            ExtractConnectionStringParameters(customerProfilesOptions.ConnectionString).Should().BeEquivalentTo(new List<string>
-            {
-                "Include Error Detail=True",
-                "Log Parameters=True",
-                "Host=10.194.59.205",
-                "Database=steeltoe",
-                "Username=testrolee93ccf859894dc60dcd53218492b37b4",
-                "Password=Qp!1mB1$Zk2T!$!D85_E"
-            }, options => options.WithoutStrictOrdering());
-        }
-        finally
+        ExtractConnectionStringParameters(customerProfilesOptions.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
-            Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", null);
-        }
+            "Include Error Detail=True",
+            "Log Parameters=True",
+            "Host=10.194.59.205",
+            "Database=steeltoe",
+            "Username=testrolee93ccf859894dc60dcd53218492b37b4",
+            "Password=Qp!1mB1$Zk2T!$!D85_E"
+        }, options => options.WithoutStrictOrdering());
     }
 
     [Fact]

@@ -4,6 +4,7 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
@@ -13,6 +14,8 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
     [Fact]
     public void EnvironmentVariableNotSet()
     {
+        using var scope = new EnvironmentVariableScope(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, null);
+
         // Optional defaults true, no throw
         var source = new KubernetesServiceBindingConfigurationSource();
         var provider = new KubernetesServiceBindingConfigurationProvider(source);
@@ -34,69 +37,55 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
     [Fact]
     public void EnvironmentVariableSet_InvalidDirectory()
     {
-        string rootDir = GetK8SResourcesDirectory("invalid");
-        Environment.SetEnvironmentVariable(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDir);
+        string rootDirectory = GetK8SResourcesDirectory("invalid");
+        using var scope = new EnvironmentVariableScope(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDirectory);
 
-        try
+        // Not optional, should throw
+        var source = new KubernetesServiceBindingConfigurationSource();
+        var provider = new KubernetesServiceBindingConfigurationProvider(source);
+        provider.Load();
+
+        // Optional, no throw
+        source = new KubernetesServiceBindingConfigurationSource
         {
-            // Not optional, should throw
-            var source = new KubernetesServiceBindingConfigurationSource();
-            var provider = new KubernetesServiceBindingConfigurationProvider(source);
-            provider.Load();
+            Optional = false
+        };
 
-            // Optional, no throw
-            source = new KubernetesServiceBindingConfigurationSource
-            {
-                Optional = false
-            };
-
-            provider = new KubernetesServiceBindingConfigurationProvider(source);
-            Action action = () => provider.Load();
-            action.Should().ThrowExactly<DirectoryNotFoundException>();
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, null);
-        }
+        provider = new KubernetesServiceBindingConfigurationProvider(source);
+        Action action = () => provider.Load();
+        action.Should().ThrowExactly<DirectoryNotFoundException>();
     }
 
     [Fact]
     public void EnvironmentVariableSet_ValidDirectory()
     {
-        string rootDir = GetK8SResourcesDirectory(null);
-        Environment.SetEnvironmentVariable(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDir);
+        string rootDirectory = GetK8SResourcesDirectory(null);
+        using var scope = new EnvironmentVariableScope(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDirectory);
 
-        try
-        {
-            var source = new KubernetesServiceBindingConfigurationSource();
-            var provider = new KubernetesServiceBindingConfigurationProvider(source);
-            provider.Load();
+        var source = new KubernetesServiceBindingConfigurationSource();
+        var provider = new KubernetesServiceBindingConfigurationProvider(source);
+        provider.Load();
 
-            provider.TryGet("k8s:bindings:test-name-1:type", out string value).Should().BeTrue();
-            value.Should().Be("test-type-1");
-            provider.TryGet("k8s:bindings:test-name-1:provider", out value).Should().BeTrue();
-            value.Should().Be("test-provider-1");
-            provider.TryGet("k8s:bindings:test-name-1:test-secret-key", out value).Should().BeTrue();
-            value.Should().Be("test-secret-value");
+        provider.TryGet("k8s:bindings:test-name-1:type", out string value).Should().BeTrue();
+        value.Should().Be("test-type-1");
+        provider.TryGet("k8s:bindings:test-name-1:provider", out value).Should().BeTrue();
+        value.Should().Be("test-provider-1");
+        provider.TryGet("k8s:bindings:test-name-1:test-secret-key", out value).Should().BeTrue();
+        value.Should().Be("test-secret-value");
 
-            provider.TryGet("k8s:bindings:test-name-2:type", out value).Should().BeTrue();
-            value.Should().Be("test-type-2");
-            provider.TryGet("k8s:bindings:test-name-2:provider", out value).Should().BeTrue();
-            value.Should().Be("test-provider-2");
-            provider.TryGet("k8s:bindings:test-name-2:test-secret-key", out value).Should().BeTrue();
-            value.Should().Be("test-secret-value");
+        provider.TryGet("k8s:bindings:test-name-2:type", out value).Should().BeTrue();
+        value.Should().Be("test-type-2");
+        provider.TryGet("k8s:bindings:test-name-2:provider", out value).Should().BeTrue();
+        value.Should().Be("test-provider-2");
+        provider.TryGet("k8s:bindings:test-name-2:test-secret-key", out value).Should().BeTrue();
+        value.Should().Be("test-secret-value");
 
-            provider.TryGet("k8s:bindings:test-k8s:type", out value).Should().BeTrue();
-            value.Should().Be("test-type-1");
-            provider.TryGet("k8s:bindings:test-k8s:provider", out value).Should().BeTrue();
-            value.Should().Be("test-provider-1");
-            provider.TryGet("k8s:bindings:test-k8s:test-secret-key", out value).Should().BeTrue();
-            value.Should().Be("test-secret-value");
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, null);
-        }
+        provider.TryGet("k8s:bindings:test-k8s:type", out value).Should().BeTrue();
+        value.Should().Be("test-type-1");
+        provider.TryGet("k8s:bindings:test-k8s:provider", out value).Should().BeTrue();
+        value.Should().Be("test-provider-1");
+        provider.TryGet("k8s:bindings:test-k8s:test-secret-key", out value).Should().BeTrue();
+        value.Should().Be("test-secret-value");
     }
 
     [Fact]
@@ -112,9 +101,9 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
     [Fact]
     public void PostProcessors_OnByDefault()
     {
-        string rootDir = GetK8SResourcesDirectory(null);
+        string rootDirectory = GetK8SResourcesDirectory(null);
 
-        var source = new KubernetesServiceBindingConfigurationSource(rootDir);
+        var source = new KubernetesServiceBindingConfigurationSource(rootDirectory);
         var postProcessor = new TestPostProcessor();
         source.RegisterPostProcessor(postProcessor);
 
@@ -127,9 +116,9 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
     [Fact]
     public void PostProcessors_CanBeDisabled()
     {
-        string rootDir = GetK8SResourcesDirectory(null);
+        string rootDirectory = GetK8SResourcesDirectory(null);
 
-        var source = new KubernetesServiceBindingConfigurationSource(rootDir)
+        var source = new KubernetesServiceBindingConfigurationSource(rootDirectory)
         {
             ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
             {

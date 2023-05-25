@@ -19,8 +19,8 @@ public sealed class ServiceBindingTest
     [Fact]
     public void PopulatesFromFileSystem_Kubernetes()
     {
-        string rootDir = GetK8SResourcesDirectory("test-name-1");
-        var binding = new KubernetesServiceBindingConfigurationProvider.ServiceBinding(rootDir);
+        string rootDirectory = GetK8SResourcesDirectory("test-name-1");
+        var binding = new KubernetesServiceBindingConfigurationProvider.ServiceBinding(rootDirectory);
         binding.Name.Should().Be("test-name-1");
         binding.Type.Should().Be("test-type-1");
         binding.Provider.Should().Be("test-provider-1");
@@ -34,8 +34,8 @@ public sealed class ServiceBindingTest
     public void PopulatesFromFileSystem_WithHiddenFilesAndLinks_Kubernetes()
     {
         // Hidden & links
-        string rootDir = GetK8SResourcesDirectory("test-k8s");
-        var binding = new KubernetesServiceBindingConfigurationProvider.ServiceBinding(rootDir);
+        string rootDirectory = GetK8SResourcesDirectory("test-k8s");
+        var binding = new KubernetesServiceBindingConfigurationProvider.ServiceBinding(rootDirectory);
         binding.Name.Should().Be("test-k8s");
         binding.Type.Should().Be("test-type-1");
         binding.Provider.Should().Be("test-provider-1");

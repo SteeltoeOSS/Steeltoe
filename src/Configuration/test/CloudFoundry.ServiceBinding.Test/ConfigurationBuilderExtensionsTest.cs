@@ -4,6 +4,7 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test;
@@ -72,26 +73,21 @@ public sealed class ConfigurationBuilderExtensionsTest
     [Fact]
     public void AddCloudFoundryServiceBindings_EnvironmentVariableSet_LoadsServiceBindings()
     {
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", VcapServicesJson);
+        using var scope = new EnvironmentVariableScope("VCAP_SERVICES", VcapServicesJson);
 
-        try
-        {
-            var builder = new ConfigurationBuilder();
-            builder.AddCloudFoundryServiceBindings();
-            IConfigurationRoot configurationRoot = builder.Build();
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundryServiceBindings();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-            configurationRoot.GetValue<string>("vcap:services:elephantsql:0:name").Should().Be("elephantsql-c6c60");
-            configurationRoot.GetValue<string>("vcap:services:sendgrid:0:name").Should().Be("mysendgrid");
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-        }
+        configurationRoot.GetValue<string>("vcap:services:elephantsql:0:name").Should().Be("elephantsql-c6c60");
+        configurationRoot.GetValue<string>("vcap:services:sendgrid:0:name").Should().Be("mysendgrid");
     }
 
     [Fact]
     public void AddCloudFoundryServiceBindings_EnvironmentVariableNotSet_DoesNotThrow()
     {
+        using var scope = new EnvironmentVariableScope("VCAP_SERVICES", null);
+
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundryServiceBindings();
 
