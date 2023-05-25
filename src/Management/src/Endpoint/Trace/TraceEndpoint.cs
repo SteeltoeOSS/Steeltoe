@@ -25,19 +25,9 @@ internal sealed class TraceEndpointHandler : ITraceEndpointHandler
         _logger = logger;
     }
 
-    public Task<IList<TraceResult>> InvokeAsync(CancellationToken cancellationToken)
-    {
-        _logger.LogTrace("Fetching Traces");
-        return Task.Run(() => DoInvoke(_traceRepo), cancellationToken);
-    }
-
-    private IList<TraceResult> DoInvoke(ITraceRepository repo)
-    {
-        return repo.GetTraces();
-    }
-
     public Task<IList<TraceResult>> InvokeAsync(object arg, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        _logger.LogTrace("Fetching Traces");
+        return Task.Run(() => _traceRepo.GetTraces(), cancellationToken);
     }
 }

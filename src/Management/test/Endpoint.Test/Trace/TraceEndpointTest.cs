@@ -29,7 +29,7 @@ public class TraceEndpointTest : BaseTest
     }
 
     [Fact]
-    public async Task DoInvoke_CallsTraceRepo()
+    public async Task TraceEndpointHandler_CallsTraceRepo()
     {
         using var tc = new TestContext(_output);
         var repo = new TestTraceRepo();

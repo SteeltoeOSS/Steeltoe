@@ -29,9 +29,9 @@ internal sealed class RefreshEndpointMiddleware : EndpointMiddleware<object, ILi
     //    return Task.CompletedTask;
     //}
 
-    protected override Task<IList<string>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<IList<string>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
 
     //internal async Task HandleRefreshRequestAsync(HttpContext context)

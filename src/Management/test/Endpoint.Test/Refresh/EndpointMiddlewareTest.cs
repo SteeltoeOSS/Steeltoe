@@ -28,14 +28,15 @@ public class EndpointMiddlewareTest : BaseTest
         ["Logging:LogLevel:Default"] = "Warning",
         ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
-        ["management:endpoints:enabled"] = "true"
+        ["management:endpoints:enabled"] = "true",
+        ["management:endpoints:actuator:exposure:include:0"] = "*"
     };
 
     [Fact]
     public async Task HandleRefreshRequestAsync_ReturnsExpected()
     {
         IOptionsMonitor<RefreshEndpointOptions> opts = GetOptionsMonitorFromSettings<RefreshEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(AppSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
@@ -51,7 +52,7 @@ public class EndpointMiddlewareTest : BaseTest
         string json = await reader.ReadLineAsync();
 
         const string expected =
-            "[\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\"]";
+            "[\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"management:endpoints:actuator\",\"management:endpoints:actuator:exposure\",\"management:endpoints:actuator:exposure:include\",\"management:endpoints:actuator:exposure:include:0\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\"]";
 
         Assert.Equal(expected, json);
     }
@@ -63,7 +64,6 @@ public class EndpointMiddlewareTest : BaseTest
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
 
         var appSettings = new Dictionary<string, string>(AppSettings);
-        appSettings.Add("management:endpoints:actuator:exposure:include:0", "*");
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(

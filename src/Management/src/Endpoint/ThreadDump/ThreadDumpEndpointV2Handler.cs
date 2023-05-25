@@ -25,7 +25,7 @@ internal sealed class ThreadDumpEndpointV2Handler : IThreadDumpEndpointV2Handler
         _logger = logger;
     }
 
-    public Task<ThreadDumpResult> InvokeAsync(CancellationToken cancellationToken)
+    public Task<ThreadDumpResult> InvokeAsync(object arg, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Dumping Thread info");
 
@@ -33,10 +33,5 @@ internal sealed class ThreadDumpEndpointV2Handler : IThreadDumpEndpointV2Handler
         {
             Threads = _threadDumper.DumpThreads()
         }, cancellationToken);
-    }
-
-    public Task<ThreadDumpResult> InvokeAsync(object arg, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
     }
 }

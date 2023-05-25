@@ -39,7 +39,8 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HandleEntityFrameworkRequestAsync_ReturnsExpected()
     {
         IOptionsMonitor<DbMigrationsEndpointOptions> opts = GetOptionsMonitorFromSettings<DbMigrationsEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(AppSettings);
+        
         managementOptions.Get(ActuatorContext.Name).EndpointOptions.Add(opts.CurrentValue);
         var container = new ServiceCollection();
         container.AddScoped<MockDbContext>();
@@ -61,7 +62,7 @@ public class EndpointMiddlewareTest : BaseTest
         var middle = new DbMigrationsEndpointMiddleware(ep, managementOptions, NullLogger<DbMigrationsEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/dbmigrations");
-      //  await middle.HandleEntityFrameworkRequestAsync(context);
+        await middle.InvokeAsync(context, null);
 
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);

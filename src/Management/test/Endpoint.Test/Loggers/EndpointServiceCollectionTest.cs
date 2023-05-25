@@ -48,7 +48,7 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddSingleton<IConfiguration>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-        var ep = serviceProvider.GetService<LoggersEndpointHandler>();
+        var ep = serviceProvider.GetService<ILoggersEndpointHandler>();
         Assert.NotNull(ep);
     }
 }

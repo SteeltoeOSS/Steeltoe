@@ -28,9 +28,9 @@ internal sealed class HttpTraceEndpointMiddleware : EndpointMiddleware<object, H
     //    return Task.CompletedTask;
     //}
 
-    protected override Task<HttpTraceResult> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<HttpTraceResult> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
 
     //internal async Task HandleTraceRequestAsync(HttpContext context)

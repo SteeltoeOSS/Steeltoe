@@ -21,7 +21,7 @@ internal sealed class EnvironmentEndpointMiddleware : EndpointMiddleware<object,
 
     protected override async Task<EnvironmentDescriptor> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        return await ((IEnvironmentEndpointHandler)EndpointHandler).InvokeAsync(null, context.RequestAborted); 
+        return await EndpointHandler.InvokeAsync(null, context.RequestAborted); 
     }
 
 }

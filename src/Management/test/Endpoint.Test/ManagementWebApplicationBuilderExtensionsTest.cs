@@ -60,7 +60,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<EnvironmentEndpointHandler>());
+        Assert.Single(host.Services.GetServices<IEnvironmentEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/env", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -143,7 +143,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
             host.UseRouting();
             await host.StartAsync();
 
-            Assert.Single(host.Services.GetServices<HeapDumpEndpointHandler>());
+            Assert.Single(host.Services.GetServices<IHeapDumpEndpointHandler>());
             Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
             HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/heapdump", UriKind.Relative));
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -273,7 +273,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
             host.UseRouting();
             await host.StartAsync();
 
-            Assert.Single(host.Services.GetServices<ThreadDumpEndpointV2Handler>());
+            Assert.Single(host.Services.GetServices<IThreadDumpEndpointV2Handler>());
             Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
             HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/threaddump", UriKind.Relative));
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -354,13 +354,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
 
-            var appSettings = new Dictionary<string, string>
-            {
-                ["management:endpoints:enabled"] = "false"
-            };
-
             WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
-            hostBuilder.Configuration.AddInMemoryCollection(appSettings);
             hostBuilder.WebHost.UseTestServer();
 
             WebApplication host = hostBuilder.AddCloudFoundryActuator().Build();
@@ -368,7 +362,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
             await host.StartAsync();
 
             HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/cloudfoundryapplication", UriKind.Relative));
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode); // Verify we are hitting the CloudfoundrySecurity Middleware
         }
         finally
         {

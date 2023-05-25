@@ -37,8 +37,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleHeapDumpRequestAsync_ReturnsExpected()
     {
-        IOptionsMonitor<HeapDumpEndpointOptions> opts = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<HeapDumpEndpointOptions> opts = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions>(AppSettings);
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(AppSettings);
 
         IServiceCollection serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
@@ -52,7 +52,7 @@ public class EndpointMiddlewareTest : BaseTest
         var ep = new HeapDumpEndpointHandler(opts, obs, loggerFactory);
         var middle = new HeapDumpEndpointMiddleware(ep, managementOptions, logger3);
         HttpContext context = CreateRequest("GET", "/heapdump");
-      //  await middle.HandleHeapDumpRequestAsync(context);
+        await middle.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         byte[] buffer = new byte[1024];
         await context.Response.Body.ReadAsync(buffer);

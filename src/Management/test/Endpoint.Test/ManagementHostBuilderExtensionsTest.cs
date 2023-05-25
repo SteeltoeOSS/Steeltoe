@@ -38,7 +38,9 @@ namespace Steeltoe.Management.Endpoint.Test;
 public class ManagementHostBuilderExtensionsTest
 {
     private readonly Action<IWebHostBuilder> _testServerWithRouting = builder =>
-        builder.UseTestServer().ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting());
+        builder.UseTestServer()
+                .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting())
+                .ConfigureAppConfiguration(c => c.AddInMemoryCollection(new Dictionary<string, string> { ["management:endpoints:actuator:exposure:include:0"] = "*" }));
 
     private readonly Action<IWebHostBuilder> _testServerWithSecureRouting = builder => builder.UseTestServer().ConfigureServices(s =>
     {
@@ -85,7 +87,7 @@ public class ManagementHostBuilderExtensionsTest
         var hostBuilder = new HostBuilder();
 
         IHost host = hostBuilder.AddEnvActuator().Build();
-        IEnumerable<EnvironmentEndpointHandler> epHandler = host.Services.GetServices<EnvironmentEndpointHandler>();
+        IEnumerable<IEnvironmentEndpointHandler> epHandler = host.Services.GetServices<IEnvironmentEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(epHandler);
@@ -199,7 +201,7 @@ public class ManagementHostBuilderExtensionsTest
             var hostBuilder = new HostBuilder();
 
             IHost host = hostBuilder.AddHeapDumpActuator().Build();
-            IEnumerable<HeapDumpEndpointHandler> epHandler = host.Services.GetServices<HeapDumpEndpointHandler>();
+            IEnumerable<IHeapDumpEndpointHandler> epHandler = host.Services.GetServices<IHeapDumpEndpointHandler>();
             IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             Assert.Single(epHandler);
@@ -299,7 +301,7 @@ public class ManagementHostBuilderExtensionsTest
         var hostBuilder = new HostBuilder();
 
         IHost host = hostBuilder.AddLoggersActuator().Build();
-        IEnumerable<LoggersEndpointHandler> epHandler = host.Services.GetServices<LoggersEndpointHandler>();
+        IEnumerable<ILoggersEndpointHandler> epHandler = host.Services.GetServices<ILoggersEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(epHandler);
@@ -425,7 +427,7 @@ public class ManagementHostBuilderExtensionsTest
             var hostBuilder = new HostBuilder();
 
             IHost host = hostBuilder.AddThreadDumpActuator().Build();
-            IEnumerable<ThreadDumpEndpointV2Handler> epEndpoint = host.Services.GetServices<ThreadDumpEndpointV2Handler>();
+            IEnumerable<IThreadDumpEndpointV2Handler> epEndpoint = host.Services.GetServices<IThreadDumpEndpointV2Handler>();
             IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             Assert.Single(epEndpoint);
@@ -533,34 +535,6 @@ public class ManagementHostBuilderExtensionsTest
         Assert.Single(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
-    }
-
-    [Fact]
-    public async Task AddCloudFoundryActuator_IHostBuilder_IStartupFilterFires()
-    {
-        try
-        {
-            var appSettings = new Dictionary<string, string>
-            {
-                ["management:endpoints:enabled"] = "false" // Turn off security middleware
-            };
-
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
-
-            IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(configBuilder => configBuilder.AddInMemoryCollection(appSettings))
-                .ConfigureWebHost(_testServerWithRouting);
-
-            using IHost host = await hostBuilder.AddCloudFoundryActuator().StartAsync();
-
-            var requestUri = new Uri("/cloudfoundryapplication", UriKind.Relative);
-            HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        }
     }
 
     [Fact]

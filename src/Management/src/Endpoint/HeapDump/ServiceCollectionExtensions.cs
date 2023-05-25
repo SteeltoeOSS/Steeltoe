@@ -27,8 +27,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-     //   services.ConfigureEndpointOptions<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions>();
-       // services.TryAddSingleton<HeapDumpEndpointHandler>();
+        services.ConfigureEndpointOptions<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions>();
         services.TryAddSingleton<IHeapDumpEndpointHandler, HeapDumpEndpointHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, HeapDumpEndpointMiddleware>());
         services.AddSingleton<HeapDumpEndpointMiddleware>();

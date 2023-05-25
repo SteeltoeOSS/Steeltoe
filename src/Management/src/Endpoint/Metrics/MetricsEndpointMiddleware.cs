@@ -91,7 +91,7 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
     }
     internal string GetMetricName(HttpRequest request)
     {
-        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptions.GetFromContextPath(request.Path);
+        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptions.GetFromContextPath(request.Path, out _);
 
         if (mgmtOptions == null)
         {

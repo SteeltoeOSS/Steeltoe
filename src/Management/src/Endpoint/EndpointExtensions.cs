@@ -59,23 +59,24 @@ internal static class EndPointExtensions
         return true;
     }
 
-    public static ManagementEndpointOptions GetFromContextPath(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path)
+    public static ManagementEndpointOptions GetFromContextPath(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path, out string managementContextName)
     {
-        List<ManagementEndpointOptions> options = new();
+        Dictionary<string, ManagementEndpointOptions> options = new();
 
         foreach (string name in managementOptions.CurrentValue.ContextNames)
         {
-            options.Add(managementOptions.Get(name));
+            options.Add(name, managementOptions.Get(name));
         }
 
-        foreach (ManagementEndpointOptions opt in options)
+        foreach ((string name, ManagementEndpointOptions opt) in options)
         {
             if (path.StartsWithSegments(new PathString(opt.Path)))
             {
+                managementContextName = name;
                 return opt;
             }
         }
-
+        managementContextName = ActuatorContext.Name;
         return managementOptions.Get(ActuatorContext.Name);
     }
 

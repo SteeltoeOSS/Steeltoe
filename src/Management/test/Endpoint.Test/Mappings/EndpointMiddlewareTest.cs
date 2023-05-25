@@ -53,6 +53,7 @@ public class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<MappingsEndpointOptions> opts = GetOptionsMonitorFromSettings<MappingsEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
+        managementOptions.CurrentValue.ContextNames.Add(CFContext.Name);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
         var mockRouteMappings = new Mock<IRouteMappings>();
@@ -66,7 +67,7 @@ public class EndpointMiddlewareTest : BaseTest
         var middle = new MappingsEndpointMiddleware(managementOptions, opts, ep, NullLogger<MappingsEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
-        await middle.HandleMappingsRequestAsync(context);
+        await middle.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string json = await reader.ReadLineAsync();

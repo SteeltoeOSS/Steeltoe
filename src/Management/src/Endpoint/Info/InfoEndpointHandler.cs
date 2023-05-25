@@ -27,10 +27,6 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
         _logger = loggerFactory.CreateLogger<InfoEndpointHandler>();
     }
 
-    public Task<Dictionary<string, object>> InvokeAsync(CancellationToken cancellationToken)
-    {
-        return Task.Run(() => BuildInfo(_contributors), cancellationToken);
-    }
 
     private Dictionary<string, object> BuildInfo(IList<IInfoContributor> infoContributors)
     {
@@ -55,6 +51,6 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
 
     public Task<Dictionary<string, object>> InvokeAsync(object arg, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.Run(() => BuildInfo(_contributors), cancellationToken);
     }
 }

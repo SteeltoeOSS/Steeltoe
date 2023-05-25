@@ -19,28 +19,8 @@ internal sealed class DbMigrationsEndpointMiddleware : EndpointMiddleware<object
     {
     }
 
-    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    //{
-    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-    //    {
-    //        return HandleEntityFrameworkRequestAsync(context);
-    //    }
-
-    //    return Task.CompletedTask;
-    //}
-
-    protected override Task<Dictionary<string, DbMigrationsDescriptor>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<Dictionary<string, DbMigrationsDescriptor>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
-
-    //internal async Task HandleEntityFrameworkRequestAsync(HttpContext context)
-    //{
-    //    ArgumentGuard.NotNull(context);
-    //    //string serialInfo = await HandleRequestAsync(context.RequestAborted);
-    //    //Logger.LogDebug("Returning: {info}", serialInfo);
-
-    //    //context.HandleContentNegotiation(Logger);
-    //    //await context.Response.WriteAsync(serialInfo);
-    //}
 }

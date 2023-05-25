@@ -37,7 +37,11 @@ namespace Steeltoe.Management.Endpoint.Test;
 public class ManagementWebHostBuilderExtensionsTest : BaseTest
 {
     private readonly IWebHostBuilder _testServerWithRouting = new WebHostBuilder().UseTestServer()
-        .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting());
+        .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting())
+        .ConfigureAppConfiguration(c => c.AddInMemoryCollection(new Dictionary<string, string>
+        {
+            ["management:endpoints:actuator:exposure:include:0"] = "*"
+        }));
 
     private readonly IWebHostBuilder _testServerWithSecureRouting = new WebHostBuilder().UseTestServer().ConfigureServices(s =>
     {
@@ -88,7 +92,7 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
         });
 
         IWebHost host = hostBuilder.AddEnvActuator().Build();
-        IEnumerable<EnvironmentEndpointHandler> epHandler = host.Services.GetServices<EnvironmentEndpointHandler>();
+        IEnumerable<IEnvironmentEndpointHandler> epHandler = host.Services.GetServices<IEnvironmentEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(epHandler);
@@ -210,7 +214,7 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
             });
 
             IWebHost host = hostBuilder.AddHeapDumpActuator().Build();
-            IEnumerable<HeapDumpEndpointHandler> epHandler = host.Services.GetServices<HeapDumpEndpointHandler>();
+            IEnumerable<IHeapDumpEndpointHandler> epHandler = host.Services.GetServices<IHeapDumpEndpointHandler>();
             IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             Assert.Single(epHandler);
@@ -456,7 +460,7 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
             });
 
             IWebHost host = hostBuilder.AddThreadDumpActuator().Build();
-            IEnumerable<ThreadDumpEndpointV2Handler> epHandler= host.Services.GetServices<ThreadDumpEndpointV2Handler>();
+            IEnumerable<IThreadDumpEndpointV2Handler> epHandler= host.Services.GetServices<IThreadDumpEndpointV2Handler>();
             IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             Assert.Single(epHandler);
@@ -579,21 +583,11 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
 
-            var appSettings = new Dictionary<string, string>
-            {
-                ["management:endpoints:enabled"] = "false"
-            };
-
-            IWebHostBuilder hostBuilder = _testServerWithRouting.ConfigureAppConfiguration(configBuilder =>
-            {
-                configBuilder.AddInMemoryCollection(appSettings);
-            });
-
-            using IWebHost host = hostBuilder.AddCloudFoundryActuator().Start();
+            using IWebHost host = _testServerWithRouting.AddCloudFoundryActuator().Start();
 
             var requestUri = new Uri("/cloudfoundryapplication", UriKind.Relative);
             HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         }
         finally
         {

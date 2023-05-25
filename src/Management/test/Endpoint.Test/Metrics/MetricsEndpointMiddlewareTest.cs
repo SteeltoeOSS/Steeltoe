@@ -119,8 +119,12 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
     {
-        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+         Dictionary<string, string> AppSettings = new()
+          {
+              ["management:endpoints:actuator:exposure:include:0"] = "*",
+          };
+    IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(AppSettings);
 
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
         var exporter = new SteeltoeExporter(_scraperOptions);
@@ -133,7 +137,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
 
-      //  await middle.HandleMetricsRequestAsync(context);
+        await middle.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var rdr = new StreamReader(context.Response.Body);
         string json = await rdr.ReadToEndAsync();
@@ -157,7 +161,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
 
-      //  await middle.HandleMetricsRequestAsync(context);
+        await middle.InvokeAsync(context, null);
         Assert.Equal(404, context.Response.StatusCode);
     }
 
@@ -180,7 +184,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/test", "?tag=a:v1");
 
-     //   await middle.HandleMetricsRequestAsync(context);
+        await middle.InvokeAsync(context, null);
         Assert.Equal(200, context.Response.StatusCode);
 
         context.Response.Body.Seek(0, SeekOrigin.Begin);

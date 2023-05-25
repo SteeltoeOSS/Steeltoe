@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-     //   services.ConfigureEndpointOptions<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>();
+        services.ConfigureEndpointOptions<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>();
         services.TryAddSingleton<IMetricsEndpointHandler, MetricsEndpointHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MetricsEndpointMiddleware>());
         services.TryAddSingleton<MetricsEndpointMiddleware>();

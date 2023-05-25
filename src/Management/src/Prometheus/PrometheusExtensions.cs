@@ -28,7 +28,7 @@ public static class PrometheusExtensions
     public static IServiceCollection AddPrometheusActuator(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-     //   services.ConfigureEndpointOptions<PrometheusEndpointOptions, ConfigurePrometheusEndpointOptions>();
+        services.ConfigureEndpointOptions<PrometheusEndpointOptions, ConfigurePrometheusEndpointOptions>();
 
         services.AddOpenTelemetry().WithMetrics(builder =>
         {

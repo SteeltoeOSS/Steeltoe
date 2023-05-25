@@ -54,11 +54,6 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
         _logger = loggerFactory.CreateLogger<DbMigrationsEndpointHandler>();
     }
 
-    public Task<Dictionary<string, DbMigrationsDescriptor>> InvokeAsync(CancellationToken cancellationToken)
-    {
-        return Task.Run(() => DoInvoke(), cancellationToken);
-    }
-
     private Dictionary<string, DbMigrationsDescriptor> DoInvoke()
     {
         var result = new Dictionary<string, DbMigrationsDescriptor>();
@@ -107,7 +102,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 
     public Task<Dictionary<string, DbMigrationsDescriptor>> InvokeAsync(object arg, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.Run(() => DoInvoke(), cancellationToken);
     }
 
     /// <summary>

@@ -19,32 +19,9 @@ internal sealed class InfoEndpointMiddleware : EndpointMiddleware<object, Dictio
     {
     }
 
-    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    //{
-    //    ArgumentGuard.NotNull(context);
-    //    ArgumentGuard.NotNull(next);
-
-    //    Logger.LogDebug("Info middleware InvokeAsync({path})", context.Request.Path.Value);
-
-    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-    //    {
-    //        return HandleInfoRequestAsync(context);
-    //    }
-
-    //    return Task.CompletedTask;
-    //}
-
-    protected override Task<Dictionary<string, object>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<Dictionary<string, object>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
 
-    //internal async Task HandleInfoRequestAsync(HttpContext context)
-    //{
-    //    string serialInfo = await HandleRequestAsync(context.RequestAborted);
-    //    Logger.LogDebug("Returning: {info}", serialInfo);
-
-    //    context.HandleContentNegotiation(Logger);
-    //    await context.Response.WriteAsync(serialInfo);
-    //}
 }

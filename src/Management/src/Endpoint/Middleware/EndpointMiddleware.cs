@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.Eventing.Reader;
+using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +12,7 @@ using Microsoft.Diagnostics.Tracing.Parsers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
@@ -132,13 +134,14 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
     public virtual bool ShouldInvoke(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
-        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptions.GetFromContextPath(context.Request.Path);
+        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptions.GetFromContextPath(context.Request.Path, out string managementContextName);
         var endpointOptions = EndpointHandler.Options;
         bool enabled = endpointOptions.IsEnabled(mgmtOptions);
         bool exposed = endpointOptions.IsExposed(mgmtOptions);
+
+        bool isCFContext = managementContextName == CFContext.Name;
         Logger.LogDebug($"endpointHandler: {endpointOptions.Id}, contextPath: {context.Request.Path}, enabled: {enabled}, exposed: {exposed}");
-        return enabled && exposed;
-        //    return ShouldInvoke(endpointHandler, mgmtOptions, logger);
+        return enabled && (exposed || isCFContext);
     }
 
 
@@ -152,7 +155,8 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         }
         else
         {
-            await next.Invoke(context);
+            // Terminal middleware
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
         }
     }
     protected abstract Task<TResult> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken);

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -27,6 +28,8 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
         services.AddCommonActuatorServices();
+
+        services.ConfigureEndpointOptions<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, CloudFoundryEndpointMiddleware>());
         services.AddSingleton<CloudFoundryEndpointMiddleware>();
         services.TryAddSingleton<ICloudFoundryEndpointHandler, CloudFoundryEndpointHandler>();

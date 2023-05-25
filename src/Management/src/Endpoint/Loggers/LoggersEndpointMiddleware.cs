@@ -92,6 +92,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
                 if (mgmtOption.Path != null)
                 {
                     path = mgmtOption.Path + "/" + path;
+                    path = path.Replace("//", "/", StringComparison.Ordinal);
                 }
                 var epPath = new PathString(path);
 

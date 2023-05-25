@@ -29,11 +29,6 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
         _logger = loggerFactory.CreateLogger<RefreshEndpointHandler>();
     }
 
-    public Task<IList<string>> InvokeAsync(CancellationToken cancellationToken)
-    {
-        return Task.Run(() => DoInvoke(_configuration), cancellationToken);
-    }
-
     public IList<string> DoInvoke(IConfiguration configuration)
     {
         _logger.LogInformation("Refreshing Configuration");
@@ -60,6 +55,6 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
 
     public Task<IList<string>> InvokeAsync(object arg, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.Run(() => DoInvoke(_configuration), cancellationToken);
     }
 }
