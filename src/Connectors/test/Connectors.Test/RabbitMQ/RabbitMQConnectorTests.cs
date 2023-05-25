@@ -250,6 +250,10 @@ public sealed class RabbitMQConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
+        connectorFactory.Names.Should().HaveCount(2);
+        connectorFactory.Names.Should().Contain("myRabbitMQServiceOne");
+        connectorFactory.Names.Should().Contain("myRabbitMQServiceTwo");
+
         var connectionOne = (FakeConnection)connectorFactory.GetNamed("myRabbitMQServiceOne").GetConnection();
         connectionOne.ConnectionString.Should().Be("amqp://user1:pass1@host1:5672/virtual-host-1");
 
@@ -295,6 +299,10 @@ public sealed class RabbitMQConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
+        connectorFactory.Names.Should().HaveCount(2);
+        connectorFactory.Names.Should().Contain(string.Empty);
+        connectorFactory.Names.Should().Contain("myRabbitMQService");
+
         RabbitMQOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
 
@@ -320,6 +328,9 @@ public sealed class RabbitMQConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
+        connectorFactory.Names.Should().HaveCount(1);
+        connectorFactory.Names.Should().Contain(string.Empty);
+
         RabbitMQOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
 
@@ -335,6 +346,9 @@ public sealed class RabbitMQConnectorTests
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
+
+        connectorFactory.Names.Should().HaveCount(1);
+        connectorFactory.Names.Should().Contain(string.Empty);
 
         RabbitMQOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().BeNull();

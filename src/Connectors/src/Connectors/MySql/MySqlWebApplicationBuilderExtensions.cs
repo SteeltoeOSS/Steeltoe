@@ -37,12 +37,12 @@ public static class MySqlWebApplicationBuilderExtensions
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
             CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver);
 
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<MySqlOptions>(builder, "mysql", createHealthContributor);
+        IReadOnlySet<string> optionNames = BaseWebApplicationBuilderExtensions.RegisterNamedOptions<MySqlOptions>(builder, "mysql", createHealthContributor);
 
         Func<MySqlOptions, string, object> createConnection = (options, _) =>
             MySqlConnectionShim.CreateInstance(packageResolver, options.ConnectionString).Instance;
 
-        ConnectorFactoryShim<MySqlOptions>.Register(builder.Services, packageResolver.MySqlConnectionClass.Type, false, createConnection);
+        ConnectorFactoryShim<MySqlOptions>.Register(packageResolver.MySqlConnectionClass.Type, builder.Services, optionNames, createConnection, false);
 
         return builder;
     }

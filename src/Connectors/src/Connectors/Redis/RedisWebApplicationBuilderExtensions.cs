@@ -40,20 +40,20 @@ public static class RedisWebApplicationBuilderExtensions
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
             CreateHealthContributor(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver);
 
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<RedisOptions>(builder, "redis", createHealthContributor);
+        IReadOnlySet<string> optionNames = BaseWebApplicationBuilderExtensions.RegisterNamedOptions<RedisOptions>(builder, "redis", createHealthContributor);
 
         Func<RedisOptions, string, object> stackExchangeCreateConnection = (options, serviceBindingName) => createConnectionMultiplexer != null
             ? createConnectionMultiplexer(options, serviceBindingName)
             : ConnectionMultiplexerShim.Connect(stackExchangeRedisPackageResolver, options.ConnectionString!).Instance;
 
-        ConnectorFactoryShim<RedisOptions>.Register(builder.Services, stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type, true,
-            stackExchangeCreateConnection);
+        ConnectorFactoryShim<RedisOptions>.Register(stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type, builder.Services, optionNames,
+            stackExchangeCreateConnection, true);
 
         Func<RedisOptions, string, object> microsoftCreateConnection = (options, serviceBindingName) => CreateMicrosoftConnection(stackExchangeCreateConnection,
             options, serviceBindingName, stackExchangeRedisPackageResolver, microsoftRedisPackageResolver);
 
-        ConnectorFactoryShim<RedisOptions>.Register(builder.Services, microsoftRedisPackageResolver.DistributedCacheInterface.Type, true,
-            microsoftCreateConnection);
+        ConnectorFactoryShim<RedisOptions>.Register(microsoftRedisPackageResolver.DistributedCacheInterface.Type, builder.Services, optionNames,
+            microsoftCreateConnection, true);
 
         return builder;
     }

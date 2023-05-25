@@ -12,17 +12,29 @@ namespace Steeltoe.Connectors.EntityFrameworkCore.SqlServer.RuntimeTypeAccess;
 internal static class SqlServerDbContextOptionsExtensionsShim
 {
     public static void UseSqlServer(SqlServerEntityFrameworkCorePackageResolver packageResolver, DbContextOptionsBuilder optionsBuilder,
-        string connectionString, object? sqlServerOptionsAction = null)
+        string? connectionString, object? sqlServerOptionsAction = null)
     {
         ArgumentGuard.NotNull(packageResolver);
 
         Type sqlServerOptionsActionType = typeof(Action<>).MakeGenericType(packageResolver.SqlServerDbContextOptionsBuilderClass.Type);
 
-        _ = packageResolver.SqlServerDbContextOptionsExtensionsClass.InvokeMethodOverload("UseSqlServer", true, new[]
+        if (string.IsNullOrWhiteSpace(connectionString))
         {
-            typeof(DbContextOptionsBuilder),
-            typeof(string),
-            sqlServerOptionsActionType
-        }, optionsBuilder, connectionString, sqlServerOptionsAction);
+            // The overload that takes a connectionString parameter throws when it is null, empty or whitespace.
+            _ = packageResolver.SqlServerDbContextOptionsExtensionsClass.InvokeMethodOverload("UseSqlServer", true, new[]
+            {
+                typeof(DbContextOptionsBuilder),
+                sqlServerOptionsActionType
+            }, optionsBuilder, sqlServerOptionsAction);
+        }
+        else
+        {
+            _ = packageResolver.SqlServerDbContextOptionsExtensionsClass.InvokeMethodOverload("UseSqlServer", true, new[]
+            {
+                typeof(DbContextOptionsBuilder),
+                typeof(string),
+                sqlServerOptionsActionType
+            }, optionsBuilder, connectionString, sqlServerOptionsAction);
+        }
     }
 }

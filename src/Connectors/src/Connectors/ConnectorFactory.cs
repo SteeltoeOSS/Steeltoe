@@ -30,12 +30,23 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
 
     private IOptionsMonitor<TOptions> OptionsMonitor => _serviceProvider.GetRequiredService<IOptionsMonitor<TOptions>>();
 
-    public ConnectorFactory(IServiceProvider serviceProvider, Func<TOptions, string, object> createConnection, bool useSingletonConnection)
+    /// <summary>
+    /// Gets the list of available connector names.
+    /// </summary>
+    /// <returns>
+    /// The connector names. An empty string represents the default connector.
+    /// </returns>
+    public IReadOnlySet<string> Names { get; }
+
+    public ConnectorFactory(IServiceProvider serviceProvider, IReadOnlySet<string> names, Func<TOptions, string, object> createConnection,
+        bool useSingletonConnection)
     {
         ArgumentGuard.NotNull(serviceProvider);
+        ArgumentGuard.NotNullOrEmpty(names);
         ArgumentGuard.NotNull(createConnection);
 
         _serviceProvider = serviceProvider;
+        Names = names;
         _createConnection = createConnection;
         _useSingletonConnection = useSingletonConnection;
     }
@@ -55,7 +66,7 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
     /// Gets a connector for the specified service binding name.
     /// </summary>
     /// <param name="name">
-    /// The service binding name.
+    /// The case-sensitive service binding name.
     /// </param>
     /// <returns>
     /// The connector.
@@ -67,6 +78,13 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
 
     private Connector<TOptions, TConnection> GetCachedConnector(string name)
     {
+        // While option values can change at runtime, the list of named options is fixed (determined at application startup).
+
+        if (!Names.Contains(name))
+        {
+            throw new InvalidOperationException(name == string.Empty ? "Default connector is unavailable." : $"Named connector '{name}' is unavailable.");
+        }
+
         return _namedConnectors.GetOrAdd(name, _ => new Connector<TOptions, TConnection>(OptionsMonitor, name, _createConnection, _useSingletonConnection));
     }
 

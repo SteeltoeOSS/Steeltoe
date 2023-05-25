@@ -37,12 +37,13 @@ public static class PostgreSqlWebApplicationBuilderExtensions
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
             CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver);
 
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<PostgreSqlOptions>(builder, "postgresql", createHealthContributor);
+        IReadOnlySet<string> optionNames =
+            BaseWebApplicationBuilderExtensions.RegisterNamedOptions<PostgreSqlOptions>(builder, "postgresql", createHealthContributor);
 
         Func<PostgreSqlOptions, string, object> createConnection = (options, _) =>
             NpgsqlConnectionShim.CreateInstance(packageResolver, options.ConnectionString).Instance;
 
-        ConnectorFactoryShim<PostgreSqlOptions>.Register(builder.Services, packageResolver.NpgsqlConnectionClass.Type, false, createConnection);
+        ConnectorFactoryShim<PostgreSqlOptions>.Register(packageResolver.NpgsqlConnectionClass.Type, builder.Services, optionNames, createConnection, false);
 
         return builder;
     }

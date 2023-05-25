@@ -11,18 +11,32 @@ namespace Steeltoe.Connectors.EntityFrameworkCore.PostgreSql.RuntimeTypeAccess;
 
 internal static class NpgsqlDbContextOptionsBuilderExtensionsShim
 {
-    public static void UseNpgsql(PostgreSqlEntityFrameworkCorePackageResolver packageResolver, DbContextOptionsBuilder optionsBuilder, string connectionString,
+    public static void UseNpgsql(PostgreSqlEntityFrameworkCorePackageResolver packageResolver, DbContextOptionsBuilder optionsBuilder, string? connectionString,
         object? npgsqlOptionsAction)
     {
         ArgumentGuard.NotNull(packageResolver);
 
-        Type npgsqlOptionsActionType = typeof(Action<>).MakeGenericType(packageResolver.NpgsqlDbContextOptionsBuilderClass.Type);
-
-        _ = packageResolver.NpgsqlDbContextOptionsBuilderExtensionsClass.InvokeMethodOverload("UseNpgsql", true, new[]
+        if (string.IsNullOrWhiteSpace(connectionString))
         {
-            typeof(DbContextOptionsBuilder),
-            typeof(string),
-            npgsqlOptionsActionType
-        }, optionsBuilder, connectionString, npgsqlOptionsAction);
+            // The overload that takes a connectionString parameter throws when it is null, empty or whitespace.
+            Type npgsqlOptionsActionType = typeof(Action<>).MakeGenericType(packageResolver.NpgsqlDbContextOptionsBuilderClass.Type);
+
+            _ = packageResolver.NpgsqlDbContextOptionsBuilderExtensionsClass.InvokeMethodOverload("UseNpgsql", true, new[]
+            {
+                typeof(DbContextOptionsBuilder),
+                npgsqlOptionsActionType
+            }, optionsBuilder, npgsqlOptionsAction);
+        }
+        else
+        {
+            Type npgsqlOptionsActionType = typeof(Action<>).MakeGenericType(packageResolver.NpgsqlDbContextOptionsBuilderClass.Type);
+
+            _ = packageResolver.NpgsqlDbContextOptionsBuilderExtensionsClass.InvokeMethodOverload("UseNpgsql", true, new[]
+            {
+                typeof(DbContextOptionsBuilder),
+                typeof(string),
+                npgsqlOptionsActionType
+            }, optionsBuilder, connectionString, npgsqlOptionsAction);
+        }
     }
 }

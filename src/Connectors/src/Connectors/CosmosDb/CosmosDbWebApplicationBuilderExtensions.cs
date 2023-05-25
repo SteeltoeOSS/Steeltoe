@@ -38,13 +38,14 @@ public static class CosmosDbWebApplicationBuilderExtensions
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
             CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver);
 
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<CosmosDbOptions>(builder, "cosmosdb", createHealthContributor);
+        IReadOnlySet<string> optionNames =
+            BaseWebApplicationBuilderExtensions.RegisterNamedOptions<CosmosDbOptions>(builder, "cosmosdb", createHealthContributor);
 
         Func<CosmosDbOptions, string, object> createConnection = (options, serviceBindingName) => createCosmosClient != null
             ? createCosmosClient(options, serviceBindingName)
             : CosmosClientShim.CreateInstance(packageResolver, options.ConnectionString!).Instance;
 
-        ConnectorFactoryShim<CosmosDbOptions>.Register(builder.Services, packageResolver.CosmosClientClass.Type, true, createConnection);
+        ConnectorFactoryShim<CosmosDbOptions>.Register(packageResolver.CosmosClientClass.Type, builder.Services, optionNames, createConnection, true);
 
         return builder;
     }

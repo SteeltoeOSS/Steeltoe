@@ -28,27 +28,20 @@ public static class PostgreSqlDbContextOptionsBuilderExtensions
         ArgumentGuard.NotNull(packageResolver);
 
         string optionName = serviceBindingName ?? string.Empty;
-        string connectionString = GetConnectionString(serviceProvider, optionName, packageResolver);
+        string? connectionString = GetConnectionString(serviceProvider, optionName, packageResolver);
 
         NpgsqlDbContextOptionsBuilderExtensionsShim.UseNpgsql(packageResolver, optionsBuilder, connectionString, npgsqlOptionsAction);
 
         return optionsBuilder;
     }
 
-    private static string GetConnectionString(IServiceProvider serviceProvider, string serviceBindingName,
+    private static string? GetConnectionString(IServiceProvider serviceProvider, string serviceBindingName,
         PostgreSqlEntityFrameworkCorePackageResolver packageResolver)
     {
         ConnectorFactoryShim<PostgreSqlOptions> connectorFactoryShim =
             ConnectorFactoryShim<PostgreSqlOptions>.FromServiceProvider(serviceProvider, packageResolver.NpgsqlConnectionClass.Type);
 
         ConnectorShim<PostgreSqlOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
-        string? connectionString = connectorShim.Options.ConnectionString;
-
-        if (connectionString == null)
-        {
-            throw new InvalidOperationException($"Connection string for service binding '{serviceBindingName}' not found.");
-        }
-
-        return connectionString;
+        return connectorShim.Options.ConnectionString;
     }
 }

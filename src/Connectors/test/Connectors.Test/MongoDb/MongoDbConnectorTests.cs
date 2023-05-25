@@ -184,6 +184,10 @@ public sealed class MongoDbConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MongoDbOptions, IMongoClient>>();
 
+        connectorFactory.Names.Should().HaveCount(2);
+        connectorFactory.Names.Should().Contain("myMongoDbServiceOne");
+        connectorFactory.Names.Should().Contain("myMongoDbServiceTwo");
+
         IMongoClient connectionOne = connectorFactory.GetNamed("myMongoDbServiceOne").GetConnection();
         connectionOne.Settings.Credential.Should().BeNull();
         connectionOne.Settings.Server.Host.Should().Be("localhost");
@@ -231,6 +235,10 @@ public sealed class MongoDbConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MongoDbOptions, IMongoClient>>();
 
+        connectorFactory.Names.Should().HaveCount(2);
+        connectorFactory.Names.Should().Contain(string.Empty);
+        connectorFactory.Names.Should().Contain("myMongoDbService");
+
         MongoDbOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
         defaultOptions.Database.Should().NotBeNullOrEmpty();
@@ -258,6 +266,9 @@ public sealed class MongoDbConnectorTests
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MongoDbOptions, IMongoClient>>();
+
+        connectorFactory.Names.Should().HaveCount(1);
+        connectorFactory.Names.Should().Contain(string.Empty);
 
         MongoDbOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();

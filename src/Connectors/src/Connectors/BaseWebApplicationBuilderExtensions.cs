@@ -13,7 +13,7 @@ namespace Steeltoe.Connectors;
 
 internal static class BaseWebApplicationBuilderExtensions
 {
-    public static void RegisterNamedOptions<TOptions>(WebApplicationBuilder builder, string bindingType,
+    public static IReadOnlySet<string> RegisterNamedOptions<TOptions>(WebApplicationBuilder builder, string bindingType,
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor)
         where TOptions : ConnectionStringOptions
     {
@@ -48,6 +48,8 @@ internal static class BaseWebApplicationBuilderExtensions
         {
             RegisterHealthContributor(builder.Services, string.Empty, createHealthContributor);
         }
+
+        return GetNamedOptions(childSections);
     }
 
     private static bool ContainsNamedServiceBindings(IConfigurationSection[] sections)
@@ -69,5 +71,20 @@ internal static class BaseWebApplicationBuilderExtensions
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor)
     {
         services.AddSingleton(typeof(IHealthContributor), serviceProvider => createHealthContributor(serviceProvider, serviceBindingName));
+    }
+
+    private static HashSet<string> GetNamedOptions(IConfigurationSection[] childSections)
+    {
+        HashSet<string> namedOptions = childSections
+            .Select(section => section.Key == ConnectionStringPostProcessor.DefaultBindingName ? string.Empty : section.Key).ToHashSet();
+
+        if (namedOptions.Count == 0)
+        {
+            // If no service bindings are available, still register default options.
+            // This is to enable access to connectors that work without a connection string.
+            namedOptions.Add(string.Empty);
+        }
+
+        return namedOptions;
     }
 }

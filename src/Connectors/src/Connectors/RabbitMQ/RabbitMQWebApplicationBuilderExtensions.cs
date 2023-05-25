@@ -39,13 +39,14 @@ public static class RabbitMQWebApplicationBuilderExtensions
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
             CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver);
 
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<RabbitMQOptions>(builder, "rabbitmq", createHealthContributor);
+        IReadOnlySet<string> optionNames =
+            BaseWebApplicationBuilderExtensions.RegisterNamedOptions<RabbitMQOptions>(builder, "rabbitmq", createHealthContributor);
 
         Func<RabbitMQOptions, string, object> createConnection = (options, serviceBindingName) => createRabbitConnection != null
             ? createRabbitConnection(options, serviceBindingName)
             : CreateDefaultRabbitConnection(options, packageResolver);
 
-        ConnectorFactoryShim<RabbitMQOptions>.Register(builder.Services, packageResolver.ConnectionInterface.Type, true, createConnection);
+        ConnectorFactoryShim<RabbitMQOptions>.Register(packageResolver.ConnectionInterface.Type, builder.Services, optionNames, createConnection, true);
 
         return builder;
     }

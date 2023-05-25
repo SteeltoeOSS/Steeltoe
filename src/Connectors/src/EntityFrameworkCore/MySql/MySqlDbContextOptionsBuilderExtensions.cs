@@ -29,27 +29,20 @@ public static class MySqlDbContextOptionsBuilderExtensions
         ArgumentGuard.NotNull(packageResolver);
 
         string optionName = serviceBindingName ?? string.Empty;
-        string connectionString = GetConnectionString(serviceProvider, optionName, packageResolver);
+        string? connectionString = GetConnectionString(serviceProvider, optionName, packageResolver);
 
         MySqlDbContextOptionsExtensionsShim.UseMySql(packageResolver, optionsBuilder, connectionString, serverVersion, mySqlOptionsAction);
 
         return optionsBuilder;
     }
 
-    private static string GetConnectionString(IServiceProvider serviceProvider, string serviceBindingName,
+    private static string? GetConnectionString(IServiceProvider serviceProvider, string serviceBindingName,
         MySqlEntityFrameworkCorePackageResolver packageResolver)
     {
         ConnectorFactoryShim<MySqlOptions> connectorFactoryShim =
             ConnectorFactoryShim<MySqlOptions>.FromServiceProvider(serviceProvider, packageResolver.MySqlConnectionClass.Type);
 
         ConnectorShim<MySqlOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
-        string? connectionString = connectorShim.Options.ConnectionString;
-
-        if (connectionString == null)
-        {
-            throw new InvalidOperationException($"Connection string for service binding '{serviceBindingName}' not found.");
-        }
-
-        return connectionString;
+        return connectorShim.Options.ConnectionString;
     }
 }

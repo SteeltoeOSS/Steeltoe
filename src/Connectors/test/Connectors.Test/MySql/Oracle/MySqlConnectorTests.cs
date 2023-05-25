@@ -198,6 +198,10 @@ public sealed class MySqlConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();
 
+        connectorFactory.Names.Should().HaveCount(2);
+        connectorFactory.Names.Should().Contain("myMySqlServiceOne");
+        connectorFactory.Names.Should().Contain("myMySqlServiceTwo");
+
         await using MySqlConnection connectionOne = connectorFactory.GetNamed("myMySqlServiceOne").GetConnection();
         connectionOne.ConnectionString.Should().Be("server=localhost;database=db1;user id=user1;password=pass1");
 
@@ -240,6 +244,10 @@ public sealed class MySqlConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();
 
+        connectorFactory.Names.Should().HaveCount(2);
+        connectorFactory.Names.Should().Contain(string.Empty);
+        connectorFactory.Names.Should().Contain("myMySqlServiceOne");
+
         string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNullOrEmpty();
 
@@ -264,6 +272,9 @@ public sealed class MySqlConnectorTests
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>();
+
+        connectorFactory.Names.Should().HaveCount(1);
+        connectorFactory.Names.Should().Contain(string.Empty);
 
         string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNullOrEmpty();

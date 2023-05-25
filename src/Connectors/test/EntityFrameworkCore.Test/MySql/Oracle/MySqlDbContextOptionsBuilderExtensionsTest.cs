@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -77,6 +78,8 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         await using WebApplication app = builder.Build();
 
         Action action = () => app.Services.GetRequiredService<GoodDbContext>();
-        action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Connection string for service binding 'unknownService' not found.");
+
+        action.Should().ThrowExactly<TargetInvocationException>().WithInnerException<InvalidOperationException>()
+            .WithMessage("Named connector 'unknownService' is unavailable.");
     }
 }

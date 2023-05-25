@@ -34,12 +34,13 @@ public static class MongoDbWebApplicationBuilderExtensions
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
             CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver);
 
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<MongoDbOptions>(builder, "mongodb", createHealthContributor);
+        IReadOnlySet<string> optionNames =
+            BaseWebApplicationBuilderExtensions.RegisterNamedOptions<MongoDbOptions>(builder, "mongodb", createHealthContributor);
 
         Func<MongoDbOptions, string, object> createMongoClient = (options, _) =>
             MongoClientShim.CreateInstance(packageResolver, options.ConnectionString!).Instance;
 
-        ConnectorFactoryShim<MongoDbOptions>.Register(builder.Services, packageResolver.MongoClientInterface.Type, false, createMongoClient);
+        ConnectorFactoryShim<MongoDbOptions>.Register(packageResolver.MongoClientInterface.Type, builder.Services, optionNames, createMongoClient, false);
 
         return builder;
     }

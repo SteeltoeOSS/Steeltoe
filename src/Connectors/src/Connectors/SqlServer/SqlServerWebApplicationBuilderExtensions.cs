@@ -35,12 +35,12 @@ public static class SqlServerWebApplicationBuilderExtensions
         Func<IServiceProvider, string, IHealthContributor> createHealthContributor = (serviceProvider, serviceBindingName) =>
             CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver);
 
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<SqlServerOptions>(builder, "sqlserver", createHealthContributor);
+        IReadOnlySet<string> optionNames =BaseWebApplicationBuilderExtensions.RegisterNamedOptions<SqlServerOptions>(builder, "sqlserver", createHealthContributor);
 
         Func<SqlServerOptions, string, object> createConnection = (options, _) =>
             SqlConnectionShim.CreateInstance(packageResolver, options.ConnectionString).Instance;
 
-        ConnectorFactoryShim<SqlServerOptions>.Register(builder.Services, packageResolver.SqlConnectionClass.Type, false, createConnection);
+        ConnectorFactoryShim<SqlServerOptions>.Register(packageResolver.SqlConnectionClass.Type, builder.Services, optionNames, createConnection, false);
 
         return builder;
     }

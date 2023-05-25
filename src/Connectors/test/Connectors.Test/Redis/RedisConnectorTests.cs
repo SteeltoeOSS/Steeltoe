@@ -160,6 +160,10 @@ public sealed class RedisConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RedisOptions, IConnectionMultiplexer>>();
 
+        connectorFactory.Names.Should().HaveCount(2);
+        connectorFactory.Names.Should().Contain("myRedisServiceOne");
+        connectorFactory.Names.Should().Contain("myRedisServiceTwo");
+
         IConnectionMultiplexer connectionOne = connectorFactory.GetNamed("myRedisServiceOne").GetConnection();
         connectionOne.Configuration.Should().Be("server1:6380,keepAlive=30");
 
@@ -186,6 +190,10 @@ public sealed class RedisConnectorTests
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RedisOptions, IDistributedCache>>();
+
+        connectorFactory.Names.Should().HaveCount(2);
+        connectorFactory.Names.Should().Contain("myRedisServiceOne");
+        connectorFactory.Names.Should().Contain("myRedisServiceTwo");
 
         var connectionOne = (RedisCache)connectorFactory.GetNamed("myRedisServiceOne").GetConnection();
         FakeConnectionMultiplexer connectionMultiplexerOne = await ExtractUnderlyingMultiplexerFromRedisCacheAsync(connectionOne);
@@ -234,6 +242,10 @@ public sealed class RedisConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RedisOptions, IConnectionMultiplexer>>();
 
+        connectorFactory.Names.Should().HaveCount(2);
+        connectorFactory.Names.Should().Contain(string.Empty);
+        connectorFactory.Names.Should().Contain("myRedisService");
+
         RedisOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
 
@@ -258,6 +270,9 @@ public sealed class RedisConnectorTests
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RedisOptions, IConnectionMultiplexer>>();
+
+        connectorFactory.Names.Should().HaveCount(1);
+        connectorFactory.Names.Should().Contain(string.Empty);
 
         RedisOptions defaultOptions = connectorFactory.GetDefault().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();

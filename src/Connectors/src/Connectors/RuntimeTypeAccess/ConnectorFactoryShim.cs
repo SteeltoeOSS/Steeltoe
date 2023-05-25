@@ -22,16 +22,16 @@ internal sealed class ConnectorFactoryShim<TOptions> : Shim, IDisposable
         _connectionType = connectionType;
     }
 
-    public static void Register(IServiceCollection services, Type connectionType, bool useSingletonConnection, Func<TOptions, string, object> createConnection)
+    public static void Register(Type connectionType, IServiceCollection services, IReadOnlySet<string> optionNames,
+        Func<TOptions, string, object> createConnection, bool useSingletonConnection)
     {
-        ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(connectionType);
-        ArgumentGuard.NotNull(createConnection);
+        ArgumentGuard.NotNull(services);
 
         TypeAccessor typeAccessor = MakeGenericTypeAccessor(connectionType);
 
         services.AddSingleton(typeAccessor.Type,
-            serviceProvider => typeAccessor.CreateInstance(serviceProvider, createConnection, useSingletonConnection).Instance);
+            serviceProvider => typeAccessor.CreateInstance(serviceProvider, optionNames, createConnection, useSingletonConnection).Instance);
     }
 
     public static ConnectorFactoryShim<TOptions> FromServiceProvider(IServiceProvider serviceProvider, Type connectionType)
