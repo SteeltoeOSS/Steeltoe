@@ -102,7 +102,7 @@ public static class PostgreSqlDbContextOptionsExtensions
 
         if (extensionType == null)
         {
-            throw new ConnectorException("Unable to find UseNpgsql extension, are you missing PostgreSQL EntityFramework Core assembly?");
+            throw new ConnectorException("Unable to find UseNpgsql extension, are you missing PostgreSQL Entity Framework Core assembly?");
         }
 
         object result = ReflectionHelpers.Invoke(useMethod, null, new[]

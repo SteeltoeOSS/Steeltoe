@@ -103,7 +103,7 @@ public static class SqlServerDbContextOptionsExtensions
 
         if (extensionType == null)
         {
-            throw new ConnectorException("Unable to find UseSqlServer extension, are you missing SqlServer EntityFramework Core assembly");
+            throw new ConnectorException("Unable to find UseSqlServer extension, are you missing SqlServer Entity Framework Core assembly");
         }
 
         object result = ReflectionHelpers.Invoke(useMethod, null, new[]

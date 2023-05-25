@@ -22,7 +22,7 @@ public static class EntityFrameworkCoreTypeLocator
     };
 
     /// <summary>
-    /// Gets a list of supported fully-qualified names for compatible DbContextOptionsExtensions used to configure EntityFrameworkCore.
+    /// Gets a list of supported fully-qualified names for compatible DbContextOptionsExtensions used to configure Entity Framework Core.
     /// </summary>
     public static string[] MySqlEntityTypeNames { get; internal set; } =
     {
@@ -31,13 +31,13 @@ public static class EntityFrameworkCoreTypeLocator
     };
 
     /// <summary>
-    /// Gets the type used to configure EntityFramework Core with MySQL.
+    /// Gets the type used to configure Entity Framework Core with MySQL.
     /// </summary>
     /// <exception cref="ConnectorException">
     /// When type is not found.
     /// </exception>
     public static Type MySqlDbContextOptionsType =>
-        ReflectionHelpers.FindTypeOrThrow(MySqlEntityAssemblies, MySqlEntityTypeNames, "DbContextOptionsBuilder", "a MySql EntityFramework Core assembly");
+        ReflectionHelpers.FindTypeOrThrow(MySqlEntityAssemblies, MySqlEntityTypeNames, "DbContextOptionsBuilder", "a MySql Entity Framework Core assembly");
 
     /// <summary>
     /// Gets the ServerVersion base type used to identify MySQL Server versions (introduced in v5.0).
@@ -60,7 +60,7 @@ public static class EntityFrameworkCoreTypeLocator
     };
 
     /// <summary>
-    /// Gets a list of supported fully-qualified names for compatible DbContextOptionsExtensions used to configure EntityFrameworkCore.
+    /// Gets a list of supported fully-qualified names for compatible DbContextOptionsExtensions used to configure Entity Framework Core.
     /// </summary>
     public static string[] PostgreSqlEntityTypeNames { get; internal set; } =
     {
@@ -68,14 +68,14 @@ public static class EntityFrameworkCoreTypeLocator
     };
 
     /// <summary>
-    /// Gets the type used to configure EntityFramework Core with PostgreSQL.
+    /// Gets the type used to configure Entity Framework Core with PostgreSQL.
     /// </summary>
     /// <exception cref="ConnectorException">
     /// When type is not found.
     /// </exception>
     public static Type PostgreSqlDbContextOptionsType =>
         ReflectionHelpers.FindTypeOrThrow(PostgreSqlEntityAssemblies, PostgreSqlEntityTypeNames, "DbContextOptionsBuilder",
-            "a PostgreSql EntityFramework Core assembly");
+            "a PostgreSql Entity Framework Core assembly");
 
     /// <summary>
     /// Gets a list of supported Microsoft SQL Server Entity Framework Core Assemblies.
@@ -86,7 +86,7 @@ public static class EntityFrameworkCoreTypeLocator
     };
 
     /// <summary>
-    /// Gets a list of supported fully-qualified names for compatible DbContextOptionsExtensions used to configure EntityFrameworkCore.
+    /// Gets a list of supported fully-qualified names for compatible DbContextOptionsExtensions used to configure Entity Framework Core.
     /// </summary>
     public static string[] SqlServerEntityTypeNames { get; internal set; } =
     {
@@ -94,14 +94,14 @@ public static class EntityFrameworkCoreTypeLocator
     };
 
     /// <summary>
-    /// Gets the type used to configure EntityFramework Core with Microsoft SQL Server.
+    /// Gets the type used to configure Entity Framework Core with Microsoft SQL Server.
     /// </summary>
     /// <exception cref="ConnectorException">
     /// When type is not found.
     /// </exception>
     public static Type SqlServerDbContextOptionsType =>
         ReflectionHelpers.FindTypeOrThrow(SqlServerEntityAssemblies, SqlServerEntityTypeNames, "DbContextOptionsBuilder",
-            "a Microsoft SQL Server EntityFramework Core assembly");
+            "a Microsoft SQL Server Entity Framework Core assembly");
 
     /// <summary>
     /// Gets a list of supported Oracle Entity Framework Core Assemblies.
@@ -113,7 +113,7 @@ public static class EntityFrameworkCoreTypeLocator
     };
 
     /// <summary>
-    /// Gets a list of supported fully-qualified names for compatible DbContextOptionsExtensions used to configure EntityFrameworkCore.
+    /// Gets a list of supported fully-qualified names for compatible DbContextOptionsExtensions used to configure Entity Framework Core.
     /// </summary>
     public static string[] OracleEntityTypeNames { get; internal set; } =
     {
@@ -122,11 +122,11 @@ public static class EntityFrameworkCoreTypeLocator
     };
 
     /// <summary>
-    /// Gets the type used to configure EntityFramework Core with Oracle.
+    /// Gets the type used to configure Entity Framework Core with Oracle.
     /// </summary>
     /// <exception cref="ConnectorException">
     /// When type is not found.
     /// </exception>
     public static Type OracleDbContextOptionsType =>
-        ReflectionHelpers.FindTypeOrThrow(OracleEntityAssemblies, OracleEntityTypeNames, "DbContextOptionsBuilder", "a Oracle EntityFramework Core assembly");
+        ReflectionHelpers.FindTypeOrThrow(OracleEntityAssemblies, OracleEntityTypeNames, "DbContextOptionsBuilder", "a Oracle Entity Framework Core assembly");
 }

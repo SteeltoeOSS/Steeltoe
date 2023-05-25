@@ -274,7 +274,7 @@ public static class MySqlDbContextOptionsExtensions
 
         if (extensionType == null)
         {
-            throw new ConnectorException("Unable to find UseMySql extension, are you missing MySql EntityFramework Core assembly");
+            throw new ConnectorException("Unable to find UseMySql extension, are you missing MySql Entity Framework Core assembly");
         }
 
         object result = ReflectionHelpers.Invoke(useMethod, null, parameters);

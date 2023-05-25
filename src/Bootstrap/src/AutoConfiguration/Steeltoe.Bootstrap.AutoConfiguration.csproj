@@ -19,7 +19,6 @@
     <ProjectReference Include="..\..\..\Configuration\src\Kubernetes\Steeltoe.Configuration.Kubernetes.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Configuration\src\RandomValue\Steeltoe.Configuration.RandomValue.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Configuration\src\Placeholder\Steeltoe.Configuration.Placeholder.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Connectors\src\EntityFramework6\Steeltoe.Connectors.EntityFramework6.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Connectors\src\Connectors\Steeltoe.Connectors.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Discovery\src\Client\Steeltoe.Discovery.Client.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicSerilog\Steeltoe.Logging.DynamicSerilog.csproj" PrivateAssets="All" />

@@ -74,7 +74,7 @@ public static class OracleDbContextOptionsExtensions
 
         if (extensionType == null)
         {
-            throw new ConnectorException("Unable to find UseOracle extension, are you missing Oracle EntityFramework Core assembly");
+            throw new ConnectorException("Unable to find UseOracle extension, are you missing Oracle Entity Framework Core assembly");
         }
 
         object result = ReflectionHelpers.Invoke(useMethod, null, new[]
