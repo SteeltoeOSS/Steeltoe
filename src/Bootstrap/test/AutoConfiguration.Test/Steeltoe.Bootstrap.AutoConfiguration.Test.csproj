@@ -23,7 +23,6 @@
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="MySql.Data" Version="$(MySqlV8)" />
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="$(OracleVersion)" />
     <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientTestVersion)" />
     <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />

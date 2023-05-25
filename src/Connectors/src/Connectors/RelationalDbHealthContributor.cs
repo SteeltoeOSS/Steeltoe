@@ -10,7 +10,6 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
 using Steeltoe.Connectors.MySql;
-using Steeltoe.Connectors.Oracle;
 using Steeltoe.Connectors.PostgreSql;
 using Steeltoe.Connectors.Services;
 using Steeltoe.Connectors.SqlServer;
@@ -77,18 +76,6 @@ public class RelationalDbHealthContributor : IHealthContributor
         return new RelationalDbHealthContributor(connection, logger);
     }
 
-    public static IHealthContributor GetOracleContributor(IConfiguration configuration, ILogger<RelationalDbHealthContributor> logger = null)
-    {
-        ArgumentGuard.NotNull(configuration);
-
-        var info = configuration.GetSingletonServiceInfo<OracleServiceInfo>();
-        Type oracleConnection = ReflectionHelpers.FindType(OracleTypeLocator.Assemblies, OracleTypeLocator.ConnectionTypeNames);
-        var options = new OracleProviderConnectorOptions(configuration);
-        var factory = new OracleProviderConnectorFactory(info, options, oracleConnection);
-        var connection = factory.Create(null) as DbConnection;
-        return new RelationalDbHealthContributor(connection, logger);
-    }
-
     public HealthCheckResult Health()
     {
         _logger?.LogTrace("Checking {DbConnection} health", Id);
@@ -103,7 +90,7 @@ public class RelationalDbHealthContributor : IHealthContributor
         {
             Connection.Open();
             DbCommand command = Connection.CreateCommand();
-            command.CommandText = Id.IndexOf("Oracle", StringComparison.OrdinalIgnoreCase) != -1 ? "SELECT 1 FROM dual" : "SELECT 1;";
+            command.CommandText = "SELECT 1;";
             command.ExecuteScalar();
             result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Up;
@@ -139,9 +126,6 @@ public class RelationalDbHealthContributor : IHealthContributor
                 break;
             case "MySqlConnection":
                 result = "MySQL";
-                break;
-            case "OracleConnection":
-                result = "Oracle";
                 break;
         }
 

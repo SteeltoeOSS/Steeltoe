@@ -16,7 +16,6 @@ using Steeltoe.Configuration.RandomValue;
 using Steeltoe.Connectors;
 using Steeltoe.Connectors.MongoDb;
 using Steeltoe.Connectors.MySql;
-using Steeltoe.Connectors.Oracle;
 using Steeltoe.Connectors.PostgreSql;
 using Steeltoe.Connectors.RabbitMQ;
 using Steeltoe.Connectors.Redis;
@@ -83,7 +82,6 @@ public static class WebApplicationBuilderExtensions
 #pragma warning disable CS0436 // Type conflicts with imported type
             webApplicationBuilder.WireIfAnyLoaded(WireMySqlConnection, MySqlTypeLocator.Assemblies);
             webApplicationBuilder.WireIfAnyLoaded(WireMongoClient, MongoDbTypeLocator.Assemblies);
-            webApplicationBuilder.WireIfAnyLoaded(WireOracleConnection, OracleTypeLocator.Assemblies);
             webApplicationBuilder.WireIfAnyLoaded(WirePostgreSqlConnection, PostgreSqlTypeLocator.Assemblies);
             webApplicationBuilder.WireIfAnyLoaded(WireRabbitMqConnection, RabbitMQTypeLocator.Assemblies);
             webApplicationBuilder.WireIfAnyLoaded(WireRedisConnectionMultiplexer, RedisTypeLocator.StackExchangeAssemblies);
@@ -201,13 +199,6 @@ public static class WebApplicationBuilderExtensions
     {
         webApplicationBuilder.Services.AddMongoClient(webApplicationBuilder.Configuration);
         Log(LogMessages.WireMongoClient);
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireOracleConnection(this WebApplicationBuilder webApplicationBuilder)
-    {
-        webApplicationBuilder.Services.AddOracleConnection(webApplicationBuilder.Configuration);
-        Log(LogMessages.WireOracleConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]

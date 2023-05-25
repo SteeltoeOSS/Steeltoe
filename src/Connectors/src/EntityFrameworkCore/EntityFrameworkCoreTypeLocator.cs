@@ -102,31 +102,4 @@ public static class EntityFrameworkCoreTypeLocator
     public static Type SqlServerDbContextOptionsType =>
         ReflectionHelpers.FindTypeOrThrow(SqlServerEntityAssemblies, SqlServerEntityTypeNames, "DbContextOptionsBuilder",
             "a Microsoft SQL Server Entity Framework Core assembly");
-
-    /// <summary>
-    /// Gets a list of supported Oracle Entity Framework Core Assemblies.
-    /// </summary>
-    public static string[] OracleEntityAssemblies { get; internal set; } =
-    {
-        "Oracle.EntityFrameworkCore",
-        "Devart.Data.Oracle.EFCore"
-    };
-
-    /// <summary>
-    /// Gets a list of supported fully-qualified names for compatible DbContextOptionsExtensions used to configure Entity Framework Core.
-    /// </summary>
-    public static string[] OracleEntityTypeNames { get; internal set; } =
-    {
-        "Microsoft.EntityFrameworkCore.OracleDbContextOptionsExtensions",
-        "Devart.Data.Oracle.Entity.OracleOptionsExtension"
-    };
-
-    /// <summary>
-    /// Gets the type used to configure Entity Framework Core with Oracle.
-    /// </summary>
-    /// <exception cref="ConnectorException">
-    /// When type is not found.
-    /// </exception>
-    public static Type OracleDbContextOptionsType =>
-        ReflectionHelpers.FindTypeOrThrow(OracleEntityAssemblies, OracleEntityTypeNames, "DbContextOptionsBuilder", "a Oracle Entity Framework Core assembly");
 }

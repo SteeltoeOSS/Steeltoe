@@ -31,7 +31,7 @@ public class ExternalConnectorTest
         ServiceInfoCreator creator = ServiceInfoCreatorFactory.GetServiceInfoCreator(configurationRoot);
 
         Assert.IsType<ServiceInfoCreator>(creator);
-        Assert.Equal(12, creator.Factories.Count);
+        Assert.Equal(11, creator.Factories.Count);
         Environment.SetEnvironmentVariable("TestServiceInfoCreator", null);
     }
 

@@ -20,7 +20,6 @@ internal static class LogMessages
     public const string WireKubernetesConfiguration = "Configured Kubernetes configuration provider";
     public const string WireMongoClient = "Configured MongoDB connector";
     public const string WireMySqlConnection = "Configured MySQL connector";
-    public const string WireOracleConnection = "Configured Oracle connector";
     public const string WirePlaceholderResolver = "Configured placeholder configuration provider";
     public const string WirePostgreSqlConnection = "Configured PostgreSQL connector";
     public const string WireRabbitMqConnection = "Configured RabbitMQ connector";

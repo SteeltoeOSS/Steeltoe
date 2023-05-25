@@ -17,7 +17,6 @@ using Steeltoe.Configuration.RandomValue;
 using Steeltoe.Connectors;
 using Steeltoe.Connectors.MongoDb;
 using Steeltoe.Connectors.MySql;
-using Steeltoe.Connectors.Oracle;
 using Steeltoe.Connectors.PostgreSql;
 using Steeltoe.Connectors.RabbitMQ;
 using Steeltoe.Connectors.Redis;
@@ -82,7 +81,6 @@ public static class WebHostBuilderExtensions
         {
             hostBuilder.WireIfAnyLoaded(WireMySqlConnection, MySqlTypeLocator.Assemblies);
             hostBuilder.WireIfAnyLoaded(WireMongoClient, MongoDbTypeLocator.Assemblies);
-            hostBuilder.WireIfAnyLoaded(WireOracleConnection, OracleTypeLocator.Assemblies);
             hostBuilder.WireIfAnyLoaded(WirePostgreSqlConnection, PostgreSqlTypeLocator.Assemblies);
             hostBuilder.WireIfAnyLoaded(WireRabbitMqConnection, RabbitMQTypeLocator.Assemblies);
             hostBuilder.WireIfAnyLoaded(WireRedisConnectionMultiplexer, RedisTypeLocator.StackExchangeAssemblies);
@@ -191,12 +189,6 @@ public static class WebHostBuilderExtensions
     private static void WireMongoClient(this IWebHostBuilder hostBuilder)
     {
         hostBuilder.ConfigureServices((host, svc) => svc.AddMongoClient(host.Configuration)).Log(LogMessages.WireMongoClient);
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireOracleConnection(this IWebHostBuilder hostBuilder)
-    {
-        hostBuilder.ConfigureServices((host, svc) => svc.AddOracleConnection(host.Configuration)).Log(LogMessages.WireOracleConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]

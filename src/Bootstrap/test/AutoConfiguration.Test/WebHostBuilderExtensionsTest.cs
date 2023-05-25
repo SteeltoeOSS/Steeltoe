@@ -18,7 +18,6 @@ using MySql.Data.MySqlClient;
 using Npgsql;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-using Oracle.ManagedDataAccess.Client;
 using RabbitMQ.Client;
 using StackExchange.Redis;
 using Steeltoe.Common;
@@ -164,7 +163,6 @@ public class WebHostBuilderExtensionsTest
         Assert.Single(configurationRoot.Providers.OfType<ConnectionStringConfigurationProvider>());
         Assert.NotNull(services.GetService<MySqlConnection>());
         Assert.NotNull(services.GetService<MongoClient>());
-        Assert.NotNull(services.GetService<OracleConnection>());
         Assert.NotNull(services.GetService<NpgsqlConnection>());
         Assert.NotNull(services.GetService<ConnectionFactory>());
         Assert.NotNull(services.GetService<ConnectionMultiplexer>());
