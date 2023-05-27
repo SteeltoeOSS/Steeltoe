@@ -45,7 +45,7 @@ namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
 public class HostBuilderExtensionsTest
 {
     private readonly Action<IWebHostBuilder> _testServerWithRouting = builder =>
-        builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+        builder.UseTestServer().ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting());
 
     [Fact]
     public void ConfigServerConfiguration_IsAutowired()

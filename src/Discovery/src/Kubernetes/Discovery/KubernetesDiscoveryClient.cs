@@ -105,7 +105,7 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
             foreach (V1EndpointSubset subset in subsets)
             {
-                // Extend the service metadata map with per-endpointHandler port information (if requested)
+                // Extend the service metadata map with per-endpoint port information (if requested)
                 var endpointMetadata = new Dictionary<string, string>(serviceMetadata);
 
                 if (metadataProps.AddPorts)

@@ -198,7 +198,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         var secrets = new[]
         {
-            Tuple.Create("credentials:cosmosdb_host_endpoint", "test-endpointHandler")
+            Tuple.Create("credentials:cosmosdb_host_endpoint", "test-endpoint")
         };
 
         Dictionary<string, string> configurationData = GetConfigurationData(CosmosDbPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
@@ -217,7 +217,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         var secrets = new[]
         {
-            Tuple.Create("credentials:cosmosdb_host_endpoint", "test-endpointHandler"),
+            Tuple.Create("credentials:cosmosdb_host_endpoint", "test-endpoint"),
             Tuple.Create("credentials:cosmosdb_master_key", "test-key"),
             Tuple.Create("credentials:cosmosdb_database_id", "test-database")
         };
@@ -228,7 +228,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, CosmosDbPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:accountEndpoint"].Should().Be("test-endpointHandler");
+        configurationData[$"{keyPrefix}:accountEndpoint"].Should().Be("test-endpoint");
         configurationData[$"{keyPrefix}:accountKey"].Should().Be("test-key");
         configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
     }

@@ -94,7 +94,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                             "Steeltoe.Management.Abstractions"
                         }, new[]
                         {
-                            "Steeltoe.Management.IEndpointOptions"
+                            "Steeltoe.Management.HttpMiddlewareOptions"
                         });
 
                         Type contextNameType = ReflectionHelpers.FindType(new[]

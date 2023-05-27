@@ -652,7 +652,7 @@ internal sealed class VaultPostProcessor : IConfigurationPostProcessor
                         mapper.MapFromTo("role", "awsIam", "role");
                         mapper.MapFromTo("aws-path", "awsIam", "awsPath");
                         mapper.MapFromTo("aws-iam-server-id", "awsIam", "serverId");
-                        mapper.MapFromTo("aws-sts-endpointHandler-uri", "awsIam", "endpointUri");
+                        mapper.MapFromTo("aws-sts-endpoint-uri", "awsIam", "endpointUri");
                         break;
                     case "AZURE_MSI":
                         mapper.MapFromTo("role", "azureMsi", "role");

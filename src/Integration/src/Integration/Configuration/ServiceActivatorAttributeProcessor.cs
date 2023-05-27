@@ -53,16 +53,16 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
             string serviceName = GetServiceName(service);
             object result = PostProcess(service, serviceName, method.Method, attributes);
 
-            AbstractEndpoint endpointHandler = GetEndpoint(attributes, result);
+            AbstractEndpoint endpoint = GetEndpoint(attributes, result);
 
-            if (endpointHandler == null)
+            if (endpoint == null)
             {
                 continue;
             }
 
             string endpointName = GenerateServiceName(serviceName, method.Method, typeof(ServiceActivatorAttribute));
-            endpointHandler.ServiceName = endpointName;
-            ApplicationContext?.Register(endpointName, endpointHandler);
+            endpoint.ServiceName = endpointName;
+            ApplicationContext?.Register(endpointName, endpoint);
         }
     }
 
@@ -135,9 +135,9 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
 
     private AbstractEndpoint GetEndpoint(List<Attribute> attributes, object result)
     {
-        var endpointHandler = result as AbstractEndpoint;
+        var endpoint = result as AbstractEndpoint;
 
-        if (endpointHandler != null)
+        if (endpoint != null)
         {
             string autoStartup = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "AutoStartup");
 
@@ -147,7 +147,7 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
 
                 if (!string.IsNullOrEmpty(autoStartup))
                 {
-                    endpointHandler.IsAutoStartup = bool.Parse(autoStartup);
+                    endpoint.IsAutoStartup = bool.Parse(autoStartup);
                 }
             }
 
@@ -159,12 +159,12 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
 
                 if (!string.IsNullOrEmpty(phase))
                 {
-                    endpointHandler.Phase = int.Parse(phase, CultureInfo.InvariantCulture);
+                    endpoint.Phase = int.Parse(phase, CultureInfo.InvariantCulture);
                 }
             }
         }
 
-        return endpointHandler;
+        return endpoint;
     }
 
     private object CreateTargetService(Type implementationType)

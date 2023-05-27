@@ -250,6 +250,7 @@ public class WebApplicationBuilderExtensionsTest
         WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
         webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers.FastTestsConfiguration);
         webAppBuilder.AddSteeltoe(SteeltoeAssemblies.AllAssemblies.Except(steeltoeInclusions));
+        webAppBuilder.Services.AddActionDescriptorCollectionProvider();
         webAppBuilder.WebHost.UseTestServer();
         return webAppBuilder.Build();
     }

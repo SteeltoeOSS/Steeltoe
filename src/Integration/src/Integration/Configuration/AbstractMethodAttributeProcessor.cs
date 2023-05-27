@@ -75,11 +75,11 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
             handler = (IMessageHandler)ApplicationContext.GetService(handlerServiceName);
         }
 
-        AbstractEndpoint endpointHandler = CreateEndpoint(handler, method, attributes);
+        AbstractEndpoint endpoint = CreateEndpoint(handler, method, attributes);
 
-        if (endpointHandler != null)
+        if (endpoint != null)
         {
-            return endpointHandler;
+            return endpoint;
         }
 
         return handler;
@@ -111,7 +111,7 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
 
     protected virtual AbstractEndpoint CreateEndpoint(IMessageHandler handler, MethodInfo method, List<Attribute> annotations)
     {
-        AbstractEndpoint endpointHandler = null;
+        AbstractEndpoint endpoint = null;
         string inputChannelName = MessagingAttributeUtils.ResolveAttribute<string>(annotations, InputChannelProperty);
 
         if (!string.IsNullOrEmpty(inputChannelName))
@@ -134,10 +134,10 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
                 ApplicationContext.Register(inputChannelName, inputChannel);
             }
 
-            endpointHandler = DoCreateEndpoint(handler, inputChannel, annotations);
+            endpoint = DoCreateEndpoint(handler, inputChannel, annotations);
         }
 
-        return endpointHandler;
+        return endpoint;
     }
 
     protected virtual AbstractEndpoint DoCreateEndpoint(IMessageHandler handler, IMessageChannel inputChannel, List<Attribute> annotations)
@@ -228,7 +228,7 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
                     throw new InvalidOperationException(
                         $"The IMessageHandler [{handlerServiceName}] can not be populated because of ambiguity with attribute properties {string.Join(',', MessageHandlerProperties)} which are not allowed when an integration attribute is used with a service definition for a IMessageHandler.\n" +
                         $"The property causing the ambiguity is: [{property}].\n" +
-                        "Use the appropriate setter on the IMessageHandler directly when configuring an endpointHandler this way.");
+                        "Use the appropriate setter on the IMessageHandler directly when configuring an endpoint this way.");
                 }
             }
         }
@@ -272,7 +272,7 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
         {
             if (!ApplicationContext.ContainsService(ResolveTargetServiceName(method)))
             {
-                _logger?.LogDebug("Skipping endpointHandler creation; perhaps due to some '[Conditional]' attribute.");
+                _logger?.LogDebug("Skipping endpoint creation; perhaps due to some '[Conditional]' attribute.");
                 skipEndpointCreation = true;
             }
             else

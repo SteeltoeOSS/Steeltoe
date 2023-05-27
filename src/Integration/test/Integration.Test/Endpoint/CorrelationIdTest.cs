@@ -45,8 +45,8 @@ public class CorrelationIdTest
             OutputChannel = outputChannel
         };
 
-        var endpointHandler = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
-        await endpointHandler.StartAsync();
+        var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
+        await endpoint.StartAsync();
         Assert.True(inputChannel.Send(message));
         IMessage reply = outputChannel.Receive(0);
         var accessor = new IntegrationMessageHeaderAccessor(reply);
@@ -66,8 +66,8 @@ public class CorrelationIdTest
             OutputChannel = outputChannel
         };
 
-        var endpointHandler = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
-        await endpointHandler.StartAsync();
+        var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
+        await endpoint.StartAsync();
         Assert.True(inputChannel.Send(message));
         IMessage reply = outputChannel.Receive(0);
         var accessor1 = new IntegrationMessageHeaderAccessor(reply);
@@ -88,8 +88,8 @@ public class CorrelationIdTest
             OutputChannel = outputChannel
         };
 
-        var endpointHandler = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
-        await endpointHandler.StartAsync();
+        var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
+        await endpoint.StartAsync();
         Assert.True(inputChannel.Send(message));
         IMessage reply = outputChannel.Receive(0);
         var accessor = new IntegrationMessageHeaderAccessor(reply);
@@ -108,8 +108,8 @@ public class CorrelationIdTest
             OutputChannel = outputChannel
         };
 
-        var endpointHandler = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
-        await endpointHandler.StartAsync();
+        var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
+        await endpoint.StartAsync();
         Assert.True(inputChannel.Send(message));
         IMessage reply = outputChannel.Receive(0);
         var accessor = new IntegrationMessageHeaderAccessor(reply);

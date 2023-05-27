@@ -588,11 +588,11 @@ public class EurekaHttpClient : IEurekaHttpClient
             {
                 var remainingHosts = new List<string>(candidateServiceUrls.Count);
 
-                foreach (string endpointHandler in candidateServiceUrls)
+                foreach (string endpoint in candidateServiceUrls)
                 {
-                    if (!failingServiceUrls.Contains(endpointHandler))
+                    if (!failingServiceUrls.Contains(endpoint))
                     {
-                        remainingHosts.Add(endpointHandler);
+                        remainingHosts.Add(endpoint);
                     }
                 }
 

@@ -201,26 +201,26 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     }
 
     // Note: The code below lifted from StackExchange.Redis.Format
-    internal static EndPoint TryParseEndPoint(string endpointHandler)
+    internal static EndPoint TryParseEndPoint(string endpoint)
     {
-        if (string.IsNullOrWhiteSpace(endpointHandler))
+        if (string.IsNullOrWhiteSpace(endpoint))
         {
             return null;
         }
 
         string host;
         int port;
-        int i = endpointHandler.IndexOf(':');
+        int i = endpoint.IndexOf(':');
 
         if (i < 0)
         {
-            host = endpointHandler;
+            host = endpoint;
             port = 0;
         }
         else
         {
-            host = endpointHandler.Substring(0, i);
-            string portAsString = endpointHandler.Substring(i + 1);
+            host = endpoint.Substring(0, i);
+            string portAsString = endpoint.Substring(i + 1);
 
             if (string.IsNullOrEmpty(portAsString))
             {

@@ -115,19 +115,19 @@ public class MessageProducerSupportEndpointTest
     public async Task CustomDoStop()
     {
         ServiceProvider provider = _services.BuildServiceProvider();
-        var endpointHandler = new CustomEndpoint(provider.GetService<IApplicationContext>());
-        Assert.Equal(0, endpointHandler.Count);
-        Assert.False(endpointHandler.IsRunning);
-        await endpointHandler.StartAsync();
-        Assert.True(endpointHandler.IsRunning);
+        var endpoint = new CustomEndpoint(provider.GetService<IApplicationContext>());
+        Assert.Equal(0, endpoint.Count);
+        Assert.False(endpoint.IsRunning);
+        await endpoint.StartAsync();
+        Assert.True(endpoint.IsRunning);
 
-        await endpointHandler.StopAsync(() =>
+        await endpoint.StopAsync(() =>
         {
             // Do nothing
         });
 
-        Assert.Equal(1, endpointHandler.Count);
-        Assert.False(endpointHandler.IsRunning);
+        Assert.Equal(1, endpoint.Count);
+        Assert.False(endpoint.IsRunning);
     }
 
     private sealed class TestMessageProducerSupportEndpoint : MessageProducerSupportEndpoint
