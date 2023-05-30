@@ -291,12 +291,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.Clou
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test", "Configuration\test\CloudFoundry.ServiceBinding.Test\Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test.csproj", "{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Actuators", "..\..\Samples\Management\src\AllActuators\Actuators\Steeltoe.Actuators.csproj", "{5D54EB75-2420-4EDE-B7F2-60B70669C22F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Management.Grpc", "Management\src\Steeltoe.Management.Grpc\Steeltoe.Management.Grpc.csproj", "{9AE567C8-5CC5-45EB-9152-E432684E0C4A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcActuatorTest", "C:\Users\Hananiel\source\repos\GrpcActuatorTest\GrpcActuatorTest.csproj", "{AD0D54E5-10FF-47DA-8759-7B9FB346B486}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -719,18 +713,6 @@ Global
 		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5D54EB75-2420-4EDE-B7F2-60B70669C22F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D54EB75-2420-4EDE-B7F2-60B70669C22F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5D54EB75-2420-4EDE-B7F2-60B70669C22F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5D54EB75-2420-4EDE-B7F2-60B70669C22F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9AE567C8-5CC5-45EB-9152-E432684E0C4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9AE567C8-5CC5-45EB-9152-E432684E0C4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9AE567C8-5CC5-45EB-9152-E432684E0C4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9AE567C8-5CC5-45EB-9152-E432684E0C4A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AD0D54E5-10FF-47DA-8759-7B9FB346B486}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD0D54E5-10FF-47DA-8759-7B9FB346B486}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD0D54E5-10FF-47DA-8759-7B9FB346B486}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD0D54E5-10FF-47DA-8759-7B9FB346B486}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -841,7 +823,6 @@ Global
 		{E887239C-FC4B-4EEE-9BD6-2DF6553DE2A9} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
 		{5625E2FC-9DAD-4ADC-B9A6-6ED192E9A4F4} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
-		{9AE567C8-5CC5-45EB-9152-E432684E0C4A} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}

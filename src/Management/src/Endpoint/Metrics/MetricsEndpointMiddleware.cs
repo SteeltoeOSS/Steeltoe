@@ -19,59 +19,6 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
     {
     }
 
-    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    //{
-    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-    //    {
-    //        return HandleMetricsRequestAsync(context);
-    //    }
-
-    //    return Task.CompletedTask;
-    //}
-
-    //public override async Task<string> HandleRequestAsync(MetricsRequest arg, CancellationToken cancellationToken)
-    //{
-    //    IMetricsResponse result = await EndpointHandler.InvokeAsync(arg, cancellationToken);
-    //    return result == null ? null : Serialize(result);
-    //}
-
-    //internal async Task HandleMetricsRequestAsync(HttpContext context)
-    //{
-    //    HttpRequest request = context.Request;
-    //    HttpResponse response = context.Response;
-
-    //    Logger.LogDebug("Incoming path: {path}", request.Path.Value);
-
-    //    string metricName = GetMetricName(request);
-
-    //    if (!string.IsNullOrEmpty(metricName))
-    //    {
-    //        // GET /metrics/{metricName}?tag=key:value&tag=key:value
-    //        IList<KeyValuePair<string, string>> tags = ParseTags(request.Query);
-    //        var metricRequest = new MetricsRequest(metricName, tags);
-    //        string serialInfo = await HandleRequestAsync(metricRequest, context.RequestAborted);
-
-    //        if (serialInfo != null)
-    //        {
-    //            response.StatusCode = (int)HttpStatusCode.OK;
-    //            await context.Response.WriteAsync(serialInfo);
-    //        }
-    //        else
-    //        {
-    //            response.StatusCode = (int)HttpStatusCode.NotFound;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        // GET /metrics
-    //        string serialInfo = await HandleRequestAsync(null, context.RequestAborted);
-    //        Logger.LogDebug("Returning: {info}", serialInfo);
-
-    //        context.HandleContentNegotiation(Logger);
-    //        context.Response.StatusCode = (int)HttpStatusCode.OK;
-    //        await context.Response.WriteAsync(serialInfo);
-    //    }
-    //}
     private MetricsRequest GetMetricsRequest(HttpContext context)
     {
         HttpRequest request = context.Request;

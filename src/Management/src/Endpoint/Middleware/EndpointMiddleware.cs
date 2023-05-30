@@ -21,90 +21,8 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
-//public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
-//{
-//    protected ILogger Logger { get; }
-//    protected IOptionsMonitor<ManagementEndpointOptions> ManagementOptions { get; }
-
-//    public IEndpointHandler<TRequest, TResult> Endpoint { get; set; }
-
-//    public virtual IOptionsMonitor<HttpMiddlewareOptions> EndpointOptions { get; }
-
-//    protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
-//    {
-//        ArgumentGuard.NotNull(logger);
-//        Logger = logger;
-//        ManagementOptions = managementOptions;
-//    }
-
-//    protected EndpointMiddleware(IEndpoint<TResult> endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, ILogger logger)
-//        : this(managementOptions, logger)
-//    {
-//        ArgumentGuard.NotNull(endpointHandler);
-//        ArgumentGuard.NotNull(logger);
-//        Endpoint = endpointHandler;
-//        EndpointOptions = endpointOptions;
-//    }
-
-//    public virtual async Task<string> HandleRequestAsync(CancellationToken cancellationToken)
-//    {
-//        TResult result = await Endpoint.InvokeAsync(cancellationToken);
-//        return await Task.Run(() => Serialize(result), cancellationToken);
-//    }
-
-//    public virtual string Serialize(TResult result)
-//    {
-//        try
-//        {
-//            JsonSerializerOptions serializerOptions = ManagementOptions.CurrentValue.SerializerOptions;
-//            JsonSerializerOptions options = GetSerializerOptions(serializerOptions);
-
-//            return JsonSerializer.Serialize(result, options);
-//        }
-//        catch (Exception e) when (e is ArgumentException or ArgumentNullException or NotSupportedException)
-//        {
-//            Logger.LogError(e, "Error serializing {MiddlewareResponse}", result);
-//        }
-
-//        return string.Empty;
-//    }
-
-//    internal static JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
-//    {
-//        serializerOptions ??= new JsonSerializerOptions
-//        {
-//            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-//        };
-
-//        if (serializerOptions.DefaultIgnoreCondition != JsonIgnoreCondition.WhenWritingNull)
-//        {
-//            serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-//        }
-
-//        if (serializerOptions.Converters?.Any(c => c is JsonStringEnumConverter) != true)
-//        {
-//            serializerOptions.Converters.Add(new JsonStringEnumConverter());
-//        }
-
-//        if (serializerOptions.Converters?.Any(c => c is HealthConverter or HealthConverterV3) != true)
-//        {
-//            serializerOptions.Converters.Add(new HealthConverter());
-//        }
-
-//        if (serializerOptions.Converters?.Any(c => c is MetricsResponseConverter) != true)
-//        {
-//            serializerOptions.Converters.Add(new MetricsResponseConverter());
-//        }
-
-//        return serializerOptions;
-//    }
-
-//    public abstract Task InvokeAsync(HttpContext context, RequestDelegate next);
-//}
-
 public interface IEndpointMiddleware : IMiddleware
 {
-    //  IEndpointHandler EndpointHandler { get; }
     HttpMiddlewareOptions EndpointOptions { get; }
     bool ShouldInvoke(HttpContext context);
 }
@@ -120,7 +38,6 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
 
     protected EndpointMiddleware(IEndpointHandler<TArgument, TResult> endpointHandler,
         IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
-      //  : base(managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpointHandler);
 
@@ -147,6 +64,8 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
+        ArgumentGuard.NotNull(context);
+
         if (ShouldInvoke(context))
         {
             context.HandleContentNegotiation(Logger);
@@ -163,6 +82,8 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
 
     protected virtual async Task WriteResponseAsync(TResult result, HttpContext context, CancellationToken cancellationToken)
     {
+        ArgumentGuard.NotNull(context);
+
         if (EqualityComparer<TResult>.Default.Equals(result, default))
         {
             return;

@@ -33,28 +33,6 @@ internal sealed class CloudFoundryEndpointMiddleware : EndpointMiddleware<string
         return await EndpointHandler.InvokeAsync(uri, cancellationToken);
     }
 
-    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    //{
-    //    ArgumentGuard.NotNull(context);
-
-    //    Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
-
-    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-    //    {
-    //        return HandleCloudFoundryRequestAsync(context);
-    //    }
-
-    //    return Task.CompletedTask;
-    //}
-
-    //internal async Task HandleCloudFoundryRequestAsync(HttpContext context)
-    //{
-    //    string serialInfo = await HandleRequestAsync(GetRequestUri(context.Request), context.RequestAborted);
-    //    Logger.LogDebug("Returning: {info}", serialInfo);
-    //    context.HandleContentNegotiation(Logger);
-    //    await context.Response.WriteAsync(serialInfo);
-    //}
-
     private string GetRequestUri(HttpContext context)
     {
         HttpRequest request = context.Request;

@@ -129,6 +129,6 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
     public async Task<EnvironmentDescriptor> InvokeAsync(object arg, CancellationToken cancellationToken)
     {
-       return DoInvoke(_configuration);
+       return await Task.Run(()=>DoInvoke(_configuration));
     }
 }

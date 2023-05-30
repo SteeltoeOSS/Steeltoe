@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRequest,HealthEndpointResponse>
 {
-    IOptionsMonitor<HealthEndpointOptions> _healthEndpointOptions;
+    private readonly IOptionsMonitor<HealthEndpointOptions> _healthEndpointOptions;
 
     public HealthEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IHealthEndpointHandler endpointHandler,
         IOptionsMonitor<HealthEndpointOptions> endpointOptions,
@@ -26,39 +26,6 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
         _healthEndpointOptions = endpointOptions;
     }
 
-
-    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    //{
-    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-    //    {
-    //        return HandleHealthRequestAsync(context);
-    //    }
-
-    //    return Task.CompletedTask;
-    //}
-
-    //internal async Task HandleHealthRequestAsync(HttpContext context)
-    //{
-    //    string serialInfo = await DoRequestAsync(context);
-    //    Logger.LogDebug("Returning: {info}", serialInfo);
-
-    //    context.HandleContentNegotiation(Logger);
-    //    await context.Response.WriteAsync(serialInfo);
-    //}
-
-    //internal async Task<string> DoRequestAsync(HttpContext context)
-    //{
-    //    HealthEndpointResponse result = await ((HealthEndpointHandler)EndpointHandler).InvokeAsync(GetRequest(context), context.RequestAborted);
-
-    //    ManagementEndpointOptions currentOptions = ManagementOptions.CurrentValue;
-
-    //    if (currentOptions.UseStatusCodeFromResponse)
-    //    {
-    //        context.Response.StatusCode = ((HealthEndpointHandler)EndpointHandler).GetStatusCode(result);
-    //    }
-
-    //    return Serialize(result);
-    //}
     internal HealthEndpointRequest GetRequest(HttpContext context)
     {
         return new HealthEndpointRequest
@@ -75,10 +42,10 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
     }
 
     /// <summary>
-    /// Returns the last value returned by <see cref="HttpContext.Request.Path" />, expected to be the name of a configured health group.
+    /// Returns the last value returned by <see cref="HttpContext.Request" />.Path, expected to be the name of a configured health group.
     /// </summary>
     /// <param name="context">
-    /// Last value of <see cref="HttpContext.Request.Path" /> is used as group name.
+    /// Last value of <see cref="HttpContext.Request" />.Path is used as group name.
     /// </param>
     private string GetRequestedHealthGroup(HttpContext context)
     {
@@ -105,6 +72,5 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
             context.Response.StatusCode = ((HealthEndpointHandler)EndpointHandler).GetStatusCode(result);
         }
         return result;
-
     }
 }

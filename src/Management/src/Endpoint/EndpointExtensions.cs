@@ -106,11 +106,4 @@ internal static class EndPointExtensions
 
         return contextPath;
     }
-
-    //// Only used by Cloudfoundry security
-    //public static bool IsAccessAllowed(this HttpMiddlewareOptions options, Permissions permissions)
-    //{
-    //    ArgumentGuard.NotNull(options);
-    //    return permissions >= options.RequiredPermissions;
-    //}
 }

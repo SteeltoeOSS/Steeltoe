@@ -6,9 +6,11 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public sealed class DefaultLoggersRequest: ILoggersRequest
+internal sealed class DefaultLoggersRequest : ILoggersRequest
 {
+    LoggersRequestType ILoggersRequest.RequestType => LoggersRequestType.Default;
 }
-public sealed class ErrorLoggersRequest: ILoggersRequest
+internal sealed class ErrorLoggersRequest : ILoggersRequest
 {
+    LoggersRequestType ILoggersRequest.RequestType => LoggersRequestType.Error;
 }

@@ -19,27 +19,9 @@ internal sealed class RefreshEndpointMiddleware : EndpointMiddleware<object, ILi
     {
     }
 
-    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    //{
-    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-    //    {
-    //        return HandleRefreshRequestAsync(context);
-    //    }
-
-    //    return Task.CompletedTask;
-    //}
-
     protected override async Task<IList<string>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
 
-    //internal async Task HandleRefreshRequestAsync(HttpContext context)
-    //{
-    //    string serialInfo = await HandleRequestAsync(context.RequestAborted);
-    //    Logger.LogDebug("Returning: {info}", serialInfo);
-
-    //    context.HandleContentNegotiation(Logger);
-    //    await context.Response.WriteAsync(serialInfo);
-    //}
 }

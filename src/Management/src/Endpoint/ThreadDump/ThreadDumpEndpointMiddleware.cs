@@ -19,17 +19,6 @@ internal sealed class ThreadDumpEndpointMiddleware : EndpointMiddleware<object, 
     {
     }
 
-    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    //{
-    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-    //    {
-    //        return HandleThreadDumpRequestAsync(context);
-    //    }
-
-    //    return Task.CompletedTask;
-    //}
-
-
     protected override async Task<IList<ThreadInfo>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         Logger.LogDebug("Executing ThreadDumpHandler");
@@ -38,11 +27,4 @@ internal sealed class ThreadDumpEndpointMiddleware : EndpointMiddleware<object, 
         
     }
 
-    //internal async Task HandleThreadDumpRequestAsync(HttpContext context)
-    //{
-    //    string serialInfo = await HandleRequestAsync(context.RequestAborted);
-       
-    //    context.HandleContentNegotiation(Logger);
-    //    await context.Response.WriteAsync(serialInfo);
-    //}
 }

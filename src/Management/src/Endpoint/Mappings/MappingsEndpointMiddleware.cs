@@ -20,29 +20,8 @@ internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<object, Ap
     {
     }
 
-    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    //{
-    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-    //    {
-    //        return HandleMappingsRequestAsync(context);
-    //    }
-
-    //    return Task.CompletedTask;
-    //}
-
     protected override async Task<ApplicationMappings> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(null, context.RequestAborted);
     }
-
-    //internal async Task HandleMappingsRequestAsync(HttpContext context)
-    //{
-    //    //ApplicationMappings result = await Endpoint.InvokeAsync(context.RequestAborted);
-    //    //string serialInfo = Serialize(result);
-
-    //    //Logger.LogDebug("Returning: {info}", serialInfo);
-
-    //    //context.HandleContentNegotiation(Logger);
-    //    //await context.Response.WriteAsync(serialInfo);
-    //}
 }

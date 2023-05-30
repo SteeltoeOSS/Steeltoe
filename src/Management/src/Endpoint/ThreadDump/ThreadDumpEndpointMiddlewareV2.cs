@@ -18,28 +18,9 @@ internal sealed class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<object
     {
     }
 
-    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    //{
-    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-    //    {
-    //        return HandleThreadDumpRequestAsync(context);
-    //    }
-
-    //    return Task.CompletedTask;
-    //}
-
     protected override async Task<ThreadDumpResult> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         Logger.LogDebug("Executing ThreadDumpV2 handler");
         return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
-
-    //internal async Task HandleThreadDumpRequestAsync(HttpContext context)
-    //{
-    //    string serialInfo = await HandleRequestAsync(context.RequestAborted);
-
-    //    Logger.LogDebug("Returning: {info}", serialInfo);
-    //    context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-    //    await context.Response.WriteAsync(serialInfo);
-    //}
 }

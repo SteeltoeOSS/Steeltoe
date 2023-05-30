@@ -42,7 +42,7 @@ internal sealed class MappingsEndpointHandler : IMappingsEndpointHandler
         _logger = loggerFactory.CreateLogger<MappingsEndpointHandler>();
     }
 
-    public Task<ApplicationMappings> InvokeAsync(object _, CancellationToken cancellationToken)
+    public Task<ApplicationMappings> InvokeAsync(object arg, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Fetching application mappings");
         return Task.Run(() => GetApplicationMappings(), cancellationToken);

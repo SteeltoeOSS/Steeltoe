@@ -15,7 +15,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 public sealed class CloudFoundrySecurityMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _middewareOptions;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
 

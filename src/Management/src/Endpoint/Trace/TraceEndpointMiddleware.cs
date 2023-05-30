@@ -17,30 +17,8 @@ internal sealed class TraceEndpointMiddleware : EndpointMiddleware<object, IList
     {
     }
 
-    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    //{
-    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-    //    {
-    //        return HandleTraceRequestAsync(context);
-    //    }
-
-    //    return Task.CompletedTask;
-    //}
-
     protected override Task<IList<TraceResult>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
-
-    //internal async Task HandleTraceRequestAsync(HttpContext context)
-    //{
-    //    ArgumentGuard.NotNull(context);
-
-    //    string serialInfo = await HandleRequestAsync(context.RequestAborted);
-
-    //    Logger.LogDebug("Returning: {info}", serialInfo);
-
-    //    context.HandleContentNegotiation(Logger);
-    //    await context.Response.WriteAsync(serialInfo);
-    //}
 }

@@ -119,12 +119,12 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
     {
-         Dictionary<string, string> AppSettings = new()
+         Dictionary<string, string> appSettings = new()
           {
               ["management:endpoints:actuator:exposure:include:0"] = "*",
           };
     IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(AppSettings);
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appSettings);
 
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
         var exporter = new SteeltoeExporter(_scraperOptions);

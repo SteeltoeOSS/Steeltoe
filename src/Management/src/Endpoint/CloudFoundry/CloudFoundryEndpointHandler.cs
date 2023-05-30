@@ -18,7 +18,6 @@ internal sealed class CloudFoundryEndpointHandler : ICloudFoundryEndpointHandler
     private readonly ILogger<CloudFoundryEndpointHandler> _logger;
 
     public CloudFoundryEndpointHandler(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options, IEnumerable<HttpMiddlewareOptions> endpointOptions, ILogger<CloudFoundryEndpointHandler> logger)
-        
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);

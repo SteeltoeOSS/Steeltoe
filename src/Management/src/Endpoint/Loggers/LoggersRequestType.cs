@@ -3,8 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 namespace Steeltoe.Management.Endpoint.Loggers;
-
-public interface ILoggersRequest
+internal enum LoggersRequestType
 {
-    internal LoggersRequestType RequestType { get; }
+    Default = 0,
+    Change = 1,
+    Error = 2,
 }

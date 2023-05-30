@@ -6,8 +6,10 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public sealed class LoggersChangeRequest: ILoggersRequest
+internal sealed class LoggersChangeRequest: ILoggersRequest
 {
+    LoggersRequestType ILoggersRequest.RequestType => LoggersRequestType.Change;
+
     /// <summary>
     /// Gets name(space) of logger level to change.
     /// </summary>

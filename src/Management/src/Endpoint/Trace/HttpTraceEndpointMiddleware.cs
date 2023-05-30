@@ -18,28 +18,8 @@ internal sealed class HttpTraceEndpointMiddleware : EndpointMiddleware<object, H
     {
     }
 
-    //public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    //{
-    //    if (EndpointOptions.CurrentValue.ShouldInvoke(ManagementOptions, context, Logger))
-    //    {
-    //        return HandleTraceRequestAsync(context);
-    //    }
-
-    //    return Task.CompletedTask;
-    //}
-
     protected override async Task<HttpTraceResult> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
-
-    //internal async Task HandleTraceRequestAsync(HttpContext context)
-    //{
-    //    string serialInfo = await HandleRequestAsync(context.RequestAborted);
-
-    //    Logger.LogDebug("Returning: {info}", serialInfo);
-
-    //    context.HandleContentNegotiation(Logger);
-    //    await context.Response.WriteAsync(serialInfo);
-    //}
 }

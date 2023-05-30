@@ -40,8 +40,10 @@ public class ActuatorRouteBuilderExtensionsTest
 
     private static IHostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction)
     {
-        var appSettings = new Dictionary<string, string>();
-        appSettings.Add("management:endpoints:actuator:exposure:include:0", "*");
+        var appSettings = new Dictionary<string, string>
+        {
+            { "management:endpoints:actuator:exposure:include:0", "*" }
+        };
 
         return new HostBuilder().AddDynamicLogging().ConfigureServices((context, s) =>
         {
@@ -84,7 +86,7 @@ public class ActuatorRouteBuilderExtensionsTest
         foreach (HttpMiddlewareOptions options in optionsCollection)
         {
             string path = options.GetContextPath(GetManagementContext(host.Services));
-            path = path.Replace("metrics/{**_}", "metrics/clr.cpu.count");
+            path = path.Replace("metrics/{**_}", "metrics/clr.cpu.count", StringComparison.Ordinal);
             Assert.NotNull(path);
             HttpResponseMessage response;
 
