@@ -244,7 +244,16 @@ public sealed class RabbitMQConnectorTests
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceTwo:ConnectionString"] = "amqps://user2:pass2@host2:5672/virtual-host-2"
         });
 
-        builder.AddRabbitMQ((options, _) => new FakeConnection(options.ConnectionString));
+        builder.AddRabbitMQ(setupOptions =>
+        {
+            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
+                RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnection(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 
@@ -275,7 +284,16 @@ public sealed class RabbitMQConnectorTests
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceTwo:ConnectionString"] = "amqps://user2:pass2@host2:5672/virtual-host-2"
         });
 
-        builder.AddRabbitMQ((options, _) => new FakeConnection(options.ConnectionString));
+        builder.AddRabbitMQ(setupOptions =>
+        {
+            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
+                RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnection(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 
@@ -293,7 +311,16 @@ public sealed class RabbitMQConnectorTests
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
-        builder.AddRabbitMQ((options, _) => new FakeConnection(options.ConnectionString));
+        builder.AddRabbitMQ(setupOptions =>
+        {
+            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
+                RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnection(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 
@@ -322,7 +349,16 @@ public sealed class RabbitMQConnectorTests
             ["Steeltoe:Client:RabbitMQ:Default:ConnectionString"] = "amqp://localhost:5672/my-virtual-host"
         });
 
-        builder.AddRabbitMQ((options, _) => new FakeConnection(options.ConnectionString));
+        builder.AddRabbitMQ(setupOptions =>
+        {
+            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
+                RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnection(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 
@@ -341,7 +377,17 @@ public sealed class RabbitMQConnectorTests
     public async Task Registers_default_connection_string_when_no_bindings_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.AddRabbitMQ((options, _) => new FakeConnection(options.ConnectionString));
+
+        builder.AddRabbitMQ(setupOptions =>
+        {
+            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
+                RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnection(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 

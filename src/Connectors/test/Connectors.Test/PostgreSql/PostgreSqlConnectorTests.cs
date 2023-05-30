@@ -492,6 +492,28 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     }
 
     [Fact]
+    public async Task Skips_HealthContributors_when_disabled()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        {
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
+        });
+
+        builder.AddPostgreSql(setupOptions =>
+        {
+            setupOptions.EnableHealthChecks = false;
+        });
+
+        await using WebApplication app = builder.Build();
+
+        IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
+        healthContributors.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Registers_default_connection_string_when_single_server_binding_and_only_default_client_binding_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();

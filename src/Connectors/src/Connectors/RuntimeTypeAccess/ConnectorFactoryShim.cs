@@ -22,8 +22,8 @@ internal sealed class ConnectorFactoryShim<TOptions> : Shim, IDisposable
         _connectionType = connectionType;
     }
 
-    public static void Register(Type connectionType, IServiceCollection services, IReadOnlySet<string> optionNames,
-        Func<TOptions, string, object> createConnection, bool useSingletonConnection)
+    public static void Register(Type connectionType, IServiceCollection services, IReadOnlySet<string> optionNames, ConnectorCreateConnection createConnection,
+        bool useSingletonConnection)
     {
         ArgumentGuard.NotNull(connectionType);
         ArgumentGuard.NotNull(services);

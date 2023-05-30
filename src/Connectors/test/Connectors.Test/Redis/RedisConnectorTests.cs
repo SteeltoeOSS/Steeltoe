@@ -154,7 +154,16 @@ public sealed class RedisConnectorTests
             ["Steeltoe:Client:Redis:myRedisServiceTwo:ConnectionString"] = "server2:6380,allowAdmin=true"
         });
 
-        builder.AddRedis((options, _) => new FakeConnectionMultiplexer(options.ConnectionString));
+        builder.AddRedis(setupOptions =>
+        {
+            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                RedisOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnectionMultiplexer(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 
@@ -185,7 +194,16 @@ public sealed class RedisConnectorTests
             ["Steeltoe:Client:Redis:myRedisServiceTwo:ConnectionString"] = "server2:6380,allowAdmin=true"
         });
 
-        builder.AddRedis((options, _) => new FakeConnectionMultiplexer(options.ConnectionString));
+        builder.AddRedis(setupOptions =>
+        {
+            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                RedisOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnectionMultiplexer(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 
@@ -218,7 +236,16 @@ public sealed class RedisConnectorTests
             ["Steeltoe:Client:Redis:myRedisServiceTwo:ConnectionString"] = "server2:6380,allowAdmin=true"
         });
 
-        builder.AddRedis((options, _) => new FakeConnectionMultiplexer(options.ConnectionString));
+        builder.AddRedis(setupOptions =>
+        {
+            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                RedisOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnectionMultiplexer(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 
@@ -236,7 +263,16 @@ public sealed class RedisConnectorTests
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
-        builder.AddRedis((options, _) => new FakeConnectionMultiplexer(options.ConnectionString));
+        builder.AddRedis(setupOptions =>
+        {
+            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                RedisOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnectionMultiplexer(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 
@@ -265,7 +301,16 @@ public sealed class RedisConnectorTests
             ["Steeltoe:Client:Redis:Default:ConnectionString"] = "server1:6380,keepAlive=30"
         });
 
-        builder.AddRedis((options, _) => new FakeConnectionMultiplexer(options.ConnectionString));
+        builder.AddRedis(setupOptions =>
+        {
+            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                RedisOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnectionMultiplexer(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 

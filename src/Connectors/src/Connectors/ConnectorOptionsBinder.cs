@@ -4,21 +4,21 @@
 
 #nullable enable
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Connectors;
 
-internal static class BaseWebApplicationBuilderExtensions
+internal static class ConnectorOptionsBinder
 {
-    public static IReadOnlySet<string> RegisterNamedOptions<TOptions>(WebApplicationBuilder builder, string bindingType,
-        Func<IServiceProvider, string, IHealthContributor> createHealthContributor)
+    public static IReadOnlySet<string> RegisterNamedOptions<TOptions>(IServiceCollection services, IConfigurationBuilder configurationBuilder,
+        string bindingType, ConnectorCreateHealthContributor? createHealthContributor)
         where TOptions : ConnectionStringOptions
     {
+        IConfigurationRoot configuration = configurationBuilder.Build();
         string key = ConfigurationPath.Combine(ConnectionStringPostProcessor.ServiceBindingsConfigurationKey, bindingType);
-        IConfigurationSection[] childSections = builder.Configuration.GetSection(key).GetChildren().ToArray();
+        IConfigurationSection[] childSections = configuration.GetSection(key).GetChildren().ToArray();
 
         bool registerDefaultHealthContributor = !ContainsNamedServiceBindings(childSections);
         bool defaultHealthContributorRegistered = false;
@@ -29,24 +29,24 @@ internal static class BaseWebApplicationBuilderExtensions
 
             if (bindingName == ConnectionStringPostProcessor.DefaultBindingName)
             {
-                builder.Services.Configure<TOptions>(childSection);
+                services.Configure<TOptions>(childSection);
 
                 if (registerDefaultHealthContributor)
                 {
-                    RegisterHealthContributor(builder.Services, string.Empty, createHealthContributor);
+                    RegisterHealthContributor(services, string.Empty, createHealthContributor);
                     defaultHealthContributorRegistered = true;
                 }
             }
             else
             {
-                builder.Services.Configure<TOptions>(bindingName, childSection);
-                RegisterHealthContributor(builder.Services, bindingName, createHealthContributor);
+                services.Configure<TOptions>(bindingName, childSection);
+                RegisterHealthContributor(services, bindingName, createHealthContributor);
             }
         }
 
         if (registerDefaultHealthContributor && !defaultHealthContributorRegistered)
         {
-            RegisterHealthContributor(builder.Services, string.Empty, createHealthContributor);
+            RegisterHealthContributor(services, string.Empty, createHealthContributor);
         }
 
         return GetNamedOptions(childSections);
@@ -68,9 +68,12 @@ internal static class BaseWebApplicationBuilderExtensions
     }
 
     private static void RegisterHealthContributor(IServiceCollection services, string serviceBindingName,
-        Func<IServiceProvider, string, IHealthContributor> createHealthContributor)
+        ConnectorCreateHealthContributor? createHealthContributor)
     {
-        services.AddSingleton(typeof(IHealthContributor), serviceProvider => createHealthContributor(serviceProvider, serviceBindingName));
+        if (createHealthContributor != null)
+        {
+            services.AddSingleton(typeof(IHealthContributor), serviceProvider => createHealthContributor(serviceProvider, serviceBindingName));
+        }
     }
 
     private static HashSet<string> GetNamedOptions(IConfigurationSection[] childSections)

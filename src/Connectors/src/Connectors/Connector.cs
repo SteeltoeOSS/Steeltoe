@@ -4,6 +4,7 @@
 
 #nullable enable
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
@@ -12,9 +13,9 @@ namespace Steeltoe.Connectors;
 public sealed class Connector<TOptions, TConnection> : IDisposable
     where TOptions : ConnectionStringOptions
 {
-    private readonly IOptionsMonitor<TOptions> _optionsMonitor;
     private readonly string _name;
-    private readonly Func<TOptions, string, object> _createConnection;
+    private readonly Func<object> _createConnection;
+    private readonly IOptionsMonitor<TOptions> _optionsMonitor;
     private readonly Lazy<(object Connection, TOptions OptionsSnapshot)>? _singletonConnectionWithOptions;
     private bool _hasDisposedSingleton;
 
@@ -40,15 +41,15 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
         }
     }
 
-    internal Connector(IOptionsMonitor<TOptions> optionsMonitor, string name, Func<TOptions, string, object> createConnection, bool useSingletonConnection)
+    public Connector(IServiceProvider serviceProvider, string name, ConnectorCreateConnection createConnection, bool useSingletonConnection)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentGuard.NotNull(serviceProvider);
         ArgumentGuard.NotNull(name);
         ArgumentGuard.NotNull(createConnection);
 
-        _optionsMonitor = optionsMonitor;
         _name = name;
-        _createConnection = createConnection;
+        _createConnection = () => createConnection(serviceProvider, name);
+        _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<TOptions>>();
 
         if (useSingletonConnection)
         {
@@ -86,7 +87,7 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
     private (object Connection, TOptions OptionsSnapshot) CreateConnectionFromOptions()
     {
         TOptions optionsSnapshot = _optionsMonitor.Get(_name);
-        object connection = _createConnection(optionsSnapshot, _name);
+        object connection = _createConnection();
 
         if (connection == null)
         {

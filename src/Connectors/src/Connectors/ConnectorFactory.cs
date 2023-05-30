@@ -5,8 +5,6 @@
 #nullable enable
 
 using System.Collections.Concurrent;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
 namespace Steeltoe.Connectors;
@@ -24,11 +22,9 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
     where TOptions : ConnectionStringOptions
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly Func<TOptions, string, object> _createConnection;
+    private readonly ConnectorCreateConnection _createConnection;
     private readonly bool _useSingletonConnection;
     private readonly ConcurrentDictionary<string, Connector<TOptions, TConnection>> _namedConnectors = new();
-
-    private IOptionsMonitor<TOptions> OptionsMonitor => _serviceProvider.GetRequiredService<IOptionsMonitor<TOptions>>();
 
     /// <summary>
     /// Gets the list of available connector names.
@@ -38,7 +34,7 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
     /// </returns>
     public IReadOnlySet<string> Names { get; }
 
-    public ConnectorFactory(IServiceProvider serviceProvider, IReadOnlySet<string> names, Func<TOptions, string, object> createConnection,
+    public ConnectorFactory(IServiceProvider serviceProvider, IReadOnlySet<string> names, ConnectorCreateConnection createConnection,
         bool useSingletonConnection)
     {
         ArgumentGuard.NotNull(serviceProvider);
@@ -85,7 +81,7 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
             throw new InvalidOperationException(name == string.Empty ? "Default connector is unavailable." : $"Named connector '{name}' is unavailable.");
         }
 
-        return _namedConnectors.GetOrAdd(name, _ => new Connector<TOptions, TConnection>(OptionsMonitor, name, _createConnection, _useSingletonConnection));
+        return _namedConnectors.GetOrAdd(name, _ => new Connector<TOptions, TConnection>(_serviceProvider, name, _createConnection, _useSingletonConnection));
     }
 
     /// <inheritdoc />

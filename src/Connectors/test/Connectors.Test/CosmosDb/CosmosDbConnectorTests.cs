@@ -191,17 +191,23 @@ public sealed class CosmosDbConnectorTests
                 "AccountEndpoint=https://host-2:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
         });
 
-        builder.AddCosmosDb((options, serviceBindingName) =>
+        builder.AddCosmosDb(setupOptions =>
         {
-            if (serviceBindingName == "myCosmosDbServiceOne")
+            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
             {
-                return new CosmosClient(options.ConnectionString, new CosmosClientOptions
-                {
-                    ConsistencyLevel = ConsistencyLevel.Eventual
-                });
-            }
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CosmosDbOptions>>();
+                var options = optionsMonitor.Get(serviceBindingName);
 
-            return new CosmosClient(options.ConnectionString);
+                if (serviceBindingName == "myCosmosDbServiceOne")
+                {
+                    return new CosmosClient(options.ConnectionString, new CosmosClientOptions
+                    {
+                        ConsistencyLevel = ConsistencyLevel.Eventual
+                    });
+                }
+
+                return new CosmosClient(options.ConnectionString);
+            };
         });
 
         await using WebApplication app = builder.Build();
