@@ -22,8 +22,8 @@ internal sealed class ConnectorFactoryShim<TOptions> : Shim, IDisposable
         _connectionType = connectionType;
     }
 
-    public static void Register(Type connectionType, IServiceCollection services, IReadOnlySet<string> optionNames, ConnectorCreateConnection createConnection,
-        bool useSingletonConnection)
+    public static void Register(Type connectionType, IServiceCollection services, IReadOnlySet<string> serviceBindingNames,
+        ConnectorCreateConnection createConnection, bool useSingletonConnection)
     {
         ArgumentGuard.NotNull(connectionType);
         ArgumentGuard.NotNull(services);
@@ -31,7 +31,7 @@ internal sealed class ConnectorFactoryShim<TOptions> : Shim, IDisposable
         TypeAccessor typeAccessor = MakeGenericTypeAccessor(connectionType);
 
         services.AddSingleton(typeAccessor.Type,
-            serviceProvider => typeAccessor.CreateInstance(serviceProvider, optionNames, createConnection, useSingletonConnection).Instance);
+            serviceProvider => typeAccessor.CreateInstance(serviceProvider, serviceBindingNames, createConnection, useSingletonConnection).Instance);
     }
 
     public static ConnectorFactoryShim<TOptions> FromServiceProvider(IServiceProvider serviceProvider, Type connectionType)
@@ -51,9 +51,13 @@ internal sealed class ConnectorFactoryShim<TOptions> : Shim, IDisposable
         return TypeAccessor.MakeGenericAccessor(typeof(ConnectorFactory<,>), typeof(TOptions), connectionType);
     }
 
-    public ConnectorShim<TOptions> GetNamed(string name)
+    public ConnectorShim<TOptions> Get(string serviceBindingName)
     {
-        object instance = InstanceAccessor.InvokeMethod(nameof(ConnectorFactory<TOptions, object>.GetNamed), true, name)!;
+        object instance = InstanceAccessor.InvokeMethodOverload(nameof(ConnectorFactory<TOptions, object>.Get), true, new[]
+        {
+            typeof(string)
+        }, serviceBindingName)!;
+
         return new ConnectorShim<TOptions>(_connectionType, instance);
     }
 

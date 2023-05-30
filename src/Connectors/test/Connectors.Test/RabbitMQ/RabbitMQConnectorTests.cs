@@ -259,17 +259,17 @@ public sealed class RabbitMQConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        connectorFactory.Names.Should().HaveCount(2);
-        connectorFactory.Names.Should().Contain("myRabbitMQServiceOne");
-        connectorFactory.Names.Should().Contain("myRabbitMQServiceTwo");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain("myRabbitMQServiceOne");
+        connectorFactory.ServiceBindingNames.Should().Contain("myRabbitMQServiceTwo");
 
-        var connectionOne = (FakeConnection)connectorFactory.GetNamed("myRabbitMQServiceOne").GetConnection();
+        var connectionOne = (FakeConnection)connectorFactory.Get("myRabbitMQServiceOne").GetConnection();
         connectionOne.ConnectionString.Should().Be("amqp://user1:pass1@host1:5672/virtual-host-1");
 
-        var connectionTwo = (FakeConnection)connectorFactory.GetNamed("myRabbitMQServiceTwo").GetConnection();
+        var connectionTwo = (FakeConnection)connectorFactory.Get("myRabbitMQServiceTwo").GetConnection();
         connectionTwo.ConnectionString.Should().Be("amqps://user2:pass2@host2:5672/virtual-host-2");
 
-        IConnection connectionOneAgain = connectorFactory.GetNamed("myRabbitMQServiceOne").GetConnection();
+        IConnection connectionOneAgain = connectorFactory.Get("myRabbitMQServiceOne").GetConnection();
         connectionOneAgain.Should().BeSameAs(connectionOne);
     }
 
@@ -326,14 +326,14 @@ public sealed class RabbitMQConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        connectorFactory.Names.Should().HaveCount(2);
-        connectorFactory.Names.Should().Contain(string.Empty);
-        connectorFactory.Names.Should().Contain("myRabbitMQService");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().Contain("myRabbitMQService");
 
-        RabbitMQOptions defaultOptions = connectorFactory.GetDefault().Options;
+        RabbitMQOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
 
-        RabbitMQOptions namedOptions = connectorFactory.GetNamed("myRabbitMQService").Options;
+        RabbitMQOptions namedOptions = connectorFactory.Get("myRabbitMQService").Options;
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -364,10 +364,10 @@ public sealed class RabbitMQConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        connectorFactory.Names.Should().HaveCount(1);
-        connectorFactory.Names.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
 
-        RabbitMQOptions defaultOptions = connectorFactory.GetDefault().Options;
+        RabbitMQOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -393,13 +393,13 @@ public sealed class RabbitMQConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        connectorFactory.Names.Should().HaveCount(1);
-        connectorFactory.Names.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
 
-        RabbitMQOptions defaultOptions = connectorFactory.GetDefault().Options;
+        RabbitMQOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().BeNull();
 
-        var connection = (FakeConnection)connectorFactory.GetDefault().GetConnection();
+        var connection = (FakeConnection)connectorFactory.Get().GetConnection();
         connection.ConnectionString.Should().BeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);

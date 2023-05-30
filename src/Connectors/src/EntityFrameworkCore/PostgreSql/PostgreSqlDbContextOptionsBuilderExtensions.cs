@@ -41,7 +41,7 @@ public static class PostgreSqlDbContextOptionsBuilderExtensions
         ConnectorFactoryShim<PostgreSqlOptions> connectorFactoryShim =
             ConnectorFactoryShim<PostgreSqlOptions>.FromServiceProvider(serviceProvider, packageResolver.NpgsqlConnectionClass.Type);
 
-        ConnectorShim<PostgreSqlOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
+        ConnectorShim<PostgreSqlOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
         return connectorShim.Options.ConnectionString;
     }
 }

@@ -27,33 +27,36 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
     private readonly ConcurrentDictionary<string, Connector<TOptions, TConnection>> _namedConnectors = new();
 
     /// <summary>
-    /// Gets the list of available connector names.
+    /// Gets the names of the available service bindings.
     /// </summary>
     /// <returns>
-    /// The connector names. An empty string represents the default connector.
+    /// The service binding names. An empty string represents the default service binding.
     /// </returns>
-    public IReadOnlySet<string> Names { get; }
+    public IReadOnlySet<string> ServiceBindingNames { get; }
 
-    public ConnectorFactory(IServiceProvider serviceProvider, IReadOnlySet<string> names, ConnectorCreateConnection createConnection,
+    public ConnectorFactory(IServiceProvider serviceProvider, IReadOnlySet<string> serviceBindingNames, ConnectorCreateConnection createConnection,
         bool useSingletonConnection)
     {
         ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNullOrEmpty(names);
+        ArgumentGuard.NotNullOrEmpty(serviceBindingNames);
         ArgumentGuard.NotNull(createConnection);
 
         _serviceProvider = serviceProvider;
-        Names = names;
+        ServiceBindingNames = serviceBindingNames;
         _createConnection = createConnection;
         _useSingletonConnection = useSingletonConnection;
     }
 
     /// <summary>
-    /// Gets a connector for the default service binding. Only use this if a single binding exists.
+    /// Gets a connector for the default service binding.
     /// </summary>
     /// <returns>
     /// The connector.
     /// </returns>
-    public Connector<TOptions, TConnection> GetDefault()
+    /// <remarks>
+    /// This is only available when at most one named service binding exists in the cloud and the client configuration only contains the "Default" entry.
+    /// </remarks>
+    public Connector<TOptions, TConnection> Get()
     {
         return GetCachedConnector(string.Empty);
     }
@@ -61,22 +64,22 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
     /// <summary>
     /// Gets a connector for the specified service binding name.
     /// </summary>
-    /// <param name="name">
+    /// <param name="serviceBindingName">
     /// The case-sensitive service binding name.
     /// </param>
     /// <returns>
     /// The connector.
     /// </returns>
-    public Connector<TOptions, TConnection> GetNamed(string name)
+    public Connector<TOptions, TConnection> Get(string serviceBindingName)
     {
-        return GetCachedConnector(name);
+        return GetCachedConnector(serviceBindingName);
     }
 
     private Connector<TOptions, TConnection> GetCachedConnector(string name)
     {
         // While option values can change at runtime, the list of named options is fixed (determined at application startup).
 
-        if (!Names.Contains(name))
+        if (!ServiceBindingNames.Contains(name))
         {
             throw new InvalidOperationException(name == string.Empty ? "Default connector is unavailable." : $"Named connector '{name}' is unavailable.");
         }

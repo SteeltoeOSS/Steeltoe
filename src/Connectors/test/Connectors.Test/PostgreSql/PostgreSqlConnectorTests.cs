@@ -395,14 +395,14 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.Names.Should().HaveCount(2);
-        connectorFactory.Names.Should().Contain("myPostgreSqlServiceOne");
-        connectorFactory.Names.Should().Contain("myPostgreSqlServiceTwo");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceOne");
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceTwo");
 
-        await using NpgsqlConnection connectionOne = connectorFactory.GetNamed("myPostgreSqlServiceOne").GetConnection();
+        await using NpgsqlConnection connectionOne = connectorFactory.Get("myPostgreSqlServiceOne").GetConnection();
         connectionOne.ConnectionString.Should().Be("Host=localhost;Database=db1;Username=user1;Password=pass1");
 
-        await using NpgsqlConnection connectionTwo = connectorFactory.GetNamed("myPostgreSqlServiceTwo").GetConnection();
+        await using NpgsqlConnection connectionTwo = connectorFactory.Get("myPostgreSqlServiceTwo").GetConnection();
         connectionTwo.ConnectionString.Should().Be("Host=localhost;Database=db2;Username=user2;Password=pass2");
     }
 
@@ -435,10 +435,10 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
             var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-            connectorFactory.Names.Should().HaveCount(1);
-            connectorFactory.Names.Should().Contain("examplePostgreSqlService");
+            connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+            connectorFactory.ServiceBindingNames.Should().Contain("examplePostgreSqlService");
 
-            string? connectionString = connectorFactory.GetNamed("examplePostgreSqlService").Options.ConnectionString;
+            string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
             connectionString.Should().Be("Host=localhost;Database=db1");
 
             await File.WriteAllTextAsync(tempJsonPath, @"{
@@ -456,10 +456,10 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
             await Task.Delay(TimeSpan.FromSeconds(2));
 
-            connectorFactory.Names.Should().HaveCount(1);
-            connectorFactory.Names.Should().Contain("examplePostgreSqlService");
+            connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+            connectorFactory.ServiceBindingNames.Should().Contain("examplePostgreSqlService");
 
-            connectionString = connectorFactory.GetNamed("examplePostgreSqlService").Options.ConnectionString;
+            connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
             connectionString.Should().Be("Host=remote.com;Database=other");
         }
         finally
@@ -530,11 +530,11 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.Names.Should().HaveCount(2);
-        connectorFactory.Names.Should().Contain(string.Empty);
-        connectorFactory.Names.Should().Contain("myPostgreSqlServiceAzureOne");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
 
-        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        string? defaultConnectionString = connectorFactory.Get().Options.ConnectionString;
 
         ExtractConnectionStringParameters(defaultConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -546,7 +546,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
             "Port=5432"
         }, options => options.WithoutStrictOrdering());
 
-        string? namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -564,14 +564,14 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.Names.Should().HaveCount(2);
-        connectorFactory.Names.Should().Contain(string.Empty);
-        connectorFactory.Names.Should().Contain("myPostgreSqlServiceAzureOne");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
 
-        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        string? defaultConnectionString = connectorFactory.Get().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNullOrEmpty();
 
-        string? namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -593,10 +593,10 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.Names.Should().HaveCount(1);
-        connectorFactory.Names.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
 
-        string? defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+        string? defaultConnectionString = connectorFactory.Get().Options.ConnectionString;
         defaultConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -618,10 +618,10 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.Names.Should().HaveCount(1);
-        connectorFactory.Names.Should().Contain("myPostgreSqlServiceAzureOne");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
 
-        string? namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -644,10 +644,10 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.Names.Should().HaveCount(1);
-        connectorFactory.Names.Should().Contain("myPostgreSqlServiceAzureOne");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
 
-        string? namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -670,12 +670,12 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.Names.Should().HaveCount(3);
-        connectorFactory.Names.Should().Contain("myPostgreSqlServiceAzureOne");
-        connectorFactory.Names.Should().Contain("myPostgreSqlServiceAzureTwo");
-        connectorFactory.Names.Should().Contain("myPostgreSqlServiceGoogle");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(3);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureTwo");
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceGoogle");
 
-        string? namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(3);
@@ -699,10 +699,10 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.Names.Should().HaveCount(1);
-        connectorFactory.Names.Should().Contain("myPostgreSqlServiceAzureOne");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
 
-        string? namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -726,14 +726,14 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        connectorFactory.Names.Should().HaveCount(2);
-        connectorFactory.Names.Should().Contain("myPostgreSqlServiceAzureOne");
-        connectorFactory.Names.Should().Contain("alternatePostgreSqlService");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
+        connectorFactory.ServiceBindingNames.Should().Contain("alternatePostgreSqlService");
 
-        string? namedConnectionString1 = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string? namedConnectionString1 = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString1.Should().NotBeNullOrEmpty();
 
-        string? namedConnectionString2 = connectorFactory.GetNamed("alternatePostgreSqlService").Options.ConnectionString;
+        string? namedConnectionString2 = connectorFactory.Get("alternatePostgreSqlService").Options.ConnectionString;
         namedConnectionString2.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(2);

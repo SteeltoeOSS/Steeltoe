@@ -84,7 +84,7 @@ public static class RabbitMQServiceCollectionExtensions
         ConnectorFactoryShim<RabbitMQOptions> connectorFactoryShim =
             ConnectorFactoryShim<RabbitMQOptions>.FromServiceProvider(serviceProvider, packageResolver.ConnectionInterface.Type);
 
-        ConnectorShim<RabbitMQOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
+        ConnectorShim<RabbitMQOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
 
         object connection = connectorShim.GetConnection();
         string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);

@@ -93,7 +93,7 @@ public static class RedisServiceCollectionExtensions
         ConnectorFactoryShim<RedisOptions> connectorFactoryShim =
             ConnectorFactoryShim<RedisOptions>.FromServiceProvider(serviceProvider, packageResolver.ConnectionMultiplexerInterface.Type);
 
-        ConnectorShim<RedisOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
+        ConnectorShim<RedisOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
 
         object redisClient = connectorShim.GetConnection();
         string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);

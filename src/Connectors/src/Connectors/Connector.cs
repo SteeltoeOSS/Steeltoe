@@ -13,7 +13,7 @@ namespace Steeltoe.Connectors;
 public sealed class Connector<TOptions, TConnection> : IDisposable
     where TOptions : ConnectionStringOptions
 {
-    private readonly string _name;
+    private readonly string _serviceBindingName;
     private readonly Func<object> _createConnection;
     private readonly IOptionsMonitor<TOptions> _optionsMonitor;
     private readonly Lazy<(object Connection, TOptions OptionsSnapshot)>? _singletonConnectionWithOptions;
@@ -37,18 +37,18 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
                 return _singletonConnectionWithOptions.Value.OptionsSnapshot;
             }
 
-            return _optionsMonitor.Get(_name);
+            return _optionsMonitor.Get(_serviceBindingName);
         }
     }
 
-    public Connector(IServiceProvider serviceProvider, string name, ConnectorCreateConnection createConnection, bool useSingletonConnection)
+    public Connector(IServiceProvider serviceProvider, string serviceBindingName, ConnectorCreateConnection createConnection, bool useSingletonConnection)
     {
         ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNull(name);
+        ArgumentGuard.NotNull(serviceBindingName);
         ArgumentGuard.NotNull(createConnection);
 
-        _name = name;
-        _createConnection = () => createConnection(serviceProvider, name);
+        _serviceBindingName = serviceBindingName;
+        _createConnection = () => createConnection(serviceProvider, serviceBindingName);
         _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<TOptions>>();
 
         if (useSingletonConnection)
@@ -86,14 +86,14 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
 
     private (object Connection, TOptions OptionsSnapshot) CreateConnectionFromOptions()
     {
-        TOptions optionsSnapshot = _optionsMonitor.Get(_name);
+        TOptions optionsSnapshot = _optionsMonitor.Get(_serviceBindingName);
         object connection = _createConnection();
 
         if (connection == null)
         {
-            throw new InvalidOperationException(_name == string.Empty
+            throw new InvalidOperationException(_serviceBindingName == string.Empty
                 ? "Failed to create connection for default service binding."
-                : $"Failed to create connection for service binding '{_name}'.");
+                : $"Failed to create connection for service binding '{_serviceBindingName}'.");
         }
 
         return (connection, optionsSnapshot);

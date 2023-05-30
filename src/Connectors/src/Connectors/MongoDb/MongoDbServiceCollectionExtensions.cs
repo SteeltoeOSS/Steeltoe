@@ -78,7 +78,7 @@ public static class MongoDbServiceCollectionExtensions
         ConnectorFactoryShim<MongoDbOptions> connectorFactoryShim =
             ConnectorFactoryShim<MongoDbOptions>.FromServiceProvider(serviceProvider, packageResolver.MongoClientInterface.Type);
 
-        ConnectorShim<MongoDbOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
+        ConnectorShim<MongoDbOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
 
         object mongoClient = connectorShim.GetConnection();
         string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);

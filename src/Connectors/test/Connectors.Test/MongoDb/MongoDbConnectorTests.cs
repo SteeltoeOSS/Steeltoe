@@ -184,16 +184,16 @@ public sealed class MongoDbConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MongoDbOptions, IMongoClient>>();
 
-        connectorFactory.Names.Should().HaveCount(2);
-        connectorFactory.Names.Should().Contain("myMongoDbServiceOne");
-        connectorFactory.Names.Should().Contain("myMongoDbServiceTwo");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain("myMongoDbServiceOne");
+        connectorFactory.ServiceBindingNames.Should().Contain("myMongoDbServiceTwo");
 
-        IMongoClient connectionOne = connectorFactory.GetNamed("myMongoDbServiceOne").GetConnection();
+        IMongoClient connectionOne = connectorFactory.Get("myMongoDbServiceOne").GetConnection();
         connectionOne.Settings.Credential.Should().BeNull();
         connectionOne.Settings.Server.Host.Should().Be("localhost");
         connectionOne.Settings.Server.Port.Should().Be(27017);
 
-        IMongoClient connectionTwo = connectorFactory.GetNamed("myMongoDbServiceTwo").GetConnection();
+        IMongoClient connectionTwo = connectorFactory.Get("myMongoDbServiceTwo").GetConnection();
         connectionTwo.Settings.Credential.Username.Should().Be("user");
         connectionTwo.Settings.Credential.Evidence.Should().Be(new PasswordEvidence("pass"));
         connectionTwo.Settings.Server.Host.Should().Be("localhost");
@@ -235,15 +235,15 @@ public sealed class MongoDbConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MongoDbOptions, IMongoClient>>();
 
-        connectorFactory.Names.Should().HaveCount(2);
-        connectorFactory.Names.Should().Contain(string.Empty);
-        connectorFactory.Names.Should().Contain("myMongoDbService");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().Contain("myMongoDbService");
 
-        MongoDbOptions defaultOptions = connectorFactory.GetDefault().Options;
+        MongoDbOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
         defaultOptions.Database.Should().NotBeNullOrEmpty();
 
-        MongoDbOptions namedOptions = connectorFactory.GetNamed("myMongoDbService").Options;
+        MongoDbOptions namedOptions = connectorFactory.Get("myMongoDbService").Options;
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
         namedOptions.Database.Should().Be(defaultOptions.Database);
 
@@ -267,10 +267,10 @@ public sealed class MongoDbConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MongoDbOptions, IMongoClient>>();
 
-        connectorFactory.Names.Should().HaveCount(1);
-        connectorFactory.Names.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
 
-        MongoDbOptions defaultOptions = connectorFactory.GetDefault().Options;
+        MongoDbOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
         defaultOptions.Database.Should().NotBeNullOrEmpty();
 

@@ -42,7 +42,7 @@ public static class MySqlDbContextOptionsBuilderExtensions
         ConnectorFactoryShim<MySqlOptions> connectorFactoryShim =
             ConnectorFactoryShim<MySqlOptions>.FromServiceProvider(serviceProvider, packageResolver.MySqlConnectionClass.Type);
 
-        ConnectorShim<MySqlOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
+        ConnectorShim<MySqlOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
         return connectorShim.Options.ConnectionString;
     }
 }

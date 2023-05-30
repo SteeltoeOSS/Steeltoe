@@ -79,7 +79,7 @@ public static class SqlServerServiceCollectionExtensions
         ConnectorFactoryShim<SqlServerOptions> connectorFactoryShim =
             ConnectorFactoryShim<SqlServerOptions>.FromServiceProvider(serviceProvider, packageResolver.SqlConnectionClass.Type);
 
-        ConnectorShim<SqlServerOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
+        ConnectorShim<SqlServerOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
 
         var connection = (DbConnection)connectorShim.GetConnection();
         string hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);

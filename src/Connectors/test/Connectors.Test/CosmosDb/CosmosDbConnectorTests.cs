@@ -196,7 +196,7 @@ public sealed class CosmosDbConnectorTests
             setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
             {
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CosmosDbOptions>>();
-                var options = optionsMonitor.Get(serviceBindingName);
+                CosmosDbOptions options = optionsMonitor.Get(serviceBindingName);
 
                 if (serviceBindingName == "myCosmosDbServiceOne")
                 {
@@ -214,17 +214,17 @@ public sealed class CosmosDbConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<CosmosDbOptions, CosmosClient>>();
 
-        connectorFactory.Names.Should().HaveCount(2);
-        connectorFactory.Names.Should().Contain("myCosmosDbServiceOne");
-        connectorFactory.Names.Should().Contain("myCosmosDbServiceTwo");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain("myCosmosDbServiceOne");
+        connectorFactory.ServiceBindingNames.Should().Contain("myCosmosDbServiceTwo");
 
-        CosmosClient connectionOne = connectorFactory.GetNamed("myCosmosDbServiceOne").GetConnection();
+        CosmosClient connectionOne = connectorFactory.Get("myCosmosDbServiceOne").GetConnection();
         connectionOne.ClientOptions.ConsistencyLevel.Should().Be(ConsistencyLevel.Eventual);
 
-        CosmosClient connectionTwo = connectorFactory.GetNamed("myCosmosDbServiceTwo").GetConnection();
+        CosmosClient connectionTwo = connectorFactory.Get("myCosmosDbServiceTwo").GetConnection();
         connectionTwo.ClientOptions.ConsistencyLevel.Should().BeNull();
 
-        CosmosClient connectionOneAgain = connectorFactory.GetNamed("myCosmosDbServiceOne").GetConnection();
+        CosmosClient connectionOneAgain = connectorFactory.Get("myCosmosDbServiceOne").GetConnection();
         connectionOneAgain.Should().BeSameAs(connectionOne);
     }
 
@@ -265,15 +265,15 @@ public sealed class CosmosDbConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<CosmosDbOptions, CosmosClient>>();
 
-        connectorFactory.Names.Should().HaveCount(2);
-        connectorFactory.Names.Should().Contain(string.Empty);
-        connectorFactory.Names.Should().Contain("myCosmosDbService");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().Contain("myCosmosDbService");
 
-        CosmosDbOptions defaultOptions = connectorFactory.GetDefault().Options;
+        CosmosDbOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
         defaultOptions.Database.Should().NotBeNullOrEmpty();
 
-        CosmosDbOptions namedOptions = connectorFactory.GetNamed("myCosmosDbService").Options;
+        CosmosDbOptions namedOptions = connectorFactory.Get("myCosmosDbService").Options;
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
         namedOptions.Database.Should().Be(defaultOptions.Database);
 
@@ -298,10 +298,10 @@ public sealed class CosmosDbConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<CosmosDbOptions, CosmosClient>>();
 
-        connectorFactory.Names.Should().HaveCount(1);
-        connectorFactory.Names.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
 
-        CosmosDbOptions defaultOptions = connectorFactory.GetDefault().Options;
+        CosmosDbOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
         defaultOptions.Database.Should().NotBeNullOrEmpty();
 

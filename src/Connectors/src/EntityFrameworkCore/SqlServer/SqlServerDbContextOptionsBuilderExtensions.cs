@@ -41,7 +41,7 @@ public static class SqlServerDbContextOptionsBuilderExtensions
         ConnectorFactoryShim<SqlServerOptions> connectorFactoryShim =
             ConnectorFactoryShim<SqlServerOptions>.FromServiceProvider(serviceProvider, packageResolver.SqlConnectionClass.Type);
 
-        ConnectorShim<SqlServerOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
+        ConnectorShim<SqlServerOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
         return connectorShim.Options.ConnectionString;
     }
 }

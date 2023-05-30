@@ -79,7 +79,7 @@ public static class CosmosDbServiceCollectionExtensions
         ConnectorFactoryShim<CosmosDbOptions> connectorFactoryShim =
             ConnectorFactoryShim<CosmosDbOptions>.FromServiceProvider(serviceProvider, packageResolver.CosmosClientClass.Type);
 
-        ConnectorShim<CosmosDbOptions> connectorShim = connectorFactoryShim.GetNamed(serviceBindingName);
+        ConnectorShim<CosmosDbOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
 
         object cosmosClient = connectorShim.GetConnection();
         string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);
