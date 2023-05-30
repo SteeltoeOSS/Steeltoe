@@ -14,8 +14,8 @@ using Steeltoe.Common.Utils.IO;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.HeapDump;

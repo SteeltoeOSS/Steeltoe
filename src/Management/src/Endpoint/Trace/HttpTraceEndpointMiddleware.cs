@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -13,7 +12,8 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 internal sealed class HttpTraceEndpointMiddleware : EndpointMiddleware<object, HttpTraceResult>
 {
-    public HttpTraceEndpointMiddleware(IHttpTraceEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<HttpTraceEndpointMiddleware> logger)
+    public HttpTraceEndpointMiddleware(IHttpTraceEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILogger<HttpTraceEndpointMiddleware> logger)
         : base(endpointHandler, managementOptions, logger)
     {
     }

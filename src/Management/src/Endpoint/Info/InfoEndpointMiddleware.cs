@@ -5,8 +5,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -14,7 +12,8 @@ namespace Steeltoe.Management.Endpoint.Info;
 
 internal sealed class InfoEndpointMiddleware : EndpointMiddleware<object, Dictionary<string, object>>
 {
-    public InfoEndpointMiddleware(IInfoEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<InfoEndpointMiddleware> logger)
+    public InfoEndpointMiddleware(IInfoEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILogger<InfoEndpointMiddleware> logger)
         : base(endpointHandler, managementOptions, logger)
     {
     }
@@ -23,5 +22,4 @@ internal sealed class InfoEndpointMiddleware : EndpointMiddleware<object, Dictio
     {
         return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
-
 }

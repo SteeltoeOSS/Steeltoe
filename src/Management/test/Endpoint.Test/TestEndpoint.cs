@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-internal sealed class TestEndpointHandler: IEndpointHandler<object, int>
+internal sealed class TestEndpointHandler : IEndpointHandler<object, int>
 {
     public HttpMiddlewareOptions Options => throw new NotImplementedException();
 

@@ -19,7 +19,6 @@ using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
@@ -29,6 +28,7 @@ using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Info;
 using Xunit;
 
@@ -37,11 +37,11 @@ namespace Steeltoe.Management.Endpoint.Test;
 public class ManagementWebHostBuilderExtensionsTest : BaseTest
 {
     private readonly IWebHostBuilder _testServerWithRouting = new WebHostBuilder().UseTestServer()
-        .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting())
-        .ConfigureAppConfiguration(c => c.AddInMemoryCollection(new Dictionary<string, string>
-        {
-            ["management:endpoints:actuator:exposure:include:0"] = "*"
-        }));
+        .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting()).ConfigureAppConfiguration(c =>
+            c.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["management:endpoints:actuator:exposure:include:0"] = "*"
+            }));
 
     private readonly IWebHostBuilder _testServerWithSecureRouting = new WebHostBuilder().UseTestServer().ConfigureServices(s =>
     {
@@ -460,7 +460,7 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
             });
 
             IWebHost host = hostBuilder.AddThreadDumpActuator().Build();
-            IEnumerable<IThreadDumpEndpointV2Handler> epHandler= host.Services.GetServices<IThreadDumpEndpointV2Handler>();
+            IEnumerable<IThreadDumpEndpointV2Handler> epHandler = host.Services.GetServices<IThreadDumpEndpointV2Handler>();
             IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             Assert.Single(epHandler);

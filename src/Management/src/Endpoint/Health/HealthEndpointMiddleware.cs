@@ -6,20 +6,18 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRequest,HealthEndpointResponse>
+internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRequest, HealthEndpointResponse>
 {
     private readonly IOptionsMonitor<HealthEndpointOptions> _healthEndpointOptions;
 
     public HealthEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IHealthEndpointHandler endpointHandler,
-        IOptionsMonitor<HealthEndpointOptions> endpointOptions,
-        ILogger<HealthEndpointMiddleware> logger)
+        IOptionsMonitor<HealthEndpointOptions> endpointOptions, ILogger<HealthEndpointMiddleware> logger)
         : base(endpointHandler, managementOptions, logger)
     {
         ArgumentGuard.NotNull(endpointOptions);
@@ -37,8 +35,8 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
     private bool GetClaim(HttpContext context)
     {
-        var claim = _healthEndpointOptions.CurrentValue.Claim;
-        return context != null && context.User != null &&  claim != null && context.User.HasClaim(claim.Type, claim.Value);
+        EndpointClaim claim = _healthEndpointOptions.CurrentValue.Claim;
+        return context != null && context.User != null && claim != null && context.User.HasClaim(claim.Type, claim.Value);
     }
 
     /// <summary>
@@ -71,6 +69,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
         {
             context.Response.StatusCode = ((HealthEndpointHandler)EndpointHandler).GetStatusCode(result);
         }
+
         return result;
     }
 }

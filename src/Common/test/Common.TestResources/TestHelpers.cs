@@ -46,7 +46,6 @@ public static class TestHelpers
         { "redis:client:connectTimeout", "1" },
         { "sqlserver:credentials:timeout", "1" },
         { "management:endpoints:actuator:exposure:include:0", "*" }
-
     }.ToImmutableDictionary();
 
     public static readonly ImmutableDictionary<string, string> WavefrontConfiguration = new Dictionary<string, string>

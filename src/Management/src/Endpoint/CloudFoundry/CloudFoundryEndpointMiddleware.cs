@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
@@ -15,8 +13,8 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 /// <summary>
-/// CloudFoundry endpointHandler provides hypermedia: a page is added with links to all the endpoints that are enabled. When deployed to CloudFoundry this
-/// endpointHandler is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware" /> is added.
+/// CloudFoundry endpointHandler provides hypermedia: a page is added with links to all the endpoints that are enabled. When deployed to CloudFoundry
+/// this endpointHandler is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware" /> is added.
 /// </summary>
 internal sealed class CloudFoundryEndpointMiddleware : EndpointMiddleware<string, Links>
 {

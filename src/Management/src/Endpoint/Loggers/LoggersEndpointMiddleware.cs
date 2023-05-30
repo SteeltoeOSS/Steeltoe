@@ -6,7 +6,6 @@ using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -16,24 +15,23 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
 {
     private readonly IEnumerable<IContextName> _contextNames;
 
-    public LoggersEndpointMiddleware(ILoggersEndpointHandler endpointHandler,
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
-        IEnumerable<IContextName> contextNames,
-        ILogger<LoggersEndpointMiddleware> logger)
-        : base(endpointHandler, managementOptions,  logger)
+    public LoggersEndpointMiddleware(ILoggersEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, IEnumerable<IContextName> contextNames, ILogger<LoggersEndpointMiddleware> logger)
+        : base(endpointHandler, managementOptions, logger)
     {
         _contextNames = contextNames;
     }
 
     protected override async Task<Dictionary<string, object>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        var loggersRequest = await GetLoggersChangeRequestAsync(context);
-        if(loggersRequest is ErrorLoggersRequest)
+        ILoggersRequest loggersRequest = await GetLoggersChangeRequestAsync(context);
+
+        if (loggersRequest is ErrorLoggersRequest)
         {
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
         }
-        return await  EndpointHandler.InvokeAsync(loggersRequest, cancellationToken);
+
+        return await EndpointHandler.InvokeAsync(loggersRequest, cancellationToken);
     }
 
     private async Task<ILoggersRequest> GetLoggersChangeRequestAsync(HttpContext context)
@@ -45,10 +43,9 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
             // POST - change a logger level
             Logger.LogDebug("Incoming path: {path}", request.Path.Value);
 
-
-            foreach (var contextName in _contextNames)
+            foreach (IContextName contextName in _contextNames)
             {
-                var mgmtOption = ManagementEndpointOptions.Get(contextName.Name);
+                ManagementEndpointOptions mgmtOption = ManagementEndpointOptions.Get(contextName.Name);
                 string path = EndpointOptions.Path;
 
                 if (mgmtOption.Path != null)
@@ -56,6 +53,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
                     path = mgmtOption.Path + "/" + path;
                     path = path.Replace("//", "/", StringComparison.Ordinal);
                 }
+
                 var epPath = new PathString(path);
 
                 if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
@@ -75,15 +73,13 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
                             Logger.LogDebug("Invalid LogLevel specified: {level}", level);
                             return new ErrorLoggersRequest();
                         }
-                        else
-                        {
-                            return new LoggersChangeRequest(loggerName, level);
-                        }
+
+                        return new LoggersChangeRequest(loggerName, level);
                     }
                 }
             }
-        
         }
+
         return new DefaultLoggersRequest();
     }
 }

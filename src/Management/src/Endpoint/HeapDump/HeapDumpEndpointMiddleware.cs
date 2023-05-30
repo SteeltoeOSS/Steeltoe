@@ -18,7 +18,6 @@ internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object, st
     {
     }
 
-
     protected override async Task<string> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         string fileName = await EndpointHandler.InvokeAsync(null, context.RequestAborted);
@@ -50,7 +49,7 @@ internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object, st
         {
             context.Response.StatusCode = StatusCodes.Status404NotFound;
         }
+
         return string.Empty;
     }
-
 }

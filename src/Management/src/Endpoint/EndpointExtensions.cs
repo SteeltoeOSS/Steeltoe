@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
@@ -17,7 +16,6 @@ internal static class EndPointExtensions
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(managementOptions);
-
 
         if (options.Enabled.HasValue)
         {
@@ -59,7 +57,8 @@ internal static class EndPointExtensions
         return true;
     }
 
-    public static ManagementEndpointOptions GetFromContextPath(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path, out string managementContextName)
+    public static ManagementEndpointOptions GetFromContextPath(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path,
+        out string managementContextName)
     {
         Dictionary<string, ManagementEndpointOptions> options = new();
 
@@ -76,6 +75,7 @@ internal static class EndPointExtensions
                 return opt;
             }
         }
+
         managementContextName = ActuatorContext.Name;
         return managementOptions.Get(ActuatorContext.Name);
     }

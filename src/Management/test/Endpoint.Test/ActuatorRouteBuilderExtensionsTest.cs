@@ -7,18 +7,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Endpoint.ThreadDump;
-using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
-using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -47,7 +44,6 @@ public class ActuatorRouteBuilderExtensionsTest
 
         return new HostBuilder().AddDynamicLogging().ConfigureServices((context, s) =>
         {
-            
             s.AddAllActuators();
             s.AddRouting();
             s.AddActionDescriptorCollectionProvider();
@@ -66,8 +62,7 @@ public class ActuatorRouteBuilderExtensionsTest
                 endpoints.MapAllActuators().RequireAuthorization("TestAuth");
                 endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
             })).UseTestServer();
-        })
-        .ConfigureAppConfiguration(configure => configure.AddInMemoryCollection(appSettings));
+        }).ConfigureAppConfiguration(configure => configure.AddInMemoryCollection(appSettings));
     }
 
     private static ManagementEndpointOptions GetManagementContext(IServiceProvider services)

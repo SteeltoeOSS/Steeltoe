@@ -30,7 +30,7 @@ internal sealed class SecurityUtils
     private readonly ILogger _logger;
     private HttpClient _httpClient;
 
-    internal SecurityUtils( CloudFoundryEndpointOptions options, ManagementEndpointOptions managementOptions, ILogger logger, HttpClient httpClient = null)
+    internal SecurityUtils(CloudFoundryEndpointOptions options, ManagementEndpointOptions managementOptions, ILogger logger, HttpClient httpClient = null)
     {
         ArgumentGuard.NotNull(logger);
         _options = options;

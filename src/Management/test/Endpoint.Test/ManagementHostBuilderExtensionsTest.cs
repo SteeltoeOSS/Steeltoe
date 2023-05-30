@@ -20,7 +20,6 @@ using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
@@ -30,6 +29,7 @@ using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Info;
 using Xunit;
 
@@ -37,10 +37,12 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public class ManagementHostBuilderExtensionsTest
 {
-    private readonly Action<IWebHostBuilder> _testServerWithRouting = builder =>
-        builder.UseTestServer()
-                .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting())
-                .ConfigureAppConfiguration(c => c.AddInMemoryCollection(new Dictionary<string, string> { ["management:endpoints:actuator:exposure:include:0"] = "*" }));
+    private readonly Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer()
+        .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting()).ConfigureAppConfiguration(c =>
+            c.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["management:endpoints:actuator:exposure:include:0"] = "*"
+            }));
 
     private readonly Action<IWebHostBuilder> _testServerWithSecureRouting = builder => builder.UseTestServer().ConfigureServices(s =>
     {

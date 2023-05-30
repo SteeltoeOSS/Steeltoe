@@ -14,7 +14,8 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequest, IMetricsResponse>
 {
-    public MetricsEndpointMiddleware(IMetricsEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<MetricsEndpointMiddleware> logger)
+    public MetricsEndpointMiddleware(IMetricsEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILogger<MetricsEndpointMiddleware> logger)
         : base(endpointHandler, managementOptions, logger)
     {
     }
@@ -36,6 +37,7 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
         // GET /metrics
         return null;
     }
+
     internal string GetMetricName(HttpRequest request)
     {
         ManagementEndpointOptions mgmtOptions = ManagementEndpointOptions.GetFromContextPath(request.Path, out _);
@@ -108,12 +110,12 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
 
     protected override async Task<IMetricsResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        var metricsRequest = GetMetricsRequest(context);
-        var response = await EndpointHandler.InvokeAsync(metricsRequest, cancellationToken);
+        MetricsRequest metricsRequest = GetMetricsRequest(context);
+        IMetricsResponse response = await EndpointHandler.InvokeAsync(metricsRequest, cancellationToken);
 
         if (metricsRequest != null && response is MetricsEmptyResponse)
         {
-            context.Response.StatusCode = (int) HttpStatusCode.NotFound;
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
         }
         else
         {
@@ -121,6 +123,5 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
         }
 
         return response;
-        
     }
 }

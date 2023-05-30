@@ -13,9 +13,9 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Refresh;
@@ -43,7 +43,7 @@ public class EndpointMiddlewareTest : BaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var ep = new RefreshEndpointHandler(opts, configurationRoot, NullLoggerFactory.Instance);
-        var middle = new RefreshEndpointMiddleware(ep, managementOptions,NullLogger<RefreshEndpointMiddleware>.Instance);
+        var middle = new RefreshEndpointMiddleware(ep, managementOptions, NullLogger<RefreshEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/refresh");
         await middle.InvokeAsync(context, null);

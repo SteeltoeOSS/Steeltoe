@@ -49,7 +49,7 @@ internal sealed class ActuatorEndpointMapper
 
                 Type middlewareType = middleware.GetType();
                 RequestDelegate pipeline = endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middlewareType).Build();
-                var endpointOptions = middleware.EndpointOptions;
+                HttpMiddlewareOptions endpointOptions = middleware.EndpointOptions;
                 string epPath = endpointOptions.GetContextPath(mgmtOption);
 
                 if (collection.Add(epPath))

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -12,7 +11,6 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
-using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
@@ -48,7 +46,8 @@ public class HealthEndpointTest : BaseTest
         var contribEx = Assert.Throws<ArgumentNullException>(() =>
             new HealthEndpointHandler(_options, _aggregator, null, ServiceOptions(), _provider, nullLoggerFactory));
 
-        var svcOptsEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointHandler(_options, _aggregator, contributors, null, _provider, nullLoggerFactory));
+        var svcOptsEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpointHandler(_options, _aggregator, contributors, null, _provider, nullLoggerFactory));
 
         var providerEx = Assert.Throws<ArgumentNullException>(() =>
             new HealthEndpointHandler(_options, _aggregator, contributors, ServiceOptions(), null, nullLoggerFactory));
@@ -110,12 +109,6 @@ public class HealthEndpointTest : BaseTest
             Assert.True(tcc.Called);
         }
     }
-
-    private static HealthEndpointRequest GetHealthRequest() => new HealthEndpointRequest
-    {
-        GroupName = string.Empty,
-        HasClaim = true
-    };
 
     [Fact]
     public async Task Invoke_HandlesExceptions_ReturnsExpectedHealth()
@@ -219,7 +212,12 @@ public class HealthEndpointTest : BaseTest
 
         var ep = tc.GetService<IHealthEndpointHandler>();
         appAvailability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, null);
-        HealthEndpointRequest healthRequest = new HealthEndpointRequest { GroupName  = "liVeness", HasClaim = true };
+
+        var healthRequest = new HealthEndpointRequest
+        {
+            GroupName = "liVeness",
+            HasClaim = true
+        };
 
         HealthEndpointResponse result = await ep.InvokeAsync(healthRequest, CancellationToken.None);
 
@@ -250,7 +248,12 @@ public class HealthEndpointTest : BaseTest
 
         var ep = tc.GetService<IHealthEndpointHandler>();
         appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
-        HealthEndpointRequest healthRequest = new HealthEndpointRequest { GroupName = "readiness", HasClaim = true };
+
+        var healthRequest = new HealthEndpointRequest
+        {
+            GroupName = "readiness",
+            HasClaim = true
+        };
 
         HealthEndpointResponse result = await ep.InvokeAsync(healthRequest, CancellationToken.None);
 
@@ -275,7 +278,12 @@ public class HealthEndpointTest : BaseTest
 
         var ep = new HealthEndpointHandler(options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), _provider, NullLoggerFactory.Instance);
         appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
-        HealthEndpointRequest healthRequest = new HealthEndpointRequest { GroupName = "readiness", HasClaim = true };
+
+        var healthRequest = new HealthEndpointRequest
+        {
+            GroupName = "readiness",
+            HasClaim = true
+        };
 
         HealthEndpointResponse result = await ep.InvokeAsync(healthRequest, CancellationToken.None);
 
@@ -305,7 +313,12 @@ public class HealthEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IHealthEndpointHandler>();
-        HealthEndpointRequest healthRequest = new HealthEndpointRequest { GroupName = "iNvaLid", HasClaim = true };
+
+        var healthRequest = new HealthEndpointRequest
+        {
+            GroupName = "iNvaLid",
+            HasClaim = true
+        };
 
         HealthEndpointResponse result = await ep.InvokeAsync(healthRequest, CancellationToken.None);
 
@@ -333,7 +346,11 @@ public class HealthEndpointTest : BaseTest
         var ep = new HealthEndpointHandler(options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider,
             NullLoggerFactory.Instance);
 
-        HealthEndpointRequest healthRequest = new HealthEndpointRequest { GroupName="msft", HasClaim=true };
+        var healthRequest = new HealthEndpointRequest
+        {
+            GroupName = "msft",
+            HasClaim = true
+        };
 
         HealthEndpointResponse result = await ep.InvokeAsync(healthRequest, CancellationToken.None);
 
@@ -341,6 +358,15 @@ public class HealthEndpointTest : BaseTest
         Assert.Contains("Up", result.Details.Keys);
         Assert.Contains("privatememory", result.Details.Keys);
         Assert.Equal(3, result.Groups.Count());
+    }
+
+    private static HealthEndpointRequest GetHealthRequest()
+    {
+        return new()
+        {
+            GroupName = string.Empty,
+            HasClaim = true
+        };
     }
 
     private IOptionsMonitor<MicrosoftHealth.HealthCheckServiceOptions> ServiceOptions()

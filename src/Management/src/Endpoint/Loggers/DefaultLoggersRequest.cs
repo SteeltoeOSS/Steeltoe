@@ -2,14 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
-
 namespace Steeltoe.Management.Endpoint.Loggers;
 
 internal sealed class DefaultLoggersRequest : ILoggersRequest
 {
     LoggersRequestType ILoggersRequest.RequestType => LoggersRequestType.Default;
 }
+
 internal sealed class ErrorLoggersRequest : ILoggersRequest
 {
     LoggersRequestType ILoggersRequest.RequestType => LoggersRequestType.Error;

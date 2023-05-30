@@ -164,7 +164,8 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         }
     }
 
-    protected void ProcessListener(MethodRabbitListenerEndpoint endpointHandler, RabbitListenerAttribute rabbitListener, object bean, object target, string beanName)
+    protected void ProcessListener(MethodRabbitListenerEndpoint endpointHandler, RabbitListenerAttribute rabbitListener, object bean, object target,
+        string beanName)
     {
         endpointHandler.MessageHandlerMethodFactory = MessageHandlerMethodFactory;
         endpointHandler.Id = GetEndpointId(rabbitListener);

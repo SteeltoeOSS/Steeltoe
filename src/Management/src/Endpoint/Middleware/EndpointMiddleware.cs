@@ -2,13 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.Eventing.Reader;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Diagnostics.Tracing.Parsers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
@@ -17,27 +14,26 @@ using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
 public interface IEndpointMiddleware : IMiddleware
 {
     HttpMiddlewareOptions EndpointOptions { get; }
+
     bool ShouldInvoke(HttpContext context);
 }
 
 public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddleware
 {
-    public IEndpointHandler<TArgument, TResult> EndpointHandler { get;  }
-
-    protected ILogger Logger { get;  }
-    protected IOptionsMonitor<ManagementEndpointOptions> ManagementEndpointOptions { get;  }
+    protected ILogger Logger { get; }
+    protected IOptionsMonitor<ManagementEndpointOptions> ManagementEndpointOptions { get; }
+    public IEndpointHandler<TArgument, TResult> EndpointHandler { get; }
 
     public HttpMiddlewareOptions EndpointOptions { get; }
 
-    protected EndpointMiddleware(IEndpointHandler<TArgument, TResult> endpointHandler,
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
+    protected EndpointMiddleware(IEndpointHandler<TArgument, TResult> endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILogger logger)
     {
         ArgumentGuard.NotNull(endpointHandler);
 
@@ -47,12 +43,11 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         EndpointOptions = EndpointHandler.Options;
     }
 
- 
     public virtual bool ShouldInvoke(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
         ManagementEndpointOptions mgmtOptions = ManagementEndpointOptions.GetFromContextPath(context.Request.Path, out string managementContextName);
-        var endpointOptions = EndpointHandler.Options;
+        HttpMiddlewareOptions endpointOptions = EndpointHandler.Options;
         bool enabled = endpointOptions.IsEnabled(mgmtOptions);
         bool exposed = endpointOptions.IsExposed(mgmtOptions);
 
@@ -61,7 +56,6 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         return enabled && (exposed || isCFContext);
     }
 
-
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         ArgumentGuard.NotNull(context);
@@ -69,7 +63,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         if (ShouldInvoke(context))
         {
             context.HandleContentNegotiation(Logger);
-            var result = await InvokeEndpointHandlerAsync(context, context.RequestAborted);
+            TResult result = await InvokeEndpointHandlerAsync(context, context.RequestAborted);
             await WriteResponseAsync(result, context, context.RequestAborted);
         }
         else
@@ -78,6 +72,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
             context.Response.StatusCode = (int)HttpStatusCode.NotFound;
         }
     }
+
     protected abstract Task<TResult> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken);
 
     protected virtual async Task WriteResponseAsync(TResult result, HttpContext context, CancellationToken cancellationToken)
@@ -93,6 +88,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         JsonSerializerOptions options = GetSerializerOptions(serializerOptions);
         await JsonSerializer.SerializeAsync(context.Response.Body, result, options, cancellationToken);
     }
+
     internal static JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
     {
         serializerOptions ??= new JsonSerializerOptions
@@ -122,5 +118,4 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
 
         return serializerOptions;
     }
-
 }

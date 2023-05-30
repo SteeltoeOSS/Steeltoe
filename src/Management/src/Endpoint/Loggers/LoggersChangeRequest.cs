@@ -6,7 +6,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-internal sealed class LoggersChangeRequest: ILoggersRequest
+internal sealed class LoggersChangeRequest : ILoggersRequest
 {
     LoggersRequestType ILoggersRequest.RequestType => LoggersRequestType.Change;
 
