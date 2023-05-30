@@ -10,12 +10,12 @@ using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connectors.MySql;
+namespace Steeltoe.Connectors.SqlServer;
 
-public static class MySqlServiceCollectionExtensions
+public static class SqlServerHealthServiceCollectionExtensions
 {
     /// <summary>
-    /// Add an IHealthContributor to a ServiceCollection for MySQL.
+    /// Add an IHealthContributor to a ServiceCollection for SqlServer.
     /// </summary>
     /// <param name="services">
     /// Service collection to add to.
@@ -29,20 +29,20 @@ public static class MySqlServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddMySqlHealthContributor(this IServiceCollection services, IConfiguration configuration,
+    public static IServiceCollection AddSqlServerHealthContributor(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
 
-        var info = configuration.GetSingletonServiceInfo<MySqlServiceInfo>();
+        var info = configuration.GetSingletonServiceInfo<SqlServerServiceInfo>();
 
         DoAdd(services, info, configuration, contextLifetime);
         return services;
     }
 
     /// <summary>
-    /// Add an IHealthContributor to a ServiceCollection for MySQL.
+    /// Add an IHealthContributor to a ServiceCollection for SqlServer.
     /// </summary>
     /// <param name="services">
     /// Service collection to add to.
@@ -59,23 +59,23 @@ public static class MySqlServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddMySqlHealthContributor(this IServiceCollection services, IConfiguration configuration, string serviceName,
+    public static IServiceCollection AddSqlServerHealthContributor(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
         ArgumentGuard.NotNull(configuration);
 
-        var info = configuration.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+        var info = configuration.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
 
         DoAdd(services, info, configuration, contextLifetime);
         return services;
     }
 
-    private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime)
+    private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime)
     {
-        var options = new MySqlProviderConnectorOptions(configuration);
-        var factory = new MySqlProviderConnectorFactory(info, options, MySqlTypeLocator.MySqlConnection);
+        var options = new SqlServerProviderConnectorOptions(configuration);
+        var factory = new SqlServerProviderConnectorFactory(info, options, SqlServerTypeLocator.SqlConnection);
 
         services.Add(new ServiceDescriptor(typeof(IHealthContributor),
             ctx => new RelationalDbHealthContributor((DbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),

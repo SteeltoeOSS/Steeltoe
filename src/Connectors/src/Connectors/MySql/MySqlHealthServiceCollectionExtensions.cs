@@ -10,12 +10,12 @@ using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connectors.PostgreSql;
+namespace Steeltoe.Connectors.MySql;
 
-public static class PostgreSqlServiceCollectionExtensions
+public static class MySqlHealthServiceCollectionExtensions
 {
     /// <summary>
-    /// Add an IHealthContributor to a ServiceCollection for PostgreSQL.
+    /// Add an IHealthContributor to a ServiceCollection for MySQL.
     /// </summary>
     /// <param name="services">
     /// Service collection to add to.
@@ -29,20 +29,20 @@ public static class PostgreSqlServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddPostgreSqlHealthContributor(this IServiceCollection services, IConfiguration configuration,
+    public static IServiceCollection AddMySqlHealthContributor(this IServiceCollection services, IConfiguration configuration,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
 
-        var info = configuration.GetSingletonServiceInfo<PostgreSqlServiceInfo>();
+        var info = configuration.GetSingletonServiceInfo<MySqlServiceInfo>();
 
         DoAdd(services, info, configuration, contextLifetime);
         return services;
     }
 
     /// <summary>
-    /// Add an IHealthContributor to a ServiceCollection for PostgreSQL.
+    /// Add an IHealthContributor to a ServiceCollection for MySQL.
     /// </summary>
     /// <param name="services">
     /// Service collection to add to.
@@ -59,23 +59,23 @@ public static class PostgreSqlServiceCollectionExtensions
     /// <returns>
     /// IServiceCollection for chaining.
     /// </returns>
-    public static IServiceCollection AddPostgreSqlHealthContributor(this IServiceCollection services, IConfiguration configuration, string serviceName,
+    public static IServiceCollection AddMySqlHealthContributor(this IServiceCollection services, IConfiguration configuration, string serviceName,
         ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNullOrEmpty(serviceName);
         ArgumentGuard.NotNull(configuration);
 
-        var info = configuration.GetRequiredServiceInfo<PostgreSqlServiceInfo>(serviceName);
+        var info = configuration.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
 
         DoAdd(services, info, configuration, contextLifetime);
         return services;
     }
 
-    private static void DoAdd(IServiceCollection services, PostgreSqlServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime)
+    private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime)
     {
-        var options = new PostgreSqlProviderConnectorOptions(configuration);
-        var factory = new PostgreSqlProviderConnectorFactory(info, options, PostgreSqlTypeLocator.NpgsqlConnection);
+        var options = new MySqlProviderConnectorOptions(configuration);
+        var factory = new MySqlProviderConnectorFactory(info, options, MySqlTypeLocator.MySqlConnection);
 
         services.Add(new ServiceDescriptor(typeof(IHealthContributor),
             ctx => new RelationalDbHealthContributor((DbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),
