@@ -78,16 +78,6 @@ internal static class ConnectorOptionsBinder
 
     private static HashSet<string> GetNamedOptions(IConfigurationSection[] childSections)
     {
-        HashSet<string> namedOptions = childSections
-            .Select(section => section.Key == ConnectionStringPostProcessor.DefaultBindingName ? string.Empty : section.Key).ToHashSet();
-
-        if (namedOptions.Count == 0)
-        {
-            // If no service bindings are available, still register default options.
-            // This is to enable access to connectors that work without a connection string.
-            namedOptions.Add(string.Empty);
-        }
-
-        return namedOptions;
+        return childSections.Select(section => section.Key == ConnectionStringPostProcessor.DefaultBindingName ? string.Empty : section.Key).ToHashSet();
     }
 }

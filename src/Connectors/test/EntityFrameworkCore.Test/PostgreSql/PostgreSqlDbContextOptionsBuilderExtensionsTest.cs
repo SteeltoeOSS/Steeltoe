@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -58,20 +57,5 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
         string connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("Host=localhost;Database=myDb;Username=myUser;Password=myPass;Log Parameters=True;Include Error Detail=true");
-    }
-
-    [Fact]
-    public async Task Throws_for_unknown_service_binding()
-    {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.AddPostgreSql();
-        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseNpgsql(serviceProvider, "unknownService"));
-
-        await using WebApplication app = builder.Build();
-
-        Action action = () => app.Services.GetRequiredService<GoodDbContext>();
-
-        action.Should().ThrowExactly<TargetInvocationException>().WithInnerException<InvalidOperationException>()
-            .WithMessage("Named connector 'unknownService' is unavailable.");
     }
 }

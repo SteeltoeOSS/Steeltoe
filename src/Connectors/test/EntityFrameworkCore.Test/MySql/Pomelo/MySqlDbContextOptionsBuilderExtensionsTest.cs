@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -66,23 +65,6 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 
         connectionString.Should().Be(
             "Server=localhost;Database=myDb;User ID=steeltoe;Password=steeltoe;Connection Timeout=15;Use Compression=False;Allow User Variables=True;Use Affected Rows=False");
-    }
-
-    [Fact]
-    public async Task Throws_for_unknown_service_binding()
-    {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.AddMySql(MySqlPackageResolver.CreateForOnlyMySqlConnector());
-
-        builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
-            MySqlEntityFrameworkCorePackageResolver.CreateForOnlyPomelo(), "unknownService", MySqlServerVersion.LatestSupportedServerVersion));
-
-        await using WebApplication app = builder.Build();
-
-        Action action = () => app.Services.GetRequiredService<GoodDbContext>();
-
-        action.Should().ThrowExactly<TargetInvocationException>().WithInnerException<InvalidOperationException>()
-            .WithMessage("Named connector 'unknownService' is unavailable.");
     }
 
     [Fact]

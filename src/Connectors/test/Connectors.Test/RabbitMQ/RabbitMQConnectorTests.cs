@@ -393,8 +393,7 @@ public sealed class RabbitMQConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
-        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().BeEmpty();
 
         RabbitMQOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().BeNull();

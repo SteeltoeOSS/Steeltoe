@@ -38,7 +38,7 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
         bool useSingletonConnection)
     {
         ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNullOrEmpty(serviceBindingNames);
+        ArgumentGuard.NotNull(serviceBindingNames);
         ArgumentGuard.NotNull(createConnection);
 
         _serviceProvider = serviceProvider;
@@ -78,12 +78,6 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
     private Connector<TOptions, TConnection> GetCachedConnector(string name)
     {
         // While option values can change at runtime, the list of named options is fixed (determined at application startup).
-
-        if (!ServiceBindingNames.Contains(name))
-        {
-            throw new InvalidOperationException(name == string.Empty ? "Default connector is unavailable." : $"Named connector '{name}' is unavailable.");
-        }
-
         return _namedConnectors.GetOrAdd(name, _ => new Connector<TOptions, TConnection>(_serviceProvider, name, _createConnection, _useSingletonConnection));
     }
 
