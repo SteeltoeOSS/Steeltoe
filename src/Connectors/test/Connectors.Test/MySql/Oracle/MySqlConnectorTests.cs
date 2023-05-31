@@ -13,7 +13,7 @@ using MySql.Data.MySqlClient;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Connectors.MySql;
-using Steeltoe.Connectors.MySql.RuntimeTypeAccess;
+using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 using Xunit;
 
 namespace Steeltoe.Connectors.Test.MySql.Oracle;

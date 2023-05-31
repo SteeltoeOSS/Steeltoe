@@ -6,8 +6,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using Steeltoe.Common;
-using Steeltoe.Connectors.EntityFrameworkCore.SqlServer.RuntimeTypeAccess;
-using Steeltoe.Connectors.RuntimeTypeAccess;
+using Steeltoe.Connectors.DynamicTypeAccess;
+using Steeltoe.Connectors.EntityFrameworkCore.SqlServer.DynamicTypeAccess;
 using Steeltoe.Connectors.SqlServer;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.SqlServer;

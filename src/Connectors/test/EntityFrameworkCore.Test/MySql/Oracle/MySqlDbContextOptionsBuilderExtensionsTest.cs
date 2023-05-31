@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Connectors.EntityFrameworkCore.MySql.RuntimeTypeAccess;
+using Steeltoe.Connectors.EntityFrameworkCore.MySql.DynamicTypeAccess;
 using Steeltoe.Connectors.MySql;
-using Steeltoe.Connectors.MySql.RuntimeTypeAccess;
+using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 using Xunit;
 using SteeltoeExtensions = Steeltoe.Connectors.EntityFrameworkCore.MySql.MySqlDbContextOptionsBuilderExtensions;
 

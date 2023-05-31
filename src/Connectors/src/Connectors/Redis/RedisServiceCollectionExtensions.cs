@@ -14,8 +14,8 @@ using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
-using Steeltoe.Connectors.Redis.RuntimeTypeAccess;
-using Steeltoe.Connectors.RuntimeTypeAccess;
+using Steeltoe.Connectors.DynamicTypeAccess;
+using Steeltoe.Connectors.Redis.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.Redis;
 

@@ -4,7 +4,7 @@
 
 #nullable enable
 
-using Steeltoe.Connectors.RuntimeTypeAccess;
+using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 

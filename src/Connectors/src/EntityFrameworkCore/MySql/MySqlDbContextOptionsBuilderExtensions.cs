@@ -6,9 +6,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using Steeltoe.Common;
-using Steeltoe.Connectors.EntityFrameworkCore.MySql.RuntimeTypeAccess;
+using Steeltoe.Connectors.DynamicTypeAccess;
+using Steeltoe.Connectors.EntityFrameworkCore.MySql.DynamicTypeAccess;
 using Steeltoe.Connectors.MySql;
-using Steeltoe.Connectors.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.MySql;
 

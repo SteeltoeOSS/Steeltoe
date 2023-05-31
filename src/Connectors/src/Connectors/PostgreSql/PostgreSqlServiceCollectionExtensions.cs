@@ -15,8 +15,8 @@ using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
-using Steeltoe.Connectors.PostgreSql.RuntimeTypeAccess;
-using Steeltoe.Connectors.RuntimeTypeAccess;
+using Steeltoe.Connectors.DynamicTypeAccess;
+using Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.PostgreSql;
 

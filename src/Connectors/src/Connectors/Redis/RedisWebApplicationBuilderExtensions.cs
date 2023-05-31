@@ -6,7 +6,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common;
-using Steeltoe.Connectors.Redis.RuntimeTypeAccess;
+using Steeltoe.Connectors.Redis.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.Redis;
 

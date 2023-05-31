@@ -5,7 +5,7 @@
 #nullable enable
 
 using Steeltoe.Common;
-using Steeltoe.Connectors.PostgreSql.RuntimeTypeAccess;
+using Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.PostgreSql;
 

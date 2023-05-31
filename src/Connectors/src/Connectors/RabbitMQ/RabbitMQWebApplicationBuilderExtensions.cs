@@ -6,7 +6,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common;
-using Steeltoe.Connectors.RabbitMQ.RuntimeTypeAccess;
+using Steeltoe.Connectors.RabbitMQ.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.RabbitMQ;
 

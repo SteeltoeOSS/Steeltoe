@@ -12,8 +12,8 @@ using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
-using Steeltoe.Connectors.MongoDb.RuntimeTypeAccess;
-using Steeltoe.Connectors.RuntimeTypeAccess;
+using Steeltoe.Connectors.DynamicTypeAccess;
+using Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MongoDb;
 

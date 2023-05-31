@@ -6,7 +6,7 @@
 
 using System.Data.Common;
 using Steeltoe.Common;
-using Steeltoe.Connectors.RuntimeTypeAccess;
+using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 

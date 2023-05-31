@@ -6,7 +6,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common;
-using Steeltoe.Connectors.MySql.RuntimeTypeAccess;
+using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MySql;
 

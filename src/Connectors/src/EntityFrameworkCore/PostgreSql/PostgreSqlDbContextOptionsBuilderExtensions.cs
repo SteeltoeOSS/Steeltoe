@@ -6,9 +6,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using Steeltoe.Common;
-using Steeltoe.Connectors.EntityFrameworkCore.PostgreSql.RuntimeTypeAccess;
+using Steeltoe.Connectors.DynamicTypeAccess;
+using Steeltoe.Connectors.EntityFrameworkCore.PostgreSql.DynamicTypeAccess;
 using Steeltoe.Connectors.PostgreSql;
-using Steeltoe.Connectors.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.PostgreSql;
 

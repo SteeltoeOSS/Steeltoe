@@ -14,8 +14,8 @@ using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
-using Steeltoe.Connectors.RabbitMQ.RuntimeTypeAccess;
-using Steeltoe.Connectors.RuntimeTypeAccess;
+using Steeltoe.Connectors.DynamicTypeAccess;
+using Steeltoe.Connectors.RabbitMQ.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.RabbitMQ;
 
