@@ -14,6 +14,10 @@ internal sealed class CosmosDbCloudFoundryPostProcessor : CloudFoundryPostProces
         {
             var mapper = ServiceBindingMapper.Create(configurationData, key, BindingType);
 
+            // Mapping from CloudFoundry service binding credentials to driver-specific connection string parameters.
+            // The available credentials are documented at:
+            // - Azure Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-Azure/1.4/csb-azure/GUID-reference-azure-cosmosdb-sql.html#binding-credentials-3
+
             mapper.MapFromTo("credentials:cosmosdb_host_endpoint", "accountEndpoint");
             mapper.MapFromTo("credentials:cosmosdb_master_key", "accountKey");
             mapper.MapFromTo("credentials:cosmosdb_database_id", "database");

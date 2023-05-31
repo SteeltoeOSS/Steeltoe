@@ -14,8 +14,15 @@ internal sealed class RedisCloudFoundryPostProcessor : CloudFoundryPostProcessor
         {
             var mapper = ServiceBindingMapper.Create(configurationData, key, BindingType);
 
-            // See Redis connection string parameters at: https://stackexchange.github.io/StackExchange.Redis/Configuration.html
+            // Mapping from CloudFoundry service binding credentials to driver-specific connection string parameters.
+            // The available credentials are documented at:
+            // - Direct: https://docs.vmware.com/en/Redis-for-VMware-Tanzu-Application-Service/3.1/redis-tanzu-application-service/GUID-using.html#use-the-redis-service-in-your-app-13
+            // - Azure Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-Azure/1.4/csb-azure/GUID-reference-azure-redis.html#binding-credentials-3
+            // - GCP Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-GCP/1.2/csb-gcp/GUID-reference-gcp-redis.html#binding-credentials-2
+            // - AWS Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-AWS/1.5/csb-aws/GUID-reference-aws-redis.html#binding-credentials-3
+
             mapper.MapFromTo("credentials:host", "host");
+            mapper.MapFromTo("credentials:tls_port", "port");
             mapper.MapFromTo("credentials:port", "port");
             mapper.MapFromTo("credentials:password", "password");
         }

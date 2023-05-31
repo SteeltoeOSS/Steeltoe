@@ -23,6 +23,9 @@ internal sealed class PostgreSqlConnectionStringPostProcessor : ConnectionString
 
     protected override IConnectionStringBuilder CreateConnectionStringBuilder()
     {
+        // The connection string parameters are documented at:
+        // https://www.npgsql.org/doc/connection-string-parameters.html
+
         var npgsqlConnectionStringBuilderShim = NpgsqlConnectionStringBuilderShim.CreateInstance(_packageResolver);
         return new DbConnectionStringBuilderWrapper(npgsqlConnectionStringBuilderShim.Instance);
     }

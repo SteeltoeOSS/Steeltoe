@@ -23,6 +23,10 @@ internal sealed class MySqlConnectionStringPostProcessor : ConnectionStringPostP
 
     protected override IConnectionStringBuilder CreateConnectionStringBuilder()
     {
+        // The connection string parameters are documented at:
+        // - MySqlConnector: https://mysqlconnector.net/connection-options/
+        // - Oracle: https://dev.mysql.com/doc/refman/8.0/en/connecting-using-uri-or-key-value-pairs.html#connection-parameters-base
+
         var mySqlConnectionStringBuilderShim = MySqlConnectionStringBuilderShim.CreateInstance(_packageResolver);
         return new DbConnectionStringBuilderWrapper(mySqlConnectionStringBuilderShim.Instance);
     }

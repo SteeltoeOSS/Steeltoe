@@ -12,6 +12,12 @@ namespace Steeltoe.Connectors;
 
 internal static class ConnectorOptionsBinder
 {
+    /// <summary>
+    /// Binds configuration keys below steeltoe:service-bindings to <see cref="ConnectionStringOptions" /> and registers health contributors.
+    /// </summary>
+    /// <returns>
+    /// The set of service binding names, which corresponds to the bound named options.
+    /// </returns>
     public static IReadOnlySet<string> RegisterNamedOptions<TOptions>(IServiceCollection services, IConfigurationBuilder configurationBuilder,
         string bindingType, ConnectorCreateHealthContributor? createHealthContributor)
         where TOptions : ConnectionStringOptions

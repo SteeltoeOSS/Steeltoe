@@ -10,8 +10,13 @@ using Steeltoe.Configuration;
 
 namespace Steeltoe.Connectors;
 
+/// <summary>
+/// Merges connection string parameters from configuration keys below steeltoe:service-bindings into an optional connection string from steeltoe:client
+/// using <see cref="IConnectionStringBuilder" />. The resulting ConnectionString key is stored below steeltoe:service-bindings.
+/// </summary>
 internal abstract class ConnectionStringPostProcessor : IConfigurationPostProcessor
 {
+    private const string ConnectionStringName = "ConnectionString";
     public const string DefaultBindingName = "Default";
 
     private static readonly string ClientBindingsConfigurationKey = ConfigurationPath.Combine("Steeltoe", "Client");
@@ -129,7 +134,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
                 string secretName = secretSection.Key;
                 string secretValue = secretSection.Value;
 
-                if (string.Equals(secretName, "ConnectionString", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(secretValue))
+                if (string.Equals(secretName, ConnectionStringName, StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(secretValue))
                 {
                     // Take the connection string from appsettings.json as baseline, then merge cloud-provided secrets into it.
                     connectionStringBuilder.ConnectionString = secretValue;
@@ -164,7 +169,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
             }
         }
 
-        string connectionStringKey = ConfigurationPath.Combine(ServiceBindingsConfigurationKey, BindingType, bindingName, "ConnectionString");
+        string connectionStringKey = ConfigurationPath.Combine(ServiceBindingsConfigurationKey, BindingType, bindingName, ConnectionStringName);
         configurationData[connectionStringKey] = connectionStringBuilder.ConnectionString;
 
         foreach ((string secretName, string secretValue) in separateSecrets)

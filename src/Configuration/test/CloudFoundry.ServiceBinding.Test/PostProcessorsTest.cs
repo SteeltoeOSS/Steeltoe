@@ -131,6 +131,31 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     }
 
     [Fact]
+    public void Processes_Redis_configuration_AzureBroker()
+    {
+        var postProcessor = new RedisCloudFoundryPostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("credentials:host", "test-host"),
+            Tuple.Create("credentials:tls_port", "test-port"),
+            Tuple.Create("credentials:password", "test-password")
+        };
+
+        Dictionary<string, string> configurationData =
+            GetConfigurationData(RedisCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisCloudFoundryPostProcessor.BindingType);
+        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+    }
+
+    [Fact]
     public void Processes_SqlServer_configuration()
     {
         var postProcessor = new SqlServerCloudFoundryPostProcessor();

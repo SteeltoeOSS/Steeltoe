@@ -14,7 +14,10 @@ internal sealed class MongoDbCloudFoundryPostProcessor : CloudFoundryPostProcess
         {
             var mapper = ServiceBindingMapper.Create(configurationData, key, BindingType);
 
-            // See MongoDB connection string parameters at: https://www.mongodb.com/docs/manual/reference/connection-string/
+            // Mapping from CloudFoundry service binding credentials to driver-specific connection string parameters.
+            // The available credentials are documented at:
+            // - Azure Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-Azure/1.4/csb-azure/GUID-reference-azure-cosmosdb-mongo.html#binding-credentials-3
+
             mapper.MapFromTo("credentials:uri", "url");
 
             if (mapper.BindingProvider == "csb-azure-mongodb")

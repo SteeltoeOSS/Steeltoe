@@ -14,7 +14,12 @@ internal sealed class PostgreSqlCloudFoundryPostProcessor : CloudFoundryPostProc
         {
             var mapper = ServiceBindingMapper.Create(configurationData, key, BindingType);
 
-            // See PostgreSQL connection string parameters at: https://www.npgsql.org/doc/connection-string-parameters.html
+            // Mapping from CloudFoundry service binding credentials to driver-specific connection string parameters.
+            // The available credentials are documented at:
+            // - Azure Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-Azure/1.4/csb-azure/GUID-reference-azure-postgresql.html#binding-credentials-5
+            // - GCP Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-GCP/1.2/csb-gcp/GUID-reference-gcp-postgresql.html#binding-credentials-6
+            // - AWS Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-AWS/1.5/csb-aws/GUID-reference-aws-postgres.html#binding-credentials-3
+
             mapper.MapFromTo("credentials:hostname", "host");
             mapper.MapFromTo("credentials:port", "port");
             mapper.MapFromTo("credentials:name", "database");

@@ -14,9 +14,11 @@ internal sealed class RabbitMQCloudFoundryPostProcessor : CloudFoundryPostProces
         {
             var mapper = ServiceBindingMapper.Create(configurationData, key, BindingType);
 
-            // See RabbitMQ connection string parameters at: https://www.rabbitmq.com/uri-spec.html
-            string useTlsValue = mapper.MapFromTo("credentials:ssl", "useTls");
+            // Mapping from CloudFoundry service binding credentials to driver-specific connection string parameters.
+            // The available credentials are documented at:
+            // - Direct: https://docs.vmware.com/en/VMware-RabbitMQ-for-Tanzu-Application-Service/2.2/tanzu-rmq/GUID-reference.html#vcapservices-0
 
+            string useTlsValue = mapper.MapFromTo("credentials:ssl", "useTls");
             string fromProtocol = bool.TryParse(useTlsValue, out bool useTls) && useTls ? "amqp+ssl" : "amqp";
 
             mapper.MapFromTo($"credentials:protocols:{fromProtocol}:host", "host");

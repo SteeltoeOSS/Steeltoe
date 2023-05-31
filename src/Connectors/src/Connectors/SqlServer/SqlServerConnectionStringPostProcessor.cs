@@ -23,6 +23,9 @@ internal sealed class SqlServerConnectionStringPostProcessor : ConnectionStringP
 
     protected override IConnectionStringBuilder CreateConnectionStringBuilder()
     {
+        // The connection string parameters are documented at:
+        // https://learn.microsoft.com/en-us/dotnet/api/microsoft.data.sqlclient.sqlconnection.connectionstring#remarks
+
         var sqlConnectionStringBuilderShim = SqlConnectionStringBuilderShim.CreateInstance(_packageResolver);
         return new DbConnectionStringBuilderWrapper(sqlConnectionStringBuilderShim.Instance);
     }

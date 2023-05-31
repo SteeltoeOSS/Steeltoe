@@ -18,7 +18,11 @@ internal sealed class RabbitMQKubernetesPostProcessor : IConfigurationPostProces
             var mapper = new ServiceBindingMapper(configurationData, bindingKey, KubernetesServiceBindingConfigurationProvider.ToKeyPrefix, BindingType,
                 ConfigurationPath.GetSectionKey(bindingKey));
 
-            // See RabbitMQ connection string parameters at: https://www.rabbitmq.com/uri-spec.html
+            // Mapping from Kubernetes secrets to driver-specific connection string parameters.
+            // At the time of writing (June 2023), there's no complete official documentation for the available secrets. Some pointers:
+            // - Generic secrets: https://github.com/servicebinding/spec#well-known-secret-entries
+            // - Input keys used at https://github.com/spring-cloud/spring-cloud-bindings/blob/main/src/main/java/org/springframework/cloud/bindings/boot/RabbitMqBindingsPropertiesProcessor.java
+
             mapper.MapFromTo("host", "host");
             mapper.MapFromTo("port", "port");
             mapper.MapFromTo("username", "username");

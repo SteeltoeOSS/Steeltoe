@@ -14,12 +14,15 @@ internal sealed class RedisKubernetesPostProcessor : IConfigurationPostProcessor
     {
         foreach (string bindingKey in configurationData.Filter(KubernetesServiceBindingConfigurationProvider.FromKeyPrefix,
             KubernetesServiceBindingConfigurationProvider.TypeKey, BindingType))
-
         {
             var mapper = new ServiceBindingMapper(configurationData, bindingKey, KubernetesServiceBindingConfigurationProvider.ToKeyPrefix, BindingType,
                 ConfigurationPath.GetSectionKey(bindingKey));
 
-            // See Redis connection string parameters at: https://stackexchange.github.io/StackExchange.Redis/Configuration.html
+            // Mapping from Kubernetes secrets to driver-specific connection string parameters.
+            // At the time of writing (June 2023), there's no complete official documentation for the available secrets. Some pointers:
+            // - Generic secrets: https://github.com/servicebinding/spec#well-known-secret-entries
+            // - Input keys used at https://github.com/spring-cloud/spring-cloud-bindings/blob/main/src/main/java/org/springframework/cloud/bindings/boot/RedisBindingsPropertiesProcessor.java
+
             mapper.MapFromTo("host", "host");
             mapper.MapFromTo("port", "port");
             mapper.MapFromTo("ssl", "ssl");

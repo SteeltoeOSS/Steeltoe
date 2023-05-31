@@ -14,12 +14,21 @@ internal sealed class MySqlCloudFoundryPostProcessor : CloudFoundryPostProcessor
         {
             var mapper = ServiceBindingMapper.Create(configurationData, key, BindingType);
 
-            // See MySQL connection string parameters at: https://dev.mysql.com/doc/refman/8.0/en/connecting-using-uri-or-key-value-pairs.html#connection-parameters-base
+            // Mapping from CloudFoundry service binding credentials to driver-specific connection string parameters.
+            // The available credentials are documented at:
+            // - Direct: https://docs.vmware.com/en/VMware-SQL-with-MySQL-for-Tanzu-Application-Service/3.0/mysql-for-tas/use.html#mysql-environment-variables-9
+            // - Azure Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-Azure/1.4/csb-azure/GUID-reference-azure-mysql.html#binding-credentials-4
+            // - GCP Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-GCP/1.2/csb-gcp/GUID-reference-gcp-mysql.html#binding-credentials-5
+            // - AWS Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-AWS/1.5/csb-aws/GUID-reference-aws-mysql.html#binding-credentials-3
+
             mapper.MapFromTo("credentials:hostname", "host");
             mapper.MapFromTo("credentials:port", "port");
             mapper.MapFromTo("credentials:name", "database");
             mapper.MapFromTo("credentials:username", "username");
             mapper.MapFromTo("credentials:password", "password");
+            mapper.MapFromToFile("credentials:sslcert", "ssl-cert");
+            mapper.MapFromToFile("credentials:sslkey", "ssl-key");
+            mapper.MapFromToFile("credentials:sslrootcert", "ssl-ca");
         }
     }
 }
