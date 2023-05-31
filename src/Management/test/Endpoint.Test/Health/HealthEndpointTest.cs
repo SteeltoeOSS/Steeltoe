@@ -362,7 +362,7 @@ public class HealthEndpointTest : BaseTest
 
     private static HealthEndpointRequest GetHealthRequest()
     {
-        return new()
+        return new HealthEndpointRequest
         {
             GroupName = string.Empty,
             HasClaim = true
