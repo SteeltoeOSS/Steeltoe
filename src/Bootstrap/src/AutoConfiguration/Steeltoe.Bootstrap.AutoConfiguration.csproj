@@ -24,10 +24,10 @@
     <ProjectReference Include="..\..\..\Logging\src\DynamicSerilog\Steeltoe.Logging.DynamicSerilog.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Management\src\Endpoint\Steeltoe.Management.Endpoint.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Management\src\Kubernetes\Steeltoe.Management.Kubernetes.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Management\src\Prometheus\Steeltoe.Management.Prometheus.csproj" />
+    <ProjectReference Include="..\..\..\Management\src\Prometheus\Steeltoe.Management.Prometheus.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Management\src\Task\Steeltoe.Management.Task.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Management\src\Tracing\Steeltoe.Management.Tracing.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Management\src\Wavefront\Steeltoe.Management.Wavefront.csproj" />
+    <ProjectReference Include="..\..\..\Management\src\Wavefront\Steeltoe.Management.Wavefront.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Security\src\Authentication.CloudFoundry\Steeltoe.Security.Authentication.CloudFoundry.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Security\src\Authentication.Mtls\Steeltoe.Security.Authentication.Mtls.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Security\src\DataProtection.Redis\Steeltoe.Security.DataProtection.Redis.csproj" PrivateAssets="All" />
