@@ -28,6 +28,7 @@ public static class MySqlWebApplicationBuilderExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);
 
+        builder.Configuration.ConfigureMySql(packageResolver);
         builder.Services.AddMySql(builder.Configuration, packageResolver, setupAction);
         return builder;
     }

@@ -10,10 +10,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.RabbitMQ.DynamicTypeAccess;
 
@@ -21,28 +17,25 @@ namespace Steeltoe.Connectors.RabbitMQ;
 
 public static class RabbitMQServiceCollectionExtensions
 {
-    public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfigurationBuilder configurationBuilder)
+    public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration)
     {
-        return AddRabbitMQ(services, configurationBuilder, null);
+        return AddRabbitMQ(services, configuration, null);
     }
 
-    public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
+    public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration, Action<ConnectorSetupOptions>? setupAction)
+    {
+        return AddRabbitMQ(services, configuration, RabbitMQPackageResolver.Default, setupAction);
+    }
+
+    private static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration, RabbitMQPackageResolver packageResolver,
         Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddRabbitMQ(services, configurationBuilder, RabbitMQPackageResolver.Default, setupAction);
-    }
-
-    internal static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
-        RabbitMQPackageResolver packageResolver, Action<ConnectorSetupOptions>? setupAction)
-    {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configurationBuilder);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(packageResolver);
 
         var setupOptions = new ConnectorSetupOptions();
         setupAction?.Invoke(setupOptions);
-
-        RegisterPostProcessors(configurationBuilder);
 
         ConnectorCreateHealthContributor? createHealthContributor = setupOptions.EnableHealthChecks
             ? (serviceProvider, serviceBindingName) => setupOptions.CreateHealthContributor != null
@@ -51,7 +44,7 @@ public static class RabbitMQServiceCollectionExtensions
             : null;
 
         IReadOnlySet<string> optionNames =
-            ConnectorOptionsBinder.RegisterNamedOptions<RabbitMQOptions>(services, configurationBuilder, "rabbitmq", createHealthContributor);
+            ConnectorOptionsBinder.RegisterNamedOptions<RabbitMQOptions>(services, configuration, "rabbitmq", createHealthContributor);
 
         ConnectorCreateConnection createConnection = (serviceProvider, serviceBindingName) => setupOptions.CreateConnection != null
             ? setupOptions.CreateConnection(serviceProvider, serviceBindingName)
@@ -60,22 +53,6 @@ public static class RabbitMQServiceCollectionExtensions
         ConnectorFactoryShim<RabbitMQOptions>.Register(packageResolver.ConnectionInterface.Type, services, optionNames, createConnection, true);
 
         return services;
-    }
-
-    private static void RegisterPostProcessors(IConfigurationBuilder builder)
-    {
-        builder.AddCloudFoundryServiceBindings();
-        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
-        cloudFoundrySource.RegisterPostProcessor(new RabbitMQCloudFoundryPostProcessor());
-
-        builder.AddKubernetesServiceBindings();
-        KubernetesServiceBindingConfigurationSource kubernetesSource = builder.Sources.OfType<KubernetesServiceBindingConfigurationSource>().First();
-        kubernetesSource.RegisterPostProcessor(new RabbitMQKubernetesPostProcessor());
-
-        var connectionStringPostProcessor = new RabbitMQConnectionStringPostProcessor();
-        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
-        connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
-        builder.Add(connectionStringSource);
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,

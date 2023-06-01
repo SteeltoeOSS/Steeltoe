@@ -20,6 +20,7 @@ public static class MongoDbWebApplicationBuilderExtensions
     {
         ArgumentGuard.NotNull(builder);
 
+        builder.Configuration.ConfigureMongoDb();
         builder.Services.AddMongoDb(builder.Configuration, setupAction);
         return builder;
     }

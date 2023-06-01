@@ -11,8 +11,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 
@@ -20,28 +18,25 @@ namespace Steeltoe.Connectors.SqlServer;
 
 public static class SqlServerServiceCollectionExtensions
 {
-    public static IServiceCollection AddSqlServer(this IServiceCollection services, IConfigurationBuilder configurationBuilder)
+    public static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration)
     {
-        return AddSqlServer(services, configurationBuilder, null);
+        return AddSqlServer(services, configuration, null);
     }
 
-    public static IServiceCollection AddSqlServer(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
+    public static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration, Action<ConnectorSetupOptions>? setupAction)
+    {
+        return AddSqlServer(services, configuration, SqlServerPackageResolver.Default, setupAction);
+    }
+
+    internal static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration, SqlServerPackageResolver packageResolver,
         Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddSqlServer(services, configurationBuilder, SqlServerPackageResolver.Default, setupAction);
-    }
-
-    internal static IServiceCollection AddSqlServer(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
-        SqlServerPackageResolver packageResolver, Action<ConnectorSetupOptions>? setupAction)
-    {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configurationBuilder);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(packageResolver);
 
         var setupOptions = new ConnectorSetupOptions();
         setupAction?.Invoke(setupOptions);
-
-        RegisterPostProcessors(configurationBuilder, packageResolver);
 
         ConnectorCreateHealthContributor? createHealthContributor = setupOptions.EnableHealthChecks
             ? (serviceProvider, serviceBindingName) => setupOptions.CreateHealthContributor != null
@@ -50,7 +45,7 @@ public static class SqlServerServiceCollectionExtensions
             : null;
 
         IReadOnlySet<string> optionNames =
-            ConnectorOptionsBinder.RegisterNamedOptions<SqlServerOptions>(services, configurationBuilder, "sqlserver", createHealthContributor);
+            ConnectorOptionsBinder.RegisterNamedOptions<SqlServerOptions>(services, configuration, "sqlserver", createHealthContributor);
 
         ConnectorCreateConnection createConnection = (serviceProvider, serviceBindingName) => setupOptions.CreateConnection != null
             ? setupOptions.CreateConnection(serviceProvider, serviceBindingName)
@@ -59,18 +54,6 @@ public static class SqlServerServiceCollectionExtensions
         ConnectorFactoryShim<SqlServerOptions>.Register(packageResolver.SqlConnectionClass.Type, services, optionNames, createConnection, false);
 
         return services;
-    }
-
-    private static void RegisterPostProcessors(IConfigurationBuilder builder, SqlServerPackageResolver packageResolver)
-    {
-        builder.AddCloudFoundryServiceBindings();
-        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
-        cloudFoundrySource.RegisterPostProcessor(new SqlServerCloudFoundryPostProcessor());
-
-        var connectionStringPostProcessor = new SqlServerConnectionStringPostProcessor(packageResolver);
-        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
-        connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
-        builder.Add(connectionStringSource);
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,

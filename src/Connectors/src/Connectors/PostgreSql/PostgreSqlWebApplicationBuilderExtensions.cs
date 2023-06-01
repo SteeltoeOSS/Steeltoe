@@ -20,6 +20,7 @@ public static class PostgreSqlWebApplicationBuilderExtensions
     {
         ArgumentGuard.NotNull(builder);
 
+        builder.Configuration.ConfigurePostgreSql();
         builder.Services.AddPostgreSql(builder.Configuration, setupAction);
         return builder;
     }

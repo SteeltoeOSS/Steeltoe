@@ -11,8 +11,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 using Steeltoe.Connectors.CosmosDb.DynamicTypeAccess;
 using Steeltoe.Connectors.DynamicTypeAccess;
 
@@ -20,28 +18,25 @@ namespace Steeltoe.Connectors.CosmosDb;
 
 public static class CosmosDbServiceCollectionExtensions
 {
-    public static IServiceCollection AddCosmosDb(this IServiceCollection services, IConfigurationBuilder configurationBuilder)
+    public static IServiceCollection AddCosmosDb(this IServiceCollection services, IConfiguration configuration)
     {
-        return AddCosmosDb(services, configurationBuilder, null);
+        return AddCosmosDb(services, configuration, null);
     }
 
-    public static IServiceCollection AddCosmosDb(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
+    public static IServiceCollection AddCosmosDb(this IServiceCollection services, IConfiguration configuration, Action<ConnectorSetupOptions>? setupAction)
+    {
+        return AddCosmosDb(services, configuration, CosmosDbPackageResolver.Default, setupAction);
+    }
+
+    private static IServiceCollection AddCosmosDb(this IServiceCollection services, IConfiguration configuration, CosmosDbPackageResolver packageResolver,
         Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddCosmosDb(services, configurationBuilder, CosmosDbPackageResolver.Default, setupAction);
-    }
-
-    private static IServiceCollection AddCosmosDb(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
-        CosmosDbPackageResolver packageResolver, Action<ConnectorSetupOptions>? setupAction)
-    {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configurationBuilder);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(packageResolver);
 
         var setupOptions = new ConnectorSetupOptions();
         setupAction?.Invoke(setupOptions);
-
-        RegisterPostProcessors(configurationBuilder);
 
         ConnectorCreateHealthContributor? createHealthContributor = setupOptions.EnableHealthChecks
             ? (serviceProvider, serviceBindingName) => setupOptions.CreateHealthContributor != null
@@ -50,7 +45,7 @@ public static class CosmosDbServiceCollectionExtensions
             : null;
 
         IReadOnlySet<string> optionNames =
-            ConnectorOptionsBinder.RegisterNamedOptions<CosmosDbOptions>(services, configurationBuilder, "cosmosdb", createHealthContributor);
+            ConnectorOptionsBinder.RegisterNamedOptions<CosmosDbOptions>(services, configuration, "cosmosdb", createHealthContributor);
 
         ConnectorCreateConnection createConnection = (serviceProvider, serviceBindingName) => setupOptions.CreateConnection != null
             ? setupOptions.CreateConnection(serviceProvider, serviceBindingName)
@@ -59,18 +54,6 @@ public static class CosmosDbServiceCollectionExtensions
         ConnectorFactoryShim<CosmosDbOptions>.Register(packageResolver.CosmosClientClass.Type, services, optionNames, createConnection, true);
 
         return services;
-    }
-
-    private static void RegisterPostProcessors(IConfigurationBuilder builder)
-    {
-        builder.AddCloudFoundryServiceBindings();
-        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
-        cloudFoundrySource.RegisterPostProcessor(new CosmosDbCloudFoundryPostProcessor());
-
-        var connectionStringPostProcessor = new CosmosDbConnectionStringPostProcessor();
-        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
-        connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
-        builder.Add(connectionStringSource);
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,

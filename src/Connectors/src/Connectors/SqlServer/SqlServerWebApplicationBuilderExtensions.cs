@@ -28,6 +28,7 @@ public static class SqlServerWebApplicationBuilderExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);
 
+        builder.Configuration.ConfigureSqlServer(packageResolver);
         builder.Services.AddSqlServer(builder.Configuration, packageResolver, setupAction);
         return builder;
     }

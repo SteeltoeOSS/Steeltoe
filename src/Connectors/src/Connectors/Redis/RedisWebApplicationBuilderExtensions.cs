@@ -6,7 +6,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common;
-using Steeltoe.Connectors.Redis.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.Redis;
 
@@ -19,17 +18,10 @@ public static class RedisWebApplicationBuilderExtensions
 
     public static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder, Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddRedis(builder, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default, setupAction);
-    }
-
-    internal static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder, StackExchangeRedisPackageResolver stackExchangeRedisPackageResolver,
-        MicrosoftRedisPackageResolver microsoftRedisPackageResolver, Action<ConnectorSetupOptions>? setupAction = null)
-    {
         ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(stackExchangeRedisPackageResolver);
-        ArgumentGuard.NotNull(microsoftRedisPackageResolver);
 
-        builder.Services.AddRedis(builder.Configuration, stackExchangeRedisPackageResolver, microsoftRedisPackageResolver, setupAction);
+        builder.Configuration.ConfigureRedis();
+        builder.Services.AddRedis(builder.Configuration, setupAction);
         return builder;
     }
 }

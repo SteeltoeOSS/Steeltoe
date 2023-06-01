@@ -11,10 +11,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
 
@@ -22,28 +18,25 @@ namespace Steeltoe.Connectors.PostgreSql;
 
 public static class PostgreSqlServiceCollectionExtensions
 {
-    public static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfigurationBuilder configurationBuilder)
+    public static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfiguration configuration)
     {
-        return AddPostgreSql(services, configurationBuilder, null);
+        return AddPostgreSql(services, configuration, null);
     }
 
-    public static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
+    public static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfiguration configuration, Action<ConnectorSetupOptions>? setupAction)
+    {
+        return AddPostgreSql(services, configuration, PostgreSqlPackageResolver.Default, setupAction);
+    }
+
+    private static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfiguration configuration, PostgreSqlPackageResolver packageResolver,
         Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddPostgreSql(services, configurationBuilder, PostgreSqlPackageResolver.Default, setupAction);
-    }
-
-    private static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
-        PostgreSqlPackageResolver packageResolver, Action<ConnectorSetupOptions>? setupAction)
-    {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configurationBuilder);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(packageResolver);
 
         var setupOptions = new ConnectorSetupOptions();
         setupAction?.Invoke(setupOptions);
-
-        RegisterPostProcessors(configurationBuilder, packageResolver);
 
         ConnectorCreateHealthContributor? createHealthContributor = setupOptions.EnableHealthChecks
             ? (serviceProvider, serviceBindingName) => setupOptions.CreateHealthContributor != null
@@ -52,7 +45,7 @@ public static class PostgreSqlServiceCollectionExtensions
             : null;
 
         IReadOnlySet<string> optionNames =
-            ConnectorOptionsBinder.RegisterNamedOptions<PostgreSqlOptions>(services, configurationBuilder, "postgresql", createHealthContributor);
+            ConnectorOptionsBinder.RegisterNamedOptions<PostgreSqlOptions>(services, configuration, "postgresql", createHealthContributor);
 
         ConnectorCreateConnection createConnection = (serviceProvider, serviceBindingName) => setupOptions.CreateConnection != null
             ? setupOptions.CreateConnection(serviceProvider, serviceBindingName)
@@ -61,22 +54,6 @@ public static class PostgreSqlServiceCollectionExtensions
         ConnectorFactoryShim<PostgreSqlOptions>.Register(packageResolver.NpgsqlConnectionClass.Type, services, optionNames, createConnection, false);
 
         return services;
-    }
-
-    private static void RegisterPostProcessors(IConfigurationBuilder builder, PostgreSqlPackageResolver packageResolver)
-    {
-        builder.AddCloudFoundryServiceBindings();
-        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
-        cloudFoundrySource.RegisterPostProcessor(new PostgreSqlCloudFoundryPostProcessor());
-
-        builder.AddKubernetesServiceBindings();
-        KubernetesServiceBindingConfigurationSource kubernetesSource = builder.Sources.OfType<KubernetesServiceBindingConfigurationSource>().First();
-        kubernetesSource.RegisterPostProcessor(new PostgreSqlKubernetesPostProcessor());
-
-        var connectionStringPostProcessor = new PostgreSqlConnectionStringPostProcessor(packageResolver);
-        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
-        connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
-        builder.Add(connectionStringSource);
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,

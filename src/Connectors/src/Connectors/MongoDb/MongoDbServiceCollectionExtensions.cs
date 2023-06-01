@@ -10,8 +10,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
 
@@ -19,28 +17,25 @@ namespace Steeltoe.Connectors.MongoDb;
 
 public static class MongoDbServiceCollectionExtensions
 {
-    public static IServiceCollection AddMongoDb(this IServiceCollection services, IConfigurationBuilder configurationBuilder)
+    public static IServiceCollection AddMongoDb(this IServiceCollection services, IConfiguration configuration)
     {
-        return AddMongoDb(services, configurationBuilder, null);
+        return AddMongoDb(services, configuration, null);
     }
 
-    public static IServiceCollection AddMongoDb(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
+    public static IServiceCollection AddMongoDb(this IServiceCollection services, IConfiguration configuration, Action<ConnectorSetupOptions>? setupAction)
+    {
+        return AddMongoDb(services, configuration, MongoDbPackageResolver.Default, setupAction);
+    }
+
+    private static IServiceCollection AddMongoDb(this IServiceCollection services, IConfiguration configuration, MongoDbPackageResolver packageResolver,
         Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddMongoDb(services, configurationBuilder, MongoDbPackageResolver.Default, setupAction);
-    }
-
-    private static IServiceCollection AddMongoDb(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
-        MongoDbPackageResolver packageResolver, Action<ConnectorSetupOptions>? setupAction)
-    {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configurationBuilder);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(packageResolver);
 
         var setupOptions = new ConnectorSetupOptions();
         setupAction?.Invoke(setupOptions);
-
-        RegisterPostProcessors(configurationBuilder);
 
         ConnectorCreateHealthContributor? createHealthContributor = setupOptions.EnableHealthChecks
             ? (serviceProvider, serviceBindingName) => setupOptions.CreateHealthContributor != null
@@ -49,7 +44,7 @@ public static class MongoDbServiceCollectionExtensions
             : null;
 
         IReadOnlySet<string> optionNames =
-            ConnectorOptionsBinder.RegisterNamedOptions<MongoDbOptions>(services, configurationBuilder, "mongodb", createHealthContributor);
+            ConnectorOptionsBinder.RegisterNamedOptions<MongoDbOptions>(services, configuration, "mongodb", createHealthContributor);
 
         ConnectorCreateConnection createConnection = (serviceProvider, serviceBindingName) => setupOptions.CreateConnection != null
             ? setupOptions.CreateConnection(serviceProvider, serviceBindingName)
@@ -58,18 +53,6 @@ public static class MongoDbServiceCollectionExtensions
         ConnectorFactoryShim<MongoDbOptions>.Register(packageResolver.MongoClientInterface.Type, services, optionNames, createConnection, false);
 
         return services;
-    }
-
-    private static void RegisterPostProcessors(IConfigurationBuilder builder)
-    {
-        builder.AddCloudFoundryServiceBindings();
-        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
-        cloudFoundrySource.RegisterPostProcessor(new MongoDbCloudFoundryPostProcessor());
-
-        var connectionStringPostProcessor = new MongoDbConnectionStringPostProcessor();
-        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
-        connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
-        builder.Add(connectionStringSource);
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,

@@ -18,11 +18,10 @@ internal static class ConnectorOptionsBinder
     /// <returns>
     /// The set of service binding names, which corresponds to the bound named options.
     /// </returns>
-    public static IReadOnlySet<string> RegisterNamedOptions<TOptions>(IServiceCollection services, IConfigurationBuilder configurationBuilder,
-        string bindingType, ConnectorCreateHealthContributor? createHealthContributor)
+    public static IReadOnlySet<string> RegisterNamedOptions<TOptions>(IServiceCollection services, IConfiguration configuration, string bindingType,
+        ConnectorCreateHealthContributor? createHealthContributor)
         where TOptions : ConnectionStringOptions
     {
-        IConfigurationRoot configuration = configurationBuilder.Build();
         string key = ConfigurationPath.Combine(ConnectionStringPostProcessor.ServiceBindingsConfigurationKey, bindingType);
         IConfigurationSection[] childSections = configuration.GetSection(key).GetChildren().ToArray();
 

@@ -10,10 +10,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.Redis.DynamicTypeAccess;
 
@@ -21,30 +17,27 @@ namespace Steeltoe.Connectors.Redis;
 
 public static class RedisServiceCollectionExtensions
 {
-    public static IServiceCollection AddRedis(this IServiceCollection services, IConfigurationBuilder configurationBuilder)
+    public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
     {
-        return AddRedis(services, configurationBuilder, null);
+        return AddRedis(services, configuration, null);
     }
 
-    public static IServiceCollection AddRedis(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
-        Action<ConnectorSetupOptions>? setupAction)
+    public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration, Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddRedis(services, configurationBuilder, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default, setupAction);
+        return AddRedis(services, configuration, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default, setupAction);
     }
 
-    internal static IServiceCollection AddRedis(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
+    private static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration,
         StackExchangeRedisPackageResolver stackExchangeRedisPackageResolver, MicrosoftRedisPackageResolver microsoftRedisPackageResolver,
         Action<ConnectorSetupOptions>? setupAction)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configurationBuilder);
+        ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(stackExchangeRedisPackageResolver);
         ArgumentGuard.NotNull(microsoftRedisPackageResolver);
 
         var setupOptions = new ConnectorSetupOptions();
         setupAction?.Invoke(setupOptions);
-
-        RegisterPostProcessors(configurationBuilder);
 
         ConnectorCreateHealthContributor? createHealthContributor = setupOptions.EnableHealthChecks
             ? (serviceProvider, serviceBindingName) => setupOptions.CreateHealthContributor != null
@@ -52,8 +45,7 @@ public static class RedisServiceCollectionExtensions
                 : CreateHealthContributor(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver)
             : null;
 
-        IReadOnlySet<string> optionNames =
-            ConnectorOptionsBinder.RegisterNamedOptions<RedisOptions>(services, configurationBuilder, "redis", createHealthContributor);
+        IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<RedisOptions>(services, configuration, "redis", createHealthContributor);
 
         ConnectorCreateConnection stackExchangeCreateConnection = (serviceProvider, serviceBindingName) => setupOptions.CreateConnection != null
             ? setupOptions.CreateConnection(serviceProvider, serviceBindingName)
@@ -69,22 +61,6 @@ public static class RedisServiceCollectionExtensions
             microsoftCreateConnection, true);
 
         return services;
-    }
-
-    private static void RegisterPostProcessors(IConfigurationBuilder builder)
-    {
-        builder.AddCloudFoundryServiceBindings();
-        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
-        cloudFoundrySource.RegisterPostProcessor(new RedisCloudFoundryPostProcessor());
-
-        builder.AddKubernetesServiceBindings();
-        KubernetesServiceBindingConfigurationSource kubernetesSource = builder.Sources.OfType<KubernetesServiceBindingConfigurationSource>().First();
-        kubernetesSource.RegisterPostProcessor(new RedisKubernetesPostProcessor());
-
-        var connectionStringPostProcessor = new RedisConnectionStringPostProcessor();
-        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
-        connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
-        builder.Add(connectionStringSource);
     }
 
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,

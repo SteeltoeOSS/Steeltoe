@@ -6,7 +6,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common;
-using Steeltoe.Connectors.RabbitMQ.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.RabbitMQ;
 
@@ -19,16 +18,10 @@ public static class RabbitMQWebApplicationBuilderExtensions
 
     public static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder, Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddRabbitMQ(builder, RabbitMQPackageResolver.Default, setupAction);
-    }
-
-    internal static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder, RabbitMQPackageResolver packageResolver,
-        Action<ConnectorSetupOptions>? setupAction = null)
-    {
         ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(packageResolver);
 
-        builder.Services.AddRabbitMQ(builder.Configuration, packageResolver, setupAction);
+        builder.Configuration.ConfigureRabbitMQ();
+        builder.Services.AddRabbitMQ(builder.Configuration, setupAction);
         return builder;
     }
 }

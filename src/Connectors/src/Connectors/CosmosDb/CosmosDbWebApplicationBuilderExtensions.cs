@@ -20,6 +20,7 @@ public static class CosmosDbWebApplicationBuilderExtensions
     {
         ArgumentGuard.NotNull(builder);
 
+        builder.Configuration.ConfigureCosmosDb();
         builder.Services.AddCosmosDb(builder.Configuration, setupAction);
         return builder;
     }
