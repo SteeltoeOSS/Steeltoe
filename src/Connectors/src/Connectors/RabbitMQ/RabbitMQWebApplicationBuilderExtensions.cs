@@ -19,7 +19,7 @@ public static class RabbitMQWebApplicationBuilderExtensions
 
     public static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder, Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddRabbitMQ(builder, new RabbitMQPackageResolver(), setupAction);
+        return AddRabbitMQ(builder, RabbitMQPackageResolver.Default, setupAction);
     }
 
     internal static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder, RabbitMQPackageResolver packageResolver,

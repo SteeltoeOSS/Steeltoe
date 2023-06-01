@@ -13,11 +13,13 @@ namespace Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
 /// </summary>
 internal sealed class MongoDbPackageResolver : PackageResolver
 {
+    public static readonly MongoDbPackageResolver Default = new("MongoDB.Driver", "MongoDB.Driver");
+
     public TypeAccessor MongoClientInterface => ResolveType("MongoDB.Driver.IMongoClient");
     public TypeAccessor MongoClientClass => ResolveType("MongoDB.Driver.MongoClient");
 
-    public MongoDbPackageResolver()
-        : base("MongoDB.Driver", "MongoDB.Driver")
+    private MongoDbPackageResolver(string assemblyName, string packageName)
+        : base(assemblyName, packageName)
     {
     }
 }

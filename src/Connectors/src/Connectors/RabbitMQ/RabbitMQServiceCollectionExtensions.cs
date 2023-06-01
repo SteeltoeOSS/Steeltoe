@@ -29,7 +29,7 @@ public static class RabbitMQServiceCollectionExtensions
     public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
         Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddRabbitMQ(services, configurationBuilder, new RabbitMQPackageResolver(), setupAction);
+        return AddRabbitMQ(services, configurationBuilder, RabbitMQPackageResolver.Default, setupAction);
     }
 
     internal static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfigurationBuilder configurationBuilder,

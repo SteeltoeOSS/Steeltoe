@@ -13,19 +13,21 @@ namespace Steeltoe.Connectors.EntityFrameworkCore.PostgreSql.DynamicTypeAccess;
 /// </summary>
 internal sealed class PostgreSqlEntityFrameworkCorePackageResolver : PackageResolver
 {
+    public static readonly PostgreSqlEntityFrameworkCorePackageResolver Default = new(new[]
+    {
+        "Npgsql.EntityFrameworkCore.PostgreSQL",
+        "Npgsql"
+    }, new[]
+    {
+        "Npgsql.EntityFrameworkCore.PostgreSQL"
+    });
+
     public TypeAccessor NpgsqlDbContextOptionsBuilderExtensionsClass => ResolveType("Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsBuilderExtensions");
     public TypeAccessor NpgsqlDbContextOptionsBuilderClass => ResolveType("Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.NpgsqlDbContextOptionsBuilder");
     public TypeAccessor NpgsqlConnectionClass => ResolveType("Npgsql.NpgsqlConnection");
 
-    public PostgreSqlEntityFrameworkCorePackageResolver()
-        : base(new[]
-        {
-            "Npgsql.EntityFrameworkCore.PostgreSQL",
-            "Npgsql"
-        }, new[]
-        {
-            "Npgsql.EntityFrameworkCore.PostgreSQL"
-        })
+    private PostgreSqlEntityFrameworkCorePackageResolver(IReadOnlyList<string> assemblyNames, IReadOnlyList<string> packageNames)
+        : base(assemblyNames, packageNames)
     {
     }
 }

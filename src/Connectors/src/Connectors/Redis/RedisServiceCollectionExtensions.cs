@@ -29,7 +29,7 @@ public static class RedisServiceCollectionExtensions
     public static IServiceCollection AddRedis(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
         Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddRedis(services, configurationBuilder, new StackExchangeRedisPackageResolver(), new MicrosoftRedisPackageResolver(), setupAction);
+        return AddRedis(services, configurationBuilder, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default, setupAction);
     }
 
     internal static IServiceCollection AddRedis(this IServiceCollection services, IConfigurationBuilder configurationBuilder,

@@ -27,7 +27,7 @@ public static class MongoDbServiceCollectionExtensions
     public static IServiceCollection AddMongoDb(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
         Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddMongoDb(services, configurationBuilder, new MongoDbPackageResolver(), setupAction);
+        return AddMongoDb(services, configurationBuilder, MongoDbPackageResolver.Default, setupAction);
     }
 
     private static IServiceCollection AddMongoDb(this IServiceCollection services, IConfigurationBuilder configurationBuilder,

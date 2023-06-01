@@ -13,11 +13,13 @@ namespace Steeltoe.Connectors.Redis.DynamicTypeAccess;
 /// </summary>
 internal sealed class StackExchangeRedisPackageResolver : PackageResolver
 {
+    public static readonly StackExchangeRedisPackageResolver Default = new("StackExchange.Redis", "StackExchange.Redis");
+
     public TypeAccessor ConnectionMultiplexerInterface => ResolveType("StackExchange.Redis.IConnectionMultiplexer");
     public TypeAccessor ConnectionMultiplexerClass => ResolveType("StackExchange.Redis.ConnectionMultiplexer");
 
-    public StackExchangeRedisPackageResolver()
-        : base("StackExchange.Redis", "StackExchange.Redis")
+    private StackExchangeRedisPackageResolver(string assemblyName, string packageName)
+        : base(assemblyName, packageName)
     {
     }
 }

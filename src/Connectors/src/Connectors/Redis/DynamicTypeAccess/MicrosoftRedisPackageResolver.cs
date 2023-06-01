@@ -13,19 +13,21 @@ namespace Steeltoe.Connectors.Redis.DynamicTypeAccess;
 /// </summary>
 internal sealed class MicrosoftRedisPackageResolver : PackageResolver
 {
+    public static readonly MicrosoftRedisPackageResolver Default = new(new[]
+    {
+        "Microsoft.Extensions.Caching.Abstractions",
+        "Microsoft.Extensions.Caching.StackExchangeRedis"
+    }, new[]
+    {
+        "Microsoft.Extensions.Caching.StackExchangeRedis"
+    });
+
     public TypeAccessor DistributedCacheInterface => ResolveType("Microsoft.Extensions.Caching.Distributed.IDistributedCache");
     public TypeAccessor RedisCacheOptionsClass => ResolveType("Microsoft.Extensions.Caching.StackExchangeRedis.RedisCacheOptions");
     public TypeAccessor RedisCacheClass => ResolveType("Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache");
 
-    public MicrosoftRedisPackageResolver()
-        : base(new List<string>
-        {
-            "Microsoft.Extensions.Caching.Abstractions",
-            "Microsoft.Extensions.Caching.StackExchangeRedis"
-        }, new List<string>
-        {
-            "Microsoft.Extensions.Caching.StackExchangeRedis"
-        })
+    private MicrosoftRedisPackageResolver(IReadOnlyList<string> assemblyNames, IReadOnlyList<string> packageNames)
+        : base(assemblyNames, packageNames)
     {
     }
 }

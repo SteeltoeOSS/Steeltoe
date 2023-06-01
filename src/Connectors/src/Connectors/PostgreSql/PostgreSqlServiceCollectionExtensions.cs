@@ -30,7 +30,7 @@ public static class PostgreSqlServiceCollectionExtensions
     public static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
         Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddPostgreSql(services, configurationBuilder, new PostgreSqlPackageResolver(), setupAction);
+        return AddPostgreSql(services, configurationBuilder, PostgreSqlPackageResolver.Default, setupAction);
     }
 
     private static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfigurationBuilder configurationBuilder,

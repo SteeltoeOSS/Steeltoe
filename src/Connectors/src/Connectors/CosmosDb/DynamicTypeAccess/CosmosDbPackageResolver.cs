@@ -13,10 +13,12 @@ namespace Steeltoe.Connectors.CosmosDb.DynamicTypeAccess;
 /// </summary>
 internal sealed class CosmosDbPackageResolver : PackageResolver
 {
+    public static readonly CosmosDbPackageResolver Default = new("Microsoft.Azure.Cosmos.Client", "Microsoft.Azure.Cosmos");
+
     public TypeAccessor CosmosClientClass => ResolveType("Microsoft.Azure.Cosmos.CosmosClient");
 
-    public CosmosDbPackageResolver()
-        : base("Microsoft.Azure.Cosmos.Client", "Microsoft.Azure.Cosmos")
+    private CosmosDbPackageResolver(string assemblyName, string packageName)
+        : base(assemblyName, packageName)
     {
     }
 }

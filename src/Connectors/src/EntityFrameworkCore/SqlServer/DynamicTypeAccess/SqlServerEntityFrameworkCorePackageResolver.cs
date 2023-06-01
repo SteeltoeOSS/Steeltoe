@@ -13,19 +13,21 @@ namespace Steeltoe.Connectors.EntityFrameworkCore.SqlServer.DynamicTypeAccess;
 /// </summary>
 internal sealed class SqlServerEntityFrameworkCorePackageResolver : PackageResolver
 {
+    public static readonly SqlServerEntityFrameworkCorePackageResolver Default = new(new[]
+    {
+        "Microsoft.EntityFrameworkCore.SqlServer",
+        "Microsoft.Data.SqlClient"
+    }, new[]
+    {
+        "Microsoft.EntityFrameworkCore.SqlServer"
+    });
+
     public TypeAccessor SqlServerDbContextOptionsExtensionsClass => ResolveType("Microsoft.EntityFrameworkCore.SqlServerDbContextOptionsExtensions");
     public TypeAccessor SqlServerDbContextOptionsBuilderClass => ResolveType("Microsoft.EntityFrameworkCore.Infrastructure.SqlServerDbContextOptionsBuilder");
     public TypeAccessor SqlConnectionClass => ResolveType("Microsoft.Data.SqlClient.SqlConnection");
 
-    public SqlServerEntityFrameworkCorePackageResolver()
-        : base(new[]
-        {
-            "Microsoft.EntityFrameworkCore.SqlServer",
-            "Microsoft.Data.SqlClient"
-        }, new[]
-        {
-            "Microsoft.EntityFrameworkCore.SqlServer"
-        })
+    private SqlServerEntityFrameworkCorePackageResolver(IReadOnlyList<string> assemblyNames, IReadOnlyList<string> packageNames)
+        : base(assemblyNames, packageNames)
     {
     }
 }

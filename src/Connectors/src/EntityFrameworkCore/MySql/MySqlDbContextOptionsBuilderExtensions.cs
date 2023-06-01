@@ -17,7 +17,8 @@ public static class MySqlDbContextOptionsBuilderExtensions
     public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,
         string? serviceBindingName = null, object? serverVersion = null, Action<object>? mySqlOptionsAction = null)
     {
-        return UseMySql(optionsBuilder, serviceProvider, new MySqlEntityFrameworkCorePackageResolver(), serviceBindingName, serverVersion, mySqlOptionsAction);
+        return UseMySql(optionsBuilder, serviceProvider, MySqlEntityFrameworkCorePackageResolver.Default, serviceBindingName, serverVersion,
+            mySqlOptionsAction);
     }
 
     internal static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,

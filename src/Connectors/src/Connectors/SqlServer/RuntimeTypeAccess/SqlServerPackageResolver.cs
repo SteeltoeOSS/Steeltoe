@@ -16,48 +16,31 @@ internal sealed class SqlServerPackageResolver : PackageResolver
     private static readonly (string AssemblyName, string PackageName) MicrosoftData = new("Microsoft.Data.SqlClient", "Microsoft.Data.SqlClient");
     private static readonly (string AssemblyName, string PackageName) SystemData = new("System.Data.SqlClient", "System.Data.SqlClient");
 
+    internal static readonly SqlServerPackageResolver MicrosoftDataOnly = new(MicrosoftData.AssemblyName, MicrosoftData.PackageName);
+    internal static readonly SqlServerPackageResolver SystemDataOnly = new(SystemData.AssemblyName, SystemData.PackageName);
+
+    public static readonly SqlServerPackageResolver Default = new(new[]
+    {
+        MicrosoftData.AssemblyName,
+        SystemData.AssemblyName
+    }, new[]
+    {
+        MicrosoftData.PackageName,
+        SystemData.PackageName
+    });
+
     public TypeAccessor SqlConnectionStringBuilderClass =>
         ResolveType("Microsoft.Data.SqlClient.SqlConnectionStringBuilder", "System.Data.SqlClient.SqlConnectionStringBuilder");
 
     public TypeAccessor SqlConnectionClass => ResolveType("Microsoft.Data.SqlClient.SqlConnection", "System.Data.SqlClient.SqlConnection");
 
-    public SqlServerPackageResolver()
-        : this(new[]
-        {
-            MicrosoftData.AssemblyName,
-            SystemData.AssemblyName
-        }, new[]
-        {
-            MicrosoftData.PackageName,
-            SystemData.PackageName
-        })
+    private SqlServerPackageResolver(string assemblyName, string packageName)
+        : base(assemblyName, packageName)
     {
     }
 
     private SqlServerPackageResolver(IReadOnlyList<string> assemblyNames, IReadOnlyList<string> packageNames)
         : base(assemblyNames, packageNames)
     {
-    }
-
-    internal static SqlServerPackageResolver CreateForOnlyMicrosoftData()
-    {
-        return new SqlServerPackageResolver(new[]
-        {
-            MicrosoftData.AssemblyName
-        }, new[]
-        {
-            MicrosoftData.PackageName
-        });
-    }
-
-    internal static SqlServerPackageResolver CreateForOnlySystemData()
-    {
-        return new SqlServerPackageResolver(new[]
-        {
-            SystemData.AssemblyName
-        }, new[]
-        {
-            SystemData.PackageName
-        });
     }
 }

@@ -16,48 +16,31 @@ internal sealed class MySqlPackageResolver : PackageResolver
     private static readonly (string AssemblyName, string PackageName) MySqlConnector = new("MySqlConnector", "MySqlConnector");
     private static readonly (string AssemblyName, string PackageName) Oracle = new("MySql.Data", "MySql.Data");
 
+    internal static readonly MySqlPackageResolver MySqlConnectorOnly = new(MySqlConnector.AssemblyName, MySqlConnector.PackageName);
+    internal static readonly MySqlPackageResolver OracleOnly = new(Oracle.AssemblyName, Oracle.PackageName);
+
+    public static readonly MySqlPackageResolver Default = new(new[]
+    {
+        MySqlConnector.AssemblyName,
+        Oracle.AssemblyName
+    }, new[]
+    {
+        MySqlConnector.PackageName,
+        Oracle.PackageName
+    });
+
     public TypeAccessor MySqlConnectionStringBuilderClass =>
         ResolveType("MySqlConnector.MySqlConnectionStringBuilder", "MySql.Data.MySqlClient.MySqlConnectionStringBuilder");
 
     public TypeAccessor MySqlConnectionClass => ResolveType("MySqlConnector.MySqlConnection", "MySql.Data.MySqlClient.MySqlConnection");
 
-    public MySqlPackageResolver()
-        : this(new[]
-        {
-            MySqlConnector.AssemblyName,
-            Oracle.AssemblyName
-        }, new[]
-        {
-            MySqlConnector.PackageName,
-            Oracle.PackageName
-        })
+    private MySqlPackageResolver(string assemblyName, string packageName)
+        : base(assemblyName, packageName)
     {
     }
 
     private MySqlPackageResolver(IReadOnlyList<string> assemblyNames, IReadOnlyList<string> packageNames)
         : base(assemblyNames, packageNames)
     {
-    }
-
-    internal static MySqlPackageResolver CreateForOnlyMySqlConnector()
-    {
-        return new MySqlPackageResolver(new[]
-        {
-            MySqlConnector.AssemblyName
-        }, new[]
-        {
-            MySqlConnector.PackageName
-        });
-    }
-
-    internal static MySqlPackageResolver CreateForOnlyOracle()
-    {
-        return new MySqlPackageResolver(new[]
-        {
-            Oracle.AssemblyName
-        }, new[]
-        {
-            Oracle.PackageName
-        });
     }
 }

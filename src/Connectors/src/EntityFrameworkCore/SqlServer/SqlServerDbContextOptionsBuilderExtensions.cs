@@ -17,7 +17,7 @@ public static class SqlServerDbContextOptionsBuilderExtensions
     public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,
         string? serviceBindingName = null, Action<object>? sqlServerOptionsAction = null)
     {
-        return UseSqlServer(optionsBuilder, serviceProvider, new SqlServerEntityFrameworkCorePackageResolver(), serviceBindingName, sqlServerOptionsAction);
+        return UseSqlServer(optionsBuilder, serviceProvider, SqlServerEntityFrameworkCorePackageResolver.Default, serviceBindingName, sqlServerOptionsAction);
     }
 
     private static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,

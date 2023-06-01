@@ -13,11 +13,13 @@ namespace Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
 /// </summary>
 internal sealed class PostgreSqlPackageResolver : PackageResolver
 {
+    public static readonly PostgreSqlPackageResolver Default = new("Npgsql", "Npgsql");
+
     public TypeAccessor NpgsqlConnectionStringBuilderClass => ResolveType("Npgsql.NpgsqlConnectionStringBuilder");
     public TypeAccessor NpgsqlConnectionClass => ResolveType("Npgsql.NpgsqlConnection");
 
-    public PostgreSqlPackageResolver()
-        : base("Npgsql", "Npgsql")
+    private PostgreSqlPackageResolver(string assemblyName, string packageName)
+        : base(assemblyName, packageName)
     {
     }
 }

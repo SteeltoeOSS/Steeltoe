@@ -28,6 +28,22 @@ internal sealed class MySqlEntityFrameworkCorePackageResolver : PackageResolver
         "MySql.Data"
     };
 
+    public static readonly MySqlEntityFrameworkCorePackageResolver Default = new(PomeloAssemblyNames.Concat(OracleAssemblyNames).ToList(), new[]
+    {
+        PomeloPackageName,
+        OraclePackageName
+    });
+
+    internal static readonly MySqlEntityFrameworkCorePackageResolver PomeloOnly = new(PomeloAssemblyNames, new[]
+    {
+        PomeloPackageName
+    });
+
+    internal static readonly MySqlEntityFrameworkCorePackageResolver OracleOnly = new(OracleAssemblyNames, new[]
+    {
+        OraclePackageName
+    });
+
     public TypeAccessor MySqlDbContextOptionsExtensionsClass =>
         ResolveType("Microsoft.EntityFrameworkCore.MySqlDbContextOptionsBuilderExtensions", "Microsoft.EntityFrameworkCore.MySQLDbContextOptionsExtensions");
 
@@ -39,33 +55,8 @@ internal sealed class MySqlEntityFrameworkCorePackageResolver : PackageResolver
 
     public TypeAccessor ServerVersionClass => ResolveType("Microsoft.EntityFrameworkCore.ServerVersion");
 
-    public MySqlEntityFrameworkCorePackageResolver()
-        : base(PomeloAssemblyNames.Concat(OracleAssemblyNames).ToList(), new[]
-        {
-            PomeloPackageName,
-            OraclePackageName
-        })
-    {
-    }
-
     private MySqlEntityFrameworkCorePackageResolver(IReadOnlyList<string> assemblyNames, IReadOnlyList<string> packageNames)
         : base(assemblyNames, packageNames)
     {
-    }
-
-    internal static MySqlEntityFrameworkCorePackageResolver CreateForOnlyPomelo()
-    {
-        return new MySqlEntityFrameworkCorePackageResolver(PomeloAssemblyNames, new[]
-        {
-            PomeloPackageName
-        });
-    }
-
-    internal static MySqlEntityFrameworkCorePackageResolver CreateForOnlyOracle()
-    {
-        return new MySqlEntityFrameworkCorePackageResolver(OracleAssemblyNames, new[]
-        {
-            OraclePackageName
-        });
     }
 }

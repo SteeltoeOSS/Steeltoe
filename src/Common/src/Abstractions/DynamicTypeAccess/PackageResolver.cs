@@ -17,10 +17,10 @@ internal abstract class PackageResolver
     private readonly IReadOnlyList<string> _packageNames;
 
     protected PackageResolver(string assemblyName, string packageName)
-        : this(new List<string>
+        : this(new[]
         {
             assemblyName
-        }, new List<string>
+        }, new[]
         {
             packageName
         })

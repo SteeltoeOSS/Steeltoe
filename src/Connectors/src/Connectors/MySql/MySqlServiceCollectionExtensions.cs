@@ -30,7 +30,7 @@ public static class MySqlServiceCollectionExtensions
     public static IServiceCollection AddMySql(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
         Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddMySql(services, configurationBuilder, new MySqlPackageResolver(), setupAction);
+        return AddMySql(services, configurationBuilder, MySqlPackageResolver.Default, setupAction);
     }
 
     internal static IServiceCollection AddMySql(this IServiceCollection services, IConfigurationBuilder configurationBuilder,

@@ -19,7 +19,7 @@ public static class RedisWebApplicationBuilderExtensions
 
     public static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder, Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddRedis(builder, new StackExchangeRedisPackageResolver(), new MicrosoftRedisPackageResolver(), setupAction);
+        return AddRedis(builder, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default, setupAction);
     }
 
     internal static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder, StackExchangeRedisPackageResolver stackExchangeRedisPackageResolver,

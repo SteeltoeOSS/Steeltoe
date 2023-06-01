@@ -19,7 +19,7 @@ public static class SqlServerWebApplicationBuilderExtensions
 
     public static WebApplicationBuilder AddSqlServer(this WebApplicationBuilder builder, Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddSqlServer(builder, new SqlServerPackageResolver(), setupAction);
+        return AddSqlServer(builder, SqlServerPackageResolver.Default, setupAction);
     }
 
     internal static WebApplicationBuilder AddSqlServer(this WebApplicationBuilder builder, SqlServerPackageResolver packageResolver,

@@ -13,11 +13,13 @@ namespace Steeltoe.Connectors.RabbitMQ.DynamicTypeAccess;
 /// </summary>
 internal sealed class RabbitMQPackageResolver : PackageResolver
 {
+    public static readonly RabbitMQPackageResolver Default = new("RabbitMQ.Client", "RabbitMQ.Client");
+
     public TypeAccessor ConnectionFactoryClass => ResolveType("RabbitMQ.Client.ConnectionFactory");
     public TypeAccessor ConnectionInterface => ResolveType("RabbitMQ.Client.IConnection");
 
-    public RabbitMQPackageResolver()
-        : base("RabbitMQ.Client", "RabbitMQ.Client")
+    private RabbitMQPackageResolver(string assemblyName, string packageName)
+        : base(assemblyName, packageName)
     {
     }
 }

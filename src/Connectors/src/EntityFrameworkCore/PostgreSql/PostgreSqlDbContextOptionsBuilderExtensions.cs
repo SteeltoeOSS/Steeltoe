@@ -17,7 +17,7 @@ public static class PostgreSqlDbContextOptionsBuilderExtensions
     public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,
         string? serviceBindingName = null, Action<object>? npgsqlOptionsAction = null)
     {
-        return UseNpgsql(optionsBuilder, serviceProvider, new PostgreSqlEntityFrameworkCorePackageResolver(), serviceBindingName, npgsqlOptionsAction);
+        return UseNpgsql(optionsBuilder, serviceProvider, PostgreSqlEntityFrameworkCorePackageResolver.Default, serviceBindingName, npgsqlOptionsAction);
     }
 
     private static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,

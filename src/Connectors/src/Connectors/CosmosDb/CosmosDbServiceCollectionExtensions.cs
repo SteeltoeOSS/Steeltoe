@@ -28,7 +28,7 @@ public static class CosmosDbServiceCollectionExtensions
     public static IServiceCollection AddCosmosDb(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
         Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddCosmosDb(services, configurationBuilder, new CosmosDbPackageResolver(), setupAction);
+        return AddCosmosDb(services, configurationBuilder, CosmosDbPackageResolver.Default, setupAction);
     }
 
     private static IServiceCollection AddCosmosDb(this IServiceCollection services, IConfigurationBuilder configurationBuilder,

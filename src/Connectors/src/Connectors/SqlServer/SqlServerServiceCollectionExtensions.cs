@@ -28,7 +28,7 @@ public static class SqlServerServiceCollectionExtensions
     public static IServiceCollection AddSqlServer(this IServiceCollection services, IConfigurationBuilder configurationBuilder,
         Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddSqlServer(services, configurationBuilder, new SqlServerPackageResolver(), setupAction);
+        return AddSqlServer(services, configurationBuilder, SqlServerPackageResolver.Default, setupAction);
     }
 
     internal static IServiceCollection AddSqlServer(this IServiceCollection services, IConfigurationBuilder configurationBuilder,

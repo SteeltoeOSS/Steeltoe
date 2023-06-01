@@ -19,7 +19,7 @@ public static class MySqlWebApplicationBuilderExtensions
 
     public static WebApplicationBuilder AddMySql(this WebApplicationBuilder builder, Action<ConnectorSetupOptions>? setupAction)
     {
-        return AddMySql(builder, new MySqlPackageResolver(), setupAction);
+        return AddMySql(builder, MySqlPackageResolver.Default, setupAction);
     }
 
     internal static WebApplicationBuilder AddMySql(this WebApplicationBuilder builder, MySqlPackageResolver packageResolver,
