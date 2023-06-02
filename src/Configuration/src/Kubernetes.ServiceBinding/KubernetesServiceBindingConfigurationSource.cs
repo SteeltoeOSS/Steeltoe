@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
+using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
@@ -47,6 +48,8 @@ internal sealed class KubernetesServiceBindingConfigurationSource : PostProcesso
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
+        ArgumentGuard.NotNull(builder);
+
         ParentConfiguration = GetParentConfiguration(builder);
 
         return new KubernetesServiceBindingConfigurationProvider(this);

@@ -21,7 +21,9 @@ internal sealed class ConnectionStringPostProcessorConfigurationProvider : PostP
 
     public override void Load()
     {
+        Data.Clear();
         PostProcessConfiguration();
+        OnReload();
     }
 
     public void Dispose()

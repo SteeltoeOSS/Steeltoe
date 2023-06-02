@@ -461,6 +461,27 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
             connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
             connectionString.Should().Be("Host=remote.com;Database=other");
+
+            await File.WriteAllTextAsync(tempJsonPath, @"{
+  ""Steeltoe"": {
+    ""Client"": {
+      ""PostgreSql"": {
+        ""examplePostgreSqlService"": {
+            ""ConnectionString"": ""SERVER=other.com;DB=other""
+        }
+      }
+    }
+  }
+}
+");
+
+            await Task.Delay(TimeSpan.FromSeconds(2));
+
+            connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+            connectorFactory.ServiceBindingNames.Should().Contain("examplePostgreSqlService");
+
+            connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
+            connectionString.Should().Be("Host=other.com;Database=other");
         }
         finally
         {
