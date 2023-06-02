@@ -16,7 +16,7 @@ internal sealed class ConnectionStringPostProcessorConfigurationSource : PostPro
     {
         ArgumentGuard.NotNull(builder);
 
-        ParentConfiguration ??= GetParentConfiguration(builder);
+        ParentConfiguration = GetParentConfiguration(builder);
         return new ConnectionStringPostProcessorConfigurationProvider(this);
     }
 }

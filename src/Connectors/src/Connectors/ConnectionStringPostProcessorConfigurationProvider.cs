@@ -9,16 +9,23 @@ using Steeltoe.Configuration;
 
 namespace Steeltoe.Connectors;
 
-internal sealed class ConnectionStringPostProcessorConfigurationProvider : PostProcessorConfigurationProvider
+internal sealed class ConnectionStringPostProcessorConfigurationProvider : PostProcessorConfigurationProvider, IDisposable
 {
+    private readonly IDisposable _changeToken;
+
     public ConnectionStringPostProcessorConfigurationProvider(PostProcessorConfigurationSource source)
         : base(source)
     {
-        ChangeToken.OnChange(() => source.ParentConfiguration.GetReloadToken(), _ => Load(), 0);
+        _changeToken = ChangeToken.OnChange(() => source.ParentConfiguration.GetReloadToken(), _ => Load(), 0);
     }
 
     public override void Load()
     {
         PostProcessConfiguration();
+    }
+
+    public void Dispose()
+    {
+        _changeToken.Dispose();
     }
 }

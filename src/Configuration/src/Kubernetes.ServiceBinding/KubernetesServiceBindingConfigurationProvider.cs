@@ -17,7 +17,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
     public static readonly string FromKeyPrefix = ConfigurationPath.Combine("k8s", "bindings");
     public static readonly string ToKeyPrefix = ConfigurationPath.Combine("steeltoe", "service-bindings");
 
-    private readonly IDisposable _changeTokenRegistration;
+    private readonly IDisposable _changeToken;
     private readonly KubernetesServiceBindingConfigurationSource _source;
 
     public KubernetesServiceBindingConfigurationProvider(KubernetesServiceBindingConfigurationSource source)
@@ -27,7 +27,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
 
         if (source.ReloadOnChange && _source.FileProvider != null)
         {
-            _changeTokenRegistration = ChangeToken.OnChange(() => _source.FileProvider.Watch("*"), () =>
+            _changeToken = ChangeToken.OnChange(() => _source.FileProvider.Watch("*"), () =>
             {
                 Thread.Sleep(_source.ReloadDelay); // Default 250
                 Load(true);
@@ -94,7 +94,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
 
     public void Dispose()
     {
-        _changeTokenRegistration?.Dispose();
+        _changeToken?.Dispose();
     }
 
     protected override void PostProcessConfiguration()

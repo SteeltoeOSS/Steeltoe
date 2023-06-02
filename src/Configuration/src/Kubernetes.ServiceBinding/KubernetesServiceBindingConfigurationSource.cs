@@ -47,7 +47,7 @@ internal sealed class KubernetesServiceBindingConfigurationSource : PostProcesso
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        ParentConfiguration ??= GetParentConfiguration(builder);
+        ParentConfiguration = GetParentConfiguration(builder);
 
         return new KubernetesServiceBindingConfigurationProvider(this);
     }

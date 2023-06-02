@@ -22,7 +22,7 @@ internal sealed class CloudFoundryServiceBindingConfigurationSource : PostProces
     {
         ArgumentGuard.NotNull(builder);
 
-        ParentConfiguration ??= GetParentConfiguration(builder);
+        ParentConfiguration = GetParentConfiguration(builder);
         return new CloudFoundryServiceBindingConfigurationProvider(this, _serviceBindingsReader);
     }
 }
