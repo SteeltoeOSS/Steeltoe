@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Connectors;
 using Steeltoe.Connectors.Services;
 using Xunit;
@@ -25,14 +26,14 @@ public class ExternalConnectorTest
     [Fact]
     public void CustomCreatorCanBePresentAndDisabled()
     {
+        using var scope = new EnvironmentVariableScope("TestServiceInfoCreator", "false");
+
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
-        Environment.SetEnvironmentVariable("TestServiceInfoCreator", "false");
 
         ServiceInfoCreator creator = ServiceInfoCreatorFactory.GetServiceInfoCreator(configurationRoot);
 
         Assert.IsType<ServiceInfoCreator>(creator);
         Assert.Equal(11, creator.Factories.Count);
-        Environment.SetEnvironmentVariable("TestServiceInfoCreator", null);
     }
 
     [Fact]

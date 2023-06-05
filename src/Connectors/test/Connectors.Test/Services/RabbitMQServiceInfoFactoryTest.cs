@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connectors.Services;
@@ -12,12 +13,6 @@ namespace Steeltoe.Connectors.Test.Services;
 
 public class RabbitMQServiceInfoFactoryTest
 {
-    public RabbitMQServiceInfoFactoryTest()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
     [Fact]
     public void Accept_AcceptsValidServiceBinding()
     {
@@ -217,7 +212,8 @@ public class RabbitMQServiceInfoFactoryTest
                     }]
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", environment);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", environment);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();

@@ -18,8 +18,8 @@ public class ConfigurationExtensionsTest
     [Fact]
     public void GetServiceInfos_GetsCFRedisServiceInfos()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcap);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcap);
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCloudFoundry().Build();
 
@@ -31,8 +31,6 @@ public class ConfigurationExtensionsTest
     [Fact]
     public void GetServiceInfos_GetsRedisServiceInfos()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", string.Empty);
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(RedisCacheTestHelpers.SingleServerAsDictionary).Build();
 
         IEnumerable<IServiceInfo> infos = configurationRoot.GetServiceInfos(typeof(RedisServiceInfo));
@@ -55,8 +53,9 @@ public class ConfigurationExtensionsTest
     [Fact]
     public void AddConnectionStrings_GetConnectionString()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
+
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCloudFoundry().AddConnectionStrings().Build();
 
         string connStringByName = configurationRoot.GetConnectionString("spring-cloud-broker-db");

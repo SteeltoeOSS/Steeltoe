@@ -12,12 +12,6 @@ namespace Steeltoe.Connectors.CloudFoundry.Test;
 
 public class CloudFoundryServiceInfoCreatorTest
 {
-    public CloudFoundryServiceInfoCreatorTest()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
@@ -63,9 +57,6 @@ public class CloudFoundryServiceInfoCreatorTest
     [Fact]
     public void BuildServiceInfos_NoCloudFoundryServices_BuildsExpected()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
@@ -156,8 +147,8 @@ public class CloudFoundryServiceInfoCreatorTest
                     }]
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", environment2);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", environment2);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -250,8 +241,8 @@ public class CloudFoundryServiceInfoCreatorTest
                     }]
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", environment2);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", environment2);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -400,8 +391,8 @@ public class CloudFoundryServiceInfoCreatorTest
                     }]
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", environment2);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", environment2);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();

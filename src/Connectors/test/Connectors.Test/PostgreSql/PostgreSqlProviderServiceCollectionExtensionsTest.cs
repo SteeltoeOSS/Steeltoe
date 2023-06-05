@@ -18,12 +18,6 @@ namespace Steeltoe.Connectors.Test.PostgreSql;
 /// </summary>
 public class PostgreSqlProviderServiceCollectionExtensionsTest
 {
-    public PostgreSqlProviderServiceCollectionExtensionsTest()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
     [Fact]
     public void AddPostgreSqlConnection_ThrowsIfServiceCollectionNull()
     {
@@ -86,9 +80,10 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddPostgreSqlConnection_MultiplePostgreSqlServices_ThrowsConnectorException()
     {
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", PostgreSqlTestHelpers.TwoServerVcapEdb);
+
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.TwoServerVcapEdb);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -101,10 +96,11 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddPostgreSqlConnection_WithVCAPs_AddsPostgreSqlConnection()
     {
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapEdb);
+
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapEdb);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
@@ -124,10 +120,11 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddPostgreSqlConnection_WithAzureVCAPs_AddsPostgreSqlConnection()
     {
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapAzure);
+
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapAzure);
         var appsettings = new Dictionary<string, string>();
 
         var builder = new ConfigurationBuilder();
@@ -153,10 +150,11 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddPostgreSqlConnection_WithCrunchyVCAPs_AddsPostgreSqlConnection()
     {
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapCrunchy);
+
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapCrunchy);
         var appsettings = new Dictionary<string, string>();
 
         var builder = new ConfigurationBuilder();

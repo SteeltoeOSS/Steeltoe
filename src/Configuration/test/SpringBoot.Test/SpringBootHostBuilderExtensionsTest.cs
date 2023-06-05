@@ -29,7 +29,7 @@ public sealed class SpringBootHostBuilderExtensionsTest
     [Fact]
     public void WebHostConfiguresIConfiguration_Spring_Application_Json()
     {
-        Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
+        using var scope = new EnvironmentVariableScope("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
         IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().AddSpringBootConfiguration();
 
@@ -39,8 +39,6 @@ public sealed class SpringBootHostBuilderExtensionsTest
 
         Assert.NotNull(configuration["foo:bar"]);
         Assert.Equal("value", configuration["foo:bar"]);
-
-        Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", string.Empty);
     }
 
     [Fact]
@@ -67,7 +65,7 @@ public sealed class SpringBootHostBuilderExtensionsTest
     [Fact]
     public void GenericHostConfiguresIConfiguration_Spring_Application_Json()
     {
-        Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
+        using var scope = new EnvironmentVariableScope("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
         IHostBuilder hostBuilder = new HostBuilder().AddSpringBootConfiguration();
         IHost host = hostBuilder.Build();
@@ -75,8 +73,6 @@ public sealed class SpringBootHostBuilderExtensionsTest
 
         Assert.NotNull(configuration["foo:bar"]);
         Assert.Equal("value", configuration["foo:bar"]);
-
-        Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", string.Empty);
     }
 
     [Fact]
@@ -109,7 +105,8 @@ public sealed class SpringBootHostBuilderExtensionsTest
     [Fact]
     public void WebApplicationConfiguresIConfiguration_Spring_Application_Json()
     {
-        Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
+        using var scope = new EnvironmentVariableScope("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
+
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
 
         hostBuilder.AddSpringBootConfiguration();
@@ -119,8 +116,6 @@ public sealed class SpringBootHostBuilderExtensionsTest
 
         Assert.NotNull(configuration["foo:bar"]);
         Assert.Equal("value", configuration["foo:bar"]);
-
-        Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", string.Empty);
     }
 
     [Fact]

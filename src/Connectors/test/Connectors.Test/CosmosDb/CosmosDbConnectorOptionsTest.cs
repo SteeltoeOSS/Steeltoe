@@ -49,9 +49,6 @@ public class CosmosDbConnectorOptionsTest
     [Fact]
     public void ConnectionString_Returned_AsConfigured()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", string.Empty);
-
         var appsettings = new Dictionary<string, string>
         {
             ["cosmosdb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
@@ -74,9 +71,8 @@ public class CosmosDbConnectorOptionsTest
             ["cosmosdb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
         };
 
-        // add environment variables as Cloud Foundry would
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", CosmosDbTestHelpers.SingleVcapBinding);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", CosmosDbTestHelpers.SingleVcapBinding);
 
         // add settings to configuration
         var configurationBuilder = new ConfigurationBuilder();

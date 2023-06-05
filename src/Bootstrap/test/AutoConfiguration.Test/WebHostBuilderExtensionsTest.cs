@@ -88,7 +88,7 @@ public class WebHostBuilderExtensionsTest
     [Fact(Skip = "Requires Kubernetes")]
     public void KubernetesConfiguration_IsAutowired()
     {
-        Environment.SetEnvironmentVariable("KUBERNETES_SERVICE_HOST", "TEST");
+        using var scope = new EnvironmentVariableScope("KUBERNETES_SERVICE_HOST", "TEST");
 
         IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
         {

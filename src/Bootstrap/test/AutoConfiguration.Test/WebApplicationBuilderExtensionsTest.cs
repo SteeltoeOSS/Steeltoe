@@ -67,7 +67,8 @@ public class WebApplicationBuilderExtensionsTest
     [Fact(Skip = "Requires Kubernetes")]
     public void KubernetesConfiguration_IsAutowired()
     {
-        Environment.SetEnvironmentVariable("KUBERNETES_SERVICE_HOST", "TEST");
+        using var scope = new EnvironmentVariableScope("KUBERNETES_SERVICE_HOST", "TEST");
+
         WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeConfigurationKubernetes);
         var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
 

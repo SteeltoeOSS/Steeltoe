@@ -37,8 +37,9 @@ public class ConnectionStringManagerTest
     [Fact]
     public void MysqlConnectionInfoByName()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
+
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCloudFoundry().Build();
 
         var cm = new ConnectionStringManager(configurationRoot);
@@ -62,8 +63,9 @@ public class ConnectionStringManagerTest
     [Fact]
     public void PostgreSqlConnectionInfoByName()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.TwoServerVcapEdb);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", PostgreSqlTestHelpers.TwoServerVcapEdb);
+
         var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
         Connection connInfo = cm.Get<PostgreSqlConnectionInfo>("myPostgres");
 
@@ -85,8 +87,8 @@ public class ConnectionStringManagerTest
     [Fact]
     public void SqlServerConnectionInfo_ByName()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVcap);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVcap);
 
         var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
         Connection connInfo = cm.Get<SqlServerConnectionInfo>("mySqlServerService");
@@ -109,8 +111,8 @@ public class ConnectionStringManagerTest
     [Fact]
     public void RedisConnectionInfoByName()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVcap);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVcap);
 
         var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
         Connection connInfo = cm.Get<RedisConnectionInfo>("myRedisService1");
@@ -144,8 +146,8 @@ public class ConnectionStringManagerTest
     [Fact]
     public void MongoDbConnectionInfoByName()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.DoubleBindingEnterpriseVcap);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", MongoDbTestHelpers.DoubleBindingEnterpriseVcap);
 
         var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
         Connection connInfo = cm.Get<MongoDbConnectionInfo>("steeltoe");

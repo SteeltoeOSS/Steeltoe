@@ -17,12 +17,6 @@ namespace Steeltoe.Connectors.Test.MySql;
 /// </summary>
 public class MySqlServiceCollectionExtensionsTest
 {
-    public MySqlServiceCollectionExtensionsTest()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
     [Fact]
     public void AddMySqlHealthContributor_ThrowsIfServiceCollectionNull()
     {
@@ -85,10 +79,10 @@ public class MySqlServiceCollectionExtensionsTest
     [Fact]
     public void AddMySqlHealthContributor_MultipleMySqlServices_ThrowsConnectorException()
     {
-        IServiceCollection services = new ServiceCollection();
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
+        IServiceCollection services = new ServiceCollection();
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();

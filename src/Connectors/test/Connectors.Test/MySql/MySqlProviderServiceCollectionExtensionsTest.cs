@@ -18,12 +18,6 @@ namespace Steeltoe.Connectors.Test.MySql;
 /// </summary>
 public class MySqlProviderServiceCollectionExtensionsTest
 {
-    public MySqlProviderServiceCollectionExtensionsTest()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
     [Fact]
     public void AddMySqlConnection_ThrowsIfServiceCollectionNull()
     {
@@ -86,10 +80,10 @@ public class MySqlProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddMySqlConnection_MultipleMySqlServices_ThrowsConnectorException()
     {
-        IServiceCollection services = new ServiceCollection();
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
+        IServiceCollection services = new ServiceCollection();
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -102,9 +96,10 @@ public class MySqlProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddMySqlConnection_WithServiceName_AndVCaps_AddsMySqlConnection()
     {
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
+
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -123,9 +118,11 @@ public class MySqlProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddMySqlConnection_WithVCAPs_AddsMySqlConnection()
     {
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
+
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
+
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
@@ -145,9 +142,11 @@ public class MySqlProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddMySqlConnection_WithAzureBrokerVCAPs_AddsMySqlConnection()
     {
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", MySqlTestHelpers.SingleServerAzureVcap);
+
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerAzureVcap);
+
         var appsettings = new Dictionary<string, string>();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();

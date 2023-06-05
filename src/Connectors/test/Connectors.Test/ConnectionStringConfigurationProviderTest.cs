@@ -35,9 +35,6 @@ public class ConnectionStringConfigurationProviderTest
     [Fact]
     public void TryGetReadsServiceBindingConnectionString()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", string.Empty);
-
         var provider = new ConnectionStringConfigurationProvider(new ConfigurationBuilder()
             .AddInMemoryCollection(RedisCacheTestHelpers.SingleServerAsDictionary).Build().Providers);
 

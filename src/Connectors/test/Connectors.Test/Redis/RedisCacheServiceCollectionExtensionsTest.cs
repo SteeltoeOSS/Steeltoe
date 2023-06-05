@@ -17,12 +17,6 @@ namespace Steeltoe.Connectors.Test.Redis;
 
 public class RedisCacheServiceCollectionExtensionsTest
 {
-    public RedisCacheServiceCollectionExtensionsTest()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
     [Fact]
     public void AddDistributedRedisCache_ThrowsIfServiceCollectionNull()
     {
@@ -146,10 +140,10 @@ public class RedisCacheServiceCollectionExtensionsTest
     [Fact]
     public void AddDistributedRedisCache_MultipleRedisServices_ThrowsConnectorException()
     {
-        IServiceCollection services = new ServiceCollection();
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVcap);
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVcap);
+        IServiceCollection services = new ServiceCollection();
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -256,8 +250,8 @@ public class RedisCacheServiceCollectionExtensionsTest
     [Fact]
     public void AddRedisConnectionMultiplexer_WithVCAPs_AddsRedisConnectionMultiplexer()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcap);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcap);
 
         var appsettings = new Dictionary<string, string>
         {
@@ -284,8 +278,8 @@ public class RedisCacheServiceCollectionExtensionsTest
     [Fact]
     public void AddRedisConnectionMultiplexer_WithAzureVCAPs_AddsRedisConnectionMultiplexer()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcapAzureBroker);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcapAzureBroker);
 
         var appsettings = new Dictionary<string, string>
         {
@@ -311,8 +305,8 @@ public class RedisCacheServiceCollectionExtensionsTest
     [Fact]
     public void AddRedisConnectionMultiplexer_WithEnterpriseVCAPs_AddsRedisConnectionMultiplexer()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerEnterpriseVcap);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerEnterpriseVcap);
 
         var appsettings = new Dictionary<string, string>
         {
@@ -339,8 +333,8 @@ public class RedisCacheServiceCollectionExtensionsTest
     [Fact]
     public void AddRedisConnectionMultiplexer_WithSecureAzureVCAPs_AddsRedisConnectionMultiplexer()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcapAzureBrokerSecure);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcapAzureBrokerSecure);
 
         var appsettings = new Dictionary<string, string>
         {
