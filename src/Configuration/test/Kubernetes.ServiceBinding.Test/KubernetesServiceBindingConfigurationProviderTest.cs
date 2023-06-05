@@ -113,28 +113,6 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
         postProcessor.PostProcessorCalled.Should().BeTrue();
     }
 
-    [Fact]
-    public void PostProcessors_CanBeDisabled()
-    {
-        string rootDirectory = GetK8SResourcesDirectory(null);
-
-        var source = new KubernetesServiceBindingConfigurationSource(rootDirectory)
-        {
-            ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "steeltoe:kubernetes:service-bindings:enable", "false" }
-            }).Build()
-        };
-
-        var postProcessor = new TestPostProcessor();
-        source.RegisterPostProcessor(postProcessor);
-
-        var provider = new KubernetesServiceBindingConfigurationProvider(source);
-        provider.Load();
-
-        postProcessor.PostProcessorCalled.Should().BeFalse();
-    }
-
     private static string GetK8SResourcesDirectory(string name)
     {
         return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s", $"{name}");

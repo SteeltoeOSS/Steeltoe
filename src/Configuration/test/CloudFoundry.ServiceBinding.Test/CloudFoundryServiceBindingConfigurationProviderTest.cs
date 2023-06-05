@@ -96,28 +96,6 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
     }
 
     [Fact]
-    public void PostProcessors_CanBeEnabled()
-    {
-        var postProcessor = new TestPostProcessor();
-
-        var reader = new StringServiceBindingsReader(VcapServicesJson);
-        var source = new CloudFoundryServiceBindingConfigurationSource(reader);
-        source.RegisterPostProcessor(postProcessor);
-
-        var builder = new ConfigurationBuilder();
-        builder.Add(source);
-
-        builder.AddInMemoryCollection(new Dictionary<string, string>
-        {
-            { "steeltoe:cloudfoundry:service-bindings:enable", "false" }
-        });
-
-        builder.Build();
-
-        postProcessor.PostProcessorCalled.Should().BeFalse();
-    }
-
-    [Fact]
     public void Build_CapturesParentConfiguration()
     {
         var reader = new StringServiceBindingsReader(string.Empty);

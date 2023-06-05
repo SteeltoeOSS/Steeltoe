@@ -80,12 +80,4 @@ internal sealed class CloudFoundryServiceBindingConfigurationProvider : PostProc
             data[key] = section.Value;
         }
     }
-
-    protected override void PostProcessConfiguration()
-    {
-        if (this.IsCloudFoundryBindingsEnabled())
-        {
-            base.PostProcessConfiguration();
-        }
-    }
 }

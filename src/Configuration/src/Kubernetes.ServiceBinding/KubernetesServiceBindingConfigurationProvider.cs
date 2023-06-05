@@ -97,14 +97,6 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
         _changeToken?.Dispose();
     }
 
-    protected override void PostProcessConfiguration()
-    {
-        if (this.IsKubernetesBindingsEnabled())
-        {
-            base.PostProcessConfiguration();
-        }
-    }
-
     private void AddBindingType(ServiceBinding binding, Dictionary<string, string> data)
     {
         string typeKey = ConfigurationPath.Combine(FromKeyPrefix, binding.Name, TypeKey);
