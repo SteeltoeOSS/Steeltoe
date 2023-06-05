@@ -16,25 +16,34 @@ public static class PostgreSqlConfigurationBuilderExtensions
 {
     public static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder)
     {
-        return ConfigurePostgreSql(builder, PostgreSqlPackageResolver.Default);
+        return ConfigurePostgreSql(builder, null);
     }
 
-    private static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder, PostgreSqlPackageResolver packageResolver)
+    public static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder, Action<ConnectorConfigureOptions>? configureAction)
+    {
+        return ConfigurePostgreSql(builder, PostgreSqlPackageResolver.Default, configureAction);
+    }
+
+    private static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder, PostgreSqlPackageResolver packageResolver,
+        Action<ConnectorConfigureOptions>? configureAction)
     {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);
 
-        RegisterPostProcessors(builder, packageResolver);
+        ConnectorConfigureOptions configureOptions = new();
+        configureAction?.Invoke(configureOptions);
+
+        RegisterPostProcessors(builder, packageResolver, configureOptions.DetectConfigurationChanges);
         return builder;
     }
 
-    private static void RegisterPostProcessors(IConfigurationBuilder builder, PostgreSqlPackageResolver packageResolver)
+    private static void RegisterPostProcessors(IConfigurationBuilder builder, PostgreSqlPackageResolver packageResolver, bool detectConfigurationChanges)
     {
         builder.AddCloudFoundryServiceBindings();
         builder.AddKubernetesServiceBindings();
 
         var connectionStringPostProcessor = new PostgreSqlConnectionStringPostProcessor(packageResolver);
-        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
+        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource(detectConfigurationChanges);
         connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
         builder.Add(connectionStringSource);
     }

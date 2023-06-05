@@ -47,8 +47,9 @@ public sealed class KubernetesServiceBindingConfigurationSourceTest
 
         builder.Build();
 
-        source.ParentConfiguration.Should().NotBeNull();
-        source.ParentConfiguration.GetValue<bool>("some:value:in:configuration:path").Should().BeTrue();
+        IConfigurationRoot parentConfiguration = source.GetParentConfiguration();
+        parentConfiguration.Should().NotBeNull();
+        parentConfiguration.GetValue<bool>("some:value:in:configuration:path").Should().BeTrue();
     }
 
     private static string GetK8SResourcesDirectory(string name)

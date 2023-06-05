@@ -191,9 +191,9 @@ public sealed class CosmosDbConnectorTests
                 "AccountEndpoint=https://host-2:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
         });
 
-        builder.AddCosmosDb(setupOptions =>
+        builder.AddCosmosDb(null, addOptions =>
         {
-            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
             {
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CosmosDbOptions>>();
                 CosmosDbOptions options = optionsMonitor.Get(serviceBindingName);

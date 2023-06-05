@@ -111,8 +111,9 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
 
         builder.Build();
 
-        source.ParentConfiguration.Should().NotBeNull();
-        source.ParentConfiguration.GetValue<bool>("some:value:in:configuration:path").Should().BeTrue();
+        IConfigurationRoot parentConfiguration = source.GetParentConfiguration();
+        parentConfiguration.Should().NotBeNull();
+        parentConfiguration.GetValue<bool>("some:value:in:configuration:path").Should().BeTrue();
     }
 
     [Fact]

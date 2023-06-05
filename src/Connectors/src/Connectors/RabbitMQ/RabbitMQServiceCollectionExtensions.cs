@@ -22,35 +22,36 @@ public static class RabbitMQServiceCollectionExtensions
         return AddRabbitMQ(services, configuration, null);
     }
 
-    public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration, Action<ConnectorSetupOptions>? setupAction)
+    public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptions>? addAction)
     {
-        return AddRabbitMQ(services, configuration, RabbitMQPackageResolver.Default, setupAction);
+        return AddRabbitMQ(services, configuration, RabbitMQPackageResolver.Default, addAction);
     }
 
     private static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration, RabbitMQPackageResolver packageResolver,
-        Action<ConnectorSetupOptions>? setupAction)
+        Action<ConnectorAddOptions>? addAction)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(packageResolver);
 
-        var setupOptions = new ConnectorSetupOptions();
-        setupAction?.Invoke(setupOptions);
+        var addOptions = new ConnectorAddOptions(
+            (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
+            (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+        {
+            // From https://www.rabbitmq.com/dotnet-api-guide.html#connection-and-channel-lifespan:
+            //   "Connections are meant to be long-lived. The underlying protocol is designed and optimized for long running connections.
+            //   That means that opening a new connection per operation, e.g. a message published, is unnecessary and strongly discouraged
+            //   as it will introduce a lot of network round-trips and overhead."
+            CacheConnection = true
+        };
 
-        ConnectorCreateHealthContributor? createHealthContributor = setupOptions.EnableHealthChecks
-            ? (serviceProvider, serviceBindingName) => setupOptions.CreateHealthContributor != null
-                ? setupOptions.CreateHealthContributor(serviceProvider, serviceBindingName)
-                : CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver)
-            : null;
+        addAction?.Invoke(addOptions);
 
-        IReadOnlySet<string> optionNames =
-            ConnectorOptionsBinder.RegisterNamedOptions<RabbitMQOptions>(services, configuration, "rabbitmq", createHealthContributor);
+        IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<RabbitMQOptions>(services, configuration, "rabbitmq",
+            addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
 
-        ConnectorCreateConnection createConnection = (serviceProvider, serviceBindingName) => setupOptions.CreateConnection != null
-            ? setupOptions.CreateConnection(serviceProvider, serviceBindingName)
-            : CreateConnection(serviceProvider, serviceBindingName, packageResolver);
-
-        ConnectorFactoryShim<RabbitMQOptions>.Register(packageResolver.ConnectionInterface.Type, services, optionNames, createConnection, true);
+        ConnectorFactoryShim<RabbitMQOptions>.Register(packageResolver.ConnectionInterface.Type, services, optionNames, addOptions.CreateConnection,
+            addOptions.CacheConnection);
 
         return services;
     }
@@ -85,7 +86,6 @@ public static class RabbitMQServiceCollectionExtensions
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
         RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
 
-        // In RabbitMQ, connections are long-lived and auto-recover from network failures. Channels are multiplexed over a single connection.
         var connectionFactoryShim = ConnectionFactoryShim.CreateInstance(packageResolver);
 
         if (!string.IsNullOrEmpty(options.ConnectionString))

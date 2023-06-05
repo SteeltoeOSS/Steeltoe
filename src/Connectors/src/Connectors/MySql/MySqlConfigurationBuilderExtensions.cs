@@ -16,25 +16,34 @@ public static class MySqlConfigurationBuilderExtensions
 {
     public static IConfigurationBuilder ConfigureMySql(this IConfigurationBuilder builder)
     {
-        return ConfigureMySql(builder, MySqlPackageResolver.Default);
+        return ConfigureMySql(builder, null);
     }
 
-    internal static IConfigurationBuilder ConfigureMySql(this IConfigurationBuilder builder, MySqlPackageResolver packageResolver)
+    public static IConfigurationBuilder ConfigureMySql(this IConfigurationBuilder builder, Action<ConnectorConfigureOptions>? configureAction)
+    {
+        return ConfigureMySql(builder, MySqlPackageResolver.Default, configureAction);
+    }
+
+    internal static IConfigurationBuilder ConfigureMySql(this IConfigurationBuilder builder, MySqlPackageResolver packageResolver,
+        Action<ConnectorConfigureOptions>? configureAction)
     {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);
 
-        RegisterPostProcessors(builder, packageResolver);
+        var configureOptions = new ConnectorConfigureOptions();
+        configureAction?.Invoke(configureOptions);
+
+        RegisterPostProcessors(builder, packageResolver, configureOptions.DetectConfigurationChanges);
         return builder;
     }
 
-    private static void RegisterPostProcessors(IConfigurationBuilder builder, MySqlPackageResolver packageResolver)
+    private static void RegisterPostProcessors(IConfigurationBuilder builder, MySqlPackageResolver packageResolver, bool detectConfigurationChanges)
     {
         builder.AddCloudFoundryServiceBindings();
         builder.AddKubernetesServiceBindings();
 
         var connectionStringPostProcessor = new MySqlConnectionStringPostProcessor(packageResolver);
-        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
+        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource(detectConfigurationChanges);
         connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
         builder.Add(connectionStringSource);
     }

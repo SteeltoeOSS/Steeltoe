@@ -13,15 +13,16 @@ public static class MongoDbWebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddMongoDb(this WebApplicationBuilder builder)
     {
-        return AddMongoDb(builder, null);
+        return AddMongoDb(builder, null, null);
     }
 
-    public static WebApplicationBuilder AddMongoDb(this WebApplicationBuilder builder, Action<ConnectorSetupOptions>? setupAction)
+    public static WebApplicationBuilder AddMongoDb(this WebApplicationBuilder builder, Action<ConnectorConfigureOptions>? configureAction,
+        Action<ConnectorAddOptions>? addAction)
     {
         ArgumentGuard.NotNull(builder);
 
-        builder.Configuration.ConfigureMongoDb();
-        builder.Services.AddMongoDb(builder.Configuration, setupAction);
+        builder.Configuration.ConfigureMongoDb(configureAction);
+        builder.Services.AddMongoDb(builder.Configuration, addAction);
         return builder;
     }
 }

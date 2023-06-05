@@ -14,22 +14,23 @@ public static class MySqlWebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddMySql(this WebApplicationBuilder builder)
     {
-        return AddMySql(builder, null);
+        return AddMySql(builder, null, null);
     }
 
-    public static WebApplicationBuilder AddMySql(this WebApplicationBuilder builder, Action<ConnectorSetupOptions>? setupAction)
+    public static WebApplicationBuilder AddMySql(this WebApplicationBuilder builder, Action<ConnectorConfigureOptions>? configureAction,
+        Action<ConnectorAddOptions>? addAction)
     {
-        return AddMySql(builder, MySqlPackageResolver.Default, setupAction);
+        return AddMySql(builder, MySqlPackageResolver.Default, configureAction, addAction);
     }
 
     internal static WebApplicationBuilder AddMySql(this WebApplicationBuilder builder, MySqlPackageResolver packageResolver,
-        Action<ConnectorSetupOptions>? setupAction = null)
+        Action<ConnectorConfigureOptions>? configureAction, Action<ConnectorAddOptions>? addAction)
     {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);
 
-        builder.Configuration.ConfigureMySql(packageResolver);
-        builder.Services.AddMySql(builder.Configuration, packageResolver, setupAction);
+        builder.Configuration.ConfigureMySql(packageResolver, configureAction);
+        builder.Services.AddMySql(builder.Configuration, packageResolver, addAction);
         return builder;
     }
 }

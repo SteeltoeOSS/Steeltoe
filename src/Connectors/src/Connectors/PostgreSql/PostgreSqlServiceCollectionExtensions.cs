@@ -23,35 +23,32 @@ public static class PostgreSqlServiceCollectionExtensions
         return AddPostgreSql(services, configuration, null);
     }
 
-    public static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfiguration configuration, Action<ConnectorSetupOptions>? setupAction)
+    public static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptions>? addAction)
     {
-        return AddPostgreSql(services, configuration, PostgreSqlPackageResolver.Default, setupAction);
+        return AddPostgreSql(services, configuration, PostgreSqlPackageResolver.Default, addAction);
     }
 
     private static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfiguration configuration, PostgreSqlPackageResolver packageResolver,
-        Action<ConnectorSetupOptions>? setupAction)
+        Action<ConnectorAddOptions>? addAction)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(packageResolver);
 
-        var setupOptions = new ConnectorSetupOptions();
-        setupAction?.Invoke(setupOptions);
+        var addOptions = new ConnectorAddOptions(
+            (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
+            (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+        {
+            CacheConnection = false
+        };
 
-        ConnectorCreateHealthContributor? createHealthContributor = setupOptions.EnableHealthChecks
-            ? (serviceProvider, serviceBindingName) => setupOptions.CreateHealthContributor != null
-                ? setupOptions.CreateHealthContributor(serviceProvider, serviceBindingName)
-                : CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver)
-            : null;
+        addAction?.Invoke(addOptions);
 
-        IReadOnlySet<string> optionNames =
-            ConnectorOptionsBinder.RegisterNamedOptions<PostgreSqlOptions>(services, configuration, "postgresql", createHealthContributor);
+        IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<PostgreSqlOptions>(services, configuration, "postgresql",
+            addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
 
-        ConnectorCreateConnection createConnection = (serviceProvider, serviceBindingName) => setupOptions.CreateConnection != null
-            ? setupOptions.CreateConnection(serviceProvider, serviceBindingName)
-            : CreateConnection(serviceProvider, serviceBindingName, packageResolver);
-
-        ConnectorFactoryShim<PostgreSqlOptions>.Register(packageResolver.NpgsqlConnectionClass.Type, services, optionNames, createConnection, false);
+        ConnectorFactoryShim<PostgreSqlOptions>.Register(packageResolver.NpgsqlConnectionClass.Type, services, optionNames, addOptions.CreateConnection,
+            addOptions.CacheConnection);
 
         return services;
     }

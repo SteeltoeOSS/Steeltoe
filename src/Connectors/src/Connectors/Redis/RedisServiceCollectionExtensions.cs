@@ -22,43 +22,43 @@ public static class RedisServiceCollectionExtensions
         return AddRedis(services, configuration, null);
     }
 
-    public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration, Action<ConnectorSetupOptions>? setupAction)
+    public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptions>? addAction)
     {
-        return AddRedis(services, configuration, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default, setupAction);
+        return AddRedis(services, configuration, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default, addAction);
     }
 
     private static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration,
         StackExchangeRedisPackageResolver stackExchangeRedisPackageResolver, MicrosoftRedisPackageResolver microsoftRedisPackageResolver,
-        Action<ConnectorSetupOptions>? setupAction)
+        Action<ConnectorAddOptions>? addAction)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(stackExchangeRedisPackageResolver);
         ArgumentGuard.NotNull(microsoftRedisPackageResolver);
 
-        var setupOptions = new ConnectorSetupOptions();
-        setupAction?.Invoke(setupOptions);
+        var addOptions = new ConnectorAddOptions(
+            (serviceProvider, serviceBindingName) => CreateConnectionMultiplexer(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver),
+            (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver))
+        {
+            // From https://github.com/StackExchange/StackExchange.Redis/blob/main/docs/Basics.md:
+            //   "Because the ConnectionMultiplexer does a lot, it is designed to be shared and reused between callers.
+            //   You should not create a ConnectionMultiplexer per operation."
+            CacheConnection = true
+        };
 
-        ConnectorCreateHealthContributor? createHealthContributor = setupOptions.EnableHealthChecks
-            ? (serviceProvider, serviceBindingName) => setupOptions.CreateHealthContributor != null
-                ? setupOptions.CreateHealthContributor(serviceProvider, serviceBindingName)
-                : CreateHealthContributor(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver)
-            : null;
+        addAction?.Invoke(addOptions);
 
-        IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<RedisOptions>(services, configuration, "redis", createHealthContributor);
-
-        ConnectorCreateConnection stackExchangeCreateConnection = (serviceProvider, serviceBindingName) => setupOptions.CreateConnection != null
-            ? setupOptions.CreateConnection(serviceProvider, serviceBindingName)
-            : CreateConnectionMultiplexer(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver);
+        IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<RedisOptions>(services, configuration, "redis",
+            addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
 
         ConnectorFactoryShim<RedisOptions>.Register(stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type, services, optionNames,
-            stackExchangeCreateConnection, true);
+            addOptions.CreateConnection, addOptions.CacheConnection);
 
-        ConnectorCreateConnection microsoftCreateConnection = (serviceProvider, serviceBindingName) => CreateDistributedCache(stackExchangeCreateConnection,
+        ConnectorCreateConnection createDistributedCache = (serviceProvider, serviceBindingName) => CreateDistributedCache(addOptions.CreateConnection,
             serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver, microsoftRedisPackageResolver);
 
-        ConnectorFactoryShim<RedisOptions>.Register(microsoftRedisPackageResolver.DistributedCacheInterface.Type, services, optionNames,
-            microsoftCreateConnection, true);
+        ConnectorFactoryShim<RedisOptions>.Register(microsoftRedisPackageResolver.DistributedCacheInterface.Type, services, optionNames, createDistributedCache,
+            addOptions.CacheConnection);
 
         return services;
     }

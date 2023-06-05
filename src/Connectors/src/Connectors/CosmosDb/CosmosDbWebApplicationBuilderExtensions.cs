@@ -13,15 +13,16 @@ public static class CosmosDbWebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddCosmosDb(this WebApplicationBuilder builder)
     {
-        return AddCosmosDb(builder, null);
+        return AddCosmosDb(builder, null, null);
     }
 
-    public static WebApplicationBuilder AddCosmosDb(this WebApplicationBuilder builder, Action<ConnectorSetupOptions>? setupAction)
+    public static WebApplicationBuilder AddCosmosDb(this WebApplicationBuilder builder, Action<ConnectorConfigureOptions>? configureAction,
+        Action<ConnectorAddOptions>? addAction)
     {
         ArgumentGuard.NotNull(builder);
 
-        builder.Configuration.ConfigureCosmosDb();
-        builder.Services.AddCosmosDb(builder.Configuration, setupAction);
+        builder.Configuration.ConfigureCosmosDb(configureAction);
+        builder.Services.AddCosmosDb(builder.Configuration, addAction);
         return builder;
     }
 }

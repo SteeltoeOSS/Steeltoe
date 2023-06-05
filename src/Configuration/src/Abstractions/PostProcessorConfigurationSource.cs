@@ -10,10 +10,10 @@ namespace Steeltoe.Configuration;
 internal abstract class PostProcessorConfigurationSource
 {
     private readonly List<IConfigurationPostProcessor> _postProcessors = new();
+    private IConfigurationBuilder _capturedConfigurationBuilder;
 
     public IReadOnlyList<IConfigurationPostProcessor> PostProcessors => _postProcessors.AsReadOnly();
     public Predicate<string> IgnoreKeyPredicate { get; set; } = _ => false;
-    public IConfigurationRoot ParentConfiguration { get; set; }
 
     public void RegisterPostProcessor(IConfigurationPostProcessor processor)
     {
@@ -22,23 +22,29 @@ internal abstract class PostProcessorConfigurationSource
         _postProcessors.Add(processor);
     }
 
-    protected IConfigurationRoot GetParentConfiguration(IConfigurationBuilder builder)
+    protected void SetConfigurationBuilder(IConfigurationBuilder configurationBuilder)
     {
-        ArgumentGuard.NotNull(builder);
+        _capturedConfigurationBuilder = configurationBuilder;
+    }
 
+    public IConfigurationRoot GetParentConfiguration()
+    {
         var configurationBuilder = new ConfigurationBuilder();
 
-        foreach (IConfigurationSource source in builder.Sources)
+        if (_capturedConfigurationBuilder != null)
         {
-            if (source.GetType() != GetType())
+            foreach (IConfigurationSource source in _capturedConfigurationBuilder.Sources)
             {
-                configurationBuilder.Add(source);
+                if (source.GetType() != GetType())
+                {
+                    configurationBuilder.Add(source);
+                }
             }
-        }
 
-        foreach (KeyValuePair<string, object> pair in builder.Properties)
-        {
-            configurationBuilder.Properties.Add(pair);
+            foreach (KeyValuePair<string, object> pair in _capturedConfigurationBuilder.Properties)
+            {
+                configurationBuilder.Properties.Add(pair);
+            }
         }
 
         return configurationBuilder.Build();

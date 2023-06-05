@@ -13,15 +13,16 @@ public static class RedisWebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder)
     {
-        return AddRedis(builder, null);
+        return AddRedis(builder, null, null);
     }
 
-    public static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder, Action<ConnectorSetupOptions>? setupAction)
+    public static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder, Action<ConnectorConfigureOptions>? configureAction,
+        Action<ConnectorAddOptions>? addAction)
     {
         ArgumentGuard.NotNull(builder);
 
-        builder.Configuration.ConfigureRedis();
-        builder.Services.AddRedis(builder.Configuration, setupAction);
+        builder.Configuration.ConfigureRedis(configureAction);
+        builder.Services.AddRedis(builder.Configuration, addAction);
         return builder;
     }
 }

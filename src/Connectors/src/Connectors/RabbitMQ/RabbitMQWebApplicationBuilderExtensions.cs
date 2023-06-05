@@ -13,15 +13,16 @@ public static class RabbitMQWebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder)
     {
-        return AddRabbitMQ(builder, null);
+        return AddRabbitMQ(builder, null, null);
     }
 
-    public static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder, Action<ConnectorSetupOptions>? setupAction)
+    public static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder, Action<ConnectorConfigureOptions>? configureAction,
+        Action<ConnectorAddOptions>? addAction)
     {
         ArgumentGuard.NotNull(builder);
 
-        builder.Configuration.ConfigureRabbitMQ();
-        builder.Services.AddRabbitMQ(builder.Configuration, setupAction);
+        builder.Configuration.ConfigureRabbitMQ(configureAction);
+        builder.Services.AddRabbitMQ(builder.Configuration, addAction);
         return builder;
     }
 }

@@ -12,11 +12,18 @@ namespace Steeltoe.Connectors;
 
 internal sealed class ConnectionStringPostProcessorConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
 {
+    private readonly bool _detectConfigurationChanges;
+
+    public ConnectionStringPostProcessorConfigurationSource(bool detectConfigurationChanges)
+    {
+        _detectConfigurationChanges = detectConfigurationChanges;
+    }
+
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
-        ParentConfiguration = GetParentConfiguration(builder);
-        return new ConnectionStringPostProcessorConfigurationProvider(this);
+        SetConfigurationBuilder(builder);
+        return new ConnectionStringPostProcessorConfigurationProvider(this, _detectConfigurationChanges);
     }
 }

@@ -50,8 +50,7 @@ internal sealed class KubernetesServiceBindingConfigurationSource : PostProcesso
     {
         ArgumentGuard.NotNull(builder);
 
-        ParentConfiguration = GetParentConfiguration(builder);
-
+        SetConfigurationBuilder(builder);
         return new KubernetesServiceBindingConfigurationProvider(this);
     }
 }

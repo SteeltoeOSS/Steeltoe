@@ -429,7 +429,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
             WebApplicationBuilder builder = WebApplication.CreateBuilder();
             builder.Configuration.AddJsonFile(tempJsonPath, false, true);
 
-            builder.AddPostgreSql();
+            builder.AddPostgreSql(configureOptions => configureOptions.DetectConfigurationChanges = true, null);
 
             await using WebApplication app = builder.Build();
 
@@ -523,9 +523,9 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddPostgreSql(setupOptions =>
+        builder.AddPostgreSql(null, addOptions =>
         {
-            setupOptions.EnableHealthChecks = false;
+            addOptions.EnableHealthChecks = false;
         });
 
         await using WebApplication app = builder.Build();

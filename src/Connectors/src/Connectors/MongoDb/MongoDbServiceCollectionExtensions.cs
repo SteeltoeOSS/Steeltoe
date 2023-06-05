@@ -22,35 +22,32 @@ public static class MongoDbServiceCollectionExtensions
         return AddMongoDb(services, configuration, null);
     }
 
-    public static IServiceCollection AddMongoDb(this IServiceCollection services, IConfiguration configuration, Action<ConnectorSetupOptions>? setupAction)
+    public static IServiceCollection AddMongoDb(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptions>? addAction)
     {
-        return AddMongoDb(services, configuration, MongoDbPackageResolver.Default, setupAction);
+        return AddMongoDb(services, configuration, MongoDbPackageResolver.Default, addAction);
     }
 
     private static IServiceCollection AddMongoDb(this IServiceCollection services, IConfiguration configuration, MongoDbPackageResolver packageResolver,
-        Action<ConnectorSetupOptions>? setupAction)
+        Action<ConnectorAddOptions>? addAction)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(packageResolver);
 
-        var setupOptions = new ConnectorSetupOptions();
-        setupAction?.Invoke(setupOptions);
+        var addOptions = new ConnectorAddOptions(
+            (serviceProvider, serviceBindingName) => CreateMongoClient(serviceProvider, serviceBindingName, packageResolver),
+            (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+        {
+            CacheConnection = false
+        };
 
-        ConnectorCreateHealthContributor? createHealthContributor = setupOptions.EnableHealthChecks
-            ? (serviceProvider, serviceBindingName) => setupOptions.CreateHealthContributor != null
-                ? setupOptions.CreateHealthContributor(serviceProvider, serviceBindingName)
-                : CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver)
-            : null;
+        addAction?.Invoke(addOptions);
 
-        IReadOnlySet<string> optionNames =
-            ConnectorOptionsBinder.RegisterNamedOptions<MongoDbOptions>(services, configuration, "mongodb", createHealthContributor);
+        IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<MongoDbOptions>(services, configuration, "mongodb",
+            addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
 
-        ConnectorCreateConnection createConnection = (serviceProvider, serviceBindingName) => setupOptions.CreateConnection != null
-            ? setupOptions.CreateConnection(serviceProvider, serviceBindingName)
-            : CreateMongoClient(serviceProvider, serviceBindingName, packageResolver);
-
-        ConnectorFactoryShim<MongoDbOptions>.Register(packageResolver.MongoClientInterface.Type, services, optionNames, createConnection, false);
+        ConnectorFactoryShim<MongoDbOptions>.Register(packageResolver.MongoClientInterface.Type, services, optionNames, addOptions.CreateConnection,
+            addOptions.CacheConnection);
 
         return services;
     }

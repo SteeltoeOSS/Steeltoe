@@ -13,15 +13,16 @@ public static class PostgreSqlWebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddPostgreSql(this WebApplicationBuilder builder)
     {
-        return AddPostgreSql(builder, null);
+        return AddPostgreSql(builder, null, null);
     }
 
-    public static WebApplicationBuilder AddPostgreSql(this WebApplicationBuilder builder, Action<ConnectorSetupOptions>? setupAction)
+    public static WebApplicationBuilder AddPostgreSql(this WebApplicationBuilder builder, Action<ConnectorConfigureOptions>? configureAction,
+        Action<ConnectorAddOptions>? addAction)
     {
         ArgumentGuard.NotNull(builder);
 
-        builder.Configuration.ConfigurePostgreSql();
-        builder.Services.AddPostgreSql(builder.Configuration, setupAction);
+        builder.Configuration.ConfigurePostgreSql(configureAction);
+        builder.Services.AddPostgreSql(builder.Configuration, addAction);
         return builder;
     }
 }

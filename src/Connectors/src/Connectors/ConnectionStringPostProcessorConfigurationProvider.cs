@@ -11,12 +11,15 @@ namespace Steeltoe.Connectors;
 
 internal sealed class ConnectionStringPostProcessorConfigurationProvider : PostProcessorConfigurationProvider, IDisposable
 {
-    private readonly IDisposable _changeToken;
+    private readonly IDisposable? _changeToken;
 
-    public ConnectionStringPostProcessorConfigurationProvider(PostProcessorConfigurationSource source)
+    public ConnectionStringPostProcessorConfigurationProvider(PostProcessorConfigurationSource source, bool detectConfigurationChanges)
         : base(source)
     {
-        _changeToken = ChangeToken.OnChange(() => source.ParentConfiguration.GetReloadToken(), _ => Load(), 0);
+        if (detectConfigurationChanges)
+        {
+            _changeToken = ChangeToken.OnChange(() => source.GetParentConfiguration().GetReloadToken(), _ => Load(), 0);
+        }
     }
 
     public override void Load()
@@ -28,6 +31,6 @@ internal sealed class ConnectionStringPostProcessorConfigurationProvider : PostP
 
     public void Dispose()
     {
-        _changeToken.Dispose();
+        _changeToken?.Dispose();
     }
 }

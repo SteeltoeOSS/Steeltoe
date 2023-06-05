@@ -31,7 +31,8 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
     {
-        IDictionary<string, BindingInfo> bindingsByName = GetBindingsByName(provider.Source.ParentConfiguration);
+        IConfigurationRoot parentConfiguration = provider.Source.GetParentConfiguration();
+        IDictionary<string, BindingInfo> bindingsByName = GetBindingsByName(parentConfiguration);
 
         if (ShouldSetDefault(bindingsByName))
         {

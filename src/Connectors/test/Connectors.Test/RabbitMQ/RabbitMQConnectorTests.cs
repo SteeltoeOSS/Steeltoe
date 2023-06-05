@@ -244,9 +244,9 @@ public sealed class RabbitMQConnectorTests
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceTwo:ConnectionString"] = "amqps://user2:pass2@host2:5672/virtual-host-2"
         });
 
-        builder.AddRabbitMQ(setupOptions =>
+        builder.AddRabbitMQ(null, addOptions =>
         {
-            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
             {
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
                 RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
@@ -284,9 +284,9 @@ public sealed class RabbitMQConnectorTests
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceTwo:ConnectionString"] = "amqps://user2:pass2@host2:5672/virtual-host-2"
         });
 
-        builder.AddRabbitMQ(setupOptions =>
+        builder.AddRabbitMQ(null, addOptions =>
         {
-            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
             {
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
                 RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
@@ -311,9 +311,9 @@ public sealed class RabbitMQConnectorTests
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
-        builder.AddRabbitMQ(setupOptions =>
+        builder.AddRabbitMQ(null, addOptions =>
         {
-            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
             {
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
                 RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
@@ -349,9 +349,9 @@ public sealed class RabbitMQConnectorTests
             ["Steeltoe:Client:RabbitMQ:Default:ConnectionString"] = "amqp://localhost:5672/my-virtual-host"
         });
 
-        builder.AddRabbitMQ(setupOptions =>
+        builder.AddRabbitMQ(null, addOptions =>
         {
-            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
             {
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
                 RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
@@ -378,9 +378,9 @@ public sealed class RabbitMQConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.AddRabbitMQ(setupOptions =>
+        builder.AddRabbitMQ(null, addOptions =>
         {
-            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
             {
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
                 RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);

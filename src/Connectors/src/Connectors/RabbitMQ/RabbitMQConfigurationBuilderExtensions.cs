@@ -15,19 +15,27 @@ public static class RabbitMQConfigurationBuilderExtensions
 {
     public static IConfigurationBuilder ConfigureRabbitMQ(this IConfigurationBuilder builder)
     {
+        return ConfigureRabbitMQ(builder, null);
+    }
+
+    public static IConfigurationBuilder ConfigureRabbitMQ(this IConfigurationBuilder builder, Action<ConnectorConfigureOptions>? configureAction)
+    {
         ArgumentGuard.NotNull(builder);
 
-        RegisterPostProcessors(builder);
+        ConnectorConfigureOptions configureOptions = new();
+        configureAction?.Invoke(configureOptions);
+
+        RegisterPostProcessors(builder, configureOptions.DetectConfigurationChanges);
         return builder;
     }
 
-    private static void RegisterPostProcessors(IConfigurationBuilder builder)
+    private static void RegisterPostProcessors(IConfigurationBuilder builder, bool detectConfigurationChanges)
     {
         builder.AddCloudFoundryServiceBindings();
         builder.AddKubernetesServiceBindings();
 
         var connectionStringPostProcessor = new RabbitMQConnectionStringPostProcessor();
-        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
+        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource(detectConfigurationChanges);
         connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
         builder.Add(connectionStringSource);
     }

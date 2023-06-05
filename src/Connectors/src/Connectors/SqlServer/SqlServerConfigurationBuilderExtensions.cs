@@ -15,24 +15,33 @@ public static class SqlServerConfigurationBuilderExtensions
 {
     public static IConfigurationBuilder ConfigureSqlServer(this IConfigurationBuilder builder)
     {
-        return ConfigureSqlServer(builder, SqlServerPackageResolver.Default);
+        return ConfigureSqlServer(builder, null);
     }
 
-    internal static IConfigurationBuilder ConfigureSqlServer(this IConfigurationBuilder builder, SqlServerPackageResolver packageResolver)
+    public static IConfigurationBuilder ConfigureSqlServer(this IConfigurationBuilder builder, Action<ConnectorConfigureOptions>? configureAction)
+    {
+        return ConfigureSqlServer(builder, SqlServerPackageResolver.Default, configureAction);
+    }
+
+    internal static IConfigurationBuilder ConfigureSqlServer(this IConfigurationBuilder builder, SqlServerPackageResolver packageResolver,
+        Action<ConnectorConfigureOptions>? configureAction)
     {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);
 
-        RegisterPostProcessors(builder, packageResolver);
+        ConnectorConfigureOptions configureOptions = new();
+        configureAction?.Invoke(configureOptions);
+
+        RegisterPostProcessors(builder, packageResolver, configureOptions.DetectConfigurationChanges);
         return builder;
     }
 
-    private static void RegisterPostProcessors(IConfigurationBuilder builder, SqlServerPackageResolver packageResolver)
+    private static void RegisterPostProcessors(IConfigurationBuilder builder, SqlServerPackageResolver packageResolver, bool detectConfigurationChanges)
     {
         builder.AddCloudFoundryServiceBindings();
 
         var connectionStringPostProcessor = new SqlServerConnectionStringPostProcessor(packageResolver);
-        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
+        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource(detectConfigurationChanges);
         connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
         builder.Add(connectionStringSource);
     }

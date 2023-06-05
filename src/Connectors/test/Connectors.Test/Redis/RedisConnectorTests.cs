@@ -154,9 +154,9 @@ public sealed class RedisConnectorTests
             ["Steeltoe:Client:Redis:myRedisServiceTwo:ConnectionString"] = "server2:6380,allowAdmin=true"
         });
 
-        builder.AddRedis(setupOptions =>
+        builder.AddRedis(null, addOptions =>
         {
-            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
             {
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 RedisOptions options = optionsMonitor.Get(serviceBindingName);
@@ -194,9 +194,9 @@ public sealed class RedisConnectorTests
             ["Steeltoe:Client:Redis:myRedisServiceTwo:ConnectionString"] = "server2:6380,allowAdmin=true"
         });
 
-        builder.AddRedis(setupOptions =>
+        builder.AddRedis(null, addOptions =>
         {
-            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
             {
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 RedisOptions options = optionsMonitor.Get(serviceBindingName);
@@ -236,9 +236,9 @@ public sealed class RedisConnectorTests
             ["Steeltoe:Client:Redis:myRedisServiceTwo:ConnectionString"] = "server2:6380,allowAdmin=true"
         });
 
-        builder.AddRedis(setupOptions =>
+        builder.AddRedis(null, addOptions =>
         {
-            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
             {
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 RedisOptions options = optionsMonitor.Get(serviceBindingName);
@@ -263,9 +263,9 @@ public sealed class RedisConnectorTests
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
-        builder.AddRedis(setupOptions =>
+        builder.AddRedis(null, addOptions =>
         {
-            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
             {
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 RedisOptions options = optionsMonitor.Get(serviceBindingName);
@@ -301,9 +301,9 @@ public sealed class RedisConnectorTests
             ["Steeltoe:Client:Redis:Default:ConnectionString"] = "server1:6380,keepAlive=30"
         });
 
-        builder.AddRedis(setupOptions =>
+        builder.AddRedis(null, addOptions =>
         {
-            setupOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
             {
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 RedisOptions options = optionsMonitor.Get(serviceBindingName);
