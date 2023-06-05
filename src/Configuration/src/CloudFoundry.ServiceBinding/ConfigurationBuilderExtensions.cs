@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 
@@ -94,9 +95,25 @@ public static class ConfigurationBuilderExtensions
                 IgnoreKeyPredicate = ignoreKeyPredicate
             };
 
+            // All post-processors must be registered *before* the configuration source is added to the builder. When adding the source,
+            // WebApplicationBuilder immediately builds the configuration provider and loads it, which executes the post-processors.
+            // Therefore adding post-processors afterwards is a no-op.
+
+            RegisterPostProcessors(source);
             builder.Add(source);
         }
 
         return builder;
+    }
+
+    private static void RegisterPostProcessors(CloudFoundryServiceBindingConfigurationSource source)
+    {
+        source.RegisterPostProcessor(new CosmosDbCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new MongoDbCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new MySqlCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new PostgreSqlCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new RabbitMQCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new RedisCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new SqlServerCloudFoundryPostProcessor());
     }
 }

@@ -7,9 +7,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MySql;
@@ -33,12 +31,7 @@ public static class MySqlConfigurationBuilderExtensions
     private static void RegisterPostProcessors(IConfigurationBuilder builder, MySqlPackageResolver packageResolver)
     {
         builder.AddCloudFoundryServiceBindings();
-        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
-        cloudFoundrySource.RegisterPostProcessor(new MySqlCloudFoundryPostProcessor());
-
         builder.AddKubernetesServiceBindings();
-        KubernetesServiceBindingConfigurationSource kubernetesSource = builder.Sources.OfType<KubernetesServiceBindingConfigurationSource>().First();
-        kubernetesSource.RegisterPostProcessor(new MySqlKubernetesPostProcessor());
 
         var connectionStringPostProcessor = new MySqlConnectionStringPostProcessor(packageResolver);
         var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();

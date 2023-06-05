@@ -5,4 +5,3 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Kubernetes.ServiceBinding.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Connectors")]

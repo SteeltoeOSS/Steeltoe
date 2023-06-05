@@ -7,9 +7,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 using Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.PostgreSql;
@@ -33,12 +31,7 @@ public static class PostgreSqlConfigurationBuilderExtensions
     private static void RegisterPostProcessors(IConfigurationBuilder builder, PostgreSqlPackageResolver packageResolver)
     {
         builder.AddCloudFoundryServiceBindings();
-        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
-        cloudFoundrySource.RegisterPostProcessor(new PostgreSqlCloudFoundryPostProcessor());
-
         builder.AddKubernetesServiceBindings();
-        KubernetesServiceBindingConfigurationSource kubernetesSource = builder.Sources.OfType<KubernetesServiceBindingConfigurationSource>().First();
-        kubernetesSource.RegisterPostProcessor(new PostgreSqlKubernetesPostProcessor());
 
         var connectionStringPostProcessor = new PostgreSqlConnectionStringPostProcessor(packageResolver);
         var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();

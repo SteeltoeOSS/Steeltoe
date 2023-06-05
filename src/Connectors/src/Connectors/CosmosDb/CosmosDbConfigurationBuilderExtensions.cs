@@ -7,7 +7,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 
 namespace Steeltoe.Connectors.CosmosDb;
 
@@ -24,8 +23,6 @@ public static class CosmosDbConfigurationBuilderExtensions
     private static void RegisterPostProcessors(IConfigurationBuilder builder)
     {
         builder.AddCloudFoundryServiceBindings();
-        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
-        cloudFoundrySource.RegisterPostProcessor(new CosmosDbCloudFoundryPostProcessor());
 
         var connectionStringPostProcessor = new CosmosDbConnectionStringPostProcessor();
         var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();

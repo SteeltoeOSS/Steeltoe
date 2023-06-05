@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
@@ -104,9 +105,22 @@ public static class ConfigurationBuilderExtensions
                 IgnoreKeyPredicate = ignoreKeyPredicate
             };
 
+            // All post-processors must be registered *before* the configuration source is added to the builder. When adding the source,
+            // WebApplicationBuilder immediately builds the configuration provider and loads it, which executes the post-processors.
+            // Therefore adding post-processors afterwards is a no-op.
+
+            RegisterPostProcessors(source);
             builder.Add(source);
         }
 
         return builder;
+    }
+
+    private static void RegisterPostProcessors(KubernetesServiceBindingConfigurationSource source)
+    {
+        source.RegisterPostProcessor(new MySqlKubernetesPostProcessor());
+        source.RegisterPostProcessor(new PostgreSqlKubernetesPostProcessor());
+        source.RegisterPostProcessor(new RabbitMQKubernetesPostProcessor());
+        source.RegisterPostProcessor(new RedisKubernetesPostProcessor());
     }
 }

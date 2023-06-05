@@ -24,8 +24,6 @@ public static class MongoDbConfigurationBuilderExtensions
     private static void RegisterPostProcessors(IConfigurationBuilder builder)
     {
         builder.AddCloudFoundryServiceBindings();
-        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
-        cloudFoundrySource.RegisterPostProcessor(new MongoDbCloudFoundryPostProcessor());
 
         var connectionStringPostProcessor = new MongoDbConnectionStringPostProcessor();
         var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();

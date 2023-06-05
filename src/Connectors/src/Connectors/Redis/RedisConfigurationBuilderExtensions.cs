@@ -7,9 +7,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 
 namespace Steeltoe.Connectors.Redis;
 
@@ -26,12 +24,7 @@ public static class RedisConfigurationBuilderExtensions
     private static void RegisterPostProcessors(IConfigurationBuilder builder)
     {
         builder.AddCloudFoundryServiceBindings();
-        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
-        cloudFoundrySource.RegisterPostProcessor(new RedisCloudFoundryPostProcessor());
-
         builder.AddKubernetesServiceBindings();
-        KubernetesServiceBindingConfigurationSource kubernetesSource = builder.Sources.OfType<KubernetesServiceBindingConfigurationSource>().First();
-        kubernetesSource.RegisterPostProcessor(new RedisKubernetesPostProcessor());
 
         var connectionStringPostProcessor = new RedisConnectionStringPostProcessor();
         var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();

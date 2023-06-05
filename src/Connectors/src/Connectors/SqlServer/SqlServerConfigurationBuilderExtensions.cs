@@ -7,7 +7,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.SqlServer;
@@ -31,8 +30,6 @@ public static class SqlServerConfigurationBuilderExtensions
     private static void RegisterPostProcessors(IConfigurationBuilder builder, SqlServerPackageResolver packageResolver)
     {
         builder.AddCloudFoundryServiceBindings();
-        CloudFoundryServiceBindingConfigurationSource cloudFoundrySource = builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().First();
-        cloudFoundrySource.RegisterPostProcessor(new SqlServerCloudFoundryPostProcessor());
 
         var connectionStringPostProcessor = new SqlServerConnectionStringPostProcessor(packageResolver);
         var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource();
