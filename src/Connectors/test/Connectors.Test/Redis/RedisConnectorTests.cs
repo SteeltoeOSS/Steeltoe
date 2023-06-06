@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
+using StackExchange.Redis.Maintenance;
 using StackExchange.Redis.Profiling;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
@@ -334,7 +335,7 @@ public sealed class RedisConnectorTests
 
     private sealed class FakeConnectionMultiplexer : IConnectionMultiplexer
     {
-        public string? Configuration { get; }
+        public string Configuration { get; }
         public string ClientName => "FakeClientName";
 
         public int TimeoutMilliseconds => throw new NotImplementedException();
@@ -397,6 +398,12 @@ public sealed class RedisConnectorTests
             remove => throw new NotImplementedException();
         }
 
+        public event EventHandler<ServerMaintenanceEvent>? ServerMaintenanceEvent
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
         public event EventHandler<HashSlotMovedEventArgs> HashSlotMoved
         {
             add => throw new NotImplementedException();
@@ -405,7 +412,7 @@ public sealed class RedisConnectorTests
 
         public FakeConnectionMultiplexer(string? connectionString)
         {
-            Configuration = connectionString;
+            Configuration = connectionString!;
         }
 
         public void Dispose()
@@ -477,6 +484,11 @@ public sealed class RedisConnectorTests
             throw new NotImplementedException();
         }
 
+        public IServer[] GetServers()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<bool> ConfigureAsync(TextWriter? log = null)
         {
             throw new NotImplementedException();
@@ -493,6 +505,11 @@ public sealed class RedisConnectorTests
         }
 
         public void GetStatus(TextWriter log)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string ToString()
         {
             throw new NotImplementedException();
         }
@@ -534,6 +551,11 @@ public sealed class RedisConnectorTests
         public void ExportConfiguration(Stream destination, ExportOptions options = ExportOptions.All)
         {
             throw new NotImplementedException();
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return ValueTask.CompletedTask;
         }
 
         private sealed class FakeDatabase : IDatabase
@@ -614,12 +636,12 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public Task<string[]> GeoHashAsync(RedisKey key, RedisValue[] members, CommandFlags flags = CommandFlags.None)
+            public Task<string?[]> GeoHashAsync(RedisKey key, RedisValue[] members, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<string> GeoHashAsync(RedisKey key, RedisValue member, CommandFlags flags = CommandFlags.None)
+            public Task<string?> GeoHashAsync(RedisKey key, RedisValue member, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -642,6 +664,30 @@ public sealed class RedisConnectorTests
 
             public Task<GeoRadiusResult[]> GeoRadiusAsync(RedisKey key, double longitude, double latitude, double radius, GeoUnit unit = GeoUnit.Meters,
                 int count = -1, Order? order = null, GeoRadiusOptions options = GeoRadiusOptions.Default, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<GeoRadiusResult[]> GeoSearchAsync(RedisKey key, RedisValue member, GeoSearchShape shape, int count = -1, bool demandClosest = true,
+                Order? order = null, GeoRadiusOptions options = GeoRadiusOptions.Default, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<GeoRadiusResult[]> GeoSearchAsync(RedisKey key, double longitude, double latitude, GeoSearchShape shape, int count = -1,
+                bool demandClosest = true, Order? order = null, GeoRadiusOptions options = GeoRadiusOptions.Default, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<long> GeoSearchAndStoreAsync(RedisKey sourceKey, RedisKey destinationKey, RedisValue member, GeoSearchShape shape, int count = -1,
+                bool demandClosest = true, Order? order = null, bool storeDistances = false, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<long> GeoSearchAndStoreAsync(RedisKey sourceKey, RedisKey destinationKey, double longitude, double latitude, GeoSearchShape shape,
+                int count = -1, bool demandClosest = true, Order? order = null, bool storeDistances = false, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -681,7 +727,7 @@ public sealed class RedisConnectorTests
                 return Task.FromResult(Array.Empty<RedisValue>());
             }
 
-            public Task<Lease<byte>> HashGetLeaseAsync(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.None)
+            public Task<Lease<byte>?> HashGetLeaseAsync(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -707,6 +753,21 @@ public sealed class RedisConnectorTests
             }
 
             public Task<long> HashLengthAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<RedisValue> HashRandomFieldAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<RedisValue[]> HashRandomFieldsAsync(RedisKey key, long count, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<HashEntry[]> HashRandomFieldsWithValuesAsync(RedisKey key, long count, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -768,7 +829,13 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public Task<EndPoint> IdentifyEndpointAsync(RedisKey key = default, CommandFlags flags = CommandFlags.None)
+            public Task<EndPoint?> IdentifyEndpointAsync(RedisKey key = default, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<bool> KeyCopyAsync(RedisKey sourceKey, RedisKey destinationKey, int destinationDatabase = -1, bool replace = false,
+                CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -783,7 +850,12 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public Task<byte[]> KeyDumpAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
+            public Task<byte[]?> KeyDumpAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<string?> KeyEncodingAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -798,12 +870,32 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public Task<bool> KeyExpireAsync(RedisKey key, TimeSpan? expiry, CommandFlags flags = CommandFlags.None)
+            public Task<bool> KeyExpireAsync(RedisKey key, TimeSpan? expiry, CommandFlags flags)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<bool> KeyExpireAsync(RedisKey key, DateTime? expiry, CommandFlags flags = CommandFlags.None)
+            public Task<bool> KeyExpireAsync(RedisKey key, TimeSpan? expiry, ExpireWhen when = ExpireWhen.Always, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<bool> KeyExpireAsync(RedisKey key, DateTime? expiry, CommandFlags flags)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<bool> KeyExpireAsync(RedisKey key, DateTime? expiry, ExpireWhen when = ExpireWhen.Always, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<DateTime?> KeyExpireTimeAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<long?> KeyFrequencyAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -824,6 +916,11 @@ public sealed class RedisConnectorTests
             }
 
             public Task<RedisKey> KeyRandomAsync(CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<long?> KeyRefCountAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -873,6 +970,22 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
+            public Task<ListPopResult> ListLeftPopAsync(RedisKey[] keys, long count, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<long> ListPositionAsync(RedisKey key, RedisValue element, long rank = 1, long maxLength = 0, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<long[]> ListPositionsAsync(RedisKey key, RedisValue element, long count, long rank = 1, long maxLength = 0,
+                CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
             public Task<long> ListLeftPushAsync(RedisKey key, RedisValue value, When when = When.Always, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
@@ -893,6 +1006,12 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
+            public Task<RedisValue> ListMoveAsync(RedisKey sourceKey, RedisKey destinationKey, ListSide sourceSide, ListSide destinationSide,
+                CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
             public Task<RedisValue[]> ListRangeAsync(RedisKey key, long start = 0, long stop = -1, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
@@ -909,6 +1028,11 @@ public sealed class RedisConnectorTests
             }
 
             public Task<RedisValue[]> ListRightPopAsync(RedisKey key, long count, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<ListPopResult> ListRightPopAsync(RedisKey[] keys, long count, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -973,7 +1097,7 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public Task<RedisResult> ExecuteAsync(string command, ICollection<object> args, CommandFlags flags = CommandFlags.None)
+            public Task<RedisResult> ExecuteAsync(string command, ICollection<object>? args, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -996,6 +1120,18 @@ public sealed class RedisConnectorTests
             }
 
             public Task<RedisResult> ScriptEvaluateAsync(LoadedLuaScript script, object? parameters = null, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<RedisResult> ScriptEvaluateReadOnlyAsync(string script, RedisKey[]? keys = null, RedisValue[]? values = null,
+                CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<RedisResult> ScriptEvaluateReadOnlyAsync(byte[] hash, RedisKey[]? keys = null, RedisValue[]? values = null,
+                CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1032,6 +1168,16 @@ public sealed class RedisConnectorTests
             }
 
             public Task<bool> SetContainsAsync(RedisKey key, RedisValue value, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<bool[]> SetContainsAsync(RedisKey key, RedisValue[] values, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<long> SetIntersectionLengthAsync(RedisKey[] keys, long limit = 0, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1104,7 +1250,13 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public Task<bool> SortedSetAddAsync(RedisKey key, RedisValue member, double score, When when = When.Always, CommandFlags flags = CommandFlags.None)
+            public Task<bool> SortedSetAddAsync(RedisKey key, RedisValue member, double score, When when, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<bool> SortedSetAddAsync(RedisKey key, RedisValue member, double score, SortedSetWhen when = SortedSetWhen.Always,
+                CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1114,7 +1266,25 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public Task<long> SortedSetAddAsync(RedisKey key, SortedSetEntry[] values, When when = When.Always, CommandFlags flags = CommandFlags.None)
+            public Task<long> SortedSetAddAsync(RedisKey key, SortedSetEntry[] values, When when, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<long> SortedSetAddAsync(RedisKey key, SortedSetEntry[] values, SortedSetWhen when = SortedSetWhen.Always,
+                CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<RedisValue[]> SortedSetCombineAsync(SetOperation operation, RedisKey[] keys, double[]? weights = null,
+                Aggregate aggregate = Aggregate.Sum, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<SortedSetEntry[]> SortedSetCombineWithScoresAsync(SetOperation operation, RedisKey[] keys, double[]? weights = null,
+                Aggregate aggregate = Aggregate.Sum, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1141,6 +1311,11 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
+            public Task<long> SortedSetIntersectionLengthAsync(RedisKey[] keys, long limit = 0, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
             public Task<long> SortedSetLengthAsync(RedisKey key, double min = double.NegativeInfinity, double max = double.PositiveInfinity,
                 Exclude exclude = Exclude.None, CommandFlags flags = CommandFlags.None)
             {
@@ -1149,6 +1324,21 @@ public sealed class RedisConnectorTests
 
             public Task<long> SortedSetLengthByValueAsync(RedisKey key, RedisValue min, RedisValue max, Exclude exclude = Exclude.None,
                 CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<RedisValue> SortedSetRandomMemberAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<RedisValue[]> SortedSetRandomMembersAsync(RedisKey key, long count, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<SortedSetEntry[]> SortedSetRandomMembersWithScoresAsync(RedisKey key, long count, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1240,12 +1430,35 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
+            public Task<double?[]> SortedSetScoresAsync(RedisKey key, RedisValue[] members, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<bool> SortedSetUpdateAsync(RedisKey key, RedisValue member, double score, SortedSetWhen when = SortedSetWhen.Always,
+                CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<long> SortedSetUpdateAsync(RedisKey key, SortedSetEntry[] values, SortedSetWhen when = SortedSetWhen.Always,
+                CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
             public Task<SortedSetEntry?> SortedSetPopAsync(RedisKey key, Order order = Order.Ascending, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
 
             public Task<SortedSetEntry[]> SortedSetPopAsync(RedisKey key, long count, Order order = Order.Ascending, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<SortedSetPopResult> SortedSetPopAsync(RedisKey[] keys, long count, Order order = Order.Ascending,
+                CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1268,6 +1481,18 @@ public sealed class RedisConnectorTests
 
             public Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, RedisValue? messageId = null, int? maxLength = null,
                 bool useApproximateMaxLength = false, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<StreamAutoClaimResult> StreamAutoClaimAsync(RedisKey key, RedisValue consumerGroup, RedisValue claimingConsumer, long minIdleTimeInMs,
+                RedisValue startAtId, int? count = null, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<StreamAutoClaimIdsOnlyResult> StreamAutoClaimIdsOnlyAsync(RedisKey key, RedisValue consumerGroup, RedisValue claimingConsumer,
+                long minIdleTimeInMs, RedisValue startAtId, int? count = null, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1397,7 +1622,13 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public Task<long> StringBitCountAsync(RedisKey key, long start = 0, long end = -1, CommandFlags flags = CommandFlags.None)
+            public Task<long> StringBitCountAsync(RedisKey key, long start, long end, CommandFlags flags)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<long> StringBitCountAsync(RedisKey key, long start = 0, long end = -1, StringIndexType indexType = StringIndexType.Byte,
+                CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1413,7 +1644,13 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public Task<long> StringBitPositionAsync(RedisKey key, bool bit, long start = 0, long end = -1, CommandFlags flags = CommandFlags.None)
+            public Task<long> StringBitPositionAsync(RedisKey key, bool bit, long start, long end, CommandFlags flags)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<long> StringBitPositionAsync(RedisKey key, bool bit, long start = 0, long end = -1, StringIndexType indexType = StringIndexType.Byte,
+                CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1438,7 +1675,7 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public Task<Lease<byte>> StringGetLeaseAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
+            public Task<Lease<byte>?> StringGetLeaseAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1489,6 +1726,27 @@ public sealed class RedisConnectorTests
             }
 
             public Task<long> StringLengthAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<string?> StringLongestCommonSubsequenceAsync(RedisKey first, RedisKey second, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<long> StringLongestCommonSubsequenceLengthAsync(RedisKey first, RedisKey second, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<LCSMatchResult> StringLongestCommonSubsequenceWithMatchesAsync(RedisKey first, RedisKey second, long minLength = 0,
+                CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<bool> StringSetAsync(RedisKey key, RedisValue value, TimeSpan? expiry, When when)
             {
                 throw new NotImplementedException();
             }
@@ -1619,6 +1877,30 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
+            public GeoRadiusResult[] GeoSearch(RedisKey key, RedisValue member, GeoSearchShape shape, int count = -1, bool demandClosest = true,
+                Order? order = null, GeoRadiusOptions options = GeoRadiusOptions.Default, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public GeoRadiusResult[] GeoSearch(RedisKey key, double longitude, double latitude, GeoSearchShape shape, int count = -1, bool demandClosest = true,
+                Order? order = null, GeoRadiusOptions options = GeoRadiusOptions.Default, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public long GeoSearchAndStore(RedisKey sourceKey, RedisKey destinationKey, RedisValue member, GeoSearchShape shape, int count = -1,
+                bool demandClosest = true, Order? order = null, bool storeDistances = false, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public long GeoSearchAndStore(RedisKey sourceKey, RedisKey destinationKey, double longitude, double latitude, GeoSearchShape shape, int count = -1,
+                bool demandClosest = true, Order? order = null, bool storeDistances = false, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
             public long HashDecrement(RedisKey key, RedisValue hashField, long value = 1, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
@@ -1680,6 +1962,21 @@ public sealed class RedisConnectorTests
             }
 
             public long HashLength(RedisKey key, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public RedisValue HashRandomField(RedisKey key, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public RedisValue[] HashRandomFields(RedisKey key, long count, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public HashEntry[] HashRandomFieldsWithValues(RedisKey key, long count, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1750,6 +2047,12 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
+            public bool KeyCopy(RedisKey sourceKey, RedisKey destinationKey, int destinationDatabase = -1, bool replace = false,
+                CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
             public bool KeyDelete(RedisKey key, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
@@ -1765,6 +2068,11 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
+            public string KeyEncoding(RedisKey key, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
             public bool KeyExists(RedisKey key, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
@@ -1775,12 +2083,32 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public bool KeyExpire(RedisKey key, TimeSpan? expiry, CommandFlags flags = CommandFlags.None)
+            public bool KeyExpire(RedisKey key, TimeSpan? expiry, CommandFlags flags)
             {
                 throw new NotImplementedException();
             }
 
-            public bool KeyExpire(RedisKey key, DateTime? expiry, CommandFlags flags = CommandFlags.None)
+            public bool KeyExpire(RedisKey key, TimeSpan? expiry, ExpireWhen when = ExpireWhen.Always, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool KeyExpire(RedisKey key, DateTime? expiry, CommandFlags flags)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool KeyExpire(RedisKey key, DateTime? expiry, ExpireWhen when = ExpireWhen.Always, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public DateTime? KeyExpireTime(RedisKey key, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public long? KeyFrequency(RedisKey key, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1801,6 +2129,11 @@ public sealed class RedisConnectorTests
             }
 
             public RedisKey KeyRandom(CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public long? KeyRefCount(RedisKey key, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1850,6 +2183,21 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
+            public ListPopResult ListLeftPop(RedisKey[] keys, long count, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public long ListPosition(RedisKey key, RedisValue element, long rank = 1, long maxLength = 0, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public long[] ListPositions(RedisKey key, RedisValue element, long count, long rank = 1, long maxLength = 0, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
             public long ListLeftPush(RedisKey key, RedisValue value, When when = When.Always, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
@@ -1870,6 +2218,12 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
+            public RedisValue ListMove(RedisKey sourceKey, RedisKey destinationKey, ListSide sourceSide, ListSide destinationSide,
+                CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
             public RedisValue[] ListRange(RedisKey key, long start = 0, long stop = -1, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
@@ -1886,6 +2240,11 @@ public sealed class RedisConnectorTests
             }
 
             public RedisValue[] ListRightPop(RedisKey key, long count, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public ListPopResult ListRightPop(RedisKey[] keys, long count, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -1975,6 +2334,17 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
+            public RedisResult ScriptEvaluateReadOnly(string script, RedisKey[]? keys = null, RedisValue[]? values = null,
+                CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public RedisResult ScriptEvaluateReadOnly(byte[] hash, RedisKey[]? keys = null, RedisValue[]? values = null, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
             public bool SetAdd(RedisKey key, RedisValue value, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
@@ -2007,6 +2377,16 @@ public sealed class RedisConnectorTests
             }
 
             public bool SetContains(RedisKey key, RedisValue value, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool[] SetContains(RedisKey key, RedisValue[] values, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public long SetIntersectionLength(RedisKey[] keys, long limit = 0, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -2084,7 +2464,13 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public bool SortedSetAdd(RedisKey key, RedisValue member, double score, When when = When.Always, CommandFlags flags = CommandFlags.None)
+            public bool SortedSetAdd(RedisKey key, RedisValue member, double score, When when, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool SortedSetAdd(RedisKey key, RedisValue member, double score, SortedSetWhen when = SortedSetWhen.Always,
+                CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -2094,7 +2480,24 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public long SortedSetAdd(RedisKey key, SortedSetEntry[] values, When when = When.Always, CommandFlags flags = CommandFlags.None)
+            public long SortedSetAdd(RedisKey key, SortedSetEntry[] values, When when, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public long SortedSetAdd(RedisKey key, SortedSetEntry[] values, SortedSetWhen when = SortedSetWhen.Always, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public RedisValue[] SortedSetCombine(SetOperation operation, RedisKey[] keys, double[]? weights = null, Aggregate aggregate = Aggregate.Sum,
+                CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public SortedSetEntry[] SortedSetCombineWithScores(SetOperation operation, RedisKey[] keys, double[]? weights = null,
+                Aggregate aggregate = Aggregate.Sum, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -2121,6 +2524,11 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
+            public long SortedSetIntersectionLength(RedisKey[] keys, long limit = 0, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
             public long SortedSetLength(RedisKey key, double min = double.NegativeInfinity, double max = double.PositiveInfinity,
                 Exclude exclude = Exclude.None, CommandFlags flags = CommandFlags.None)
             {
@@ -2129,6 +2537,21 @@ public sealed class RedisConnectorTests
 
             public long SortedSetLengthByValue(RedisKey key, RedisValue min, RedisValue max, Exclude exclude = Exclude.None,
                 CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public RedisValue SortedSetRandomMember(RedisKey key, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public RedisValue[] SortedSetRandomMembers(RedisKey key, long count, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public SortedSetEntry[] SortedSetRandomMembersWithScores(RedisKey key, long count, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -2224,12 +2647,34 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
+            public double?[] SortedSetScores(RedisKey key, RedisValue[] members, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
             public SortedSetEntry? SortedSetPop(RedisKey key, Order order = Order.Ascending, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
 
             public SortedSetEntry[] SortedSetPop(RedisKey key, long count, Order order = Order.Ascending, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public SortedSetPopResult SortedSetPop(RedisKey[] keys, long count, Order order = Order.Ascending, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool SortedSetUpdate(RedisKey key, RedisValue member, double score, SortedSetWhen when = SortedSetWhen.Always,
+                CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public long SortedSetUpdate(RedisKey key, SortedSetEntry[] values, SortedSetWhen when = SortedSetWhen.Always,
+                CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -2252,6 +2697,18 @@ public sealed class RedisConnectorTests
 
             public RedisValue StreamAdd(RedisKey key, NameValueEntry[] streamPairs, RedisValue? messageId = null, int? maxLength = null,
                 bool useApproximateMaxLength = false, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public StreamAutoClaimResult StreamAutoClaim(RedisKey key, RedisValue consumerGroup, RedisValue claimingConsumer, long minIdleTimeInMs,
+                RedisValue startAtId, int? count = null, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public StreamAutoClaimIdsOnlyResult StreamAutoClaimIdsOnly(RedisKey key, RedisValue consumerGroup, RedisValue claimingConsumer,
+                long minIdleTimeInMs, RedisValue startAtId, int? count = null, CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -2380,7 +2837,13 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public long StringBitCount(RedisKey key, long start = 0, long end = -1, CommandFlags flags = CommandFlags.None)
+            public long StringBitCount(RedisKey key, long start, long end, CommandFlags flags)
+            {
+                throw new NotImplementedException();
+            }
+
+            public long StringBitCount(RedisKey key, long start = 0, long end = -1, StringIndexType indexType = StringIndexType.Byte,
+                CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -2396,7 +2859,13 @@ public sealed class RedisConnectorTests
                 throw new NotImplementedException();
             }
 
-            public long StringBitPosition(RedisKey key, bool bit, long start = 0, long end = -1, CommandFlags flags = CommandFlags.None)
+            public long StringBitPosition(RedisKey key, bool bit, long start, long end, CommandFlags flags)
+            {
+                throw new NotImplementedException();
+            }
+
+            public long StringBitPosition(RedisKey key, bool bit, long start = 0, long end = -1, StringIndexType indexType = StringIndexType.Byte,
+                CommandFlags flags = CommandFlags.None)
             {
                 throw new NotImplementedException();
             }
@@ -2472,6 +2941,27 @@ public sealed class RedisConnectorTests
             }
 
             public long StringLength(RedisKey key, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public string StringLongestCommonSubsequence(RedisKey first, RedisKey second, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public long StringLongestCommonSubsequenceLength(RedisKey first, RedisKey second, CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public LCSMatchResult StringLongestCommonSubsequenceWithMatches(RedisKey first, RedisKey second, long minLength = 0,
+                CommandFlags flags = CommandFlags.None)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool StringSet(RedisKey key, RedisValue value, TimeSpan? expiry, When when)
             {
                 throw new NotImplementedException();
             }

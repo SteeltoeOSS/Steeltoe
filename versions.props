@@ -5,13 +5,13 @@
       It's safe to update these at any time, so wildcards are allowed.
     -->
 
-    <MongoDbClientVersion>2.16.*</MongoDbClientVersion>
-    <MySqlConnectorVersion>2.1.*</MySqlConnectorVersion>
+    <MongoDbClientVersion>2.19.*</MongoDbClientVersion>
+    <MySqlConnectorVersion>2.2.*</MySqlConnectorVersion>
     <MySqlV8>8.0.*</MySqlV8>
     <NpgsqlVersion>6.0.*</NpgsqlVersion>
-    <SqlClientVersion>4.8.*</SqlClientVersion>
-    <MicrosoftSqlClientVersion>5.0.*</MicrosoftSqlClientVersion>
-    <MicrosoftAzureCosmosVersion>3.28.*</MicrosoftAzureCosmosVersion>
+    <SystemSqlClientVersion>4.8.*</SystemSqlClientVersion>
+    <MicrosoftSqlClientVersion>5.1.*</MicrosoftSqlClientVersion>
+    <MicrosoftAzureCosmosVersion>3.33.*</MicrosoftAzureCosmosVersion>
     <StackExchangeVersion>2.6.*</StackExchangeVersion>
     <CoverletVersion>3.2.*</CoverletVersion>
     <FluentAssertionsVersion>6.8.*</FluentAssertionsVersion>
@@ -32,10 +32,10 @@
     <SourceLinkGitHubVersion>1.1.*</SourceLinkGitHubVersion>
     <StyleCopVersion>1.2.0-beta.435</StyleCopVersion>
     <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
-    <EFCoreTestVersion>6.0.*</EFCoreTestVersion>
+    <EFCoreTestVersion>7.0.*</EFCoreTestVersion>
     <NerdbankGitVersioningVersion>3.5.*</NerdbankGitVersioningVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
-    <RabbitClientTestVersion>6.4.*</RabbitClientTestVersion>
+    <RabbitClientTestVersion>6.5.*</RabbitClientTestVersion>
 
     <!--
       Exposed dependencies, observable by Steeltoe consumers.

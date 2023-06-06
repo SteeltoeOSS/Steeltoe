@@ -39,7 +39,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         string connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be(
-            "Server=localhost;Database=myDb;User ID=steeltoe;Password=steeltoe;Connection Timeout=15;Use Compression=False;Allow User Variables=True;Use Affected Rows=False");
+            "Server=localhost;User ID=steeltoe;Password=steeltoe;Database=myDb;Allow User Variables=True;Connection Timeout=15;Use Affected Rows=False;Use Compression=False");
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         string connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be(
-            "Server=localhost;Database=myDb;User ID=steeltoe;Password=steeltoe;Connection Timeout=15;Use Compression=False;Allow User Variables=True;Use Affected Rows=False");
+            "Server=localhost;User ID=steeltoe;Password=steeltoe;Database=myDb;Allow User Variables=True;Connection Timeout=15;Use Affected Rows=False;Use Compression=False");
     }
 
     [Fact]

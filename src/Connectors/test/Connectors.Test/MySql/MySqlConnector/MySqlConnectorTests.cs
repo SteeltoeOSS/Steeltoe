@@ -203,10 +203,10 @@ public sealed class MySqlConnectorTests
         connectorFactory.ServiceBindingNames.Should().Contain("myMySqlServiceTwo");
 
         await using MySqlConnection connectionOne = connectorFactory.Get("myMySqlServiceOne").GetConnection();
-        connectionOne.ConnectionString.Should().Be("Server=localhost;Database=db1;User ID=user1;Password=pass1");
+        connectionOne.ConnectionString.Should().Be("Server=localhost;User ID=user1;Password=pass1;Database=db1");
 
         await using MySqlConnection connectionTwo = connectorFactory.Get("myMySqlServiceTwo").GetConnection();
-        connectionTwo.ConnectionString.Should().Be("Server=localhost;Database=db2;User ID=user2;Password=pass2");
+        connectionTwo.ConnectionString.Should().Be("Server=localhost;User ID=user2;Password=pass2;Database=db2");
     }
 
     [Fact]
