@@ -6,6 +6,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
@@ -43,7 +44,8 @@ public static class RedisServiceCollectionExtensions
             // From https://github.com/StackExchange/StackExchange.Redis/blob/main/docs/Basics.md:
             //   "Because the ConnectionMultiplexer does a lot, it is designed to be shared and reused between callers.
             //   You should not create a ConnectionMultiplexer per operation."
-            CacheConnection = true
+            CacheConnection = true,
+            EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
         };
 
         addAction?.Invoke(addOptions);

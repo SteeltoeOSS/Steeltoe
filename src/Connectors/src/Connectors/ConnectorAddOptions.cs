@@ -24,9 +24,10 @@ public sealed class ConnectorAddOptions
     public bool CacheConnection { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether contribution to health checks is enabled for this connector. <c>true</c> by default.
+    /// Gets or sets a value indicating whether contribution to Steeltoe health checks is enabled for this connector. <c>true</c> by default, unless ASP.NET
+    /// Core health checks are registered in the service container.
     /// </summary>
-    public bool EnableHealthChecks { get; set; } = true;
+    public bool EnableHealthChecks { get; set; }
 
     /// <summary>
     /// Gets or sets the callback that creates an <see cref="IHealthContributor" /> for this connector, in case <see cref="EnableHealthChecks" /> is

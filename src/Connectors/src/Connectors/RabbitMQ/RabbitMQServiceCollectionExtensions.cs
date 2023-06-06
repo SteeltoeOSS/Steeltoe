@@ -6,6 +6,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
@@ -42,7 +43,8 @@ public static class RabbitMQServiceCollectionExtensions
             //   "Connections are meant to be long-lived. The underlying protocol is designed and optimized for long running connections.
             //   That means that opening a new connection per operation, e.g. a message published, is unnecessary and strongly discouraged
             //   as it will introduce a lot of network round-trips and overhead."
-            CacheConnection = true
+            CacheConnection = true,
+            EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
         };
 
         addAction?.Invoke(addOptions);

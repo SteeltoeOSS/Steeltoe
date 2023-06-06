@@ -7,6 +7,7 @@
 using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
@@ -39,7 +40,8 @@ public static class PostgreSqlServiceCollectionExtensions
             (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
             (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
         {
-            CacheConnection = false
+            CacheConnection = false,
+            EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
         };
 
         addAction?.Invoke(addOptions);

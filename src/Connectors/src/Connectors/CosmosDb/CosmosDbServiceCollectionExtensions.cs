@@ -7,6 +7,7 @@
 using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
@@ -42,7 +43,8 @@ public static class CosmosDbServiceCollectionExtensions
             // From https://learn.microsoft.com/en-us/dotnet/api/microsoft.azure.cosmos.cosmosclient:
             //   "Its recommended to maintain a single instance of CosmosClient per lifetime of the application
             //   which enables efficient connection management and performance."
-            CacheConnection = true
+            CacheConnection = true,
+            EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
         };
 
         addAction?.Invoke(addOptions);
