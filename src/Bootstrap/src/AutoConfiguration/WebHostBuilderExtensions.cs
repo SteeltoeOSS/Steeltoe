@@ -9,18 +9,27 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
+using Steeltoe.Common.DynamicTypeAccess;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Kubernetes;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
 using Steeltoe.Connectors;
+using Steeltoe.Connectors.CosmosDb;
+using Steeltoe.Connectors.CosmosDb.DynamicTypeAccess;
 using Steeltoe.Connectors.MongoDb;
+using Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
 using Steeltoe.Connectors.MySql;
+using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 using Steeltoe.Connectors.PostgreSql;
+using Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
 using Steeltoe.Connectors.RabbitMQ;
+using Steeltoe.Connectors.RabbitMQ.DynamicTypeAccess;
 using Steeltoe.Connectors.Redis;
+using Steeltoe.Connectors.Redis.DynamicTypeAccess;
 using Steeltoe.Connectors.SqlServer;
+using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
@@ -79,18 +88,13 @@ public static class WebHostBuilderExtensions
 
         if (hostBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.SteeltoeConnectors))
         {
-            hostBuilder.WireIfAnyLoaded(WireMySqlConnection, MySqlTypeLocator.Assemblies);
-            hostBuilder.WireIfAnyLoaded(WireMongoClient, MongoDbTypeLocator.Assemblies);
-            hostBuilder.WireIfAnyLoaded(WirePostgreSqlConnection, PostgreSqlTypeLocator.Assemblies);
-            hostBuilder.WireIfAnyLoaded(WireRabbitMqConnection, RabbitMQTypeLocator.Assemblies);
-            hostBuilder.WireIfAnyLoaded(WireRedisConnectionMultiplexer, RedisTypeLocator.StackExchangeAssemblies);
-
-            hostBuilder.WireIfAnyLoaded(WireDistributedRedisCache, RedisTypeLocator.MicrosoftAssemblies.Except(new[]
-            {
-                "Microsoft.Extensions.Caching.Abstractions"
-            }).ToArray());
-
-            hostBuilder.WireIfAnyLoaded(WireSqlServerConnection, SqlServerTypeLocator.Assemblies);
+            hostBuilder.WireIfAnyLoaded(WireCosmosDbConnector, CosmosDbPackageResolver.Default);
+            hostBuilder.WireIfAnyLoaded(WireMongoDbConnector, MongoDbPackageResolver.Default);
+            hostBuilder.WireIfAnyLoaded(WireMySqlConnector, MySqlPackageResolver.Default);
+            hostBuilder.WireIfAnyLoaded(WirePostgreSqlConnector, PostgreSqlPackageResolver.Default);
+            hostBuilder.WireIfAnyLoaded(WireRabbitMQConnector, RabbitMQPackageResolver.Default);
+            hostBuilder.WireIfAnyLoaded(WireRedisConnector, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default);
+            hostBuilder.WireIfAnyLoaded(WireSqlServerConnector, SqlServerPackageResolver.Default);
         }
 
         hostBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.SteeltoeLoggingDynamicSerilog);
@@ -124,15 +128,12 @@ public static class WebHostBuilderExtensions
         return false;
     }
 
-    private static bool WireIfAnyLoaded(this IWebHostBuilder hostBuilder, Action<IWebHostBuilder> action, params string[] assembly)
+    private static void WireIfAnyLoaded(this IWebHostBuilder hostBuilder, Action<IWebHostBuilder> action, params PackageResolver[] packageResolvers)
     {
-        if (assembly.Any(AssemblyExtensions.IsAssemblyLoaded))
+        if (packageResolvers.Any(packageResolver => packageResolver.IsAvailable()))
         {
             action(hostBuilder);
-            return true;
         }
-
-        return false;
     }
 
     private static IWebHostBuilder Log(this IWebHostBuilder host, string message)
@@ -180,45 +181,120 @@ public static class WebHostBuilderExtensions
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireMySqlConnection(this IWebHostBuilder hostBuilder)
+    private static void WireMySqlConnector(this IWebHostBuilder hostBuilder)
     {
-        hostBuilder.ConfigureServices((host, svc) => svc.AddMySqlConnection(host.Configuration)).Log(LogMessages.WireMySqlConnection);
+        hostBuilder.ConfigureAppConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.ConfigureMySql();
+        });
+
+        hostBuilder.ConfigureServices((host, services) =>
+        {
+            services.AddMySql(host.Configuration);
+        });
+
+        hostBuilder.Log(LogMessages.WireMySqlConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireMongoClient(this IWebHostBuilder hostBuilder)
+    private static void WireCosmosDbConnector(this IWebHostBuilder hostBuilder)
     {
-        hostBuilder.ConfigureServices((host, svc) => svc.AddMongoClient(host.Configuration)).Log(LogMessages.WireMongoClient);
+        hostBuilder.ConfigureAppConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.ConfigureCosmosDb();
+        });
+
+        hostBuilder.ConfigureServices((host, services) =>
+        {
+            services.AddCosmosDb(host.Configuration);
+        });
+
+        hostBuilder.Log(LogMessages.WireCosmosClient);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WirePostgreSqlConnection(this IWebHostBuilder hostBuilder)
+    private static void WireMongoDbConnector(this IWebHostBuilder hostBuilder)
     {
-        hostBuilder.ConfigureServices((host, svc) => svc.AddPostgreSqlConnection(host.Configuration)).Log(LogMessages.WirePostgreSqlConnection);
+        hostBuilder.ConfigureAppConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.ConfigureMongoDb();
+        });
+
+        hostBuilder.ConfigureServices((host, services) =>
+        {
+            services.AddMongoDb(host.Configuration);
+        });
+
+        hostBuilder.Log(LogMessages.WireMongoClient);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireRabbitMqConnection(this IWebHostBuilder hostBuilder)
+    private static void WirePostgreSqlConnector(this IWebHostBuilder hostBuilder)
     {
-        hostBuilder.ConfigureServices((host, svc) => svc.AddRabbitMQConnection(host.Configuration)).Log(LogMessages.WireRabbitMqConnection);
+        hostBuilder.ConfigureAppConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.ConfigurePostgreSql();
+        });
+
+        hostBuilder.ConfigureServices((host, services) =>
+        {
+            services.AddPostgreSql(host.Configuration);
+        });
+
+        hostBuilder.Log(LogMessages.WirePostgreSqlConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireRedisConnectionMultiplexer(this IWebHostBuilder hostBuilder)
+    private static void WireRabbitMQConnector(this IWebHostBuilder hostBuilder)
     {
-        hostBuilder.ConfigureServices((host, svc) => svc.AddRedisConnectionMultiplexer(host.Configuration)).Log(LogMessages.WireRedisConnectionMultiplexer);
+        hostBuilder.ConfigureAppConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.ConfigureRabbitMQ();
+        });
+
+        hostBuilder.ConfigureServices((host, services) =>
+        {
+            services.AddRabbitMQ(host.Configuration);
+        });
+
+        hostBuilder.Log(LogMessages.WireRabbitMQConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireDistributedRedisCache(this IWebHostBuilder hostBuilder)
+    private static void WireRedisConnector(this IWebHostBuilder hostBuilder)
     {
-        hostBuilder.ConfigureServices((host, svc) => svc.AddDistributedRedisCache(host.Configuration)).Log(LogMessages.WireDistributedRedisCache);
+        hostBuilder.ConfigureAppConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.ConfigureRedis();
+        });
+
+        hostBuilder.ConfigureServices((host, services) =>
+        {
+            services.AddRedis(host.Configuration);
+        });
+
+        hostBuilder.Log(LogMessages.WireRedisConnectionMultiplexer);
+
+        if (MicrosoftRedisPackageResolver.Default.IsAvailable())
+        {
+            hostBuilder.Log(LogMessages.WireRedisDistributedCache);
+        }
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireSqlServerConnection(this IWebHostBuilder hostBuilder)
+    private static void WireSqlServerConnector(this IWebHostBuilder hostBuilder)
     {
-        hostBuilder.ConfigureServices((host, svc) => svc.AddSqlServerConnection(host.Configuration)).Log(LogMessages.WireSqlServerConnection);
+        hostBuilder.ConfigureAppConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.ConfigureSqlServer();
+        });
+
+        hostBuilder.ConfigureServices((host, services) =>
+        {
+            services.AddSqlServer(host.Configuration);
+        });
+
+        hostBuilder.Log(LogMessages.WireSqlServerConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]

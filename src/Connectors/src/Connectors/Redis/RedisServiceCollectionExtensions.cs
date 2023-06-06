@@ -54,11 +54,14 @@ public static class RedisServiceCollectionExtensions
         ConnectorFactoryShim<RedisOptions>.Register(stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type, services, optionNames,
             addOptions.CreateConnection, addOptions.CacheConnection);
 
-        ConnectorCreateConnection createDistributedCache = (serviceProvider, serviceBindingName) => CreateDistributedCache(addOptions.CreateConnection,
-            serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver, microsoftRedisPackageResolver);
+        if (microsoftRedisPackageResolver.IsAvailable())
+        {
+            ConnectorCreateConnection createDistributedCache = (serviceProvider, serviceBindingName) => CreateDistributedCache(addOptions.CreateConnection,
+                serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver, microsoftRedisPackageResolver);
 
-        ConnectorFactoryShim<RedisOptions>.Register(microsoftRedisPackageResolver.DistributedCacheInterface.Type, services, optionNames, createDistributedCache,
-            addOptions.CacheConnection);
+            ConnectorFactoryShim<RedisOptions>.Register(microsoftRedisPackageResolver.DistributedCacheInterface.Type, services, optionNames,
+                createDistributedCache, addOptions.CacheConnection);
+        }
 
         return services;
     }

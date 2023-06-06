@@ -4,17 +4,20 @@
 
 using System.Net;
 using System.Reflection;
+using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using Npgsql;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -25,11 +28,20 @@ using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Kubernetes;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
 using Steeltoe.Connectors;
+using Steeltoe.Connectors.CosmosDb;
+using Steeltoe.Connectors.MongoDb;
+using Steeltoe.Connectors.MySql;
+using Steeltoe.Connectors.PostgreSql;
+using Steeltoe.Connectors.RabbitMQ;
+using Steeltoe.Connectors.Redis;
+using Steeltoe.Connectors.SqlServer;
 using Steeltoe.Discovery;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Logging;
@@ -135,24 +147,28 @@ public class HostBuilderExtensionsTest
     [Fact]
     public void Connectors_AreAutowired()
     {
-        IEnumerable<string> exclusions = SteeltoeAssemblies.AllAssemblies.Except(new List<string>
+        string[] exclusions = SteeltoeAssemblies.AllAssemblies.Except(new[]
         {
             SteeltoeAssemblies.SteeltoeConnectors
-        });
+        }).ToArray();
 
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
+        IHostBuilder hostBuilder = new HostBuilder();
+        hostBuilder.AddSteeltoe(exclusions);
 
-        IHost host = hostBuilder.AddSteeltoe(exclusions).Build();
-        var configurationRoot = host.Services.GetService<IConfiguration>() as ConfigurationRoot;
-        IServiceProvider services = host.Services;
+        IHost host = hostBuilder.Build();
+        var configurationRoot = (ConfigurationRoot)host.Services.GetService<IConfiguration>();
 
-        Assert.Single(configurationRoot.Providers.OfType<ConnectionStringConfigurationProvider>());
-        Assert.NotNull(services.GetService<MySqlConnection>());
-        Assert.NotNull(services.GetService<MongoClient>());
-        Assert.NotNull(services.GetService<NpgsqlConnection>());
-        Assert.NotNull(services.GetService<ConnectionFactory>());
-        Assert.NotNull(services.GetService<ConnectionMultiplexer>());
-        Assert.NotNull(services.GetService<SqlConnection>());
+        configurationRoot.Providers.Should().ContainSingle(provider => provider is KubernetesServiceBindingConfigurationProvider);
+        configurationRoot.Providers.Should().ContainSingle(provider => provider is CloudFoundryServiceBindingConfigurationProvider);
+
+        host.Services.GetService<ConnectorFactory<CosmosDbOptions, CosmosClient>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<MongoDbOptions, IMongoClient>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<MySqlOptions, MySqlConnection>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<RabbitMQOptions, IConnection>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<RedisOptions, IConnectionMultiplexer>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<RedisOptions, IDistributedCache>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<SqlServerOptions, SqlConnection>>().Should().NotBeNull();
     }
 
     [Fact]

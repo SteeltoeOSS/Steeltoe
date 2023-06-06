@@ -4,17 +4,20 @@
 
 using System.Net;
 using System.Reflection;
+using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using Npgsql;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -25,11 +28,20 @@ using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Kubernetes;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
 using Steeltoe.Connectors;
+using Steeltoe.Connectors.CosmosDb;
+using Steeltoe.Connectors.MongoDb;
+using Steeltoe.Connectors.MySql;
+using Steeltoe.Connectors.PostgreSql;
+using Steeltoe.Connectors.RabbitMQ;
+using Steeltoe.Connectors.Redis;
+using Steeltoe.Connectors.SqlServer;
 using Steeltoe.Discovery;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Logging;
@@ -97,16 +109,20 @@ public class WebApplicationBuilderExtensionsTest
     public void Connectors_AreAutowired()
     {
         WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblies.SteeltoeConnectors);
-        var configurationRoot = host.Services.GetServices<IConfiguration>().First(c => c is ConfigurationManager) as IConfigurationRoot;
-        IServiceProvider services = host.Services;
 
-        Assert.Single(configurationRoot.Providers.OfType<ConnectionStringConfigurationProvider>());
-        Assert.NotNull(services.GetService<MySqlConnection>());
-        Assert.NotNull(services.GetService<MongoClient>());
-        Assert.NotNull(services.GetService<NpgsqlConnection>());
-        Assert.NotNull(services.GetService<ConnectionFactory>());
-        Assert.NotNull(services.GetService<ConnectionMultiplexer>());
-        Assert.NotNull(services.GetService<SqlConnection>());
+        var configurationRoot = (IConfigurationRoot)(ConfigurationManager)host.Services.GetService<IConfiguration>();
+
+        configurationRoot.Providers.Should().ContainSingle(provider => provider is KubernetesServiceBindingConfigurationProvider);
+        configurationRoot.Providers.Should().ContainSingle(provider => provider is CloudFoundryServiceBindingConfigurationProvider);
+
+        host.Services.GetService<ConnectorFactory<CosmosDbOptions, CosmosClient>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<MongoDbOptions, IMongoClient>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<MySqlOptions, MySqlConnection>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<RabbitMQOptions, IConnection>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<RedisOptions, IConnectionMultiplexer>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<RedisOptions, IDistributedCache>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<SqlServerOptions, SqlConnection>>().Should().NotBeNull();
     }
 
     [Fact]

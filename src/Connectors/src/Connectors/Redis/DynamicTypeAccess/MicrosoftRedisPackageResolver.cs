@@ -30,4 +30,12 @@ internal sealed class MicrosoftRedisPackageResolver : PackageResolver
         : base(assemblyNames, packageNames)
     {
     }
+
+    protected override bool IsAvailable(IEnumerable<string> assemblyNames)
+    {
+        return base.IsAvailable(new[]
+        {
+            "Microsoft.Extensions.Caching.StackExchangeRedis"
+        });
+    }
 }

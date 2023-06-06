@@ -13,18 +13,19 @@ internal static class LogMessages
     public const string WireConfigServer = "Configured config server configuration provider";
     public const string WireConnectorsConfiguration = "Configured ConnectionStrings configuration provider";
     public const string WireDiscoveryClient = "Configured discovery client";
-    public const string WireDistributedRedisCache = "Configured Redis distributed cache connector";
+    public const string WireRedisDistributedCache = "Configured Redis distributed cache connector";
     public const string WireDistributedTracing = "Configured distributed tracing";
     public const string WireDynamicSerilog = "Configured dynamic console logger for Serilog";
     public const string WireKubernetesActuators = "Configured Kubernetes actuators";
     public const string WireKubernetesConfiguration = "Configured Kubernetes configuration provider";
+    public const string WireCosmosClient = "Configured CosmosDB connector";
     public const string WireMongoClient = "Configured MongoDB connector";
     public const string WireMySqlConnection = "Configured MySQL connector";
     public const string WirePlaceholderResolver = "Configured placeholder configuration provider";
     public const string WirePostgreSqlConnection = "Configured PostgreSQL connector";
-    public const string WireRabbitMqConnection = "Configured RabbitMQ connector";
+    public const string WireRabbitMQConnection = "Configured RabbitMQ connector";
     public const string WireRandomValueProvider = "Configured Random Value configuration provider";
-    public const string WireRedisConnectionMultiplexer = "Configured StackExchange RabbitMQ connector";
+    public const string WireRedisConnectionMultiplexer = "Configured StackExchange Redis connector";
     public const string WireSqlServerConnection = "Configured SQL Server connector";
     public const string WireWavefrontMetrics = "Configured Wavefront Metrics";
 }

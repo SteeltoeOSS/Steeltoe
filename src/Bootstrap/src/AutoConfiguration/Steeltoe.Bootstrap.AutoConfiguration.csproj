@@ -32,12 +32,7 @@
     <ProjectReference Include="..\..\..\Security\src\Authentication.Mtls\Steeltoe.Security.Authentication.Mtls.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Security\src\DataProtection.Redis\Steeltoe.Security.DataProtection.Redis.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connectors.CloudFoundry.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\..\..\Connectors\src\EntityFrameworkCore\Steeltoe.Connectors.EntityFrameworkCore.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Logging.DynamicLogger.csproj" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\..\..\Connectors\src\Connectors\**\*TypeLocator.cs" LinkBase="TypeLocators" />
   </ItemGroup>
 
   <ItemDefinitionGroup>

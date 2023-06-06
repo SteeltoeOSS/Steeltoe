@@ -8,18 +8,27 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
+using Steeltoe.Common.DynamicTypeAccess;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Kubernetes;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
 using Steeltoe.Connectors;
+using Steeltoe.Connectors.CosmosDb;
+using Steeltoe.Connectors.CosmosDb.DynamicTypeAccess;
 using Steeltoe.Connectors.MongoDb;
+using Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
 using Steeltoe.Connectors.MySql;
+using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 using Steeltoe.Connectors.PostgreSql;
+using Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
 using Steeltoe.Connectors.RabbitMQ;
+using Steeltoe.Connectors.RabbitMQ.DynamicTypeAccess;
 using Steeltoe.Connectors.Redis;
+using Steeltoe.Connectors.Redis.DynamicTypeAccess;
 using Steeltoe.Connectors.SqlServer;
+using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
@@ -79,20 +88,13 @@ public static class WebApplicationBuilderExtensions
 
         if (webApplicationBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.SteeltoeConnectors))
         {
-#pragma warning disable CS0436 // Type conflicts with imported type
-            webApplicationBuilder.WireIfAnyLoaded(WireMySqlConnection, MySqlTypeLocator.Assemblies);
-            webApplicationBuilder.WireIfAnyLoaded(WireMongoClient, MongoDbTypeLocator.Assemblies);
-            webApplicationBuilder.WireIfAnyLoaded(WirePostgreSqlConnection, PostgreSqlTypeLocator.Assemblies);
-            webApplicationBuilder.WireIfAnyLoaded(WireRabbitMqConnection, RabbitMQTypeLocator.Assemblies);
-            webApplicationBuilder.WireIfAnyLoaded(WireRedisConnectionMultiplexer, RedisTypeLocator.StackExchangeAssemblies);
-
-            webApplicationBuilder.WireIfAnyLoaded(WireDistributedRedisCache, RedisTypeLocator.MicrosoftAssemblies.Except(new[]
-            {
-                "Microsoft.Extensions.Caching.Abstractions"
-            }).ToArray());
-
-            webApplicationBuilder.WireIfAnyLoaded(WireSqlServerConnection, SqlServerTypeLocator.Assemblies);
-#pragma warning restore CS0436 // Type conflicts with imported type
+            webApplicationBuilder.WireIfAnyLoaded(WireCosmosDbConnector, CosmosDbPackageResolver.Default);
+            webApplicationBuilder.WireIfAnyLoaded(WireMongoDbConnector, MongoDbPackageResolver.Default);
+            webApplicationBuilder.WireIfAnyLoaded(WireMySqlConnector, MySqlPackageResolver.Default);
+            webApplicationBuilder.WireIfAnyLoaded(WirePostgreSqlConnector, PostgreSqlPackageResolver.Default);
+            webApplicationBuilder.WireIfAnyLoaded(WireRabbitMQConnector, RabbitMQPackageResolver.Default);
+            webApplicationBuilder.WireIfAnyLoaded(WireRedisConnector, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default);
+            webApplicationBuilder.WireIfAnyLoaded(WireSqlServerConnector, SqlServerPackageResolver.Default);
         }
 
         webApplicationBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.SteeltoeLoggingDynamicSerilog);
@@ -127,15 +129,13 @@ public static class WebApplicationBuilderExtensions
         return false;
     }
 
-    private static bool WireIfAnyLoaded(this WebApplicationBuilder webApplicationBuilder, Action<WebApplicationBuilder> action, params string[] assembly)
+    private static void WireIfAnyLoaded(this WebApplicationBuilder webApplicationBuilder, Action<WebApplicationBuilder> action,
+        params PackageResolver[] packageResolvers)
     {
-        if (assembly.Any(AssemblyExtensions.IsAssemblyLoaded))
+        if (packageResolvers.Any(packageResolver => packageResolver.IsAvailable()))
         {
             action(webApplicationBuilder);
-            return true;
         }
-
-        return false;
     }
 
     private static void Log(string message)
@@ -188,51 +188,56 @@ public static class WebApplicationBuilderExtensions
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireMySqlConnection(this WebApplicationBuilder webApplicationBuilder)
+    private static void WireMySqlConnector(this WebApplicationBuilder builder)
     {
-        webApplicationBuilder.Services.AddMySqlConnection(webApplicationBuilder.Configuration);
+        builder.AddMySql();
         Log(LogMessages.WireMySqlConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireMongoClient(this WebApplicationBuilder webApplicationBuilder)
+    private static void WireCosmosDbConnector(this WebApplicationBuilder builder)
     {
-        webApplicationBuilder.Services.AddMongoClient(webApplicationBuilder.Configuration);
+        builder.AddCosmosDb();
+        Log(LogMessages.WireCosmosClient);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void WireMongoDbConnector(this WebApplicationBuilder builder)
+    {
+        builder.AddMongoDb();
         Log(LogMessages.WireMongoClient);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WirePostgreSqlConnection(this WebApplicationBuilder webApplicationBuilder)
+    private static void WirePostgreSqlConnector(this WebApplicationBuilder builder)
     {
-        webApplicationBuilder.Services.AddPostgreSqlConnection(webApplicationBuilder.Configuration);
+        builder.AddPostgreSql();
         Log(LogMessages.WirePostgreSqlConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireRabbitMqConnection(this WebApplicationBuilder webApplicationBuilder)
+    private static void WireRabbitMQConnector(this WebApplicationBuilder builder)
     {
-        webApplicationBuilder.Services.AddRabbitMQConnection(webApplicationBuilder.Configuration);
-        Log(LogMessages.WireRabbitMqConnection);
+        builder.AddRabbitMQ();
+        Log(LogMessages.WireRabbitMQConnection);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireRedisConnectionMultiplexer(this WebApplicationBuilder webApplicationBuilder)
+    private static void WireRedisConnector(this WebApplicationBuilder builder)
     {
-        webApplicationBuilder.Services.AddRedisConnectionMultiplexer(webApplicationBuilder.Configuration);
+        builder.AddRedis();
         Log(LogMessages.WireRedisConnectionMultiplexer);
+
+        if (MicrosoftRedisPackageResolver.Default.IsAvailable())
+        {
+            Log(LogMessages.WireRedisDistributedCache);
+        }
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireDistributedRedisCache(this WebApplicationBuilder webApplicationBuilder)
+    private static void WireSqlServerConnector(this WebApplicationBuilder builder)
     {
-        webApplicationBuilder.Services.AddDistributedRedisCache(webApplicationBuilder.Configuration);
-        Log(LogMessages.WireDistributedRedisCache);
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireSqlServerConnection(this WebApplicationBuilder webApplicationBuilder)
-    {
-        webApplicationBuilder.Services.AddSqlServerConnection(webApplicationBuilder.Configuration);
+        builder.AddSqlServer();
         Log(LogMessages.WireSqlServerConnection);
     }
 

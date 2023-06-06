@@ -4,5 +4,6 @@
 
 using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors.Test")]

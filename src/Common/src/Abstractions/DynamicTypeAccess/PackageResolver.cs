@@ -38,6 +38,29 @@ internal abstract class PackageResolver
         _packageNames = packageNames;
     }
 
+    public bool IsAvailable()
+    {
+        return IsAvailable(_assemblyNames);
+    }
+
+    protected virtual bool IsAvailable(IEnumerable<string> assemblyNames)
+    {
+        foreach (string assemblyName in assemblyNames)
+        {
+            try
+            {
+                Assembly.Load(new AssemblyName(assemblyName));
+                return true;
+            }
+            catch (Exception exception) when (exception is ArgumentException or IOException or BadImageFormatException)
+            {
+                // Intentionally left empty.
+            }
+        }
+
+        return false;
+    }
+
     protected TypeAccessor ResolveType(params string[] typeNames)
     {
         ArgumentGuard.NotNull(typeNames);
