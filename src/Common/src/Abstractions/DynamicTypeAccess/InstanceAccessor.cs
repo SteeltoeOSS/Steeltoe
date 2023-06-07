@@ -31,6 +31,7 @@ internal sealed class InstanceAccessor : ReflectionAccessor
     private static Type AssertNotNull(TypeAccessor declaredTypeAccessor)
     {
         ArgumentGuard.NotNull(declaredTypeAccessor);
+
         return declaredTypeAccessor.Type;
     }
 

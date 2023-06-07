@@ -15,10 +15,10 @@ public sealed class ConfigurationBuilderExtensionsTest
     {
         var builder = new ConfigurationBuilder();
 
-        Action action1 = () => ((ConfigurationBuilder)null).AddKubernetesServiceBindings();
+        Action action1 = () => ((ConfigurationBuilder)null!).AddKubernetesServiceBindings();
         action1.Should().ThrowExactly<ArgumentNullException>().WithParameterName("builder");
 
-        Action action2 = () => builder.AddKubernetesServiceBindings(true, false, null);
+        Action action2 = () => builder.AddKubernetesServiceBindings(true, false, null!);
         action2.Should().ThrowExactly<ArgumentNullException>().WithParameterName("ignoreKeyPredicate");
     }
 

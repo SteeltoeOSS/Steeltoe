@@ -17,7 +17,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
     public static readonly string FromKeyPrefix = ConfigurationPath.Combine("k8s", "bindings");
     public static readonly string ToKeyPrefix = ConfigurationPath.Combine("steeltoe", "service-bindings");
 
-    private readonly IDisposable _changeToken;
+    private readonly IDisposable? _changeToken;
     private readonly KubernetesServiceBindingConfigurationSource _source;
 
     public KubernetesServiceBindingConfigurationProvider(KubernetesServiceBindingConfigurationSource source)
@@ -136,7 +136,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
 
         public string Name { get; }
         public string Path { get; }
-        public string Provider { get; }
+        public string? Provider { get; }
         public IDictionary<string, string> Secrets => new ReadOnlyDictionary<string, string>(_secrets);
         public string Type { get; }
 
@@ -154,8 +154,8 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
 
             _secrets = new Dictionary<string, string>();
 
-            string type = null;
-            string provider = null;
+            string? type = null;
+            string? provider = null;
 
             foreach ((string secretName, string secretValue) in secrets)
             {
@@ -238,7 +238,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
     {
         public IList<ServiceBinding> Bindings { get; }
 
-        public ServiceBindings(IFileProvider fileProvider)
+        public ServiceBindings(IFileProvider? fileProvider)
         {
             Bindings = new List<ServiceBinding>();
 

@@ -23,7 +23,7 @@ internal sealed class ConnectionStringPostProcessorConfigurationSource : PostPro
     {
         ArgumentGuard.NotNull(builder);
 
-        SetConfigurationBuilder(builder);
+        CaptureConfigurationBuilder(builder);
         return new ConnectionStringPostProcessorConfigurationProvider(this, _detectConfigurationChanges);
     }
 }

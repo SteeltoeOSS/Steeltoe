@@ -43,19 +43,19 @@ public sealed class ConfigurationBuilderExtensionsTest
         var builder = new ConfigurationBuilder();
         var reader = new StringServiceBindingsReader(string.Empty);
 
-        Action action1 = () => ((ConfigurationBuilder)null).AddCloudFoundryServiceBindings();
+        Action action1 = () => ((ConfigurationBuilder)null!).AddCloudFoundryServiceBindings();
         action1.Should().ThrowExactly<ArgumentNullException>().WithParameterName("builder");
 
-        Action action2 = () => builder.AddCloudFoundryServiceBindings((Predicate<string>)null);
+        Action action2 = () => builder.AddCloudFoundryServiceBindings((Predicate<string>)null!);
         action2.Should().ThrowExactly<ArgumentNullException>().WithParameterName("ignoreKeyPredicate");
 
-        Action action3 = () => builder.AddCloudFoundryServiceBindings((IServiceBindingsReader)null);
+        Action action3 = () => builder.AddCloudFoundryServiceBindings((IServiceBindingsReader)null!);
         action3.Should().ThrowExactly<ArgumentNullException>().WithParameterName("serviceBindingsReader");
 
-        Action action4 = () => builder.AddCloudFoundryServiceBindings(null, reader);
+        Action action4 = () => builder.AddCloudFoundryServiceBindings(null!, reader);
         action4.Should().ThrowExactly<ArgumentNullException>().WithParameterName("ignoreKeyPredicate");
 
-        Action action5 = () => builder.AddCloudFoundryServiceBindings(_ => false, null);
+        Action action5 = () => builder.AddCloudFoundryServiceBindings(_ => false, null!);
         action5.Should().ThrowExactly<ArgumentNullException>().WithParameterName("serviceBindingsReader");
     }
 

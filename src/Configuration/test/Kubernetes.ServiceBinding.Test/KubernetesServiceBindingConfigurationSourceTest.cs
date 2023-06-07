@@ -22,19 +22,19 @@ public sealed class KubernetesServiceBindingConfigurationSourceTest
     [Fact]
     public void EnvironmentVariableSet()
     {
-        string rootDirectory = GetK8SResourcesDirectory(null);
+        string rootDirectory = GetK8SResourcesDirectory(string.Empty);
         using var scope = new EnvironmentVariableScope(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDirectory);
 
         var source = new KubernetesServiceBindingConfigurationSource();
         source.ServiceBindingRoot.Should().Contain(Path.Combine("resources", "k8s"));
         source.FileProvider.Should().NotBeNull();
-        source.FileProvider.GetDirectoryContents("/").Should().NotBeNull();
+        source.FileProvider!.GetDirectoryContents("/").Should().NotBeNull();
     }
 
     [Fact]
     public void Build_CapturesParentConfiguration()
     {
-        string rootDirectory = GetK8SResourcesDirectory(null);
+        string rootDirectory = GetK8SResourcesDirectory(string.Empty);
         var source = new KubernetesServiceBindingConfigurationSource(rootDirectory);
 
         var builder = new ConfigurationBuilder();
@@ -54,6 +54,6 @@ public sealed class KubernetesServiceBindingConfigurationSourceTest
 
     private static string GetK8SResourcesDirectory(string name)
     {
-        return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s", $"{name}");
+        return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s", name);
     }
 }

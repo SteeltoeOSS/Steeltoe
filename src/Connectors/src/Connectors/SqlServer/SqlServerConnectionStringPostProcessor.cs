@@ -18,6 +18,7 @@ internal sealed class SqlServerConnectionStringPostProcessor : ConnectionStringP
     public SqlServerConnectionStringPostProcessor(SqlServerPackageResolver packageResolver)
     {
         ArgumentGuard.NotNull(packageResolver);
+
         _packageResolver = packageResolver;
     }
 

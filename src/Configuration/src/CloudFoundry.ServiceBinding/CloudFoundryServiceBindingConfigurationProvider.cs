@@ -18,13 +18,14 @@ internal sealed class CloudFoundryServiceBindingConfigurationProvider : PostProc
         : base(source)
     {
         ArgumentGuard.NotNull(serviceBindingsReader);
+
         _serviceBindingsReader = serviceBindingsReader;
     }
 
     public override void Load()
     {
         var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        string json = _serviceBindingsReader.GetServiceBindingsJson();
+        string? json = _serviceBindingsReader.GetServiceBindingsJson();
 
         if (!string.IsNullOrEmpty(json))
         {
@@ -34,6 +35,7 @@ internal sealed class CloudFoundryServiceBindingConfigurationProvider : PostProc
 
         Data = data;
         PostProcessConfiguration();
+        OnReload();
     }
 
     private static IConfigurationRoot BuildConfiguration(string json)

@@ -59,7 +59,7 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
     [Fact]
     public void EnvironmentVariableSet_ValidDirectory()
     {
-        string rootDirectory = GetK8SResourcesDirectory(null);
+        string rootDirectory = GetK8SResourcesDirectory(string.Empty);
         using var scope = new EnvironmentVariableScope(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDirectory);
 
         var source = new KubernetesServiceBindingConfigurationSource();
@@ -101,7 +101,7 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
     [Fact]
     public void PostProcessors_OnByDefault()
     {
-        string rootDirectory = GetK8SResourcesDirectory(null);
+        string rootDirectory = GetK8SResourcesDirectory(string.Empty);
 
         var source = new KubernetesServiceBindingConfigurationSource(rootDirectory);
         var postProcessor = new TestPostProcessor();
@@ -115,7 +115,7 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
 
     private static string GetK8SResourcesDirectory(string name)
     {
-        return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s", $"{name}");
+        return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s", name);
     }
 
     private static string GetEmptyK8SResourcesDirectory()

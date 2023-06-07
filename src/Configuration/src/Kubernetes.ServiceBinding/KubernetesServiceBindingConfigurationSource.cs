@@ -13,9 +13,9 @@ internal sealed class KubernetesServiceBindingConfigurationSource : PostProcesso
 {
     internal const string ServiceBindingRootDirEnvVariable = "SERVICE_BINDING_ROOT";
 
-    public IFileProvider FileProvider { get; set; }
+    public IFileProvider? FileProvider { get; set; }
 
-    public string ServiceBindingRoot { get; set; }
+    public string? ServiceBindingRoot { get; set; }
 
     public bool ReloadOnChange { get; set; }
 
@@ -28,7 +28,7 @@ internal sealed class KubernetesServiceBindingConfigurationSource : PostProcesso
     {
     }
 
-    public KubernetesServiceBindingConfigurationSource(string serviceBindingRootDirectory)
+    public KubernetesServiceBindingConfigurationSource(string? serviceBindingRootDirectory)
     {
         ServiceBindingRoot = serviceBindingRootDirectory != null ? Path.GetFullPath(serviceBindingRootDirectory) : null;
 
@@ -50,7 +50,7 @@ internal sealed class KubernetesServiceBindingConfigurationSource : PostProcesso
     {
         ArgumentGuard.NotNull(builder);
 
-        SetConfigurationBuilder(builder);
+        CaptureConfigurationBuilder(builder);
         return new KubernetesServiceBindingConfigurationProvider(this);
     }
 }

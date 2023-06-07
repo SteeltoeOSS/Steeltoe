@@ -16,6 +16,7 @@ internal abstract class PostProcessorConfigurationProvider : ConfigurationProvid
     protected PostProcessorConfigurationProvider(PostProcessorConfigurationSource source)
     {
         ArgumentGuard.NotNull(source);
+
         Source = source;
     }
 

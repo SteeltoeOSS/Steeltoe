@@ -22,7 +22,7 @@ internal abstract class PostProcessorConfigurationSource
         _postProcessors.Add(processor);
     }
 
-    protected void SetConfigurationBuilder(IConfigurationBuilder configurationBuilder)
+    protected void CaptureConfigurationBuilder(IConfigurationBuilder configurationBuilder)
     {
         _capturedConfigurationBuilder = configurationBuilder;
     }

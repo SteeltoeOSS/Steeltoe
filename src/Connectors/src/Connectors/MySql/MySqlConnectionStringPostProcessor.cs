@@ -18,6 +18,7 @@ internal sealed class MySqlConnectionStringPostProcessor : ConnectionStringPostP
     public MySqlConnectionStringPostProcessor(MySqlPackageResolver packageResolver)
     {
         ArgumentGuard.NotNull(packageResolver);
+
         _packageResolver = packageResolver;
     }
 

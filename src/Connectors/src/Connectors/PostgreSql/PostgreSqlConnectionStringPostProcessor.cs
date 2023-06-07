@@ -18,6 +18,7 @@ internal sealed class PostgreSqlConnectionStringPostProcessor : ConnectionString
     public PostgreSqlConnectionStringPostProcessor(PostgreSqlPackageResolver packageResolver)
     {
         ArgumentGuard.NotNull(packageResolver);
+
         _packageResolver = packageResolver;
     }
 
