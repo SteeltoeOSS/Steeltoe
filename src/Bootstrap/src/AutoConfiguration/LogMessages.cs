@@ -7,7 +7,6 @@ namespace Steeltoe.Bootstrap.AutoConfiguration;
 internal static class LogMessages
 {
     public const string WireAllActuators = "Configured actuators";
-    public const string WireCloudFoundryActuators = "Configured Cloud Foundry actuators";
     public const string WireCloudFoundryConfiguration = "Configured Cloud Foundry configuration provider";
     public const string WireCloudFoundryContainerIdentity = "Configured Cloud Foundry MTLs security";
     public const string WireConfigServer = "Configured config server configuration provider";

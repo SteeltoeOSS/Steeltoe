@@ -329,6 +329,7 @@ public static class WebHostBuilderExtensions
             if (context.Configuration.HasWavefront())
             {
                 collection.AddWavefrontMetrics();
+                hostBuilder.Log(LogMessages.WireWavefrontMetrics);
             }
         });
     }
