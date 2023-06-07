@@ -64,7 +64,7 @@ internal static class ConnectorOptionsBinder
             return false;
         }
 
-        if (sections is [{ Key: ConnectionStringPostProcessor.DefaultBindingName }])
+        if (sections.Length == 1 && sections[0].Key == ConnectionStringPostProcessor.DefaultBindingName)
         {
             return false;
         }

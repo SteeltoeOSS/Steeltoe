@@ -39,7 +39,7 @@ public static class TestHelpers
     {
         { "spring:cloud:config:enabled", "false" },
         { "eureka:client:serviceUrl", "http://127.0.0.1" },
-        { "eureka:client:enabled", "false" },
+        { "eureka:client:enabled", "false" }
     }.ToImmutableDictionary();
 
     public static readonly ImmutableDictionary<string, string> WavefrontConfiguration = new Dictionary<string, string>

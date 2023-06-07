@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-
 namespace Steeltoe.Management.MetricCollectors.Metrics;
 #pragma warning disable S1135 // Track uses of "TODO" tags
 // TODO: Move to common 

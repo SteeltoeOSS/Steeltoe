@@ -25,8 +25,9 @@ public class MetricsCollection<T> : ConcurrentDictionary<string, T>
     internal MetricsCollection()
     {
     }
-    internal MetricsCollection(IEnumerable<KeyValuePair<string,T>> instance): base(instance)
-    {
 
+    internal MetricsCollection(IEnumerable<KeyValuePair<string, T>> instance)
+        : base(instance)
+    {
     }
 }
