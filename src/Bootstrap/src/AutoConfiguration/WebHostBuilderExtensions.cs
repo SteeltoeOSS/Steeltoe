@@ -56,7 +56,7 @@ public static class WebHostBuilderExtensions
     /// <para />
     /// PLEASE NOTE: No extensions to IApplicationBuilder will be configured.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// Your <see cref="IWebHostBuilder" />.
     /// </param>
     /// <param name="exclusions">
@@ -65,57 +65,62 @@ public static class WebHostBuilderExtensions
     /// <param name="loggerFactory">
     /// For logging within auto-configuration.
     /// </param>
-    public static IWebHostBuilder AddSteeltoe(this IWebHostBuilder hostBuilder, IEnumerable<string> exclusions = null, ILoggerFactory loggerFactory = null)
+    public static IWebHostBuilder AddSteeltoe(this IWebHostBuilder builder, IEnumerable<string> exclusions = null, ILoggerFactory loggerFactory = null)
     {
         AssemblyExtensions.ExcludedAssemblies = exclusions ?? new List<string>();
         _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
         _logger = _loggerFactory.CreateLogger(LoggerName);
 
-        if (!hostBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblyNames.ConfigurationConfigServer))
+        if (!builder.WireIfLoaded(WireConfigServer, SteeltoeAssemblyNames.ConfigurationConfigServer))
         {
-            hostBuilder.WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblyNames.ConfigurationCloudFoundry);
+            builder.WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblyNames.ConfigurationCloudFoundry);
         }
 
         if (Platform.IsKubernetes && AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblyNames.ConfigurationKubernetes))
         {
-            WireKubernetesConfiguration(hostBuilder);
+            WireKubernetesConfiguration(builder);
         }
 
-        hostBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblyNames.ConfigurationRandomValue);
+        builder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblyNames.ConfigurationRandomValue);
 
-        hostBuilder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblyNames.ConfigurationPlaceholder);
+        builder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblyNames.ConfigurationPlaceholder);
 
-        if (hostBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblyNames.Connectors))
+        if (builder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblyNames.Connectors))
         {
-            hostBuilder.WireIfAnyLoaded(WireCosmosDbConnector, CosmosDbPackageResolver.Default);
-            hostBuilder.WireIfAnyLoaded(WireMongoDbConnector, MongoDbPackageResolver.Default);
-            hostBuilder.WireIfAnyLoaded(WireMySqlConnector, MySqlPackageResolver.Default);
-            hostBuilder.WireIfAnyLoaded(WirePostgreSqlConnector, PostgreSqlPackageResolver.Default);
-            hostBuilder.WireIfAnyLoaded(WireRabbitMQConnector, RabbitMQPackageResolver.Default);
-            hostBuilder.WireIfAnyLoaded(WireRedisConnector, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default);
-            hostBuilder.WireIfAnyLoaded(WireSqlServerConnector, SqlServerPackageResolver.Default);
+            var assemblyNamesToExclude = new HashSet<string>(AssemblyExtensions.ExcludedAssemblies, StringComparer.OrdinalIgnoreCase);
+
+            builder.WireIfAnyLoaded(WireCosmosDbConnector, assemblyNamesToExclude, CosmosDbPackageResolver.Default);
+            builder.WireIfAnyLoaded(WireMongoDbConnector, assemblyNamesToExclude, MongoDbPackageResolver.Default);
+            builder.WireIfAnyLoaded(WireMySqlConnector, assemblyNamesToExclude, MySqlPackageResolver.Default);
+            builder.WireIfAnyLoaded(WirePostgreSqlConnector, assemblyNamesToExclude, PostgreSqlPackageResolver.Default);
+            builder.WireIfAnyLoaded(WireRabbitMQConnector, assemblyNamesToExclude, RabbitMQPackageResolver.Default);
+
+            builder.WireIfAnyLoaded(WireRedisConnector, assemblyNamesToExclude, StackExchangeRedisPackageResolver.Default,
+                MicrosoftRedisPackageResolver.Default);
+
+            builder.WireIfAnyLoaded(WireSqlServerConnector, assemblyNamesToExclude, SqlServerPackageResolver.Default);
         }
 
-        hostBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblyNames.LoggingDynamicSerilog);
-        hostBuilder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblyNames.DiscoveryClient);
+        builder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblyNames.LoggingDynamicSerilog);
+        builder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblyNames.DiscoveryClient);
 
         if (AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblyNames.ManagementKubernetes))
         {
-            hostBuilder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblyNames.ManagementKubernetes);
+            builder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblyNames.ManagementKubernetes);
         }
         else
         {
-            hostBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblyNames.ManagementEndpoint);
+            builder.WireIfLoaded(WireAllActuators, SteeltoeAssemblyNames.ManagementEndpoint);
         }
 
-        hostBuilder.WireIfLoaded(WireSteeltoePrometheus, SteeltoeAssemblyNames.ManagementPrometheus);
+        builder.WireIfLoaded(WireSteeltoePrometheus, SteeltoeAssemblyNames.ManagementPrometheus);
 
-        hostBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblyNames.ManagementWavefront);
+        builder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblyNames.ManagementWavefront);
 
-        hostBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblyNames.ManagementTracing);
+        builder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblyNames.ManagementTracing);
 
-        hostBuilder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
-        return hostBuilder;
+        builder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
+        return builder;
     }
 
     private static bool WireIfLoaded(this IWebHostBuilder hostBuilder, Action<IWebHostBuilder> action, params string[] assembly)
@@ -129,9 +134,10 @@ public static class WebHostBuilderExtensions
         return false;
     }
 
-    private static void WireIfAnyLoaded(this IWebHostBuilder hostBuilder, Action<IWebHostBuilder> action, params PackageResolver[] packageResolvers)
+    private static void WireIfAnyLoaded(this IWebHostBuilder hostBuilder, Action<IWebHostBuilder> action, IReadOnlySet<string> assemblyNamesToExclude,
+        params PackageResolver[] packageResolvers)
     {
-        if (packageResolvers.Any(packageResolver => packageResolver.IsAvailable()))
+        if (packageResolvers.Any(packageResolver => packageResolver.IsAvailable(assemblyNamesToExclude)))
         {
             action(hostBuilder);
         }
@@ -275,6 +281,7 @@ public static class WebHostBuilderExtensions
 
         hostBuilder.Log(LogMessages.WireStackExchangeRedisConnector);
 
+        // Intentionally ignoring excluded assemblies here.
         if (MicrosoftRedisPackageResolver.Default.IsAvailable())
         {
             hostBuilder.Log(LogMessages.WireDistributedCacheRedisConnector);

@@ -171,6 +171,22 @@ public sealed class HostBuilderExtensionsTest
     }
 
     [Fact]
+    public void SqlServerConnector_NotAutowiredIfExcluded()
+    {
+        var exclusions = new HashSet<string>(SteeltoeAssemblyNames.All);
+        exclusions.Remove(SteeltoeAssemblyNames.Connectors);
+        exclusions.Add("Microsoft.Data.SqlClient");
+        exclusions.Add("System.Data.SqlClient");
+
+        IHostBuilder hostBuilder = new HostBuilder();
+        hostBuilder.AddSteeltoe(exclusions);
+
+        IHost host = hostBuilder.Build();
+
+        host.Services.GetService<ConnectorFactory<SqlServerOptions, SqlConnection>>().Should().BeNull();
+    }
+
+    [Fact]
     public void DynamicSerilog_IsAutowired()
     {
         string[] exclusions = SteeltoeAssemblyNames.All.Except(new[]

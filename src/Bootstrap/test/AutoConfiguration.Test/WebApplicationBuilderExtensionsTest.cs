@@ -125,6 +125,22 @@ public sealed class WebApplicationBuilderExtensionsTest
     }
 
     [Fact]
+    public void SqlServerConnector_NotAutowiredIfExcluded()
+    {
+        var exclusions = new HashSet<string>(SteeltoeAssemblyNames.All);
+        exclusions.Remove(SteeltoeAssemblyNames.Connectors);
+        exclusions.Add("Microsoft.Data.SqlClient");
+        exclusions.Add("System.Data.SqlClient");
+
+        WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
+        webAppBuilder.AddSteeltoe(exclusions);
+        webAppBuilder.WebHost.UseTestServer();
+        WebApplication host = webAppBuilder.Build();
+
+        host.Services.GetService<ConnectorFactory<SqlServerOptions, SqlConnection>>().Should().BeNull();
+    }
+
+    [Fact]
     public void DynamicSerilog_IsAutowired()
     {
         WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblyNames.LoggingDynamicSerilog);

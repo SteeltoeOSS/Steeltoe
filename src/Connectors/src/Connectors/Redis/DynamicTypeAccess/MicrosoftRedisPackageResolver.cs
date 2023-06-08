@@ -31,11 +31,14 @@ internal sealed class MicrosoftRedisPackageResolver : PackageResolver
     {
     }
 
-    protected override bool IsAvailable(IEnumerable<string> assemblyNames)
+    protected override bool IsAssemblyAvailable(IReadOnlySet<string> assemblyNamesToExclude)
     {
-        return base.IsAvailable(new[]
+        var newAssemblyNamesToExclude = new HashSet<string>(assemblyNamesToExclude, StringComparer.OrdinalIgnoreCase)
         {
-            "Microsoft.Extensions.Caching.StackExchangeRedis"
-        });
+            // This dependent assembly does not indicate that RedisCache is available.
+            "Microsoft.Extensions.Caching.Abstractions"
+        };
+
+        return base.IsAssemblyAvailable(newAssemblyNamesToExclude);
     }
 }

@@ -13,6 +13,8 @@ namespace Steeltoe.Common.DynamicTypeAccess;
 /// </summary>
 internal abstract class PackageResolver
 {
+    private static readonly IReadOnlySet<string> EmptySet = new HashSet<string>();
+
     private readonly IReadOnlyList<string> _assemblyNames;
     private readonly IReadOnlyList<string> _packageNames;
 
@@ -40,21 +42,29 @@ internal abstract class PackageResolver
 
     public bool IsAvailable()
     {
-        return IsAvailable(_assemblyNames);
+        return IsAvailable(EmptySet);
     }
 
-    protected virtual bool IsAvailable(IEnumerable<string> assemblyNames)
+    public bool IsAvailable(IReadOnlySet<string> assemblyNamesToExclude)
     {
-        foreach (string assemblyName in assemblyNames)
+        return IsAssemblyAvailable(assemblyNamesToExclude);
+    }
+
+    protected virtual bool IsAssemblyAvailable(IReadOnlySet<string> assemblyNamesToExclude)
+    {
+        foreach (string assemblyName in _assemblyNames)
         {
-            try
+            if (!assemblyNamesToExclude.Contains(assemblyName))
             {
-                Assembly.Load(new AssemblyName(assemblyName));
-                return true;
-            }
-            catch (Exception exception) when (exception is ArgumentException or IOException or BadImageFormatException)
-            {
-                // Intentionally left empty.
+                try
+                {
+                    Assembly.Load(new AssemblyName(assemblyName));
+                    return true;
+                }
+                catch (Exception exception) when (exception is ArgumentException or IOException or BadImageFormatException)
+                {
+                    // Intentionally left empty.
+                }
             }
         }
 
