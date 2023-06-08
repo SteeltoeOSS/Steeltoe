@@ -152,6 +152,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisCloudFoundryPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
         configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:ssl"].Should().Be("true");
         configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
     }
 

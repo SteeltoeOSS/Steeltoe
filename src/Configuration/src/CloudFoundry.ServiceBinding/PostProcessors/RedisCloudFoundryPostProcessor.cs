@@ -22,9 +22,14 @@ internal sealed class RedisCloudFoundryPostProcessor : CloudFoundryPostProcessor
             // - AWS Service Broker: https://docs.vmware.com/en/Tanzu-Cloud-Service-Broker-for-AWS/1.5/csb-aws/GUID-reference-aws-redis.html#binding-credentials-3
 
             mapper.MapFromTo("credentials:host", "host");
-            mapper.MapFromTo("credentials:tls_port", "port");
             mapper.MapFromTo("credentials:port", "port");
             mapper.MapFromTo("credentials:password", "password");
+
+            if (mapper.GetFromValue("credentials:tls_port") != null)
+            {
+                mapper.MapFromTo("credentials:tls_port", "port");
+                mapper.SetToValue("ssl", "true");
+            }
         }
     }
 }
