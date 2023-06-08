@@ -4,6 +4,7 @@
 
 #nullable enable
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Configuration;
 
@@ -11,14 +12,22 @@ namespace Steeltoe.Connectors;
 
 internal sealed class ConnectionStringPostProcessorConfigurationProvider : PostProcessorConfigurationProvider, IDisposable
 {
+    private readonly ConfigurationManager? _configurationManager;
     private readonly IDisposable? _changeToken;
 
-    public ConnectionStringPostProcessorConfigurationProvider(PostProcessorConfigurationSource source, bool detectConfigurationChanges)
+    public ConnectionStringPostProcessorConfigurationProvider(PostProcessorConfigurationSource source, bool detectConfigurationChanges,
+        ConfigurationManager? configurationManager)
         : base(source)
     {
+        _configurationManager = configurationManager;
+
         if (detectConfigurationChanges)
         {
-            _changeToken = ChangeToken.OnChange(() => source.GetParentConfiguration().GetReloadToken(), _ => Load(), 0);
+            _changeToken = ChangeToken.OnChange(
+                // PERF: Use ConfigurationManager if available to avoid a (potentially expensive) reload of all configuration providers.
+                () => configurationManager != null
+                    ? ((IConfigurationRoot)configurationManager).GetReloadToken()
+                    : source.GetParentConfiguration().GetReloadToken(), _ => Load(), 0);
         }
     }
 
@@ -26,7 +35,11 @@ internal sealed class ConnectionStringPostProcessorConfigurationProvider : PostP
     {
         Data.Clear();
         PostProcessConfiguration();
-        OnReload();
+
+        if (_configurationManager == null)
+        {
+            OnReload();
+        }
     }
 
     public void Dispose()

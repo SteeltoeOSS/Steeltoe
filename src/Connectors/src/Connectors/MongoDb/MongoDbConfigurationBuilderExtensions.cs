@@ -35,6 +35,13 @@ public static class MongoDbConfigurationBuilderExtensions
         var connectionStringPostProcessor = new MongoDbConnectionStringPostProcessor();
         var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource(detectConfigurationChanges);
         connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
+
+        if (builder is ConfigurationManager configurationManager)
+        {
+            connectionStringSource.CaptureConfigurationManager(configurationManager);
+            connectionStringPostProcessor.CaptureConfigurationManager(configurationManager);
+        }
+
         builder.Add(connectionStringSource);
     }
 }

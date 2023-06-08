@@ -45,6 +45,13 @@ public static class PostgreSqlConfigurationBuilderExtensions
         var connectionStringPostProcessor = new PostgreSqlConnectionStringPostProcessor(packageResolver);
         var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource(detectConfigurationChanges);
         connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
+
+        if (builder is ConfigurationManager configurationManager)
+        {
+            connectionStringSource.CaptureConfigurationManager(configurationManager);
+            connectionStringPostProcessor.CaptureConfigurationManager(configurationManager);
+        }
+
         builder.Add(connectionStringSource);
     }
 }

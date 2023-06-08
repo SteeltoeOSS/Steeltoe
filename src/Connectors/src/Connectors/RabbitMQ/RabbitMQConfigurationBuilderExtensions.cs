@@ -37,6 +37,13 @@ public static class RabbitMQConfigurationBuilderExtensions
         var connectionStringPostProcessor = new RabbitMQConnectionStringPostProcessor();
         var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource(detectConfigurationChanges);
         connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
+
+        if (builder is ConfigurationManager configurationManager)
+        {
+            connectionStringSource.CaptureConfigurationManager(configurationManager);
+            connectionStringPostProcessor.CaptureConfigurationManager(configurationManager);
+        }
+
         builder.Add(connectionStringSource);
     }
 }
