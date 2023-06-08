@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#pragma warning disable 0436 // Type conflicts with imported type
-
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
@@ -34,6 +32,7 @@ using Steeltoe.Discovery.Client;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Kubernetes;
+using Steeltoe.Management.Prometheus;
 using Steeltoe.Management.Tracing;
 using Steeltoe.Management.Wavefront;
 using Steeltoe.Security.Authentication.CloudFoundry;
@@ -61,7 +60,7 @@ public static class WebHostBuilderExtensions
     /// Your <see cref="IWebHostBuilder" />.
     /// </param>
     /// <param name="exclusions">
-    /// A list of assemblies to exclude from auto-configuration. For ease of use, select from <see cref="SteeltoeAssemblies" />.
+    /// A list of assemblies to exclude from auto-configuration. For ease of use, select from <see cref="SteeltoeAssemblyNames" />.
     /// </param>
     /// <param name="loggerFactory">
     /// For logging within auto-configuration.
@@ -72,21 +71,21 @@ public static class WebHostBuilderExtensions
         _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
         _logger = _loggerFactory.CreateLogger(LoggerName);
 
-        if (!hostBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeConfigurationConfigServer))
+        if (!hostBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblyNames.ConfigurationConfigServer))
         {
-            hostBuilder.WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.SteeltoeConfigurationCloudFoundry);
+            hostBuilder.WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblyNames.ConfigurationCloudFoundry);
         }
 
-        if (Platform.IsKubernetes && AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeConfigurationKubernetes))
+        if (Platform.IsKubernetes && AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblyNames.ConfigurationKubernetes))
         {
             WireKubernetesConfiguration(hostBuilder);
         }
 
-        hostBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.SteeltoeConfigurationRandomValue);
+        hostBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblyNames.ConfigurationRandomValue);
 
-        hostBuilder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblies.SteeltoeConfigurationPlaceholder);
+        hostBuilder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblyNames.ConfigurationPlaceholder);
 
-        if (hostBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.SteeltoeConnectors))
+        if (hostBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblyNames.Connectors))
         {
             hostBuilder.WireIfAnyLoaded(WireCosmosDbConnector, CosmosDbPackageResolver.Default);
             hostBuilder.WireIfAnyLoaded(WireMongoDbConnector, MongoDbPackageResolver.Default);
@@ -97,23 +96,25 @@ public static class WebHostBuilderExtensions
             hostBuilder.WireIfAnyLoaded(WireSqlServerConnector, SqlServerPackageResolver.Default);
         }
 
-        hostBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.SteeltoeLoggingDynamicSerilog);
-        hostBuilder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblies.SteeltoeDiscoveryClient);
+        hostBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblyNames.LoggingDynamicSerilog);
+        hostBuilder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblyNames.DiscoveryClient);
 
-        if (AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeManagementKubernetes))
+        if (AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblyNames.ManagementKubernetes))
         {
-            hostBuilder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblies.SteeltoeManagementKubernetes);
+            hostBuilder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblyNames.ManagementKubernetes);
         }
         else
         {
-            hostBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.SteeltoeManagementEndpoint);
+            hostBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblyNames.ManagementEndpoint);
         }
 
-        hostBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeWavefront);
+        hostBuilder.WireIfLoaded(WireSteeltoePrometheus, SteeltoeAssemblyNames.ManagementPrometheus);
 
-        hostBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblies.SteeltoeManagementTracing);
+        hostBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblyNames.ManagementWavefront);
 
-        hostBuilder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblies.SteeltoeSecurityAuthenticationCloudFoundry);
+        hostBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblyNames.ManagementTracing);
+
+        hostBuilder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
         return hostBuilder;
     }
 
@@ -136,17 +137,16 @@ public static class WebHostBuilderExtensions
         }
     }
 
-    private static IWebHostBuilder Log(this IWebHostBuilder host, string message)
+    private static void Log(this IWebHostBuilder host, string message)
     {
         _logger.LogInformation(message);
-        return host;
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireConfigServer(this IWebHostBuilder hostBuilder)
     {
         hostBuilder.ConfigureAppConfiguration((context, cfg) => cfg.AddConfigServer(context.HostingEnvironment, _loggerFactory))
-            .ConfigureServices((_, services) => services.AddConfigServerServices()).Log(LogMessages.WireConfigServer);
+            .ConfigureServices((_, services) => services.AddConfigServerServices()).Log(LogMessages.WireConfigServerConfiguration);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -165,13 +165,13 @@ public static class WebHostBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireRandomValueProvider(this IWebHostBuilder hostBuilder)
     {
-        hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddRandomValueSource(_loggerFactory)).Log(LogMessages.WireRandomValueProvider);
+        hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddRandomValueSource(_loggerFactory)).Log(LogMessages.WireRandomValueConfiguration);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WirePlaceholderResolver(this IWebHostBuilder hostBuilder)
     {
-        hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddPlaceholderResolver(_loggerFactory)).Log(LogMessages.WirePlaceholderResolver);
+        hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddPlaceholderResolver(_loggerFactory)).Log(LogMessages.WirePlaceholderConfiguration);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -193,7 +193,7 @@ public static class WebHostBuilderExtensions
             services.AddMySql(host.Configuration);
         });
 
-        hostBuilder.Log(LogMessages.WireMySqlConnection);
+        hostBuilder.Log(LogMessages.WireMySqlConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -209,7 +209,7 @@ public static class WebHostBuilderExtensions
             services.AddCosmosDb(host.Configuration);
         });
 
-        hostBuilder.Log(LogMessages.WireCosmosClient);
+        hostBuilder.Log(LogMessages.WireCosmosDbConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -225,7 +225,7 @@ public static class WebHostBuilderExtensions
             services.AddMongoDb(host.Configuration);
         });
 
-        hostBuilder.Log(LogMessages.WireMongoClient);
+        hostBuilder.Log(LogMessages.WireMongoDbConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -241,7 +241,7 @@ public static class WebHostBuilderExtensions
             services.AddPostgreSql(host.Configuration);
         });
 
-        hostBuilder.Log(LogMessages.WirePostgreSqlConnection);
+        hostBuilder.Log(LogMessages.WirePostgreSqlConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -257,7 +257,7 @@ public static class WebHostBuilderExtensions
             services.AddRabbitMQ(host.Configuration);
         });
 
-        hostBuilder.Log(LogMessages.WireRabbitMQConnection);
+        hostBuilder.Log(LogMessages.WireRabbitMQConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -273,11 +273,11 @@ public static class WebHostBuilderExtensions
             services.AddRedis(host.Configuration);
         });
 
-        hostBuilder.Log(LogMessages.WireRedisConnectionMultiplexer);
+        hostBuilder.Log(LogMessages.WireStackExchangeRedisConnector);
 
         if (MicrosoftRedisPackageResolver.Default.IsAvailable())
         {
-            hostBuilder.Log(LogMessages.WireRedisDistributedCache);
+            hostBuilder.Log(LogMessages.WireDistributedCacheRedisConnector);
         }
     }
 
@@ -294,7 +294,7 @@ public static class WebHostBuilderExtensions
             services.AddSqlServer(host.Configuration);
         });
 
-        hostBuilder.Log(LogMessages.WireSqlServerConnection);
+        hostBuilder.Log(LogMessages.WireSqlServerConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -332,6 +332,12 @@ public static class WebHostBuilderExtensions
                 hostBuilder.Log(LogMessages.WireWavefrontMetrics);
             }
         });
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void WireSteeltoePrometheus(this IWebHostBuilder hostBuilder)
+    {
+        hostBuilder.ConfigureServices((_, collection) => collection.AddPrometheusActuator()).Log(LogMessages.WirePrometheus);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]

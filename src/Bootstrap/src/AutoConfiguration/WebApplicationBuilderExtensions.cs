@@ -33,6 +33,7 @@ using Steeltoe.Discovery.Client;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Kubernetes;
+using Steeltoe.Management.Prometheus;
 using Steeltoe.Management.Tracing;
 using Steeltoe.Management.Wavefront;
 using Steeltoe.Security.Authentication.CloudFoundry;
@@ -60,7 +61,7 @@ public static class WebApplicationBuilderExtensions
     /// Your <see cref="WebApplicationBuilder" />.
     /// </param>
     /// <param name="exclusions">
-    /// A list of assemblies to exclude from auto-configuration. For ease of use, select from <see cref="SteeltoeAssemblies" />.
+    /// A list of assemblies to exclude from auto-configuration. For ease of use, select from <see cref="SteeltoeAssemblyNames" />.
     /// </param>
     /// <param name="loggerFactory">
     /// For logging within auto-configuration.
@@ -72,21 +73,21 @@ public static class WebApplicationBuilderExtensions
         _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
         _logger = _loggerFactory.CreateLogger(LoggerName);
 
-        if (!webApplicationBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeConfigurationConfigServer))
+        if (!webApplicationBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblyNames.ConfigurationConfigServer))
         {
-            webApplicationBuilder.WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.SteeltoeConfigurationCloudFoundry);
+            webApplicationBuilder.WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblyNames.ConfigurationCloudFoundry);
         }
 
-        if (Platform.IsKubernetes && AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeConfigurationKubernetes))
+        if (Platform.IsKubernetes && AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblyNames.ConfigurationKubernetes))
         {
             WireKubernetesConfiguration(webApplicationBuilder);
         }
 
-        webApplicationBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.SteeltoeConfigurationRandomValue);
+        webApplicationBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblyNames.ConfigurationRandomValue);
 
-        webApplicationBuilder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblies.SteeltoeConfigurationPlaceholder);
+        webApplicationBuilder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblyNames.ConfigurationPlaceholder);
 
-        if (webApplicationBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.SteeltoeConnectors))
+        if (webApplicationBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblyNames.Connectors))
         {
             webApplicationBuilder.WireIfAnyLoaded(WireCosmosDbConnector, CosmosDbPackageResolver.Default);
             webApplicationBuilder.WireIfAnyLoaded(WireMongoDbConnector, MongoDbPackageResolver.Default);
@@ -97,24 +98,26 @@ public static class WebApplicationBuilderExtensions
             webApplicationBuilder.WireIfAnyLoaded(WireSqlServerConnector, SqlServerPackageResolver.Default);
         }
 
-        webApplicationBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.SteeltoeLoggingDynamicSerilog);
+        webApplicationBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblyNames.LoggingDynamicSerilog);
 
-        webApplicationBuilder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblies.SteeltoeDiscoveryClient);
+        webApplicationBuilder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblyNames.DiscoveryClient);
 
-        if (AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeManagementKubernetes))
+        if (AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblyNames.ManagementKubernetes))
         {
-            webApplicationBuilder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblies.SteeltoeManagementKubernetes);
+            webApplicationBuilder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblyNames.ManagementKubernetes);
         }
         else
         {
-            webApplicationBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.SteeltoeManagementEndpoint);
+            webApplicationBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblyNames.ManagementEndpoint);
         }
 
-        webApplicationBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeWavefront);
+        webApplicationBuilder.WireIfLoaded(WireSteeltoePrometheus, SteeltoeAssemblyNames.ManagementPrometheus);
 
-        webApplicationBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblies.SteeltoeManagementTracing);
+        webApplicationBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblyNames.ManagementWavefront);
 
-        webApplicationBuilder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblies.SteeltoeSecurityAuthenticationCloudFoundry);
+        webApplicationBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblyNames.ManagementTracing);
+
+        webApplicationBuilder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
         return webApplicationBuilder;
     }
 
@@ -148,7 +151,7 @@ public static class WebApplicationBuilderExtensions
     {
         webApplicationBuilder.Configuration.AddConfigServer(webApplicationBuilder.Environment.EnvironmentName, _loggerFactory);
         webApplicationBuilder.Services.AddConfigServerServices();
-        Log(LogMessages.WireConfigServer);
+        Log(LogMessages.WireConfigServerConfiguration);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -170,14 +173,14 @@ public static class WebApplicationBuilderExtensions
     private static void WireRandomValueProvider(this WebApplicationBuilder webApplicationBuilder)
     {
         webApplicationBuilder.Configuration.AddRandomValueSource(_loggerFactory);
-        Log(LogMessages.WireRandomValueProvider);
+        Log(LogMessages.WireRandomValueConfiguration);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WirePlaceholderResolver(this WebApplicationBuilder webApplicationBuilder)
     {
         ((IConfigurationBuilder)webApplicationBuilder.Configuration).AddPlaceholderResolver(_loggerFactory);
-        Log(LogMessages.WirePlaceholderResolver);
+        Log(LogMessages.WirePlaceholderConfiguration);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -191,46 +194,46 @@ public static class WebApplicationBuilderExtensions
     private static void WireMySqlConnector(this WebApplicationBuilder builder)
     {
         builder.AddMySql();
-        Log(LogMessages.WireMySqlConnection);
+        Log(LogMessages.WireMySqlConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireCosmosDbConnector(this WebApplicationBuilder builder)
     {
         builder.AddCosmosDb();
-        Log(LogMessages.WireCosmosClient);
+        Log(LogMessages.WireCosmosDbConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireMongoDbConnector(this WebApplicationBuilder builder)
     {
         builder.AddMongoDb();
-        Log(LogMessages.WireMongoClient);
+        Log(LogMessages.WireMongoDbConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WirePostgreSqlConnector(this WebApplicationBuilder builder)
     {
         builder.AddPostgreSql();
-        Log(LogMessages.WirePostgreSqlConnection);
+        Log(LogMessages.WirePostgreSqlConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireRabbitMQConnector(this WebApplicationBuilder builder)
     {
         builder.AddRabbitMQ();
-        Log(LogMessages.WireRabbitMQConnection);
+        Log(LogMessages.WireRabbitMQConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireRedisConnector(this WebApplicationBuilder builder)
     {
         builder.AddRedis();
-        Log(LogMessages.WireRedisConnectionMultiplexer);
+        Log(LogMessages.WireStackExchangeRedisConnector);
 
         if (MicrosoftRedisPackageResolver.Default.IsAvailable())
         {
-            Log(LogMessages.WireRedisDistributedCache);
+            Log(LogMessages.WireDistributedCacheRedisConnector);
         }
     }
 
@@ -238,7 +241,7 @@ public static class WebApplicationBuilderExtensions
     private static void WireSqlServerConnector(this WebApplicationBuilder builder)
     {
         builder.AddSqlServer();
-        Log(LogMessages.WireSqlServerConnection);
+        Log(LogMessages.WireSqlServerConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -274,13 +277,18 @@ public static class WebApplicationBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireWavefrontMetrics(this WebApplicationBuilder webApplicationBuilder)
     {
-        if (!webApplicationBuilder.Configuration.HasWavefront())
+        if (webApplicationBuilder.Configuration.HasWavefront())
         {
-            return;
+            webApplicationBuilder.AddWavefrontMetrics();
+            Log(LogMessages.WireWavefrontMetrics);
         }
+    }
 
-        webApplicationBuilder.AddWavefrontMetrics();
-        Log(LogMessages.WireWavefrontMetrics);
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void WireSteeltoePrometheus(this WebApplicationBuilder webApplicationBuilder)
+    {
+        webApplicationBuilder.Services.AddPrometheusActuator();
+        Log(LogMessages.WirePrometheus);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
