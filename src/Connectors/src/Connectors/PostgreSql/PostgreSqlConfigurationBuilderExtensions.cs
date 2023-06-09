@@ -30,11 +30,21 @@ public static class PostgreSqlConfigurationBuilderExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);
 
-        ConnectorConfigureOptions configureOptions = new();
-        configureAction?.Invoke(configureOptions);
+        if (!IsConfigured(builder))
+        {
+            ConnectorConfigureOptions configureOptions = new();
+            configureAction?.Invoke(configureOptions);
 
-        RegisterPostProcessors(builder, packageResolver, configureOptions.DetectConfigurationChanges);
+            RegisterPostProcessors(builder, packageResolver, configureOptions.DetectConfigurationChanges);
+        }
+
         return builder;
+    }
+
+    private static bool IsConfigured(IConfigurationBuilder builder)
+    {
+        return builder.Sources.OfType<ConnectionStringPostProcessorConfigurationSource>().Any(connectionStringSource =>
+            connectionStringSource.PostProcessors.Any(postProcessor => postProcessor is PostgreSqlConnectionStringPostProcessor));
     }
 
     private static void RegisterPostProcessors(IConfigurationBuilder builder, PostgreSqlPackageResolver packageResolver, bool detectConfigurationChanges)

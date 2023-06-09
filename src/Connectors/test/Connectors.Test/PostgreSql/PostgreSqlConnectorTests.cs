@@ -781,6 +781,22 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(2);
     }
 
+    [Fact]
+    public void Subsequent_registrations_are_ignored()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        {
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "Include Error Detail=true;Log Parameters=true;host=localhost"
+        });
+
+        builder.AddPostgreSql();
+
+        Action action = () => builder.AddPostgreSql();
+        action.Should().NotThrow();
+    }
+
     private static IEnumerable<string> ExtractConnectionStringParameters(string? connectionString)
     {
         List<string> entries = new();

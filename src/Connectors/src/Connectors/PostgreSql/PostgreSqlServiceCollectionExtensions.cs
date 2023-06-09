@@ -36,21 +36,24 @@ public static class PostgreSqlServiceCollectionExtensions
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(packageResolver);
 
-        var addOptions = new ConnectorAddOptions(
-            (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
-            (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+        if (!ConnectorFactoryShim<PostgreSqlOptions>.IsRegistered(packageResolver.NpgsqlConnectionClass.Type, services))
         {
-            CacheConnection = false,
-            EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
-        };
+            var addOptions = new ConnectorAddOptions(
+                (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
+                (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+            {
+                CacheConnection = false,
+                EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
+            };
 
-        addAction?.Invoke(addOptions);
+            addAction?.Invoke(addOptions);
 
-        IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<PostgreSqlOptions>(services, configuration, "postgresql",
-            addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
+            IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<PostgreSqlOptions>(services, configuration, "postgresql",
+                addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
 
-        ConnectorFactoryShim<PostgreSqlOptions>.Register(packageResolver.NpgsqlConnectionClass.Type, services, optionNames, addOptions.CreateConnection,
-            addOptions.CacheConnection);
+            ConnectorFactoryShim<PostgreSqlOptions>.Register(packageResolver.NpgsqlConnectionClass.Type, services, optionNames, addOptions.CreateConnection,
+                addOptions.CacheConnection);
+        }
 
         return services;
     }

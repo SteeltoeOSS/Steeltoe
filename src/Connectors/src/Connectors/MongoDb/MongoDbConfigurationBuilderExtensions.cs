@@ -21,11 +21,21 @@ public static class MongoDbConfigurationBuilderExtensions
     {
         ArgumentGuard.NotNull(builder);
 
-        ConnectorConfigureOptions configureOptions = new();
-        configureAction?.Invoke(configureOptions);
+        if (!IsConfigured(builder))
+        {
+            ConnectorConfigureOptions configureOptions = new();
+            configureAction?.Invoke(configureOptions);
 
-        RegisterPostProcessors(builder, configureOptions.DetectConfigurationChanges);
+            RegisterPostProcessors(builder, configureOptions.DetectConfigurationChanges);
+        }
+
         return builder;
+    }
+
+    private static bool IsConfigured(IConfigurationBuilder builder)
+    {
+        return builder.Sources.OfType<ConnectionStringPostProcessorConfigurationSource>().Any(connectionStringSource =>
+            connectionStringSource.PostProcessors.Any(postProcessor => postProcessor is MongoDbConnectionStringPostProcessor));
     }
 
     private static void RegisterPostProcessors(IConfigurationBuilder builder, bool detectConfigurationChanges)

@@ -35,21 +35,24 @@ public static class MongoDbServiceCollectionExtensions
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(packageResolver);
 
-        var addOptions = new ConnectorAddOptions(
-            (serviceProvider, serviceBindingName) => CreateMongoClient(serviceProvider, serviceBindingName, packageResolver),
-            (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+        if (!ConnectorFactoryShim<MongoDbOptions>.IsRegistered(packageResolver.MongoClientInterface.Type, services))
         {
-            CacheConnection = false,
-            EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
-        };
+            var addOptions = new ConnectorAddOptions(
+                (serviceProvider, serviceBindingName) => CreateMongoClient(serviceProvider, serviceBindingName, packageResolver),
+                (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+            {
+                CacheConnection = false,
+                EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
+            };
 
-        addAction?.Invoke(addOptions);
+            addAction?.Invoke(addOptions);
 
-        IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<MongoDbOptions>(services, configuration, "mongodb",
-            addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
+            IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<MongoDbOptions>(services, configuration, "mongodb",
+                addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
 
-        ConnectorFactoryShim<MongoDbOptions>.Register(packageResolver.MongoClientInterface.Type, services, optionNames, addOptions.CreateConnection,
-            addOptions.CacheConnection);
+            ConnectorFactoryShim<MongoDbOptions>.Register(packageResolver.MongoClientInterface.Type, services, optionNames, addOptions.CreateConnection,
+                addOptions.CacheConnection);
+        }
 
         return services;
     }

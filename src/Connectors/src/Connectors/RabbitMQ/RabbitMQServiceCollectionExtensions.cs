@@ -35,25 +35,28 @@ public static class RabbitMQServiceCollectionExtensions
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(packageResolver);
 
-        var addOptions = new ConnectorAddOptions(
-            (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
-            (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+        if (!ConnectorFactoryShim<RabbitMQOptions>.IsRegistered(packageResolver.ConnectionInterface.Type, services))
         {
-            // From https://www.rabbitmq.com/dotnet-api-guide.html#connection-and-channel-lifespan:
-            //   "Connections are meant to be long-lived. The underlying protocol is designed and optimized for long running connections.
-            //   That means that opening a new connection per operation, e.g. a message published, is unnecessary and strongly discouraged
-            //   as it will introduce a lot of network round-trips and overhead."
-            CacheConnection = true,
-            EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
-        };
+            var addOptions = new ConnectorAddOptions(
+                (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
+                (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+            {
+                // From https://www.rabbitmq.com/dotnet-api-guide.html#connection-and-channel-lifespan:
+                //   "Connections are meant to be long-lived. The underlying protocol is designed and optimized for long running connections.
+                //   That means that opening a new connection per operation, e.g. a message published, is unnecessary and strongly discouraged
+                //   as it will introduce a lot of network round-trips and overhead."
+                CacheConnection = true,
+                EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
+            };
 
-        addAction?.Invoke(addOptions);
+            addAction?.Invoke(addOptions);
 
-        IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<RabbitMQOptions>(services, configuration, "rabbitmq",
-            addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
+            IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<RabbitMQOptions>(services, configuration, "rabbitmq",
+                addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
 
-        ConnectorFactoryShim<RabbitMQOptions>.Register(packageResolver.ConnectionInterface.Type, services, optionNames, addOptions.CreateConnection,
-            addOptions.CacheConnection);
+            ConnectorFactoryShim<RabbitMQOptions>.Register(packageResolver.ConnectionInterface.Type, services, optionNames, addOptions.CreateConnection,
+                addOptions.CacheConnection);
+        }
 
         return services;
     }

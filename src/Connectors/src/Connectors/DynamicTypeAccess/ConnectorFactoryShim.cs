@@ -23,6 +23,15 @@ internal sealed class ConnectorFactoryShim<TOptions> : Shim, IDisposable
         _connectionType = connectionType;
     }
 
+    public static bool IsRegistered(Type connectionType, IServiceCollection services)
+    {
+        ArgumentGuard.NotNull(connectionType);
+        ArgumentGuard.NotNull(services);
+
+        TypeAccessor typeAccessor = MakeGenericTypeAccessor(connectionType);
+        return services.Any(descriptor => descriptor.ServiceType == typeAccessor.Type);
+    }
+
     public static void Register(Type connectionType, IServiceCollection services, IReadOnlySet<string> serviceBindingNames,
         ConnectorCreateConnection createConnection, bool useSingletonConnection)
     {

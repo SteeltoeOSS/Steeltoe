@@ -36,21 +36,24 @@ public static class SqlServerServiceCollectionExtensions
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(packageResolver);
 
-        var addOptions = new ConnectorAddOptions(
-            (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
-            (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+        if (!ConnectorFactoryShim<SqlServerOptions>.IsRegistered(packageResolver.SqlConnectionClass.Type, services))
         {
-            CacheConnection = false,
-            EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
-        };
+            var addOptions = new ConnectorAddOptions(
+                (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
+                (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+            {
+                CacheConnection = false,
+                EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
+            };
 
-        addAction?.Invoke(addOptions);
+            addAction?.Invoke(addOptions);
 
-        IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<SqlServerOptions>(services, configuration, "sqlserver",
-            addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
+            IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<SqlServerOptions>(services, configuration, "sqlserver",
+                addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
 
-        ConnectorFactoryShim<SqlServerOptions>.Register(packageResolver.SqlConnectionClass.Type, services, optionNames, addOptions.CreateConnection,
-            addOptions.CacheConnection);
+            ConnectorFactoryShim<SqlServerOptions>.Register(packageResolver.SqlConnectionClass.Type, services, optionNames, addOptions.CreateConnection,
+                addOptions.CacheConnection);
+        }
 
         return services;
     }

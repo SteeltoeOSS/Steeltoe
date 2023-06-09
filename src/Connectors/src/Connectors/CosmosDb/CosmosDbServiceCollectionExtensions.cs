@@ -36,24 +36,27 @@ public static class CosmosDbServiceCollectionExtensions
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(packageResolver);
 
-        var addOptions = new ConnectorAddOptions(
-            (serviceProvider, serviceBindingName) => CreateCosmosClient(serviceProvider, serviceBindingName, packageResolver),
-            (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+        if (!ConnectorFactoryShim<CosmosDbOptions>.IsRegistered(packageResolver.CosmosClientClass.Type, services))
         {
-            // From https://learn.microsoft.com/en-us/dotnet/api/microsoft.azure.cosmos.cosmosclient:
-            //   "Its recommended to maintain a single instance of CosmosClient per lifetime of the application
-            //   which enables efficient connection management and performance."
-            CacheConnection = true,
-            EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
-        };
+            var addOptions = new ConnectorAddOptions(
+                (serviceProvider, serviceBindingName) => CreateCosmosClient(serviceProvider, serviceBindingName, packageResolver),
+                (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+            {
+                // From https://learn.microsoft.com/en-us/dotnet/api/microsoft.azure.cosmos.cosmosclient:
+                //   "Its recommended to maintain a single instance of CosmosClient per lifetime of the application
+                //   which enables efficient connection management and performance."
+                CacheConnection = true,
+                EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
+            };
 
-        addAction?.Invoke(addOptions);
+            addAction?.Invoke(addOptions);
 
-        IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<CosmosDbOptions>(services, configuration, "cosmosdb",
-            addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
+            IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<CosmosDbOptions>(services, configuration, "cosmosdb",
+                addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
 
-        ConnectorFactoryShim<CosmosDbOptions>.Register(packageResolver.CosmosClientClass.Type, services, optionNames, addOptions.CreateConnection,
-            addOptions.CacheConnection);
+            ConnectorFactoryShim<CosmosDbOptions>.Register(packageResolver.CosmosClientClass.Type, services, optionNames, addOptions.CreateConnection,
+                addOptions.CacheConnection);
+        }
 
         return services;
     }

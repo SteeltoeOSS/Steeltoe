@@ -37,32 +37,35 @@ public static class RedisServiceCollectionExtensions
         ArgumentGuard.NotNull(stackExchangeRedisPackageResolver);
         ArgumentGuard.NotNull(microsoftRedisPackageResolver);
 
-        var addOptions = new ConnectorAddOptions(
-            (serviceProvider, serviceBindingName) => CreateConnectionMultiplexer(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver),
-            (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver))
+        if (!ConnectorFactoryShim<RedisOptions>.IsRegistered(stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type, services))
         {
-            // From https://github.com/StackExchange/StackExchange.Redis/blob/main/docs/Basics.md:
-            //   "Because the ConnectionMultiplexer does a lot, it is designed to be shared and reused between callers.
-            //   You should not create a ConnectionMultiplexer per operation."
-            CacheConnection = true,
-            EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
-        };
+            var addOptions = new ConnectorAddOptions(
+                (serviceProvider, serviceBindingName) => CreateConnectionMultiplexer(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver),
+                (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver))
+            {
+                // From https://github.com/StackExchange/StackExchange.Redis/blob/main/docs/Basics.md:
+                //   "Because the ConnectionMultiplexer does a lot, it is designed to be shared and reused between callers.
+                //   You should not create a ConnectionMultiplexer per operation."
+                CacheConnection = true,
+                EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
+            };
 
-        addAction?.Invoke(addOptions);
+            addAction?.Invoke(addOptions);
 
-        IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<RedisOptions>(services, configuration, "redis",
-            addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
+            IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<RedisOptions>(services, configuration, "redis",
+                addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
 
-        ConnectorFactoryShim<RedisOptions>.Register(stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type, services, optionNames,
-            addOptions.CreateConnection, addOptions.CacheConnection);
+            ConnectorFactoryShim<RedisOptions>.Register(stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type, services, optionNames,
+                addOptions.CreateConnection, addOptions.CacheConnection);
 
-        if (microsoftRedisPackageResolver.IsAvailable())
-        {
-            ConnectorCreateConnection createDistributedCache = (serviceProvider, serviceBindingName) => CreateDistributedCache(addOptions.CreateConnection,
-                serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver, microsoftRedisPackageResolver);
+            if (microsoftRedisPackageResolver.IsAvailable())
+            {
+                ConnectorCreateConnection createDistributedCache = (serviceProvider, serviceBindingName) => CreateDistributedCache(addOptions.CreateConnection,
+                    serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver, microsoftRedisPackageResolver);
 
-            ConnectorFactoryShim<RedisOptions>.Register(microsoftRedisPackageResolver.DistributedCacheInterface.Type, services, optionNames,
-                createDistributedCache, addOptions.CacheConnection);
+                ConnectorFactoryShim<RedisOptions>.Register(microsoftRedisPackageResolver.DistributedCacheInterface.Type, services, optionNames,
+                    createDistributedCache, addOptions.CacheConnection);
+            }
         }
 
         return services;

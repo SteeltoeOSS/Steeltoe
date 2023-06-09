@@ -30,11 +30,21 @@ public static class MySqlConfigurationBuilderExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);
 
-        var configureOptions = new ConnectorConfigureOptions();
-        configureAction?.Invoke(configureOptions);
+        if (!IsConfigured(builder))
+        {
+            var configureOptions = new ConnectorConfigureOptions();
+            configureAction?.Invoke(configureOptions);
 
-        RegisterPostProcessors(builder, packageResolver, configureOptions.DetectConfigurationChanges);
+            RegisterPostProcessors(builder, packageResolver, configureOptions.DetectConfigurationChanges);
+        }
+
         return builder;
+    }
+
+    private static bool IsConfigured(IConfigurationBuilder builder)
+    {
+        return builder.Sources.OfType<ConnectionStringPostProcessorConfigurationSource>().Any(connectionStringSource =>
+            connectionStringSource.PostProcessors.Any(postProcessor => postProcessor is MySqlConnectionStringPostProcessor));
     }
 
     private static void RegisterPostProcessors(IConfigurationBuilder builder, MySqlPackageResolver packageResolver, bool detectConfigurationChanges)
