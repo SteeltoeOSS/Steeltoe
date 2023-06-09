@@ -16,7 +16,7 @@ public static class RedisConfigurationBuilderExtensions
         return ConfigureRedis(builder, null);
     }
 
-    public static IConfigurationBuilder ConfigureRedis(this IConfigurationBuilder builder, Action<ConnectorConfigureOptions>? configureAction)
+    public static IConfigurationBuilder ConfigureRedis(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
         ArgumentGuard.NotNull(builder);
 

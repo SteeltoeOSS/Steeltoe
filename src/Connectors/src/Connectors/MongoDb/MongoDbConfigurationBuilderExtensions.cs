@@ -16,7 +16,7 @@ public static class MongoDbConfigurationBuilderExtensions
         return ConfigureMongoDb(builder, null);
     }
 
-    public static IConfigurationBuilder ConfigureMongoDb(this IConfigurationBuilder builder, Action<ConnectorConfigureOptions>? configureAction)
+    public static IConfigurationBuilder ConfigureMongoDb(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
         ArgumentGuard.NotNull(builder);
 

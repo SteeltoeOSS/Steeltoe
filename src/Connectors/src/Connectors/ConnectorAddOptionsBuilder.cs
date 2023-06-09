@@ -9,7 +9,7 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Connectors;
 
-public sealed class ConnectorAddOptions
+public sealed class ConnectorAddOptionsBuilder
 {
     /// <summary>
     /// Gets or sets the callback that creates the driver-specific connection object, which is invoked when
@@ -35,7 +35,7 @@ public sealed class ConnectorAddOptions
     /// </summary>
     public ConnectorCreateHealthContributor CreateHealthContributor { get; set; }
 
-    internal ConnectorAddOptions(ConnectorCreateConnection createConnection, ConnectorCreateHealthContributor createHealthContributor)
+    internal ConnectorAddOptionsBuilder(ConnectorCreateConnection createConnection, ConnectorCreateHealthContributor createHealthContributor)
     {
         ArgumentGuard.NotNull(createConnection);
         ArgumentGuard.NotNull(createHealthContributor);

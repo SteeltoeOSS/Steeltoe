@@ -24,13 +24,14 @@ public static class PostgreSqlServiceCollectionExtensions
         return AddPostgreSql(services, configuration, null);
     }
 
-    public static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptions>? addAction)
+    public static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfiguration configuration,
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddPostgreSql(services, configuration, PostgreSqlPackageResolver.Default, addAction);
     }
 
     private static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfiguration configuration, PostgreSqlPackageResolver packageResolver,
-        Action<ConnectorAddOptions>? addAction)
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
@@ -38,7 +39,7 @@ public static class PostgreSqlServiceCollectionExtensions
 
         if (!ConnectorFactoryShim<PostgreSqlOptions>.IsRegistered(packageResolver.NpgsqlConnectionClass.Type, services))
         {
-            var addOptions = new ConnectorAddOptions(
+            var optionsBuilder = new ConnectorAddOptionsBuilder(
                 (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
                 (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
             {
@@ -46,13 +47,13 @@ public static class PostgreSqlServiceCollectionExtensions
                 EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
             };
 
-            addAction?.Invoke(addOptions);
+            addAction?.Invoke(optionsBuilder);
 
             IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<PostgreSqlOptions>(services, configuration, "postgresql",
-                addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
+                optionsBuilder.EnableHealthChecks ? optionsBuilder.CreateHealthContributor : null);
 
-            ConnectorFactoryShim<PostgreSqlOptions>.Register(packageResolver.NpgsqlConnectionClass.Type, services, optionNames, addOptions.CreateConnection,
-                addOptions.CacheConnection);
+            ConnectorFactoryShim<PostgreSqlOptions>.Register(packageResolver.NpgsqlConnectionClass.Type, services, optionNames, optionsBuilder.CreateConnection,
+                optionsBuilder.CacheConnection);
         }
 
         return services;

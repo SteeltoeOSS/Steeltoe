@@ -17,14 +17,14 @@ public static class SqlServerWebApplicationBuilderExtensions
         return AddSqlServer(builder, null, null);
     }
 
-    public static WebApplicationBuilder AddSqlServer(this WebApplicationBuilder builder, Action<ConnectorConfigureOptions>? configureAction,
-        Action<ConnectorAddOptions>? addAction)
+    public static WebApplicationBuilder AddSqlServer(this WebApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddSqlServer(builder, SqlServerPackageResolver.Default, configureAction, addAction);
     }
 
     internal static WebApplicationBuilder AddSqlServer(this WebApplicationBuilder builder, SqlServerPackageResolver packageResolver,
-        Action<ConnectorConfigureOptions>? configureAction, Action<ConnectorAddOptions>? addAction)
+        Action<ConnectorConfigureOptionsBuilder>? configureAction, Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);

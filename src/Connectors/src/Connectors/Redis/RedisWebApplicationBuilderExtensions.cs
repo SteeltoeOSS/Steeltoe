@@ -16,8 +16,8 @@ public static class RedisWebApplicationBuilderExtensions
         return AddRedis(builder, null, null);
     }
 
-    public static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder, Action<ConnectorConfigureOptions>? configureAction,
-        Action<ConnectorAddOptions>? addAction)
+    public static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(builder);
 

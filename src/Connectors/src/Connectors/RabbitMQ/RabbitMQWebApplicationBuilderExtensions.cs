@@ -16,8 +16,8 @@ public static class RabbitMQWebApplicationBuilderExtensions
         return AddRabbitMQ(builder, null, null);
     }
 
-    public static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder, Action<ConnectorConfigureOptions>? configureAction,
-        Action<ConnectorAddOptions>? addAction)
+    public static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(builder);
 

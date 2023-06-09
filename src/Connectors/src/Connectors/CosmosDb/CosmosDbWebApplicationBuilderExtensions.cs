@@ -16,8 +16,8 @@ public static class CosmosDbWebApplicationBuilderExtensions
         return AddCosmosDb(builder, null, null);
     }
 
-    public static WebApplicationBuilder AddCosmosDb(this WebApplicationBuilder builder, Action<ConnectorConfigureOptions>? configureAction,
-        Action<ConnectorAddOptions>? addAction)
+    public static WebApplicationBuilder AddCosmosDb(this WebApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(builder);
 

@@ -16,8 +16,8 @@ public static class MongoDbWebApplicationBuilderExtensions
         return AddMongoDb(builder, null, null);
     }
 
-    public static WebApplicationBuilder AddMongoDb(this WebApplicationBuilder builder, Action<ConnectorConfigureOptions>? configureAction,
-        Action<ConnectorAddOptions>? addAction)
+    public static WebApplicationBuilder AddMongoDb(this WebApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(builder);
 

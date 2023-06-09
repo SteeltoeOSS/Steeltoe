@@ -17,13 +17,13 @@ public static class MySqlConfigurationBuilderExtensions
         return ConfigureMySql(builder, null);
     }
 
-    public static IConfigurationBuilder ConfigureMySql(this IConfigurationBuilder builder, Action<ConnectorConfigureOptions>? configureAction)
+    public static IConfigurationBuilder ConfigureMySql(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
         return ConfigureMySql(builder, MySqlPackageResolver.Default, configureAction);
     }
 
     internal static IConfigurationBuilder ConfigureMySql(this IConfigurationBuilder builder, MySqlPackageResolver packageResolver,
-        Action<ConnectorConfigureOptions>? configureAction)
+        Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);

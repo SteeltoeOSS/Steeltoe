@@ -17,13 +17,13 @@ public static class SqlServerConfigurationBuilderExtensions
         return ConfigureSqlServer(builder, null);
     }
 
-    public static IConfigurationBuilder ConfigureSqlServer(this IConfigurationBuilder builder, Action<ConnectorConfigureOptions>? configureAction)
+    public static IConfigurationBuilder ConfigureSqlServer(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
         return ConfigureSqlServer(builder, SqlServerPackageResolver.Default, configureAction);
     }
 
     internal static IConfigurationBuilder ConfigureSqlServer(this IConfigurationBuilder builder, SqlServerPackageResolver packageResolver,
-        Action<ConnectorConfigureOptions>? configureAction)
+        Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);

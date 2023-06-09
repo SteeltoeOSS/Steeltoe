@@ -16,7 +16,7 @@ public static class CosmosDbConfigurationBuilderExtensions
         return ConfigureCosmosDb(builder, null);
     }
 
-    public static IConfigurationBuilder ConfigureCosmosDb(this IConfigurationBuilder builder, Action<ConnectorConfigureOptions>? configureAction)
+    public static IConfigurationBuilder ConfigureCosmosDb(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
         ArgumentGuard.NotNull(builder);
 

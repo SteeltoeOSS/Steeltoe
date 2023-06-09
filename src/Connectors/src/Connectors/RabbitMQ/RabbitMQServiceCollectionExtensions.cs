@@ -23,13 +23,13 @@ public static class RabbitMQServiceCollectionExtensions
         return AddRabbitMQ(services, configuration, null);
     }
 
-    public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptions>? addAction)
+    public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddRabbitMQ(services, configuration, RabbitMQPackageResolver.Default, addAction);
     }
 
     private static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration, RabbitMQPackageResolver packageResolver,
-        Action<ConnectorAddOptions>? addAction)
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
@@ -37,7 +37,7 @@ public static class RabbitMQServiceCollectionExtensions
 
         if (!ConnectorFactoryShim<RabbitMQOptions>.IsRegistered(packageResolver.ConnectionInterface.Type, services))
         {
-            var addOptions = new ConnectorAddOptions(
+            var optionsBuilder = new ConnectorAddOptionsBuilder(
                 (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
                 (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
             {
@@ -49,13 +49,13 @@ public static class RabbitMQServiceCollectionExtensions
                 EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
             };
 
-            addAction?.Invoke(addOptions);
+            addAction?.Invoke(optionsBuilder);
 
             IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<RabbitMQOptions>(services, configuration, "rabbitmq",
-                addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
+                optionsBuilder.EnableHealthChecks ? optionsBuilder.CreateHealthContributor : null);
 
-            ConnectorFactoryShim<RabbitMQOptions>.Register(packageResolver.ConnectionInterface.Type, services, optionNames, addOptions.CreateConnection,
-                addOptions.CacheConnection);
+            ConnectorFactoryShim<RabbitMQOptions>.Register(packageResolver.ConnectionInterface.Type, services, optionNames, optionsBuilder.CreateConnection,
+                optionsBuilder.CacheConnection);
         }
 
         return services;

@@ -24,13 +24,13 @@ public static class CosmosDbServiceCollectionExtensions
         return AddCosmosDb(services, configuration, null);
     }
 
-    public static IServiceCollection AddCosmosDb(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptions>? addAction)
+    public static IServiceCollection AddCosmosDb(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddCosmosDb(services, configuration, CosmosDbPackageResolver.Default, addAction);
     }
 
     private static IServiceCollection AddCosmosDb(this IServiceCollection services, IConfiguration configuration, CosmosDbPackageResolver packageResolver,
-        Action<ConnectorAddOptions>? addAction)
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
@@ -38,7 +38,7 @@ public static class CosmosDbServiceCollectionExtensions
 
         if (!ConnectorFactoryShim<CosmosDbOptions>.IsRegistered(packageResolver.CosmosClientClass.Type, services))
         {
-            var addOptions = new ConnectorAddOptions(
+            var optionsBuilder = new ConnectorAddOptionsBuilder(
                 (serviceProvider, serviceBindingName) => CreateCosmosClient(serviceProvider, serviceBindingName, packageResolver),
                 (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
             {
@@ -49,13 +49,13 @@ public static class CosmosDbServiceCollectionExtensions
                 EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
             };
 
-            addAction?.Invoke(addOptions);
+            addAction?.Invoke(optionsBuilder);
 
             IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<CosmosDbOptions>(services, configuration, "cosmosdb",
-                addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
+                optionsBuilder.EnableHealthChecks ? optionsBuilder.CreateHealthContributor : null);
 
-            ConnectorFactoryShim<CosmosDbOptions>.Register(packageResolver.CosmosClientClass.Type, services, optionNames, addOptions.CreateConnection,
-                addOptions.CacheConnection);
+            ConnectorFactoryShim<CosmosDbOptions>.Register(packageResolver.CosmosClientClass.Type, services, optionNames, optionsBuilder.CreateConnection,
+                optionsBuilder.CacheConnection);
         }
 
         return services;

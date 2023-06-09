@@ -24,13 +24,13 @@ public static class SqlServerServiceCollectionExtensions
         return AddSqlServer(services, configuration, null);
     }
 
-    public static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptions>? addAction)
+    public static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddSqlServer(services, configuration, SqlServerPackageResolver.Default, addAction);
     }
 
     internal static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration, SqlServerPackageResolver packageResolver,
-        Action<ConnectorAddOptions>? addAction)
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
@@ -38,7 +38,7 @@ public static class SqlServerServiceCollectionExtensions
 
         if (!ConnectorFactoryShim<SqlServerOptions>.IsRegistered(packageResolver.SqlConnectionClass.Type, services))
         {
-            var addOptions = new ConnectorAddOptions(
+            var optionsBuilder = new ConnectorAddOptionsBuilder(
                 (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
                 (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
             {
@@ -46,13 +46,13 @@ public static class SqlServerServiceCollectionExtensions
                 EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
             };
 
-            addAction?.Invoke(addOptions);
+            addAction?.Invoke(optionsBuilder);
 
             IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<SqlServerOptions>(services, configuration, "sqlserver",
-                addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
+                optionsBuilder.EnableHealthChecks ? optionsBuilder.CreateHealthContributor : null);
 
-            ConnectorFactoryShim<SqlServerOptions>.Register(packageResolver.SqlConnectionClass.Type, services, optionNames, addOptions.CreateConnection,
-                addOptions.CacheConnection);
+            ConnectorFactoryShim<SqlServerOptions>.Register(packageResolver.SqlConnectionClass.Type, services, optionNames, optionsBuilder.CreateConnection,
+                optionsBuilder.CacheConnection);
         }
 
         return services;

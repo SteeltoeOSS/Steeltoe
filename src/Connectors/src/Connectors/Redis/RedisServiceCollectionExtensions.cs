@@ -23,14 +23,14 @@ public static class RedisServiceCollectionExtensions
         return AddRedis(services, configuration, null);
     }
 
-    public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptions>? addAction)
+    public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddRedis(services, configuration, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default, addAction);
     }
 
     private static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration,
         StackExchangeRedisPackageResolver stackExchangeRedisPackageResolver, MicrosoftRedisPackageResolver microsoftRedisPackageResolver,
-        Action<ConnectorAddOptions>? addAction)
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
@@ -39,7 +39,7 @@ public static class RedisServiceCollectionExtensions
 
         if (!ConnectorFactoryShim<RedisOptions>.IsRegistered(stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type, services))
         {
-            var addOptions = new ConnectorAddOptions(
+            var optionsBuilder = new ConnectorAddOptionsBuilder(
                 (serviceProvider, serviceBindingName) => CreateConnectionMultiplexer(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver),
                 (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver))
             {
@@ -50,21 +50,21 @@ public static class RedisServiceCollectionExtensions
                 EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
             };
 
-            addAction?.Invoke(addOptions);
+            addAction?.Invoke(optionsBuilder);
 
             IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<RedisOptions>(services, configuration, "redis",
-                addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
+                optionsBuilder.EnableHealthChecks ? optionsBuilder.CreateHealthContributor : null);
 
             ConnectorFactoryShim<RedisOptions>.Register(stackExchangeRedisPackageResolver.ConnectionMultiplexerInterface.Type, services, optionNames,
-                addOptions.CreateConnection, addOptions.CacheConnection);
+                optionsBuilder.CreateConnection, optionsBuilder.CacheConnection);
 
             if (microsoftRedisPackageResolver.IsAvailable())
             {
-                ConnectorCreateConnection createDistributedCache = (serviceProvider, serviceBindingName) => CreateDistributedCache(addOptions.CreateConnection,
-                    serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver, microsoftRedisPackageResolver);
+                ConnectorCreateConnection createDistributedCache = (serviceProvider, serviceBindingName) => CreateDistributedCache(
+                    optionsBuilder.CreateConnection, serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver, microsoftRedisPackageResolver);
 
                 ConnectorFactoryShim<RedisOptions>.Register(microsoftRedisPackageResolver.DistributedCacheInterface.Type, services, optionNames,
-                    createDistributedCache, addOptions.CacheConnection);
+                    createDistributedCache, optionsBuilder.CacheConnection);
             }
         }
 

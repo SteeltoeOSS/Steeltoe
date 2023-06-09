@@ -16,7 +16,7 @@ public static class RabbitMQConfigurationBuilderExtensions
         return ConfigureRabbitMQ(builder, null);
     }
 
-    public static IConfigurationBuilder ConfigureRabbitMQ(this IConfigurationBuilder builder, Action<ConnectorConfigureOptions>? configureAction)
+    public static IConfigurationBuilder ConfigureRabbitMQ(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
         ArgumentGuard.NotNull(builder);
 

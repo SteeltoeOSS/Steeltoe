@@ -17,13 +17,13 @@ public static class PostgreSqlConfigurationBuilderExtensions
         return ConfigurePostgreSql(builder, null);
     }
 
-    public static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder, Action<ConnectorConfigureOptions>? configureAction)
+    public static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
         return ConfigurePostgreSql(builder, PostgreSqlPackageResolver.Default, configureAction);
     }
 
     private static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder, PostgreSqlPackageResolver packageResolver,
-        Action<ConnectorConfigureOptions>? configureAction)
+        Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);

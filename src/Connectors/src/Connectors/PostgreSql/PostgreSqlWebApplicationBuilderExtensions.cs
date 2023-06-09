@@ -16,8 +16,8 @@ public static class PostgreSqlWebApplicationBuilderExtensions
         return AddPostgreSql(builder, null, null);
     }
 
-    public static WebApplicationBuilder AddPostgreSql(this WebApplicationBuilder builder, Action<ConnectorConfigureOptions>? configureAction,
-        Action<ConnectorAddOptions>? addAction)
+    public static WebApplicationBuilder AddPostgreSql(this WebApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(builder);
 

@@ -12,19 +12,19 @@ namespace Steeltoe.Connectors;
 
 internal static class ConnectorConfigurer
 {
-    public static void Configure<TPostProcessor>(IConfigurationBuilder builder, Action<ConnectorConfigureOptions>? configureAction,
+    public static void Configure<TPostProcessor>(IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         TPostProcessor connectionStringPostProcessor)
         where TPostProcessor : ConnectionStringPostProcessor
     {
         if (!IsConfigured<TPostProcessor>(builder))
         {
-            ConnectorConfigureOptions configureOptions = new();
-            configureAction?.Invoke(configureOptions);
+            var optionsBuilder = new ConnectorConfigureOptionsBuilder();
+            configureAction?.Invoke(optionsBuilder);
 
             builder.AddCloudFoundryServiceBindings();
             builder.AddKubernetesServiceBindings();
 
-            RegisterPostProcessor(connectionStringPostProcessor, builder, configureOptions.DetectConfigurationChanges);
+            RegisterPostProcessor(connectionStringPostProcessor, builder, optionsBuilder.DetectConfigurationChanges);
         }
     }
 

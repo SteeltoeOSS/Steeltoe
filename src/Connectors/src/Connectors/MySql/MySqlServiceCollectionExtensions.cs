@@ -24,13 +24,13 @@ public static class MySqlServiceCollectionExtensions
         return AddMySql(services, configuration, null);
     }
 
-    public static IServiceCollection AddMySql(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptions>? addAction)
+    public static IServiceCollection AddMySql(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddMySql(services, configuration, MySqlPackageResolver.Default, addAction);
     }
 
     internal static IServiceCollection AddMySql(this IServiceCollection services, IConfiguration configuration, MySqlPackageResolver packageResolver,
-        Action<ConnectorAddOptions>? addAction)
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
@@ -38,7 +38,7 @@ public static class MySqlServiceCollectionExtensions
 
         if (!ConnectorFactoryShim<MySqlOptions>.IsRegistered(packageResolver.MySqlConnectionClass.Type, services))
         {
-            var addOptions = new ConnectorAddOptions(
+            var optionsBuilder = new ConnectorAddOptionsBuilder(
                 (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
                 (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
             {
@@ -46,13 +46,13 @@ public static class MySqlServiceCollectionExtensions
                 EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
             };
 
-            addAction?.Invoke(addOptions);
+            addAction?.Invoke(optionsBuilder);
 
             IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<MySqlOptions>(services, configuration, "mysql",
-                addOptions.EnableHealthChecks ? addOptions.CreateHealthContributor : null);
+                optionsBuilder.EnableHealthChecks ? optionsBuilder.CreateHealthContributor : null);
 
-            ConnectorFactoryShim<MySqlOptions>.Register(packageResolver.MySqlConnectionClass.Type, services, optionNames, addOptions.CreateConnection,
-                addOptions.CacheConnection);
+            ConnectorFactoryShim<MySqlOptions>.Register(packageResolver.MySqlConnectionClass.Type, services, optionNames, optionsBuilder.CreateConnection,
+                optionsBuilder.CacheConnection);
         }
 
         return services;
