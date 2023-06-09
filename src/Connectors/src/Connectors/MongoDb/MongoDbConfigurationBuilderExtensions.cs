@@ -6,7 +6,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 
 namespace Steeltoe.Connectors.MongoDb;
 
@@ -21,37 +20,7 @@ public static class MongoDbConfigurationBuilderExtensions
     {
         ArgumentGuard.NotNull(builder);
 
-        if (!IsConfigured(builder))
-        {
-            ConnectorConfigureOptions configureOptions = new();
-            configureAction?.Invoke(configureOptions);
-
-            RegisterPostProcessors(builder, configureOptions.DetectConfigurationChanges);
-        }
-
+        ConnectorConfigurer.Configure(builder, configureAction, new MongoDbConnectionStringPostProcessor());
         return builder;
-    }
-
-    private static bool IsConfigured(IConfigurationBuilder builder)
-    {
-        return builder.Sources.OfType<ConnectionStringPostProcessorConfigurationSource>().Any(connectionStringSource =>
-            connectionStringSource.PostProcessors.Any(postProcessor => postProcessor is MongoDbConnectionStringPostProcessor));
-    }
-
-    private static void RegisterPostProcessors(IConfigurationBuilder builder, bool detectConfigurationChanges)
-    {
-        builder.AddCloudFoundryServiceBindings();
-
-        var connectionStringPostProcessor = new MongoDbConnectionStringPostProcessor();
-        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource(detectConfigurationChanges);
-        connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
-
-        if (builder is ConfigurationManager configurationManager)
-        {
-            connectionStringSource.CaptureConfigurationManager(configurationManager);
-            connectionStringPostProcessor.CaptureConfigurationManager(configurationManager);
-        }
-
-        builder.Add(connectionStringSource);
     }
 }

@@ -6,7 +6,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.SqlServer;
@@ -29,37 +28,7 @@ public static class SqlServerConfigurationBuilderExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);
 
-        if (!IsConfigured(builder))
-        {
-            ConnectorConfigureOptions configureOptions = new();
-            configureAction?.Invoke(configureOptions);
-
-            RegisterPostProcessors(builder, packageResolver, configureOptions.DetectConfigurationChanges);
-        }
-
+        ConnectorConfigurer.Configure(builder, configureAction, new SqlServerConnectionStringPostProcessor(packageResolver));
         return builder;
-    }
-
-    private static bool IsConfigured(IConfigurationBuilder builder)
-    {
-        return builder.Sources.OfType<ConnectionStringPostProcessorConfigurationSource>().Any(connectionStringSource =>
-            connectionStringSource.PostProcessors.Any(postProcessor => postProcessor is SqlServerConnectionStringPostProcessor));
-    }
-
-    private static void RegisterPostProcessors(IConfigurationBuilder builder, SqlServerPackageResolver packageResolver, bool detectConfigurationChanges)
-    {
-        builder.AddCloudFoundryServiceBindings();
-
-        var connectionStringPostProcessor = new SqlServerConnectionStringPostProcessor(packageResolver);
-        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource(detectConfigurationChanges);
-        connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
-
-        if (builder is ConfigurationManager configurationManager)
-        {
-            connectionStringSource.CaptureConfigurationManager(configurationManager);
-            connectionStringPostProcessor.CaptureConfigurationManager(configurationManager);
-        }
-
-        builder.Add(connectionStringSource);
     }
 }

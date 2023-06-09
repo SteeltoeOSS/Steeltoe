@@ -6,8 +6,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
 namespace Steeltoe.Connectors.RabbitMQ;
 
@@ -22,38 +20,7 @@ public static class RabbitMQConfigurationBuilderExtensions
     {
         ArgumentGuard.NotNull(builder);
 
-        if (!IsConfigured(builder))
-        {
-            ConnectorConfigureOptions configureOptions = new();
-            configureAction?.Invoke(configureOptions);
-
-            RegisterPostProcessors(builder, configureOptions.DetectConfigurationChanges);
-        }
-
+        ConnectorConfigurer.Configure(builder, configureAction, new RabbitMQConnectionStringPostProcessor());
         return builder;
-    }
-
-    private static bool IsConfigured(IConfigurationBuilder builder)
-    {
-        return builder.Sources.OfType<ConnectionStringPostProcessorConfigurationSource>().Any(connectionStringSource =>
-            connectionStringSource.PostProcessors.Any(postProcessor => postProcessor is RabbitMQConnectionStringPostProcessor));
-    }
-
-    private static void RegisterPostProcessors(IConfigurationBuilder builder, bool detectConfigurationChanges)
-    {
-        builder.AddCloudFoundryServiceBindings();
-        builder.AddKubernetesServiceBindings();
-
-        var connectionStringPostProcessor = new RabbitMQConnectionStringPostProcessor();
-        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource(detectConfigurationChanges);
-        connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
-
-        if (builder is ConfigurationManager configurationManager)
-        {
-            connectionStringSource.CaptureConfigurationManager(configurationManager);
-            connectionStringPostProcessor.CaptureConfigurationManager(configurationManager);
-        }
-
-        builder.Add(connectionStringSource);
     }
 }

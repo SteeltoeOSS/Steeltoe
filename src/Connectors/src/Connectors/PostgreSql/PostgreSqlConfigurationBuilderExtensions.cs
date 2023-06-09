@@ -6,8 +6,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.PostgreSql;
@@ -30,38 +28,7 @@ public static class PostgreSqlConfigurationBuilderExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(packageResolver);
 
-        if (!IsConfigured(builder))
-        {
-            ConnectorConfigureOptions configureOptions = new();
-            configureAction?.Invoke(configureOptions);
-
-            RegisterPostProcessors(builder, packageResolver, configureOptions.DetectConfigurationChanges);
-        }
-
+        ConnectorConfigurer.Configure(builder, configureAction, new PostgreSqlConnectionStringPostProcessor(packageResolver));
         return builder;
-    }
-
-    private static bool IsConfigured(IConfigurationBuilder builder)
-    {
-        return builder.Sources.OfType<ConnectionStringPostProcessorConfigurationSource>().Any(connectionStringSource =>
-            connectionStringSource.PostProcessors.Any(postProcessor => postProcessor is PostgreSqlConnectionStringPostProcessor));
-    }
-
-    private static void RegisterPostProcessors(IConfigurationBuilder builder, PostgreSqlPackageResolver packageResolver, bool detectConfigurationChanges)
-    {
-        builder.AddCloudFoundryServiceBindings();
-        builder.AddKubernetesServiceBindings();
-
-        var connectionStringPostProcessor = new PostgreSqlConnectionStringPostProcessor(packageResolver);
-        var connectionStringSource = new ConnectionStringPostProcessorConfigurationSource(detectConfigurationChanges);
-        connectionStringSource.RegisterPostProcessor(connectionStringPostProcessor);
-
-        if (builder is ConfigurationManager configurationManager)
-        {
-            connectionStringSource.CaptureConfigurationManager(configurationManager);
-            connectionStringPostProcessor.CaptureConfigurationManager(configurationManager);
-        }
-
-        builder.Add(connectionStringSource);
     }
 }
