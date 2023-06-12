@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Logging;
@@ -312,5 +313,21 @@ public class PlaceholderResolverProviderTest
         Assert.Equal(2, list.Count);
         Assert.Contains("bar", list);
         Assert.Contains("cloud", list);
+    }
+
+    [Fact]
+    public void EmptyValuesHandledAsExpected()
+    {
+        var builder = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string> { { "valueIsEmptyString", string.Empty } })
+            .AddPlaceholderResolver();
+
+        var config = builder.Build();
+
+        config.AsEnumerable().Should().ContainSingle();
+        config["valueIsEmptyString"].Should().BeEmpty();
+
+        // for comparison, keys not defined return null values
+        config["undefinedKey"].Should().BeNull();
     }
 }
