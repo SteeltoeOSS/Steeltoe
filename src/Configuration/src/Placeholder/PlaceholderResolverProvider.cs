@@ -92,7 +92,7 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
             ResolvedKeys.Add(key);
         }
 
-        return !string.IsNullOrEmpty(value);
+        return value != null;
     }
 
     /// <summary>
