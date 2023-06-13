@@ -357,7 +357,8 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:customer-profiles:ConnectionString"] = "Host=ignored;Database=ignored;Include Error Detail=true;Log Parameters=true;host=localhost"
+            ["Steeltoe:Client:PostgreSql:customer-profiles:ConnectionString"] =
+                "Host=ignored;Database=ignored;Include Error Detail=true;Log Parameters=true;host=localhost"
         });
 
         builder.AddPostgreSql();
