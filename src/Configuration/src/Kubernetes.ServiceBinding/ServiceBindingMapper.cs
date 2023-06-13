@@ -22,11 +22,11 @@ internal sealed class ServiceBindingMapper : ConfigurationDictionaryMapper
 
     private string GetBindingProvider(string providerKey)
     {
-        return ConfigurationData.TryGetValue(providerKey, out string result) ? result : string.Empty;
+        return ConfigurationData.TryGetValue(providerKey, out string? result) ? result : string.Empty;
     }
 
     private string GetBindingType(string typeKey)
     {
-        return ConfigurationData.TryGetValue(typeKey, out string result) ? result : string.Empty;
+        return ConfigurationData.TryGetValue(typeKey, out string? result) ? result : string.Empty;
     }
 }

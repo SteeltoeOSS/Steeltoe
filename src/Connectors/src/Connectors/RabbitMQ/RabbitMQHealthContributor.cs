@@ -33,7 +33,6 @@ public class RabbitMQHealthContributor : IHealthContributor
     {
         ArgumentGuard.NotNull(connection);
         ArgumentGuard.NotNull(serviceName);
-        ArgumentGuard.NotNull(hostName);
         ArgumentGuard.NotNull(logger);
 
         _connection = connection;
@@ -60,7 +59,7 @@ public class RabbitMQHealthContributor : IHealthContributor
         _logger?.LogTrace("Checking RabbitMQ connection health");
         var result = new HealthCheckResult();
 
-        if (_hostName != null)
+        if (!string.IsNullOrEmpty(_hostName))
         {
             result.Details.Add("host", _hostName);
         }

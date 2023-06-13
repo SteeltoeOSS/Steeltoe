@@ -2,15 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
-using FluentAssertions;
+using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connectors.PostgreSql;
 using Xunit;
 
@@ -21,12 +18,6 @@ namespace Steeltoe.Connectors.Test.PostgreSql;
 /// </summary>
 public class PostgreSqlProviderServiceCollectionExtensionsTest
 {
-    public PostgreSqlProviderServiceCollectionExtensionsTest()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
     [Fact]
     public void AddPostgreSqlConnection_ThrowsIfServiceCollectionNull()
     {
@@ -72,7 +63,7 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
 
         services.AddPostgreSqlConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
     }
 
@@ -89,9 +80,10 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddPostgreSqlConnection_MultiplePostgreSqlServices_ThrowsConnectorException()
     {
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", PostgreSqlTestHelpers.TwoServerVcapEdb);
+
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.TwoServerVcapEdb);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -104,17 +96,18 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddPostgreSqlConnection_WithVCAPs_AddsPostgreSqlConnection()
     {
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapEdb);
+
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapEdb);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
 
         services.AddPostgreSqlConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
         Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString, StringComparison.Ordinal);
@@ -127,10 +120,11 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddPostgreSqlConnection_WithAzureVCAPs_AddsPostgreSqlConnection()
     {
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapAzure);
+
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapAzure);
         var appsettings = new Dictionary<string, string>();
 
         var builder = new ConfigurationBuilder();
@@ -140,7 +134,7 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
 
         services.AddPostgreSqlConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
         Assert.Contains("Host=2980cfbe-e198-46fd-8f81-966584bb4678.postgres.database.azure.com;", connString, StringComparison.Ordinal);
@@ -156,10 +150,11 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddPostgreSqlConnection_WithCrunchyVCAPs_AddsPostgreSqlConnection()
     {
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapCrunchy);
+
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapCrunchy);
         var appsettings = new Dictionary<string, string>();
 
         var builder = new ConfigurationBuilder();
@@ -169,7 +164,7 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
 
         services.AddPostgreSqlConnection(configurationRoot);
 
-        var service = services.BuildServiceProvider().GetService<IDbConnection>();
+        var service = services.BuildServiceProvider().GetService<DbConnection>();
         Assert.NotNull(service);
         string connString = service.ConnectionString;
         Assert.Contains("Host=10.194.45.174;", connString, StringComparison.Ordinal);
@@ -229,41 +224,5 @@ public class PostgreSqlProviderServiceCollectionExtensionsTest
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
         Assert.NotNull(healthContributor);
-    }
-
-    [Fact]
-    public void AddPostgreSqlConnectionWithConnectionStringAndCloudNativeBindingsAddsRightPostgreSqlConnection()
-    {
-        string rootDir = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
-        Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", rootDir);
-
-        try
-        {
-            IServiceCollection services = new ServiceCollection();
-
-            var appsettings = new Dictionary<string, string>
-            {
-                { "postgres:client:ConnectionString", "Server=fake;Database=test;User Id=steeltoe;Password=password;" }
-            };
-
-            var configurationBuilder = new ConfigurationBuilder();
-            _ = configurationBuilder.AddInMemoryCollection(appsettings).AddEnvironmentVariables().AddKubernetesServiceBindings(false);
-            IConfigurationRoot configurationRoot = configurationBuilder.Build();
-            services.AddPostgreSqlConnection(configurationRoot);
-            using ServiceProvider built = services.BuildServiceProvider();
-
-            using var connection = built.GetService<IDbConnection>();
-            connection.Should().BeOfType<NpgsqlConnection>().And.Subject.Should().NotBeNull();
-
-            connection.ConnectionString.Should().Contain("Host=10.194.59.205");
-            connection.ConnectionString.Should().Contain("Port=5432");
-            connection.ConnectionString.Should().Contain("Username=testrolee93ccf859894dc60dcd53218492b37b4");
-            connection.ConnectionString.Should().Contain("Password=Qp!1mB1$Zk2T!$!D85_E");
-            connection.ConnectionString.Should().Contain("Database=steeltoe");
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", null);
-        }
     }
 }

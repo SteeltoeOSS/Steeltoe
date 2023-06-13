@@ -215,7 +215,7 @@ public static class MySqlDbContextOptionsExtensions
         return factory.CreateConnectionString();
     }
 
-    internal static DbContextOptionsBuilder DoUseMySql(DbContextOptionsBuilder builder, string connection, object mySqlOptionsAction = null,
+    private static DbContextOptionsBuilder DoUseMySql(DbContextOptionsBuilder builder, string connection, object mySqlOptionsAction = null,
         object serverVersion = null)
     {
         Type extensionType = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
@@ -274,7 +274,7 @@ public static class MySqlDbContextOptionsExtensions
 
         if (extensionType == null)
         {
-            throw new ConnectorException("Unable to find UseMySql extension, are you missing MySql EntityFramework Core assembly");
+            throw new ConnectorException("Unable to find UseMySql extension, are you missing MySql Entity Framework Core assembly");
         }
 
         object result = ReflectionHelpers.Invoke(useMethod, null, parameters);

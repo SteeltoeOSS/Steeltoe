@@ -4,6 +4,7 @@
     <Description>Configuration Provider for reading CloudFoundry Service Bindings</Description>
     <PackageTags>Configuration;CloudFoundry;Services;Bindings</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

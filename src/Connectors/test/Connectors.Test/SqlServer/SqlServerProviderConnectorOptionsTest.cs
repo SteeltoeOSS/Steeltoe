@@ -70,9 +70,8 @@ public class SqlServerProviderConnectorOptionsTest
             ["sqlserver:credentials:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
         };
 
-        // add environment variables as Cloud Foundry would
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcap);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcap);
 
         // add settings to configuration
         var configurationBuilder = new ConfigurationBuilder();
@@ -89,8 +88,8 @@ public class SqlServerProviderConnectorOptionsTest
     [Fact]
     public void CloudFoundryConfig_Found_By_Name()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcapNoTag);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcapNoTag);
 
         // add settings to configuration
         var configurationBuilder = new ConfigurationBuilder();
@@ -109,8 +108,8 @@ public class SqlServerProviderConnectorOptionsTest
     [Fact]
     public void CloudFoundryConfig_Found_By_Tag()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcapIgnoreName);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcapIgnoreName);
 
         // add settings to configuration
         var configurationBuilder = new ConfigurationBuilder();
@@ -135,9 +134,8 @@ public class SqlServerProviderConnectorOptionsTest
             ["sqlserver:credentials:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
         };
 
-        // add environment variables as Cloud Foundry would
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcapCredentialsInUrl);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcapCredentialsInUrl);
 
         // add settings to configuration
         var configurationBuilder = new ConfigurationBuilder();

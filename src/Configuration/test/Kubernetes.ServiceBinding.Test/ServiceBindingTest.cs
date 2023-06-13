@@ -12,15 +12,15 @@ public sealed class ServiceBindingTest
     [Fact]
     public void InvalidDirectory_Throws()
     {
-        Action action = () => _ = new ServiceBindingConfigurationProvider.ServiceBinding("invalid");
+        Action action = () => _ = new KubernetesServiceBindingConfigurationProvider.ServiceBinding("invalid");
         action.Should().ThrowExactly<ArgumentException>();
     }
 
     [Fact]
     public void PopulatesFromFileSystem_Kubernetes()
     {
-        string rootDir = GetK8SResourcesDirectory("test-name-1");
-        var binding = new ServiceBindingConfigurationProvider.ServiceBinding(rootDir);
+        string rootDirectory = GetK8SResourcesDirectory("test-name-1");
+        var binding = new KubernetesServiceBindingConfigurationProvider.ServiceBinding(rootDirectory);
         binding.Name.Should().Be("test-name-1");
         binding.Type.Should().Be("test-type-1");
         binding.Provider.Should().Be("test-provider-1");
@@ -34,8 +34,8 @@ public sealed class ServiceBindingTest
     public void PopulatesFromFileSystem_WithHiddenFilesAndLinks_Kubernetes()
     {
         // Hidden & links
-        string rootDir = GetK8SResourcesDirectory("test-k8s");
-        var binding = new ServiceBindingConfigurationProvider.ServiceBinding(rootDir);
+        string rootDirectory = GetK8SResourcesDirectory("test-k8s");
+        var binding = new KubernetesServiceBindingConfigurationProvider.ServiceBinding(rootDirectory);
         binding.Name.Should().Be("test-k8s");
         binding.Type.Should().Be("test-type-1");
         binding.Provider.Should().Be("test-provider-1");
@@ -47,6 +47,6 @@ public sealed class ServiceBindingTest
 
     private static string GetK8SResourcesDirectory(string name)
     {
-        return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s", $"{name}");
+        return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s", name);
     }
 }

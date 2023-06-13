@@ -16,12 +16,6 @@ namespace Steeltoe.Connectors.Test.SqlServer;
 /// </summary>
 public class SqlServerServiceCollectionExtensionsTest
 {
-    public SqlServerServiceCollectionExtensionsTest()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
     [Fact]
     public void AddSqlServerHealthContributor_ThrowsIfServiceCollectionNull()
     {

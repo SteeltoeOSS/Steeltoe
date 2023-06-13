@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -221,13 +223,11 @@ public sealed class RabbitMQConnectorTests
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
 
         RabbitMQOptions optionsOne = optionsMonitor.Get("myRabbitMQServiceOne");
-        optionsOne.Should().NotBeNull();
 
         optionsOne.ConnectionString.Should().Be(
             "amqp://d2fd2c9d-ef84-406b-8401-f2ffacaafda6:AqntL6IwehKOGssE51psrJYd@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-377d9d72-e951-4a1c-82e8-99c3c4933368.bosh:5672/377d9d72-e951-4a1c-82e8-99c3c4933368");
 
         RabbitMQOptions optionsTwo = optionsMonitor.Get("myRabbitMQServiceTwo");
-        optionsTwo.Should().NotBeNull();
 
         optionsTwo.ConnectionString.Should().Be(
             "amqp://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh:5672/eda94023-757e-4ef4-9315-dcba2e96efb5");
@@ -244,19 +244,32 @@ public sealed class RabbitMQConnectorTests
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceTwo:ConnectionString"] = "amqps://user2:pass2@host2:5672/virtual-host-2"
         });
 
-        builder.AddRabbitMQ((options, _) => new FakeConnection(options.ConnectionString));
+        builder.AddRabbitMQ(null, addOptions =>
+        {
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
+                RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnection(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        var connectionOne = (FakeConnection)connectorFactory.GetNamed("myRabbitMQServiceOne").GetConnection();
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain("myRabbitMQServiceOne");
+        connectorFactory.ServiceBindingNames.Should().Contain("myRabbitMQServiceTwo");
+
+        var connectionOne = (FakeConnection)connectorFactory.Get("myRabbitMQServiceOne").GetConnection();
         connectionOne.ConnectionString.Should().Be("amqp://user1:pass1@host1:5672/virtual-host-1");
 
-        var connectionTwo = (FakeConnection)connectorFactory.GetNamed("myRabbitMQServiceTwo").GetConnection();
+        var connectionTwo = (FakeConnection)connectorFactory.Get("myRabbitMQServiceTwo").GetConnection();
         connectionTwo.ConnectionString.Should().Be("amqps://user2:pass2@host2:5672/virtual-host-2");
 
-        IConnection connectionOneAgain = connectorFactory.GetNamed("myRabbitMQServiceOne").GetConnection();
+        IConnection connectionOneAgain = connectorFactory.Get("myRabbitMQServiceOne").GetConnection();
         connectionOneAgain.Should().BeSameAs(connectionOne);
     }
 
@@ -271,7 +284,16 @@ public sealed class RabbitMQConnectorTests
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceTwo:ConnectionString"] = "amqps://user2:pass2@host2:5672/virtual-host-2"
         });
 
-        builder.AddRabbitMQ((options, _) => new FakeConnection(options.ConnectionString));
+        builder.AddRabbitMQ(null, addOptions =>
+        {
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
+                RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnection(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 
@@ -289,16 +311,29 @@ public sealed class RabbitMQConnectorTests
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
-        builder.AddRabbitMQ((options, _) => new FakeConnection(options.ConnectionString));
+        builder.AddRabbitMQ(null, addOptions =>
+        {
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
+                RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnection(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        RabbitMQOptions defaultOptions = connectorFactory.GetDefault().Options;
-        defaultOptions.ConnectionString.Should().NotBeNull();
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().Contain("myRabbitMQService");
 
-        RabbitMQOptions namedOptions = connectorFactory.GetNamed("myRabbitMQService").Options;
+        RabbitMQOptions defaultOptions = connectorFactory.Get().Options;
+        defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
+
+        RabbitMQOptions namedOptions = connectorFactory.Get("myRabbitMQService").Options;
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -314,14 +349,26 @@ public sealed class RabbitMQConnectorTests
             ["Steeltoe:Client:RabbitMQ:Default:ConnectionString"] = "amqp://localhost:5672/my-virtual-host"
         });
 
-        builder.AddRabbitMQ((options, _) => new FakeConnection(options.ConnectionString));
+        builder.AddRabbitMQ(null, addOptions =>
+        {
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
+                RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnection(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        RabbitMQOptions defaultOptions = connectorFactory.GetDefault().Options;
-        defaultOptions.ConnectionString.Should().NotBeNull();
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+
+        RabbitMQOptions defaultOptions = connectorFactory.Get().Options;
+        defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
@@ -330,16 +377,28 @@ public sealed class RabbitMQConnectorTests
     public async Task Registers_default_connection_string_when_no_bindings_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.AddRabbitMQ((options, _) => new FakeConnection(options.ConnectionString));
+
+        builder.AddRabbitMQ(null, addOptions =>
+        {
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
+            {
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
+                RabbitMQOptions options = optionsMonitor.Get(serviceBindingName);
+
+                return new FakeConnection(options.ConnectionString);
+            };
+        });
 
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>();
 
-        RabbitMQOptions defaultOptions = connectorFactory.GetDefault().Options;
+        connectorFactory.ServiceBindingNames.Should().BeEmpty();
+
+        RabbitMQOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().BeNull();
 
-        var connection = (FakeConnection)connectorFactory.GetDefault().GetConnection();
+        var connection = (FakeConnection)connectorFactory.Get().GetConnection();
         connection.ConnectionString.Should().BeNull();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -347,7 +406,7 @@ public sealed class RabbitMQConnectorTests
 
     private sealed class FakeConnection : IConnection
     {
-        public string ConnectionString { get; }
+        public string? ConnectionString { get; }
 
         public int LocalPort => throw new NotImplementedException();
         public int RemotePort => throw new NotImplementedException();
@@ -388,7 +447,7 @@ public sealed class RabbitMQConnectorTests
             remove => throw new NotImplementedException();
         }
 
-        public FakeConnection(string connectionString)
+        public FakeConnection(string? connectionString)
         {
             ConnectionString = connectionString;
         }

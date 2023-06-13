@@ -8,23 +8,32 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
+using Steeltoe.Common.DynamicTypeAccess;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Kubernetes;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
 using Steeltoe.Connectors;
+using Steeltoe.Connectors.CosmosDb;
+using Steeltoe.Connectors.CosmosDb.DynamicTypeAccess;
 using Steeltoe.Connectors.MongoDb;
+using Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
 using Steeltoe.Connectors.MySql;
-using Steeltoe.Connectors.Oracle;
+using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 using Steeltoe.Connectors.PostgreSql;
+using Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
 using Steeltoe.Connectors.RabbitMQ;
+using Steeltoe.Connectors.RabbitMQ.DynamicTypeAccess;
 using Steeltoe.Connectors.Redis;
+using Steeltoe.Connectors.Redis.DynamicTypeAccess;
 using Steeltoe.Connectors.SqlServer;
+using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Kubernetes;
+using Steeltoe.Management.Prometheus;
 using Steeltoe.Management.Tracing;
 using Steeltoe.Management.Wavefront;
 using Steeltoe.Security.Authentication.CloudFoundry;
@@ -48,74 +57,62 @@ public static class WebApplicationBuilderExtensions
     /// <para />
     /// PLEASE NOTE: No extensions to IApplicationBuilder will be configured.
     /// </summary>
-    /// <param name="webApplicationBuilder">
+    /// <param name="builder">
     /// Your <see cref="WebApplicationBuilder" />.
     /// </param>
     /// <param name="exclusions">
-    /// A list of assemblies to exclude from auto-configuration. For ease of use, select from <see cref="SteeltoeAssemblies" />.
+    /// A list of assemblies to exclude from auto-configuration. For ease of use, select from <see cref="SteeltoeAssemblyNames" />.
     /// </param>
     /// <param name="loggerFactory">
     /// For logging within auto-configuration.
     /// </param>
-    public static WebApplicationBuilder AddSteeltoe(this WebApplicationBuilder webApplicationBuilder, IEnumerable<string> exclusions = null,
+    public static WebApplicationBuilder AddSteeltoe(this WebApplicationBuilder builder, IEnumerable<string> exclusions = null,
         ILoggerFactory loggerFactory = null)
     {
         AssemblyExtensions.ExcludedAssemblies = exclusions ?? new List<string>();
         _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
         _logger = _loggerFactory.CreateLogger(LoggerName);
 
-        if (!webApplicationBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServer))
+        if (!builder.WireIfLoaded(WireConfigServer, SteeltoeAssemblyNames.ConfigurationConfigServer))
         {
-            webApplicationBuilder.WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundry);
+            builder.WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblyNames.ConfigurationCloudFoundry);
         }
 
-        if (Platform.IsKubernetes && AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetes))
+        if (Platform.IsKubernetes && AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblyNames.ConfigurationKubernetes))
         {
-            WireKubernetesConfiguration(webApplicationBuilder);
+            WireKubernetesConfiguration(builder);
         }
 
-        webApplicationBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValue);
+        builder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblyNames.ConfigurationRandomValue);
 
-        webApplicationBuilder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholder);
+        builder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblyNames.ConfigurationPlaceholder);
 
-        if (webApplicationBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.SteeltoeConnectors))
+        if (builder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblyNames.Connectors))
         {
-#pragma warning disable CS0436 // Type conflicts with imported type
-            webApplicationBuilder.WireIfAnyLoaded(WireMySqlConnection, MySqlTypeLocator.Assemblies);
-            webApplicationBuilder.WireIfAnyLoaded(WireMongoClient, MongoDbTypeLocator.Assemblies);
-            webApplicationBuilder.WireIfAnyLoaded(WireOracleConnection, OracleTypeLocator.Assemblies);
-            webApplicationBuilder.WireIfAnyLoaded(WirePostgreSqlConnection, PostgreSqlTypeLocator.Assemblies);
-            webApplicationBuilder.WireIfAnyLoaded(WireRabbitMqConnection, RabbitMQTypeLocator.Assemblies);
-            webApplicationBuilder.WireIfAnyLoaded(WireRedisConnectionMultiplexer, RedisTypeLocator.StackExchangeAssemblies);
-
-            webApplicationBuilder.WireIfAnyLoaded(WireDistributedRedisCache, RedisTypeLocator.MicrosoftAssemblies.Except(new[]
-            {
-                "Microsoft.Extensions.Caching.Abstractions"
-            }).ToArray());
-
-            webApplicationBuilder.WireIfAnyLoaded(WireSqlServerConnection, SqlServerTypeLocator.Assemblies);
-#pragma warning restore CS0436 // Type conflicts with imported type
+            WireConnectors(builder);
         }
 
-        webApplicationBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.SteeltoeExtensionsLoggingDynamicSerilog);
+        builder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblyNames.LoggingDynamicSerilog);
 
-        webApplicationBuilder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblies.SteeltoeDiscoveryClient);
+        builder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblyNames.DiscoveryClient);
 
-        if (AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeManagementKubernetes))
+        if (AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblyNames.ManagementKubernetes))
         {
-            webApplicationBuilder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblies.SteeltoeManagementKubernetes);
+            builder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblyNames.ManagementKubernetes);
         }
         else
         {
-            webApplicationBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.SteeltoeManagementEndpoint);
+            builder.WireIfLoaded(WireAllActuators, SteeltoeAssemblyNames.ManagementEndpoint);
         }
 
-        webApplicationBuilder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblies.SteeltoeWavefront);
+        builder.WireIfLoaded(WireSteeltoePrometheus, SteeltoeAssemblyNames.ManagementPrometheus);
 
-        webApplicationBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblies.SteeltoeManagementTracing);
+        builder.WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblyNames.ManagementWavefront);
 
-        webApplicationBuilder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblies.SteeltoeSecurityAuthenticationCloudFoundry);
-        return webApplicationBuilder;
+        builder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblyNames.ManagementTracing);
+
+        builder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
+        return builder;
     }
 
     private static bool WireIfLoaded(this WebApplicationBuilder webApplicationBuilder, Action<WebApplicationBuilder> action, params string[] assembly)
@@ -129,15 +126,13 @@ public static class WebApplicationBuilderExtensions
         return false;
     }
 
-    private static bool WireIfAnyLoaded(this WebApplicationBuilder webApplicationBuilder, Action<WebApplicationBuilder> action, params string[] assembly)
+    private static void WireIfAnyLoaded(this WebApplicationBuilder builder, Action<WebApplicationBuilder> action, IReadOnlySet<string> assemblyNamesToExclude,
+        params PackageResolver[] packageResolvers)
     {
-        if (assembly.Any(AssemblyExtensions.IsAssemblyLoaded))
+        if (packageResolvers.Any(packageResolver => packageResolver.IsAvailable(assemblyNamesToExclude)))
         {
-            action(webApplicationBuilder);
-            return true;
+            action(builder);
         }
-
-        return false;
     }
 
     private static void Log(string message)
@@ -150,7 +145,7 @@ public static class WebApplicationBuilderExtensions
     {
         webApplicationBuilder.Configuration.AddConfigServer(webApplicationBuilder.Environment.EnvironmentName, _loggerFactory);
         webApplicationBuilder.Services.AddConfigServerServices();
-        Log(LogMessages.WireConfigServer);
+        Log(LogMessages.WireConfigServerConfiguration);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -172,14 +167,14 @@ public static class WebApplicationBuilderExtensions
     private static void WireRandomValueProvider(this WebApplicationBuilder webApplicationBuilder)
     {
         webApplicationBuilder.Configuration.AddRandomValueSource(_loggerFactory);
-        Log(LogMessages.WireRandomValueProvider);
+        Log(LogMessages.WireRandomValueConfiguration);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WirePlaceholderResolver(this WebApplicationBuilder webApplicationBuilder)
     {
         ((IConfigurationBuilder)webApplicationBuilder.Configuration).AddPlaceholderResolver(_loggerFactory);
-        Log(LogMessages.WirePlaceholderResolver);
+        Log(LogMessages.WirePlaceholderConfiguration);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -190,59 +185,72 @@ public static class WebApplicationBuilderExtensions
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireMySqlConnection(this WebApplicationBuilder webApplicationBuilder)
+    private static void WireConnectors(WebApplicationBuilder builder)
     {
-        webApplicationBuilder.Services.AddMySqlConnection(webApplicationBuilder.Configuration);
-        Log(LogMessages.WireMySqlConnection);
+        var assemblyNamesToExclude = new HashSet<string>(AssemblyExtensions.ExcludedAssemblies, StringComparer.OrdinalIgnoreCase);
+
+        builder.WireIfAnyLoaded(WireCosmosDbConnector, assemblyNamesToExclude, CosmosDbPackageResolver.Default);
+        builder.WireIfAnyLoaded(WireMongoDbConnector, assemblyNamesToExclude, MongoDbPackageResolver.Default);
+        builder.WireIfAnyLoaded(WireMySqlConnector, assemblyNamesToExclude, MySqlPackageResolver.Default);
+        builder.WireIfAnyLoaded(WirePostgreSqlConnector, assemblyNamesToExclude, PostgreSqlPackageResolver.Default);
+        builder.WireIfAnyLoaded(WireRabbitMQConnector, assemblyNamesToExclude, RabbitMQPackageResolver.Default);
+        builder.WireIfAnyLoaded(WireRedisConnector, assemblyNamesToExclude, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default);
+        builder.WireIfAnyLoaded(WireSqlServerConnector, assemblyNamesToExclude, SqlServerPackageResolver.Default);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireMongoClient(this WebApplicationBuilder webApplicationBuilder)
+    private static void WireMySqlConnector(this WebApplicationBuilder builder)
     {
-        webApplicationBuilder.Services.AddMongoClient(webApplicationBuilder.Configuration);
-        Log(LogMessages.WireMongoClient);
+        builder.AddMySql();
+        Log(LogMessages.WireMySqlConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireOracleConnection(this WebApplicationBuilder webApplicationBuilder)
+    private static void WireCosmosDbConnector(this WebApplicationBuilder builder)
     {
-        webApplicationBuilder.Services.AddOracleConnection(webApplicationBuilder.Configuration);
-        Log(LogMessages.WireOracleConnection);
+        builder.AddCosmosDb();
+        Log(LogMessages.WireCosmosDbConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WirePostgreSqlConnection(this WebApplicationBuilder webApplicationBuilder)
+    private static void WireMongoDbConnector(this WebApplicationBuilder builder)
     {
-        webApplicationBuilder.Services.AddPostgreSqlConnection(webApplicationBuilder.Configuration);
-        Log(LogMessages.WirePostgreSqlConnection);
+        builder.AddMongoDb();
+        Log(LogMessages.WireMongoDbConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireRabbitMqConnection(this WebApplicationBuilder webApplicationBuilder)
+    private static void WirePostgreSqlConnector(this WebApplicationBuilder builder)
     {
-        webApplicationBuilder.Services.AddRabbitMQConnection(webApplicationBuilder.Configuration);
-        Log(LogMessages.WireRabbitMqConnection);
+        builder.AddPostgreSql();
+        Log(LogMessages.WirePostgreSqlConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireRedisConnectionMultiplexer(this WebApplicationBuilder webApplicationBuilder)
+    private static void WireRabbitMQConnector(this WebApplicationBuilder builder)
     {
-        webApplicationBuilder.Services.AddRedisConnectionMultiplexer(webApplicationBuilder.Configuration);
-        Log(LogMessages.WireRedisConnectionMultiplexer);
+        builder.AddRabbitMQ();
+        Log(LogMessages.WireRabbitMQConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireDistributedRedisCache(this WebApplicationBuilder webApplicationBuilder)
+    private static void WireRedisConnector(this WebApplicationBuilder builder)
     {
-        webApplicationBuilder.Services.AddDistributedRedisCache(webApplicationBuilder.Configuration);
-        Log(LogMessages.WireDistributedRedisCache);
+        builder.AddRedis();
+        Log(LogMessages.WireStackExchangeRedisConnector);
+
+        // Intentionally ignoring excluded assemblies here.
+        if (MicrosoftRedisPackageResolver.Default.IsAvailable())
+        {
+            Log(LogMessages.WireDistributedCacheRedisConnector);
+        }
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireSqlServerConnection(this WebApplicationBuilder webApplicationBuilder)
+    private static void WireSqlServerConnector(this WebApplicationBuilder builder)
     {
-        webApplicationBuilder.Services.AddSqlServerConnection(webApplicationBuilder.Configuration);
-        Log(LogMessages.WireSqlServerConnection);
+        builder.AddSqlServer();
+        Log(LogMessages.WireSqlServerConnector);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -278,13 +286,18 @@ public static class WebApplicationBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireWavefrontMetrics(this WebApplicationBuilder webApplicationBuilder)
     {
-        if (!webApplicationBuilder.Configuration.HasWavefront())
+        if (webApplicationBuilder.Configuration.HasWavefront())
         {
-            return;
+            webApplicationBuilder.AddWavefrontMetrics();
+            Log(LogMessages.WireWavefrontMetrics);
         }
+    }
 
-        webApplicationBuilder.AddWavefrontMetrics();
-        Log(LogMessages.WireWavefrontMetrics);
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void WireSteeltoePrometheus(this WebApplicationBuilder webApplicationBuilder)
+    {
+        webApplicationBuilder.Services.AddPrometheusActuator();
+        Log(LogMessages.WirePrometheus);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]

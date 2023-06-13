@@ -2,32 +2,35 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.SqlServer;
 
 public static class SqlServerWebApplicationBuilderExtensions
 {
-    private static readonly Type ConnectionType = SqlServerTypeLocator.SqlConnection;
-
     public static WebApplicationBuilder AddSqlServer(this WebApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
-
-        var connectionStringPostProcessor = new SqlServerConnectionStringPostProcessor();
-
-        BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<SqlServerOptions>(builder, "sqlserver", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory<SqlServerOptions>(builder.Services, ConnectionType, false, null);
-
-        return builder;
+        return AddSqlServer(builder, null, null);
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
+    public static WebApplicationBuilder AddSqlServer(this WebApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
-        return BaseWebApplicationBuilderExtensions.CreateRelationalHealthContributor<SqlServerOptions>(serviceProvider, bindingName, ConnectionType,
-            "SqlServer", "Data Source");
+        return AddSqlServer(builder, SqlServerPackageResolver.Default, configureAction, addAction);
+    }
+
+    internal static WebApplicationBuilder AddSqlServer(this WebApplicationBuilder builder, SqlServerPackageResolver packageResolver,
+        Action<ConnectorConfigureOptionsBuilder>? configureAction, Action<ConnectorAddOptionsBuilder>? addAction)
+    {
+        ArgumentGuard.NotNull(builder);
+        ArgumentGuard.NotNull(packageResolver);
+
+        builder.Configuration.ConfigureSqlServer(packageResolver, configureAction);
+        builder.Services.AddSqlServer(builder.Configuration, packageResolver, addAction);
+        return builder;
     }
 }

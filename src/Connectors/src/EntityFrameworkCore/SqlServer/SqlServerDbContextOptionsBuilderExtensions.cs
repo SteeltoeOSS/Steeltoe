@@ -2,8 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.EntityFrameworkCore;
 using Steeltoe.Common;
+using Steeltoe.Connectors.DynamicTypeAccess;
+using Steeltoe.Connectors.EntityFrameworkCore.SqlServer.DynamicTypeAccess;
 using Steeltoe.Connectors.SqlServer;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.SqlServer;
@@ -11,23 +15,33 @@ namespace Steeltoe.Connectors.EntityFrameworkCore.SqlServer;
 public static class SqlServerDbContextOptionsBuilderExtensions
 {
     public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,
-        string serviceBindingName = null, Action<object> sqlServerOptionsAction = null)
+        string? serviceBindingName = null, Action<object>? sqlServerOptionsAction = null)
+    {
+        return UseSqlServer(optionsBuilder, serviceProvider, SqlServerEntityFrameworkCorePackageResolver.Default, serviceBindingName, sqlServerOptionsAction);
+    }
+
+    private static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,
+        SqlServerEntityFrameworkCorePackageResolver packageResolver, string? serviceBindingName = null, Action<object>? sqlServerOptionsAction = null)
     {
         ArgumentGuard.NotNull(optionsBuilder);
         ArgumentGuard.NotNull(serviceProvider);
-
-        Type connectionType = SqlServerTypeLocator.SqlConnection;
+        ArgumentGuard.NotNull(packageResolver);
 
         string optionName = serviceBindingName ?? string.Empty;
-        string connectionString = ConnectorFactoryInvoker.GetConnectionString<SqlServerOptions>(serviceProvider, optionName, connectionType);
+        string? connectionString = GetConnectionString(serviceProvider, optionName, packageResolver);
 
-        if (connectionString == null)
-        {
-            throw new InvalidOperationException($"Connection string for service binding '{serviceBindingName}' not found.");
-        }
-
-        SqlServerDbContextOptionsExtensions.DoUseSqlServer(optionsBuilder, connectionString, sqlServerOptionsAction);
+        SqlServerDbContextOptionsExtensionsShim.UseSqlServer(packageResolver, optionsBuilder, connectionString, sqlServerOptionsAction);
 
         return optionsBuilder;
+    }
+
+    private static string? GetConnectionString(IServiceProvider serviceProvider, string serviceBindingName,
+        SqlServerEntityFrameworkCorePackageResolver packageResolver)
+    {
+        ConnectorFactoryShim<SqlServerOptions> connectorFactoryShim =
+            ConnectorFactoryShim<SqlServerOptions>.FromServiceProvider(serviceProvider, packageResolver.SqlConnectionClass.Type);
+
+        ConnectorShim<SqlServerOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
+        return connectorShim.Options.ConnectionString;
     }
 }

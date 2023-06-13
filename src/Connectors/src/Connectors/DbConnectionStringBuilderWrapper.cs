@@ -35,6 +35,7 @@ internal sealed class DbConnectionStringBuilderWrapper : IConnectionStringBuilde
     public DbConnectionStringBuilderWrapper(DbConnectionStringBuilder innerBuilder)
     {
         ArgumentGuard.NotNull(innerBuilder);
+
         _innerBuilder = innerBuilder;
     }
 }

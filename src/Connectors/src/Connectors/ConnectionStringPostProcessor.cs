@@ -2,18 +2,27 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration;
 
 namespace Steeltoe.Connectors;
 
+/// <summary>
+/// Merges connection string parameters from configuration keys below steeltoe:service-bindings into an optional connection string from steeltoe:client
+/// using <see cref="IConnectionStringBuilder" />. The resulting ConnectionString key is stored below steeltoe:service-bindings.
+/// </summary>
 internal abstract class ConnectionStringPostProcessor : IConfigurationPostProcessor
 {
+    private const string ConnectionStringName = "ConnectionString";
     public const string DefaultBindingName = "Default";
 
     private static readonly string ClientBindingsConfigurationKey = ConfigurationPath.Combine("Steeltoe", "Client");
     public static readonly string ServiceBindingsConfigurationKey = ConfigurationPath.Combine("steeltoe", "service-bindings");
+
+    private ConfigurationManager? _configurationManager;
 
     protected abstract string BindingType { get; }
 
@@ -22,16 +31,24 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
         return new DbConnectionStringBuilderWrapper(new DbConnectionStringBuilder());
     }
 
+    public void CaptureConfigurationManager(ConfigurationManager configurationManager)
+    {
+        _configurationManager = configurationManager;
+    }
+
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
     {
-        IDictionary<string, BindingInfo> bindingsByName = GetBindingsByName(provider.Source.ParentConfiguration);
+        // PERF: Use ConfigurationManager if available to avoid a (potentially expensive) reload of all configuration providers.
+        IConfigurationRoot parentConfiguration = _configurationManager ?? provider.Source.GetParentConfiguration();
+
+        IDictionary<string, BindingInfo> bindingsByName = GetBindingsByName(parentConfiguration);
 
         if (ShouldSetDefault(bindingsByName))
         {
-            bindingsByName.TryGetValue(DefaultBindingName, out BindingInfo defaultBinding);
+            bindingsByName.TryGetValue(DefaultBindingName, out BindingInfo? defaultBinding);
 
-            string alternateBindingName = bindingsByName.Keys.SingleOrDefault(bindingName => bindingName != DefaultBindingName);
-            BindingInfo alternateBinding = alternateBindingName == null ? null : bindingsByName[alternateBindingName];
+            string? alternateBindingName = bindingsByName.Keys.SingleOrDefault(bindingName => bindingName != DefaultBindingName);
+            BindingInfo? alternateBinding = alternateBindingName == null ? null : bindingsByName[alternateBindingName];
 
             var bindingInfo = new BindingInfo
             {
@@ -69,7 +86,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
             return binding.IsServerOnly;
         }
 
-        if (bindingsByName.Count == 2 && bindingsByName.TryGetValue(DefaultBindingName, out BindingInfo defaultBinding) && defaultBinding.IsClientOnly)
+        if (bindingsByName.Count == 2 && bindingsByName.TryGetValue(DefaultBindingName, out BindingInfo? defaultBinding) && defaultBinding.IsClientOnly)
         {
             BindingInfo alternateBinding = bindingsByName.Single(binding => binding.Key != DefaultBindingName).Value;
 
@@ -127,7 +144,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
                 string secretName = secretSection.Key;
                 string secretValue = secretSection.Value;
 
-                if (string.Equals(secretName, "ConnectionString", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(secretValue))
+                if (string.Equals(secretName, ConnectionStringName, StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(secretValue))
                 {
                     // Take the connection string from appsettings.json as baseline, then merge cloud-provided secrets into it.
                     connectionStringBuilder.ConnectionString = secretValue;
@@ -162,7 +179,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
             }
         }
 
-        string connectionStringKey = ConfigurationPath.Combine(ServiceBindingsConfigurationKey, BindingType, bindingName, "ConnectionString");
+        string connectionStringKey = ConfigurationPath.Combine(ServiceBindingsConfigurationKey, BindingType, bindingName, ConnectionStringName);
         configurationData[connectionStringKey] = connectionStringBuilder.ConnectionString;
 
         foreach ((string secretName, string secretValue) in separateSecrets)
@@ -179,8 +196,8 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
     private sealed class BindingInfo
     {
-        public IConfigurationSection ServerBindingSection { get; set; }
-        public IConfigurationSection ClientBindingSection { get; set; }
+        public IConfigurationSection? ServerBindingSection { get; set; }
+        public IConfigurationSection? ClientBindingSection { get; set; }
 
         public bool IsServerOnly => ServerBindingSection != null && ClientBindingSection == null;
         public bool IsClientOnly => ServerBindingSection == null && ClientBindingSection != null;

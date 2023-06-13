@@ -1,0 +1,28 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+// ReSharper disable MemberCanBeInternal
+
+namespace Steeltoe.Bootstrap.AutoConfiguration;
+
+public static class SteeltoeAssemblyNames
+{
+    public const string ConfigurationCloudFoundry = "Steeltoe.Configuration.CloudFoundry";
+    public const string ConfigurationConfigServer = "Steeltoe.Configuration.ConfigServer";
+    public const string ConfigurationKubernetes = "Steeltoe.Configuration.Kubernetes";
+    public const string ConfigurationRandomValue = "Steeltoe.Configuration.RandomValue";
+    public const string ConfigurationPlaceholder = "Steeltoe.Configuration.Placeholder";
+    public const string Connectors = "Steeltoe.Connectors";
+    public const string DiscoveryClient = "Steeltoe.Discovery.Client";
+    public const string LoggingDynamicSerilog = "Steeltoe.Logging.DynamicSerilog";
+    public const string ManagementEndpoint = "Steeltoe.Management.Endpoint";
+    public const string ManagementKubernetes = "Steeltoe.Management.Kubernetes";
+    public const string ManagementPrometheus = "Steeltoe.Management.Prometheus";
+    public const string ManagementTracing = "Steeltoe.Management.Tracing";
+    public const string ManagementWavefront = "Steeltoe.Management.Wavefront";
+    public const string SecurityAuthenticationCloudFoundry = "Steeltoe.Security.Authentication.CloudFoundry";
+
+    internal static readonly IReadOnlyCollection<string> All = typeof(SteeltoeAssemblyNames).GetFields().Where(field => field.FieldType == typeof(string))
+        .Select(field => field.GetValue(null)).Cast<string>().ToArray();
+}

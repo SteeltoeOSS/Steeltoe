@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using FluentAssertions;
-using Steeltoe.Connectors.MongoDb;
 using Steeltoe.Connectors.Redis;
 using Xunit;
 
@@ -42,7 +41,7 @@ public sealed class RedisConnectionStringBuilderTests
     [Fact]
     public void Returns_null_when_getting_known_keyword()
     {
-        var builder = new MongoDbConnectionStringBuilder();
+        var builder = new RedisConnectionStringBuilder();
 
         object port = builder["port"];
 
@@ -52,7 +51,7 @@ public sealed class RedisConnectionStringBuilderTests
     [Fact]
     public void Throws_when_getting_unknown_keyword()
     {
-        var builder = new MongoDbConnectionStringBuilder();
+        var builder = new RedisConnectionStringBuilder();
 
         Action action = () => _ = builder["bad"];
 
@@ -62,7 +61,7 @@ public sealed class RedisConnectionStringBuilderTests
     [Fact]
     public void Can_get_unknown_keyword_that_was_set_earlier()
     {
-        var builder = new MongoDbConnectionStringBuilder
+        var builder = new RedisConnectionStringBuilder
         {
             ["some"] = "other"
         };

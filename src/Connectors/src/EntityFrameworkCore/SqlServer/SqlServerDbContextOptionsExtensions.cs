@@ -91,7 +91,7 @@ public static class SqlServerDbContextOptionsExtensions
         return factory.CreateConnectionString();
     }
 
-    internal static DbContextOptionsBuilder DoUseSqlServer(DbContextOptionsBuilder builder, string connection, object sqlServerOptionsAction = null)
+    private static DbContextOptionsBuilder DoUseSqlServer(DbContextOptionsBuilder builder, string connection, object sqlServerOptionsAction = null)
     {
         Type extensionType = EntityFrameworkCoreTypeLocator.SqlServerDbContextOptionsType;
 
@@ -103,7 +103,7 @@ public static class SqlServerDbContextOptionsExtensions
 
         if (extensionType == null)
         {
-            throw new ConnectorException("Unable to find UseSqlServer extension, are you missing SqlServer EntityFramework Core assembly");
+            throw new ConnectorException("Unable to find UseSqlServer extension, are you missing SqlServer Entity Framework Core assembly");
         }
 
         object result = ReflectionHelpers.Invoke(useMethod, null, new[]

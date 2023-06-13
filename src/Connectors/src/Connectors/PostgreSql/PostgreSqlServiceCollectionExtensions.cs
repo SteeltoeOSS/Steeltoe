@@ -2,83 +2,91 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
+#nullable enable
+
+using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connectors.Services;
+using Steeltoe.Connectors.DynamicTypeAccess;
+using Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.PostgreSql;
 
 public static class PostgreSqlServiceCollectionExtensions
 {
-    /// <summary>
-    /// Add an IHealthContributor to a ServiceCollection for PostgreSQL.
-    /// </summary>
-    /// <param name="services">
-    /// Service collection to add to.
-    /// </param>
-    /// <param name="configuration">
-    /// App configuration.
-    /// </param>
-    /// <param name="contextLifetime">
-    /// Lifetime of the service to inject.
-    /// </param>
-    /// <returns>
-    /// IServiceCollection for chaining.
-    /// </returns>
-    public static IServiceCollection AddPostgreSqlHealthContributor(this IServiceCollection services, IConfiguration configuration,
-        ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
+    public static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfiguration configuration)
+    {
+        return AddPostgreSql(services, configuration, null);
+    }
+
+    public static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfiguration configuration,
+        Action<ConnectorAddOptionsBuilder>? addAction)
+    {
+        return AddPostgreSql(services, configuration, PostgreSqlPackageResolver.Default, addAction);
+    }
+
+    private static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfiguration configuration, PostgreSqlPackageResolver packageResolver,
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(packageResolver);
 
-        var info = configuration.GetSingletonServiceInfo<PostgreSqlServiceInfo>();
+        if (!ConnectorFactoryShim<PostgreSqlOptions>.IsRegistered(packageResolver.NpgsqlConnectionClass.Type, services))
+        {
+            var optionsBuilder = new ConnectorAddOptionsBuilder(
+                (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
+                (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+            {
+                CacheConnection = false,
+                EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
+            };
 
-        DoAdd(services, info, configuration, contextLifetime);
+            addAction?.Invoke(optionsBuilder);
+
+            IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<PostgreSqlOptions>(services, configuration, "postgresql",
+                optionsBuilder.EnableHealthChecks ? optionsBuilder.CreateHealthContributor : null);
+
+            ConnectorFactoryShim<PostgreSqlOptions>.Register(packageResolver.NpgsqlConnectionClass.Type, services, optionNames, optionsBuilder.CreateConnection,
+                optionsBuilder.CacheConnection);
+        }
+
         return services;
     }
 
-    /// <summary>
-    /// Add an IHealthContributor to a ServiceCollection for PostgreSQL.
-    /// </summary>
-    /// <param name="services">
-    /// Service collection to add to.
-    /// </param>
-    /// <param name="configuration">
-    /// App configuration.
-    /// </param>
-    /// <param name="serviceName">
-    /// cloud foundry service name binding.
-    /// </param>
-    /// <param name="contextLifetime">
-    /// Lifetime of the service to inject.
-    /// </param>
-    /// <returns>
-    /// IServiceCollection for chaining.
-    /// </returns>
-    public static IServiceCollection AddPostgreSqlHealthContributor(this IServiceCollection services, IConfiguration configuration, string serviceName,
-        ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
+    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
+        PostgreSqlPackageResolver packageResolver)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(configuration);
+        ConnectorFactoryShim<PostgreSqlOptions> connectorFactoryShim =
+            ConnectorFactoryShim<PostgreSqlOptions>.FromServiceProvider(serviceProvider, packageResolver.NpgsqlConnectionClass.Type);
 
-        var info = configuration.GetRequiredServiceInfo<PostgreSqlServiceInfo>(serviceName);
+        ConnectorShim<PostgreSqlOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
 
-        DoAdd(services, info, configuration, contextLifetime);
-        return services;
+        var connection = (DbConnection)connectorShim.GetConnection();
+        string hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);
+        var logger = serviceProvider.GetRequiredService<ILogger<RelationalDbHealthContributor>>();
+
+        return new RelationalDbHealthContributor(connection, $"PostgreSQL-{serviceBindingName}", hostName, logger);
     }
 
-    private static void DoAdd(IServiceCollection services, PostgreSqlServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime)
+    private static string GetHostNameFromConnectionString(PostgreSqlPackageResolver packageResolver, string? connectionString)
     {
-        var options = new PostgreSqlProviderConnectorOptions(configuration);
-        var factory = new PostgreSqlProviderConnectorFactory(info, options, PostgreSqlTypeLocator.NpgsqlConnection);
+        var connectionStringBuilderShim = NpgsqlConnectionStringBuilderShim.CreateInstance(packageResolver);
+        connectionStringBuilderShim.Instance.ConnectionString = connectionString;
+        return (string)connectionStringBuilderShim.Instance["host"];
+    }
 
-        services.Add(new ServiceDescriptor(typeof(IHealthContributor),
-            ctx => new RelationalDbHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),
-            contextLifetime));
+    private static DbConnection CreateConnection(IServiceProvider serviceProvider, string serviceBindingName, PostgreSqlPackageResolver packageResolver)
+    {
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
+        PostgreSqlOptions options = optionsMonitor.Get(serviceBindingName);
+
+        var npgsqlConnectionShim = NpgsqlConnectionShim.CreateInstance(packageResolver, options.ConnectionString);
+        return npgsqlConnectionShim.Instance;
     }
 }

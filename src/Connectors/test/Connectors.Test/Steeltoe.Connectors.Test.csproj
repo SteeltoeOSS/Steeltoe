@@ -14,8 +14,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="$(HealthChecksVersion)" />
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="$(HealthChecksVersion)" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="$(MicrosoftAzureCosmosVersion)" />
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="$(OracleVersion)" />
-    <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
+    <PackageReference Include="System.Data.SqlClient" Version="$(SystemSqlClientVersion)" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="$(MicrosoftSqlClientVersion)" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
@@ -24,6 +23,7 @@
     <PackageReference Include="MySql.Data" Version="$(MySqlV8)" />
     <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientTestVersion)" />
+    <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />
   </ItemGroup>
 
   <ItemGroup>

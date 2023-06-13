@@ -2,6 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
@@ -10,10 +13,10 @@ namespace Steeltoe.Connectors;
 public sealed class Connector<TOptions, TConnection> : IDisposable
     where TOptions : ConnectionStringOptions
 {
+    private readonly string _serviceBindingName;
+    private readonly Func<object> _createConnection;
     private readonly IOptionsMonitor<TOptions> _optionsMonitor;
-    private readonly string _name;
-    private readonly Func<TOptions, string, object> _createConnection;
-    private readonly Lazy<(object Connection, TOptions OptionsSnapshot)> _singletonConnectionWithOptions;
+    private readonly Lazy<(object Connection, TOptions OptionsSnapshot)>? _singletonConnectionWithOptions;
     private bool _hasDisposedSingleton;
 
     /// <summary>
@@ -34,19 +37,19 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
                 return _singletonConnectionWithOptions.Value.OptionsSnapshot;
             }
 
-            return _optionsMonitor.Get(_name);
+            return _optionsMonitor.Get(_serviceBindingName);
         }
     }
 
-    internal Connector(IOptionsMonitor<TOptions> optionsMonitor, string name, Func<TOptions, string, object> createConnection, bool useSingletonConnection)
+    public Connector(IServiceProvider serviceProvider, string serviceBindingName, ConnectorCreateConnection createConnection, bool useSingletonConnection)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(name);
+        ArgumentGuard.NotNull(serviceProvider);
+        ArgumentGuard.NotNull(serviceBindingName);
         ArgumentGuard.NotNull(createConnection);
 
-        _optionsMonitor = optionsMonitor;
-        _name = name;
-        _createConnection = createConnection;
+        _serviceBindingName = serviceBindingName;
+        _createConnection = () => createConnection(serviceProvider, serviceBindingName);
+        _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<TOptions>>();
 
         if (useSingletonConnection)
         {
@@ -83,14 +86,14 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
 
     private (object Connection, TOptions OptionsSnapshot) CreateConnectionFromOptions()
     {
-        TOptions optionsSnapshot = _optionsMonitor.Get(_name);
-        object connection = _createConnection(optionsSnapshot, _name);
+        TOptions optionsSnapshot = _optionsMonitor.Get(_serviceBindingName);
+        object connection = _createConnection();
 
         if (connection == null)
         {
-            throw new InvalidOperationException(_name == string.Empty
+            throw new InvalidOperationException(_serviceBindingName == string.Empty
                 ? "Failed to create connection for default service binding."
-                : $"Failed to create connection for service binding '{_name}'.");
+                : $"Failed to create connection for service binding '{_serviceBindingName}'.");
         }
 
         return (connection, optionsSnapshot);

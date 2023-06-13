@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connectors.PostgreSql;
@@ -198,7 +201,6 @@ public sealed class PostgreSqlConnectorTests
         var optionsSnapshot = app.Services.GetRequiredService<IOptionsSnapshot<PostgreSqlOptions>>();
 
         PostgreSqlOptions optionsOne = optionsSnapshot.Get("myPostgreSqlServiceOne");
-        optionsOne.ConnectionString.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsOne.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -210,7 +212,6 @@ public sealed class PostgreSqlConnectorTests
         }, options => options.WithoutStrictOrdering());
 
         PostgreSqlOptions optionsTwo = optionsSnapshot.Get("myPostgreSqlServiceTwo");
-        optionsTwo.ConnectionString.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsTwo.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -238,7 +239,6 @@ public sealed class PostgreSqlConnectorTests
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
 
         PostgreSqlOptions optionsAzureOne = optionsMonitor.Get("myPostgreSqlServiceAzureOne");
-        optionsAzureOne.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsAzureOne.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -252,7 +252,6 @@ public sealed class PostgreSqlConnectorTests
         }, options => options.WithoutStrictOrdering());
 
         PostgreSqlOptions optionsAzureTwo = optionsMonitor.Get("myPostgreSqlServiceAzureTwo");
-        optionsAzureTwo.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsAzureTwo.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -264,7 +263,6 @@ public sealed class PostgreSqlConnectorTests
         }, options => options.WithoutStrictOrdering());
 
         PostgreSqlOptions optionsGoogle = optionsMonitor.Get("myPostgreSqlServiceGoogle");
-        optionsGoogle.ConnectionString.Should().NotBeNull();
 
         ExtractConnectionStringParameters(optionsGoogle.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -351,42 +349,34 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     [Fact]
     public async Task Binds_options_with_Kubernetes_service_bindings()
     {
-        try
+        string rootDirectory = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
+        using var scope = new EnvironmentVariableScope("SERVICE_BINDING_ROOT", rootDirectory);
+
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Configuration.AddKubernetesServiceBindings();
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            string rootDir = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
-            Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", rootDir);
+            ["Steeltoe:Client:PostgreSql:customer-profiles:ConnectionString"] =
+                "Host=ignored;Database=ignored;Include Error Detail=true;Log Parameters=true;host=localhost"
+        });
 
-            WebApplicationBuilder builder = WebApplication.CreateBuilder();
-            builder.Configuration.AddEnvironmentVariables();
-            builder.Configuration.AddKubernetesServiceBindings();
+        builder.AddPostgreSql();
 
-            builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
-            {
-                ["Steeltoe:Client:PostgreSql:customer-profiles:ConnectionString"] = "Include Error Detail=true;Log Parameters=true;host=localhost"
-            });
+        await using WebApplication app = builder.Build();
+        var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
 
-            builder.AddPostgreSql();
+        PostgreSqlOptions customerProfilesOptions = optionsMonitor.Get("customer-profiles");
 
-            await using WebApplication app = builder.Build();
-            var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
-
-            PostgreSqlOptions customerProfilesOptions = optionsMonitor.Get("customer-profiles");
-            customerProfilesOptions.Should().NotBeNull();
-
-            ExtractConnectionStringParameters(customerProfilesOptions.ConnectionString).Should().BeEquivalentTo(new List<string>
-            {
-                "Include Error Detail=True",
-                "Log Parameters=True",
-                "Host=10.194.59.205",
-                "Database=steeltoe",
-                "Username=testrolee93ccf859894dc60dcd53218492b37b4",
-                "Password=Qp!1mB1$Zk2T!$!D85_E"
-            }, options => options.WithoutStrictOrdering());
-        }
-        finally
+        ExtractConnectionStringParameters(customerProfilesOptions.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
-            Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", null);
-        }
+            "Include Error Detail=True",
+            "Log Parameters=True",
+            "Host=10.194.59.205",
+            "Database=steeltoe",
+            "Username=testrolee93ccf859894dc60dcd53218492b37b4",
+            "Password=Qp!1mB1$Zk2T!$!D85_E"
+        }, options => options.WithoutStrictOrdering());
     }
 
     [Fact]
@@ -406,10 +396,14 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        await using NpgsqlConnection connectionOne = connectorFactory.GetNamed("myPostgreSqlServiceOne").GetConnection();
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceOne");
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceTwo");
+
+        await using NpgsqlConnection connectionOne = connectorFactory.Get("myPostgreSqlServiceOne").GetConnection();
         connectionOne.ConnectionString.Should().Be("Host=localhost;Database=db1;Username=user1;Password=pass1");
 
-        await using NpgsqlConnection connectionTwo = connectorFactory.GetNamed("myPostgreSqlServiceTwo").GetConnection();
+        await using NpgsqlConnection connectionTwo = connectorFactory.Get("myPostgreSqlServiceTwo").GetConnection();
         connectionTwo.ConnectionString.Should().Be("Host=localhost;Database=db2;Username=user2;Password=pass2");
     }
 
@@ -436,13 +430,16 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
             WebApplicationBuilder builder = WebApplication.CreateBuilder();
             builder.Configuration.AddJsonFile(tempJsonPath, false, true);
 
-            builder.AddPostgreSql();
+            builder.AddPostgreSql(configureOptions => configureOptions.DetectConfigurationChanges = true, null);
 
             await using WebApplication app = builder.Build();
 
             var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-            string connectionString = connectorFactory.GetNamed("examplePostgreSqlService").Options.ConnectionString;
+            connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+            connectorFactory.ServiceBindingNames.Should().Contain("examplePostgreSqlService");
+
+            string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
             connectionString.Should().Be("Host=localhost;Database=db1");
 
             await File.WriteAllTextAsync(tempJsonPath, @"{
@@ -460,8 +457,32 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
             await Task.Delay(TimeSpan.FromSeconds(2));
 
-            connectionString = connectorFactory.GetNamed("examplePostgreSqlService").Options.ConnectionString;
+            connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+            connectorFactory.ServiceBindingNames.Should().Contain("examplePostgreSqlService");
+
+            connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
             connectionString.Should().Be("Host=remote.com;Database=other");
+
+            await File.WriteAllTextAsync(tempJsonPath, @"{
+  ""Steeltoe"": {
+    ""Client"": {
+      ""PostgreSql"": {
+        ""examplePostgreSqlService"": {
+            ""ConnectionString"": ""SERVER=other.com;DB=other""
+        }
+      }
+    }
+  }
+}
+");
+
+            await Task.Delay(TimeSpan.FromSeconds(2));
+
+            connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+            connectorFactory.ServiceBindingNames.Should().Contain("examplePostgreSqlService");
+
+            connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
+            connectionString.Should().Be("Host=other.com;Database=other");
         }
         finally
         {
@@ -493,6 +514,49 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     }
 
     [Fact]
+    public async Task Skips_HealthContributors_when_AspNetCore_health_checks_are_registered()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        {
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
+        });
+
+        builder.Services.AddHealthChecks();
+
+        builder.AddPostgreSql(null, null);
+
+        await using WebApplication app = builder.Build();
+
+        IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
+        healthContributors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Skips_HealthContributors_when_disabled()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        {
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
+        });
+
+        builder.AddPostgreSql(null, addOptions =>
+        {
+            addOptions.EnableHealthChecks = false;
+        });
+
+        await using WebApplication app = builder.Build();
+
+        IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
+        healthContributors.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Registers_default_connection_string_when_single_server_binding_and_only_default_client_binding_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -508,7 +572,12 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
+
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
+
+        string? defaultConnectionString = connectorFactory.Get().Options.ConnectionString;
 
         ExtractConnectionStringParameters(defaultConnectionString).Should().BeEquivalentTo(new List<string>
         {
@@ -520,7 +589,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
             "Port=5432"
         }, options => options.WithoutStrictOrdering());
 
-        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -538,10 +607,14 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().NotBeNull();
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
 
-        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        string? defaultConnectionString = connectorFactory.Get().Options.ConnectionString;
+        defaultConnectionString.Should().NotBeNullOrEmpty();
+
+        string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
         namedConnectionString.Should().Be(defaultConnectionString);
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
@@ -563,8 +636,11 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().NotBeNull();
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+
+        string? defaultConnectionString = connectorFactory.Get().Options.ConnectionString;
+        defaultConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
@@ -585,11 +661,11 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().BeNull();
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
 
-        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
-        namedConnectionString.Should().NotBeNull();
+        string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        namedConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
@@ -611,11 +687,11 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().BeNull();
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
 
-        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
-        namedConnectionString.Should().NotBeNull();
+        string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        namedConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
@@ -637,11 +713,13 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().BeNull();
+        connectorFactory.ServiceBindingNames.Should().HaveCount(3);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureTwo");
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceGoogle");
 
-        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
-        namedConnectionString.Should().NotBeNull();
+        string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        namedConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(3);
     }
@@ -664,11 +742,11 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().BeNull();
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
 
-        string namedConnectionString = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
-        namedConnectionString.Should().NotBeNull();
+        string? namedConnectionString = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        namedConnectionString.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }
@@ -691,19 +769,36 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
 
-        string defaultConnectionString = connectorFactory.GetDefault().Options.ConnectionString;
-        defaultConnectionString.Should().BeNull();
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain("myPostgreSqlServiceAzureOne");
+        connectorFactory.ServiceBindingNames.Should().Contain("alternatePostgreSqlService");
 
-        string namedConnectionString1 = connectorFactory.GetNamed("myPostgreSqlServiceAzureOne").Options.ConnectionString;
-        namedConnectionString1.Should().NotBeNull();
+        string? namedConnectionString1 = connectorFactory.Get("myPostgreSqlServiceAzureOne").Options.ConnectionString;
+        namedConnectionString1.Should().NotBeNullOrEmpty();
 
-        string namedConnectionString2 = connectorFactory.GetNamed("alternatePostgreSqlService").Options.ConnectionString;
-        namedConnectionString2.Should().NotBeNull();
+        string? namedConnectionString2 = connectorFactory.Get("alternatePostgreSqlService").Options.ConnectionString;
+        namedConnectionString2.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(2);
     }
 
-    private static IEnumerable<string> ExtractConnectionStringParameters(string connectionString)
+    [Fact]
+    public void Subsequent_registrations_are_ignored()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        {
+            ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "Include Error Detail=true;Log Parameters=true;host=localhost"
+        });
+
+        builder.AddPostgreSql();
+
+        Action action = () => builder.AddPostgreSql();
+        action.Should().NotThrow();
+    }
+
+    private static IEnumerable<string> ExtractConnectionStringParameters(string? connectionString)
     {
         List<string> entries = new();
 
@@ -733,19 +828,22 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         return entries;
     }
 
-    private static void CleanupTempFiles(params string[] connectionStrings)
+    private static void CleanupTempFiles(params string?[] connectionStrings)
     {
-        foreach (string connectionString in connectionStrings)
+        foreach (string? connectionString in connectionStrings)
         {
-            foreach (string entry in connectionString.Split(';').ToArray())
+            if (!string.IsNullOrEmpty(connectionString))
             {
-                string[] pair = entry.Split('=', 2);
-                string key = pair[0];
-                string value = pair[1];
-
-                if (TempFileKeys.Contains(key) && File.Exists(value))
+                foreach (string entry in connectionString.Split(';').ToArray())
                 {
-                    File.Delete(value);
+                    string[] pair = entry.Split('=', 2);
+                    string key = pair[0];
+                    string value = pair[1];
+
+                    if (TempFileKeys.Contains(key) && File.Exists(value))
+                    {
+                        File.Delete(value);
+                    }
                 }
             }
         }

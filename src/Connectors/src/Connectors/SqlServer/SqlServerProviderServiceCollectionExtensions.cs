@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
+using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -85,13 +85,13 @@ public static class SqlServerProviderServiceCollectionExtensions
         Type sqlServerConnection = SqlServerTypeLocator.SqlConnection;
         var options = new SqlServerProviderConnectorOptions(configuration);
         var factory = new SqlServerProviderConnectorFactory(info, options, sqlServerConnection);
-        services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
+        services.Add(new ServiceDescriptor(typeof(DbConnection), factory.Create, contextLifetime));
         services.Add(new ServiceDescriptor(sqlServerConnection, factory.Create, contextLifetime));
 
         if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
         {
             services.Add(new ServiceDescriptor(typeof(IHealthContributor),
-                ctx => new RelationalDbHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),
+                ctx => new RelationalDbHealthContributor((DbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),
                 ServiceLifetime.Singleton));
         }
     }

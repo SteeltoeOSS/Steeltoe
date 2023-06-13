@@ -129,8 +129,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.Redis.Test", "Security\test\DataProtection.Redis.Test\Steeltoe.Security.DataProtection.Redis.Test.csproj", "{6D09B0D3-AF28-4FC4-A67D-424E7746682B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connectors.EntityFramework6", "Connectors\src\EntityFramework6\Steeltoe.Connectors.EntityFramework6.csproj", "{C98FC8E6-2CD8-45E7-9453-92340A0129DF}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResources", "Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj", "{65CF716D-9215-475C-B37F-CA943F5CD6A3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Hosting", "Common\src\Common.Hosting\Steeltoe.Common.Hosting.csproj", "{BEB156E9-4E06-403A-B778-E7B092B79962}"
@@ -192,8 +190,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connectors.CloudFoundry", "Connectors\src\CloudFoundry\Steeltoe.Connectors.CloudFoundry.csproj", "{AFD6152E-A432-4CD4-AB73-A5DC2411EAB1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connectors.CloudFoundry.Test", "Connectors\test\CloudFoundry.Test\Steeltoe.Connectors.CloudFoundry.Test.csproj", "{7B4E0A71-F3AE-4F7A-AA01-519DE4AFD08E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connectors.EntityFramework6.Test", "Connectors\test\EntityFramework6.Test\Steeltoe.Connectors.EntityFramework6.Test.csproj", "{53CC34F9-3661-4719-827D-0ADADCA8FC92}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "External.Connectors.Test", "Connectors\test\External.Test\External.Connectors.Test.csproj", "{71BBC2CC-8449-4D28-8D23-C544E857B642}"
 EndProject
@@ -290,6 +286,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.CloudFoundry.ServiceBinding", "Configuration\src\CloudFoundry.ServiceBinding\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj", "{5625E2FC-9DAD-4ADC-B9A6-6ED192E9A4F4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test", "Configuration\test\CloudFoundry.ServiceBinding.Test\Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test.csproj", "{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Bootstrap.EmptyAutoConfiguration.Test", "Bootstrap\test\EmptyAutoConfiguration.Test\Steeltoe.Bootstrap.EmptyAutoConfiguration.Test.csproj", "{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -449,10 +447,6 @@ Global
 		{6D09B0D3-AF28-4FC4-A67D-424E7746682B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D09B0D3-AF28-4FC4-A67D-424E7746682B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D09B0D3-AF28-4FC4-A67D-424E7746682B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C98FC8E6-2CD8-45E7-9453-92340A0129DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C98FC8E6-2CD8-45E7-9453-92340A0129DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C98FC8E6-2CD8-45E7-9453-92340A0129DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C98FC8E6-2CD8-45E7-9453-92340A0129DF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{65CF716D-9215-475C-B37F-CA943F5CD6A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{65CF716D-9215-475C-B37F-CA943F5CD6A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65CF716D-9215-475C-B37F-CA943F5CD6A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -565,10 +559,6 @@ Global
 		{7B4E0A71-F3AE-4F7A-AA01-519DE4AFD08E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B4E0A71-F3AE-4F7A-AA01-519DE4AFD08E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B4E0A71-F3AE-4F7A-AA01-519DE4AFD08E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{53CC34F9-3661-4719-827D-0ADADCA8FC92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{53CC34F9-3661-4719-827D-0ADADCA8FC92}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{53CC34F9-3661-4719-827D-0ADADCA8FC92}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{53CC34F9-3661-4719-827D-0ADADCA8FC92}.Release|Any CPU.Build.0 = Release|Any CPU
 		{71BBC2CC-8449-4D28-8D23-C544E857B642}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{71BBC2CC-8449-4D28-8D23-C544E857B642}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71BBC2CC-8449-4D28-8D23-C544E857B642}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -713,6 +703,10 @@ Global
 		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -756,7 +750,6 @@ Global
 		{31E52250-3422-49E9-9605-EBE786CC1BE3} = {5128206A-242E-4069-AD30-910EDC40B165}
 		{3F235016-1E47-4BB7-AB68-F1900E8CF951} = {5128206A-242E-4069-AD30-910EDC40B165}
 		{6D09B0D3-AF28-4FC4-A67D-424E7746682B} = {5128206A-242E-4069-AD30-910EDC40B165}
-		{C98FC8E6-2CD8-45E7-9453-92340A0129DF} = {3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}
 		{65CF716D-9215-475C-B37F-CA943F5CD6A3} = {59874241-E276-4035-B31D-14924889A1C9}
 		{BEB156E9-4E06-403A-B778-E7B092B79962} = {59874241-E276-4035-B31D-14924889A1C9}
 		{BA80CEAD-02A2-480D-93F4-907B01BDB219} = {59874241-E276-4035-B31D-14924889A1C9}
@@ -785,7 +778,6 @@ Global
 		{B29554A3-724B-4D8D-B7D1-32EB53497FBC} = {59874241-E276-4035-B31D-14924889A1C9}
 		{AFD6152E-A432-4CD4-AB73-A5DC2411EAB1} = {3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}
 		{7B4E0A71-F3AE-4F7A-AA01-519DE4AFD08E} = {3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}
-		{53CC34F9-3661-4719-827D-0ADADCA8FC92} = {3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}
 		{71BBC2CC-8449-4D28-8D23-C544E857B642} = {3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}
 		{C3232459-EE86-430B-B310-EB32C991A11A} = {3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}
 		{E0B1415D-8D97-4BA5-9315-82E7D33E3933} = {DDB99068-891F-4937-98B0-E72CC3F4964B}
@@ -823,6 +815,7 @@ Global
 		{E887239C-FC4B-4EEE-9BD6-2DF6553DE2A9} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
 		{5625E2FC-9DAD-4ADC-B9A6-6ED192E9A4F4} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 		{BF725F33-3361-4D9C-A1FA-27EEA79A09DA} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
+		{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0} = {EA9C3A73-3F31-4DC9-982C-963CE613E119}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}

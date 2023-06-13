@@ -31,7 +31,7 @@ internal sealed class ServiceBindingMapper : ConfigurationDictionaryMapper
         string bindingName = configurationData[ConfigurationPath.Combine(bindingKey, "name")];
         string bindingProvider = ConfigurationPath.GetSectionKey(ConfigurationPath.GetParentPath(bindingKey));
 
-        List<string> toPrefix = ServiceBindingConfigurationProvider.OutputKeyPrefix.Split(ConfigurationPath.KeyDelimiter).ToList();
+        List<string> toPrefix = CloudFoundryServiceBindingConfigurationProvider.ToKeyPrefix.Split(ConfigurationPath.KeyDelimiter).ToList();
         toPrefix.Add(bindingType);
         toPrefix.Add(bindingName);
 

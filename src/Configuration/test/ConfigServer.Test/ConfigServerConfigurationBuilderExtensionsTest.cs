@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Security;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Configuration.CloudFoundry;
 using Xunit;
@@ -433,10 +434,10 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     [InlineData(VcapServicesAlt)]
     public void AddConfigServer_VCAP_SERVICES_Override_Defaults(string vcapServices)
     {
-        var configurationBuilder = new ConfigurationBuilder();
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
+        var configurationBuilder = new ConfigurationBuilder();
 
         var settings = new ConfigServerClientSettings
         {
@@ -454,10 +455,6 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         Assert.NotEqual("https://uri-from-settings", configServerProvider.Settings.Uri);
         Assert.Equal("https://uri-from-vcap-services", configServerProvider.Settings.Uri);
-
-        // reset to avoid breaking other tests
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", string.Empty);
     }
 
     [Fact]

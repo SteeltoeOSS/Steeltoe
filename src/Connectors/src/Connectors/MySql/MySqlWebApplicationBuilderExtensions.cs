@@ -2,32 +2,35 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common;
-using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MySql;
 
 public static class MySqlWebApplicationBuilderExtensions
 {
-    private static readonly Type ConnectionType = MySqlTypeLocator.MySqlConnection;
-
     public static WebApplicationBuilder AddMySql(this WebApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
-
-        var connectionStringPostProcessor = new MySqlConnectionStringPostProcessor();
-
-        BaseWebApplicationBuilderExtensions.RegisterConfigurationSource(builder.Configuration, connectionStringPostProcessor);
-        BaseWebApplicationBuilderExtensions.RegisterNamedOptions<MySqlOptions>(builder, "mysql", CreateHealthContributor);
-        BaseWebApplicationBuilderExtensions.RegisterConnectorFactory<MySqlOptions>(builder.Services, ConnectionType, false, null);
-
-        return builder;
+        return AddMySql(builder, null, null);
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string bindingName)
+    public static WebApplicationBuilder AddMySql(this WebApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
-        return BaseWebApplicationBuilderExtensions.CreateRelationalHealthContributor<MySqlOptions>(serviceProvider, bindingName, ConnectionType, "MySQL",
-            "server");
+        return AddMySql(builder, MySqlPackageResolver.Default, configureAction, addAction);
+    }
+
+    internal static WebApplicationBuilder AddMySql(this WebApplicationBuilder builder, MySqlPackageResolver packageResolver,
+        Action<ConnectorConfigureOptionsBuilder>? configureAction, Action<ConnectorAddOptionsBuilder>? addAction)
+    {
+        ArgumentGuard.NotNull(builder);
+        ArgumentGuard.NotNull(packageResolver);
+
+        builder.Configuration.ConfigureMySql(packageResolver, configureAction);
+        builder.Services.AddMySql(builder.Configuration, packageResolver, addAction);
+        return builder;
     }
 }

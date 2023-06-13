@@ -13,11 +13,9 @@
       "Connectors\\src\\Abstractions\\Steeltoe.Connectors.Abstractions.csproj",
       "Connectors\\src\\CloudFoundry\\Steeltoe.Connectors.CloudFoundry.csproj",
       "Connectors\\src\\Connectors\\Steeltoe.Connectors.csproj",
-      "Connectors\\src\\EntityFramework6\\Steeltoe.Connectors.EntityFramework6.csproj",
       "Connectors\\src\\EntityFrameworkCore\\Steeltoe.Connectors.EntityFrameworkCore.csproj",
       "Connectors\\test\\CloudFoundry.Test\\Steeltoe.Connectors.CloudFoundry.Test.csproj",
       "Connectors\\test\\Connectors.Test\\Steeltoe.Connectors.Test.csproj",
-      "Connectors\\test\\EntityFramework6.Test\\Steeltoe.Connectors.EntityFramework6.Test.csproj",
       "Connectors\\test\\EntityFrameworkCore.Test\\Steeltoe.Connectors.EntityFrameworkCore.Test.csproj",
       "Connectors\\test\\External.Test\\External.Connectors.Test.csproj"
     ]

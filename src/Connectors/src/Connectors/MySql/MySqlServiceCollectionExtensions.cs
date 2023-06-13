@@ -2,83 +2,89 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
+#nullable enable
+
+using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connectors.Services;
+using Steeltoe.Connectors.DynamicTypeAccess;
+using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MySql;
 
 public static class MySqlServiceCollectionExtensions
 {
-    /// <summary>
-    /// Add an IHealthContributor to a ServiceCollection for MySQL.
-    /// </summary>
-    /// <param name="services">
-    /// Service collection to add to.
-    /// </param>
-    /// <param name="configuration">
-    /// App configuration.
-    /// </param>
-    /// <param name="contextLifetime">
-    /// Lifetime of the service to inject.
-    /// </param>
-    /// <returns>
-    /// IServiceCollection for chaining.
-    /// </returns>
-    public static IServiceCollection AddMySqlHealthContributor(this IServiceCollection services, IConfiguration configuration,
-        ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
+    public static IServiceCollection AddMySql(this IServiceCollection services, IConfiguration configuration)
+    {
+        return AddMySql(services, configuration, null);
+    }
+
+    public static IServiceCollection AddMySql(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
+    {
+        return AddMySql(services, configuration, MySqlPackageResolver.Default, addAction);
+    }
+
+    internal static IServiceCollection AddMySql(this IServiceCollection services, IConfiguration configuration, MySqlPackageResolver packageResolver,
+        Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(packageResolver);
 
-        var info = configuration.GetSingletonServiceInfo<MySqlServiceInfo>();
+        if (!ConnectorFactoryShim<MySqlOptions>.IsRegistered(packageResolver.MySqlConnectionClass.Type, services))
+        {
+            var optionsBuilder = new ConnectorAddOptionsBuilder(
+                (serviceProvider, serviceBindingName) => CreateConnection(serviceProvider, serviceBindingName, packageResolver),
+                (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
+            {
+                CacheConnection = false,
+                EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))
+            };
 
-        DoAdd(services, info, configuration, contextLifetime);
+            addAction?.Invoke(optionsBuilder);
+
+            IReadOnlySet<string> optionNames = ConnectorOptionsBinder.RegisterNamedOptions<MySqlOptions>(services, configuration, "mysql",
+                optionsBuilder.EnableHealthChecks ? optionsBuilder.CreateHealthContributor : null);
+
+            ConnectorFactoryShim<MySqlOptions>.Register(packageResolver.MySqlConnectionClass.Type, services, optionNames, optionsBuilder.CreateConnection,
+                optionsBuilder.CacheConnection);
+        }
+
         return services;
     }
 
-    /// <summary>
-    /// Add an IHealthContributor to a ServiceCollection for MySQL.
-    /// </summary>
-    /// <param name="services">
-    /// Service collection to add to.
-    /// </param>
-    /// <param name="configuration">
-    /// App configuration.
-    /// </param>
-    /// <param name="serviceName">
-    /// cloud foundry service name binding.
-    /// </param>
-    /// <param name="contextLifetime">
-    /// Lifetime of the service to inject.
-    /// </param>
-    /// <returns>
-    /// IServiceCollection for chaining.
-    /// </returns>
-    public static IServiceCollection AddMySqlHealthContributor(this IServiceCollection services, IConfiguration configuration, string serviceName,
-        ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
+    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName, MySqlPackageResolver packageResolver)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNullOrEmpty(serviceName);
-        ArgumentGuard.NotNull(configuration);
+        ConnectorFactoryShim<MySqlOptions> connectorFactoryShim =
+            ConnectorFactoryShim<MySqlOptions>.FromServiceProvider(serviceProvider, packageResolver.MySqlConnectionClass.Type);
 
-        var info = configuration.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+        ConnectorShim<MySqlOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
 
-        DoAdd(services, info, configuration, contextLifetime);
-        return services;
+        var connection = (DbConnection)connectorShim.GetConnection();
+        string hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);
+        var logger = serviceProvider.GetRequiredService<ILogger<RelationalDbHealthContributor>>();
+
+        return new RelationalDbHealthContributor(connection, $"MySQL-{serviceBindingName}", hostName, logger);
     }
 
-    private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration configuration, ServiceLifetime contextLifetime)
+    private static string GetHostNameFromConnectionString(MySqlPackageResolver packageResolver, string? connectionString)
     {
-        var options = new MySqlProviderConnectorOptions(configuration);
-        var factory = new MySqlProviderConnectorFactory(info, options, MySqlTypeLocator.MySqlConnection);
+        var connectionStringBuilderShim = MySqlConnectionStringBuilderShim.CreateInstance(packageResolver);
+        connectionStringBuilderShim.Instance.ConnectionString = connectionString;
+        return (string)connectionStringBuilderShim.Instance["host"];
+    }
 
-        services.Add(new ServiceDescriptor(typeof(IHealthContributor),
-            ctx => new RelationalDbHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),
-            contextLifetime));
+    private static DbConnection CreateConnection(IServiceProvider serviceProvider, string serviceBindingName, MySqlPackageResolver packageResolver)
+    {
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<MySqlOptions>>();
+        MySqlOptions options = optionsMonitor.Get(serviceBindingName);
+
+        var mySqlConnectionShim = MySqlConnectionShim.CreateInstance(packageResolver, options.ConnectionString);
+        return mySqlConnectionShim.Instance;
     }
 }

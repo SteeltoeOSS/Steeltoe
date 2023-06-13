@@ -65,7 +65,7 @@ public class MongoDbHealthContributor : IHealthContributor
         _logger?.LogTrace("Checking MongoDb connection health");
         var result = new HealthCheckResult();
 
-        if (HostName != null)
+        if (!string.IsNullOrEmpty(HostName))
         {
             result.Details.Add("host", HostName);
         }

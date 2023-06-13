@@ -73,7 +73,7 @@ public static class MongoDbTypeLocator
     /// Gets a method that lists databases available in a MongoClient.
     /// </summary>
     public static MethodInfo ListDatabasesMethod =>
-        FindMethodOrThrow(MongoClient, "ListDatabases", new[]
+        FindMethodOrThrow(MongoClientInterface, "ListDatabases", new[]
         {
             typeof(CancellationToken)
         });

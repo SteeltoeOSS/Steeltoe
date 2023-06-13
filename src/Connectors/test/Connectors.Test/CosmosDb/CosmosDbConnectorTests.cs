@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Azure.Cosmos;
@@ -162,7 +164,6 @@ public sealed class CosmosDbConnectorTests
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<CosmosDbOptions>>();
 
         CosmosDbOptions optionsOne = optionsMonitor.Get("myCosmosDbServiceOne");
-        optionsOne.Should().NotBeNull();
 
         optionsOne.ConnectionString.Should().Be(
             "accountendpoint=https://csb05a6b464-4680-472f-8754-7e1afe015fac.documents.cloud-host.com:443/;accountkey=\"ovmolgG4kWHqoP4PaIfi35zXQGaWG04wr4Bh1mS1gckfh99yMsnCFgdlLPNao0M9GYYiReDhDSklACDbxSCpvw==\"");
@@ -170,7 +171,6 @@ public sealed class CosmosDbConnectorTests
         optionsOne.Database.Should().Be("csb-db05a6b464-4680-472f-8754-7e1afe015fac");
 
         CosmosDbOptions optionsTwo = optionsMonitor.Get("myCosmosDbServiceTwo");
-        optionsTwo.Should().NotBeNull();
 
         optionsTwo.ConnectionString.Should().Be(
             "accountEndpoint=https://csbf1eeadc1-cab8-436e-b1ac-61bf7c7ebfcc.documents.cloud-host.com:443/;accountKey=\"Hr6oIIHBGPt5KXvtIbSj36D8Te7xMYuFZj2L5w7FcmfPRkXd64PA87aXcOwuvxmKkXnsQlOZDCK3ACDbNzQFPw==\"");
@@ -191,30 +191,40 @@ public sealed class CosmosDbConnectorTests
                 "AccountEndpoint=https://host-2:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
         });
 
-        builder.AddCosmosDb((options, serviceBindingName) =>
+        builder.AddCosmosDb(null, addOptions =>
         {
-            if (serviceBindingName == "myCosmosDbServiceOne")
+            addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
             {
-                return new CosmosClient(options.ConnectionString, new CosmosClientOptions
-                {
-                    ConsistencyLevel = ConsistencyLevel.Eventual
-                });
-            }
+                var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CosmosDbOptions>>();
+                CosmosDbOptions options = optionsMonitor.Get(serviceBindingName);
 
-            return new CosmosClient(options.ConnectionString);
+                if (serviceBindingName == "myCosmosDbServiceOne")
+                {
+                    return new CosmosClient(options.ConnectionString, new CosmosClientOptions
+                    {
+                        ConsistencyLevel = ConsistencyLevel.Eventual
+                    });
+                }
+
+                return new CosmosClient(options.ConnectionString);
+            };
         });
 
         await using WebApplication app = builder.Build();
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<CosmosDbOptions, CosmosClient>>();
 
-        CosmosClient connectionOne = connectorFactory.GetNamed("myCosmosDbServiceOne").GetConnection();
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain("myCosmosDbServiceOne");
+        connectorFactory.ServiceBindingNames.Should().Contain("myCosmosDbServiceTwo");
+
+        CosmosClient connectionOne = connectorFactory.Get("myCosmosDbServiceOne").GetConnection();
         connectionOne.ClientOptions.ConsistencyLevel.Should().Be(ConsistencyLevel.Eventual);
 
-        CosmosClient connectionTwo = connectorFactory.GetNamed("myCosmosDbServiceTwo").GetConnection();
+        CosmosClient connectionTwo = connectorFactory.Get("myCosmosDbServiceTwo").GetConnection();
         connectionTwo.ClientOptions.ConsistencyLevel.Should().BeNull();
 
-        CosmosClient connectionOneAgain = connectorFactory.GetNamed("myCosmosDbServiceOne").GetConnection();
+        CosmosClient connectionOneAgain = connectorFactory.Get("myCosmosDbServiceOne").GetConnection();
         connectionOneAgain.Should().BeSameAs(connectionOne);
     }
 
@@ -255,11 +265,15 @@ public sealed class CosmosDbConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<CosmosDbOptions, CosmosClient>>();
 
-        CosmosDbOptions defaultOptions = connectorFactory.GetDefault().Options;
-        defaultOptions.ConnectionString.Should().NotBeNull();
-        defaultOptions.Database.Should().NotBeNull();
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().Contain("myCosmosDbService");
 
-        CosmosDbOptions namedOptions = connectorFactory.GetNamed("myCosmosDbService").Options;
+        CosmosDbOptions defaultOptions = connectorFactory.Get().Options;
+        defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
+        defaultOptions.Database.Should().NotBeNullOrEmpty();
+
+        CosmosDbOptions namedOptions = connectorFactory.Get("myCosmosDbService").Options;
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
         namedOptions.Database.Should().Be(defaultOptions.Database);
 
@@ -284,9 +298,12 @@ public sealed class CosmosDbConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<CosmosDbOptions, CosmosClient>>();
 
-        CosmosDbOptions defaultOptions = connectorFactory.GetDefault().Options;
-        defaultOptions.ConnectionString.Should().NotBeNull();
-        defaultOptions.Database.Should().Be("db");
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+
+        CosmosDbOptions defaultOptions = connectorFactory.Get().Options;
+        defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
+        defaultOptions.Database.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }

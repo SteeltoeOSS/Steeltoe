@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -151,7 +153,6 @@ public sealed class MongoDbConnectorTests
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<MongoDbOptions>>();
 
         MongoDbOptions optionsOne = optionsMonitor.Get("myMongoDbServiceOne");
-        optionsOne.Should().NotBeNull();
 
         optionsOne.ConnectionString.Should().Be(
             "mongodb://csb0230eada-2354-4c73-b3e4-8a1aaa996894:AiNtEyASbdXR5neJmTStMzKGItX2xvKuyEkcy65rviKD0ggZR19E1iVFIJ5ZAIY1xvvAiS5tOXsmACDbKDJIhQ%3D%3D@csb0230eada-2354-4c73-b3e4-8a1aaa996894.mongo.cosmos.cloud-hostname.com:10255/csb-db0230eada-2354-4c73-b3e4-8a1aaa996894?connectTimeoutMS=5000&ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@csb0230eada-2354-4c73-b3e4-8a1aaa996894@");
@@ -159,7 +160,6 @@ public sealed class MongoDbConnectorTests
         optionsOne.Database.Should().Be("csb-db0230eada-2354-4c73-b3e4-8a1aaa996894");
 
         MongoDbOptions optionsTwo = optionsMonitor.Get("myMongoDbServiceTwo");
-        optionsTwo.Should().NotBeNull();
 
         optionsTwo.ConnectionString.Should().Be(
             "mongodb://csb3aa12f5f-7530-4ff3-b328-a23a42af18df:NhCG266clYbNakBniDs8oLTniqTE06XXafhJWcbkNuma8Ie1XntsO2DqvPudYwqgk4le896YZjxbACDb8GiQYg%3D%3D@csb3aa12f5f-7530-4ff3-b328-a23a42af18df.mongo.cosmos.cloud-hostname.com:10255/csb-db3aa12f5f-7530-4ff3-b328-a23a42af18df?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@csb3aa12f5f-7530-4ff3-b328-a23a42af18df@");
@@ -184,12 +184,16 @@ public sealed class MongoDbConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MongoDbOptions, IMongoClient>>();
 
-        IMongoClient connectionOne = connectorFactory.GetNamed("myMongoDbServiceOne").GetConnection();
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain("myMongoDbServiceOne");
+        connectorFactory.ServiceBindingNames.Should().Contain("myMongoDbServiceTwo");
+
+        IMongoClient connectionOne = connectorFactory.Get("myMongoDbServiceOne").GetConnection();
         connectionOne.Settings.Credential.Should().BeNull();
         connectionOne.Settings.Server.Host.Should().Be("localhost");
         connectionOne.Settings.Server.Port.Should().Be(27017);
 
-        IMongoClient connectionTwo = connectorFactory.GetNamed("myMongoDbServiceTwo").GetConnection();
+        IMongoClient connectionTwo = connectorFactory.Get("myMongoDbServiceTwo").GetConnection();
         connectionTwo.Settings.Credential.Username.Should().Be("user");
         connectionTwo.Settings.Credential.Evidence.Should().Be(new PasswordEvidence("pass"));
         connectionTwo.Settings.Server.Host.Should().Be("localhost");
@@ -231,11 +235,15 @@ public sealed class MongoDbConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MongoDbOptions, IMongoClient>>();
 
-        MongoDbOptions defaultOptions = connectorFactory.GetDefault().Options;
+        connectorFactory.ServiceBindingNames.Should().HaveCount(2);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+        connectorFactory.ServiceBindingNames.Should().Contain("myMongoDbService");
+
+        MongoDbOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
         defaultOptions.Database.Should().NotBeNullOrEmpty();
 
-        MongoDbOptions namedOptions = connectorFactory.GetNamed("myMongoDbService").Options;
+        MongoDbOptions namedOptions = connectorFactory.Get("myMongoDbService").Options;
         namedOptions.ConnectionString.Should().Be(defaultOptions.ConnectionString);
         namedOptions.Database.Should().Be(defaultOptions.Database);
 
@@ -259,9 +267,12 @@ public sealed class MongoDbConnectorTests
 
         var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<MongoDbOptions, IMongoClient>>();
 
-        MongoDbOptions defaultOptions = connectorFactory.GetDefault().Options;
+        connectorFactory.ServiceBindingNames.Should().HaveCount(1);
+        connectorFactory.ServiceBindingNames.Should().Contain(string.Empty);
+
+        MongoDbOptions defaultOptions = connectorFactory.Get().Options;
         defaultOptions.ConnectionString.Should().NotBeNullOrEmpty();
-        defaultOptions.Database.Should().Be("db");
+        defaultOptions.Database.Should().NotBeNullOrEmpty();
 
         app.Services.GetServices<IHealthContributor>().Should().HaveCount(1);
     }

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
 using System.Data.Common;
 using Steeltoe.Common.Reflection;
 
@@ -24,7 +23,7 @@ public static class SqlServerTypeLocator
     };
 
     /// <summary>
-    /// Gets the list of SQL Server types that implement <see cref="IDbConnection" />.
+    /// Gets the list of SQL Server types that implement <see cref="DbConnection" />.
     /// </summary>
     public static string[] ConnectionTypeNames { get; internal set; } =
     {

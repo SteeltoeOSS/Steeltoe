@@ -16,12 +16,6 @@ namespace Steeltoe.Connectors.Test.PostgreSql;
 /// </summary>
 public class PostgreSqlServiceCollectionExtensionsTest
 {
-    public PostgreSqlServiceCollectionExtensionsTest()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
     [Fact]
     public void AddPostgreSqlHealthContributor_ThrowsIfServiceCollectionNull()
     {

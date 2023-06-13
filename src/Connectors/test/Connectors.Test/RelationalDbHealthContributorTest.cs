@@ -2,12 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
+using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.MySql;
-using Steeltoe.Connectors.Oracle;
 using Steeltoe.Connectors.PostgreSql;
 using Steeltoe.Connectors.Services;
 using Steeltoe.Connectors.SqlServer;
@@ -82,28 +81,6 @@ public class RelationalDbHealthContributorTest
     }
 
     [Fact]
-    public void GetOracleContributor_ReturnsContributor()
-    {
-        var appsettings = new Dictionary<string, string>
-        {
-            ["oracle:client:server"] = "localhost",
-            ["oracle:client:port"] = "1234",
-            ["oracle:client:PersistSecurityInfo"] = "true",
-            ["oracle:client:password"] = "password",
-            ["oracle:client:username"] = "username",
-            ["oracle:client:connectiontimeout"] = "1"
-        };
-
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        IHealthContributor contrib = RelationalDbHealthContributor.GetOracleContributor(configurationRoot);
-        Assert.NotNull(contrib);
-        HealthCheckResult status = contrib.Health();
-        Assert.Equal(HealthStatus.Down, status.Status);
-    }
-
-    [Fact]
     public void Sql_Not_Connected_Returns_Down_Status()
     {
         Type implementationType = SqlServerTypeLocator.SqlConnection;
@@ -118,7 +95,7 @@ public class RelationalDbHealthContributorTest
 
         var factory = new LoggerFactory();
         var connFactory = new SqlServerProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((DbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
 
@@ -140,7 +117,7 @@ public class RelationalDbHealthContributorTest
         var sInfo = new SqlServerServiceInfo("MyId", string.Empty);
         var factory = new LoggerFactory();
         var connFactory = new SqlServerProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((DbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
 
@@ -160,7 +137,7 @@ public class RelationalDbHealthContributorTest
         var sInfo = new MySqlServiceInfo("MyId", "mysql://localhost:80;databaseName=invalidDatabaseName");
         var factory = new LoggerFactory();
         var connFactory = new MySqlProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((DbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
 
@@ -181,7 +158,7 @@ public class RelationalDbHealthContributorTest
         var sInfo = new MySqlServiceInfo("MyId", "mysql://steeltoe:steeltoe@localhost:3306");
         var factory = new LoggerFactory();
         var connFactory = new MySqlProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((DbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
 
@@ -201,7 +178,7 @@ public class RelationalDbHealthContributorTest
         var sInfo = new PostgreSqlServiceInfo("MyId", "postgres://localhost:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
         var factory = new LoggerFactory();
         var connFactory = new PostgreSqlProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((DbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
 
@@ -217,43 +194,7 @@ public class RelationalDbHealthContributorTest
         var sInfo = new PostgreSqlServiceInfo("MyId", "postgres://steeltoe:steeltoe@localhost:5432/postgres");
         var factory = new LoggerFactory();
         var connFactory = new PostgreSqlProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
-
-        HealthCheckResult status = h.Health();
-
-        Assert.Equal(HealthStatus.Up, status.Status);
-    }
-
-    [Fact]
-    public void Oracle_Not_Connected_Returns_Down_Status()
-    {
-        Type implementationType = OracleTypeLocator.OracleConnection;
-
-        var options = new OracleProviderConnectorOptions
-        {
-            ConnectionTimeout = 1
-        };
-
-        var sInfo = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/someService");
-        var factory = new LoggerFactory();
-        var connFactory = new OracleProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
-
-        HealthCheckResult status = h.Health();
-
-        Assert.Equal(HealthStatus.Down, status.Status);
-        Assert.Contains(status.Details.Keys, k => k == "error");
-    }
-
-    [Fact(Skip = "Integration test - requires local db server")]
-    public void Oracle_Is_Connected_Returns_Up_Status()
-    {
-        Type implementationType = OracleTypeLocator.OracleConnection;
-        var options = new OracleProviderConnectorOptions();
-        var sInfo = new OracleServiceInfo("MyId", "oracle://hr:hr@localhost:1521/orclpdb1");
-        var factory = new LoggerFactory();
-        var connFactory = new OracleProviderConnectorFactory(sInfo, options, implementationType);
-        var h = new RelationalDbHealthContributor((IDbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
+        var h = new RelationalDbHealthContributor((DbConnection)connFactory.Create(null), factory.CreateLogger<RelationalDbHealthContributor>());
 
         HealthCheckResult status = h.Health();
 

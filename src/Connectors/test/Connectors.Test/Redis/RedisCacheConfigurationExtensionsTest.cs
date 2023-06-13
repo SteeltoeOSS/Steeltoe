@@ -12,12 +12,6 @@ namespace Steeltoe.Connectors.Test.Redis;
 
 public class RedisCacheConfigurationExtensionsTest
 {
-    public RedisCacheConfigurationExtensionsTest()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
     [Fact]
     public void CreateRedisServiceConnectorFactory_ThrowsIfConfigurationNull()
     {
@@ -95,8 +89,8 @@ public class RedisCacheConfigurationExtensionsTest
     [Fact]
     public void CreateRedisServiceConnectorFactory_MultipleRedisServices_ThrowsConnectorException()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVcap);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVcap);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();

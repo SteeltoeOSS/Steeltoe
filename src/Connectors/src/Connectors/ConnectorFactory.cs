@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Collections.Concurrent;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
 namespace Steeltoe.Connectors;
@@ -22,29 +22,41 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
     where TOptions : ConnectionStringOptions
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly Func<TOptions, string, object> _createConnection;
+    private readonly ConnectorCreateConnection _createConnection;
     private readonly bool _useSingletonConnection;
     private readonly ConcurrentDictionary<string, Connector<TOptions, TConnection>> _namedConnectors = new();
 
-    private IOptionsMonitor<TOptions> OptionsMonitor => _serviceProvider.GetRequiredService<IOptionsMonitor<TOptions>>();
+    /// <summary>
+    /// Gets the names of the available service bindings.
+    /// </summary>
+    /// <returns>
+    /// The service binding names. An empty string represents the default service binding.
+    /// </returns>
+    public IReadOnlySet<string> ServiceBindingNames { get; }
 
-    public ConnectorFactory(IServiceProvider serviceProvider, Func<TOptions, string, object> createConnection, bool useSingletonConnection)
+    public ConnectorFactory(IServiceProvider serviceProvider, IReadOnlySet<string> serviceBindingNames, ConnectorCreateConnection createConnection,
+        bool useSingletonConnection)
     {
-        ArgumentGuard.NotNull(createConnection);
         ArgumentGuard.NotNull(serviceProvider);
+        ArgumentGuard.NotNull(serviceBindingNames);
+        ArgumentGuard.NotNull(createConnection);
 
         _serviceProvider = serviceProvider;
+        ServiceBindingNames = serviceBindingNames;
         _createConnection = createConnection;
         _useSingletonConnection = useSingletonConnection;
     }
 
     /// <summary>
-    /// Gets a connector for the default service binding. Only use this if a single binding exists.
+    /// Gets a connector for the default service binding.
     /// </summary>
     /// <returns>
     /// The connector.
     /// </returns>
-    public Connector<TOptions, TConnection> GetDefault()
+    /// <remarks>
+    /// This is only available when at most one named service binding exists in the cloud and the client configuration only contains the "Default" entry.
+    /// </remarks>
+    public Connector<TOptions, TConnection> Get()
     {
         return GetCachedConnector(string.Empty);
     }
@@ -52,20 +64,21 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
     /// <summary>
     /// Gets a connector for the specified service binding name.
     /// </summary>
-    /// <param name="name">
-    /// The service binding name.
+    /// <param name="serviceBindingName">
+    /// The case-sensitive service binding name.
     /// </param>
     /// <returns>
     /// The connector.
     /// </returns>
-    public Connector<TOptions, TConnection> GetNamed(string name)
+    public Connector<TOptions, TConnection> Get(string serviceBindingName)
     {
-        return GetCachedConnector(name);
+        return GetCachedConnector(serviceBindingName);
     }
 
     private Connector<TOptions, TConnection> GetCachedConnector(string name)
     {
-        return _namedConnectors.GetOrAdd(name, _ => new Connector<TOptions, TConnection>(OptionsMonitor, name, _createConnection, _useSingletonConnection));
+        // While option values can change at runtime, the list of named options is fixed (determined at application startup).
+        return _namedConnectors.GetOrAdd(name, _ => new Connector<TOptions, TConnection>(_serviceProvider, name, _createConnection, _useSingletonConnection));
     }
 
     /// <inheritdoc />

@@ -4,11 +4,12 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
 /// <summary>
-/// Extension methods for registering Kubernetes <see cref="ServiceBindingConfigurationProvider" /> with <see cref="IConfigurationBuilder" />.
+/// Extension methods for registering Kubernetes <see cref="KubernetesServiceBindingConfigurationProvider" /> with <see cref="IConfigurationBuilder" />.
 /// </summary>
 public static class ConfigurationBuilderExtensions
 {
@@ -95,46 +96,31 @@ public static class ConfigurationBuilderExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(ignoreKeyPredicate);
 
-        var source = new ServiceBindingConfigurationSource
+        if (!builder.Sources.OfType<KubernetesServiceBindingConfigurationSource>().Any())
         {
-            Optional = optional,
-            ReloadOnChange = reloadOnChange,
-            IgnoreKeyPredicate = ignoreKeyPredicate
-        };
+            var source = new KubernetesServiceBindingConfigurationSource
+            {
+                Optional = optional,
+                ReloadOnChange = reloadOnChange,
+                IgnoreKeyPredicate = ignoreKeyPredicate
+            };
 
-        return RegisterPostProcessors(builder, source);
+            // All post-processors must be registered *before* the configuration source is added to the builder. When adding the source,
+            // WebApplicationBuilder immediately builds the configuration provider and loads it, which executes the post-processors.
+            // Therefore adding post-processors afterwards is a no-op.
+
+            RegisterPostProcessors(source);
+            builder.Add(source);
+        }
+
+        return builder;
     }
 
-    private static IConfigurationBuilder RegisterPostProcessors(IConfigurationBuilder builder, ServiceBindingConfigurationSource source)
+    private static void RegisterPostProcessors(KubernetesServiceBindingConfigurationSource source)
     {
-        source.RegisterPostProcessor(new ArtemisPostProcessor());
-        source.RegisterPostProcessor(new CassandraPostProcessor());
-        source.RegisterPostProcessor(new ConfigServerPostProcessor());
-        source.RegisterPostProcessor(new CouchbasePostProcessor());
-        source.RegisterPostProcessor(new DB2PostProcessor());
-        source.RegisterPostProcessor(new ElasticSearchPostProcessor());
-        source.RegisterPostProcessor(new EurekaPostProcessor());
-        source.RegisterPostProcessor(new KafkaPostProcessor());
-        source.RegisterPostProcessor(new LdapPostProcessor());
-        source.RegisterPostProcessor(new MongoDbPostProcessor());
-        source.RegisterPostProcessor(new MySqlPostProcessor());
-        source.RegisterPostProcessor(new Neo4JPostProcessor());
-        source.RegisterPostProcessor(new OraclePostProcessor());
-        source.RegisterPostProcessor(new PostgreSqlPostProcessor());
-        source.RegisterPostProcessor(new RabbitMQPostProcessor());
-        source.RegisterPostProcessor(new RedisPostProcessor());
-        source.RegisterPostProcessor(new SapHanaPostProcessor());
-        source.RegisterPostProcessor(new SpringSecurityOAuth2PostProcessor());
-        source.RegisterPostProcessor(new SqlServerPostProcessor());
-        source.RegisterPostProcessor(new VaultPostProcessor());
-        source.RegisterPostProcessor(new WavefrontPostProcessor());
-
-        // Legacy Connector Post Processors
-        source.RegisterPostProcessor(new RabbitMQLegacyConnectorPostProcessor());
-        source.RegisterPostProcessor(new MySqlLegacyConnectorPostProcessor());
-        source.RegisterPostProcessor(new PostgreSqlLegacyConnectorPostProcessor());
-
-        builder.Add(source);
-        return builder;
+        source.RegisterPostProcessor(new MySqlKubernetesPostProcessor());
+        source.RegisterPostProcessor(new PostgreSqlKubernetesPostProcessor());
+        source.RegisterPostProcessor(new RabbitMQKubernetesPostProcessor());
+        source.RegisterPostProcessor(new RedisKubernetesPostProcessor());
     }
 }
