@@ -77,8 +77,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
             _listenerContainers.TryAdd(endpoint.Id, container);
 
             if (!string.IsNullOrEmpty(endpoint.Group) && ApplicationContext != null &&
-                ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) is MessageListenerContainerCollection
-                    containerCollection)
+                ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) is MessageListenerContainerCollection containerCollection)
             {
                 containerCollection.AddContainer(container);
             }
