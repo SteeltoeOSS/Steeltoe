@@ -4,6 +4,8 @@
 
 namespace Steeltoe.Management.Endpoint.Info;
 
+#pragma warning disable S4023 // Interfaces should not be empty
 public interface IInfoEndpointHandler : IEndpointHandler<object, Dictionary<string, object>>
+#pragma warning restore S4023 // Interfaces should not be empty
 {
 }

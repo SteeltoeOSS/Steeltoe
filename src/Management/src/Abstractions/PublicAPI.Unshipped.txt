@@ -57,10 +57,9 @@ Steeltoe.Management.HttpMiddlewareOptions
 Steeltoe.Management.HttpMiddlewareOptions.HttpMiddlewareOptions() -> void
 Steeltoe.Management.HttpMiddlewareOptions.RequiredPermissions.get -> Steeltoe.Management.Permissions
 Steeltoe.Management.HttpMiddlewareOptions.RequiredPermissions.set -> void
-Steeltoe.Management.IEndpointHandler
-Steeltoe.Management.IEndpointHandler.Options.get -> Steeltoe.Management.HttpMiddlewareOptions
 Steeltoe.Management.IEndpointHandler<TArgument, TResult>
-Steeltoe.Management.IEndpointHandler<TArgument, TResult>.InvokeAsync(TArgument arg, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>
+Steeltoe.Management.IEndpointHandler<TArgument, TResult>.InvokeAsync(TArgument argument, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>
+Steeltoe.Management.IEndpointHandler<TArgument, TResult>.Options.get -> Steeltoe.Management.HttpMiddlewareOptions
 Steeltoe.Management.Info.AbstractConfigurationContributor
 Steeltoe.Management.Info.AbstractConfigurationContributor.AbstractConfigurationContributor() -> void
 Steeltoe.Management.Info.AbstractConfigurationContributor.AbstractConfigurationContributor(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void

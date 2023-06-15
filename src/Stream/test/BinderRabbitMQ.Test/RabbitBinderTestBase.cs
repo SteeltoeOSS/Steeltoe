@@ -101,11 +101,11 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
         return TestBinder;
     }
 
-    protected DirectMessageListenerContainer VerifyContainer(RabbitInboundChannelAdapter endpointHandler)
+    protected DirectMessageListenerContainer VerifyContainer(RabbitInboundChannelAdapter endpoint)
     {
         DirectMessageListenerContainer container;
         RetryTemplate retry;
-        container = GetPropertyValue<DirectMessageListenerContainer>(endpointHandler, "MessageListenerContainer");
+        container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
 
         Assert.Equal(AcknowledgeMode.None, container.AcknowledgeMode);
         Assert.StartsWith("foo.props.0", container.GetQueueNames()[0], StringComparison.Ordinal);
@@ -114,7 +114,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
         Assert.False(container.DefaultRequeueRejected);
         Assert.Equal(20, container.PrefetchCount);
 
-        retry = endpointHandler.RetryTemplate;
+        retry = endpoint.RetryTemplate;
         Assert.Equal(23, GetFieldValue<int>(retry, "_maxAttempts"));
         Assert.Equal(2000, GetFieldValue<int>(retry, "_backOffInitialInterval"));
         Assert.Equal(5.0, GetFieldValue<double>(retry, "_backOffMultiplier"));

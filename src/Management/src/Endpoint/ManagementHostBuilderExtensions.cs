@@ -316,7 +316,7 @@ public static class ManagementHostBuilderExtensions
     /// Your HostBuilder.
     /// </param>
     /// <param name="configureEndpoints">
-    /// Customize endpointHandler behavior. Useful for tailoring auth requirements.
+    /// Customize endpoint behavior. Useful for tailoring auth requirements.
     /// </param>
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
@@ -359,7 +359,7 @@ public static class ManagementHostBuilderExtensions
     /// Your HostBuilder.
     /// </param>
     /// <param name="configureEndpoints">
-    /// Customize endpointHandler behavior. Useful for tailoring auth requirements.
+    /// Customize endpoint behavior. Useful for tailoring auth requirements.
     /// </param>
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
@@ -380,7 +380,7 @@ public static class ManagementHostBuilderExtensions
     /// Your HostBuilder.
     /// </param>
     /// <param name="configureEndpoints">
-    /// Customize endpointHandler behavior. Useful for tailoring auth requirements.
+    /// Customize endpoint behavior. Useful for tailoring auth requirements.
     /// </param>
     /// <remarks>
     /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).

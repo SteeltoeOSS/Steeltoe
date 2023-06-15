@@ -78,7 +78,7 @@ internal sealed class HypermediaService
                     }
                     else if (links.LinkCollection.ContainsKey(opt.Id))
                     {
-                        _logger.LogWarning("Duplicate endpointHandler id detected: {DuplicateEndpointId}", opt.Id);
+                        _logger.LogWarning("Duplicate endpoint ID detected: {DuplicateEndpointId}", opt.Id);
                     }
                 }
             }

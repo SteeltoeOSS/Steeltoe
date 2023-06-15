@@ -53,7 +53,7 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
         return keys;
     }
 
-    public Task<IList<string>> InvokeAsync(object arg, CancellationToken cancellationToken)
+    public Task<IList<string>> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         return Task.Run(() => DoInvoke(_configuration), cancellationToken);
     }

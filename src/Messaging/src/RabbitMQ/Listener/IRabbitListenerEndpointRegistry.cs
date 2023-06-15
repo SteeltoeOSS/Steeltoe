@@ -15,9 +15,9 @@ public interface IRabbitListenerEndpointRegistry : ISmartLifecycle, IDisposable,
 
     public ICollection<IMessageListenerContainer> GetListenerContainers();
 
-    public void RegisterListenerContainer(IRabbitListenerEndpoint endpointHandler, IRabbitListenerContainerFactory factory);
+    public void RegisterListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory);
 
-    public void RegisterListenerContainer(IRabbitListenerEndpoint endpointHandler, IRabbitListenerContainerFactory factory, bool startImmediately);
+    public void RegisterListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory, bool startImmediately);
 
     public IMessageListenerContainer UnregisterListenerContainer(string id);
 }

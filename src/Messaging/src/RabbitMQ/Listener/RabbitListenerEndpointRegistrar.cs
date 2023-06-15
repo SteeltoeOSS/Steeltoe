@@ -38,11 +38,11 @@ public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
         RegisterAllEndpoints();
     }
 
-    public void RegisterEndpoint(IRabbitListenerEndpoint endpointHandler, IRabbitListenerContainerFactory factory)
+    public void RegisterEndpoint(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory)
     {
-        ArgumentGuard.NotNull(endpointHandler);
+        ArgumentGuard.NotNull(endpoint);
 
-        if (string.IsNullOrEmpty(endpointHandler.Id))
+        if (string.IsNullOrEmpty(endpoint.Id))
         {
             throw new InvalidOperationException("Endpoint id must be set");
         }
@@ -53,7 +53,7 @@ public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
         }
 
         // Factory may be null, we defer the resolution right before actually creating the container
-        var descriptor = new RabbitListenerEndpointDescriptor(endpointHandler, factory);
+        var descriptor = new RabbitListenerEndpointDescriptor(endpoint, factory);
 
         lock (_endpointDescriptors)
         {
@@ -69,9 +69,9 @@ public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
         }
     }
 
-    public void RegisterEndpoint(IRabbitListenerEndpoint endpointHandler)
+    public void RegisterEndpoint(IRabbitListenerEndpoint endpoint)
     {
-        RegisterEndpoint(endpointHandler, null);
+        RegisterEndpoint(endpoint, null);
     }
 
     protected void RegisterAllEndpoints()
@@ -125,9 +125,9 @@ public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
 
         public IRabbitListenerContainerFactory ContainerFactory { get; }
 
-        public RabbitListenerEndpointDescriptor(IRabbitListenerEndpoint endpointHandler, IRabbitListenerContainerFactory containerFactory)
+        public RabbitListenerEndpointDescriptor(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory containerFactory)
         {
-            Endpoint = endpointHandler;
+            Endpoint = endpoint;
             ContainerFactory = containerFactory;
         }
     }

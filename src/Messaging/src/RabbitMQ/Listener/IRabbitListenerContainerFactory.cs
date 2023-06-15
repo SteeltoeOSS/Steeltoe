@@ -8,7 +8,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public interface IRabbitListenerContainerFactory : IServiceNameAware
 {
-    IMessageListenerContainer CreateListenerContainer(IRabbitListenerEndpoint endpointHandler);
+    IMessageListenerContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint);
 
     IMessageListenerContainer CreateListenerContainer()
     {
@@ -19,7 +19,7 @@ public interface IRabbitListenerContainerFactory : IServiceNameAware
 public interface IRabbitListenerContainerFactory<out TContainer> : IRabbitListenerContainerFactory
     where TContainer : IMessageListenerContainer
 {
-    new TContainer CreateListenerContainer(IRabbitListenerEndpoint endpointHandler);
+    new TContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint);
 
     new TContainer CreateListenerContainer()
     {

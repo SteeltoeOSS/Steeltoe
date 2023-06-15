@@ -73,7 +73,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         }
         catch (Exception e)
         {
-            throw new BinderException("Exception thrown while building outbound endpointHandler", e);
+            throw new BinderException("Exception thrown while building outbound endpoint", e);
         }
 
         if (producerOptions.AutoStartup && producerMessageHandler is ILifecycle producerMsgHandlerLifecycle)

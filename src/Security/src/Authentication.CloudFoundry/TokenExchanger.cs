@@ -32,7 +32,7 @@ public class TokenExchanger
     /// The auth code to exchange.
     /// </param>
     /// <param name="targetUrl">
-    /// The full address of the token endpointHandler.
+    /// The full address of the token endpoint.
     /// </param>
     /// <param name="cancellationToken">
     /// Your CancellationToken.
@@ -86,7 +86,7 @@ public class TokenExchanger
     /// Get an access token using client_credentials grant.
     /// </summary>
     /// <param name="targetUrl">
-    /// full address of the token endpointHandler at the auth server.
+    /// full address of the token endpoint at the auth server.
     /// </param>
     /// <returns>
     /// HttpResponse from the auth server.

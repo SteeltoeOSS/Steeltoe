@@ -13,8 +13,7 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 /// <summary>
-/// CloudFoundry endpointHandler provides hypermedia: a page is added with links to all the endpoints that are enabled. When deployed to CloudFoundry
-/// this endpointHandler is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware" /> is added.
+/// Used in conjunction with <see cref="CloudFoundryEndpointHandler"/> to generate hypermedia list of links to all endpoints activated in the application.
 /// </summary>
 internal sealed class CloudFoundryEndpointMiddleware : EndpointMiddleware<string, Links>
 {

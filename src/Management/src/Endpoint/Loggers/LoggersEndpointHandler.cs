@@ -39,14 +39,8 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
         _dynamicLoggerProvider = dynamicLoggerProvider;
         _logger = loggerFactory.CreateLogger<LoggersEndpointHandler>();
     }
-    public LoggersEndpointHandler(IOptionsMonitor<LoggersEndpointOptions> options, ILoggerFactory loggerFactory)
-    {
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(loggerFactory);
-        _options = options;
-        _logger = loggerFactory.CreateLogger<LoggersEndpointHandler>();
-    }
-        public Task<Dictionary<string, object>> InvokeAsync(ILoggersRequest request, CancellationToken cancellationToken)
+
+    public Task<Dictionary<string, object>> InvokeAsync(ILoggersRequest request, CancellationToken cancellationToken)
     {
         _logger.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
 
@@ -118,7 +112,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Exception deserializing LoggersEndpointHandler Request.");
+            _logger.LogError(e, "Exception deserializing loggers endpoint request.");
         }
 
         return new Dictionary<string, string>();

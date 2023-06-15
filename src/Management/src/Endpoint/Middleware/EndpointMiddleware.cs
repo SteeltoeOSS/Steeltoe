@@ -79,18 +79,19 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
     {
         ArgumentGuard.NotNull(context);
 
-        if (EqualityComparer<TResult>.Default.Equals(result, default))
+        if (Equals(result, null))
         {
             return;
         }
 
-        JsonSerializerOptions serializerOptions = ManagementEndpointOptions.CurrentValue.SerializerOptions;
-        JsonSerializerOptions options = GetSerializerOptions(serializerOptions);
+        JsonSerializerOptions options = GetSerializerOptions();
         await JsonSerializer.SerializeAsync(context.Response.Body, result, options, cancellationToken);
     }
 
-    internal static JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
+    protected virtual JsonSerializerOptions GetSerializerOptions()
     {
+        JsonSerializerOptions serializerOptions = ManagementEndpointOptions.CurrentValue.SerializerOptions;
+
         serializerOptions ??= new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase

@@ -589,5 +589,6 @@ Steeltoe.Management.Endpoint.Web.Hypermedia.Links.Type.set -> void
 Steeltoe.Management.Endpoint.Web.Hypermedia.ServiceCollectionExtensions
 virtual Steeltoe.Management.Endpoint.Info.Contributor.GitInfoContributor.Contribute(Steeltoe.Management.Info.IInfoBuilder builder) -> void
 virtual Steeltoe.Management.Endpoint.Info.Contributor.GitInfoContributor.ReadGitProperties(string propFile) -> Microsoft.Extensions.Configuration.IConfiguration
+virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.GetSerializerOptions() -> System.Text.Json.JsonSerializerOptions
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ShouldInvoke(Microsoft.AspNetCore.Http.HttpContext context) -> bool
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.WriteResponseAsync(TResult result, Microsoft.AspNetCore.Http.HttpContext context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task

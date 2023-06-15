@@ -60,7 +60,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 
         if (DbContextType is null)
         {
-            _logger.LogCritical("DbMigrations endpointHandler invoked but no DbContext was found.");
+            _logger.LogCritical("DbMigrationsEndpointHandler was invoked but no DbContext was found.");
         }
         else
         {
@@ -100,7 +100,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
         return result;
     }
 
-    public Task<Dictionary<string, DbMigrationsDescriptor>> InvokeAsync(object arg, CancellationToken cancellationToken)
+    public Task<Dictionary<string, DbMigrationsDescriptor>> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         return Task.Run(() => DoInvoke(), cancellationToken);
     }

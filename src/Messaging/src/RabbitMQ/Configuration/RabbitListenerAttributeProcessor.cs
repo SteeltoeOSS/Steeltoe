@@ -159,61 +159,61 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
 
         foreach (RabbitListenerAttribute classLevelListener in classLevelListeners)
         {
-            var endpointHandler = new MultiMethodRabbitListenerEndpoint(ApplicationContext, checkedMethods, defaultMethod, bean, _loggerFactory);
-            ProcessListener(endpointHandler, classLevelListener, bean, bean.GetType(), beanName);
+            var endpoint = new MultiMethodRabbitListenerEndpoint(ApplicationContext, checkedMethods, defaultMethod, bean, _loggerFactory);
+            ProcessListener(endpoint, classLevelListener, bean, bean.GetType(), beanName);
         }
     }
 
-    protected void ProcessListener(MethodRabbitListenerEndpoint endpointHandler, RabbitListenerAttribute rabbitListener, object bean, object target,
+    protected void ProcessListener(MethodRabbitListenerEndpoint endpoint, RabbitListenerAttribute rabbitListener, object bean, object target,
         string beanName)
     {
-        endpointHandler.MessageHandlerMethodFactory = MessageHandlerMethodFactory;
-        endpointHandler.Id = GetEndpointId(rabbitListener);
-        endpointHandler.SetQueueNames(ResolveQueues(rabbitListener));
-        endpointHandler.Concurrency = ResolveExpressionAsInteger(rabbitListener.Concurrency, "Concurrency");
-        endpointHandler.ApplicationContext = ApplicationContext;
-        endpointHandler.ReturnExceptions = ResolveExpressionAsBoolean(rabbitListener.ReturnExceptions, "ReturnExceptions");
+        endpoint.MessageHandlerMethodFactory = MessageHandlerMethodFactory;
+        endpoint.Id = GetEndpointId(rabbitListener);
+        endpoint.SetQueueNames(ResolveQueues(rabbitListener));
+        endpoint.Concurrency = ResolveExpressionAsInteger(rabbitListener.Concurrency, "Concurrency");
+        endpoint.ApplicationContext = ApplicationContext;
+        endpoint.ReturnExceptions = ResolveExpressionAsBoolean(rabbitListener.ReturnExceptions, "ReturnExceptions");
 
         string group = rabbitListener.Group;
 
         if (!string.IsNullOrEmpty(group))
         {
-            endpointHandler.Group = group;
+            endpoint.Group = group;
         }
 
         string autoStartup = rabbitListener.AutoStartup;
 
         if (!string.IsNullOrEmpty(autoStartup))
         {
-            endpointHandler.AutoStartup = ResolveExpressionAsBoolean(autoStartup, "AutoStartup");
+            endpoint.AutoStartup = ResolveExpressionAsBoolean(autoStartup, "AutoStartup");
         }
 
-        endpointHandler.Exclusive = rabbitListener.Exclusive;
+        endpoint.Exclusive = rabbitListener.Exclusive;
 
-        endpointHandler.Priority = ResolveExpressionAsInteger(rabbitListener.Priority, "Priority");
+        endpoint.Priority = ResolveExpressionAsInteger(rabbitListener.Priority, "Priority");
 
-        ResolveErrorHandler(endpointHandler, rabbitListener);
-        ResolveAdmin(endpointHandler, rabbitListener, target);
-        ResolveAckMode(endpointHandler, rabbitListener);
-        ResolvePostProcessor(endpointHandler, rabbitListener, target, beanName);
+        ResolveErrorHandler(endpoint, rabbitListener);
+        ResolveAdmin(endpoint, rabbitListener, target);
+        ResolveAckMode(endpoint, rabbitListener);
+        ResolvePostProcessor(endpoint, rabbitListener, target, beanName);
         IRabbitListenerContainerFactory factory = ResolveContainerFactory(rabbitListener, target);
 
-        Registrar.RegisterEndpoint(endpointHandler, factory);
+        Registrar.RegisterEndpoint(endpoint, factory);
     }
 
     private void ProcessAmqpListener(RabbitListenerAttribute rabbitListener, MethodInfo method, object bean, string beanName)
     {
         _logger?.LogDebug("Adding RabbitListener method {method} from type {type}", method, method.DeclaringType);
 
-        var endpointHandler = new MethodRabbitListenerEndpoint(ApplicationContext, method, bean, _loggerFactory)
+        var endpoint = new MethodRabbitListenerEndpoint(ApplicationContext, method, bean, _loggerFactory)
         {
             Method = method
         };
 
-        ProcessListener(endpointHandler, rabbitListener, bean, method, beanName);
+        ProcessListener(endpoint, rabbitListener, bean, method, beanName);
     }
 
-    private void ResolvePostProcessor(MethodRabbitListenerEndpoint endpointHandler, RabbitListenerAttribute rabbitListener, object target, string name)
+    private void ResolvePostProcessor(MethodRabbitListenerEndpoint endpoint, RabbitListenerAttribute rabbitListener, object target, string name)
     {
         string ppBeanName = Resolve(rabbitListener.ReplyPostProcessor);
 
@@ -229,10 +229,10 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
             if (pp == null)
             {
                 throw new InvalidOperationException(
-                    $"Could not register rabbit listener endpointHandler on [{target}], no IReplyPostProcessor with id '{name}' was found");
+                    $"Could not register rabbit listener endpoint on [{target}], no IReplyPostProcessor with id '{name}' was found");
             }
 
-            endpointHandler.ReplyPostProcessor = pp;
+            endpoint.ReplyPostProcessor = pp;
         }
     }
 
@@ -253,14 +253,14 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
             if (factory == null)
             {
                 throw new InvalidOperationException(
-                    $"Could not register rabbit listener endpointHandler on [{factoryTarget}], no IRabbitListenerContainerFactory with id '{containerFactoryBeanName}' was found");
+                    $"Could not register rabbit listener endpoint on [{factoryTarget}], no IRabbitListenerContainerFactory with id '{containerFactoryBeanName}' was found");
             }
         }
 
         return factory;
     }
 
-    private void ResolveAdmin(MethodRabbitListenerEndpoint endpointHandler, RabbitListenerAttribute rabbitListener, object adminTarget)
+    private void ResolveAdmin(MethodRabbitListenerEndpoint endpoint, RabbitListenerAttribute rabbitListener, object adminTarget)
     {
         string rabbitAdmin = Resolve(rabbitListener.Admin);
 
@@ -271,17 +271,17 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
                 throw new InvalidOperationException("IApplicationContext must be set to resolve RabbitAdmin by name");
             }
 
-            endpointHandler.Admin = ApplicationContext.GetService<IRabbitAdmin>(rabbitAdmin);
+            endpoint.Admin = ApplicationContext.GetService<IRabbitAdmin>(rabbitAdmin);
 
-            if (endpointHandler.Admin == null)
+            if (endpoint.Admin == null)
             {
                 throw new InvalidOperationException(
-                    $"Could not register rabbit listener endpointHandler on [{adminTarget}], no RabbitAdmin with id '{rabbitAdmin}' was found");
+                    $"Could not register rabbit listener endpoint on [{adminTarget}], no RabbitAdmin with id '{rabbitAdmin}' was found");
             }
         }
     }
 
-    private void ResolveErrorHandler(MethodRabbitListenerEndpoint endpointHandler, RabbitListenerAttribute rabbitListener)
+    private void ResolveErrorHandler(MethodRabbitListenerEndpoint endpoint, RabbitListenerAttribute rabbitListener)
     {
         if (!string.IsNullOrEmpty(rabbitListener.ErrorHandler))
         {
@@ -290,7 +290,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
             switch (errorHandler)
             {
                 case IRabbitListenerErrorHandler rabbitListenerErrorHandler:
-                    endpointHandler.ErrorHandler = rabbitListenerErrorHandler;
+                    endpoint.ErrorHandler = rabbitListenerErrorHandler;
                     break;
                 case string errorHandlerName:
                     if (ApplicationContext == null)
@@ -298,9 +298,9 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
                         throw new InvalidOperationException("IApplicationContext must be set to resolve ErrorHandler by name");
                     }
 
-                    endpointHandler.ErrorHandler = ApplicationContext.GetService<IRabbitListenerErrorHandler>(errorHandlerName);
+                    endpoint.ErrorHandler = ApplicationContext.GetService<IRabbitListenerErrorHandler>(errorHandlerName);
 
-                    if (endpointHandler.ErrorHandler == null)
+                    if (endpoint.ErrorHandler == null)
                     {
                         throw new InvalidOperationException($"Failed to resolve ErrorHandler by name using: {errorHandlerName}");
                     }
@@ -312,7 +312,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         }
     }
 
-    private void ResolveAckMode(MethodRabbitListenerEndpoint endpointHandler, RabbitListenerAttribute rabbitListener)
+    private void ResolveAckMode(MethodRabbitListenerEndpoint endpoint, RabbitListenerAttribute rabbitListener)
     {
         if (!string.IsNullOrEmpty(rabbitListener.AckMode))
         {
@@ -320,11 +320,11 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
 
             if (ackMode is AcknowledgeMode mode)
             {
-                endpointHandler.AckMode = mode;
+                endpoint.AckMode = mode;
             }
             else if (ackMode is string ackModeString)
             {
-                endpointHandler.AckMode = (AcknowledgeMode)Enum.Parse(typeof(AcknowledgeMode), ackModeString);
+                endpoint.AckMode = (AcknowledgeMode)Enum.Parse(typeof(AcknowledgeMode), ackModeString);
             }
             else
             {

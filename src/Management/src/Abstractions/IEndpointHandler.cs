@@ -4,12 +4,10 @@
 
 namespace Steeltoe.Management;
 
-public interface IEndpointHandler
+public interface IEndpointHandler<in TArgument, TResult> 
 {
-    HttpMiddlewareOptions Options { get; }
-}
+    Task<TResult> InvokeAsync(TArgument argument, CancellationToken cancellationToken);
 
-public interface IEndpointHandler<in TArgument, TResult> : IEndpointHandler
-{
-    Task<TResult> InvokeAsync(TArgument arg, CancellationToken cancellationToken);
+    HttpMiddlewareOptions Options { get; }
+
 }

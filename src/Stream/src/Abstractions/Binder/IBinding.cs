@@ -5,7 +5,7 @@
 namespace Steeltoe.Stream.Binder;
 
 /// <summary>
-/// Represents a binding between an input or output and an adapter endpointHandler that connects via a Binder.The binding could be for a consumer or a
+/// Represents a binding between an input or output and an adapter endpoint that connects via a Binder.The binding could be for a consumer or a
 /// producer. A consumer binding represents a connection from an adapter to an input. A producer binding represents a connection from an output to an
 /// adapter.
 /// </summary>

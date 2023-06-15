@@ -4,6 +4,8 @@
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
+#pragma warning disable S4023 // Interfaces should not be empty
 public interface IThreadDumpEndpointV2Handler : IEndpointHandler<object, ThreadDumpResult>
+#pragma warning restore S4023 // Interfaces should not be empty
 {
 }

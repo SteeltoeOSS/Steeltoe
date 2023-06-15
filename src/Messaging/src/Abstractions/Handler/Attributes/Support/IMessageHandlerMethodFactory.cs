@@ -14,7 +14,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support;
 public interface IMessageHandlerMethodFactory : IServiceNameAware
 {
     /// <summary>
-    /// Create the invokable handler method that can process the specified method endpointHandler.
+    /// Create the invokable handler method that can process the specified method endpoint.
     /// </summary>
     /// <param name="instance">
     /// the instance of the object.

@@ -43,7 +43,7 @@ public static class HostBuilderExtensions
     /// Your HostBuilder.
     /// </param>
     /// <param name="configureEndpoints">
-    /// Customize endpointHandler behavior. Useful for tailoring auth requirements.
+    /// Customize endpoint behavior. Useful for tailoring auth requirements.
     /// </param>
     public static IHostBuilder AddKubernetesActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
     {
@@ -62,7 +62,7 @@ public static class HostBuilderExtensions
     /// Your WebHostBuilder.
     /// </param>
     /// <param name="configureEndpoints">
-    /// Customize endpointHandler behavior. Useful for tailoring auth requirements.
+    /// Customize endpoint behavior. Useful for tailoring auth requirements.
     /// </param>
     public static IWebHostBuilder AddKubernetesActuators(this IWebHostBuilder webHostBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
     {
@@ -92,7 +92,7 @@ public static class HostBuilderExtensions
     /// Your <see cref="WebApplicationBuilder" />.
     /// </param>
     /// <param name="configureEndpoints">
-    /// Customize endpointHandler behavior. Useful for tailoring auth requirements.
+    /// Customize endpoint behavior. Useful for tailoring auth requirements.
     /// </param>
     public static WebApplicationBuilder AddKubernetesActuators(this WebApplicationBuilder webApplicationBuilder,
         Action<IEndpointConventionBuilder> configureEndpoints)

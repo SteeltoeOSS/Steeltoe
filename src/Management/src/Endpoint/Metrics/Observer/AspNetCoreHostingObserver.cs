@@ -70,39 +70,39 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
         }
     }
 
-    internal void HandleStopEvent(Activity current, HttpContext arg)
+    internal void HandleStopEvent(Activity current, HttpContext context)
     {
         ArgumentGuard.NotNull(current);
-        ArgumentGuard.NotNull(arg);
+        ArgumentGuard.NotNull(context);
 
-        if (ShouldIgnoreRequest(arg.Request.Path))
+        if (ShouldIgnoreRequest(context.Request.Path))
         {
-            Logger.LogDebug("HandleStopEvent: Ignoring path: {path}", arg.Request.Path);
+            Logger.LogDebug("HandleStopEvent: Ignoring path: {path}", context.Request.Path);
             return;
         }
 
         if (current.Duration.TotalMilliseconds > 0)
         {
-            IEnumerable<KeyValuePair<string, object>> labelSets = GetLabelSets(arg);
+            IEnumerable<KeyValuePair<string, object>> labelSets = GetLabelSets(context);
 
             _serverCount.Record(1, labelSets.AsReadonlySpan());
             _responseTime.Record(current.Duration.TotalSeconds, labelSets.AsReadonlySpan());
         }
     }
 
-    internal IEnumerable<KeyValuePair<string, object>> GetLabelSets(HttpContext arg)
+    internal IEnumerable<KeyValuePair<string, object>> GetLabelSets(HttpContext context)
     {
-        ArgumentGuard.NotNull(arg);
-        string uri = arg.Request.Path.ToString();
-        string statusCode = arg.Response.StatusCode.ToString(CultureInfo.InvariantCulture);
-        string exception = GetException(arg);
+        ArgumentGuard.NotNull(context);
+        string uri = context.Request.Path.ToString();
+        string statusCode = context.Response.StatusCode.ToString(CultureInfo.InvariantCulture);
+        string exception = GetException(context);
 
         return new Dictionary<string, object>
         {
             { UriTagKey, uri },
             { StatusTagKey, statusCode },
             { ExceptionTagKey, exception },
-            { MethodTagKey, arg.Request.Method }
+            { MethodTagKey, context.Request.Method }
         };
     }
 

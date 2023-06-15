@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,7 +17,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
     private readonly IEnumerable<IContextName> _contextNames;
 
     public LoggersEndpointMiddleware(ILoggersEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IOptionsMonitor<HttpMiddlewareOptions> endpointOptions, IEnumerable<IContextName> contextNames, ILogger<LoggersEndpointMiddleware> logger)
+         IEnumerable<IContextName> contextNames, ILogger<LoggersEndpointMiddleware> logger)
         : base(endpointHandler, managementOptions, logger)
     {
         _contextNames = contextNames;
@@ -29,6 +30,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
         if (loggersRequest is ErrorLoggersRequest)
         {
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return null;
         }
 
         return await EndpointHandler.InvokeAsync(loggersRequest, cancellationToken);
