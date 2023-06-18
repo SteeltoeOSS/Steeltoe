@@ -5,9 +5,12 @@
 using System.Net.Http.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
@@ -21,19 +24,22 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
 
     internal static RegistrationResult RegistrationResult { get; set; }
 
-    public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, ManagementEndpointOptions managementOptions,
-        HealthEndpointOptions healthOptions, HttpClient httpClient = null, ILogger<SpringBootAdminClientHostedService> logger = null)
+    public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IOptionsMonitor<HealthEndpointOptions> healthOptions, ILogger<SpringBootAdminClientHostedService> logger, HttpClient httpClient = null)
     {
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
-        _managementOptions = managementOptions;
-        _healthOptions = healthOptions;
+        _managementOptions = managementOptions.Get(ActuatorContext.Name);
+        _healthOptions = healthOptions.CurrentValue;
         _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.ConnectionTimeoutMs);
-        _logger = logger ?? NullLogger<SpringBootAdminClientHostedService>.Instance;
+        _logger = logger;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Registering with Spring Boot Admin Server at {url}", _options.Url);
+
         string basePath = _options.BasePath.TrimEnd('/');
 
         var app = new Application

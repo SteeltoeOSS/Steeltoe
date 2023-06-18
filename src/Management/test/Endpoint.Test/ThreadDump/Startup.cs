@@ -22,17 +22,13 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddCloudFoundryActuator(Configuration);
-        services.AddThreadDumpActuator(Configuration);
+        services.AddCloudFoundryActuator();
+        services.AddThreadDumpActuator();
     }
 
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.Map<ThreadDumpEndpointV2>();
-        });
+        app.UseEndpoints(endpoints => endpoints.MapAllActuators());
     }
 }

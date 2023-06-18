@@ -8,26 +8,28 @@ namespace Steeltoe.Configuration;
 
 internal static class ConfigurationDictionaryExtensions
 {
-    public static IEnumerable<string> Filter(this IDictionary<string, string> configData, string keyPrefix, string keySuffix, string keyValue)
+    public static IEnumerable<string> Filter(this IDictionary<string, string> configurationData, string keyPrefix, string keySuffix, string keyValue)
     {
         var results = new List<string>();
 
-        foreach (KeyValuePair<string, string> pair in configData)
+        foreach ((string key, string value) in configurationData)
         {
-            if (pair.Key.StartsWith(keyPrefix, StringComparison.OrdinalIgnoreCase) && pair.Key.EndsWith(keySuffix, StringComparison.OrdinalIgnoreCase) &&
-                pair.Value == keyValue)
+            if (key.StartsWith(keyPrefix, StringComparison.OrdinalIgnoreCase) && key.EndsWith(keySuffix, StringComparison.OrdinalIgnoreCase) &&
+                value == keyValue)
             {
-                results.Add(ConfigurationPath.GetParentPath(pair.Key));
+                results.Add(ConfigurationPath.GetParentPath(key));
             }
         }
 
         return results;
     }
 
-    public static IEnumerable<string> Filter(this IDictionary<string, string> configData, string keyPrefix)
+    public static IEnumerable<string> Filter(this IDictionary<string, string> configurationData, string keyPrefix)
     {
         return
-            from pair in configData where pair.Key.StartsWith(keyPrefix, StringComparison.OrdinalIgnoreCase) select ConfigurationPath.GetParentPath(pair.Key);
+            from pair in configurationData
+            where pair.Key.StartsWith(keyPrefix, StringComparison.OrdinalIgnoreCase)
+            select ConfigurationPath.GetParentPath(pair.Key);
     }
 
     public static void ForEach(this IEnumerable<string> keys, Action<string> mapping)

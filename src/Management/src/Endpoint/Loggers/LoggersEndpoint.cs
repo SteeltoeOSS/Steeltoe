@@ -4,12 +4,13 @@
 
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, LoggersChangeRequest>, ILoggersEndpoint
+public class LoggersEndpoint : ILoggersEndpoint
 {
     private static readonly List<string> Levels = new()
     {
@@ -23,20 +24,24 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
     };
 
     private readonly ILogger<LoggersEndpoint> _logger;
+    private readonly IOptionsMonitor<LoggersEndpointOptions> _options;
     private readonly IDynamicLoggerProvider _cloudFoundryLoggerProvider;
 
-    protected new ILoggersOptions Options => options as ILoggersOptions;
+    public IEndpointOptions Options => _options.CurrentValue;
 
-    public LoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider cloudFoundryLoggerProvider = null, ILogger<LoggersEndpoint> logger = null)
-        : base(options)
+    public LoggersEndpoint(IOptionsMonitor<LoggersEndpointOptions> options, ILogger<LoggersEndpoint> logger,
+        IDynamicLoggerProvider cloudFoundryLoggerProvider = null)
     {
+        ArgumentGuard.NotNull(logger);
+
+        _options = options;
         _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider;
         _logger = logger;
     }
 
-    public override Dictionary<string, object> Invoke(LoggersChangeRequest request)
+    public virtual Dictionary<string, object> Invoke(LoggersChangeRequest request)
     {
-        _logger?.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
+        _logger.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
 
         return DoInvoke(_cloudFoundryLoggerProvider, request);
     }
@@ -77,7 +82,7 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
     {
         if (provider == null)
         {
-            _logger?.LogInformation("Unable to access the Dynamic Logging provider, log configuration unavailable");
+            _logger.LogInformation("Unable to access the Dynamic Logging provider, log configuration unavailable");
             return new List<ILoggerConfiguration>();
         }
 
@@ -88,7 +93,7 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
     {
         if (provider == null)
         {
-            _logger?.LogInformation("Unable to access the Dynamic Logging provider, log level not changed");
+            _logger.LogInformation("Unable to access the Dynamic Logging provider, log level not changed");
             return;
         }
 
@@ -105,7 +110,7 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Exception deserializing LoggersEndpoint Request.");
+            _logger.LogError(e, "Exception deserializing LoggersEndpoint Request.");
         }
 
         return new Dictionary<string, string>();

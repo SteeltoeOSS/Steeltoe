@@ -33,6 +33,7 @@
     <ProjectReference Include="..\..\..\Configuration\src\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Logging.DynamicLogger.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
-    <ProjectReference Include="..\OpenTelemetry\Steeltoe.Management.OpenTelemetry.csproj" />
+    <ProjectReference Include="..\MetricCollectors\Steeltoe.Management.MetricCollectors.csproj" />
   </ItemGroup>
+
 </Project>

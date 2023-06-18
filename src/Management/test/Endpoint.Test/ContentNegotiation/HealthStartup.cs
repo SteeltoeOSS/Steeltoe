@@ -22,8 +22,8 @@ public class HealthStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddHypermediaActuator(Configuration);
-        services.AddHealthActuator(Configuration);
+        services.AddHypermediaActuator();
+        services.AddHealthActuator();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -32,8 +32,7 @@ public class HealthStartup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.Map<ActuatorEndpoint>();
-            endpoints.Map<HealthEndpointCore>();
+            endpoints.MapAllActuators();
         });
     }
 }

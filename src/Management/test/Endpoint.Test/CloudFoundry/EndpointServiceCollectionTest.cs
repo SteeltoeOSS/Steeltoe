@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Xunit;
 
@@ -15,11 +16,9 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddCloudFoundryActuator_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddCloudFoundryActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => services2.AddCloudFoundryActuator());
     }
 
     [Fact]
@@ -38,12 +37,14 @@ public class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        services.AddCloudFoundryActuator(configurationRoot);
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddLogging();
+        services.AddCloudFoundryActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<ICloudFoundryOptions>();
-        Assert.NotNull(options);
-        var ep = serviceProvider.GetService<CloudFoundryEndpoint>();
+        var options = serviceProvider.GetService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
+        Assert.Equal(string.Empty, options.CurrentValue.Id);
+        var ep = serviceProvider.GetService<ICloudFoundryEndpoint>();
         Assert.NotNull(ep);
     }
 }

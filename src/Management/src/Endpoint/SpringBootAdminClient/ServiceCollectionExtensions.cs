@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
@@ -25,8 +25,8 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.RegisterDefaultApplicationInstanceInfo();
-        services.TryAddSingleton<ManagementEndpointOptions>();
-        services.TryAddSingleton<HealthEndpointOptions>();
+        services.ConfigureOptions<ConfigureManagementEndpointOptions>();
+        services.ConfigureOptions<ConfigureHealthEndpointOptions>();
         services.AddSingleton<SpringBootAdminClientOptions>();
         services.AddHostedService<SpringBootAdminClientHostedService>();
         return services;

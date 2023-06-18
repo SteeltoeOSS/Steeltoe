@@ -3,10 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Security;
@@ -18,7 +20,7 @@ namespace Steeltoe.Management.Endpoint.Test.Health;
 
 public class HealthEndpointCoreTest : BaseTest
 {
-    private readonly IHealthOptions _options = new HealthEndpointOptions();
+    private readonly IOptionsMonitor<HealthEndpointOptions> _options = new TestOptionsMonitor<HealthEndpointOptions>(new HealthEndpointOptions());
     private readonly IHealthAggregator _aggregator = new DefaultHealthAggregator();
     private readonly ServiceProvider _provider = new ServiceCollection().BuildServiceProvider();
 
@@ -27,11 +29,20 @@ public class HealthEndpointCoreTest : BaseTest
     {
         var contributors = new List<IHealthContributor>();
 
-        var optionsEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(null, _aggregator, contributors, ServiceOptions(), _provider));
-        var aggregatorEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(_options, null, contributors, ServiceOptions(), _provider));
-        var contribEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(_options, _aggregator, null, ServiceOptions(), _provider));
-        var svcOptsEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(_options, _aggregator, contributors, null, _provider));
-        var providerEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), null));
+        var optionsEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpointCore(null, _aggregator, contributors, ServiceOptions(), _provider, NullLogger<HealthEndpointCore>.Instance));
+
+        var aggregatorEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpointCore(_options, null, contributors, ServiceOptions(), _provider, NullLogger<HealthEndpointCore>.Instance));
+
+        var contribEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpointCore(_options, _aggregator, null, ServiceOptions(), _provider, NullLogger<HealthEndpointCore>.Instance));
+
+        var svcOptsEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpointCore(_options, _aggregator, contributors, null, _provider, NullLogger<HealthEndpointCore>.Instance));
+
+        var providerEx = Assert.Throws<ArgumentNullException>(() =>
+            new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), null, NullLogger<HealthEndpointCore>.Instance));
 
         Assert.Equal("options", optionsEx.ParamName);
         Assert.Equal("aggregator", aggregatorEx.ParamName);
@@ -44,7 +55,7 @@ public class HealthEndpointCoreTest : BaseTest
     public void Invoke_NoContributors_ReturnsExpectedHealth()
     {
         var contributors = new List<IHealthContributor>();
-        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider, GetLogger<HealthEndpoint>());
+        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider, GetLogger<HealthEndpointCore>());
 
         HealthEndpointResponse health = ep.Invoke(null);
         Assert.NotNull(health);
@@ -61,7 +72,7 @@ public class HealthEndpointCoreTest : BaseTest
             new TestContributor("h3")
         };
 
-        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider);
+        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider, NullLogger<HealthEndpointCore>.Instance);
 
         ep.Invoke(null);
 
@@ -82,7 +93,7 @@ public class HealthEndpointCoreTest : BaseTest
             new TestContributor("h3")
         };
 
-        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider);
+        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider, NullLogger<HealthEndpointCore>.Instance);
 
         HealthEndpointResponse info = ep.Invoke(null);
 
@@ -111,7 +122,7 @@ public class HealthEndpointCoreTest : BaseTest
             new DiskSpaceContributor()
         };
 
-        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider);
+        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider, NullLogger<HealthEndpointCore>.Instance);
 
         Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult
         {
@@ -145,7 +156,11 @@ public class HealthEndpointCoreTest : BaseTest
             new UpContributor()
         };
 
-        var ep = new HealthEndpointCore(_options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider);
+        IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
+
+        var ep = new HealthEndpointCore(options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider,
+            NullLogger<HealthEndpointCore>.Instance);
+
         var context = Substitute.For<ISecurityContext>();
 
         context.GetRequestComponents().Returns(new[]
@@ -171,7 +186,8 @@ public class HealthEndpointCoreTest : BaseTest
             new LivenessHealthContributor(appAvailability)
         };
 
-        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider);
+        IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
+        var ep = new HealthEndpointCore(options, _aggregator, contributors, ServiceOptions(), _provider, NullLogger<HealthEndpointCore>.Instance);
         var context = Substitute.For<ISecurityContext>();
 
         context.GetRequestComponents().Returns(new[]
@@ -202,7 +218,9 @@ public class HealthEndpointCoreTest : BaseTest
             new ReadinessHealthContributor(appAvailability)
         };
 
-        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider);
+        IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
+
+        var ep = new HealthEndpointCore(options, _aggregator, contributors, ServiceOptions(), _provider, NullLogger<HealthEndpointCore>.Instance);
         var context = Substitute.For<ISecurityContext>();
 
         context.GetRequestComponents().Returns(new[]
@@ -233,7 +251,11 @@ public class HealthEndpointCoreTest : BaseTest
             new ReadinessHealthContributor(appAvailability)
         };
 
-        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), _provider);
+        IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
+
+        var ep = new HealthEndpointCore(options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), _provider,
+            NullLogger<HealthEndpointCore>.Instance);
+
         var context = Substitute.For<ISecurityContext>();
 
         context.GetRequestComponents().Returns(new[]
@@ -255,7 +277,9 @@ public class HealthEndpointCoreTest : BaseTest
     [Fact]
     public void InvokeWithGroupFiltersMicrosoftResults()
     {
-        _options.Groups.Add("msft", new HealthGroupOptions
+        IOptionsMonitor<HealthEndpointOptions> options = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
+
+        options.CurrentValue.Groups.Add("msft", new HealthGroupOptions
         {
             Include = "up,privatememory"
         });
@@ -266,7 +290,9 @@ public class HealthEndpointCoreTest : BaseTest
             new UpContributor()
         };
 
-        var ep = new HealthEndpointCore(_options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider);
+        var ep = new HealthEndpointCore(options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider,
+            NullLogger<HealthEndpointCore>.Instance);
+
         var context = Substitute.For<ISecurityContext>();
 
         context.GetRequestComponents().Returns(new[]

@@ -21,7 +21,7 @@ public class CloudFoundryStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddCloudFoundryActuator(Configuration);
+        services.AddCloudFoundryActuator();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -30,7 +30,7 @@ public class CloudFoundryStartup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.Map<CloudFoundryEndpoint>();
+            endpoints.MapAllActuators();
         });
     }
 }

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Info;
 using Xunit;
 
@@ -13,16 +12,9 @@ public class InfoEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new InfoEndpointOptions();
+        var opts = GetOptionsFromSettings<InfoEndpointOptions>();
         Assert.Null(opts.Enabled);
         Assert.Equal("info", opts.Id);
-    }
-
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new InfoEndpointOptions(configuration));
     }
 
     [Fact]
@@ -36,11 +28,7 @@ public class InfoEndpointOptionsTest : BaseTest
             ["management:endpoints:info:id"] = "infomanagement"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var opts = new InfoEndpointOptions(configurationRoot);
+        InfoEndpointOptions opts = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appsettings);
         Assert.False(opts.Enabled);
         Assert.Equal("infomanagement", opts.Id);
     }

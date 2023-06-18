@@ -3,8 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
@@ -16,6 +17,7 @@ using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
@@ -24,41 +26,61 @@ namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorServiceCollectionExtensions
 {
-    public static void AddAllActuators(this IServiceCollection services, IConfiguration configuration, Action<CorsPolicyBuilder> buildCorsPolicy)
+    public static void AddCommonActuatorServices(this IServiceCollection services)
     {
-        services.AddAllActuators(configuration, MediaTypeVersion.V2, buildCorsPolicy);
+        if (Platform.IsCloudFoundry)
+        {
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IContextName, CFContext>());
+        }
+
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IContextName, ActuatorContext>());
+        services.TryAddScoped<ActuatorEndpointMapper>();
+
+        services.ConfigureOptions<ConfigureManagementEndpointOptions>();
     }
 
-    public static IServiceCollection AddAllActuators(this IServiceCollection services, IConfiguration configuration = null,
-        MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+    public static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
+        where TOptions : class, IEndpointOptions
+        where TConfigureOptions : class
+    {
+        services.ConfigureOptions<TConfigureOptions>();
+
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IEndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
+    }
+
+    public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy)
+    {
+        services.AddAllActuators(MediaTypeVersion.V2, buildCorsPolicy);
+    }
+
+    public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version = MediaTypeVersion.V2,
+        Action<CorsPolicyBuilder> buildCorsPolicy = null)
     {
         ArgumentGuard.NotNull(services);
-
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.AddSteeltoeCors(buildCorsPolicy);
 
         if (Platform.IsCloudFoundry)
         {
-            services.AddCloudFoundryActuator(configuration);
+            services.AddCloudFoundryActuator();
         }
 
-        services.AddHypermediaActuator(configuration);
+        services.AddHypermediaActuator();
 
-        services.AddThreadDumpActuator(configuration, version);
+        services.AddThreadDumpActuator(version);
 
-        services.AddHeapDumpActuator(configuration);
+        services.AddHeapDumpActuator();
 
-        services.AddDbMigrationsActuator(configuration);
-        services.AddEnvActuator(configuration);
-        services.AddInfoActuator(configuration);
-        services.AddHealthActuator(configuration);
-        services.AddLoggersActuator(configuration);
-        services.AddTraceActuator(configuration, version);
-        services.AddMappingsActuator(configuration);
-        services.AddMetricsActuator(configuration);
-        services.AddPrometheusActuator(configuration);
-        services.AddRefreshActuator(configuration);
+        services.AddDbMigrationsActuator();
+        services.AddEnvActuator();
+        services.AddInfoActuator();
+        services.AddHealthActuator();
+        services.AddLoggersActuator();
+        services.AddTraceActuator(version);
+        services.AddMappingsActuator();
+        services.AddMetricsActuator();
+        services.AddRefreshActuator();
         return services;
     }
 

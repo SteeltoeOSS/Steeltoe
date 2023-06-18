@@ -4,15 +4,18 @@
 
 using System.Net;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
-public class SpringBootAdminClientHostedServiceTest
+public class SpringBootAdminClientHostedServiceTest : BaseTest
 {
     [Fact]
     public async Task SpringBootAdminClient_RegistersAndDeletes()
@@ -31,8 +34,8 @@ public class SpringBootAdminClientHostedServiceTest
             IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
             var appInfo = new ApplicationInstanceInfo(configurationRoot);
             var sbaOptions = new SpringBootAdminClientOptions(configurationRoot, appInfo);
-            var managementOptions = new ManagementEndpointOptions(configurationRoot);
-            var healthOptions = new HealthEndpointOptions(configurationRoot);
+            IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appSettings);
+            IOptionsMonitor<HealthEndpointOptions> healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
             var httpMessageHandler = new MockHttpMessageHandler();
             httpMessageHandler.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances").Respond("application/json", "{\"Id\":\"1234567\"}");
 
@@ -40,7 +43,10 @@ public class SpringBootAdminClientHostedServiceTest
                 .Respond(_ => new HttpResponseMessage(HttpStatusCode.NoContent));
 
             Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
-            var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions, httpMessageHandler.ToHttpClient());
+
+            var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions,
+                NullLogger<SpringBootAdminClientHostedService>.Instance, httpMessageHandler.ToHttpClient());
+
             await service.StartAsync(default);
             await service.StopAsync(default);
 
@@ -68,15 +74,18 @@ public class SpringBootAdminClientHostedServiceTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var appInfo = new ApplicationInstanceInfo(configurationRoot);
         var sbaOptions = new SpringBootAdminClientOptions(configurationRoot, appInfo);
-        var managementOptions = new ManagementEndpointOptions(configurationRoot);
-        var healthOptions = new HealthEndpointOptions(configurationRoot);
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appSettings);
+        IOptionsMonitor<HealthEndpointOptions> healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions>(appSettings);
         var httpMessageHandler = new MockHttpMessageHandler();
 
         httpMessageHandler.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances")
             .Throw(new HttpRequestException("No connection could be made because the target machine actively refused it."));
 
         Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
-        var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions, httpMessageHandler.ToHttpClient());
+
+        var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions,
+            NullLogger<SpringBootAdminClientHostedService>.Instance, httpMessageHandler.ToHttpClient());
+
         await service.StartAsync(default);
 
         httpMessageHandler.VerifyNoOutstandingExpectation();

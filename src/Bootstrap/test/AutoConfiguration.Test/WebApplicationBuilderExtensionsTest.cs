@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MySql.Data.MySqlClient;
 using Npgsql;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Oracle.ManagedDataAccess.Client;
 using RabbitMQ.Client;
@@ -36,7 +37,7 @@ using Steeltoe.Logging;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
+using Steeltoe.Management.Wavefront.Exporters;
 using Xunit;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
@@ -136,7 +137,7 @@ public class WebApplicationBuilderExtensionsTest
         webApp.UseRouting();
         await webApp.StartAsync();
 
-        IEnumerable<ActuatorEndpoint> managementEndpoint = webApp.Services.GetServices<ActuatorEndpoint>();
+        IEnumerable<IActuatorEndpoint> managementEndpoint = webApp.Services.GetServices<IActuatorEndpoint>();
         IStartupFilter filter = webApp.Services.GetServices<IStartupFilter>().FirstOrDefault();
         Assert.Single(managementEndpoint);
         Assert.NotNull(filter);
@@ -151,7 +152,7 @@ public class WebApplicationBuilderExtensionsTest
         webApp.UseRouting();
         await webApp.StartAsync();
 
-        IEnumerable<ActuatorEndpoint> managementEndpoint = webApp.Services.GetServices<ActuatorEndpoint>();
+        IEnumerable<IActuatorEndpoint> managementEndpoint = webApp.Services.GetServices<IActuatorEndpoint>();
         IStartupFilter filter = webApp.Services.GetServices<IStartupFilter>().FirstOrDefault(f => f is AllActuatorsStartupFilter);
 
         Assert.Single(managementEndpoint);
@@ -168,7 +169,7 @@ public class WebApplicationBuilderExtensionsTest
 
         var exclusions = new List<string>
         {
-            SteeltoeAssemblies.SteeltoeManagementEndpoint
+            SteeltoeAssemblies.SteeltoeWavefront
         };
 
         webAppBuilder.AddSteeltoe(SteeltoeAssemblies.AllAssemblies.Except(exclusions));
@@ -177,9 +178,9 @@ public class WebApplicationBuilderExtensionsTest
 
         webApp.UseRouting();
         await webApp.StartAsync();
-        var exporter = webApp.Services.GetService<WavefrontMetricsExporter>();
+        var meterProvider = webApp.Services.GetService<MeterProvider>();
 
-        Assert.NotNull(exporter);
+        Assert.NotNull(meterProvider);
     }
 
     [Fact]

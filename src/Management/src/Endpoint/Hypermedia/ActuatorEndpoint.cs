@@ -3,29 +3,37 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
 /// <summary>
 /// Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators.
 /// </summary>
-public class ActuatorEndpoint : AbstractEndpoint<Links, string>, IActuatorEndpoint
+public class ActuatorEndpoint : IActuatorEndpoint
 {
     private readonly ILogger<ActuatorEndpoint> _logger;
-    private readonly ActuatorManagementOptions _managementOption;
+    private readonly IOptionsMonitor<HypermediaEndpointOptions> _options;
+    private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOption;
+    private readonly IEnumerable<IEndpointOptions> _endpointOptions;
 
-    protected new IActuatorHypermediaOptions Options => options as IActuatorHypermediaOptions;
+    public IEndpointOptions Options => _options.CurrentValue;
 
-    public ActuatorEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions managementOptions, ILogger<ActuatorEndpoint> logger = null)
-        : base(options)
+    public ActuatorEndpoint(IOptionsMonitor<HypermediaEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        IEnumerable<IEndpointOptions> endpointOptions, ILogger<ActuatorEndpoint> logger)
     {
+        ArgumentGuard.NotNull(logger);
+        _options = options;
         _managementOption = managementOptions;
+        _endpointOptions = endpointOptions;
         _logger = logger;
     }
 
-    public override Links Invoke(string baseUrl)
+    public virtual Links Invoke(string baseUrl)
     {
-        var service = new HypermediaService(_managementOption, options, _logger);
+        var service = new HypermediaService(_managementOption, _options, _endpointOptions, _logger);
         return service.Invoke(baseUrl);
     }
 }

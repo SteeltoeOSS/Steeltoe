@@ -23,9 +23,9 @@ public class StartupWithSecurity
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddCloudFoundryActuator(Configuration);
-        services.AddHypermediaActuator(Configuration);
-        services.AddInfoActuator(Configuration);
+        services.AddCloudFoundryActuator();
+        services.AddHypermediaActuator();
+        services.AddInfoActuator();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -35,8 +35,8 @@ public class StartupWithSecurity
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.Map<CloudFoundryEndpoint>();
-            endpoints.Map<InfoEndpoint>();
+            endpoints.MapAllActuators();
         });
+        // app.UseEndpoints
     }
 }

@@ -8,8 +8,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
@@ -31,24 +34,31 @@ public class EndpointMiddlewareTest : BaseTest
         ["info:NET:ASPNET:version"] = "2.0.0"
     };
 
+    public EndpointMiddlewareTest()
+    {
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
+    }
+
     [Fact]
     public void RoutesByPathAndVerb()
     {
         var options = new HypermediaEndpointOptions();
+        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/cloudfoundryapplication", options.GetContextPath(new CloudFoundryManagementOptions()));
-        Assert.Null(options.AllowedVerbs);
+        Assert.Equal("/cloudfoundryapplication", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
+
+        Assert.Single(options.AllowedVerbs);
+        Assert.Contains("Get", options.AllowedVerbs);
     }
 
     [Fact]
     public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
     {
-        var opts = new CloudFoundryEndpointOptions();
-        var managementOptions = new CloudFoundryManagementOptions();
-        managementOptions.EndpointOptions.Add(opts);
-        var ep = new TestCloudFoundryEndpoint(opts, managementOptions);
+        IOptionsMonitor<CloudFoundryEndpointOptions> opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        var ep = new TestCloudFoundryEndpoint(opts, managementOptions, NullLogger<CloudFoundryEndpoint>.Instance);
 
-        var middle = new CloudFoundryEndpointMiddleware(null, ep, managementOptions);
+        var middle = new CloudFoundryEndpointMiddleware(ep, managementOptions, NullLogger<CloudFoundryEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/");
         await middle.HandleCloudFoundryRequestAsync(context);

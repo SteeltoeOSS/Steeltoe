@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
@@ -22,7 +23,9 @@ public class TraceEndpointTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfNullRepo()
     {
-        Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(new TraceEndpointOptions(), null));
+        IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
+        Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(opts, null, null));
+        Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(opts, new TestTraceRepository(), null));
     }
 
     [Fact]
@@ -34,12 +37,20 @@ public class TraceEndpointTest : BaseTest
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton<ITraceRepository>(repo);
-            services.AddTraceActuatorServices(configuration, MediaTypeVersion.V1);
+            services.AddTraceActuatorServices(MediaTypeVersion.V1);
         };
 
         var ep = tc.GetService<ITraceEndpoint>();
         List<TraceResult> result = ep.Invoke();
         Assert.NotNull(result);
         Assert.True(repo.GetTracesCalled);
+    }
+
+    private class TestTraceRepository : ITraceRepository
+    {
+        public List<TraceResult> GetTraces()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

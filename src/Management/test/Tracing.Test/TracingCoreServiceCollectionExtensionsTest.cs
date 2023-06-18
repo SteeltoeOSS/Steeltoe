@@ -23,7 +23,7 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration());
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
 
         ServiceProvider serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider();
 
@@ -35,7 +35,7 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_WiresIncludedExporters()
     {
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration());
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
 
         ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
         var hst = serviceProvider.GetService<IHostedService>();
@@ -55,7 +55,7 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
             { "management:metrics:export:wavefront:apiToken", "fakeSecret" }
         }));
 
-        ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+        ServiceProvider serviceProvider = services.AddLogging().AddDistributedTracing(null).BuildServiceProvider();
 
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
         Assert.NotNull(tracerProvider);

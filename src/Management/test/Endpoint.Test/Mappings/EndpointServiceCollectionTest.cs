@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Mappings;
 using Xunit;
@@ -16,11 +17,9 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddMappingsActuator_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
-        IServiceCollection services2 = new ServiceCollection();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddMappingsActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => services2.AddMappingsActuator());
     }
 
     [Fact]
@@ -40,11 +39,11 @@ public class EndpointServiceCollectionTest : BaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         services.AddSingleton<IConfiguration>(configurationRoot);
 
-        services.AddMappingsActuator(configurationRoot);
+        services.AddMappingsActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IMappingsOptions>();
-        Assert.NotNull(options);
+        var options = serviceProvider.GetService<IOptionsMonitor<MappingsEndpointOptions>>();
+        Assert.Equal("mappings", options.CurrentValue.Id);
 
         var routeMappings = serviceProvider.GetService<IRouteMappings>();
         Assert.NotNull(routeMappings);

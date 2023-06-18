@@ -22,8 +22,8 @@ public class ThreadDumpStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddHypermediaActuator(Configuration);
-        services.AddThreadDumpActuator(Configuration);
+        services.AddHypermediaActuator();
+        services.AddThreadDumpActuator();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -32,8 +32,7 @@ public class ThreadDumpStartup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.Map<ActuatorEndpoint>();
-            endpoints.Map<ThreadDumpEndpoint>();
+            endpoints.MapAllActuators();
         });
     }
 }

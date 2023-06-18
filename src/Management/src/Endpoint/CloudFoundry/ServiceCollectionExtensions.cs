@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -20,35 +20,17 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// Reference to the service collection.
     /// </param>
-    /// <param name="configuration">
-    /// Reference to the configuration system.
-    /// </param>
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddCloudFoundryActuatorServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCloudFoundryActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
-
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(configuration)));
-        services.TryAddSingleton(provider => provider.GetServices<IManagementOptions>().OfType<CloudFoundryManagementOptions>().First());
-
-        services.TryAddSingleton<ICloudFoundryOptions>(new CloudFoundryEndpointOptions(configuration));
-
-        services.TryAddSingleton(provider =>
-        {
-            var options = provider.GetService<ICloudFoundryOptions>();
-
-            CloudFoundryManagementOptions managementOptions = provider.GetServices<IManagementOptions>().OfType<CloudFoundryManagementOptions>().Single();
-
-            managementOptions.EndpointOptions.Add(options);
-
-            return new CloudFoundryEndpoint(options, managementOptions);
-        });
-
-        services.TryAddSingleton<ICloudFoundryEndpoint>(provider => provider.GetRequiredService<CloudFoundryEndpoint>());
-
+        services.AddCommonActuatorServices();
+        services.ConfigureEndpointOptions<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, CloudFoundryEndpointMiddleware>());
+        services.AddSingleton<CloudFoundryEndpointMiddleware>();
+        services.TryAddSingleton<ICloudFoundryEndpoint, CloudFoundryEndpoint>();
         return services;
     }
 }

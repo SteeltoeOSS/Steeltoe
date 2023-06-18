@@ -8,15 +8,13 @@ namespace Steeltoe.Configuration;
 
 internal abstract class ConfigurationDictionaryMapper
 {
-    public string BindingKey { get; }
+    protected string BindingKey { get; }
+    protected string ToPrefix { get; }
+    protected IDictionary<string, string> ConfigurationData { get; }
 
-    public string ToPrefix { get; }
-
-    public IDictionary<string, string> ConfigData { get; }
-
-    protected ConfigurationDictionaryMapper(IDictionary<string, string> configData, string bindingKey, params string[] toPrefix)
+    protected ConfigurationDictionaryMapper(IDictionary<string, string> configurationData, string bindingKey, params string[] toPrefix)
     {
-        ConfigData = configData;
+        ConfigurationData = configurationData;
         BindingKey = !string.IsNullOrEmpty(bindingKey) ? bindingKey + ConfigurationPath.KeyDelimiter : string.Empty;
 
         if (toPrefix.Length > 0)
@@ -25,51 +23,86 @@ internal abstract class ConfigurationDictionaryMapper
         }
     }
 
-    public void MapFromTo(string existingKey, string newKey)
+    public string MapFromTo(string fromKey, string toKey)
     {
-        if (ConfigData.TryGetValue(BindingKey + existingKey, out string value))
+        string value = GetFromValue(fromKey);
+
+        if (value != null)
         {
-            if (ToPrefix != null)
+            SetToValue(toKey, value);
+        }
+
+        return value;
+    }
+
+    public string MapFromTo(string fromKey, params string[] toKeySegments)
+    {
+        string value = GetFromValue(fromKey);
+
+        if (value != null)
+        {
+            string toKey = string.Join(ConfigurationPath.KeyDelimiter, toKeySegments);
+            SetToValue(toKey, value);
+        }
+
+        return value;
+    }
+
+    public string MapFromAppendTo(string fromKey, string appendToKey, string separator)
+    {
+        string valueToAppend = GetFromValue(fromKey);
+
+        if (valueToAppend != null)
+        {
+            string existingValue = GetToValue(appendToKey);
+
+            if (existingValue != null)
             {
-                ConfigData[ToPrefix + newKey] = value;
-            }
-            else
-            {
-                ConfigData[newKey] = value;
+                string newValue = $"{existingValue}{separator}{valueToAppend}";
+                SetToValue(appendToKey, newValue);
+
+                return newValue;
             }
         }
+
+        return null;
     }
 
-    public void MapFromTo(string existingKey, params string[] newKeyPath)
+    public string MapFromToFile(string fromKey, string toKey)
     {
-        if (ConfigData.TryGetValue(BindingKey + existingKey, out string value))
+        string value = GetFromValue(fromKey);
+
+        if (value != null)
         {
-            string newKey = string.Join(ConfigurationPath.KeyDelimiter, newKeyPath);
+            string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
-            if (ToPrefix != null)
+            using (StreamWriter writer = File.CreateText(tempPath))
             {
-                ConfigData[ToPrefix + newKey] = value;
+                writer.Write(value);
             }
-            else
-            {
-                ConfigData[newKey] = value;
-            }
+
+            SetToValue(toKey, tempPath);
+            return tempPath;
         }
+
+        return null;
     }
 
-    public void AddKeyValue(string newKey, string value)
+    public void SetToValue(string toKey, string value)
     {
-        ConfigData.Add(ToPrefix + newKey, value);
+        string key = $"{ToPrefix}{toKey}";
+        ConfigurationData[key] = value;
     }
 
-    public string Get(string key)
+    public string GetFromValue(string fromKey)
     {
-        return Get(key, null);
+        string key = $"{BindingKey}{fromKey}";
+        return ConfigurationData.TryGetValue(key, out string value) ? value : null;
     }
 
-    public string Get(string key, string defaultValue)
+    private string GetToValue(string toKey)
     {
-        _ = ConfigData.TryGetValue(BindingKey + key, out string result);
-        return result ?? defaultValue;
+        string key = $"{ToPrefix}{toKey}";
+        return ConfigurationData.TryGetValue(key, out string value) ? value : null;
     }
 }

@@ -2,9 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
+using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -14,16 +15,22 @@ public class ManagementEndpointOptionsTest : BaseTest
     [Fact]
     public void InitializedWithDefaults()
     {
-        var opts = new ManagementEndpointOptions();
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(ActuatorContext.Name);
         Assert.False(opts.Enabled.HasValue);
         Assert.Equal("/actuator", opts.Path);
+        Assert.NotNull(opts.Exposure);
+        Assert.Contains("health", opts.Exposure.Include);
+        Assert.Contains("info", opts.Exposure.Include);
     }
 
     [Fact]
-    public void ThrowsIfConfigNull()
+    public void InitializedWithDefaultsCF()
     {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new ManagementEndpointOptions(configuration));
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>().Get(CFContext.Name);
+        Assert.True(opts.Enabled);
+        Assert.Equal("/cloudfoundryapplication", opts.Path);
+        Assert.NotNull(opts.Exposure);
+        Assert.Contains("*", opts.Exposure.Include);
     }
 
     [Fact]
@@ -37,19 +44,43 @@ public class ManagementEndpointOptionsTest : BaseTest
             ["management:endpoints:info:id"] = "/infomanagement"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-
-        var opts = new ManagementEndpointOptions(configurationRoot);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(ActuatorContext.Name);
         Assert.False(opts.Enabled);
         Assert.Equal("/management", opts.Path);
+        ManagementEndpointOptions cfopts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(CFContext.Name);
+        Assert.False(cfopts.Enabled);
+        Assert.Equal("/cloudfoundryapplication", cfopts.Path);
+    }
+
+    [Fact]
+    public void BindsCFConfigurationCorrectly()
+    {
+        var appsettings = new Dictionary<string, string>
+        {
+            ["management:endpoints:enabled"] = "true",
+            ["management:endpoints:path"] = "/management",
+            ["management:endpoints:info:enabled"] = "true",
+            ["management:endpoints:info:id"] = "/infomanagement",
+            ["management:cloudfoundry:enabled"] = "false"
+        };
+
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>(appsettings)
+            .Get(ActuatorContext.Name);
+
+        Assert.True(opts.Enabled);
+        Assert.Equal("/management", opts.Path);
+
+        ManagementEndpointOptions cfopts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>(appsettings)
+            .Get(CFContext.Name);
+
+        Assert.False(cfopts.Enabled);
+        Assert.Equal("/cloudfoundryapplication", cfopts.Path);
     }
 
     [Fact]
     public void IsExposedCorrectly()
     {
-        var managementOptions = new ActuatorManagementOptions
+        var managementOptions = new ManagementEndpointOptions
         {
             Exposure =
             {
@@ -60,7 +91,7 @@ public class ManagementEndpointOptionsTest : BaseTest
             }
         };
 
-        var options = new InfoEndpointOptions();
+        var options = GetOptionsFromSettings<InfoEndpointOptions>();
         Assert.False(options.IsExposed(managementOptions));
     }
 }

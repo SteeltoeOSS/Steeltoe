@@ -2,21 +2,34 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 
-public class ConfigurationBuilderExtensionsTest
+public sealed class ConfigurationBuilderExtensionsTest
 {
     [Fact]
-    public void AddKubernetesServiceBindings_AddsSourceAndRegistersProcessors()
+    public void AddKubernetesServiceBindings_ThrowsOnNulls()
+    {
+        var builder = new ConfigurationBuilder();
+
+        Action action1 = () => ((ConfigurationBuilder)null).AddKubernetesServiceBindings();
+        action1.Should().ThrowExactly<ArgumentNullException>().WithParameterName("builder");
+
+        Action action2 = () => builder.AddKubernetesServiceBindings(true, false, null);
+        action2.Should().ThrowExactly<ArgumentNullException>().WithParameterName("ignoreKeyPredicate");
+    }
+
+    [Fact]
+    public void AddKubernetesServiceBindings_RegistersProcessors()
     {
         var builder = new ConfigurationBuilder();
         builder.AddKubernetesServiceBindings();
-        Assert.Single(builder.Sources);
-        Assert.IsType<ServiceBindingConfigurationSource>(builder.Sources[0]);
-        var source = (ServiceBindingConfigurationSource)builder.Sources[0];
-        Assert.Equal(24, source.RegisteredProcessors.Count);
+
+        builder.Sources.Should().HaveCount(1);
+        ServiceBindingConfigurationSource source = builder.Sources[0].Should().BeOfType<ServiceBindingConfigurationSource>().Subject;
+        source.RegisteredProcessors.Should().NotBeEmpty();
     }
 }

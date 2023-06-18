@@ -21,7 +21,7 @@ public class HyperMediaStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddHypermediaActuator(Configuration);
+        services.AddHypermediaActuator();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -30,7 +30,7 @@ public class HyperMediaStartup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.Map<ActuatorEndpoint>();
+            endpoints.MapAllActuators();
         });
     }
 }

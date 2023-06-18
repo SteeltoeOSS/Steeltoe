@@ -10,20 +10,15 @@ using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
-internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationProvider, IDisposable
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
+
+internal sealed class ServiceBindingConfigurationProvider : PostProcessorConfigurationProvider, IDisposable
 {
-    // The key for the provider of binding
     public const string ProviderKey = "provider";
-
-    // The key for the type of binding
     public const string TypeKey = "type";
-
-    public static readonly string KubernetesBindingsPrefix = "k8s" + ConfigurationPath.KeyDelimiter + "bindings";
+    public static readonly string InputKeyPrefix = ConfigurationPath.Combine("k8s", "bindings");
+    public static readonly string OutputKeyPrefix = ConfigurationPath.Combine("steeltoe", "service-bindings");
 
     private readonly IDisposable _changeTokenRegistration;
-
     private readonly ServiceBindingConfigurationSource _source;
 
     public ServiceBindingConfigurationProvider(ServiceBindingConfigurationSource source)
@@ -106,7 +101,7 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
 
     protected override void PostProcessConfiguration()
     {
-        if (this.IsSteeltoeBindingsEnabled())
+        if (this.IsKubernetesBindingsEnabled())
         {
             base.PostProcessConfiguration();
         }
@@ -114,7 +109,7 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
 
     private void AddBindingType(ServiceBinding binding, Dictionary<string, string> data)
     {
-        string typeKey = KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + binding.Name + ConfigurationPath.KeyDelimiter + TypeKey;
+        string typeKey = ConfigurationPath.Combine(InputKeyPrefix, binding.Name, TypeKey);
 
         if (!_source.IgnoreKeyPredicate(typeKey))
         {
@@ -126,36 +121,33 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
     {
         if (!string.IsNullOrEmpty(binding.Provider))
         {
-            string provKey = KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + binding.Name + ConfigurationPath.KeyDelimiter + ProviderKey;
+            string providerKey = ConfigurationPath.Combine(InputKeyPrefix, binding.Name, ProviderKey);
 
-            if (!_source.IgnoreKeyPredicate(provKey))
+            if (!_source.IgnoreKeyPredicate(providerKey))
             {
-                data[provKey] = binding.Provider;
+                data[providerKey] = binding.Provider;
             }
         }
     }
 
     private void AddBindingSecret(ServiceBinding binding, KeyValuePair<string, string> secretEntry, Dictionary<string, string> data)
     {
-        string secretkey = KubernetesBindingsPrefix + ConfigurationPath.KeyDelimiter + binding.Name + ConfigurationPath.KeyDelimiter + secretEntry.Key;
+        string secretKey = ConfigurationPath.Combine(InputKeyPrefix, binding.Name, secretEntry.Key);
 
-        if (!_source.IgnoreKeyPredicate(secretkey))
+        if (!_source.IgnoreKeyPredicate(secretKey))
         {
-            data[secretkey] = secretEntry.Value;
+            data[secretKey] = secretEntry.Value;
         }
     }
 
-    internal class ServiceBinding
+    internal sealed class ServiceBinding
     {
         private readonly Dictionary<string, string> _secrets;
+
         public string Name { get; }
-
         public string Path { get; }
-
         public string Provider { get; }
-
         public IDictionary<string, string> Secrets => new ReadOnlyDictionary<string, string>(_secrets);
-
         public string Type { get; }
 
         // Creates a new Binding instance using the specified file system directory
@@ -165,7 +157,7 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
         }
 
         // Creates a new Binding instance using the specified content
-        public ServiceBinding(string name, string path, IDictionary<string, string> secret)
+        private ServiceBinding(string name, string path, IDictionary<string, string> secrets)
         {
             Name = name ?? throw new ArgumentException("Binding has no name and is not a valid binding");
             Path = path ?? throw new ArgumentException("Binding has no path and is not a valid binding");
@@ -175,18 +167,18 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
             string type = null;
             string provider = null;
 
-            foreach (KeyValuePair<string, string> entry in secret)
+            foreach ((string secretName, string secretValue) in secrets)
             {
-                switch (entry.Key)
+                switch (secretName)
                 {
                     case TypeKey:
-                        type = entry.Value;
+                        type = secretValue;
                         break;
                     case ProviderKey:
-                        provider = entry.Value;
+                        provider = secretValue;
                         break;
                     default:
-                        _secrets.Add(entry.Key, entry.Value);
+                        _secrets.Add(secretName, secretValue);
                         break;
                 }
             }
@@ -206,11 +198,6 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
             {
                 IEnumerable<string> files = Directory.EnumerateFiles(path);
                 var result = new Dictionary<string, string>();
-
-                if (!files.Any())
-                {
-                    return result;
-                }
 
                 foreach (string file in files)
                 {
@@ -257,7 +244,7 @@ internal class ServiceBindingConfigurationProvider : PostProcessorConfigurationP
         }
     }
 
-    internal class ServiceBindings
+    internal sealed class ServiceBindings
     {
         public IList<ServiceBinding> Bindings { get; }
 

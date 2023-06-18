@@ -2,19 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
+using System.Diagnostics.Metrics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Metrics;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Common.Logging;
-using Steeltoe.Management.Endpoint.Metrics.Prometheus;
-using Steeltoe.Management.OpenTelemetry.Exporters;
-using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
-using Steeltoe.Management.OpenTelemetry.Exporters.Steeltoe;
-using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
-using Steeltoe.Management.OpenTelemetry.Metrics;
+using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Exporters;
+using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
@@ -29,164 +26,78 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// Reference to the service collection.
     /// </param>
-    /// <param name="configuration">
-    /// Reference to the configuration system.
-    /// </param>
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddMetricsActuatorServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddMetricsActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
 
-        var options = new MetricsEndpointOptions(configuration);
-        services.TryAddSingleton<IMetricsEndpointOptions>(options);
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
-        services.TryAddSingleton<MetricsEndpoint>();
+        services.ConfigureEndpointOptions<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>();
+        services.TryAddSingleton<IMetricsEndpoint, MetricsEndpoint>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MetricsEndpointMiddleware>());
+        services.TryAddSingleton<MetricsEndpointMiddleware>();
 
-        services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
-
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoeExporter>(provider =>
+        services.TryAddSingleton<IExporterOptions>(provider =>
         {
-            var options = provider.GetService<IMetricsEndpointOptions>();
+            MetricsEndpointOptions options = provider.GetService<IOptionsMonitor<MetricsEndpointOptions>>().CurrentValue;
 
-            var exporterOptions = new PullMetricsExporterOptions
+            return new MetricsExporterOptions
             {
-                ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds
+                CacheDurationMilliseconds = options.CacheDurationMilliseconds,
+                MaxTimeSeries = options.MaxTimeSeries,
+                MaxHistograms = options.MaxHistograms,
+                IncludedMetrics = options.IncludedMetrics
             };
+        });
 
+        services.TryAddSingleton(provider =>
+        {
+            var exporterOptions = provider.GetService<IExporterOptions>();
             return new SteeltoeExporter(exporterOptions);
-        }));
+        });
 
-        services.AddOpenTelemetryMetricsForSteeltoe();
+        services.AddSteeltoeCollector();
 
         return services;
     }
 
-    /// <summary>
-    /// Adds the services used by the Prometheus actuator.
-    /// </summary>
-    /// <param name="services">
-    /// Reference to the service collection.
-    /// </param>
-    /// <param name="configuration">
-    /// Reference to the configuration system.
-    /// </param>
-    /// <returns>
-    /// A reference to the service collection.
-    /// </returns>
-    public static IServiceCollection AddPrometheusActuatorServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddSteeltoeCollector(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
-
-        var options = new PrometheusEndpointOptions(configuration);
-        services.TryAddSingleton<IPrometheusEndpointOptions>(options);
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
-        services.TryAddSingleton<PrometheusScraperEndpoint>();
-
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoePrometheusExporter>(provider =>
+        return services.AddSingleton(provider =>
         {
-            var options = provider.GetService<IMetricsEndpointOptions>();
+            var steeltoeExporter = provider.GetService<SteeltoeExporter>();
+            var exporterOptions = provider.GetService<IExporterOptions>();
+            var logger = provider.GetService<ILogger<SteeltoeExporter>>();
 
-            var exporterOptions = new PullMetricsExporterOptions
+            var aggregationManager = new AggregationManager(exporterOptions.MaxTimeSeries, exporterOptions.MaxHistograms, steeltoeExporter.AddMetrics,
+                instrument => logger.LogTrace($"Begin measurements from {instrument.Name} for {instrument.Meter.Name}"),
+                instrument => logger.LogTrace($"End measurements from {instrument.Name} for {instrument.Meter.Name}"),
+                instrument => logger.LogTrace($"Instrument {instrument.Name} published for {instrument.Meter.Name}"),
+                () => logger.LogTrace("Steeltoe metrics collector started."),
+                () => logger.LogWarning($"Cannnot collect any more time series because the configured limit of {exporterOptions.MaxTimeSeries} was reached"),
+                () => logger.LogWarning($"Cannnot collect any more Histograms because the configured limit of {exporterOptions.MaxHistograms} was reached"),
+                ex => logger.LogError(ex, "An error occured while collecting Observable Instruments "));
+
+            steeltoeExporter.Collect = aggregationManager.Collect;
+            aggregationManager.Include(SteeltoeMetrics.InstrumentationName); // Default to Steeltoe Metrics
+
+            if (exporterOptions.IncludedMetrics != null)
             {
-                ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds
-            };
+                foreach (string filter in exporterOptions.IncludedMetrics)
+                {
+                    string[] filterParts = filter?.Split(":");
 
-            return new SteeltoePrometheusExporter(exporterOptions);
-        }));
-
-        services.AddOpenTelemetryMetricsForSteeltoe();
-
-        return services;
-    }
-
-    /// <summary>
-    /// Helper method to configure opentelemetry metrics. Do not use in conjunction with Extension methods provided by OpenTelemetry.
-    /// </summary>
-    /// <param name="services">
-    /// Reference to the service collection.
-    /// </param>
-    /// <param name="configure">
-    /// The Action to configure OpenTelemetry.
-    /// </param>
-    /// <param name="name">
-    /// Instrumentation Name.
-    /// </param>
-    /// <param name="version">
-    /// Instrumentation Version.
-    /// </param>
-    /// <returns>
-    /// A reference to the service collection.
-    /// </returns>
-    public static IServiceCollection AddOpenTelemetryMetricsForSteeltoe(this IServiceCollection services,
-        Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
-    {
-        if (services.Any(sd => sd.ServiceType == typeof(MeterProvider)))
-        {
-            if (!services.Any(sd => sd.ImplementationInstance?.ToString() == "{ ConfiguredSteeltoeMetrics = True }"))
-            {
-                ILogger logger = BootstrapLoggerFactory.Instance.CreateLogger(typeof(ServiceCollectionExtensions).FullName!);
-
-                logger.LogWarning(
-                    $"Make sure one of the extension methods that calls {nameof(ConfigureSteeltoeMetrics)} is used to correctly configure metrics using OpenTelemetry for Steeltoe.");
+                    if (filterParts != null && filterParts.Length == 2)
+                    {
+                        string meter = filterParts[0];
+                        string instrument = filterParts[1];
+                        aggregationManager.Include(meter, instrument);
+                    }
+                }
             }
 
-            return services; // Already Configured, get out of here
-        }
-
-        services.AddSingleton(new
-        {
-            ConfiguredSteeltoeMetrics = true
-        });
-
-        return services.AddOpenTelemetryMetrics(builder => builder.ConfigureSteeltoeMetrics());
-    }
-
-    /// <summary>
-    /// Configures the <see cref="MeterProviderBuilder"></see> as an underlying Metrics processor and exporter for Steeltoe in actuators and exporters. />.
-    /// </summary>
-    /// <param name="builder">
-    /// MeterProviderBuilder.
-    /// </param>
-    /// <param name="configure">
-    /// Configuration callback.
-    /// </param>
-    /// <param name="name">
-    /// Instrumentation Name.
-    /// </param>
-    /// <param name="version">
-    /// Instrumentation Version.
-    /// </param>
-    /// <returns>
-    /// Configured MeterProviderBuilder.
-    /// </returns>
-    public static MeterProviderBuilder ConfigureSteeltoeMetrics(this MeterProviderBuilder builder,
-        Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
-    {
-        if (configure != null)
-        {
-            builder.Configure(configure);
-        }
-
-        builder.Configure((provider, deferredBuilder) =>
-        {
-            var views = provider.GetService<IViewRegistry>();
-            var exporters = provider.GetServices(typeof(MetricsExporter)) as IEnumerable<MetricsExporter>;
-
-            deferredBuilder.AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
-                .AddRegisteredViews(views).AddExporters(exporters);
-
-            var wavefrontExporter = provider.GetService<WavefrontMetricsExporter>(); // Not an IMetricsExporter
-
-            if (wavefrontExporter != null)
-            {
-                deferredBuilder.AddWavefrontExporter(wavefrontExporter);
-            }
-        });
-
-        return builder;
+            return aggregationManager;
+        }).AddHostedService<MetricCollectionHostedService>();
     }
 }
