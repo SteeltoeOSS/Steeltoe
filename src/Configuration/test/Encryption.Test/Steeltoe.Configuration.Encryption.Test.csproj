@@ -22,4 +22,10 @@
     <ProjectReference Include="..\..\..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj" />
     <ProjectReference Include="..\..\src\Encryption\Steeltoe.Configuration.Encryption.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Decryption\server.jks">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

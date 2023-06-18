@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 
-namespace Steeltoe.Configuration.Encryption.ConfigServer;
+namespace Steeltoe.Configuration.Encryption.Decryption;
 
 internal static class ConfigServerEncryptionResolverExtensions
 {

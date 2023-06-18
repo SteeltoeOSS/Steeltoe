@@ -2,9 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Configuration.Encryption.Decryption;
 using Xunit;
 
-namespace Steeltoe.Configuration.Encryption.ConfigServer.Test;
+namespace Steeltoe.Configuration.Encryption.Test.Decryption;
 
 public class EncryptionFactoryTest
 {
@@ -33,7 +34,7 @@ public class EncryptionFactoryTest
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings
         {
             EncryptionEnabled = true,
-            EncryptionKeyStoreLocation = "./server.jks",
+            EncryptionKeyStoreLocation = "./Decryption/server.jks",
             EncryptionKeyStorePassword = "letmein",
             EncryptionKeyStoreAlias = "mytestkey"
         };

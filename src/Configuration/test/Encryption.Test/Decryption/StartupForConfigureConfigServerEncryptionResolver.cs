@@ -5,9 +5,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Configuration.Encryption.ConfigServer;
+using Steeltoe.Configuration.Encryption.Decryption;
 
-namespace Steeltoe.Configuration.Encryption.Test;
+namespace Steeltoe.Configuration.Encryption.Test.Decryption;
 
 public sealed class StartupForConfigureConfigServerEncryptionResolver
 {

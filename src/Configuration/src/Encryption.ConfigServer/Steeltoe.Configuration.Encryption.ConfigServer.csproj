@@ -10,10 +10,6 @@
     <ProjectReference Include="..\..\src\Encryption\Steeltoe.Configuration.Encryption.csproj" />
   </ItemGroup>
   
-  <ItemGroup>
-    <PackageReference Include="BouncyCastle.NetCore" Version="1.9.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="7.0.2" />
-  </ItemGroup>
-
+ 
 
 </Project>

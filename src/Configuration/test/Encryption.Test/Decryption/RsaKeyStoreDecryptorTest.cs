@@ -2,9 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Configuration.Encryption.Decryption;
 using Xunit;
 
-namespace Steeltoe.Configuration.Encryption.ConfigServer.Test;
+namespace Steeltoe.Configuration.Encryption.Test.Decryption;
 
 public sealed class RsaKeyStoreDecryptorTest
 {
@@ -12,7 +13,7 @@ public sealed class RsaKeyStoreDecryptorTest
 
     public RsaKeyStoreDecryptorTest()
     {
-        _keyProvider = new KeyProvider("./server.jks", "letmein");
+        _keyProvider = new KeyProvider("./Decryption/server.jks", "letmein");
     }
 
     [Fact]

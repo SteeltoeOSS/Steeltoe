@@ -9,10 +9,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Configuration.Encryption.ConfigServer;
+using Steeltoe.Configuration.Encryption.Decryption;
 using Xunit;
 
-namespace Steeltoe.Configuration.Encryption.Test;
+namespace Steeltoe.Configuration.Encryption.Test.Decryption;
 
 public sealed class ConfigServerEncryptionResolverExtensionsTest
 {
@@ -78,13 +78,13 @@ public sealed class ConfigServerEncryptionResolverExtensionsTest
     {
         var settings = new Dictionary<string, string>
         {
-            { "spring:cloud:config:encrypt:enabled", "true" },
-            { "spring:cloud:config:encrypt:keyStore:location", ".\\server.jks" },
-            { "spring:cloud:config:encrypt:keyStore:password", "letmein" },
-            { "spring:cloud:config:encrypt:keyStore:alias", "mytestkey" },
-            { "spring:cloud:config:encrypt:rsa:strong", "false" },
-            { "spring:cloud:config:encrypt:rsa:algorithm", "OAEP" },
-            { "spring:cloud:config:encrypt:rsa:salt", "deadbeef" },
+            { "encrypt:enabled", "true" },
+            { "encrypt:keyStore:location", "./Decryption/server.jks" },
+            { "encrypt:keyStore:password", "letmein" },
+            { "encrypt:keyStore:alias", "mytestkey" },
+            { "encrypt:rsa:strong", "false" },
+            { "encrypt:rsa:algorithm", "OAEP" },
+            { "encrypt:rsa:salt", "deadbeef" },
             { "key1", "value1" },
             {
                 "key2",

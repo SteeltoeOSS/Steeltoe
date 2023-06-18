@@ -4,7 +4,7 @@
 
 using Org.BouncyCastle.Crypto;
 
-namespace Steeltoe.Configuration.Encryption.ConfigServer;
+namespace Steeltoe.Configuration.Encryption.Decryption;
 
 public interface IKeyProvider
 {

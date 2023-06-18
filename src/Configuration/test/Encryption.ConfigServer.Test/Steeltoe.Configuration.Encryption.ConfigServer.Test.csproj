@@ -4,12 +4,6 @@
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
-  
-  <ItemGroup>
-    <None Update="server.jks">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCoreVersion)" />

@@ -9,7 +9,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Steeltoe.Common;
 
-namespace Steeltoe.Configuration.Encryption.ConfigServer;
+namespace Steeltoe.Configuration.Encryption.Decryption;
 
 public sealed class AesTextDecryptor : ITextDecryptor
 {

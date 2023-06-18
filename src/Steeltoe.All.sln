@@ -289,10 +289,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Configuration.Encr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Configuration.Encryption", "Configuration\src\Encryption\Steeltoe.Configuration.Encryption.csproj", "{764B3355-FD20-42E3-B452-357FCC20A27D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Configuration.Encryption.ConfigServer", "Configuration\src\Encryption.ConfigServer\Steeltoe.Configuration.Encryption.ConfigServer.csproj", "{94FF9BA0-AC2C-4C63-ABBF-5FA8B85C13DD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Configuration.Encryption.ConfigServer.Test", "Configuration\test\Encryption.ConfigServer.Test\Steeltoe.Configuration.Encryption.ConfigServer.Test.csproj", "{D34B8D66-C31A-43E6-A234-6B8212EACB8D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -711,14 +707,6 @@ Global
 		{764B3355-FD20-42E3-B452-357FCC20A27D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{764B3355-FD20-42E3-B452-357FCC20A27D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{764B3355-FD20-42E3-B452-357FCC20A27D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{94FF9BA0-AC2C-4C63-ABBF-5FA8B85C13DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{94FF9BA0-AC2C-4C63-ABBF-5FA8B85C13DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{94FF9BA0-AC2C-4C63-ABBF-5FA8B85C13DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{94FF9BA0-AC2C-4C63-ABBF-5FA8B85C13DD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D34B8D66-C31A-43E6-A234-6B8212EACB8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D34B8D66-C31A-43E6-A234-6B8212EACB8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D34B8D66-C31A-43E6-A234-6B8212EACB8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D34B8D66-C31A-43E6-A234-6B8212EACB8D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -828,8 +816,6 @@ Global
 		{0D68FC03-7FD4-4280-852B-0E620872CE22} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 		{BCC3F7DC-080D-4A7E-8060-40ED65073EB3} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 		{764B3355-FD20-42E3-B452-357FCC20A27D} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
-		{94FF9BA0-AC2C-4C63-ABBF-5FA8B85C13DD} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
-		{D34B8D66-C31A-43E6-A234-6B8212EACB8D} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}

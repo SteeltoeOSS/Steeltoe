@@ -13,6 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BouncyCastle.NetCore" Version="1.9.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="7.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
   </ItemGroup>
