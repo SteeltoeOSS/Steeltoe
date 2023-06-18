@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Globalization;
 using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
@@ -50,34 +49,29 @@ public abstract class BasePostProcessorsTest
 
     private string MakeTypeKey(string bindingName)
     {
-        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.InputKeyPrefix, bindingName, ServiceBindingConfigurationProvider.TypeKey);
+        return ConfigurationPath.Combine(KubernetesServiceBindingConfigurationProvider.FromKeyPrefix, bindingName,
+            KubernetesServiceBindingConfigurationProvider.TypeKey);
     }
 
     private string MakeProviderKey(string bindingName)
     {
-        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.InputKeyPrefix, bindingName, ServiceBindingConfigurationProvider.ProviderKey);
+        return ConfigurationPath.Combine(KubernetesServiceBindingConfigurationProvider.FromKeyPrefix, bindingName,
+            KubernetesServiceBindingConfigurationProvider.ProviderKey);
     }
 
     private string MakeSecretKey(string bindingName, string key)
     {
-        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.InputKeyPrefix, bindingName, key);
+        return ConfigurationPath.Combine(KubernetesServiceBindingConfigurationProvider.FromKeyPrefix, bindingName, key);
     }
 
     internal string GetOutputKeyPrefix(string bindingName, string bindingType)
     {
-        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.OutputKeyPrefix, bindingType, bindingName);
+        return ConfigurationPath.Combine(KubernetesServiceBindingConfigurationProvider.ToKeyPrefix, bindingType, bindingName);
     }
 
-    internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor, string bindingType, bool isEnabled)
+    internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor)
     {
-        var source = new TestPostProcessorConfigurationSource
-        {
-            ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                { $"steeltoe:kubernetes:service-bindings:{bindingType}:enable", isEnabled.ToString(CultureInfo.InvariantCulture) }
-            }).Build()
-        };
-
+        var source = new TestPostProcessorConfigurationSource();
         source.RegisterPostProcessor(postProcessor);
 
         return new TestPostProcessorConfigurationProvider(source);

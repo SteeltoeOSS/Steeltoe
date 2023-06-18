@@ -4,6 +4,7 @@
     <Description>Configuration Provider for reading Kubernetes Service Bindings</Description>
     <PackageTags>Configuration;Kubernetes;Services;Bindings</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

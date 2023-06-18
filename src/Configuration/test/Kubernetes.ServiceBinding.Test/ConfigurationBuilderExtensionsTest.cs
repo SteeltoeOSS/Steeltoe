@@ -15,10 +15,10 @@ public sealed class ConfigurationBuilderExtensionsTest
     {
         var builder = new ConfigurationBuilder();
 
-        Action action1 = () => ((ConfigurationBuilder)null).AddKubernetesServiceBindings();
+        Action action1 = () => ((ConfigurationBuilder)null!).AddKubernetesServiceBindings();
         action1.Should().ThrowExactly<ArgumentNullException>().WithParameterName("builder");
 
-        Action action2 = () => builder.AddKubernetesServiceBindings(true, false, null);
+        Action action2 = () => builder.AddKubernetesServiceBindings(true, false, null!);
         action2.Should().ThrowExactly<ArgumentNullException>().WithParameterName("ignoreKeyPredicate");
     }
 
@@ -29,7 +29,7 @@ public sealed class ConfigurationBuilderExtensionsTest
         builder.AddKubernetesServiceBindings();
 
         builder.Sources.Should().HaveCount(1);
-        ServiceBindingConfigurationSource source = builder.Sources[0].Should().BeOfType<ServiceBindingConfigurationSource>().Subject;
-        source.RegisteredProcessors.Should().NotBeEmpty();
+        KubernetesServiceBindingConfigurationSource source = builder.Sources[0].Should().BeOfType<KubernetesServiceBindingConfigurationSource>().Subject;
+        source.PostProcessors.Should().NotBeEmpty();
     }
 }

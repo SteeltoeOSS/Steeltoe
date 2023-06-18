@@ -2,7 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Configuration;
 
@@ -12,12 +15,14 @@ internal abstract class PostProcessorConfigurationProvider : ConfigurationProvid
 
     protected PostProcessorConfigurationProvider(PostProcessorConfigurationSource source)
     {
+        ArgumentGuard.NotNull(source);
+
         Source = source;
     }
 
     protected virtual void PostProcessConfiguration()
     {
-        foreach (IConfigurationPostProcessor processor in Source.RegisteredProcessors)
+        foreach (IConfigurationPostProcessor processor in Source.PostProcessors)
         {
             processor.PostProcessConfiguration(this, Data);
         }

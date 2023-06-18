@@ -3,27 +3,19 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data.Common;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Configuration.Kubernetes.ServiceBinding;
-using Steeltoe.Connector.EntityFrameworkCore.PostgreSql;
+using Steeltoe.Connectors.EntityFrameworkCore.PostgreSql;
 using Xunit;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.Test;
+namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
 
 public class PostgreSqlDbContextOptionsExtensionsTest
 {
-    public PostgreSqlDbContextOptionsExtensionsTest()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
     [Fact]
     public void UseNpgsql_ThrowsIfDbContextOptionsBuilderNull()
     {
@@ -109,10 +101,10 @@ public class PostgreSqlDbContextOptionsExtensionsTest
     [Fact]
     public void AddDbContext_MultiplePostgreSqlServices_ThrowsConnectorException()
     {
-        IServiceCollection services = new ServiceCollection();
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", PostgreSqlTestHelpers.TwoServerVcapEdb);
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.TwoServerVcapEdb);
+        IServiceCollection services = new ServiceCollection();
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -127,10 +119,10 @@ public class PostgreSqlDbContextOptionsExtensionsTest
     [Fact]
     public void AddDbContexts_WithEDbVCaps_AddsDbContexts()
     {
-        IServiceCollection services = new ServiceCollection();
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapEdb);
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapEdb);
+        IServiceCollection services = new ServiceCollection();
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -160,10 +152,10 @@ public class PostgreSqlDbContextOptionsExtensionsTest
     [Fact]
     public void AddDbContexts_WithCrunchyVCAPs_AddsDbContexts()
     {
-        IServiceCollection services = new ServiceCollection();
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapCrunchy);
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerVcapCrunchy);
+        IServiceCollection services = new ServiceCollection();
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -193,10 +185,10 @@ public class PostgreSqlDbContextOptionsExtensionsTest
     [Fact]
     public void AddDbContexts_WithEncodedCrunchyVCAPs_AddsDbContexts()
     {
-        IServiceCollection services = new ServiceCollection();
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerEncodedVcapCrunchy);
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgreSqlTestHelpers.SingleServerEncodedVcapCrunchy);
+        IServiceCollection services = new ServiceCollection();
 
         var appsettings = new Dictionary<string, string>();
 
@@ -224,40 +216,5 @@ public class PostgreSqlDbContextOptionsExtensionsTest
         Assert.Contains("Username=testrolee93ccf859894dc60dcd53218492b37b4", connString, StringComparison.Ordinal);
         Assert.Contains("Password=Qp!1mB1$Zk2T!$!D85_E", connString, StringComparison.Ordinal);
         Assert.Contains("Database=steeltoe", connString, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void AddDbContext_WithK8sBinding_AddsDbContext()
-    {
-        string rootDir = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
-        Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", rootDir);
-
-        try
-        {
-            IServiceCollection services = new ServiceCollection();
-
-            var builder = new ConfigurationBuilder();
-            builder.AddKubernetesServiceBindings(false);
-            IConfigurationRoot configurationRoot = builder.Build();
-
-            services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(configurationRoot));
-
-            using ServiceProvider built = services.BuildServiceProvider();
-            using var dbContext = built.GetService<GoodDbContext>();
-            dbContext.Should().NotBeNull();
-
-            using DbConnection connection = dbContext.Database.GetDbConnection();
-            connection.Should().BeOfType<NpgsqlConnection>().And.Subject.Should().NotBeNull();
-
-            connection.ConnectionString.Should().Contain("Host=10.194.59.205");
-            connection.ConnectionString.Should().Contain("Port=5432");
-            connection.ConnectionString.Should().Contain("Username=testrolee93ccf859894dc60dcd53218492b37b4");
-            connection.ConnectionString.Should().Contain("Password=Qp!1mB1$Zk2T!$!D85_E");
-            connection.ConnectionString.Should().Contain("Database=steeltoe");
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("SERVICE_BINDING_ROOT", null);
-        }
     }
 }

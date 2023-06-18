@@ -10,16 +10,14 @@
       "Configuration\\src\\CloudFoundry.ServiceBinding\\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj",
       "Configuration\\src\\CloudFoundry\\Steeltoe.Configuration.CloudFoundry.csproj",
       "Configuration\\src\\Kubernetes.ServiceBinding\\Steeltoe.Configuration.Kubernetes.ServiceBinding.csproj",
-      "Connectors\\src\\Abstractions\\Steeltoe.Connector.Abstractions.csproj",
-      "Connectors\\src\\CloudFoundry\\Steeltoe.Connector.CloudFoundry.csproj",
-      "Connectors\\src\\Connector\\Steeltoe.Connector.csproj",
-      "Connectors\\src\\EntityFramework6\\Steeltoe.Connector.EntityFramework6.csproj",
-      "Connectors\\src\\EntityFrameworkCore\\Steeltoe.Connector.EntityFrameworkCore.csproj",
-      "Connectors\\test\\Connector.CloudFoundry.Test\\Steeltoe.Connector.CloudFoundry.Test.csproj",
-      "Connectors\\test\\Connector.Test\\Steeltoe.Connector.Test.csproj",
-      "Connectors\\test\\EntityFramework6.Test\\Steeltoe.Connector.EntityFramework6.Test.csproj",
-      "Connectors\\test\\EntityFrameworkCore.Test\\Steeltoe.Connector.EntityFrameworkCore.Test.csproj",
-      "Connectors\\test\\External.Connector.Test\\External.Connector.Test.csproj"
+      "Connectors\\src\\Abstractions\\Steeltoe.Connectors.Abstractions.csproj",
+      "Connectors\\src\\CloudFoundry\\Steeltoe.Connectors.CloudFoundry.csproj",
+      "Connectors\\src\\Connectors\\Steeltoe.Connectors.csproj",
+      "Connectors\\src\\EntityFrameworkCore\\Steeltoe.Connectors.EntityFrameworkCore.csproj",
+      "Connectors\\test\\CloudFoundry.Test\\Steeltoe.Connectors.CloudFoundry.Test.csproj",
+      "Connectors\\test\\Connectors.Test\\Steeltoe.Connectors.Test.csproj",
+      "Connectors\\test\\EntityFrameworkCore.Test\\Steeltoe.Connectors.EntityFrameworkCore.Test.csproj",
+      "Connectors\\test\\External.Test\\External.Connectors.Test.csproj"
     ]
   }
 }

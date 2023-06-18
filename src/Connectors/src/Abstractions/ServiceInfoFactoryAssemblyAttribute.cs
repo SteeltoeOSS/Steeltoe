@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Attributes;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connector;
+namespace Steeltoe.Connectors;
 
 /// <summary>
 /// Identifies an assembly that contains one or more <see cref="IServiceInfoFactory" />.

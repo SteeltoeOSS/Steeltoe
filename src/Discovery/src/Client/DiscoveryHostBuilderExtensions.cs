@@ -4,7 +4,7 @@
 
 using System.Reflection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Connector;
+using Steeltoe.Connectors;
 using Steeltoe.Discovery.Client.SimpleClients;
 
 namespace Steeltoe.Discovery.Client;

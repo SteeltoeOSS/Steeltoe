@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Globalization;
 using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test;
@@ -32,32 +31,25 @@ public abstract class BasePostProcessorsTest
 
     private static string MakeSecretKey(string bindingProvider, string key)
     {
-        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.InputKeyPrefix, bindingProvider, "0", key);
+        return ConfigurationPath.Combine(CloudFoundryServiceBindingConfigurationProvider.FromKeyPrefix, bindingProvider, "0", key);
     }
 
     internal string GetOutputKeyPrefix(string bindingName, string bindingType)
     {
-        return ConfigurationPath.Combine(ServiceBindingConfigurationProvider.OutputKeyPrefix, bindingType, bindingName);
+        return ConfigurationPath.Combine(CloudFoundryServiceBindingConfigurationProvider.ToKeyPrefix, bindingType, bindingName);
     }
 
-    internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor, string bindingTypeKey, bool isEnabled)
+    internal PostProcessorConfigurationProvider GetConfigurationProvider(IConfigurationPostProcessor postProcessor)
     {
-        var source = new TestPostProcessorConfigurationSource
-        {
-            ParentConfiguration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                { $"steeltoe:cloudfoundry:service-bindings:{bindingTypeKey}:enable", isEnabled.ToString(CultureInfo.InvariantCulture) }
-            }).Build()
-        };
-
+        var source = new TestPostProcessorConfigurationSource();
         source.RegisterPostProcessor(postProcessor);
 
         return new TestPostProcessorConfigurationProvider(source);
     }
 
-    protected string GetFileContentAtKey(Dictionary<string, string> configurationData, string key)
+    protected string? GetFileContentAtKey(Dictionary<string, string> configurationData, string key)
     {
-        if (configurationData.TryGetValue(key, out string value))
+        if (configurationData.TryGetValue(key, out string? value))
         {
             return File.ReadAllText(value);
         }
