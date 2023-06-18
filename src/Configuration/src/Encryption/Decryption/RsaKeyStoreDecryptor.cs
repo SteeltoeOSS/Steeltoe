@@ -9,7 +9,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Encryption.Decryption;
 
-public sealed class RsaKeyStoreDecryptor : ITextDecryptor
+internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
 {
     private readonly string _salt;
     private readonly bool _strong;

@@ -11,7 +11,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Encryption.Decryption;
 
-public sealed class AesTextDecryptor : ITextDecryptor
+internal sealed class AesTextDecryptor : ITextDecryptor
 {
     private const short KeySize = 256;
     private const short IvSize = 128;

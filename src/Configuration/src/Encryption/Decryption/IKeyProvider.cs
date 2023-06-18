@@ -6,7 +6,7 @@ using Org.BouncyCastle.Crypto;
 
 namespace Steeltoe.Configuration.Encryption.Decryption;
 
-public interface IKeyProvider
+internal interface IKeyProvider
 {
     ICipherParameters GetKey(string keyAlias);
 }

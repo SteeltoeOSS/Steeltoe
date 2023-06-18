@@ -7,7 +7,7 @@ using Org.BouncyCastle.Pkcs;
 
 namespace Steeltoe.Configuration.Encryption.Decryption;
 
-public sealed class KeyProvider : IKeyProvider
+internal sealed class KeyProvider : IKeyProvider
 {
     private readonly Pkcs12Store _pkcs12;
 
