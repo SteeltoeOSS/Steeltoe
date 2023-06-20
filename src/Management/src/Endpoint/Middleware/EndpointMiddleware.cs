@@ -20,8 +20,6 @@ namespace Steeltoe.Management.Endpoint.Middleware;
 public interface IEndpointMiddleware : IMiddleware
 {
     HttpMiddlewareOptions EndpointOptions { get; }
-
-    bool ShouldInvoke(HttpContext context);
 }
 
 public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddleware
