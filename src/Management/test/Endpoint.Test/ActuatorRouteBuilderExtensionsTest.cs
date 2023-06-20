@@ -81,7 +81,7 @@ public class ActuatorRouteBuilderExtensionsTest
         foreach (HttpMiddlewareOptions options in optionsCollection)
         {
             string path = options.GetContextPath(GetManagementContext(host.Services));
-            path = path.Replace("metrics/{**_}", "metrics/clr.cpu.count", StringComparison.Ordinal);
+            path = path.Replace("metrics/{**_}", "metrics", StringComparison.Ordinal);
             Assert.NotNull(path);
             HttpResponseMessage response;
 
