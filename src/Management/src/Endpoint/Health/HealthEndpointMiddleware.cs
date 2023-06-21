@@ -16,6 +16,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 {
     private readonly IOptionsMonitor<HealthEndpointOptions> _healthEndpointOptionsMonitor;
     private readonly ILogger<HealthEndpointMiddleware> _logger;
+
     public HealthEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IHealthEndpointHandler endpointHandler,
         IOptionsMonitor<HealthEndpointOptions> endpointOptions, ILoggerFactory loggerFactory)
         : base(endpointHandler, managementOptions, loggerFactory)

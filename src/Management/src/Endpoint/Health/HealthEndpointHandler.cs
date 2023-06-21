@@ -42,7 +42,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 
     public Task<HealthEndpointResponse> InvokeAsync(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)
     {
-        return Task.Run(()=> BuildHealth(healthRequest), cancellationToken);
+        return Task.Run(() => BuildHealth(healthRequest), cancellationToken);
     }
 
     public int GetStatusCode(HealthCheckResult health)
@@ -113,8 +113,6 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         return svcOptions.CurrentValue.Registrations;
     }
 
-  
-
     /// <summary>
     /// Filter out health contributors that do not belong to the requested group.
     /// </summary>
@@ -152,5 +150,4 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 
         return contributors;
     }
-
 }

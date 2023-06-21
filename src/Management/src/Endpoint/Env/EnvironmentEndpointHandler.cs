@@ -22,7 +22,8 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
     public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public EnvironmentEndpointHandler(IOptionsMonitor<EnvironmentEndpointOptions> options, IConfiguration configuration, IHostEnvironment env, ILoggerFactory loggerFactory)
+    public EnvironmentEndpointHandler(IOptionsMonitor<EnvironmentEndpointOptions> options, IConfiguration configuration, IHostEnvironment env,
+        ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(env);
@@ -129,6 +130,6 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
     public async Task<EnvironmentDescriptor> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
-       return await Task.Run(()=>DoInvoke(_configuration));
+        return await Task.Run(() => DoInvoke(_configuration));
     }
 }

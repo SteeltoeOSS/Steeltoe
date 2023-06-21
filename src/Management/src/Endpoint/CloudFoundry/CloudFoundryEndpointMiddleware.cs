@@ -13,12 +13,16 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 /// <summary>
-/// Used in conjunction with <see cref="CloudFoundryEndpointHandler"/> to generate hypermedia list of links to all endpoints activated in the application.
+/// Used in conjunction with <see cref="CloudFoundryEndpointHandler" /> to generate hypermedia list of links to all endpoints activated in the
+/// application.
 /// </summary>
 internal sealed class CloudFoundryEndpointMiddleware : EndpointMiddleware<string, Links>
 {
     private readonly ILogger _logger;
-    public CloudFoundryEndpointMiddleware(ICloudFoundryEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILoggerFactory loggerFactory) : base(endpointHandler, managementOptions, loggerFactory)
+
+    public CloudFoundryEndpointMiddleware(ICloudFoundryEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
         _logger = loggerFactory.CreateLogger<CloudFoundryEndpointMiddleware>();
     }

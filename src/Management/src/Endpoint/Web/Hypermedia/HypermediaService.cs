@@ -15,7 +15,7 @@ internal sealed class HypermediaService
     private readonly IEnumerable<HttpMiddlewareOptions> _endpointOptions;
     private readonly ILogger _logger;
     private readonly ManagementEndpointOptions _managementOptions;
-    private readonly HttpMiddlewareOptions  _options;
+    private readonly HttpMiddlewareOptions _options;
 
     public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HypermediaEndpointOptions> options,
         IEnumerable<HttpMiddlewareOptions> endpointOptions, ILogger logger)
@@ -30,7 +30,8 @@ internal sealed class HypermediaService
         _options = options.CurrentValue;
     }
 
-    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options, IEnumerable<HttpMiddlewareOptions> endpointOptions, ILogger logger)
+    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options,
+        IEnumerable<HttpMiddlewareOptions> endpointOptions, ILogger logger)
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);

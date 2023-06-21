@@ -45,7 +45,6 @@ public class EndpointMiddlewareTest : BaseTest
         var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
 
         ILogger<HeapDumper> logger1 = loggerFactory.CreateLogger<HeapDumper>();
-        ILogger<HeapDumpEndpointMiddleware> logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
 
         var obs = new HeapDumper(opts, logger1, null);
 

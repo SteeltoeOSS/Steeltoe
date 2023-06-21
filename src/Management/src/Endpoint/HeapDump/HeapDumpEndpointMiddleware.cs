@@ -13,7 +13,10 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object, string>
 {
     private readonly ILogger<HeapDumpEndpointMiddleware> _logger;
-    public HeapDumpEndpointMiddleware(IHeapDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILoggerFactory loggerFactory) : base(endpointHandler, managementOptions, loggerFactory)
+
+    public HeapDumpEndpointMiddleware(IHeapDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
         _logger = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
     }

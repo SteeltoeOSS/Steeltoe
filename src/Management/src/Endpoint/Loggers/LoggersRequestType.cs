@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 namespace Steeltoe.Management.Endpoint.Loggers;
+
 internal enum LoggersRequestType
 {
     Default = 0,
     Change = 1,
-    Error = 2,
+    Error = 2
 }

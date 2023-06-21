@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using System.Security;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -17,8 +16,9 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
 {
     private readonly IEnumerable<IContextName> _contextNames;
     private readonly ILogger<LoggersEndpointMiddleware> _logger;
+
     public LoggersEndpointMiddleware(ILoggersEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-         IEnumerable<IContextName> contextNames, ILoggerFactory loggerFactory)
+        IEnumerable<IContextName> contextNames, ILoggerFactory loggerFactory)
         : base(endpointHandler, managementOptions, loggerFactory)
     {
         _contextNames = contextNames;
@@ -86,6 +86,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
 
         return new DefaultLoggersRequest();
     }
+
     internal async Task<Dictionary<string, string>> DeserializeRequestAsync(Stream stream)
     {
         try

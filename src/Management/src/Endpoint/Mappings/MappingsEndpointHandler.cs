@@ -274,6 +274,4 @@ internal sealed class MappingsEndpointHandler : IMappingsEndpointHandler
 
         return context;
     }
-
-   
 }

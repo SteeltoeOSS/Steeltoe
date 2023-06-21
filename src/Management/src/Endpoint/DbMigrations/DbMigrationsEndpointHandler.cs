@@ -40,8 +40,8 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
     {
     }
 
-    public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, DbMigrationsEndpointHelper endpointHelper,
-        ILoggerFactory loggerFactory)
+    public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container,
+        DbMigrationsEndpointHelper endpointHelper, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(loggerFactory);
         ArgumentGuard.NotNull(container);

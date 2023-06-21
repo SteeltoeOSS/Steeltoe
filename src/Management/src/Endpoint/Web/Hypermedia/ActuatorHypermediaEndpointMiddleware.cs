@@ -2,14 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -18,6 +15,7 @@ namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<string, Links>
 {
     private readonly ILogger _logger;
+
     public ActuatorHypermediaEndpointMiddleware(IActuatorEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILoggerFactory loggerFactory)
         : base(endpointHandler, managementOptions, loggerFactory)
@@ -44,12 +42,11 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
         return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
     }
 
-
     protected override async Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(context);
         _logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
-        var requestUri = GetRequestUri(context.Request);
+        string requestUri = GetRequestUri(context.Request);
         return await EndpointHandler.InvokeAsync(requestUri, cancellationToken);
     }
 }

@@ -11,8 +11,8 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 /// <summary>
-/// CloudFoundryEndpointHandler provides hypermedia: a page is added with links to all the endpoints that are enabled. When deployed to CloudFoundry
-/// this EndpointHandler is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware" /> is added.
+/// CloudFoundryEndpointHandler provides hypermedia: a page is added with links to all the endpoints that are enabled. When deployed to CloudFoundry this
+/// EndpointHandler is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware" /> is added.
 /// </summary>
 internal sealed class CloudFoundryEndpointHandler : ICloudFoundryEndpointHandler
 {
@@ -21,7 +21,10 @@ internal sealed class CloudFoundryEndpointHandler : ICloudFoundryEndpointHandler
     private readonly IEnumerable<HttpMiddlewareOptions> _endpointOptions;
     private readonly ILogger<CloudFoundryEndpointHandler> _logger;
 
-    public CloudFoundryEndpointHandler(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options, IEnumerable<HttpMiddlewareOptions> endpointOptions, ILogger<CloudFoundryEndpointHandler> logger)
+    public HttpMiddlewareOptions Options => _options.CurrentValue;
+
+    public CloudFoundryEndpointHandler(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options,
+        IEnumerable<HttpMiddlewareOptions> endpointOptions, ILogger<CloudFoundryEndpointHandler> logger)
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(options);
@@ -33,8 +36,6 @@ internal sealed class CloudFoundryEndpointHandler : ICloudFoundryEndpointHandler
         _endpointOptions = endpointOptions;
         _logger = logger;
     }
-
-    public HttpMiddlewareOptions Options => _options.CurrentValue;
 
     public Task<Links> InvokeAsync(string baseUrl, CancellationToken cancellationToken)
     {

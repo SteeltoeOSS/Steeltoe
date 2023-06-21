@@ -27,7 +27,6 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
         _logger = loggerFactory.CreateLogger<InfoEndpointHandler>();
     }
 
-
     private Dictionary<string, object> BuildInfo(IList<IInfoContributor> infoContributors)
     {
         ArgumentGuard.NotNull(infoContributors);

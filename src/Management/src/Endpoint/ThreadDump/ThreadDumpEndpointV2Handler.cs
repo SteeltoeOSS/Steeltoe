@@ -16,7 +16,8 @@ internal sealed class ThreadDumpEndpointV2Handler : IThreadDumpEndpointV2Handler
 
     public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public ThreadDumpEndpointV2Handler(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpointV2Handler> logger)
+    public ThreadDumpEndpointV2Handler(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper,
+        ILogger<ThreadDumpEndpointV2Handler> logger)
     {
         ArgumentGuard.NotNull(threadDumper);
         ArgumentGuard.NotNull(logger);
