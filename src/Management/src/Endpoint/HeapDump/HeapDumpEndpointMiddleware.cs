@@ -35,15 +35,20 @@ internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object, st
 
         if (result != null)
         {
-            await using (result)
+            try
             {
-                context.Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{Path.GetFileName(gzFileName)}\"");
-                context.Response.StatusCode = StatusCodes.Status200OK;
-                context.Response.ContentLength = result.Length;
-                await result.CopyToAsync(context.Response.Body);
+                await using (result)
+                {
+                    context.Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{Path.GetFileName(gzFileName)}\"");
+                    context.Response.StatusCode = StatusCodes.Status200OK;
+                    context.Response.ContentLength = result.Length;
+                    await result.CopyToAsync(context.Response.Body);
+                }
             }
-
-            File.Delete(gzFileName);
+            finally
+            {
+                File.Delete(gzFileName);
+            }
         }
         else
         {
