@@ -103,18 +103,4 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
 
         provider.SetLogLevel(name, LoggerLevels.MapLogLevel(level));
     }
-
-    internal async Task<Dictionary<string, string>> DeserializeRequestAsync(Stream stream)
-    {
-        try
-        {
-            return await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Exception deserializing loggers endpoint request.");
-        }
-
-        return new Dictionary<string, string>();
-    }
 }

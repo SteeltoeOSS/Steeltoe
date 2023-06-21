@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Security;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -62,7 +63,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
                 {
                     string loggerName = remaining.Value.TrimStart('/');
 
-                    Dictionary<string, string> change = await ((LoggersEndpointHandler)EndpointHandler).DeserializeRequestAsync(request.Body);
+                    Dictionary<string, string> change = await DeserializeRequestAsync(request.Body);
 
                     change.TryGetValue("configuredLevel", out string level);
 
@@ -83,5 +84,18 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
         }
 
         return new DefaultLoggersRequest();
+    }
+    internal async Task<Dictionary<string, string>> DeserializeRequestAsync(Stream stream)
+    {
+        try
+        {
+            return await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception deserializing loggers endpoint request.");
+        }
+
+        return new Dictionary<string, string>();
     }
 }

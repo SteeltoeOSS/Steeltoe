@@ -336,8 +336,6 @@ Steeltoe.Management.Endpoint.Metrics.IMetricsObserverOptions.ExcludedMetrics.get
 Steeltoe.Management.Endpoint.Metrics.IMetricsObserverOptions.IncludedMetrics.get -> System.Collections.Generic.IList<string>
 Steeltoe.Management.Endpoint.Metrics.IMetricsObserverOptions.IngressIgnorePattern.get -> string
 Steeltoe.Management.Endpoint.Metrics.IMetricsResponse
-Steeltoe.Management.Endpoint.Metrics.MetricsEmptyResponse
-Steeltoe.Management.Endpoint.Metrics.MetricsEmptyResponse.MetricsEmptyResponse() -> void
 Steeltoe.Management.Endpoint.Metrics.MetricsEndpointOptions
 Steeltoe.Management.Endpoint.Metrics.MetricsEndpointOptions.CacheDurationMilliseconds.get -> int
 Steeltoe.Management.Endpoint.Metrics.MetricsEndpointOptions.CacheDurationMilliseconds.set -> void
@@ -376,7 +374,6 @@ Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.L
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ManagementEndpointOptions.get -> Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions>
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware.EndpointOptions.get -> Steeltoe.Management.HttpMiddlewareOptions
-Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware.ShouldInvoke(Microsoft.AspNetCore.Http.HttpContext context) -> bool
 Steeltoe.Management.Endpoint.Options.IContextName
 Steeltoe.Management.Endpoint.Options.IContextName.Name.get -> string
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions

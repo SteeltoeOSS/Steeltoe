@@ -53,7 +53,7 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
             return GetMetric(request, sampleList, availTags[request.MetricName]);
         }
 
-        return new MetricsEmptyResponse();
+        return null;
     }
 
     internal IList<MetricSample> GetMetricSamplesByTags(MetricsCollection<List<MetricSample>> measurements, string metricName,

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
@@ -44,10 +45,10 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
 
         if (mgmtOptions == null)
         {
-            return GetMetricName(request, EndpointOptions.Path);
+            return GetMetricName(request, EndpointHandler.Options.Path);
         }
 
-        string path = $"{mgmtOptions.Path}/{EndpointOptions.Id}".Replace("//", "/", StringComparison.Ordinal);
+        string path = $"{mgmtOptions.Path}/{EndpointHandler.Options.Id}".Replace("//", "/", StringComparison.Ordinal);
         string metricName = GetMetricName(request, path);
 
         return metricName;
@@ -111,9 +112,14 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
     protected override async Task<IMetricsResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         MetricsRequest metricsRequest = GetMetricsRequest(context);
-        IMetricsResponse response = await EndpointHandler.InvokeAsync(metricsRequest, cancellationToken);
+        return await EndpointHandler.InvokeAsync(metricsRequest, cancellationToken);
+    }
 
-        if (metricsRequest != null && response is MetricsEmptyResponse)
+    protected override async Task WriteResponseAsync(IMetricsResponse result, HttpContext context, CancellationToken cancellationToken)
+    {
+        MetricsRequest metricsRequest = GetMetricsRequest(context);
+
+        if (metricsRequest != null && result is null)
         {
             context.Response.StatusCode = (int)HttpStatusCode.NotFound;
         }
@@ -122,6 +128,6 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
             context.Response.StatusCode = (int)HttpStatusCode.OK;
         }
 
-        return response;
+        await base.WriteResponseAsync(result, context, cancellationToken);
     }
 }
