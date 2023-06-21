@@ -12,16 +12,16 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 
 internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object, string>
 {
-    public HeapDumpEndpointMiddleware(IHeapDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<HeapDumpEndpointMiddleware> logger)
-        : base(endpointHandler, managementOptions, logger)
+    private readonly ILogger<HeapDumpEndpointMiddleware> _logger;
+    public HeapDumpEndpointMiddleware(IHeapDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILoggerFactory loggerFactory) : base(endpointHandler, managementOptions, loggerFactory)
     {
+        _logger = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
     }
 
     protected override async Task<string> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         string fileName = await EndpointHandler.InvokeAsync(null, context.RequestAborted);
-        Logger.LogDebug("Returning: {fileName}", fileName);
+        _logger.LogDebug("Returning: {fileName}", fileName);
         context.Response.Headers["Content-Type"] = "application/octet-stream";
 
         if (!File.Exists(fileName))
@@ -31,7 +31,7 @@ internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object, st
         }
 
         string gzFileName = $"{fileName}.gz";
-        Stream result = await Utils.CompressFileAsync(fileName, gzFileName, Logger);
+        Stream result = await Utils.CompressFileAsync(fileName, gzFileName, _logger);
 
         if (result != null)
         {

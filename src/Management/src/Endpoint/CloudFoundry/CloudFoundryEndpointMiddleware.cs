@@ -17,15 +17,15 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 /// </summary>
 internal sealed class CloudFoundryEndpointMiddleware : EndpointMiddleware<string, Links>
 {
-    public CloudFoundryEndpointMiddleware(ICloudFoundryEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<CloudFoundryEndpointMiddleware> logger)
-        : base(endpointHandler, managementOptions, logger)
+    private readonly ILogger _logger;
+    public CloudFoundryEndpointMiddleware(ICloudFoundryEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILoggerFactory loggerFactory) : base(endpointHandler, managementOptions, loggerFactory)
     {
+        _logger = loggerFactory.CreateLogger<CloudFoundryEndpointMiddleware>();
     }
 
     protected override async Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
+        _logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
         string uri = GetRequestUri(context);
         return await EndpointHandler.InvokeAsync(uri, cancellationToken);
     }

@@ -59,7 +59,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         var ep = new DbMigrationsEndpointHandler(opts, container.BuildServiceProvider(), helper, NullLoggerFactory.Instance);
 
-        var middle = new DbMigrationsEndpointMiddleware(ep, managementOptions, NullLogger<DbMigrationsEndpointMiddleware>.Instance);
+        var middle = new DbMigrationsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/dbmigrations");
         await middle.InvokeAsync(context, null);

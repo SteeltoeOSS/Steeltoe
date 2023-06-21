@@ -12,9 +12,7 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 internal sealed class HttpTraceEndpointMiddleware : EndpointMiddleware<object, HttpTraceResult>
 {
-    public HttpTraceEndpointMiddleware(IHttpTraceEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<HttpTraceEndpointMiddleware> logger)
-        : base(endpointHandler, managementOptions, logger)
+    public HttpTraceEndpointMiddleware(IHttpTraceEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILoggerFactory loggerFactory) : base(endpointHandler, managementOptions, loggerFactory)
     {
     }
 

@@ -50,7 +50,7 @@ public class EndpointMiddlewareTest : BaseTest
         var obs = new HeapDumper(opts, logger1, null);
 
         var ep = new HeapDumpEndpointHandler(opts, obs, loggerFactory);
-        var middle = new HeapDumpEndpointMiddleware(ep, managementOptions, logger3);
+        var middle = new HeapDumpEndpointMiddleware(ep, managementOptions, loggerFactory);
         HttpContext context = CreateRequest("GET", "/heapdump");
         await middle.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);

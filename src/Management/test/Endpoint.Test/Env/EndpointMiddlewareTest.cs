@@ -49,7 +49,7 @@ public class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(AppSettings);
 
         var ep = new EnvironmentEndpointHandler(optionsMonitor, configurationRoot, _host, NullLoggerFactory.Instance);
-        var middle = new EnvironmentEndpointMiddleware(ep, managementOptions, NullLogger<EnvironmentEndpointMiddleware>.Instance);
+        var middle = new EnvironmentEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/env");
         await middle.InvokeAsync(context, null);

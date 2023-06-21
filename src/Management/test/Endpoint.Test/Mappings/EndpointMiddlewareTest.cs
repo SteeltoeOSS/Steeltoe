@@ -64,7 +64,7 @@ public class EndpointMiddlewareTest : BaseTest
         var ep = new MappingsEndpointHandler(opts, NullLoggerFactory.Instance, mockRouteMappings.Object, mockActionDescriptorCollectionProvider.Object,
             mockApiDescriptionProvider.Object);
 
-        var middle = new MappingsEndpointMiddleware(managementOptions, opts, ep, NullLogger<MappingsEndpointMiddleware>.Instance);
+        var middle = new MappingsEndpointMiddleware(managementOptions, opts, ep, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
         await middle.InvokeAsync(context, null);

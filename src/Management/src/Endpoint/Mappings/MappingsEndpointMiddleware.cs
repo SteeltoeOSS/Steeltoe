@@ -13,8 +13,8 @@ namespace Steeltoe.Management.Endpoint.Mappings;
 internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<object, ApplicationMappings>
 {
     public MappingsEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
-        IMappingsEndpointHandler endpointHandler, ILogger<MappingsEndpointMiddleware> logger)
-        : base(endpointHandler, managementOptions, logger)
+        IMappingsEndpointHandler endpointHandler, ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
     }
 

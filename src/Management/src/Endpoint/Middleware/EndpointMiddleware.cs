@@ -24,33 +24,34 @@ public interface IEndpointMiddleware : IMiddleware
 
 public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddleware
 {
-    protected ILogger Logger { get; }
-    protected IOptionsMonitor<ManagementEndpointOptions> ManagementEndpointOptions { get; }
+    private readonly ILogger _logger;
+    protected IOptionsMonitor<ManagementEndpointOptions> ManagementEndpointOptionsMonitor { get; }
     public IEndpointHandler<TArgument, TResult> EndpointHandler { get; }
 
     public HttpMiddlewareOptions EndpointOptions { get; }
 
     protected EndpointMiddleware(IEndpointHandler<TArgument, TResult> endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger logger)
+        ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(endpointHandler);
 
         EndpointHandler = endpointHandler;
-        Logger = logger;
-        ManagementEndpointOptions = managementOptions;
+        ManagementEndpointOptionsMonitor = managementOptions;
         EndpointOptions = EndpointHandler.Options;
+
+        _logger = loggerFactory.CreateLogger(GetType());
     }
 
     public virtual bool ShouldInvoke(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
-        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptions.GetFromContextPath(context.Request.Path, out string managementContextName);
+        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptionsMonitor.GetFromContextPath(context.Request.Path, out string managementContextName);
         HttpMiddlewareOptions endpointOptions = EndpointHandler.Options;
         bool enabled = endpointOptions.IsEnabled(mgmtOptions);
         bool exposed = endpointOptions.IsExposed(mgmtOptions);
 
         bool isCFContext = managementContextName == CFContext.Name;
-        Logger.LogDebug($"endpointHandler: {endpointOptions.Id}, contextPath: {context.Request.Path}, enabled: {enabled}, exposed: {exposed}");
+        _logger.LogDebug($"endpointHandler: {endpointOptions.Id}, contextPath: {context.Request.Path}, enabled: {enabled}, exposed: {exposed}");
         return enabled && (exposed || isCFContext);
     }
 
@@ -60,7 +61,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
 
         if (ShouldInvoke(context))
         {
-            context.HandleContentNegotiation(Logger);
+            context.HandleContentNegotiation(_logger);
             TResult result = await InvokeEndpointHandlerAsync(context, context.RequestAborted);
             await WriteResponseAsync(result, context, context.RequestAborted);
         }
@@ -88,7 +89,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
 
     protected virtual JsonSerializerOptions GetSerializerOptions()
     {
-        JsonSerializerOptions serializerOptions = ManagementEndpointOptions.CurrentValue.SerializerOptions;
+        JsonSerializerOptions serializerOptions = ManagementEndpointOptionsMonitor.CurrentValue.SerializerOptions;
 
         serializerOptions ??= new JsonSerializerOptions
         {

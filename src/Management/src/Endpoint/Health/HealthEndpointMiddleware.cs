@@ -14,14 +14,15 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRequest, HealthEndpointResponse>
 {
-    private readonly IOptionsMonitor<HealthEndpointOptions> _healthEndpointOptions;
-
+    private readonly IOptionsMonitor<HealthEndpointOptions> _healthEndpointOptionsMonitor;
+    private readonly ILogger<HealthEndpointMiddleware> _logger;
     public HealthEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IHealthEndpointHandler endpointHandler,
-        IOptionsMonitor<HealthEndpointOptions> endpointOptions, ILogger<HealthEndpointMiddleware> logger)
-        : base(endpointHandler, managementOptions, logger)
+        IOptionsMonitor<HealthEndpointOptions> endpointOptions, ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
         ArgumentGuard.NotNull(endpointOptions);
-        _healthEndpointOptions = endpointOptions;
+        _logger = loggerFactory.CreateLogger<HealthEndpointMiddleware>();
+        _healthEndpointOptionsMonitor = endpointOptions;
     }
 
     internal HealthEndpointRequest GetRequest(HttpContext context)
@@ -35,7 +36,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
     private bool GetClaim(HttpContext context)
     {
-        EndpointClaim claim = _healthEndpointOptions.CurrentValue.Claim;
+        EndpointClaim claim = _healthEndpointOptionsMonitor.CurrentValue.Claim;
         return context != null && context.User != null && claim != null && context.User.HasClaim(claim.Type, claim.Value);
     }
 
@@ -54,7 +55,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
             return requestComponents[^1];
         }
 
-        Logger?.LogWarning("Failed to find anything in the request from which to parse health group name.");
+        _logger?.LogWarning("Failed to find anything in the request from which to parse health group name.");
 
         return string.Empty;
     }
@@ -63,7 +64,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
     {
         HealthEndpointResponse result = await EndpointHandler.InvokeAsync(GetRequest(context), context.RequestAborted);
 
-        ManagementEndpointOptions currentOptions = ManagementEndpointOptions.CurrentValue;
+        ManagementEndpointOptions currentOptions = ManagementEndpointOptionsMonitor.CurrentValue;
 
         if (currentOptions.UseStatusCodeFromResponse)
         {

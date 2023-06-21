@@ -17,10 +17,12 @@ namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<string, Links>
 {
+    private readonly ILogger _logger;
     public ActuatorHypermediaEndpointMiddleware(IActuatorEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<ActuatorHypermediaEndpointMiddleware> logger)
-        : base(endpointHandler, managementOptions, logger)
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
+        _logger = loggerFactory.CreateLogger<ActuatorHypermediaEndpointMiddleware>();
     }
 
     private static string GetRequestUri(HttpRequest request)
@@ -46,7 +48,7 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
     protected override async Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(context);
-        Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
+        _logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
         var requestUri = GetRequestUri(context.Request);
         return await EndpointHandler.InvokeAsync(requestUri, cancellationToken);
     }

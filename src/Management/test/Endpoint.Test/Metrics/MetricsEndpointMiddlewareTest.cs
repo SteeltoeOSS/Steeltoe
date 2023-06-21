@@ -32,7 +32,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
         var ep = new MetricsEndpointHandler(opts, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
 
-        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLogger<MetricsEndpointMiddleware>.Instance);
+        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
 
         Assert.Null(middle.ParseTag("foobar"));
         Assert.Equal(new KeyValuePair<string, string>("foo", "bar"), middle.ParseTag("foo:bar"));
@@ -48,7 +48,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
         var ep = new MetricsEndpointHandler(opts, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
 
-        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLogger<MetricsEndpointMiddleware>.Instance);
+        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?foo=key:value");
         IList<KeyValuePair<string, string>> result = middle.ParseTags(context1.Request.Query);
@@ -84,7 +84,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
         var ep = new MetricsEndpointHandler(opts, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
 
-        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLogger<MetricsEndpointMiddleware>.Instance);
+        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics");
         Assert.Null(middle.GetMetricName(context1.Request));
@@ -104,7 +104,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
         var ep = new MetricsEndpointHandler(opts, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
 
-        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLogger<MetricsEndpointMiddleware>.Instance);
+        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context1 = CreateRequest("GET", "/actuator/metrics");
         Assert.Null(middle.GetMetricName(context1.Request));
@@ -134,7 +134,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
 
         var ep = new MetricsEndpointHandler(opts, exporter, NullLoggerFactory.Instance);
 
-        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLogger<MetricsEndpointMiddleware>.Instance);
+        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
 
@@ -158,7 +158,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var ep = new MetricsEndpointHandler(opts, exporter, NullLoggerFactory.Instance);
 
         GetTestMetrics(exporter);
-        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLogger<MetricsEndpointMiddleware>.Instance);
+        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
 
@@ -179,7 +179,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         aggManager.Start();
         var ep = new MetricsEndpointHandler(opts, exporter, NullLoggerFactory.Instance);
 
-        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLogger<MetricsEndpointMiddleware>.Instance);
+        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
 
         SetupTestView();
 

@@ -43,7 +43,7 @@ public class EndpointMiddlewareTest : BaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var ep = new RefreshEndpointHandler(opts, configurationRoot, NullLoggerFactory.Instance);
-        var middle = new RefreshEndpointMiddleware(ep, managementOptions, NullLogger<RefreshEndpointMiddleware>.Instance);
+        var middle = new RefreshEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/refresh");
         await middle.InvokeAsync(context, null);

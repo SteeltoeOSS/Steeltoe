@@ -12,8 +12,8 @@ namespace Steeltoe.Management.Endpoint.Test.Middleware;
 
 internal sealed class TestMiddleware2 : EndpointMiddleware<string, string>
 {
-    public TestMiddleware2(IEndpointHandler<string, string> endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
-        : base(endpointHandler, managementOptions, logger)
+    public TestMiddleware2(IEndpointHandler<string, string> endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
     }
 

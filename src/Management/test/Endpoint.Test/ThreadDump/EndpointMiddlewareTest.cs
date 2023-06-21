@@ -42,7 +42,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         var obs = new ThreadDumperEp(opts, NullLogger<ThreadDumperEp>.Instance);
         var ep = new ThreadDumpEndpointHandler(opts, obs, NullLoggerFactory.Instance);
-        var middle = new ThreadDumpEndpointMiddleware(ep, managementOptions, NullLogger<ThreadDumpEndpointMiddleware>.Instance);
+        var middle = new ThreadDumpEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest("GET", "/dump");
         await middle.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);

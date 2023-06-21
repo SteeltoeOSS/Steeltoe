@@ -12,15 +12,15 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 
 internal sealed class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<object, ThreadDumpResult>
 {
-    public ThreadDumpEndpointMiddlewareV2(IThreadDumpEndpointV2Handler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<ThreadDumpEndpointMiddlewareV2> logger)
-        : base(endpointHandler, managementOptions, logger)
+    private readonly ILogger<ThreadDumpEndpointMiddlewareV2> _logger;
+    public ThreadDumpEndpointMiddlewareV2(IThreadDumpEndpointV2Handler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILoggerFactory loggerFactory) : base(endpointHandler, managementOptions, loggerFactory)
     {
+        _logger = loggerFactory.CreateLogger<ThreadDumpEndpointMiddlewareV2>();
     }
 
     protected override async Task<ThreadDumpResult> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        Logger.LogDebug("Executing ThreadDumpV2 handler");
+        _logger.LogDebug("Executing ThreadDumpV2 handler");
         return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
 }

@@ -367,11 +367,10 @@ Steeltoe.Management.Endpoint.Metrics.MetricsResponseConverter.MetricsResponseCon
 Steeltoe.Management.Endpoint.Metrics.ServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointHandler.get -> Steeltoe.Management.IEndpointHandler<TArgument, TResult>
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointMiddleware(Steeltoe.Management.IEndpointHandler<TArgument, TResult> endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions> managementOptions, Microsoft.Extensions.Logging.ILogger logger) -> void
+Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointMiddleware(Steeltoe.Management.IEndpointHandler<TArgument, TResult> endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions> managementOptions, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointOptions.get -> Steeltoe.Management.HttpMiddlewareOptions
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext context, Microsoft.AspNetCore.Http.RequestDelegate next) -> System.Threading.Tasks.Task
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.Logger.get -> Microsoft.Extensions.Logging.ILogger
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ManagementEndpointOptions.get -> Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions>
+Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ManagementEndpointOptionsMonitor.get -> Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions>
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware.EndpointOptions.get -> Steeltoe.Management.HttpMiddlewareOptions
 Steeltoe.Management.Endpoint.Options.IContextName

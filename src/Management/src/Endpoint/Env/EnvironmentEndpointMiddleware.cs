@@ -13,8 +13,8 @@ namespace Steeltoe.Management.Endpoint.Env;
 internal sealed class EnvironmentEndpointMiddleware : EndpointMiddleware<object, EnvironmentDescriptor>
 {
     public EnvironmentEndpointMiddleware(IEnvironmentEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<EnvironmentEndpointMiddleware> logger)
-        : base(endpointHandler, managementOptions, logger)
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
     }
 

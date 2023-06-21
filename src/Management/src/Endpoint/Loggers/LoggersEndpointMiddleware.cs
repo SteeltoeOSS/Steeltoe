@@ -16,12 +16,13 @@ namespace Steeltoe.Management.Endpoint.Loggers;
 internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersRequest, Dictionary<string, object>>
 {
     private readonly IEnumerable<IContextName> _contextNames;
-
+    private readonly ILogger<LoggersEndpointMiddleware> _logger;
     public LoggersEndpointMiddleware(ILoggersEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-         IEnumerable<IContextName> contextNames, ILogger<LoggersEndpointMiddleware> logger)
-        : base(endpointHandler, managementOptions, logger)
+         IEnumerable<IContextName> contextNames, ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
         _contextNames = contextNames;
+        _logger = loggerFactory.CreateLogger<LoggersEndpointMiddleware>();
     }
 
     protected override async Task<Dictionary<string, object>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
@@ -44,11 +45,11 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
         if (context.Request.Method == "POST")
         {
             // POST - change a logger level
-            Logger.LogDebug("Incoming path: {path}", request.Path.Value);
+            _logger.LogDebug("Incoming path: {path}", request.Path.Value);
 
             foreach (IContextName contextName in _contextNames)
             {
-                ManagementEndpointOptions mgmtOption = ManagementEndpointOptions.Get(contextName.Name);
+                ManagementEndpointOptions mgmtOption = ManagementEndpointOptionsMonitor.Get(contextName.Name);
                 string path = EndpointOptions.Path;
 
                 if (mgmtOption.Path != null)
@@ -67,13 +68,13 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
 
                     change.TryGetValue("configuredLevel", out string level);
 
-                    Logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
+                    _logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
 
                     if (!string.IsNullOrEmpty(loggerName))
                     {
                         if (!string.IsNullOrEmpty(level) && LoggerLevels.MapLogLevel(level) == null)
                         {
-                            Logger.LogDebug("Invalid LogLevel specified: {level}", level);
+                            _logger.LogDebug("Invalid LogLevel specified: {level}", level);
                             return new ErrorLoggersRequest();
                         }
 
@@ -93,7 +94,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Exception deserializing loggers endpoint request.");
+            _logger.LogError(e, "Exception deserializing loggers endpoint request.");
         }
 
         return new Dictionary<string, string>();

@@ -15,16 +15,16 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequest, IMetricsResponse>
 {
-    public MetricsEndpointMiddleware(IMetricsEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<MetricsEndpointMiddleware> logger)
-        : base(endpointHandler, managementOptions, logger)
+    private readonly ILogger<MetricsEndpointMiddleware> _logger;
+    public MetricsEndpointMiddleware(IMetricsEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILoggerFactory loggerFactory) : base(endpointHandler, managementOptions, loggerFactory)
     {
+        _logger = loggerFactory.CreateLogger<MetricsEndpointMiddleware>();
     }
 
     private MetricsRequest GetMetricsRequest(HttpContext context)
     {
         HttpRequest request = context.Request;
-        Logger.LogDebug("Handling metrics for path: {path}", request.Path.Value);
+        _logger.LogDebug("Handling metrics for path: {path}", request.Path.Value);
 
         string metricName = GetMetricName(request);
 
@@ -41,7 +41,7 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
 
     internal string GetMetricName(HttpRequest request)
     {
-        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptions.GetFromContextPath(request.Path, out _);
+        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptionsMonitor.GetFromContextPath(request.Path, out _);
 
         if (mgmtOptions == null)
         {
