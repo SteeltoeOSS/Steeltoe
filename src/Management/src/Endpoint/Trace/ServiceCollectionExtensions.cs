@@ -34,14 +34,14 @@ public static class ServiceCollectionExtensions
         switch (version)
         {
             case MediaTypeVersion.V1:
-                services.TryAddSingleton<ITraceEndpoint, TraceEndpoint>();
+                services.TryAddSingleton<ITraceEndpointHandler, TraceEndpointHandler>();
 
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, TraceEndpointMiddleware>());
                 services.AddSingleton<TraceEndpointMiddleware>();
                 break;
             default:
 
-                services.TryAddSingleton<IHttpTraceEndpoint, HttpTraceEndpoint>();
+                services.TryAddSingleton<IHttpTraceEndpointHandler, HttpTraceEndpointHandler>();
 
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, HttpTraceEndpointMiddleware>());
                 services.AddSingleton<HttpTraceEndpointMiddleware>();

@@ -36,7 +36,7 @@ using Steeltoe.Discovery.Eureka;
 using Steeltoe.Logging;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Wavefront.Exporters;
 using Xunit;
 
@@ -137,9 +137,9 @@ public class WebApplicationBuilderExtensionsTest
         webApp.UseRouting();
         await webApp.StartAsync();
 
-        IEnumerable<IActuatorEndpoint> managementEndpoint = webApp.Services.GetServices<IActuatorEndpoint>();
+        IEnumerable<IActuatorEndpointHandler> managementEndpointHandler = webApp.Services.GetServices<IActuatorEndpointHandler>();
         IStartupFilter filter = webApp.Services.GetServices<IStartupFilter>().FirstOrDefault();
-        Assert.Single(managementEndpoint);
+        Assert.Single(managementEndpointHandler);
         Assert.NotNull(filter);
 
         await ActuatorTestAsync(webApp.GetTestClient());
@@ -152,10 +152,10 @@ public class WebApplicationBuilderExtensionsTest
         webApp.UseRouting();
         await webApp.StartAsync();
 
-        IEnumerable<IActuatorEndpoint> managementEndpoint = webApp.Services.GetServices<IActuatorEndpoint>();
+        IEnumerable<IActuatorEndpointHandler> managementEndpointHandler = webApp.Services.GetServices<IActuatorEndpointHandler>();
         IStartupFilter filter = webApp.Services.GetServices<IStartupFilter>().FirstOrDefault(f => f is AllActuatorsStartupFilter);
 
-        Assert.Single(managementEndpoint);
+        Assert.Single(managementEndpointHandler);
         Assert.NotNull(filter);
 
         await ActuatorTestAsync(webApp.GetTestClient());
@@ -250,6 +250,7 @@ public class WebApplicationBuilderExtensionsTest
         WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
         webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers.FastTestsConfiguration);
         webAppBuilder.AddSteeltoe(SteeltoeAssemblies.AllAssemblies.Except(steeltoeInclusions));
+        webAppBuilder.Services.AddActionDescriptorCollectionProvider();
         webAppBuilder.WebHost.UseTestServer();
         return webAppBuilder.Build();
     }

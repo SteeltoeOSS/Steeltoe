@@ -17,8 +17,8 @@ using NSubstitute;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
@@ -39,11 +39,12 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HandleEntityFrameworkRequestAsync_ReturnsExpected()
     {
         IOptionsMonitor<DbMigrationsEndpointOptions> opts = GetOptionsMonitorFromSettings<DbMigrationsEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(AppSettings);
+
         managementOptions.Get(ActuatorContext.Name).EndpointOptions.Add(opts.CurrentValue);
         var container = new ServiceCollection();
         container.AddScoped<MockDbContext>();
-        var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
+        var helper = Substitute.For<DbMigrationsEndpointHandler.DbMigrationsEndpointHelper>();
         helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
 
         helper.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[]
@@ -56,12 +57,12 @@ public class EndpointMiddlewareTest : BaseTest
             "applied"
         });
 
-        var ep = new DbMigrationsEndpoint(opts, container.BuildServiceProvider(), helper, NullLoggerFactory.Instance);
+        var ep = new DbMigrationsEndpointHandler(opts, container.BuildServiceProvider(), helper, NullLoggerFactory.Instance);
 
-        var middle = new DbMigrationsEndpointMiddleware(ep, managementOptions, NullLogger<DbMigrationsEndpointMiddleware>.Instance);
+        var middle = new DbMigrationsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/dbmigrations");
-        await middle.HandleEntityFrameworkRequestAsync(context);
+        await middle.InvokeAsync(context, null);
 
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);

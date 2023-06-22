@@ -4,9 +4,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -32,7 +32,7 @@ public class CloudFoundryEndpointTest : BaseTest
             services.AddCloudFoundryActuatorServices();
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpoint>();
+        var ep = tc.GetService<ICloudFoundryEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
@@ -54,7 +54,7 @@ public class CloudFoundryEndpointTest : BaseTest
             services.AddCloudFoundryActuatorServices();
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpoint>();
+        var ep = tc.GetService<ICloudFoundryEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
@@ -83,7 +83,7 @@ public class CloudFoundryEndpointTest : BaseTest
             });
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpoint>();
+        var ep = tc.GetService<ICloudFoundryEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
@@ -114,7 +114,7 @@ public class CloudFoundryEndpointTest : BaseTest
             });
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpoint>();
+        var ep = tc.GetService<ICloudFoundryEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);

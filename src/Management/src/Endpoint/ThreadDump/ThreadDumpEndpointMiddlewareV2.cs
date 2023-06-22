@@ -10,30 +10,20 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-internal sealed class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResult>
+internal sealed class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<object, ThreadDumpResult>
 {
-    public ThreadDumpEndpointMiddlewareV2(IThreadDumpEndpointV2 endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<ThreadDumpEndpointMiddlewareV2> logger)
-        : base(endpoint, managementOptions, logger)
+    private readonly ILogger<ThreadDumpEndpointMiddlewareV2> _logger;
+
+    public ThreadDumpEndpointMiddlewareV2(IThreadDumpEndpointV2Handler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
+        _logger = loggerFactory.CreateLogger<ThreadDumpEndpointMiddlewareV2>();
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override async Task<ThreadDumpResult> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleThreadDumpRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
-    }
-
-    internal async Task HandleThreadDumpRequestAsync(HttpContext context)
-    {
-        string serialInfo = await HandleRequestAsync(context.RequestAborted);
-
-        Logger.LogDebug("Returning: {info}", serialInfo);
-        context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
-        await context.Response.WriteAsync(serialInfo);
+        _logger.LogDebug("Executing ThreadDumpV2 handler");
+        return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
 }

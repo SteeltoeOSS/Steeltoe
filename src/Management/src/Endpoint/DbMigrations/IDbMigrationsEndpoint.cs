@@ -4,6 +4,8 @@
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-public interface IDbMigrationsEndpoint : IEndpoint<Dictionary<string, DbMigrationsDescriptor>>
+#pragma warning disable S4023 // Interfaces should not be empty
+public interface IDbMigrationsEndpointHandler : IEndpointHandler<object, Dictionary<string, DbMigrationsDescriptor>>
+#pragma warning restore S4023 // Interfaces should not be empty
 {
 }

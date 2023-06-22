@@ -5,38 +5,22 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-internal sealed class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
+internal sealed class DbMigrationsEndpointMiddleware : EndpointMiddleware<object, Dictionary<string, DbMigrationsDescriptor>>
 {
-    public DbMigrationsEndpointMiddleware(IDbMigrationsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<DbMigrationsEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    public DbMigrationsEndpointMiddleware(IDbMigrationsEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override async Task<Dictionary<string, DbMigrationsDescriptor>> InvokeEndpointHandlerAsync(HttpContext context,
+        CancellationToken cancellationToken)
     {
-        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleEntityFrameworkRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
-    }
-
-    internal async Task HandleEntityFrameworkRequestAsync(HttpContext context)
-    {
-        ArgumentGuard.NotNull(context);
-        string serialInfo = await HandleRequestAsync(context.RequestAborted);
-        Logger.LogDebug("Returning: {info}", serialInfo);
-
-        context.HandleContentNegotiation(Logger);
-        await context.Response.WriteAsync(serialInfo);
+        return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
 }

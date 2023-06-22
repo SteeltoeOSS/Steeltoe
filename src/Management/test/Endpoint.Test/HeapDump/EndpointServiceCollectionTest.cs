@@ -44,7 +44,7 @@ public class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var repo = serviceProvider.GetService<IHeapDumper>();
         Assert.NotNull(repo);
-        var ep = serviceProvider.GetService<HeapDumpEndpoint>();
+        var ep = serviceProvider.GetService<IHeapDumpEndpointHandler>();
         Assert.NotNull(ep);
     }
 }

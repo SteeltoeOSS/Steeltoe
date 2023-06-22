@@ -4,7 +4,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
@@ -19,7 +19,7 @@ public sealed class ManagementEndpointOptions
 
     public string Port { get; set; }
 
-    public IList<IEndpointOptions> EndpointOptions { get; set; }
+    public IList<HttpMiddlewareOptions> EndpointOptions { get; set; }
 
     public HashSet<string> ContextNames { get; set; } = new()
     {

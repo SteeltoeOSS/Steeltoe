@@ -34,19 +34,19 @@ public sealed class CloudFoundrySecurityMiddleware
         _options = options;
         _managementOptions = managementOptions.Get(CFContext.Name);
 
-        _base = new SecurityUtils(options.CurrentValue, managementOptions.Get(CFContext.Name), logger);
+        _base = new SecurityUtils(_options.CurrentValue, managementOptions.Get(CFContext.Name), logger);
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
-        CloudFoundryEndpointOptions cfOptions = _options.CurrentValue;
+
         CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
         _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);
 
         if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptions) && _base.IsCloudFoundryRequest(context.Request.Path))
         {
-            if (string.IsNullOrEmpty(cfOptions.ApplicationId))
+            if (string.IsNullOrEmpty(endpointOptions.ApplicationId))
             {
                 _logger.LogCritical(
                     "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
@@ -56,14 +56,14 @@ public sealed class CloudFoundrySecurityMiddleware
                 return;
             }
 
-            if (string.IsNullOrEmpty(cfOptions.CloudFoundryApi))
+            if (string.IsNullOrEmpty(endpointOptions.CloudFoundryApi))
             {
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityUtils.CloudfoundryApiMissingMessage));
 
                 return;
             }
 
-            IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
+            HttpMiddlewareOptions target = FindTargetEndpoint(context.Request.Path);
 
             if (target == null)
             {
@@ -72,17 +72,15 @@ public sealed class CloudFoundrySecurityMiddleware
                 return;
             }
 
-            SecurityResult sr = await GetPermissionsAsync(context);
+            SecurityResult givenPermissions = await GetPermissionsAsync(context);
 
-            if (sr.Code != HttpStatusCode.OK)
+            if (givenPermissions.Code != HttpStatusCode.OK)
             {
-                await ReturnErrorAsync(context, sr);
+                await ReturnErrorAsync(context, givenPermissions);
                 return;
             }
 
-            Permissions permissions = sr.Permissions;
-
-            if (!target.IsAccessAllowed(permissions))
+            if (target.RequiredPermissions > givenPermissions.Permissions)
             {
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, SecurityUtils.AccessDeniedMessage));
                 return;
@@ -113,13 +111,11 @@ public sealed class CloudFoundrySecurityMiddleware
         return _base.GetPermissionsAsync(token);
     }
 
-    private IEndpointOptions FindTargetEndpoint(PathString path)
+    private HttpMiddlewareOptions FindTargetEndpoint(PathString path)
     {
-        IList<IEndpointOptions> configEndpoints;
+        IList<HttpMiddlewareOptions> configEndpoints = _managementOptions.EndpointOptions;
 
-        configEndpoints = _managementOptions.EndpointOptions;
-
-        foreach (IEndpointOptions ep in configEndpoints)
+        foreach (HttpMiddlewareOptions ep in configEndpoints)
         {
             string contextPath = _managementOptions.Path;
 

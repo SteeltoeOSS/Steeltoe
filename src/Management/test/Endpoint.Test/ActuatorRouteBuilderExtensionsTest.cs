@@ -7,16 +7,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Endpoint.ThreadDump;
-using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -39,11 +37,13 @@ public class ActuatorRouteBuilderExtensionsTest
 
     private static IHostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction)
     {
+        var appSettings = new Dictionary<string, string>
+        {
+            { "management:endpoints:actuator:exposure:include:0", "*" }
+        };
+
         return new HostBuilder().AddDynamicLogging().ConfigureServices((context, s) =>
         {
-            s.AddTraceActuator(MediaTypeVersion.V1);
-            s.AddThreadDumpActuator(MediaTypeVersion.V1);
-            s.AddCloudFoundryActuator();
             s.AddAllActuators();
             s.AddRouting();
             s.AddActionDescriptorCollectionProvider();
@@ -62,7 +62,7 @@ public class ActuatorRouteBuilderExtensionsTest
                 endpoints.MapAllActuators().RequireAuthorization("TestAuth");
                 endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
             })).UseTestServer();
-        });
+        }).ConfigureAppConfiguration(configure => configure.AddInMemoryCollection(appSettings));
     }
 
     private static ManagementEndpointOptions GetManagementContext(IServiceProvider services)
@@ -76,12 +76,12 @@ public class ActuatorRouteBuilderExtensionsTest
         using IHost host = await hostBuilder.StartAsync();
         using TestServer server = host.GetTestServer();
 
-        IEnumerable<IEndpointOptions> optionsCollection = host.Services.GetServices<IEndpointOptions>();
+        IEnumerable<HttpMiddlewareOptions> optionsCollection = host.Services.GetServices<HttpMiddlewareOptions>();
 
-        foreach (IEndpointOptions options in optionsCollection)
+        foreach (HttpMiddlewareOptions options in optionsCollection)
         {
             string path = options.GetContextPath(GetManagementContext(host.Services));
-
+            path = path.Replace("metrics/{**_}", "metrics", StringComparison.Ordinal);
             Assert.NotNull(path);
             HttpResponseMessage response;
 

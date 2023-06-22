@@ -5,36 +5,26 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-internal sealed class ThreadDumpEndpointMiddleware : EndpointMiddleware<IList<ThreadInfo>>
+internal sealed class ThreadDumpEndpointMiddleware : EndpointMiddleware<object, IList<ThreadInfo>>
 {
-    public ThreadDumpEndpointMiddleware(IThreadDumpEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<ThreadDumpEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    private readonly ILogger<ThreadDumpEndpointMiddleware> _logger;
+
+    public ThreadDumpEndpointMiddleware(IThreadDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
+        _logger = loggerFactory.CreateLogger<ThreadDumpEndpointMiddleware>();
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override async Task<IList<ThreadInfo>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleThreadDumpRequestAsync(context);
-        }
+        _logger.LogDebug("Executing ThreadDumpHandler");
 
-        return Task.CompletedTask;
-    }
-
-    internal async Task HandleThreadDumpRequestAsync(HttpContext context)
-    {
-        string serialInfo = await HandleRequestAsync(context.RequestAborted);
-        Logger.LogDebug("Returning: {info}", serialInfo);
-
-        context.HandleContentNegotiation(Logger);
-        await context.Response.WriteAsync(serialInfo);
+        return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
 }

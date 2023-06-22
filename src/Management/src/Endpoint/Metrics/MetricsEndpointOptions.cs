@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public sealed class MetricsEndpointOptions : EndpointOptionsBase
+public sealed class MetricsEndpointOptions : HttpMiddlewareOptions
 {
     public string IngressIgnorePattern { get; set; }
 
@@ -19,6 +19,5 @@ public sealed class MetricsEndpointOptions : EndpointOptionsBase
     [SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "Allow in Options Classes")]
     public IList<string> IncludedMetrics { get; set; }
 
-    public EndpointOptionsBase EndpointOptions { get; set; }
     public override bool ExactMatch => false;
 }

@@ -32,9 +32,9 @@ public class InfoEndpointTest : BaseTest
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
-        var ep = tc.GetService<IInfoEndpoint>();
+        var ep = tc.GetService<IInfoEndpointHandler>();
 
-        Dictionary<string, object> info = await ep.InvokeAsync(CancellationToken.None);
+        Dictionary<string, object> info = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(info);
         Assert.Empty(info);
     }
@@ -57,9 +57,9 @@ public class InfoEndpointTest : BaseTest
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
-        var ep = tc.GetService<IInfoEndpoint>();
+        var ep = tc.GetService<IInfoEndpointHandler>();
 
-        await ep.InvokeAsync(CancellationToken.None);
+        await ep.InvokeAsync(null, CancellationToken.None);
 
         foreach (IInfoContributor contrib in contributors)
         {
@@ -86,9 +86,9 @@ public class InfoEndpointTest : BaseTest
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
-        var ep = tc.GetService<IInfoEndpoint>();
+        var ep = tc.GetService<IInfoEndpointHandler>();
 
-        await ep.InvokeAsync(CancellationToken.None);
+        await ep.InvokeAsync(null, CancellationToken.None);
 
         foreach (IInfoContributor contrib in contributors)
         {

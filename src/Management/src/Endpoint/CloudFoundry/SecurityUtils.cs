@@ -24,7 +24,6 @@ internal sealed class SecurityUtils
     public const string AuthorizationHeader = "Authorization";
     public const string Bearer = "bearer";
     public const string ReadSensitiveData = "read_sensitive_data";
-
     private readonly CloudFoundryEndpointOptions _options;
     private readonly ManagementEndpointOptions _managementOptions;
 
@@ -34,7 +33,6 @@ internal sealed class SecurityUtils
     internal SecurityUtils(CloudFoundryEndpointOptions options, ManagementEndpointOptions managementOptions, ILogger logger, HttpClient httpClient = null)
     {
         ArgumentGuard.NotNull(logger);
-
         _options = options;
         _managementOptions = managementOptions;
         _logger = logger;

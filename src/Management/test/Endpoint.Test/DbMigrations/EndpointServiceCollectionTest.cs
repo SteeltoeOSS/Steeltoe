@@ -45,7 +45,7 @@ public class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<DbMigrationsEndpointOptions>>();
         options.CurrentValue.Id.Should().Be("dbmigrations");
-        var ep = serviceProvider.GetService<IDbMigrationsEndpoint>();
+        var ep = serviceProvider.GetService<IDbMigrationsEndpointHandler>();
         ep.Should().NotBeNull();
     }
 }

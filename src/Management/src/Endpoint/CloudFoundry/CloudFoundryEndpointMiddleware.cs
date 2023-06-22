@@ -6,50 +6,37 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 /// <summary>
-/// CloudFoundry endpoint provides hypermedia: a page is added with links to all the endpoints that are enabled. When deployed to CloudFoundry this
-/// endpoint is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware" /> is added.
+/// Used in conjunction with <see cref="CloudFoundryEndpointHandler" /> to generate hypermedia list of links to all endpoints activated in the
+/// application.
 /// </summary>
-internal sealed class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
+internal sealed class CloudFoundryEndpointMiddleware : EndpointMiddleware<string, Links>
 {
-    public CloudFoundryEndpointMiddleware(ICloudFoundryEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<CloudFoundryEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    private readonly ILogger _logger;
+
+    public CloudFoundryEndpointMiddleware(ICloudFoundryEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
+        _logger = loggerFactory.CreateLogger<CloudFoundryEndpointMiddleware>();
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override async Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(context);
-
-        Logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
-
-        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleCloudFoundryRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
+        _logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
+        string uri = GetRequestUri(context);
+        return await EndpointHandler.InvokeAsync(uri, cancellationToken);
     }
 
-    internal async Task HandleCloudFoundryRequestAsync(HttpContext context)
+    private string GetRequestUri(HttpContext context)
     {
-        string serialInfo = await HandleRequestAsync(GetRequestUri(context.Request), context.RequestAborted);
-        Logger.LogDebug("Returning: {info}", serialInfo);
-        context.HandleContentNegotiation(Logger);
-        await context.Response.WriteAsync(serialInfo);
-    }
-
-    private string GetRequestUri(HttpRequest request)
-    {
+        HttpRequest request = context.Request;
         string scheme = request.Scheme;
 
         if (request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues headerScheme))

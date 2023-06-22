@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -49,11 +49,12 @@ internal sealed class ActuatorEndpointMapper
 
                 Type middlewareType = middleware.GetType();
                 RequestDelegate pipeline = endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middlewareType).Build();
-                string epPath = middleware.EndpointOptions.GetContextPath(mgmtOption);
+                HttpMiddlewareOptions endpointOptions = middleware.EndpointOptions;
+                string epPath = endpointOptions.GetContextPath(mgmtOption);
 
                 if (collection.Add(epPath))
                 {
-                    IEndpointConventionBuilder builder = endpointRouteBuilder.MapMethods(epPath, middleware.EndpointOptions.AllowedVerbs, pipeline);
+                    IEndpointConventionBuilder builder = endpointRouteBuilder.MapMethods(epPath, endpointOptions.AllowedVerbs, pipeline);
                     conventionBuilder.Add(builder);
                 }
                 else

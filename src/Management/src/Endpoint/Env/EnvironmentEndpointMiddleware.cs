@@ -5,35 +5,21 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-internal sealed class EnvironmentEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
+internal sealed class EnvironmentEndpointMiddleware : EndpointMiddleware<object, EnvironmentDescriptor>
 {
-    public EnvironmentEndpointMiddleware(IEnvironmentEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<EnvironmentEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    public EnvironmentEndpointMiddleware(IEnvironmentEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override async Task<EnvironmentDescriptor> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        if (EndpointOptions.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleEnvRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
-    }
-
-    internal async Task HandleEnvRequestAsync(HttpContext context)
-    {
-        string serialInfo = await HandleRequestAsync(context.RequestAborted);
-        Logger.LogDebug("Returning: {info}", serialInfo);
-
-        context.HandleContentNegotiation(Logger);
-        await context.Response.WriteAsync(serialInfo);
+        return await EndpointHandler.InvokeAsync(null, context.RequestAborted);
     }
 }

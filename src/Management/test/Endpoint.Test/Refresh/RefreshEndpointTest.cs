@@ -28,10 +28,10 @@ public class RefreshEndpointTest : BaseTest
 
         IOptionsMonitor<RefreshEndpointOptions> options1 = null;
 
-        Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options1, configuration, NullLoggerFactory.Instance));
+        Assert.Throws<ArgumentNullException>(() => new RefreshEndpointHandler(options1, configuration, NullLoggerFactory.Instance));
         IOptionsMonitor<RefreshEndpointOptions> options = GetOptionsMonitorFromSettings<RefreshEndpointOptions, ConfigureRefreshEndpointOptions>();
 
-        Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options, configuration, NullLoggerFactory.Instance));
+        Assert.Throws<ArgumentNullException>(() => new RefreshEndpointHandler(options, configuration, NullLoggerFactory.Instance));
     }
 
     [Fact]
@@ -59,8 +59,8 @@ public class RefreshEndpointTest : BaseTest
             configuration.AddInMemoryCollection(appsettings);
         };
 
-        var ep = tc.GetService<IRefreshEndpoint>();
-        IList<string> result = await ep.InvokeAsync(CancellationToken.None);
+        var ep = tc.GetService<IRefreshEndpointHandler>();
+        IList<string> result = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
 
         Assert.Contains("management:endpoints:loggers:enabled", result);

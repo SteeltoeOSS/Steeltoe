@@ -8,15 +8,15 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-internal sealed class TraceEndpoint : ITraceEndpoint
+internal sealed class TraceEndpointHandler : ITraceEndpointHandler
 {
     private readonly ITraceRepository _traceRepo;
-    private readonly ILogger<TraceEndpoint> _logger;
+    private readonly ILogger<TraceEndpointHandler> _logger;
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
 
-    public IEndpointOptions Options => _options.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
+    public HttpMiddlewareOptions Options => _options.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
 
-    public TraceEndpoint(IOptionsMonitor<TraceEndpointOptions> options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger)
+    public TraceEndpointHandler(IOptionsMonitor<TraceEndpointOptions> options, ITraceRepository traceRepository, ILogger<TraceEndpointHandler> logger)
     {
         ArgumentGuard.NotNull(traceRepository);
         ArgumentGuard.NotNull(logger);
@@ -25,14 +25,9 @@ internal sealed class TraceEndpoint : ITraceEndpoint
         _logger = logger;
     }
 
-    public Task<IList<TraceResult>> InvokeAsync(CancellationToken cancellationToken)
+    public Task<IList<TraceResult>> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Fetching Traces");
-        return Task.Run(() => DoInvoke(_traceRepo), cancellationToken);
-    }
-
-    private IList<TraceResult> DoInvoke(ITraceRepository repo)
-    {
-        return repo.GetTraces();
+        return Task.Run(() => _traceRepo.GetTraces(), cancellationToken);
     }
 }

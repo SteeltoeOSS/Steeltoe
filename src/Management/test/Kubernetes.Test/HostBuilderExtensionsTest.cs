@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.TestResources;
@@ -17,8 +18,14 @@ namespace Steeltoe.Management.Kubernetes.Test;
 
 public class HostBuilderExtensionsTest
 {
-    private readonly Action<IWebHostBuilder> _testServerWithRouting = builder =>
-        builder.UseTestServer().ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting());
+    private static readonly Dictionary<string, string> _appSettings = new()
+    {
+        { "management:endpoints:actuator:exposure:include:0", "*" }
+    };
+
+    private readonly Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer()
+        .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting())
+        .ConfigureAppConfiguration(b => b.AddInMemoryCollection(_appSettings));
 
     private readonly Action<IWebHostBuilder> _testServerWithSecureRouting = builder => builder.UseTestServer().ConfigureServices(s =>
     {
@@ -31,7 +38,7 @@ public class HostBuilderExtensionsTest
             });
 
         s.AddAuthorization(options => options.AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read")));
-    }).Configure(a => a.UseRouting().UseAuthentication().UseAuthorization());
+    }).Configure(a => a.UseRouting().UseAuthentication().UseAuthorization()).ConfigureAppConfiguration(b => b.AddInMemoryCollection(_appSettings));
 
     [Fact]
     public async Task AddKubernetesActuators_IHostBuilder_AddsAndActivatesActuators()

@@ -25,7 +25,7 @@ public class ThreadDumpEndpointTest : BaseTest
     public void Constructor_ThrowsIfNullRepo()
     {
         IOptionsMonitor<ThreadDumpEndpointOptions> options = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions>();
-        Assert.Throws<ArgumentNullException>(() => new ThreadDumpEndpoint(options, null, NullLoggerFactory.Instance));
+        Assert.Throws<ArgumentNullException>(() => new ThreadDumpEndpointHandler(options, null, NullLoggerFactory.Instance));
     }
 
     [Fact]
@@ -40,8 +40,8 @@ public class ThreadDumpEndpointTest : BaseTest
             services.AddThreadDumpActuatorServices(MediaTypeVersion.V1);
         };
 
-        var ep = tc.GetService<IThreadDumpEndpoint>();
-        IList<ThreadInfo> result = await ep.InvokeAsync(CancellationToken.None);
+        var ep = tc.GetService<IThreadDumpEndpointHandler>();
+        IList<ThreadInfo> result = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
         Assert.True(dumper.DumpThreadsCalled);
     }

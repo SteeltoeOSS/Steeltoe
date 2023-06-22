@@ -46,7 +46,7 @@ public class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<EnvironmentEndpointOptions>>();
         Assert.NotNull(options);
-        var ep = serviceProvider.GetService<EnvironmentEndpoint>();
+        var ep = serviceProvider.GetService<IEnvironmentEndpointHandler>();
         Assert.NotNull(ep);
     }
 }

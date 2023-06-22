@@ -9,7 +9,6 @@ using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
-using Steeltoe.Management.Endpoint.Security;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
@@ -58,7 +57,7 @@ public class EndpointServiceCollectionTest : BaseTest
         List<IHealthContributor> contributorList = contributors.ToList();
         Assert.Single(contributorList);
 
-        var ep = serviceProvider.GetService<IEndpoint<HealthEndpointResponse, ISecurityContext>>();
+        var ep = serviceProvider.GetService<IHealthEndpointHandler>();
         Assert.NotNull(ep);
     }
 
@@ -84,7 +83,7 @@ public class EndpointServiceCollectionTest : BaseTest
 
         services.Configure<HealthCheckServiceOptions>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var ep = serviceProvider.GetService<IHealthEndpoint>();
+        var ep = serviceProvider.GetService<IHealthEndpointHandler>();
         Assert.NotNull(ep);
         var agg = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(agg);

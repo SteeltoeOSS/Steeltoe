@@ -12,7 +12,6 @@ using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
@@ -21,6 +20,7 @@ using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -40,13 +40,13 @@ public static class ActuatorServiceCollectionExtensions
     }
 
     public static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
-        where TOptions : class, IEndpointOptions
+        where TOptions : HttpMiddlewareOptions
         where TConfigureOptions : class
     {
         services.ConfigureOptions<TConfigureOptions>();
 
         services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<IEndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
+            ServiceDescriptor.Singleton<HttpMiddlewareOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
     }
 
     public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy)

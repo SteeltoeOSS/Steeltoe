@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
@@ -18,10 +18,10 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
     private const string DefaultCFPath = "/cloudfoundryapplication";
     private readonly IConfiguration _configuration;
     private readonly IEnumerable<IContextName> _contextNames;
-    private readonly IEnumerable<IEndpointOptions> _endpoints;
+    private readonly IEnumerable<HttpMiddlewareOptions> _endpoints;
 
     public ConfigureManagementEndpointOptions(IConfiguration configuration, IEnumerable<IContextName> contextNames,
-        IEnumerable<IEndpointOptions> endpointsCollection)
+        IEnumerable<HttpMiddlewareOptions> endpointsCollection)
     {
         _configuration = configuration;
         _contextNames = contextNames;
@@ -54,7 +54,7 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
 
             options.Exposure = new Exposure(_configuration);
 
-            options.EndpointOptions = new List<IEndpointOptions>(_endpoints.Where(e => e is not CloudFoundryEndpointOptions));
+            options.EndpointOptions = new List<HttpMiddlewareOptions>(_endpoints.Where(e => e is not CloudFoundryEndpointOptions));
         }
         else if (name == CFContext.Name)
         {
@@ -71,7 +71,7 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
             }
 
             options.Exposure = new Exposure(true);
-            options.EndpointOptions = new List<IEndpointOptions>(_endpoints.Where(e => e is not HypermediaEndpointOptions));
+            options.EndpointOptions = new List<HttpMiddlewareOptions>(_endpoints.Where(e => e is not HypermediaEndpointOptions));
         }
     }
 

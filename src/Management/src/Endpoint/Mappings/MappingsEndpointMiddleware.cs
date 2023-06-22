@@ -5,38 +5,24 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings>
+/// <summary>
+/// Middleware for displaying <see cref="IRouteMappings"/> information. 
+/// </summary>
+internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<object, ApplicationMappings>
 {
-    public MappingsEndpointMiddleware(IOptionsMonitor<MappingsEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IMappingsEndpoint endpoint, ILogger<MappingsEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    public MappingsEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
+        IMappingsEndpointHandler endpointHandler, ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override async Task<ApplicationMappings> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleMappingsRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
-    }
-
-    internal async Task HandleMappingsRequestAsync(HttpContext context)
-    {
-        ApplicationMappings result = await Endpoint.InvokeAsync(context.RequestAborted);
-        string serialInfo = Serialize(result);
-
-        Logger.LogDebug("Returning: {info}", serialInfo);
-
-        context.HandleContentNegotiation(Logger);
-        await context.Response.WriteAsync(serialInfo);
+        return await EndpointHandler.InvokeAsync(null, context.RequestAborted);
     }
 }

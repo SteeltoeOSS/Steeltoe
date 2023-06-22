@@ -65,7 +65,7 @@ public class ActuatorServiceCollectionExtensionsTest
 
         IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators()).Build();
 
-        Assert.NotNull(host.Services.GetService<ICloudFoundryEndpoint>());
+        Assert.NotNull(host.Services.GetService<ICloudFoundryEndpointHandler>());
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
     }
 
@@ -78,6 +78,6 @@ public class ActuatorServiceCollectionExtensionsTest
 
         IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators()).Build();
 
-        Assert.Null(host.Services.GetService<ICloudFoundryEndpoint>());
+        Assert.Null(host.Services.GetService<ICloudFoundryEndpointHandler>());
     }
 }

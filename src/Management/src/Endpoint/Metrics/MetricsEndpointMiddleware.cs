@@ -7,42 +7,26 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>
+internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequest, IMetricsResponse>
 {
-    public MetricsEndpointMiddleware(IMetricsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<MetricsEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    private readonly ILogger<MetricsEndpointMiddleware> _logger;
+
+    public MetricsEndpointMiddleware(IMetricsEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
+        _logger = loggerFactory.CreateLogger<MetricsEndpointMiddleware>();
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        if (Endpoint.Options.ShouldInvoke(ManagementOptions, context, Logger))
-        {
-            return HandleMetricsRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
-    }
-
-    public override async Task<string> HandleRequestAsync(MetricsRequest arg, CancellationToken cancellationToken)
-    {
-        IMetricsResponse result = await Endpoint.InvokeAsync(arg, cancellationToken);
-        return result == null ? null : Serialize(result);
-    }
-
-    internal async Task HandleMetricsRequestAsync(HttpContext context)
+    private MetricsRequest GetMetricsRequest(HttpContext context)
     {
         HttpRequest request = context.Request;
-        HttpResponse response = context.Response;
-
-        Logger.LogDebug("Incoming path: {path}", request.Path.Value);
+        _logger.LogDebug("Handling metrics for path: {path}", request.Path.Value);
 
         string metricName = GetMetricName(request);
 
@@ -50,41 +34,23 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsRes
         {
             // GET /metrics/{metricName}?tag=key:value&tag=key:value
             IList<KeyValuePair<string, string>> tags = ParseTags(request.Query);
-            var metricRequest = new MetricsRequest(metricName, tags);
-            string serialInfo = await HandleRequestAsync(metricRequest, context.RequestAborted);
-
-            if (serialInfo != null)
-            {
-                response.StatusCode = (int)HttpStatusCode.OK;
-                await context.Response.WriteAsync(serialInfo);
-            }
-            else
-            {
-                response.StatusCode = (int)HttpStatusCode.NotFound;
-            }
+            return new MetricsRequest(metricName, tags);
         }
-        else
-        {
-            // GET /metrics
-            string serialInfo = await HandleRequestAsync(null, context.RequestAborted);
-            Logger.LogDebug("Returning: {info}", serialInfo);
 
-            context.HandleContentNegotiation(Logger);
-            context.Response.StatusCode = (int)HttpStatusCode.OK;
-            await context.Response.WriteAsync(serialInfo);
-        }
+        // GET /metrics
+        return null;
     }
 
     internal string GetMetricName(HttpRequest request)
     {
-        ManagementEndpointOptions mgmtOptions = ManagementOptions.GetFromContextPath(request.Path);
+        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptionsMonitor.GetFromContextPath(request.Path, out _);
 
         if (mgmtOptions == null)
         {
-            return GetMetricName(request, Endpoint.Options.Path);
+            return GetMetricName(request, EndpointHandler.Options.Path);
         }
 
-        string path = $"{mgmtOptions.Path}/{Endpoint.Options.Id}".Replace("//", "/", StringComparison.Ordinal);
+        string path = $"{mgmtOptions.Path}/{EndpointHandler.Options.Id}".Replace("//", "/", StringComparison.Ordinal);
         string metricName = GetMetricName(request, path);
 
         return metricName;
@@ -143,5 +109,27 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsRes
         }
 
         return null;
+    }
+
+    protected override async Task<IMetricsResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    {
+        MetricsRequest metricsRequest = GetMetricsRequest(context);
+        return await EndpointHandler.InvokeAsync(metricsRequest, cancellationToken);
+    }
+
+    protected override async Task WriteResponseAsync(IMetricsResponse result, HttpContext context, CancellationToken cancellationToken)
+    {
+        MetricsRequest metricsRequest = GetMetricsRequest(context);
+
+        if (metricsRequest != null && result is null)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+        }
+        else
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
+        }
+
+        await base.WriteResponseAsync(result, context, cancellationToken);
     }
 }

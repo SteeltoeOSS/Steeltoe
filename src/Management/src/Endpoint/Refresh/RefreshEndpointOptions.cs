@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-public sealed class RefreshEndpointOptions : EndpointOptionsBase
+public sealed class RefreshEndpointOptions : HttpMiddlewareOptions
 {
     private const bool DefaultReturnConfiguration = true;
 

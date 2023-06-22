@@ -32,10 +32,10 @@ public class EnvEndpointTest : BaseTest
         IConfiguration configuration = null;
         const IHostEnvironment env = null;
 
-        Assert.Throws<ArgumentNullException>(() => new EnvironmentEndpoint(options, configuration, env, NullLoggerFactory.Instance));
+        Assert.Throws<ArgumentNullException>(() => new EnvironmentEndpointHandler(options, configuration, env, NullLoggerFactory.Instance));
 
         configuration = new ConfigurationBuilder().Build();
-        Assert.Throws<ArgumentNullException>(() => new EnvironmentEndpoint(options, configuration, env, NullLoggerFactory.Instance));
+        Assert.Throws<ArgumentNullException>(() => new EnvironmentEndpointHandler(options, configuration, env, NullLoggerFactory.Instance));
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class EnvEndpointTest : BaseTest
                 configuration.AddEnvironmentVariables();
             };
 
-            var ep = tc.GetService<IEnvironmentEndpoint>() as EnvironmentEndpoint;
+            var ep = tc.GetService<IEnvironmentEndpointHandler>() as EnvironmentEndpointHandler;
 
             IConfigurationProvider provider = tc.Configuration.Providers.Single();
             string name = ep.GetPropertySourceName(provider);
@@ -74,7 +74,7 @@ public class EnvEndpointTest : BaseTest
                 configuration.AddJsonFile("foobar", true);
             };
 
-            var ep = (EnvironmentEndpoint)tc.GetService<IEnvironmentEndpoint>();
+            var ep = (EnvironmentEndpointHandler)tc.GetService<IEnvironmentEndpointHandler>();
 
             IConfigurationProvider provider = tc.Configuration.Providers.Single();
             string name = ep.GetPropertySourceName(provider);
@@ -118,7 +118,7 @@ public class EnvEndpointTest : BaseTest
             configuration.AddInMemoryCollection(otherAppsettings);
         };
 
-        var ep = (EnvironmentEndpoint)tc.GetService<IEnvironmentEndpoint>();
+        var ep = (EnvironmentEndpointHandler)tc.GetService<IEnvironmentEndpointHandler>();
 
         IConfigurationProvider appsettingsProvider = tc.Configuration.Providers.ElementAt(0);
         PropertySourceDescriptor appsettingsDesc = ep.GetPropertySourceDescriptor(appsettingsProvider);
@@ -169,7 +169,7 @@ public class EnvEndpointTest : BaseTest
             configuration.AddInMemoryCollection(appsettings);
         };
 
-        var ep = (EnvironmentEndpoint)tc.GetService<IEnvironmentEndpoint>();
+        var ep = (EnvironmentEndpointHandler)tc.GetService<IEnvironmentEndpointHandler>();
         IList<PropertySourceDescriptor> result = ep.GetPropertySources(tc.Configuration);
         Assert.NotNull(result);
         Assert.Single(result);
@@ -210,7 +210,7 @@ public class EnvEndpointTest : BaseTest
             configuration.AddPlaceholderResolver();
         };
 
-        var endpoint = (EnvironmentEndpoint)tc.GetService<IEnvironmentEndpoint>();
+        var endpoint = (EnvironmentEndpointHandler)tc.GetService<IEnvironmentEndpointHandler>();
 
         IList<PropertySourceDescriptor> result = endpoint.GetPropertySources(tc.Configuration);
         string testProp = tc.Configuration["appsManagerBase"];
@@ -247,8 +247,8 @@ public class EnvEndpointTest : BaseTest
             configuration.AddInMemoryCollection(appsettings);
         };
 
-        var ep = tc.GetService<IEnvironmentEndpoint>();
-        EnvironmentDescriptor result = await ep.InvokeAsync(CancellationToken.None);
+        var ep = tc.GetService<IEnvironmentEndpointHandler>();
+        EnvironmentDescriptor result = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Single(result.ActiveProfiles);
         Assert.Equal("EnvironmentName", result.ActiveProfiles[0]);
@@ -295,8 +295,8 @@ public class EnvEndpointTest : BaseTest
             configuration.AddInMemoryCollection(appsettings);
         };
 
-        var ep = tc.GetService<IEnvironmentEndpoint>();
-        EnvironmentDescriptor result = await ep.InvokeAsync(CancellationToken.None);
+        var ep = tc.GetService<IEnvironmentEndpointHandler>();
+        EnvironmentDescriptor result = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
 
         PropertySourceDescriptor desc = result.PropertySources[0];
@@ -336,8 +336,8 @@ public class EnvEndpointTest : BaseTest
             configuration.AddInMemoryCollection(appsettings);
         };
 
-        var ep = tc.GetService<IEnvironmentEndpoint>();
-        EnvironmentDescriptor result = await ep.InvokeAsync(CancellationToken.None);
+        var ep = tc.GetService<IEnvironmentEndpointHandler>();
+        EnvironmentDescriptor result = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
 
         PropertySourceDescriptor desc = result.PropertySources[0];

@@ -27,9 +27,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
         services.ConfigureEndpointOptions<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
-        services.TryAddSingleton<EnvironmentEndpoint>();
-        services.TryAddSingleton<IEnvironmentEndpoint>(provider => provider.GetRequiredService<EnvironmentEndpoint>());
-
+        services.TryAddSingleton<IEnvironmentEndpointHandler, EnvironmentEndpointHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, EnvironmentEndpointMiddleware>());
         services.AddSingleton<EnvironmentEndpointMiddleware>();
 

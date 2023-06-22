@@ -13,9 +13,9 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.ThreadDump;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
@@ -38,13 +38,13 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HandleThreadDumpRequestAsync_ReturnsExpected()
     {
         IOptionsMonitor<ThreadDumpEndpointOptions> opts = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(AppSettings);
 
         var obs = new ThreadDumperEp(opts, NullLogger<ThreadDumperEp>.Instance);
-        var ep = new ThreadDumpEndpoint(opts, obs, NullLoggerFactory.Instance);
-        var middle = new ThreadDumpEndpointMiddleware(ep, managementOptions, NullLogger<ThreadDumpEndpointMiddleware>.Instance);
+        var ep = new ThreadDumpEndpointHandler(opts, obs, NullLoggerFactory.Instance);
+        var middle = new ThreadDumpEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest("GET", "/dump");
-        await middle.HandleThreadDumpRequestAsync(context);
+        await middle.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var rdr = new StreamReader(context.Response.Body);
         string json = await rdr.ReadToEndAsync();
