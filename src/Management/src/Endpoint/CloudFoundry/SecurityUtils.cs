@@ -16,7 +16,7 @@ internal sealed class SecurityUtils
 {
     public const int DefaultGetPermissionsTimeout = 5000; // Milliseconds
     public const string ApplicationIdMissingMessage = "Application id is not available";
-    public const string EndpointNotConfiguredMessage = "EndpointHandler is not available";
+    public const string EndpointNotConfiguredMessage = "Endpoint is not available";
     public const string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
     public const string CloudfoundryApiMissingMessage = "Cloud controller URL is not available";
     public const string CloudfoundryNotReachableMessage = "Cloud controller not reachable";

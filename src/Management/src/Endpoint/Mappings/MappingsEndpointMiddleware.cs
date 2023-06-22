@@ -10,6 +10,9 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
+/// <summary>
+/// Middleware for displaying <see cref="IRouteMappings"/> information. 
+/// </summary>
 internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<object, ApplicationMappings>
 {
     public MappingsEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,

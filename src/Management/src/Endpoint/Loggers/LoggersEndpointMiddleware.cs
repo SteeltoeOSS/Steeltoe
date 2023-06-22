@@ -87,7 +87,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
         return new DefaultLoggersRequest();
     }
 
-    internal async Task<Dictionary<string, string>> DeserializeRequestAsync(Stream stream)
+    private async Task<Dictionary<string, string>> DeserializeRequestAsync(Stream stream)
     {
         try
         {
@@ -100,4 +100,6 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
 
         return new Dictionary<string, string>();
     }
+
+
 }

@@ -63,8 +63,10 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
     protected override async Task<HealthEndpointResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        HealthEndpointResponse result = await EndpointHandler.InvokeAsync(GetRequest(context), context.RequestAborted);
-
+        return await EndpointHandler.InvokeAsync(GetRequest(context), context.RequestAborted);
+    }
+    protected override async Task WriteResponseAsync(HealthEndpointResponse result, HttpContext context, CancellationToken cancellationToken)
+    {
         ManagementEndpointOptions currentOptions = ManagementEndpointOptionsMonitor.CurrentValue;
 
         if (currentOptions.UseStatusCodeFromResponse)
@@ -72,6 +74,6 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
             context.Response.StatusCode = ((HealthEndpointHandler)EndpointHandler).GetStatusCode(result);
         }
 
-        return result;
+        await base.WriteResponseAsync(result, context, cancellationToken);
     }
 }

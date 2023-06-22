@@ -60,7 +60,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 
         if (DbContextType is null)
         {
-            _logger.LogCritical("DbMigrationsEndpointHandler was invoked but no DbContext was found.");
+            _logger.LogCritical("DbMigrations endpoint was invoked but no DbContext was found.");
         }
         else
         {

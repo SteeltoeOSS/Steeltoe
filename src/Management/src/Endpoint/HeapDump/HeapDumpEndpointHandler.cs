@@ -12,16 +12,16 @@ internal sealed class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
 {
     private readonly IHeapDumper _heapDumper;
     private readonly ILogger<HeapDumpEndpointHandler> _logger;
+    private readonly IOptionsMonitor<HeapDumpEndpointOptions> _optionsMonitor;
 
-    public HttpMiddlewareOptions Options { get; }
+    public HttpMiddlewareOptions Options => _optionsMonitor.CurrentValue;
 
-    public HeapDumpEndpointHandler(IOptionsMonitor<HeapDumpEndpointOptions> options, IHeapDumper heapDumper, ILoggerFactory loggerFactory)
+    public HeapDumpEndpointHandler(IOptionsMonitor<HeapDumpEndpointOptions> optionsMonitor, IHeapDumper heapDumper, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(heapDumper);
         ArgumentGuard.NotNull(loggerFactory);
-
-        Options = options.CurrentValue;
+        _optionsMonitor = optionsMonitor;
         _heapDumper = heapDumper;
         _logger = loggerFactory.CreateLogger<HeapDumpEndpointHandler>();
     }
@@ -29,6 +29,6 @@ internal sealed class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
     public Task<string> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Invoking the heap dumper");
-        return Task.Run(() => _heapDumper.DumpHeap(), cancellationToken);
+        return Task.Run(_heapDumper.DumpHeap, cancellationToken);
     }
 }
