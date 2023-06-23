@@ -18,7 +18,7 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
 
     internal WavefrontExporterOptions Options { get; }
 
-    public WavefrontMetricsExporter(IWavefrontExporterOptions options, ILogger<WavefrontMetricsExporter> logger)
+    public WavefrontMetricsExporter(WavefrontExporterOptions options, ILogger<WavefrontMetricsExporter> logger)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(logger);

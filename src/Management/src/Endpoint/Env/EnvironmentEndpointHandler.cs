@@ -17,22 +17,22 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
     private readonly IConfiguration _configuration;
     private readonly Sanitizer _sanitizer;
 
-    private readonly IHostEnvironment _env;
+    private readonly IHostEnvironment _environment;
     private readonly ILogger<EnvironmentEndpointHandler> _logger;
 
     public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public EnvironmentEndpointHandler(IOptionsMonitor<EnvironmentEndpointOptions> options, IConfiguration configuration, IHostEnvironment env,
+    public EnvironmentEndpointHandler(IOptionsMonitor<EnvironmentEndpointOptions> options, IConfiguration configuration, IHostEnvironment environment,
         ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(env);
+        ArgumentGuard.NotNull(environment);
         ArgumentGuard.NotNull(loggerFactory);
         ArgumentGuard.NotNull(options);
 
         _options = options;
         _configuration = configuration;
-        _env = env;
+        _environment = environment;
         _sanitizer = new Sanitizer(options.CurrentValue.KeysToSanitize);
         _logger = loggerFactory.CreateLogger<EnvironmentEndpointHandler>();
     }
@@ -41,7 +41,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
     {
         IList<string> activeProfiles = new List<string>
         {
-            _env.EnvironmentName
+            _environment.EnvironmentName
         };
 
         _logger.LogTrace("Fetching property sources");

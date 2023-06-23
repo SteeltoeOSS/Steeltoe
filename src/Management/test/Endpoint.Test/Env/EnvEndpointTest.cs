@@ -30,12 +30,12 @@ public class EnvEndpointTest : BaseTest
     {
         IOptionsMonitor<EnvironmentEndpointOptions> options = GetOptionsMonitorFromSettings<EnvironmentEndpointOptions>();
         IConfiguration configuration = null;
-        const IHostEnvironment env = null;
+        const IHostEnvironment environment = null;
 
-        Assert.Throws<ArgumentNullException>(() => new EnvironmentEndpointHandler(options, configuration, env, NullLoggerFactory.Instance));
+        Assert.Throws<ArgumentNullException>(() => new EnvironmentEndpointHandler(options, configuration, environment, NullLoggerFactory.Instance));
 
         configuration = new ConfigurationBuilder().Build();
-        Assert.Throws<ArgumentNullException>(() => new EnvironmentEndpointHandler(options, configuration, env, NullLoggerFactory.Instance));
+        Assert.Throws<ArgumentNullException>(() => new EnvironmentEndpointHandler(options, configuration, environment, NullLoggerFactory.Instance));
     }
 
     [Fact]

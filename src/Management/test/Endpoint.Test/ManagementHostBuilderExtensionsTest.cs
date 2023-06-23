@@ -429,7 +429,7 @@ public class ManagementHostBuilderExtensionsTest
             var hostBuilder = new HostBuilder();
 
             IHost host = hostBuilder.AddThreadDumpActuator().Build();
-            IEnumerable<IThreadDumpEndpointV2Handler> epEndpoint = host.Services.GetServices<IThreadDumpEndpointV2Handler>();
+            IEnumerable<IThreadDumpEndpointHandler> epEndpoint = host.Services.GetServices<IThreadDumpEndpointHandler>();
             IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             Assert.Single(epEndpoint);

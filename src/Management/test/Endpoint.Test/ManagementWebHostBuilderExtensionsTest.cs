@@ -460,7 +460,7 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
             });
 
             IWebHost host = hostBuilder.AddThreadDumpActuator().Build();
-            IEnumerable<IThreadDumpEndpointV2Handler> epHandler = host.Services.GetServices<IThreadDumpEndpointV2Handler>();
+            IEnumerable<IThreadDumpEndpointHandler> epHandler = host.Services.GetServices<IThreadDumpEndpointHandler>();
             IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             Assert.Single(epHandler);

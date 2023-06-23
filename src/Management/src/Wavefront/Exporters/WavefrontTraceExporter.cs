@@ -20,7 +20,7 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
     private readonly WavefrontDirectIngestionClient _wavefrontSender;
     private readonly WavefrontExporterOptions _options;
 
-    public WavefrontTraceExporter(IWavefrontExporterOptions options, ILogger<WavefrontTraceExporter> logger)
+    public WavefrontTraceExporter(WavefrontExporterOptions options, ILogger<WavefrontTraceExporter> logger)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(logger);

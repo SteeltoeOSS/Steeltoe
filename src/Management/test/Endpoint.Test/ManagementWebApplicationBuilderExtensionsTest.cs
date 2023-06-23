@@ -272,7 +272,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
             host.UseRouting();
             await host.StartAsync();
 
-            Assert.Single(host.Services.GetServices<IThreadDumpEndpointV2Handler>());
+            Assert.Single(host.Services.GetServices<IThreadDumpEndpointHandler>());
             Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
             HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/threaddump", UriKind.Relative));
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
