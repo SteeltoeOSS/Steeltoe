@@ -23,16 +23,16 @@ internal sealed class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTra
 
     private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
-    private readonly ILogger<TraceDiagnosticObserver> _logger;
+    private readonly ILogger<HttpTraceDiagnosticObserver> _logger;
     private readonly ConcurrentQueue<HttpTrace> _queue = new();
 
-    public HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILogger<TraceDiagnosticObserver> logger)
-        : base(DefaultObserverName, DiagnosticName, logger)
+    public HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILoggerFactory loggerFactory)
+        : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
         ArgumentGuard.NotNull(options);
 
         _options = options;
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<HttpTraceDiagnosticObserver>();
     }
 
     public HttpTraceResult GetTraces()

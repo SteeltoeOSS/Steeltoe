@@ -10,23 +10,23 @@ namespace Steeltoe.Management.Diagnostics;
 
 public abstract class DiagnosticObserver : IDiagnosticObserver
 {
-    protected ILogger Logger { get; }
+    private ILogger _logger;
 
-    protected IDisposable Subscription { get; set; }
+    private IDisposable _subscription;
 
     public string ListenerName { get; }
 
     public string ObserverName { get; }
-
-    protected DiagnosticObserver(string name, string listenerName, ILogger logger)
+    
+    protected DiagnosticObserver(string name, string listenerName, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNullOrEmpty(name);
         ArgumentGuard.NotNullOrEmpty(listenerName);
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(loggerFactory);
 
         ObserverName = name;
         ListenerName = listenerName;
-        Logger = logger;
+        _logger = loggerFactory.CreateLogger<DiagnosticObserver>();
     }
 
     public void Dispose()
@@ -39,10 +39,10 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
     {
         if (disposing)
         {
-            Subscription?.Dispose();
-            Subscription = null;
+            _subscription?.Dispose();
+            _subscription = null;
 
-            Logger.LogInformation("DiagnosticObserver {observer} Disposed", ObserverName);
+            _logger.LogInformation("DiagnosticObserver {observer} Disposed", ObserverName);
         }
     }
 
@@ -52,13 +52,13 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
 
         if (ListenerName == listener.Name)
         {
-            if (Subscription != null)
+            if (_subscription != null)
             {
                 Dispose();
             }
 
-            Subscription = listener.Subscribe(this);
-            Logger.LogInformation("DiagnosticObserver {observer} Subscribed to {listener}", ObserverName, listener.Name);
+            _subscription = listener.Subscribe(this);
+            _logger.LogInformation("DiagnosticObserver {observer} Subscribed to {listener}", ObserverName, listener.Name);
         }
     }
 
@@ -78,7 +78,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "ProcessEvent exception: {Id}", @event.Key);
+            _logger.LogError(e, "ProcessEvent exception: {Id}", @event.Key);
         }
     }
 

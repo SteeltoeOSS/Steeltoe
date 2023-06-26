@@ -26,13 +26,13 @@ internal sealed class TraceDiagnosticObserver : DiagnosticObserver, ITraceReposi
     private readonly ILogger<TraceDiagnosticObserver> _logger;
     internal ConcurrentQueue<TraceResult> Queue { get; } = new();
 
-    public TraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILogger<TraceDiagnosticObserver> logger)
-        : base(DefaultObserverName, DiagnosticName, logger)
+    public TraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILoggerFactory loggerFactory)
+        : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
         ArgumentGuard.NotNull(options);
 
         _options = options;
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<TraceDiagnosticObserver>();
     }
 
     public IList<TraceResult> GetTraces()

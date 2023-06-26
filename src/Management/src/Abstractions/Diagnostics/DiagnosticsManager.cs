@@ -5,27 +5,23 @@
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Diagnostics;
 
-public sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
+internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
 {
-    private static readonly Lazy<DiagnosticsManager> AsSingleton = new(() => new DiagnosticsManager(NullLogger<DiagnosticsManager>.Instance));
-    private readonly IEnumerable<IRuntimeDiagnosticSource> _runtimeSources;
-    private readonly IEnumerable<EventListener> _eventListeners;
+    private readonly IList<IRuntimeDiagnosticSource> _runtimeSources;
+    private readonly IList<EventListener> _eventListeners;
+    private readonly IList<IDiagnosticObserver> _observers;
 
     private bool _isDisposed;
     private IDisposable _listenersSubscription;
-    private ILogger<DiagnosticsManager> _logger;
+    private readonly ILogger<DiagnosticsManager> _logger;
 
     private int _started;
 
-    public static DiagnosticsManager Instance => AsSingleton.Value;
-
-    public IList<IDiagnosticObserver> Observers { get; }
 
     public DiagnosticsManager(IOptionsMonitor<MetricsObserverOptions> observerOptions, IEnumerable<IRuntimeDiagnosticSource> runtimeSources,
         IEnumerable<IDiagnosticObserver> observers, IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger)
@@ -45,16 +41,9 @@ public sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposa
             }
         }
 
-        Observers = filteredObservers;
-        _runtimeSources = runtimeSources;
-        _eventListeners = eventListeners;
-    }
-
-    internal DiagnosticsManager(ILogger<DiagnosticsManager> logger)
-    {
-        ArgumentGuard.NotNull(logger);
-        _logger = logger;
-        Observers = new List<IDiagnosticObserver>();
+        _observers = filteredObservers;
+        _runtimeSources = runtimeSources.ToList();
+        _eventListeners = eventListeners.ToList();
     }
 
     public void OnCompleted()
@@ -69,7 +58,7 @@ public sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposa
 
     public void OnNext(DiagnosticListener value)
     {
-        foreach (IDiagnosticObserver listener in Observers)
+        foreach (IDiagnosticObserver listener in _observers)
         {
             listener.Subscribe(value);
         }
@@ -77,6 +66,11 @@ public sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposa
 
     public void Start()
     {
+        if(_isDisposed)
+        {
+            throw new ObjectDisposedException(GetType().Name);
+        }
+
         if (Interlocked.CompareExchange(ref _started, 1, 0) == 0)
         {
             _listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
@@ -105,7 +99,7 @@ public sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposa
     {
         if (Interlocked.CompareExchange(ref _started, 0, 1) == 1)
         {
-            foreach (IDiagnosticObserver listener in Observers)
+            foreach (IDiagnosticObserver listener in _observers)
             {
                 listener.Dispose();
             }
@@ -114,20 +108,12 @@ public sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposa
 
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (disposing && !_isDisposed)
+        if (!_isDisposed)
         {
             Stop();
-
-            Observers.Clear();
-            _runtimeSources?.ToList()?.Clear();
-            _eventListeners?.ToList()?.Clear();
-            _logger = null;
+            _observers.Clear();
+            _runtimeSources.Clear();
+            _eventListeners.Clear();
             _isDisposed = true;
         }
     }

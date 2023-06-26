@@ -10,9 +10,5 @@ public interface IDiagnosticObserver : IObserver<KeyValuePair<string, object>>, 
 {
     string ObserverName { get; }
 
-    string ListenerName { get; }
-
     void Subscribe(DiagnosticListener listener);
-
-    void ProcessEvent(string eventName, object value);
 }

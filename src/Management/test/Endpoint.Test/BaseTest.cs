@@ -31,7 +31,6 @@ public abstract class BaseTest : IDisposable
     {
         if (disposing)
         {
-            DiagnosticsManager.Instance.Dispose();
         }
     }
 
