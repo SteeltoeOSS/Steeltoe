@@ -8,7 +8,7 @@ namespace Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 public interface ISteeltoeExporter
 {
-    Action? Collect { get; set; }
+    void SetCollect(Action collect);
 
     (MetricsCollection<List<MetricSample>> MetricSamples, MetricsCollection<List<MetricTag>> AvailableTags) Export();
 

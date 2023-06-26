@@ -465,9 +465,6 @@ Steeltoe.Management.Endpoint.ThreadDump.ThreadDumpEndpointOptions
 Steeltoe.Management.Endpoint.ThreadDump.ThreadDumpEndpointOptions.Duration.get -> int
 Steeltoe.Management.Endpoint.ThreadDump.ThreadDumpEndpointOptions.Duration.set -> void
 Steeltoe.Management.Endpoint.ThreadDump.ThreadDumpEndpointOptions.ThreadDumpEndpointOptions() -> void
-Steeltoe.Management.Endpoint.ThreadDump.ThreadDumpResult.ThreadDumpResult() -> void
-Steeltoe.Management.Endpoint.ThreadDump.ThreadDumpResult.Threads.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.ThreadDump.ThreadInfo>
-Steeltoe.Management.Endpoint.ThreadDump.ThreadDumpResult.Threads.set -> void
 Steeltoe.Management.Endpoint.ThreadDump.ThreadInfo
 Steeltoe.Management.Endpoint.ThreadDump.ThreadInfo.BlockedCount.get -> long
 Steeltoe.Management.Endpoint.ThreadDump.ThreadInfo.BlockedCount.set -> void

@@ -72,7 +72,7 @@ public abstract class BaseTest : IDisposable
 
         aggregator.Include(SteeltoeMetrics.InstrumentationName);
 
-        steeltoeExporter.Collect = aggregator.Collect;
+        steeltoeExporter.SetCollect(aggregator.Collect);
 
         return aggregator;
     }

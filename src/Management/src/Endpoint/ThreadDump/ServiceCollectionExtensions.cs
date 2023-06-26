@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
@@ -46,9 +49,25 @@ public static class ServiceCollectionExtensions
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ThreadDumpEndpointMiddleware>(provider =>
         {
             var middleware = provider.GetRequiredService<ThreadDumpEndpointMiddleware>();
-            middleware.MediaTypeVersion = version;
+          //  middleware.MediaTypeVersion = version;
             return middleware;
         }));
+
+        if (version == MediaTypeVersion.V2)
+        {
+            services.PostConfigure((ManagementEndpointOptions mgmtOptions) =>
+            {
+                JsonSerializerOptions serializerOptions = mgmtOptions.SerializerOptions ?? new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+
+                if (serializerOptions.Converters?.Any(c => c is ThreadDumpV2Converter) != true)
+                {
+                    serializerOptions.Converters.Add(new ThreadDumpV2Converter());
+                }
+            });
+        }
 
         services.TryAddSingleton<IThreadDumper, ThreadDumperEp>();
 

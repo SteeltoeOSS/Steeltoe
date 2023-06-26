@@ -28,6 +28,6 @@ internal sealed class TraceEndpointHandler : ITraceEndpointHandler
     public Task<IList<TraceResult>> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Fetching Traces");
-        return Task.Run(() => _traceRepo.GetTraces(), cancellationToken);
+        return Task.Run(_traceRepo.GetTraces, cancellationToken);
     }
 }

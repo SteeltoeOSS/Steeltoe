@@ -46,7 +46,7 @@ public class TraceEndpointTest : BaseTest
         Assert.True(repo.GetTracesCalled);
     }
 
-    private class TestTraceRepository : ITraceRepository
+    private sealed class TestTraceRepository : ITraceRepository
     {
         public IList<TraceResult> GetTraces()
         {

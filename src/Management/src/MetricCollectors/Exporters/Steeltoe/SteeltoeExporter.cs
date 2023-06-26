@@ -19,8 +19,11 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
     private MetricsCollection<List<MetricSample>> _lastCollectionSamples = new();
     private MetricsCollection<List<MetricTag>> _lastAvailableTags = new();
     private DateTime _lastCollection = DateTime.MinValue;
-
-    public Action? Collect { get; set; }
+    private Action? _collect;
+    public void SetCollect(Action collect)
+    {
+        _collect = collect;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SteeltoeExporter" /> class.
@@ -35,7 +38,7 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
 
     public (MetricsCollection<List<MetricSample>> MetricSamples, MetricsCollection<List<MetricTag>> AvailableTags) Export()
     {
-        if (Collect == null)
+        if (_collect == null)
         {
             throw new InvalidOperationException("Collect should not be null");
         }
@@ -46,7 +49,7 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
             {
                 _metricSamples.Clear();
                 _availTags.Clear();
-                Collect(); // Calls aggregation Manager.Collect
+                _collect(); // Calls aggregation Manager.Collect
                 _lastCollectionSamples = new MetricsCollection<List<MetricSample>>(_metricSamples);
                 _lastAvailableTags = new MetricsCollection<List<MetricTag>>(_availTags);
                 _lastCollection = DateTime.Now;

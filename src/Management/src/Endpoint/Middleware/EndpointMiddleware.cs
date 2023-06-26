@@ -17,11 +17,6 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
-public interface IEndpointMiddleware : IMiddleware
-{
-    HttpMiddlewareOptions EndpointOptions { get; }
-}
-
 public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddleware
 {
     private readonly ILogger _logger;
@@ -115,7 +110,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         {
             serializerOptions.Converters.Add(new MetricsResponseConverter());
         }
-
+       
         return serializerOptions;
     }
 }

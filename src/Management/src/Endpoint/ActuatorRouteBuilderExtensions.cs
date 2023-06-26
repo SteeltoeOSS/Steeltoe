@@ -29,21 +29,3 @@ public static class ActuatorRouteBuilderExtensions
         }
     }
 }
-
-public sealed class ActuatorConventionBuilder : IEndpointConventionBuilder
-{
-    private readonly List<IEndpointConventionBuilder> _builders = new();
-
-    public void Add(Action<EndpointBuilder> convention)
-    {
-        foreach (IEndpointConventionBuilder builder in _builders)
-        {
-            builder.Add(convention);
-        }
-    }
-
-    public void Add(IEndpointConventionBuilder builder)
-    {
-        _builders.Add(builder);
-    }
-}
