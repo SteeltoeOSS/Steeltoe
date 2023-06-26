@@ -16,7 +16,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 internal sealed class ThreadDumpEndpointMiddleware : EndpointMiddleware<object, IList<ThreadInfo>>
 {
     private readonly ILogger<ThreadDumpEndpointMiddleware> _logger;
-   // internal MediaTypeVersion MediaTypeVersion { get; set; }
 
     public ThreadDumpEndpointMiddleware(IThreadDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILoggerFactory loggerFactory)
         : base(endpointHandler, managementOptions, loggerFactory)
@@ -30,10 +29,4 @@ internal sealed class ThreadDumpEndpointMiddleware : EndpointMiddleware<object, 
 
         return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
-    //protected override JsonSerializerOptions GetSerializerOptions()
-    //{
-    //    JsonSerializerOptions serializerOptions = base.GetSerializerOptions();
-      
-    //    return serializerOptions;
-    //}
 }

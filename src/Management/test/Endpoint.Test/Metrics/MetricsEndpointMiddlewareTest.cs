@@ -11,8 +11,10 @@ using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Aggregations;
 using Steeltoe.Management.MetricCollectors.Exporters;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
+using Steeltoe.Management.MetricCollectors.Metrics;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;

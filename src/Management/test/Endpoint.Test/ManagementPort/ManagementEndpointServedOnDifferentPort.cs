@@ -17,7 +17,7 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.ManagementPort;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test;
+namespace Steeltoe.Management.Endpoint.Test.ManagementPort;
 
 public class ManagementEndpointServedOnDifferentPort
 {

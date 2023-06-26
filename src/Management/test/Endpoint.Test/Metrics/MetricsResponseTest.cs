@@ -4,6 +4,7 @@
 
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Metrics;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;

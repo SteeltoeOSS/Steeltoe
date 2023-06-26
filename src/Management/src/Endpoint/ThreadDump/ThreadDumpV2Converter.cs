@@ -4,11 +4,8 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Util;
-using Steeltoe.Management.Endpoint.ThreadDump;
 
-namespace Steeltoe.Management.Endpoint.Health;
+namespace Steeltoe.Management.Endpoint.ThreadDump;
 
 internal sealed class ThreadDumpV2Converter : JsonConverter<IList<ThreadInfo>>
 {

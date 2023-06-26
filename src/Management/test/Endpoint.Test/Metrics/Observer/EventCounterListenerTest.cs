@@ -8,8 +8,10 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Aggregations;
 using Steeltoe.Management.MetricCollectors.Exporters;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
+using Steeltoe.Management.MetricCollectors.Metrics;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics.Observer;

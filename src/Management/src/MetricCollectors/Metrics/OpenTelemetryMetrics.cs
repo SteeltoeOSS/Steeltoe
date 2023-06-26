@@ -5,7 +5,7 @@
 using System.Diagnostics.Metrics;
 using System.Reflection;
 
-namespace Steeltoe.Management.MetricCollectors;
+namespace Steeltoe.Management.MetricCollectors.Metrics;
 
 public static class SteeltoeMetrics
 {

@@ -4,7 +4,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.MetricCollectors;
+namespace Steeltoe.Management.MetricCollectors.Metrics;
 
 public sealed class MetricSample
 {

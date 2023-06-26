@@ -5,7 +5,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
-namespace System.Diagnostics.Metrics;
+namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
 internal interface IStringSequence
 {

@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Security;
 
-namespace System.Diagnostics.Metrics;
+namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
 /// <summary>
 /// AggregatorStore is a high performance map from an unordered list of labels (KeyValuePairs) to an instance of TAggregator.

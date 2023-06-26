@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.Metrics;
+using Steeltoe.Management.MetricCollectors.Aggregations;
+using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 

@@ -4,8 +4,9 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Metrics;
 
-namespace System.Diagnostics.Metrics;
+namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
 internal sealed class AggregationManager
 {

@@ -46,13 +46,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<ThreadDumpEndpointMiddleware>();
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ThreadDumpEndpointMiddleware>(provider =>
-        {
-            var middleware = provider.GetRequiredService<ThreadDumpEndpointMiddleware>();
-          //  middleware.MediaTypeVersion = version;
-            return middleware;
-        }));
-
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ThreadDumpEndpointMiddleware>());
         if (version == MediaTypeVersion.V2)
         {
             services.PostConfigure((ManagementEndpointOptions mgmtOptions) =>

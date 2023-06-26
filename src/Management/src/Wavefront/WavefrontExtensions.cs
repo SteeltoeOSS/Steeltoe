@@ -16,6 +16,7 @@ using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Metrics;
 using Steeltoe.Management.Wavefront.Exporters;
 
 namespace Steeltoe.Management.Wavefront;

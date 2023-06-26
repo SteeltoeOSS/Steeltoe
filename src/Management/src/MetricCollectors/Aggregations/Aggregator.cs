@@ -4,7 +4,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace System.Diagnostics.Metrics;
+namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
 internal abstract class Aggregator
 {
