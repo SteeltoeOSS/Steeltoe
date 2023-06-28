@@ -69,9 +69,12 @@ public static class PostgreSqlServiceCollectionExtensions
 
         var connection = (DbConnection)connectorShim.GetConnection();
         string hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);
-        var logger = serviceProvider.GetRequiredService<ILogger<RelationalDbHealthContributor>>();
+        var logger = serviceProvider.GetRequiredService<ILogger<RelationalDatabaseHealthContributor>>();
 
-        return new RelationalDbHealthContributor(connection, $"PostgreSQL-{serviceBindingName}", hostName, logger);
+        return new RelationalDatabaseHealthContributor(connection, hostName, logger)
+        {
+            ServiceName = serviceBindingName
+        };
     }
 
     private static string GetHostNameFromConnectionString(PostgreSqlPackageResolver packageResolver, string? connectionString)

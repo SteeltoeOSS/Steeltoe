@@ -77,8 +77,12 @@ public static class PostgreSqlHealthServiceCollectionExtensions
         var options = new PostgreSqlProviderConnectorOptions(configuration);
         var factory = new PostgreSqlProviderConnectorFactory(info, options, PostgreSqlTypeLocator.NpgsqlConnection);
 
-        services.Add(new ServiceDescriptor(typeof(IHealthContributor),
-            ctx => new RelationalDbHealthContributor((DbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),
-            contextLifetime));
+        services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx =>
+        {
+            string connectionString = factory.CreateConnectionString();
+            object connection = factory.CreateConnection(connectionString);
+
+            return new RelationalDatabaseHealthContributor((DbConnection)connection, " ", ctx.GetService<ILogger<RelationalDatabaseHealthContributor>>());
+        }, contextLifetime));
     }
 }

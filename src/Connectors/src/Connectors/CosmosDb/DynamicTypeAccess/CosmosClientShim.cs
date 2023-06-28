@@ -13,6 +13,11 @@ internal sealed class CosmosClientShim : Shim, IDisposable
 {
     public override IDisposable Instance => (IDisposable)base.Instance;
 
+    public CosmosClientShim(CosmosDbPackageResolver packageResolver, object instance)
+        : this(new InstanceAccessor(packageResolver.CosmosClientClass, instance))
+    {
+    }
+
     private CosmosClientShim(InstanceAccessor instanceAccessor)
         : base(instanceAccessor)
     {
@@ -24,6 +29,11 @@ internal sealed class CosmosClientShim : Shim, IDisposable
 
         InstanceAccessor instanceAccessor = packageResolver.CosmosClientClass.CreateInstance(connectionString, null);
         return new CosmosClientShim(instanceAccessor);
+    }
+
+    public Task ReadAccountAsync()
+    {
+        return (Task)InstanceAccessor.InvokeMethod("ReadAccountAsync", true)!;
     }
 
     public void Dispose()

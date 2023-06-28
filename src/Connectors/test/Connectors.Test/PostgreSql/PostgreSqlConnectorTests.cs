@@ -506,11 +506,16 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         await using WebApplication app = builder.Build();
 
         IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        healthContributors.Should().AllBeOfType<RelationalDbHealthContributor>();
+        RelationalDatabaseHealthContributor[] contributors = healthContributors.Should().AllBeOfType<RelationalDatabaseHealthContributor>().Subject.ToArray();
+        contributors.Should().HaveCount(2);
 
-        healthContributors.Should().HaveCount(2);
-        healthContributors[0].Id.Should().Be("PostgreSQL-myPostgreSqlServiceOne");
-        healthContributors[1].Id.Should().Be("PostgreSQL-myPostgreSqlServiceTwo");
+        contributors[0].Id.Should().Be("PostgreSQL");
+        contributors[0].ServiceName.Should().Be("myPostgreSqlServiceOne");
+        contributors[0].Host.Should().Be("localhost");
+
+        contributors[1].Id.Should().Be("PostgreSQL");
+        contributors[1].ServiceName.Should().Be("myPostgreSqlServiceTwo");
+        contributors[1].Host.Should().Be("localhost");
     }
 
     [Fact]

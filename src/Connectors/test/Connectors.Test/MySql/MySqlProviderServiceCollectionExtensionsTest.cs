@@ -169,12 +169,14 @@ public class MySqlProviderServiceCollectionExtensionsTest
     public void AddMySqlConnection_AddsRelationalHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
 
         services.AddMySqlConnection(configurationRoot);
-        var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
+        var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDatabaseHealthContributor;
 
         Assert.NotNull(healthContributor);
     }
@@ -192,7 +194,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
         services.AddHealthChecks().AddMySql(ci.ConnectionString, ci.Name);
 
         services.AddMySqlConnection(configurationRoot);
-        var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
+        var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDatabaseHealthContributor;
 
         Assert.Null(healthContributor);
     }
@@ -201,6 +203,8 @@ public class MySqlProviderServiceCollectionExtensionsTest
     public void AddMySqlConnection_AddsRelationalHealthContributor_WhenCommunityHealthExistsAndForced()
     {
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
@@ -210,7 +214,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
         services.AddHealthChecks().AddMySql(ci.ConnectionString, ci.Name);
 
         services.AddMySqlConnection(configurationRoot, addSteeltoeHealthChecks: true);
-        var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
+        var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDatabaseHealthContributor;
 
         Assert.NotNull(healthContributor);
     }

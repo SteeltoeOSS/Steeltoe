@@ -90,8 +90,13 @@ public static class MongoDbProviderServiceCollectionExtensions
 
         if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
         {
-            services.Add(new ServiceDescriptor(typeof(IHealthContributor),
-                ctx => new MongoDbHealthContributor(clientFactory, ctx.GetService<ILogger<MongoDbHealthContributor>>()), ServiceLifetime.Singleton));
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx =>
+            {
+                string connectionString = clientFactory.CreateConnectionString();
+                object connection = clientFactory.CreateConnection(connectionString);
+
+                return new MongoDbHealthContributor(connection, " ", ctx.GetService<ILogger<MongoDbHealthContributor>>());
+            }, ServiceLifetime.Singleton));
         }
 
         Type mongoInfo = ReflectionHelpers.FindType(MongoDbTypeLocator.Assemblies, MongoDbTypeLocator.MongoConnectionInfo);

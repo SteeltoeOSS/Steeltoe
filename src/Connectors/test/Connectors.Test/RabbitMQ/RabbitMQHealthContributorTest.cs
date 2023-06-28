@@ -2,100 +2,129 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Text;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using FluentAssertions;
+using FluentAssertions.Extensions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using RabbitMQ.Client;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.RabbitMQ;
-using Steeltoe.Connectors.Services;
 using Xunit;
 
 namespace Steeltoe.Connectors.Test.RabbitMQ;
 
-public class RabbitMQHealthContributorTest
+public sealed class RabbitMQHealthContributorTest
 {
-    [Fact]
-    public void GetRabbitMQContributor_ReturnsContributor()
-    {
-        var appsettings = new Dictionary<string, string>
-        {
-            ["rabbit:client:server"] = "localhost",
-            ["rabbit:client:port"] = "1234"
-        };
-
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        IHealthContributor contrib = RabbitMQHealthContributor.GetRabbitMQContributor(configurationRoot);
-        Assert.NotNull(contrib);
-        HealthCheckResult status = contrib.Health();
-        Assert.Equal(HealthStatus.Down, status.Status);
-    }
-
     [Fact]
     public void Not_Connected_Returns_Down_Status()
     {
-        _ = RabbitMQTypeLocator.ConnectionFactoryInterface;
-        Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
-        var options = new RabbitMQProviderConnectorOptions();
-        var sInfo = new RabbitMQServiceInfo("MyId", "amqp://si_username:si_password@localhost:5672/si_vhost");
-        var factory = new LoggerFactory();
-        var connFactory = new RabbitMQProviderConnectorFactory(sInfo, options, rabbitMQImplementationType);
-        var h = new RabbitMQHealthContributor(connFactory, factory.CreateLogger<RabbitMQHealthContributor>());
+        var connectionFactory = new ConnectionFactory
+        {
+            Uri = new Uri("amqp://si_username:si_password@localhost:5672/si_vhost"),
+            RequestedConnectionTimeout = 1.Milliseconds()
+        };
 
-        HealthCheckResult status = h.Health();
+        using var healthContributor = new RabbitMQHealthContributor(connectionFactory, "localhost", NullLogger<RabbitMQHealthContributor>.Instance)
+        {
+            ServiceName = "Example"
+        };
 
-        Assert.Equal(HealthStatus.Down, status.Status);
-        Assert.Equal("Failed to open RabbitMQ connection!", status.Description);
-    }
+        HealthCheckResult status = healthContributor.Health();
 
-    [Fact(Skip = "Integration test - Requires local RMQ server")]
-    public void Is_Connected_Returns_Up_Status()
-    {
-        Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
-        var options = new RabbitMQProviderConnectorOptions();
-        var sInfo = new RabbitMQServiceInfo("MyId", "amqp://localhost:5672");
-        var factory = new LoggerFactory();
-        var connFactory = new RabbitMQProviderConnectorFactory(sInfo, options, rabbitMQImplementationType);
-        var h = new RabbitMQHealthContributor(connFactory, factory.CreateLogger<RabbitMQHealthContributor>());
-
-        HealthCheckResult status = h.Health();
-
-        Assert.Equal(HealthStatus.Up, status.Status);
-        Assert.Contains("version", status.Details.Keys);
+        status.Status.Should().Be(HealthStatus.Down);
+        status.Description.Should().Be("RabbitMQ health check failed");
+        status.Details.Should().Contain("host", "localhost");
+        status.Details.Should().Contain("service", "Example");
+        status.Details.Should().Contain("error", "BrokerUnreachableException: None of the specified endpoints were reachable");
+        status.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact]
-    public void ScenarioTesting()
+    public void Is_Connected_Returns_Up_Status()
     {
-        var mockConnection = new Mock<IConnection>();
-        mockConnection.Setup(a => a.IsOpen).Returns(false);
+        var connectionMock = new Mock<IConnection>();
+        connectionMock.Setup(connection => connection.IsOpen).Returns(true);
 
-        mockConnection.Setup(s => s.ServerProperties).Returns(new Dictionary<string, object>
+        connectionMock.Setup(connection => connection.ServerProperties).Returns(new Dictionary<string, object>
         {
-            { "version", Encoding.UTF8.GetBytes("test") }
+            { "version", Encoding.UTF8.GetBytes("1.2.3") }
         });
 
-        var mockConnFactory = new Mock<IConnectionFactory>();
-        mockConnFactory.Setup(s => s.CreateConnection()).Returns(mockConnection.Object);
+        var connectionFactoryMock = new Mock<IConnectionFactory>();
+        connectionFactoryMock.Setup(factory => factory.CreateConnection()).Returns(connectionMock.Object);
 
-        var mockProviderFactory =
-            new Mock<RabbitMQProviderConnectorFactory>(null, new RabbitMQProviderConnectorOptions(), RabbitMQTypeLocator.ConnectionFactory);
+        using var healthContributor = new RabbitMQHealthContributor(connectionFactoryMock.Object, "localhost", NullLogger<RabbitMQHealthContributor>.Instance)
+        {
+            ServiceName = "Example"
+        };
 
-        mockProviderFactory.Setup(a => a.Create(null)).Returns(mockConnFactory.Object);
-        var h = new RabbitMQHealthContributor(mockProviderFactory.Object);
+        HealthCheckResult status = healthContributor.Health();
 
-        // check health, get object that is closed
-        HealthCheckResult status = h.Health();
-        Assert.Equal(HealthStatus.Down, status.Status);
-        Assert.Equal("ConnectorException: RabbitMQ connection is closed!", status.Details["error"]);
+        status.Status.Should().Be(HealthStatus.Up);
+        status.Details.Should().Contain("host", "localhost");
+        status.Details.Should().Contain("service", "Example");
+        status.Details.Should().NotContainKey("error");
+        status.Details.Should().Contain("status", "UP");
+        status.Details.Should().Contain("version", "1.2.3");
+    }
 
-        // check health, get object that is open
-        mockConnection.Setup(a => a.IsOpen).Returns(true);
-        status = h.Health();
-        Assert.Equal(HealthStatus.Up, status.Status);
-        Assert.Equal("test", status.Details["version"]);
+    [Fact]
+    public void Lost_Connection_Returns_Down_Status()
+    {
+        var connectionMock = new Mock<IConnection>();
+        connectionMock.Setup(connection => connection.IsOpen).Returns(true);
+
+        connectionMock.Setup(connection => connection.ServerProperties).Returns(new Dictionary<string, object>
+        {
+            { "version", Encoding.UTF8.GetBytes("1.2.3") }
+        });
+
+        var connectionFactoryMock = new Mock<IConnectionFactory>();
+        connectionFactoryMock.Setup(factory => factory.CreateConnection()).Returns(connectionMock.Object);
+
+        using var healthContributor = new RabbitMQHealthContributor(connectionFactoryMock.Object, "localhost", NullLogger<RabbitMQHealthContributor>.Instance)
+        {
+            ServiceName = "Example"
+        };
+
+        // Ensure initial connection is obtained.
+        _ = healthContributor.Health();
+
+        connectionMock.Setup(connection => connection.IsOpen).Returns(false);
+
+        HealthCheckResult status = healthContributor.Health();
+
+        status.Status.Should().Be(HealthStatus.Down);
+        status.Description.Should().Be("RabbitMQ health check failed");
+        status.Details.Should().Contain("host", "localhost");
+        status.Details.Should().Contain("service", "Example");
+        status.Details.Should().Contain("error", "ConnectorException: RabbitMQ connection is closed!");
+        status.Details.Should().Contain("status", "DOWN");
+    }
+
+    [Fact(Skip = "Integration test - Requires local RabbitMQ server")]
+    public void Integration_Is_Connected_Returns_Up_Status()
+    {
+        var connectionFactory = new ConnectionFactory
+        {
+            Uri = new Uri("amqp://localhost:5672")
+        };
+
+        using var healthContributor = new RabbitMQHealthContributor(connectionFactory, "localhost", NullLogger<RabbitMQHealthContributor>.Instance)
+        {
+            ServiceName = "Example"
+        };
+
+        HealthCheckResult status = healthContributor.Health();
+
+        status.Status.Should().Be(HealthStatus.Up);
+        status.Details.Should().Contain("host", "localhost");
+        status.Details.Should().Contain("service", "Example");
+        status.Details.Should().NotContainKey("error");
+        status.Details.Should().Contain("status", "UP");
+        status.Details.Should().ContainKey("version");
     }
 }

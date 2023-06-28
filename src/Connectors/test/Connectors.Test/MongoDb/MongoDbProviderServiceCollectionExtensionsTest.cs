@@ -188,6 +188,8 @@ public class MongoDbProviderServiceCollectionExtensionsTest
     public void AddMongoClientConnection_AddsMongoDbHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
@@ -227,6 +229,7 @@ public class MongoDbProviderServiceCollectionExtensionsTest
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", MongoDbTestHelpers.SingleServerEnterpriseVcap);
 
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();

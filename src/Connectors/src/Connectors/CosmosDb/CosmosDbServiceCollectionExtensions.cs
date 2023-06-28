@@ -73,7 +73,11 @@ public static class CosmosDbServiceCollectionExtensions
         string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<CosmosDbHealthContributor>>();
 
-        return new CosmosDbHealthContributor(cosmosClient, $"CosmosDB-{serviceBindingName}", hostName, logger);
+        return new CosmosDbHealthContributor(cosmosClient, hostName, logger)
+        {
+            ServiceName = serviceBindingName,
+            Timeout = TimeSpan.FromSeconds(5)
+        };
     }
 
     private static string GetHostNameFromConnectionString(string? connectionString)

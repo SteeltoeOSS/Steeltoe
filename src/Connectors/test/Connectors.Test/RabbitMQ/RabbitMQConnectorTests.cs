@@ -298,11 +298,16 @@ public sealed class RabbitMQConnectorTests
         await using WebApplication app = builder.Build();
 
         IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        healthContributors.Should().AllBeOfType<RabbitMQHealthContributor>();
+        RabbitMQHealthContributor[] rabbitMQHealthContributors = healthContributors.Should().AllBeOfType<RabbitMQHealthContributor>().Subject.ToArray();
+        rabbitMQHealthContributors.Should().HaveCount(2);
 
-        healthContributors.Should().HaveCount(2);
-        healthContributors[0].Id.Should().Be("RabbitMQ-myRabbitMQServiceOne");
-        healthContributors[1].Id.Should().Be("RabbitMQ-myRabbitMQServiceTwo");
+        rabbitMQHealthContributors[0].Id.Should().Be("RabbitMQ");
+        rabbitMQHealthContributors[0].ServiceName.Should().Be("myRabbitMQServiceOne");
+        rabbitMQHealthContributors[0].Host.Should().Be("host1");
+
+        rabbitMQHealthContributors[1].Id.Should().Be("RabbitMQ");
+        rabbitMQHealthContributors[1].ServiceName.Should().Be("myRabbitMQServiceTwo");
+        rabbitMQHealthContributors[1].Host.Should().Be("host2");
     }
 
     [Fact]

@@ -41,7 +41,7 @@ public static class RedisServiceCollectionExtensions
         {
             var optionsBuilder = new ConnectorAddOptionsBuilder(
                 (serviceProvider, serviceBindingName) => CreateConnectionMultiplexer(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver),
-                (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver))
+                (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName))
             {
                 // From https://github.com/StackExchange/StackExchange.Redis/blob/main/docs/Basics.md:
                 //   "Because the ConnectionMultiplexer does a lot, it is designed to be shared and reused between callers.
@@ -71,33 +71,19 @@ public static class RedisServiceCollectionExtensions
         return services;
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
-        StackExchangeRedisPackageResolver packageResolver)
+    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName)
     {
         // Not using the Steeltoe ConnectorFactory here, because obtaining a connection throws when Redis is down at application startup.
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
         string? connectionString = optionsMonitor.Get(serviceBindingName).ConnectionString;
 
-        string hostName = GetHostNameFromConnectionString(connectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<RedisHealthContributor>>();
 
-        return new RedisHealthContributor(connectionString, $"Redis-{serviceBindingName}", hostName, logger);
-    }
-
-    private static string GetHostNameFromConnectionString(string? connectionString)
-    {
-        if (connectionString == null)
+        return new RedisHealthContributor(connectionString!, logger)
         {
-            return string.Empty;
-        }
-
-        var builder = new RedisConnectionStringBuilder
-        {
-            ConnectionString = connectionString
+            ServiceName = serviceBindingName
         };
-
-        return (string)builder["host"]!;
     }
 
     private static IDisposable CreateConnectionMultiplexer(IServiceProvider serviceProvider, string serviceBindingName,
@@ -106,8 +92,8 @@ public static class RedisServiceCollectionExtensions
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
         RedisOptions options = optionsMonitor.Get(serviceBindingName);
 
-        ConnectionMultiplexerShim connectionMultiplexerShim = ConnectionMultiplexerShim.Connect(packageResolver, options.ConnectionString!);
-        return connectionMultiplexerShim.Instance;
+        ConnectionMultiplexerInterfaceShim connectionMultiplexerInterfaceShim = ConnectionMultiplexerShim.Connect(packageResolver, options.ConnectionString!);
+        return connectionMultiplexerInterfaceShim.Instance;
     }
 
     private static object CreateDistributedCache(ConnectorCreateConnection stackExchangeCreateConnection, IServiceProvider serviceProvider,

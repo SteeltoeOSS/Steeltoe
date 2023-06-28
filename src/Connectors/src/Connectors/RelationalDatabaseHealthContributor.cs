@@ -4,33 +4,33 @@
 
 #nullable enable
 
-using System.Reflection;
+using System.Data.Common;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
-using Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
 
-namespace Steeltoe.Connectors.MongoDb;
+namespace Steeltoe.Connectors;
 
-internal sealed class MongoDbHealthContributor : IHealthContributor
+internal sealed class RelationalDatabaseHealthContributor : IHealthContributor, IDisposable
 {
-    private readonly MongoClientInterfaceShim _mongoClientShim;
-    private readonly ILogger<MongoDbHealthContributor> _logger;
+    private readonly DbConnection _connection;
+    private readonly ILogger<RelationalDatabaseHealthContributor> _logger;
 
-    public string Id { get; } = "MongoDB";
+    public string Id { get; }
     public string Host { get; }
     public string? ServiceName { get; set; }
 
-    public MongoDbHealthContributor(object mongoClient, string host, ILogger<MongoDbHealthContributor> logger)
+    public RelationalDatabaseHealthContributor(DbConnection connection, string host, ILogger<RelationalDatabaseHealthContributor> logger)
     {
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(connection);
         ArgumentGuard.NotNullOrEmpty(host);
-        ArgumentGuard.NotNull(mongoClient);
+        ArgumentGuard.NotNull(logger);
 
-        _mongoClientShim = new MongoClientInterfaceShim(MongoDbPackageResolver.Default, mongoClient);
+        _connection = connection;
         Host = host;
         _logger = logger;
+        Id = GetDatabaseType(connection);
     }
 
     public HealthCheckResult Health()
@@ -52,7 +52,10 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
 
         try
         {
-            _ = _mongoClientShim.ListDatabaseNames(CancellationToken.None);
+            _connection.Open();
+            DbCommand command = _connection.CreateCommand();
+            command.CommandText = "SELECT 1;";
+            command.ExecuteScalar();
 
             result.Status = HealthStatus.Up;
             result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
@@ -61,11 +64,6 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
         }
         catch (Exception exception)
         {
-            if (exception is TargetInvocationException)
-            {
-                exception = exception.InnerException ?? exception;
-            }
-
             _logger.LogError(exception, "{DbConnection} at {Host} is down!", Id, Host);
 
             result.Status = HealthStatus.Down;
@@ -73,7 +71,27 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
             result.Details.Add("error", $"{exception.GetType().Name}: {exception.Message}");
             result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
         }
+        finally
+        {
+            _connection.Close();
+        }
 
         return result;
+    }
+
+    private static string GetDatabaseType(DbConnection connection)
+    {
+        return connection.GetType().Name switch
+        {
+            "NpgsqlConnection" => "PostgreSQL",
+            "SqlConnection" => "SQL Server",
+            "MySqlConnection" => "MySQL",
+            _ => "unknown"
+        };
+    }
+
+    public void Dispose()
+    {
+        _connection.Dispose();
     }
 }

@@ -33,9 +33,8 @@ internal sealed class ConnectionFactoryShim : Shim
         return new ConnectionFactoryShim(packageResolver, instanceAccessor);
     }
 
-    public ConnectionInterfaceShim CreateConnection()
+    public ConnectionFactoryInterfaceShim AsInterface()
     {
-        object instance = InstanceAccessor.InvokeMethodOverload("CreateConnection", true, Type.EmptyTypes)!;
-        return new ConnectionInterfaceShim(_packageResolver, instance);
+        return new ConnectionFactoryInterfaceShim(_packageResolver, Instance);
     }
 }

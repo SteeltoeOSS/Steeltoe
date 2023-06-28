@@ -78,6 +78,8 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddDistributedRedisCache_AddsRedisHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
@@ -110,6 +112,8 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddDistributedRedisCache_AddsRedisHealthContributor_WhenCommunityHealthCheckExistsAndForced()
     {
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
@@ -237,6 +241,8 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddRedisConnectionMultiplexer_AddsRedisHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();

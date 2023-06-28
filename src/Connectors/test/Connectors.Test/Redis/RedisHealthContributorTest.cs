@@ -2,109 +2,91 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+#nullable enable
+
+using FluentAssertions;
+using FluentAssertions.Extensions;
+using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
+using StackExchange.Redis;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.Redis;
-using Steeltoe.Connectors.Services;
 using Xunit;
 
 namespace Steeltoe.Connectors.Test.Redis;
 
-public class RedisHealthContributorTest
+public sealed class RedisHealthContributorTest
 {
     [Fact]
-    public void GetRedisContributor_ReturnsContributor()
+    public void Not_Connected_Returns_Down_Status()
     {
-        var appsettings = new Dictionary<string, string>
+        var connectionMultiplexerMock = new Mock<IConnectionMultiplexer>();
+
+        connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.GetDatabase(It.IsAny<int>(), It.IsAny<object?>()))
+            .Throws(new RedisConnectionException(ConnectionFailureType.UnableToConnect, "It was not possible to connect ..."));
+
+        using var healthContributor = new RedisHealthContributor("localhost", NullLogger<RedisHealthContributor>.Instance)
         {
-            ["redis:client:host"] = "localhost",
-            ["redis:client:port"] = "1234",
-            ["redis:client:connectTimeout"] = "1"
+            ServiceName = "Example"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        IHealthContributor contrib = RedisHealthContributor.GetRedisContributor(configurationRoot);
-        Assert.NotNull(contrib);
-        HealthCheckResult status = contrib.Health();
-        Assert.Equal(HealthStatus.Down, status.Status);
+        healthContributor.SetConnectionMultiplexer(connectionMultiplexerMock.Object);
+
+        HealthCheckResult status = healthContributor.Health();
+
+        status.Status.Should().Be(HealthStatus.Down);
+        status.Description.Should().Be("Redis health check failed");
+        status.Details.Should().Contain("host", "localhost");
+        status.Details.Should().Contain("service", "Example");
+        status.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("RedisConnectionException: It was not possible to connect ");
+        status.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact]
-    public void StackExchange_Not_Connected_Returns_Down_Status()
+    public void Is_Connected_Returns_Up_Status()
     {
-        var options = new RedisCacheConnectorOptions
+        var databaseMock = new Mock<IDatabase>();
+        databaseMock.Setup(database => database.Ping(It.IsAny<CommandFlags>())).Returns(50.Milliseconds());
+
+        var connectionMultiplexerMock = new Mock<IConnectionMultiplexer>();
+
+        connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.GetDatabase(It.IsAny<int>(), It.IsAny<object?>()))
+            .Returns(databaseMock.Object);
+
+        using var healthContributor = new RedisHealthContributor("localhost", NullLogger<RedisHealthContributor>.Instance)
         {
-            ConnectTimeout = 1
+            ServiceName = "Example"
         };
 
-        var sInfo = new RedisServiceInfo("MyId", "redis://localhost:6378");
-        var factory = new LoggerFactory();
+        healthContributor.SetConnectionMultiplexer(connectionMultiplexerMock.Object);
 
-        var connFactory = new RedisServiceConnectorFactory(sInfo, options, RedisTypeLocator.StackExchangeImplementation, RedisTypeLocator.StackExchangeOptions,
-            RedisTypeLocator.StackExchangeInitializer);
+        HealthCheckResult status = healthContributor.Health();
 
-        var h = new RedisHealthContributor(connFactory, RedisTypeLocator.StackExchangeImplementation, factory.CreateLogger<RedisHealthContributor>());
-
-        HealthCheckResult status = h.Health();
-
-        Assert.Equal(HealthStatus.Down, status.Status);
-        Assert.Equal("Redis health check failed", status.Description);
+        status.Status.Should().Be(HealthStatus.Up);
+        status.Details.Should().Contain("host", "localhost");
+        status.Details.Should().Contain("service", "Example");
+        status.Details.Should().NotContainKey("error");
+        status.Details.Should().Contain("status", "UP");
+        status.Details.Should().Contain("ping", 50D);
     }
 
-    [Fact(Skip = "Integration test - Requires local server")]
-    public void StackExchange_Is_Connected_Returns_Up_Status()
+    [Fact(Skip = "Integration test - Requires local Redis server")]
+    public void Integration_Is_Connected_Returns_Up_Status()
     {
-        var options = new RedisCacheConnectorOptions();
-        var sInfo = new RedisServiceInfo("MyId", "redis://localhost:6379");
-        var factory = new LoggerFactory();
+        const string connectionString = "localhost";
 
-        var connFactory = new RedisServiceConnectorFactory(sInfo, options, RedisTypeLocator.StackExchangeImplementation, RedisTypeLocator.StackExchangeOptions,
-            RedisTypeLocator.StackExchangeInitializer);
-
-        var h = new RedisHealthContributor(connFactory, RedisTypeLocator.StackExchangeImplementation, factory.CreateLogger<RedisHealthContributor>());
-
-        HealthCheckResult status = h.Health();
-
-        Assert.Equal(HealthStatus.Up, status.Status);
-    }
-
-    [Fact]
-    public void Microsoft_Not_Connected_Returns_Down_Status()
-    {
-        var options = new RedisCacheConnectorOptions
+        using var healthContributor = new RedisHealthContributor(connectionString, NullLogger<RedisHealthContributor>.Instance)
         {
-            ConnectTimeout = 1
+            ServiceName = "Example"
         };
 
-        var sInfo = new RedisServiceInfo("MyId", "redis://localhost:6378");
-        var factory = new LoggerFactory();
+        HealthCheckResult status = healthContributor.Health();
 
-        var connFactory = new RedisServiceConnectorFactory(sInfo, options, RedisTypeLocator.MicrosoftImplementation, RedisTypeLocator.MicrosoftOptions, null);
-
-        var h = new RedisHealthContributor(connFactory, RedisTypeLocator.MicrosoftImplementation, factory.CreateLogger<RedisHealthContributor>());
-
-        HealthCheckResult status = h.Health();
-
-        Assert.Equal(HealthStatus.Down, status.Status);
-        Assert.Equal("Redis health check failed", status.Description);
-    }
-
-    [Fact(Skip = "Integration test - Requires local server")]
-    public void Microsoft_Is_Connected_Returns_Up_Status()
-    {
-        var options = new RedisCacheConnectorOptions();
-        var sInfo = new RedisServiceInfo("MyId", "redis://localhost:6379");
-        var factory = new LoggerFactory();
-
-        var connFactory = new RedisServiceConnectorFactory(sInfo, options, RedisTypeLocator.MicrosoftImplementation, RedisTypeLocator.MicrosoftOptions, null);
-
-        var h = new RedisHealthContributor(connFactory, RedisTypeLocator.MicrosoftImplementation, factory.CreateLogger<RedisHealthContributor>());
-
-        HealthCheckResult status = h.Health();
-
-        Assert.Equal(HealthStatus.Up, status.Status);
+        status.Status.Should().Be(HealthStatus.Up);
+        status.Details.Should().Contain("host", "localhost");
+        status.Details.Should().Contain("service", "Example");
+        status.Details.Should().NotContainKey("error");
+        status.Details.Should().Contain("status", "UP");
+        status.Details.Should().ContainKey("ping");
     }
 }

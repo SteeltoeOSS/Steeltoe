@@ -57,6 +57,8 @@ public class SqlServerServiceCollectionExtensionsTest
     public void AddSqlServerHealthContributor_NoVCAPs_AddsIHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         services.AddSqlServerHealthContributor(configurationRoot);
@@ -79,12 +81,14 @@ public class SqlServerServiceCollectionExtensionsTest
     public void AddSqlServerHealthContributor_AddsRelationalHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
 
         services.AddSqlServerHealthContributor(configurationRoot);
-        var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
+        var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDatabaseHealthContributor;
 
         Assert.NotNull(healthContributor);
     }

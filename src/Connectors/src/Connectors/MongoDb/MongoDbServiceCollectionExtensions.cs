@@ -69,7 +69,10 @@ public static class MongoDbServiceCollectionExtensions
         string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<MongoDbHealthContributor>>();
 
-        return new MongoDbHealthContributor(mongoClient, $"MongoDB-{serviceBindingName}", hostName, logger);
+        return new MongoDbHealthContributor(mongoClient, hostName, logger)
+        {
+            ServiceName = serviceBindingName
+        };
     }
 
     private static string GetHostNameFromConnectionString(string? connectionString)

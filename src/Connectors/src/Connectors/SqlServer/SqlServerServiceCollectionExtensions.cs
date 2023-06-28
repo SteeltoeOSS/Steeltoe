@@ -68,9 +68,12 @@ public static class SqlServerServiceCollectionExtensions
 
         var connection = (DbConnection)connectorShim.GetConnection();
         string hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);
-        var logger = serviceProvider.GetRequiredService<ILogger<RelationalDbHealthContributor>>();
+        var logger = serviceProvider.GetRequiredService<ILogger<RelationalDatabaseHealthContributor>>();
 
-        return new RelationalDbHealthContributor(connection, $"SqlServer-{serviceBindingName}", hostName, logger);
+        return new RelationalDatabaseHealthContributor(connection, hostName, logger)
+        {
+            ServiceName = serviceBindingName
+        };
     }
 
     private static string GetHostNameFromConnectionString(SqlServerPackageResolver packageResolver, string? connectionString)

@@ -221,6 +221,8 @@ public class RabbitMQServiceCollectionExtensionsTest
     public void AddRabbitMQConnection_AddsRabbitMQHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
@@ -253,6 +255,8 @@ public class RabbitMQServiceCollectionExtensionsTest
     public void AddRabbitMQConnection_AddsRabbitMQHealthContributor_WhenCommunityHealthCheckExistsAndForced()
     {
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();

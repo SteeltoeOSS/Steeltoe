@@ -77,8 +77,12 @@ public static class SqlServerHealthServiceCollectionExtensions
         var options = new SqlServerProviderConnectorOptions(configuration);
         var factory = new SqlServerProviderConnectorFactory(info, options, SqlServerTypeLocator.SqlConnection);
 
-        services.Add(new ServiceDescriptor(typeof(IHealthContributor),
-            ctx => new RelationalDbHealthContributor((DbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),
-            contextLifetime));
+        services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx =>
+        {
+            string connectionString = factory.CreateConnectionString();
+            object connection = factory.CreateConnection(connectionString);
+
+            return new RelationalDatabaseHealthContributor((DbConnection)connection, " ", ctx.GetService<ILogger<RelationalDatabaseHealthContributor>>());
+        }, contextLifetime));
     }
 }

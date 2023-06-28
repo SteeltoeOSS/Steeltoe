@@ -2,74 +2,96 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
+using Steeltoe.Connectors.CosmosDb.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.CosmosDb;
 
-internal sealed class CosmosDbHealthContributor : IHealthContributor
+internal sealed class CosmosDbHealthContributor : IHealthContributor, IDisposable
 {
-    private readonly object _cosmosClient;
-    private readonly string _hostName;
     private readonly ILogger<CosmosDbHealthContributor> _logger;
-    private readonly int _timeout;
+    private readonly CosmosClientShim _cosmosClientShim;
 
-    public string Id { get; }
+    public string Id { get; } = "CosmosDB";
+    public string Host { get; }
+    public string? ServiceName { get; set; }
 
-    internal CosmosDbHealthContributor(object cosmosClient, string serviceName, string hostName, ILogger<CosmosDbHealthContributor> logger, int timeout = 5000)
+    // This property exists because CosmosClient does not respect any timeouts configured in CosmosClientOptions.
+    public TimeSpan Timeout { get; set; } = System.Threading.Timeout.InfiniteTimeSpan;
+
+    public CosmosDbHealthContributor(object cosmosClient, string host, ILogger<CosmosDbHealthContributor> logger)
     {
         ArgumentGuard.NotNull(cosmosClient);
-        ArgumentGuard.NotNull(serviceName);
+        ArgumentGuard.NotNullOrEmpty(host);
         ArgumentGuard.NotNull(logger);
 
-        _cosmosClient = cosmosClient;
-        Id = serviceName;
-        _hostName = hostName;
+        _cosmosClientShim = new CosmosClientShim(CosmosDbPackageResolver.Default, cosmosClient);
+        Host = host;
         _logger = logger;
-        _timeout = timeout;
     }
 
     public HealthCheckResult Health()
     {
-        _logger.LogTrace("Checking CosmosDB connection health");
-        var result = new HealthCheckResult();
+        _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
 
-        if (!string.IsNullOrEmpty(_hostName))
+        var result = new HealthCheckResult
         {
-            result.Details.Add("host", _hostName);
+            Details =
+            {
+                ["host"] = Host
+            }
+        };
+
+        if (!string.IsNullOrEmpty(ServiceName))
+        {
+            result.Details["service"] = ServiceName;
         }
 
         try
         {
-            var task = (Task)ReflectionHelpers.Invoke(CosmosDbTypeLocator.ReadAccountAsyncMethod, _cosmosClient, Array.Empty<object>());
+            Task task = _cosmosClientShim.ReadAccountAsync();
 
-            if (!task.Wait(_timeout))
+            if (!task.Wait(Timeout))
             {
-                throw new ConnectorException("Failed to open CosmosDB connection!");
+                throw new TimeoutException();
             }
 
-            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Up;
-            _logger.LogTrace("CosmosDB connection is up!");
+            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+
+            _logger.LogTrace("{DbConnection} at {Host} is up!", Id, Host);
         }
         catch (Exception exception)
         {
             if (exception is TargetInvocationException)
             {
-                exception = exception.InnerException;
+                exception = exception.InnerException ?? exception;
             }
 
-            _logger.LogError(exception, "CosmosDB connection is down! {HealthCheckException}", exception.Message);
+            if (exception is AggregateException { InnerExceptions.Count: 1 } aggregateException)
+            {
+                exception = aggregateException.InnerExceptions[0];
+            }
+
+            _logger.LogError(exception, "{DbConnection} at {Host} is down!", Id, Host);
+
+            result.Status = HealthStatus.Down;
+            result.Description = $"{Id} health check failed";
             result.Details.Add("error", $"{exception.GetType().Name}: {exception.Message}");
             result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
-            result.Status = HealthStatus.Down;
-            result.Description = exception.Message;
         }
 
         return result;
+    }
+
+    public void Dispose()
+    {
+        _cosmosClientShim.Dispose();
     }
 }

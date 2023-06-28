@@ -97,9 +97,13 @@ public static class MySqlProviderServiceCollectionExtensions
 
         if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
         {
-            services.Add(new ServiceDescriptor(typeof(IHealthContributor),
-                ctx => new RelationalDbHealthContributor((DbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()),
-                ServiceLifetime.Singleton));
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx =>
+            {
+                string connectionString = factory.CreateConnectionString();
+                object connection = factory.CreateConnection(connectionString);
+
+                return new RelationalDatabaseHealthContributor((DbConnection)connection, " ", ctx.GetService<ILogger<RelationalDatabaseHealthContributor>>());
+            }, ServiceLifetime.Singleton));
         }
     }
 }

@@ -18,7 +18,7 @@ internal sealed class ConnectionMultiplexerShim : Shim, IDisposable
     {
     }
 
-    public static ConnectionMultiplexerShim Connect(StackExchangeRedisPackageResolver packageResolver, string configuration)
+    public static ConnectionMultiplexerInterfaceShim Connect(StackExchangeRedisPackageResolver packageResolver, string configuration)
     {
         ArgumentGuard.NotNull(packageResolver);
 
@@ -28,7 +28,7 @@ internal sealed class ConnectionMultiplexerShim : Shim, IDisposable
             typeof(TextWriter)
         }, configuration, null)!;
 
-        return new ConnectionMultiplexerShim(packageResolver, instance);
+        return new ConnectionMultiplexerInterfaceShim(packageResolver, instance);
     }
 
     public void Dispose()

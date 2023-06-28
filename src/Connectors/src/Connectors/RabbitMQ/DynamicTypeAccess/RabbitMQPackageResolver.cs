@@ -16,6 +16,7 @@ internal sealed class RabbitMQPackageResolver : PackageResolver
     public static readonly RabbitMQPackageResolver Default = new("RabbitMQ.Client", "RabbitMQ.Client");
 
     public TypeAccessor ConnectionFactoryClass => ResolveType("RabbitMQ.Client.ConnectionFactory");
+    public TypeAccessor ConnectionFactoryInterface => ResolveType("RabbitMQ.Client.IConnectionFactory");
     public TypeAccessor ConnectionInterface => ResolveType("RabbitMQ.Client.IConnection");
 
     private RabbitMQPackageResolver(string assemblyName, string packageName)

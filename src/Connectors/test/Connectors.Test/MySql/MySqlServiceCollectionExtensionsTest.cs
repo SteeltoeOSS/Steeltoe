@@ -58,6 +58,8 @@ public class MySqlServiceCollectionExtensionsTest
     public void AddMySqlHealthContributor_NoVCAPs_AddsIHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         services.AddMySqlHealthContributor(configurationRoot);
@@ -96,12 +98,14 @@ public class MySqlServiceCollectionExtensionsTest
     public void AddMySqlHealthContributor_AddsRelationalHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
 
         services.AddMySqlHealthContributor(configurationRoot);
-        var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
+        var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDatabaseHealthContributor;
 
         Assert.NotNull(healthContributor);
     }

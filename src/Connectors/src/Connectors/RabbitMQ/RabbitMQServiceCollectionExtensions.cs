@@ -73,7 +73,16 @@ public static class RabbitMQServiceCollectionExtensions
         var logger = serviceProvider.GetRequiredService<ILogger<RabbitMQHealthContributor>>();
 
         var connectionFactoryShim = ConnectionFactoryShim.CreateInstance(packageResolver);
-        return new RabbitMQHealthContributor(connectionFactoryShim.Instance, $"RabbitMQ-{serviceBindingName}", hostName, logger);
+
+        if (connectionString != null)
+        {
+            connectionFactoryShim.Uri = new Uri(connectionString);
+        }
+
+        return new RabbitMQHealthContributor(connectionFactoryShim.Instance, hostName, logger)
+        {
+            ServiceName = serviceBindingName
+        };
     }
 
     private static string GetHostNameFromConnectionString(string? connectionString)
@@ -98,7 +107,8 @@ public static class RabbitMQServiceCollectionExtensions
             connectionFactoryShim.Uri = new Uri(options.ConnectionString);
         }
 
-        ConnectionInterfaceShim connectionInterfaceShim = connectionFactoryShim.CreateConnection();
+        ConnectionFactoryInterfaceShim connectionFactoryInterfaceShim = connectionFactoryShim.AsInterface();
+        ConnectionInterfaceShim connectionInterfaceShim = connectionFactoryInterfaceShim.CreateConnection();
         return connectionInterfaceShim.Instance;
     }
 }

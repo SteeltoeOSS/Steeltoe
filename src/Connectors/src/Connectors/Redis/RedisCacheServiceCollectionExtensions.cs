@@ -233,8 +233,10 @@ public static class RedisCacheServiceCollectionExtensions
 
         if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
         {
+            string connectionString = factory.GetConnectionString();
+
             services.Add(new ServiceDescriptor(typeof(IHealthContributor),
-                ctx => new RedisHealthContributor(factory, connectionType, ctx.GetService<ILogger<RedisHealthContributor>>()), ServiceLifetime.Singleton));
+                ctx => new RedisHealthContributor(connectionString, ctx.GetService<ILogger<RedisHealthContributor>>()), ServiceLifetime.Singleton));
         }
     }
 
@@ -253,8 +255,10 @@ public static class RedisCacheServiceCollectionExtensions
 
         if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
         {
+            string connectionString = factory.GetConnectionString();
+
             services.Add(new ServiceDescriptor(typeof(IHealthContributor),
-                ctx => new RedisHealthContributor(factory, redisImplementation, ctx.GetService<ILogger<RedisHealthContributor>>()), ServiceLifetime.Singleton));
+                ctx => new RedisHealthContributor(connectionString, ctx.GetService<ILogger<RedisHealthContributor>>()), ServiceLifetime.Singleton));
         }
     }
 }

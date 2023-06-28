@@ -225,11 +225,16 @@ public sealed class MySqlConnectorTests
         await using WebApplication app = builder.Build();
 
         IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        healthContributors.Should().AllBeOfType<RelationalDbHealthContributor>();
+        RelationalDatabaseHealthContributor[] contributors = healthContributors.Should().AllBeOfType<RelationalDatabaseHealthContributor>().Subject.ToArray();
+        contributors.Should().HaveCount(2);
 
-        healthContributors.Should().HaveCount(2);
-        healthContributors[0].Id.Should().Be("MySQL-myMySqlServiceOne");
-        healthContributors[1].Id.Should().Be("MySQL-myMySqlServiceTwo");
+        contributors[0].Id.Should().Be("MySQL");
+        contributors[0].ServiceName.Should().Be("myMySqlServiceOne");
+        contributors[0].Host.Should().Be("localhost");
+
+        contributors[1].Id.Should().Be("MySQL");
+        contributors[1].ServiceName.Should().Be("myMySqlServiceTwo");
+        contributors[1].Host.Should().Be("localhost");
     }
 
     [Fact]

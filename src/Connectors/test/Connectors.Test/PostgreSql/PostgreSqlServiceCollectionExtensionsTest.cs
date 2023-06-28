@@ -57,6 +57,8 @@ public class PostgreSqlServiceCollectionExtensionsTest
     public void AddPostgreSqlHealthContributor_NoVCAPs_AddsIHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         services.AddPostgreSqlHealthContributor(configurationRoot);
@@ -79,12 +81,14 @@ public class PostgreSqlServiceCollectionExtensionsTest
     public void AddPostgreSqlHealthContributor_AddsRelationalHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
 
         services.AddPostgreSqlHealthContributor(configurationRoot);
-        var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
+        var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDatabaseHealthContributor;
 
         Assert.NotNull(healthContributor);
     }

@@ -97,8 +97,13 @@ public static class RabbitMQProviderServiceCollectionExtensions
 
         if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
         {
-            services.Add(new ServiceDescriptor(typeof(IHealthContributor),
-                ctx => new RabbitMQHealthContributor(factory, ctx.GetService<ILogger<RabbitMQHealthContributor>>()), ServiceLifetime.Singleton));
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx =>
+            {
+                string connectionString = factory.CreateConnectionString();
+                object connection = factory.CreateConnection(connectionString);
+
+                return new RabbitMQHealthContributor(connection, " ", ctx.GetService<ILogger<RabbitMQHealthContributor>>());
+            }, ServiceLifetime.Singleton));
         }
     }
 }

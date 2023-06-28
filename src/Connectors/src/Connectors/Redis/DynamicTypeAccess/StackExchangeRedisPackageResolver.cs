@@ -17,6 +17,7 @@ internal sealed class StackExchangeRedisPackageResolver : PackageResolver
 
     public TypeAccessor ConnectionMultiplexerInterface => ResolveType("StackExchange.Redis.IConnectionMultiplexer");
     public TypeAccessor ConnectionMultiplexerClass => ResolveType("StackExchange.Redis.ConnectionMultiplexer");
+    public TypeAccessor DatabaseInterface => ResolveType("StackExchange.Redis.IDatabase");
 
     private StackExchangeRedisPackageResolver(string assemblyName, string packageName)
         : base(assemblyName, packageName)

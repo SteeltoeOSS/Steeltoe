@@ -238,7 +238,7 @@ public sealed class CosmosDbConnectorTests
             ["Steeltoe:Client:CosmosDb:myCosmosDbServiceOne:ConnectionString"] =
                 "AccountEndpoint=https://host-1:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
             ["Steeltoe:Client:CosmosDb:myCosmosDbServiceTwo:ConnectionString"] =
-                "AccountEndpoint=https://host-1:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
+                "AccountEndpoint=https://host-2:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
         });
 
         builder.AddCosmosDb();
@@ -246,11 +246,16 @@ public sealed class CosmosDbConnectorTests
         await using WebApplication app = builder.Build();
 
         IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        healthContributors.Should().AllBeOfType<CosmosDbHealthContributor>();
+        CosmosDbHealthContributor[] cosmosDbHealthContributors = healthContributors.Should().AllBeOfType<CosmosDbHealthContributor>().Subject.ToArray();
+        cosmosDbHealthContributors.Should().HaveCount(2);
 
-        healthContributors.Should().HaveCount(2);
-        healthContributors[0].Id.Should().Be("CosmosDB-myCosmosDbServiceOne");
-        healthContributors[1].Id.Should().Be("CosmosDB-myCosmosDbServiceTwo");
+        cosmosDbHealthContributors[0].Id.Should().Be("CosmosDB");
+        cosmosDbHealthContributors[0].ServiceName.Should().Be("myCosmosDbServiceOne");
+        cosmosDbHealthContributors[0].Host.Should().Be("host-1");
+
+        cosmosDbHealthContributors[1].Id.Should().Be("CosmosDB");
+        cosmosDbHealthContributors[1].ServiceName.Should().Be("myCosmosDbServiceTwo");
+        cosmosDbHealthContributors[1].Host.Should().Be("host-2");
     }
 
     [Fact]
