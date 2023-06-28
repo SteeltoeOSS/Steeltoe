@@ -33,7 +33,7 @@ internal sealed class HeapDumper : IHeapDumper
         _basePathOverride = basePathOverride;
     }
 
-    public string DumpHeap()
+    public string DumpHeapToFile()
     {
         string fileName = CreateFileName();
 
@@ -44,7 +44,7 @@ internal sealed class HeapDumper : IHeapDumper
 
         try
         {
-            if (Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+            if (System.Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogInformation("Attempting to create a gcdump");
 
@@ -75,7 +75,7 @@ internal sealed class HeapDumper : IHeapDumper
 
     internal string CreateFileName()
     {
-        if (Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+        if (System.Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
         {
             return $"gcdump-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}-live.gcdump";
         }

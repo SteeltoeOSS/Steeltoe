@@ -5,7 +5,7 @@
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
-namespace Steeltoe.Management.Endpoint.Env;
+namespace Steeltoe.Management.Endpoint.Environment;
 
 public sealed class GenericHostingEnvironment : IHostEnvironment
 {

@@ -34,7 +34,7 @@ public class EndpointMiddlewareTest : BaseTest
 
     public EndpointMiddlewareTest()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
+        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
     }
 
     [Fact]

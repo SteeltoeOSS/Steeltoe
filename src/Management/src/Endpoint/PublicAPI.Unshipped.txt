@@ -330,11 +330,6 @@ Steeltoe.Management.Endpoint.MediaTypeVersion.V2 = 1 -> Steeltoe.Management.Endp
 Steeltoe.Management.Endpoint.MediaTypeVersion.V3 = 2 -> Steeltoe.Management.Endpoint.MediaTypeVersion
 Steeltoe.Management.Endpoint.Metrics.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Metrics.IMetricsEndpointHandler
-Steeltoe.Management.Endpoint.Metrics.IMetricsObserverOptions
-Steeltoe.Management.Endpoint.Metrics.IMetricsObserverOptions.EgressIgnorePattern.get -> string
-Steeltoe.Management.Endpoint.Metrics.IMetricsObserverOptions.ExcludedMetrics.get -> System.Collections.Generic.IList<string>
-Steeltoe.Management.Endpoint.Metrics.IMetricsObserverOptions.IncludedMetrics.get -> System.Collections.Generic.IList<string>
-Steeltoe.Management.Endpoint.Metrics.IMetricsObserverOptions.IngressIgnorePattern.get -> string
 Steeltoe.Management.Endpoint.Metrics.IMetricsResponse
 Steeltoe.Management.Endpoint.Metrics.MetricsEndpointOptions
 Steeltoe.Management.Endpoint.Metrics.MetricsEndpointOptions.CacheDurationMilliseconds.get -> int

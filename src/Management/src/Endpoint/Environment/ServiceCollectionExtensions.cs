@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Middleware;
 
-namespace Steeltoe.Management.Endpoint.Env;
+namespace Steeltoe.Management.Endpoint.Environment;
 
 /// <summary>
 /// Add services used by the Env actuator.

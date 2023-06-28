@@ -104,7 +104,7 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
             meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");
             meter.CreateObservableGauge("clr.gc.collections", GetCollectionCount, "Garbage collection count", "count");
             meter.CreateObservableGauge("clr.process.uptime", GetUpTime, "Process uptime in seconds", "count");
-            meter.CreateObservableGauge("clr.cpu.count", () => Environment.ProcessorCount, "Total processor count", "count");
+            meter.CreateObservableGauge("clr.cpu.count", () => System.Environment.ProcessorCount, "Total processor count", "count");
         }
 
         if (_options.CurrentValue.ThreadPoolEvents)

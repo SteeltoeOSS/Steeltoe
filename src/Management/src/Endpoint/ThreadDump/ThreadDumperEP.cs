@@ -97,7 +97,7 @@ internal sealed class ThreadDumperEp : IThreadDumper
             {
                 using var symbolReader = new SymbolReader(TextWriter.Null)
                 {
-                    SymbolPath = Environment.CurrentDirectory
+                    SymbolPath = System.Environment.CurrentDirectory
                 };
 
                 using var eventLog = new TraceLog(traceFileName);

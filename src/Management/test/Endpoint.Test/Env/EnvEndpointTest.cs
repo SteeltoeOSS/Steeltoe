@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;

@@ -60,8 +60,8 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task RefreshActuator_ReturnsExpectedData()
     {
-        string ancEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
+        string ancEnv = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        System.Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
 
         var appSettings = new Dictionary<string, string>(AppSettings);
 
@@ -86,7 +86,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Equal(expected, json);
         }
 
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", ancEnv);
+        System.Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", ancEnv);
     }
 
     [Fact]

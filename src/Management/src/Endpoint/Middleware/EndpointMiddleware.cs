@@ -57,7 +57,6 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
 
         if (ShouldInvoke(context))
         {
-            context.HandleContentNegotiation(_logger);
             TResult result = await InvokeEndpointHandlerAsync(context, context.RequestAborted);
             await WriteResponseAsync(result, context, context.RequestAborted);
         }
@@ -73,6 +72,8 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
     protected virtual async Task WriteResponseAsync(TResult result, HttpContext context, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(context);
+        
+        context.HandleContentNegotiation(_logger);
 
         if (Equals(result, null))
         {

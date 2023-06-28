@@ -4,7 +4,7 @@
 
 using System.Text.RegularExpressions;
 
-namespace Steeltoe.Management.Endpoint.Env;
+namespace Steeltoe.Management.Endpoint.Environment;
 
 internal sealed class Sanitizer
 {

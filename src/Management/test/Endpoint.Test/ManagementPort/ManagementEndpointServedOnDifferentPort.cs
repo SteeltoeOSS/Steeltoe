@@ -76,8 +76,8 @@ public class ManagementEndpointServedOnDifferentPort
     [Fact]
     public void AddAllActuators_WebApplication_MakeSure_SSLEnabled()
     {
-        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
-        Environment.SetEnvironmentVariable("PORT", null);
+        System.Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
+        System.Environment.SetEnvironmentVariable("PORT", null);
 
         ImmutableDictionary<string, string> config = new Dictionary<string, string>
         {
@@ -135,8 +135,8 @@ public class ManagementEndpointServedOnDifferentPort
     [Fact]
     public async Task AddAllActuators_GenericHost_MakeSure_SSLEnabled()
     {
-        Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
-        Environment.SetEnvironmentVariable("PORT", null);
+        System.Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
+        System.Environment.SetEnvironmentVariable("PORT", null);
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(webhostBuilder =>
         {

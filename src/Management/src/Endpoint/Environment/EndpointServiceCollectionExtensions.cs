@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 
-namespace Steeltoe.Management.Endpoint.Env;
+namespace Steeltoe.Management.Endpoint.Environment;
 
 public static class EndpointServiceCollectionExtensions
 {

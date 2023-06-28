@@ -35,7 +35,7 @@ public class CloudfoundryManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly_OnCF()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
+        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
 
         var appsettings = new Dictionary<string, string>
         {
@@ -47,6 +47,6 @@ public class CloudfoundryManagementOptionsTest : BaseTest
 
         Assert.Equal("/cloudfoundryapplication", opts.Path);
         Assert.False(opts.Enabled);
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
     }
 }

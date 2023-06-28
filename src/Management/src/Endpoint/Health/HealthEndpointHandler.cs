@@ -54,8 +54,8 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
     private HealthEndpointResponse BuildHealth(HealthEndpointRequest healthRequest)
     {
         string groupName = healthRequest.GroupName;
-        ICollection<HealthCheckRegistration> healthCheckRegistrations;
-        IList<IHealthContributor> filteredContributors;
+        IEnumerable<HealthCheckRegistration> healthCheckRegistrations;
+        IEnumerable<IHealthContributor> filteredContributors;
         var options = Options as HealthEndpointOptions;
 
         if (!string.IsNullOrEmpty(groupName) && groupName != options.Id)
@@ -89,7 +89,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         return response;
     }
 
-    private ICollection<HealthCheckRegistration> GetFilteredHealthCheckServiceOptions(string requestedGroup,
+    private IEnumerable<HealthCheckRegistration> GetFilteredHealthCheckServiceOptions(string requestedGroup,
         IOptionsMonitor<HealthCheckServiceOptions> svcOptions)
     {
         var options = Options as HealthEndpointOptions;
@@ -127,7 +127,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
     /// <para />
     /// If group can't be parsed or is not configured, returns all health contributors.
     /// </returns>
-    private IList<IHealthContributor> GetFilteredContributorList(string requestedGroup, IList<IHealthContributor> contributors)
+    private IEnumerable<IHealthContributor> GetFilteredContributorList(string requestedGroup, IList<IHealthContributor> contributors)
     {
         var options = Options as HealthEndpointOptions;
 

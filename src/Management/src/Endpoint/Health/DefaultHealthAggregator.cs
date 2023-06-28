@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 internal class DefaultHealthAggregator : IHealthAggregator
 {
-    public HealthCheckResult Aggregate(IList<IHealthContributor> contributors)
+    public HealthCheckResult Aggregate(IEnumerable<IHealthContributor> contributors)
     {
         if (contributors == null)
         {

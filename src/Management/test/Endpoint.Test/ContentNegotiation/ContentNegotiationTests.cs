@@ -179,7 +179,7 @@ public class ContentNegotiationTests
         {
             if (epName == EndpointNames.Cloudfoundry)
             {
-                Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
+                System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
             }
 
             // arrange a server and client
@@ -216,7 +216,7 @@ public class ContentNegotiationTests
         }
         finally
         {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
         }
     }
 }

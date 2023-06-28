@@ -4,7 +4,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.Env;
+namespace Steeltoe.Management.Endpoint.Environment;
 
 public sealed class PropertySourceDescriptor
 {

@@ -8,8 +8,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Configuration;
+using Steeltoe.Management.Endpoint.Env;
 
-namespace Steeltoe.Management.Endpoint.Env;
+namespace Steeltoe.Management.Endpoint.Environment;
 
 internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 {
@@ -55,7 +56,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
         if (configuration is IConfigurationRoot root)
         {
-            List<IConfigurationProvider> providers = root.Providers.ToList();
+            var providers = root.Providers.ToList();
 
             if (providers.Any(p => p is IPlaceholderResolverProvider))
             {

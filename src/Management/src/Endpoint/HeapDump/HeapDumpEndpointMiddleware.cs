@@ -37,7 +37,7 @@ internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object, st
         }
 
         context.Response.ContentType = "application/octet-stream";
-        context.Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{Path.GetFileName(fileName)}\"");
+        context.Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{Path.GetFileName(fileName)}.gz\"");
         context.Response.StatusCode = StatusCodes.Status200OK;
 
         try

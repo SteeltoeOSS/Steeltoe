@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace Steeltoe.Management.Endpoint.Env;
+namespace Steeltoe.Management.Endpoint.Environment;
 
 internal sealed class ConfigureEnvironmentEndpointOptions : IConfigureOptions<EnvironmentEndpointOptions>
 {

@@ -15,7 +15,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
@@ -67,8 +67,8 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task EnvActuator_ReturnsExpectedData()
     {
         // Some developers set ASPNETCORE_ENVIRONMENT in their environment, which will break this test if we don't un-set it
-        string originalEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
+        string originalEnv = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        System.Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
@@ -91,7 +91,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Equal(expected, json);
         }
 
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", originalEnv);
+        System.Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", originalEnv);
     }
 
     [Fact]

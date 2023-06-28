@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 internal sealed class HealthRegistrationsAggregator : DefaultHealthAggregator, IHealthRegistrationsAggregator
 {
-    public HealthCheckResult Aggregate(IList<IHealthContributor> contributors, ICollection<HealthCheckRegistration> healthCheckRegistrations,
+    public HealthCheckResult Aggregate(IEnumerable<IHealthContributor> contributors, IEnumerable<HealthCheckRegistration> healthCheckRegistrations,
         IServiceProvider serviceProvider)
     {
         // get results from DefaultHealthAggregator first

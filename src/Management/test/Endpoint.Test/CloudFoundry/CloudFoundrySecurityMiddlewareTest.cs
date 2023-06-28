@@ -20,7 +20,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
 {
     public CloudFoundrySecurityMiddlewareTest()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
+        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
     }
 
     [Fact]
@@ -259,7 +259,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalseViaEnvVariables()
     {
-        Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", "False");
+        System.Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", "False");
 
         var appSettings = new Dictionary<string, string>
         {
@@ -325,8 +325,8 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
     {
         if (disposing)
         {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-            Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", null);
+            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            System.Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", null);
         }
 
         base.Dispose(disposing);

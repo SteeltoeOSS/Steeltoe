@@ -29,6 +29,8 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
         ArgumentGuard.NotNull(observerOptions);
         ArgumentGuard.NotNull(observers);
         ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(runtimeSources);
+        ArgumentGuard.NotNull(eventListeners);
 
         _logger = logger;
         var filteredObservers = new List<IDiagnosticObserver>();
@@ -42,7 +44,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
         }
 
         _observers = filteredObservers;
-        _runtimeSources = runtimeSources.ToList();
+        _runtimeSources = runtimeSources.ToList() ;
         _eventListeners = eventListeners.ToList();
     }
 
@@ -74,24 +76,24 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
         if (Interlocked.CompareExchange(ref _started, 1, 0) == 0)
         {
             _listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
-        }
-
-        if (_listenersSubscription != null)
-        {
-            _logger.LogTrace("Subscribed to Diagnostic Listener");
-        }
-
-        if (_runtimeSources != null)
-        {
-            foreach (IRuntimeDiagnosticSource source in _runtimeSources)
+        
+            if (_listenersSubscription != null)
             {
-                source.AddInstrumentation();
+                _logger.LogTrace("Subscribed to Diagnostic Listener");
             }
-        }
 
-        if (_eventListeners != null)
-        {
-            _logger.LogTrace("Subscribed to EventListeners: {eventListeners}", string.Join(",", _eventListeners.Select(e => e.GetType().Name)));
+            if (_runtimeSources != null)
+            {
+                foreach (IRuntimeDiagnosticSource source in _runtimeSources)
+                {
+                    source.AddInstrumentation();
+                }
+            }
+
+            if (_eventListeners != null)
+            {
+                _logger.LogTrace("Subscribed to EventListeners: {eventListeners}", string.Join(",", _eventListeners.Select(e => e.GetType().Name)));
+            }
         }
     }
 

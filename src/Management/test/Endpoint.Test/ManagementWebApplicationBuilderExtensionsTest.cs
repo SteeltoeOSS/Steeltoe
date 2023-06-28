@@ -15,7 +15,7 @@ using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Info;
@@ -351,7 +351,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
     {
         try
         {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
+            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
 
             WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
             hostBuilder.WebHost.UseTestServer();
@@ -365,7 +365,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         }
         finally
         {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
         }
     }
 
