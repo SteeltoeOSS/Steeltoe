@@ -9,6 +9,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
+using Steeltoe.Connectors.Redis.DynamicTypeAccess;
 using Steeltoe.Connectors.Services;
 
 namespace Steeltoe.Connectors.Redis;
@@ -19,13 +20,14 @@ public class RedisHealthContributor : IHealthContributor
     private readonly Type _implType;
     private readonly ILogger<RedisHealthContributor> _logger;
     private readonly string _hostName;
+    private readonly string _connectionString;
     private object _connector;
     private object _database;
     private object _flags;
     private MethodInfo _pingMethod;
     private MethodInfo _getMethod;
 
-    private bool IsMicrosoftImplementation => _implType.FullName.Contains("Microsoft", StringComparison.Ordinal);
+    private bool IsMicrosoftImplementation => _implType != null && _implType.FullName.Contains("Microsoft", StringComparison.Ordinal);
 
     public string Id { get; }
 
@@ -37,10 +39,9 @@ public class RedisHealthContributor : IHealthContributor
         Id = IsMicrosoftImplementation ? "Redis-Cache" : "Redis";
     }
 
-    internal RedisHealthContributor(object redisClient, string serviceName, string hostName, ILogger<RedisHealthContributor> logger)
+    internal RedisHealthContributor(string connectionString, string serviceName, string hostName, ILogger<RedisHealthContributor> logger)
     {
-        _connector = redisClient;
-        _implType = redisClient.GetType();
+        _connectionString = connectionString;
         Id = serviceName;
         _hostName = hostName;
         _logger = logger;
@@ -107,7 +108,7 @@ public class RedisHealthContributor : IHealthContributor
 
     private void DoStackExchangeHealth(HealthCheckResult health)
     {
-        var latency = (TimeSpan)ReflectionHelpers.Invoke(_pingMethod, _database, new[]
+        var latency = (TimeSpan)_pingMethod.Invoke(_database, new[]
         {
             _flags
         });
@@ -127,7 +128,9 @@ public class RedisHealthContributor : IHealthContributor
     {
         if (_connector == null)
         {
-            _connector = _factory.Create(null);
+            _connector = _factory == null
+                ? ConnectionMultiplexerShim.Connect(StackExchangeRedisPackageResolver.Default, _connectionString).Instance
+                : _factory.Create(null);
 
             if (_connector == null)
             {

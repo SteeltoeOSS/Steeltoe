@@ -74,16 +74,15 @@ public static class RedisServiceCollectionExtensions
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
         StackExchangeRedisPackageResolver packageResolver)
     {
-        ConnectorFactoryShim<RedisOptions> connectorFactoryShim =
-            ConnectorFactoryShim<RedisOptions>.FromServiceProvider(serviceProvider, packageResolver.ConnectionMultiplexerInterface.Type);
+        // Not using the Steeltoe ConnectorFactory here, because obtaining a connection throws when Redis is down at application startup.
 
-        ConnectorShim<RedisOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+        string? connectionString = optionsMonitor.Get(serviceBindingName).ConnectionString;
 
-        object redisClient = connectorShim.GetConnection();
-        string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);
+        string hostName = GetHostNameFromConnectionString(connectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<RedisHealthContributor>>();
 
-        return new RedisHealthContributor(redisClient, $"Redis-{serviceBindingName}", hostName, logger);
+        return new RedisHealthContributor(connectionString, $"Redis-{serviceBindingName}", hostName, logger);
     }
 
     private static string GetHostNameFromConnectionString(string? connectionString)

@@ -64,16 +64,16 @@ public static class RabbitMQServiceCollectionExtensions
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
         RabbitMQPackageResolver packageResolver)
     {
-        ConnectorFactoryShim<RabbitMQOptions> connectorFactoryShim =
-            ConnectorFactoryShim<RabbitMQOptions>.FromServiceProvider(serviceProvider, packageResolver.ConnectionInterface.Type);
+        // Not using the Steeltoe ConnectorFactory here, because obtaining a connection throws when RabbitMQ is down at application startup.
 
-        ConnectorShim<RabbitMQOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
+        string? connectionString = optionsMonitor.Get(serviceBindingName).ConnectionString;
 
-        object connection = connectorShim.GetConnection();
-        string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);
+        string hostName = GetHostNameFromConnectionString(connectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<RabbitMQHealthContributor>>();
 
-        return new RabbitMQHealthContributor(connection, $"RabbitMQ-{serviceBindingName}", hostName, logger);
+        var connectionFactoryShim = ConnectionFactoryShim.CreateInstance(packageResolver);
+        return new RabbitMQHealthContributor(connectionFactoryShim.Instance, $"RabbitMQ-{serviceBindingName}", hostName, logger);
     }
 
     private static string GetHostNameFromConnectionString(string? connectionString)

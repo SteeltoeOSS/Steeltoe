@@ -17,7 +17,7 @@ namespace Steeltoe.Connectors.RabbitMQ;
 public class RabbitMQHealthContributor : IHealthContributor
 {
     private readonly ILogger<RabbitMQHealthContributor> _logger;
-    private readonly object _connFactory;
+    private readonly object _connectionFactory;
     private readonly string _hostName;
     private object _connection;
 
@@ -26,16 +26,16 @@ public class RabbitMQHealthContributor : IHealthContributor
     public RabbitMQHealthContributor(RabbitMQProviderConnectorFactory factory, ILogger<RabbitMQHealthContributor> logger = null)
     {
         _logger = logger;
-        _connFactory = factory.Create(null);
+        _connectionFactory = factory.Create(null);
     }
 
-    internal RabbitMQHealthContributor(object connection, string serviceName, string hostName, ILogger<RabbitMQHealthContributor> logger)
+    internal RabbitMQHealthContributor(object connectionFactory, string serviceName, string hostName, ILogger<RabbitMQHealthContributor> logger)
     {
-        ArgumentGuard.NotNull(connection);
+        ArgumentGuard.NotNull(connectionFactory);
         ArgumentGuard.NotNull(serviceName);
         ArgumentGuard.NotNull(logger);
 
-        _connection = connection;
+        _connectionFactory = connectionFactory;
         Id = serviceName;
         _hostName = hostName;
         _logger = logger;
@@ -66,7 +66,7 @@ public class RabbitMQHealthContributor : IHealthContributor
 
         try
         {
-            _connection ??= ReflectionHelpers.Invoke(RabbitMQTypeLocator.CreateConnectionMethod, _connFactory, null);
+            _connection ??= ReflectionHelpers.Invoke(RabbitMQTypeLocator.CreateConnectionMethod, _connectionFactory, null);
 
             if (_connection == null)
             {
