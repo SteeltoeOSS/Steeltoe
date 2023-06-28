@@ -20,14 +20,7 @@ public class TraceEndpointTest : BaseTest
         _output = output;
     }
 
-    //[Fact]
-    //public void Constructor_ThrowsIfNullRepo()
-    //{
-    //    IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
-    //    Assert.Throws<ArgumentNullException>(() => new TraceEndpointHandler(opts, null, null));
-    //    Assert.Throws<ArgumentNullException>(() => new TraceEndpointHandler(opts, new TestTraceRepository(), null));
-    //}
-
+    
     [Fact]
     public async Task TraceEndpointHandler_CallsTraceRepo()
     {
@@ -36,7 +29,7 @@ public class TraceEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddSingleton<ITraceRepository>(repo);
+            services.AddSingleton<IHttpTraceRepository>(repo);
             services.AddTraceActuatorServices(MediaTypeVersion.V1);
         };
 
@@ -45,12 +38,5 @@ public class TraceEndpointTest : BaseTest
         Assert.NotNull(result);
         Assert.True(repo.GetTracesCalled);
     }
-
-    private sealed class TestTraceRepository : ITraceRepository
-    {
-        public IList<TraceResult> GetTraces()
-        {
-            throw new NotImplementedException();
-        }
-    }
+    
 }
