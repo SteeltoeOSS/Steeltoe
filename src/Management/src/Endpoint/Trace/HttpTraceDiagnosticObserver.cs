@@ -15,19 +15,16 @@ using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-internal sealed class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepository
+internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
 {
-    private const string DiagnosticName = "Microsoft.AspNetCore";
-    private const string DefaultObserverName = "HttpTraceDiagnosticObserver";
-    private const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
-
     private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
     private readonly ILogger<HttpTraceDiagnosticObserver> _logger;
     private readonly ConcurrentQueue<HttpTrace> _queue = new();
 
+
     public HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILoggerFactory loggerFactory)
-        : base(DefaultObserverName, DiagnosticName, loggerFactory)
+        : base(options, loggerFactory)
     {
         ArgumentGuard.NotNull(options);
 
@@ -35,45 +32,29 @@ internal sealed class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTra
         _logger = loggerFactory.CreateLogger<HttpTraceDiagnosticObserver>();
     }
 
-    public HttpTraceResult GetTraces()
+    public override HttpTraceResult GetTraces()
     {
-        return new HttpTraceResult(_queue.ToList());
+        return new HttpTracesV2(_queue.ToList());
     }
+    //public override void ProcessEvent(string eventName, object value)
+    //{
+    //    base.ProcessEvent(eventName, value);
+    //}
 
-    public override void ProcessEvent(string eventName, object value)
+    
+
+    protected override void RecordHttpTrace(Activity current, HttpContext context)
     {
-        if (eventName != StopEvent)
+        HttpTrace trace = MakeTraceV2(context, current.Duration);
+        _queue.Enqueue(trace);
+
+        if (_queue.Count > _options.CurrentValue.Capacity && !_queue.TryDequeue(out _))
         {
-            return;
-        }
-
-        Activity current = Activity.Current;
-
-        if (current == null)
-        {
-            return;
-        }
-
-        if (value == null)
-        {
-            return;
-        }
-
-        HttpContext context = GetHttpContextPropertyValue(value);
-
-        if (context != null)
-        {
-            HttpTrace trace = MakeTrace(context, current.Duration);
-            _queue.Enqueue(trace);
-
-            if (_queue.Count > _options.CurrentValue.Capacity && !_queue.TryDequeue(out _))
-            {
-                _logger.LogDebug("Stop - Dequeue failed");
-            }
+            _logger.LogDebug("Stop - Dequeue failed");
         }
     }
 
-    private HttpTrace MakeTrace(HttpContext context, TimeSpan duration)
+    private HttpTrace MakeTraceV2(HttpContext context, TimeSpan duration)
     {
         HttpRequest req = context.Request;
         HttpResponse res = context.Response;
@@ -85,40 +66,9 @@ internal sealed class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTra
         return new HttpTrace(request, response, GetJavaTime(DateTime.Now.Ticks), principal, session, duration.Milliseconds);
     }
 
-    private long GetJavaTime(long ticks)
-    {
-        long javaTicks = ticks - BaseTime.Ticks;
-        return javaTicks / 10000;
-    }
 
-    private string GetSessionId(HttpContext context)
-    {
-        var sessionFeature = context.Features.Get<ISessionFeature>();
-        return sessionFeature == null ? null : context.Session.Id;
-    }
 
-    internal string GetTimeTaken(TimeSpan duration)
-    {
-        long timeInMilliseconds = (long)duration.TotalMilliseconds;
-        return timeInMilliseconds.ToString(CultureInfo.InvariantCulture);
-    }
-
-    private string GetRequestUri(HttpRequest request)
-    {
-        return $"{request.Scheme}://{request.Host.Value}{request.Path.Value}";
-    }
-
-    private string GetUserPrincipal(HttpContext context)
-    {
-        return context?.User?.Identity?.Name;
-    }
-
-    private string GetRemoteAddress(HttpContext context)
-    {
-        return context?.Connection?.RemoteIpAddress?.ToString();
-    }
-
-    private Dictionary<string, string[]> GetHeaders(IHeaderDictionary headers)
+    internal new Dictionary<string, string[]> GetHeaders(IHeaderDictionary headers)
     {
         var result = new Dictionary<string, string[]>();
 
@@ -133,8 +83,4 @@ internal sealed class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTra
         return result;
     }
 
-    private HttpContext GetHttpContextPropertyValue(object obj)
-    {
-        return DiagnosticHelpers.GetProperty<HttpContext>(obj, "HttpContext");
-    }
 }

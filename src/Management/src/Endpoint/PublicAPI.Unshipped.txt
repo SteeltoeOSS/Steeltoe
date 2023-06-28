@@ -507,9 +507,11 @@ Steeltoe.Management.Endpoint.Trace.HttpTrace.Session.get -> Steeltoe.Management.
 Steeltoe.Management.Endpoint.Trace.HttpTrace.Timestamp.get -> long
 Steeltoe.Management.Endpoint.Trace.HttpTrace.TimeTaken.get -> long
 Steeltoe.Management.Endpoint.Trace.HttpTraceResult
-Steeltoe.Management.Endpoint.Trace.HttpTraceResult.HttpTraceResult(System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Trace.HttpTrace> traces) -> void
-Steeltoe.Management.Endpoint.Trace.HttpTraceResult.HttpTraceResult(System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Trace.TraceResult> list) -> void
-Steeltoe.Management.Endpoint.Trace.HttpTraceResult.Traces.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Trace.HttpTrace>
+Steeltoe.Management.Endpoint.Trace.HttpTraceResult.HttpTraceResult() -> void
+Steeltoe.Management.Endpoint.Trace.HttpTraceResult.HttpTracesV1.get -> Steeltoe.Management.Endpoint.Trace.HttpTracesV1
+Steeltoe.Management.Endpoint.Trace.HttpTraceResult.HttpTracesV1.set -> void
+Steeltoe.Management.Endpoint.Trace.HttpTraceResult.HttpTracesV2.get -> Steeltoe.Management.Endpoint.Trace.HttpTracesV2
+Steeltoe.Management.Endpoint.Trace.HttpTraceResult.HttpTracesV2.set -> void
 Steeltoe.Management.Endpoint.Trace.IHttpTraceEndpointHandler
 Steeltoe.Management.Endpoint.Trace.IHttpTraceRepository
 Steeltoe.Management.Endpoint.Trace.IHttpTraceRepository.GetTraces() -> Steeltoe.Management.Endpoint.Trace.HttpTraceResult

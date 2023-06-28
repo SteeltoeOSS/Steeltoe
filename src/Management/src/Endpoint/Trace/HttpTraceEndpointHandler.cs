@@ -13,7 +13,7 @@ internal sealed class HttpTraceEndpointHandler : IHttpTraceEndpointHandler
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
     private readonly IHttpTraceRepository _traceRepo;
     private readonly ILogger<HttpTraceEndpointHandler> _logger;
-
+    private MediaTypeVersion Version { get; set; } = MediaTypeVersion.V2;
     public HttpMiddlewareOptions Options => _options.CurrentValue;
 
     public HttpTraceEndpointHandler(IOptionsMonitor<TraceEndpointOptions> options, IHttpTraceRepository traceRepository, ILoggerFactory loggerFactory)
@@ -30,6 +30,6 @@ internal sealed class HttpTraceEndpointHandler : IHttpTraceEndpointHandler
     public Task<HttpTraceResult> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Fetching Traces");
-        return Task.Run(_traceRepo.GetTraces, cancellationToken);
+        return Task.Run(() => _traceRepo.GetTraces(), cancellationToken);
     }
 }

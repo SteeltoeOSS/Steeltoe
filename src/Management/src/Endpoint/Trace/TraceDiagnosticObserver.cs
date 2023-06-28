@@ -15,7 +15,7 @@ using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-internal sealed class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
+internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepository
 {
     private const string DiagnosticName = "Microsoft.AspNetCore";
     private const string DefaultObserverName = "TraceDiagnosticObserver";
@@ -35,10 +35,9 @@ internal sealed class TraceDiagnosticObserver : DiagnosticObserver, ITraceReposi
         _logger = loggerFactory.CreateLogger<TraceDiagnosticObserver>();
     }
 
-    public IList<TraceResult> GetTraces()
+    public virtual HttpTraceResult GetTraces()
     {
-        TraceResult[] traces = Queue.ToArray();
-        return new List<TraceResult>(traces);
+        return new HttpTracesV1(Queue.ToList());
     }
 
     public override void ProcessEvent(string eventName, object value)
@@ -64,13 +63,18 @@ internal sealed class TraceDiagnosticObserver : DiagnosticObserver, ITraceReposi
 
         if (context != null)
         {
-            TraceResult trace = MakeTrace(context, current.Duration);
-            Queue.Enqueue(trace);
+            RecordHttpTrace(current, context);
+        }
+    }
 
-            if (Queue.Count > _options.CurrentValue.Capacity && !Queue.TryDequeue(out _))
-            {
-                _logger.LogDebug("Stop - Dequeue failed");
-            }
+    protected virtual void RecordHttpTrace(Activity current, HttpContext context)
+    {
+        TraceResult trace = MakeTrace(context, current.Duration);
+        Queue.Enqueue(trace);
+
+        if (Queue.Count > _options.CurrentValue.Capacity && !Queue.TryDequeue(out _))
+        {
+            _logger.LogDebug("Stop - Dequeue failed");
         }
     }
 
@@ -257,4 +261,5 @@ internal sealed class TraceDiagnosticObserver : DiagnosticObserver, ITraceReposi
     {
         return DiagnosticHelpers.GetProperty<HttpContext>(obj, "HttpContext");
     }
+
 }
