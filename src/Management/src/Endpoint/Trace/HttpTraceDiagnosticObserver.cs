@@ -17,7 +17,6 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
 {
-    private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
     private readonly ILogger<HttpTraceDiagnosticObserver> _logger;
     private readonly ConcurrentQueue<HttpTrace> _queue = new();
@@ -36,11 +35,6 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
     {
         return new HttpTracesV2(_queue.ToList());
     }
-    //public override void ProcessEvent(string eventName, object value)
-    //{
-    //    base.ProcessEvent(eventName, value);
-    //}
-
     
 
     protected override void RecordHttpTrace(Activity current, HttpContext context)

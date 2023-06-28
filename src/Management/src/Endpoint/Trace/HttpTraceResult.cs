@@ -6,8 +6,6 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-[JsonDerivedType(typeof(HttpTracesV1), typeDiscriminator: "V1")]
-[JsonDerivedType(typeof(HttpTracesV2), typeDiscriminator: "V2")]
 public class HttpTraceResult
 {
     internal MediaTypeVersion CurrentVersion { get; set; }

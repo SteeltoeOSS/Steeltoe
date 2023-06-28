@@ -14,6 +14,7 @@ using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
@@ -110,7 +111,11 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         {
             serializerOptions.Converters.Add(new MetricsResponseConverter());
         }
-       
+
+        if (serializerOptions.Converters?.Any(c => c is HttpTraceResultConverter) != true)
+        {
+            serializerOptions.Converters.Add(new HttpTraceResultConverter());
+        }
         return serializerOptions;
     }
 }
