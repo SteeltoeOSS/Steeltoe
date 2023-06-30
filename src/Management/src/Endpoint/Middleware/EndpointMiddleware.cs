@@ -108,11 +108,6 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
             serializerOptions.Converters.Add(new HealthConverter());
         }
 
-        if (serializerOptions.Converters?.Any(c => c is MetricsResponseConverter) != true)
-        {
-            serializerOptions.Converters.Add(new MetricsResponseConverter());
-        }
-
         if (serializerOptions.Converters?.Any(c => c is HttpTraceResultConverter) != true)
         {
             serializerOptions.Converters.Add(new HttpTraceResultConverter());

@@ -30,12 +30,12 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
         _logger = loggerFactory.CreateLogger<MetricsEndpointHandler>();
     }
 
-    public Task<IMetricsResponse> InvokeAsync(MetricsRequest request, CancellationToken cancellationToken)
+    public Task<MetricsResponse> InvokeAsync(MetricsRequest request, CancellationToken cancellationToken)
     {
         return Task.Run(() => DoInvoke(request), cancellationToken);
     }
 
-    private IMetricsResponse DoInvoke(MetricsRequest request)
+    private MetricsResponse DoInvoke(MetricsRequest request)
     {
         (MetricsCollection<List<MetricSample>> measurements, MetricsCollection<List<MetricTag>> availTags) = GetMetrics();
 
@@ -43,7 +43,7 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
 
         if (request == null)
         {
-            return new MetricsListNamesResponse(metricNames);
+            return new MetricsResponse(metricNames);
         }
 
         if (metricNames.Contains(request.MetricName))

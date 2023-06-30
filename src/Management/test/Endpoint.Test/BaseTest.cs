@@ -48,7 +48,6 @@ public abstract class BaseTest : IDisposable
         };
 
         options.Converters.Add(new HealthConverter());
-        options.Converters.Add(new MetricsResponseConverter());
         return options;
     }
 

@@ -57,15 +57,13 @@ public class MetricsEndpointTest : BaseTest
                 Counter<double> memory = SteeltoeMetrics.Meter.CreateCounter<double>("gc.memory.used");
                 memory.Add(25);
 
-                IMetricsResponse result = await ep.InvokeAsync(null, CancellationToken.None);
+                MetricsResponse result = await ep.InvokeAsync(null, CancellationToken.None);
                 Assert.NotNull(result);
-                Assert.IsType<MetricsListNamesResponse>(result);
-                var resp = result as MetricsListNamesResponse;
-                Assert.NotEmpty(resp.Names);
-                Assert.Contains("http.server.requests", resp.Names);
-                Assert.Contains("gc.memory.used", resp.Names);
+                Assert.NotEmpty(result.Names);
+                Assert.Contains("http.server.requests", result.Names);
+                Assert.Contains("gc.memory.used", result.Names);
 
-                Assert.Equal(2, resp.Names.Count);
+                Assert.Equal(2, result.Names.Count);
             }
             finally
             {
@@ -87,11 +85,11 @@ public class MetricsEndpointTest : BaseTest
             try
             {
                 var ep = tc.GetService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
-                IMetricsResponse result = await ep.InvokeAsync(null, CancellationToken.None);
+                MetricsResponse result = await ep.InvokeAsync(null, CancellationToken.None);
                 Assert.NotNull(result);
 
-                Assert.IsType<MetricsListNamesResponse>(result);
-                var resp = result as MetricsListNamesResponse;
+                Assert.IsType<MetricsResponse>(result);
+                var resp = result as MetricsResponse;
                 Assert.Empty(resp.Names);
             }
             finally

@@ -3,16 +3,19 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequest, IMetricsResponse>
+internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequest, MetricsResponse>
 {
     private readonly ILogger<MetricsEndpointMiddleware> _logger;
 
@@ -111,14 +114,15 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
         return null;
     }
 
-    protected override async Task<IMetricsResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<MetricsResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         MetricsRequest metricsRequest = GetMetricsRequest(context);
         return await EndpointHandler.InvokeAsync(metricsRequest, cancellationToken);
     }
 
-    protected override async Task WriteResponseAsync(IMetricsResponse result, HttpContext context, CancellationToken cancellationToken)
+    protected override async Task WriteResponseAsync(MetricsResponse result, HttpContext context, CancellationToken cancellationToken)
     {
+      
         MetricsRequest metricsRequest = GetMetricsRequest(context);
 
         if (metricsRequest != null && result is null)
