@@ -41,12 +41,12 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
     public virtual bool ShouldInvoke(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
-        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptionsMonitor.GetFromContextPath(context.Request.Path, out string managementContextName);
+        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptionsMonitor.GetFromContextPath(context.Request.Path, out EndpointContext endpointContext);
         HttpMiddlewareOptions endpointOptions = EndpointHandler.Options;
         bool enabled = endpointOptions.IsEnabled(mgmtOptions);
         bool exposed = endpointOptions.IsExposed(mgmtOptions);
 
-        bool isCFContext = managementContextName == CFContext.Name;
+        bool isCFContext = endpointContext == EndpointContext.CloudFoundry;
         _logger.LogDebug($"endpointHandler: {endpointOptions.Id}, contextPath: {context.Request.Path}, enabled: {enabled}, exposed: {exposed}");
         return enabled && (exposed || isCFContext);
     }

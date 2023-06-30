@@ -28,14 +28,7 @@ public static class ActuatorServiceCollectionExtensions
 {
     public static void AddCommonActuatorServices(this IServiceCollection services)
     {
-        if (Platform.IsCloudFoundry)
-        {
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IContextName, CFContext>());
-        }
-
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IContextName, ActuatorContext>());
         services.TryAddScoped<ActuatorEndpointMapper>();
-
         services.ConfigureOptions<ConfigureManagementEndpointOptions>();
     }
 

@@ -10,15 +10,14 @@ namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
 internal sealed class ConfigureTestManagementOptions : ConfigureManagementEndpointOptions
 {
-    public ConfigureTestManagementOptions(IConfiguration configuration, IEnumerable<IContextName> contextNames,
-        IEnumerable<HttpMiddlewareOptions> endpointsCollection)
-        : base(configuration, contextNames, endpointsCollection)
+    public ConfigureTestManagementOptions(IConfiguration configuration, IEnumerable<HttpMiddlewareOptions> endpointsCollection)
+        : base(configuration, endpointsCollection)
     {
     }
 
     public override void Configure(string name, ManagementEndpointOptions options)
     {
         base.Configure(name, options);
-        options.ContextNames.Add(CFContext.Name);
+        options.EndpointContexts |= EndpointContext.CloudFoundry;
     }
 }

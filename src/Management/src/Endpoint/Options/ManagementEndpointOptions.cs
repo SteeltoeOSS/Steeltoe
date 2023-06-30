@@ -21,10 +21,7 @@ public sealed class ManagementEndpointOptions
 
     public IList<HttpMiddlewareOptions> EndpointOptions { get; set; }
 
-    public HashSet<string> ContextNames { get; set; } = new()
-    {
-        ActuatorContext.Name
-    };
+    public EndpointContext EndpointContexts { get; set; } = EndpointContext.Actuator;
 
     public bool UseStatusCodeFromResponse { get; set; } = true;
 

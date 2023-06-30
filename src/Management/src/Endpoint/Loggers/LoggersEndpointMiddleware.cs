@@ -14,14 +14,14 @@ namespace Steeltoe.Management.Endpoint.Loggers;
 
 internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersRequest, Dictionary<string, object>>
 {
-    private readonly IEnumerable<IContextName> _contextNames;
+   // private readonly IEnumerable<IContextName> _contextNames;
     private readonly ILogger<LoggersEndpointMiddleware> _logger;
 
-    public LoggersEndpointMiddleware(ILoggersEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IEnumerable<IContextName> contextNames, ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptions, loggerFactory)
+    public LoggersEndpointMiddleware(ILoggersEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptionsMonitor,
+         ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
-        _contextNames = contextNames;
+       // _contextNames = contextNames;
         _logger = loggerFactory.CreateLogger<LoggersEndpointMiddleware>();
     }
 
@@ -47,39 +47,37 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
             // POST - change a logger level
             _logger.LogDebug("Incoming path: {path}", request.Path.Value);
 
-            foreach (IContextName contextName in _contextNames)
+            ManagementEndpointOptions mgmtOption = ManagementEndpointOptionsMonitor.GetFromContextPath(request.Path, out var _);
+
+            string path = EndpointOptions.Path;
+
+            if (mgmtOption.Path != null)
             {
-                ManagementEndpointOptions mgmtOption = ManagementEndpointOptionsMonitor.Get(contextName.Name);
-                string path = EndpointOptions.Path;
+                path = mgmtOption.Path + "/" + path;
+                path = path.Replace("//", "/", StringComparison.Ordinal);
+            }
 
-                if (mgmtOption.Path != null)
+            var epPath = new PathString(path);
+
+            if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
+            {
+                string loggerName = remaining.Value.TrimStart('/');
+
+                Dictionary<string, string> change = await DeserializeRequestAsync(request.Body);
+
+                change.TryGetValue("configuredLevel", out string level);
+
+                _logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
+
+                if (!string.IsNullOrEmpty(loggerName))
                 {
-                    path = mgmtOption.Path + "/" + path;
-                    path = path.Replace("//", "/", StringComparison.Ordinal);
-                }
-
-                var epPath = new PathString(path);
-
-                if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
-                {
-                    string loggerName = remaining.Value.TrimStart('/');
-
-                    Dictionary<string, string> change = await DeserializeRequestAsync(request.Body);
-
-                    change.TryGetValue("configuredLevel", out string level);
-
-                    _logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
-
-                    if (!string.IsNullOrEmpty(loggerName))
+                    if (!string.IsNullOrEmpty(level) && LoggerLevels.MapLogLevel(level) == null)
                     {
-                        if (!string.IsNullOrEmpty(level) && LoggerLevels.MapLogLevel(level) == null)
-                        {
-                            _logger.LogDebug("Invalid LogLevel specified: {level}", level);
-                            return new ErrorLoggersRequest();
-                        }
-
-                        return new LoggersChangeRequest(loggerName, level);
+                        _logger.LogDebug("Invalid LogLevel specified: {level}", level);
+                        return new ErrorLoggersRequest();
                     }
+
+                    return new LoggersChangeRequest(loggerName, level);
                 }
             }
         }

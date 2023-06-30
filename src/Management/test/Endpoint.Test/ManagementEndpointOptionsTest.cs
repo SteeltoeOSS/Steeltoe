@@ -15,7 +15,7 @@ public class ManagementEndpointOptionsTest : BaseTest
     [Fact]
     public void InitializedWithDefaults()
     {
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(ActuatorContext.Name);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(EndpointContext.Actuator);
         Assert.False(opts.Enabled.HasValue);
         Assert.Equal("/actuator", opts.Path);
         Assert.NotNull(opts.Exposure);
@@ -26,7 +26,7 @@ public class ManagementEndpointOptionsTest : BaseTest
     [Fact]
     public void InitializedWithDefaultsCF()
     {
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>().Get(CFContext.Name);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>().Get(EndpointContext.CloudFoundry);
         Assert.True(opts.Enabled);
         Assert.Equal("/cloudfoundryapplication", opts.Path);
         Assert.NotNull(opts.Exposure);
@@ -44,10 +44,10 @@ public class ManagementEndpointOptionsTest : BaseTest
             ["management:endpoints:info:id"] = "/infomanagement"
         };
 
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(ActuatorContext.Name);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(EndpointContext.Actuator);
         Assert.False(opts.Enabled);
         Assert.Equal("/management", opts.Path);
-        ManagementEndpointOptions cfopts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(CFContext.Name);
+        ManagementEndpointOptions cfopts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(EndpointContext.CloudFoundry);
         Assert.False(cfopts.Enabled);
         Assert.Equal("/cloudfoundryapplication", cfopts.Path);
     }
@@ -65,13 +65,13 @@ public class ManagementEndpointOptionsTest : BaseTest
         };
 
         ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>(appsettings)
-            .Get(ActuatorContext.Name);
+            .Get(EndpointContext.Actuator);
 
         Assert.True(opts.Enabled);
         Assert.Equal("/management", opts.Path);
 
         ManagementEndpointOptions cfopts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>(appsettings)
-            .Get(CFContext.Name);
+            .Get(EndpointContext.CloudFoundry);
 
         Assert.False(cfopts.Enabled);
         Assert.Equal("/cloudfoundryapplication", cfopts.Path);

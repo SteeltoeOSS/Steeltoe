@@ -58,26 +58,21 @@ internal static class EndPointExtensions
     }
 
     public static ManagementEndpointOptions GetFromContextPath(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path,
-        out string managementContextName)
+        out EndpointContext endpointContext)
     {
-        Dictionary<string, ManagementEndpointOptions> options = new();
-
-        foreach (string name in managementOptions.CurrentValue.ContextNames)
+        foreach (EndpointContext context in Enum.GetValues<EndpointContext>())
         {
-            options.Add(name, managementOptions.Get(name));
-        }
+            var options = managementOptions.Get(context);
 
-        foreach ((string name, ManagementEndpointOptions opt) in options)
-        {
-            if (path.StartsWithSegments(new PathString(opt.Path)))
+            if (path.StartsWithSegments(new PathString(options.Path)))
             {
-                managementContextName = name;
-                return opt;
+                endpointContext = context;
+                return options;
             }
         }
 
-        managementContextName = ActuatorContext.Name;
-        return managementOptions.Get(ActuatorContext.Name);
+        endpointContext = EndpointContext.Actuator;
+        return managementOptions.Get(endpointContext);
     }
 
     public static string GetContextPath(this HttpMiddlewareOptions options, ManagementEndpointOptions managementOptions)

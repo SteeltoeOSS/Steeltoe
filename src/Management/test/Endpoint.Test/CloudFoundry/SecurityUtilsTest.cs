@@ -49,7 +49,7 @@ public class SecurityUtilsTest : BaseTest
     private static SecurityUtils GetSecurityUtils(out CloudFoundryEndpointOptions cloudOpts, out ManagementEndpointOptions managementOptions)
     {
         cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>();
-        managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(CFContext.Name);
+        managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(EndpointContext.CloudFoundry);
         var securityUtils = new SecurityUtils(cloudOpts, managementOptions, NullLogger.Instance);
         return securityUtils;
     }

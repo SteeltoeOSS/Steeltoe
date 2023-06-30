@@ -3,8 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 namespace Steeltoe.Management.Endpoint.Options;
-
-public interface IContextName
+[Flags]
+public enum EndpointContext
 {
-    string Name { get; }
+    Actuator = 1,
+    CloudFoundry = 1 << 1,
 }

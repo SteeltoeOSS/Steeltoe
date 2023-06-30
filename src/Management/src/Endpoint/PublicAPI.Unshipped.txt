@@ -368,8 +368,6 @@ Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.I
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ManagementEndpointOptionsMonitor.get -> Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions>
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware.EndpointOptions.get -> Steeltoe.Management.HttpMiddlewareOptions
-Steeltoe.Management.Endpoint.Options.IContextName
-Steeltoe.Management.Endpoint.Options.IContextName.Name.get -> string
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.ContextNames.get -> System.Collections.Generic.HashSet<string>
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.ContextNames.set -> void

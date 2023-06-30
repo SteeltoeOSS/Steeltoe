@@ -205,8 +205,8 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         var options = GetOptionsFromSettings<MetricsEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.False(options.ExactMatch);
-        Assert.Equal("/actuator/metrics/{**_}", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
-        Assert.Equal("/cloudfoundryapplication/metrics/{**_}", options.GetContextPath(managementOptions.Get(CFContext.Name)));
+        Assert.Equal("/actuator/metrics/{**_}", options.GetContextPath(managementOptions.Get(EndpointContext.Actuator)));
+        Assert.Equal("/cloudfoundryapplication/metrics/{**_}", options.GetContextPath(managementOptions.Get(EndpointContext.CloudFoundry)));
         Assert.Contains("Get", options.AllowedVerbs);
     }
 

@@ -13,7 +13,7 @@ public class CloudfoundryManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(CFContext.Name);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(EndpointContext.CloudFoundry);
         Assert.Equal("/cloudfoundryapplication", opts.Path);
     }
 
@@ -26,7 +26,7 @@ public class CloudfoundryManagementOptionsTest : BaseTest
             ["management:endpoints:path"] = "/management"
         };
 
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(CFContext.Name);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(EndpointContext.CloudFoundry);
 
         Assert.Equal("/cloudfoundryapplication", opts.Path);
         Assert.False(opts.Enabled);
@@ -43,7 +43,7 @@ public class CloudfoundryManagementOptionsTest : BaseTest
             ["management:endpoints:path"] = "/management"
         };
 
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(CFContext.Name);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(EndpointContext.CloudFoundry);
 
         Assert.Equal("/cloudfoundryapplication", opts.Path);
         Assert.False(opts.Enabled);

@@ -5,6 +5,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
@@ -17,20 +18,25 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
     private const string DefaultPath = "/actuator";
     private const string DefaultCFPath = "/cloudfoundryapplication";
     private readonly IConfiguration _configuration;
-    private readonly IEnumerable<IContextName> _contextNames;
     private readonly IEnumerable<HttpMiddlewareOptions> _endpoints;
 
-    public ConfigureManagementEndpointOptions(IConfiguration configuration, IEnumerable<IContextName> contextNames,
-        IEnumerable<HttpMiddlewareOptions> endpointsCollection)
+    public ConfigureManagementEndpointOptions(IConfiguration configuration, IEnumerable<HttpMiddlewareOptions> endpointsCollection)
     {
         _configuration = configuration;
-        _contextNames = contextNames;
         _endpoints = endpointsCollection;
+        
     }
 
     public virtual void Configure(string name, ManagementEndpointOptions options)
     {
         _configuration.GetSection(ManagementInfoPrefix).Bind(options);
+
+        //Regardless of the name, configure the available platforms
+
+        if(Platform.IsCloudFoundry)
+        {
+            options.EndpointContexts |= EndpointContext.CloudFoundry;
+        }
 
         foreach (string converterTypeName in options.CustomJsonConverters ?? Array.Empty<string>())
         {
@@ -43,12 +49,7 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
             }
         }
 
-        foreach (IContextName context in _contextNames)
-        {
-            options.ContextNames.Add(context.Name);
-        }
-
-        if (name == ActuatorContext.Name)
+        if (name == EndpointContext.Actuator.ToString())
         {
             options.Path ??= DefaultPath;
 
@@ -56,7 +57,7 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
 
             options.EndpointOptions = new List<HttpMiddlewareOptions>(_endpoints.Where(e => e is not CloudFoundryEndpointOptions));
         }
-        else if (name == CFContext.Name)
+        else if (name == EndpointContext.CloudFoundry.ToString())
         {
             options.Path = DefaultCFPath;
             string cfEnabledConfig = _configuration.GetSection(CloudFoundryEnabledPrefix).Value;

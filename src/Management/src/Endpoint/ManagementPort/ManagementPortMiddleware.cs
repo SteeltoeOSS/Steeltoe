@@ -30,7 +30,7 @@ internal sealed class ManagementPortMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
-        ManagementEndpointOptions mgmtOptions = _managementOptions.Get(ActuatorContext.Name);
+        ManagementEndpointOptions mgmtOptions = _managementOptions.Get(EndpointContext.Actuator);
         _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, mgmtOptions.Path);
 
         string contextPath = mgmtOptions.Path;

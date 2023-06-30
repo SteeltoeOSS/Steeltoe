@@ -95,8 +95,8 @@ public class EndpointMiddlewareTest : BaseTest
         var options = GetOptionsFromSettings<RefreshEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/refresh", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
-        Assert.Equal("/cloudfoundryapplication/refresh", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
+        Assert.Equal("/actuator/refresh", options.GetContextPath(mgmtOptions.Get(EndpointContext.Actuator)));
+        Assert.Equal("/cloudfoundryapplication/refresh", options.GetContextPath(mgmtOptions.Get(EndpointContext.CloudFoundry)));
         Assert.Contains("Post", options.AllowedVerbs);
     }
 

@@ -25,7 +25,7 @@ internal sealed class HypermediaService
         ArgumentGuard.NotNull(logger);
 
         _logger = logger;
-        _managementOptions = managementOptions.Get(ActuatorContext.Name);
+        _managementOptions = managementOptions.Get(EndpointContext.Actuator);
         _endpointOptions = endpointOptions;
         _options = options.CurrentValue;
     }
@@ -40,7 +40,7 @@ internal sealed class HypermediaService
         _endpointOptions = endpointOptions;
         _logger = logger;
         _options = options.CurrentValue;
-        _managementOptions = managementOptions.Get(CFContext.Name);
+        _managementOptions = managementOptions.Get(EndpointContext.CloudFoundry);
     }
 
     public Links Invoke(string baseUrl)

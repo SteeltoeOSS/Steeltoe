@@ -13,7 +13,7 @@ public class ActuatorManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(ActuatorContext.Name);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(EndpointContext.Actuator);
         Assert.Equal("/actuator", opts.Path);
         Assert.Contains("health", opts.Exposure.Include);
         Assert.Contains("info", opts.Exposure.Include);
@@ -23,7 +23,7 @@ public class ActuatorManagementOptionsTest : BaseTest
     public void Constructor_InitializesWithDefaultsOnCF()
     {
         System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(ActuatorContext.Name);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(EndpointContext.Actuator);
 
         Assert.Equal("/actuator", opts.Path);
         Assert.Contains("health", opts.Exposure.Include);

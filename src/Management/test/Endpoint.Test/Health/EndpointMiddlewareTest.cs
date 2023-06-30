@@ -319,8 +319,8 @@ public class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         Assert.False(options.ExactMatch);
-        Assert.Equal("/actuator/health/{**_}", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
-        Assert.Equal("/cloudfoundryapplication/health/{**_}", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
+        Assert.Equal("/actuator/health/{**_}", options.GetContextPath(mgmtOptions.Get(EndpointContext.Actuator)));
+        Assert.Equal("/cloudfoundryapplication/health/{**_}", options.GetContextPath(mgmtOptions.Get(EndpointContext.CloudFoundry)));
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
     }

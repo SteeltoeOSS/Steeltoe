@@ -41,8 +41,8 @@ public class EndpointMiddlewareTest : BaseTest
         var options = GetOptionsFromSettings<MappingsEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/mappings", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
-        Assert.Equal("/cloudfoundryapplication/mappings", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
+        Assert.Equal("/actuator/mappings", options.GetContextPath(mgmtOptions.Get(EndpointContext.Actuator)));
+        Assert.Equal("/cloudfoundryapplication/mappings", options.GetContextPath(mgmtOptions.Get(EndpointContext.CloudFoundry)));
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
     }
@@ -53,7 +53,7 @@ public class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<MappingsEndpointOptions> opts = GetOptionsMonitorFromSettings<MappingsEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-        managementOptions.CurrentValue.ContextNames.Add(CFContext.Name);
+        managementOptions.CurrentValue.EndpointContexts |= EndpointContext.CloudFoundry;
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
         var mockRouteMappings = new Mock<IRouteMappings>();
