@@ -56,7 +56,7 @@ public class GitInfoContributorTest : BaseTest
     {
         // Uses git.properties file in test project
         var contrib = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
-        Assert.Throws<ArgumentNullException>(() => contrib.Contribute(null));
+        Assert.ThrowsAsync<ArgumentNullException>(() => contrib.ContributeAsync(null));
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class GitInfoContributorTest : BaseTest
         // Uses git.properties file in test project
         var contrib = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
         var builder = new InfoBuilder();
-        contrib.Contribute(builder);
+        contrib.ContributeAsync(builder);
 
         Dictionary<string, object> result = builder.Build();
         Assert.NotNull(result);

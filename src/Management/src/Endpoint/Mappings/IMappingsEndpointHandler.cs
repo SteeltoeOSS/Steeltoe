@@ -5,7 +5,7 @@
 namespace Steeltoe.Management.Endpoint.Mappings;
 
 #pragma warning disable S4023 // Interfaces should not be empty
-public interface IMappingsEndpointHandler : IEndpointHandler<object, ApplicationMappings>
+public interface IMappingsEndpointHandler : IEndpointHandler<object, MappingsResponse>
 #pragma warning restore S4023 // Interfaces should not be empty
 {
 }

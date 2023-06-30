@@ -36,10 +36,11 @@ public sealed class GitInfoContributor : AbstractConfigurationContributor, IInfo
         _logger = logger;
     }
 
-    public void Contribute(IInfoBuilder builder)
+    public Task ContributeAsync(IInfoBuilder builder)
     {
         Configuration = ReadGitProperties(_propFile);
         Contribute(builder, GitSettingsPrefix, true);
+        return Task.CompletedTask;
     }
 
     public IConfiguration ReadGitProperties(string propFile)

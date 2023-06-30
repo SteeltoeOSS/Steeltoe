@@ -249,7 +249,7 @@ public class EnvEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IEnvironmentEndpointHandler>();
-        EnvironmentDescriptor result = await ep.InvokeAsync(null, CancellationToken.None);
+        EnvironmentResponse result = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Single(result.ActiveProfiles);
         Assert.Equal("EnvironmentName", result.ActiveProfiles[0]);
@@ -297,7 +297,7 @@ public class EnvEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IEnvironmentEndpointHandler>();
-        EnvironmentDescriptor result = await ep.InvokeAsync(null, CancellationToken.None);
+        EnvironmentResponse result = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
 
         PropertySourceDescriptor desc = result.PropertySources[0];
@@ -338,7 +338,7 @@ public class EnvEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IEnvironmentEndpointHandler>();
-        EnvironmentDescriptor result = await ep.InvokeAsync(null, CancellationToken.None);
+        EnvironmentResponse result = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
 
         PropertySourceDescriptor desc = result.PropertySources[0];

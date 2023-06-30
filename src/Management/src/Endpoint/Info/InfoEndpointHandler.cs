@@ -37,7 +37,7 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
         {
             try
             {
-                contributor.Contribute(builder);
+                contributor.ContributeAsync(builder);
             }
             catch (Exception e)
             {

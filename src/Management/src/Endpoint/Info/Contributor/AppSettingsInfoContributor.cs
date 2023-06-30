@@ -16,8 +16,9 @@ public sealed class AppSettingsInfoContributor : AbstractConfigurationContributo
     {
     }
 
-    public void Contribute(IInfoBuilder builder)
+    public Task ContributeAsync(IInfoBuilder builder)
     {
         Contribute(builder, AppsettingsPrefix, false);
+        return Task.CompletedTask;
     }
 }

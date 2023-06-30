@@ -26,7 +26,7 @@ public class AppSettingsInfoContributorTest : BaseTest
     {
         var contributor = new AppSettingsInfoContributor(null);
         var builder = new InfoBuilder();
-        contributor.Contribute(builder);
+        contributor.ContributeAsync(builder);
         Dictionary<string, object> result = builder.Build();
         Assert.NotNull(result);
         Assert.Empty(result);
@@ -40,7 +40,7 @@ public class AppSettingsInfoContributorTest : BaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         var settings = new AppSettingsInfoContributor(configurationRoot);
 
-        Assert.Throws<ArgumentNullException>(() => settings.Contribute(null));
+        Assert.ThrowsAsync<ArgumentNullException>(() => settings.ContributeAsync(null));
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class AppSettingsInfoContributorTest : BaseTest
         var settings = new AppSettingsInfoContributor(configurationRoot);
 
         var builder = new InfoBuilder();
-        settings.Contribute(builder);
+        settings.ContributeAsync(builder);
 
         Dictionary<string, object> info = builder.Build();
         Assert.NotNull(info);

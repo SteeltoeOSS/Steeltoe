@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Environment;
 
-internal sealed class EnvironmentEndpointMiddleware : EndpointMiddleware<object, EnvironmentDescriptor>
+internal sealed class EnvironmentEndpointMiddleware : EndpointMiddleware<object, EnvironmentResponse>
 {
     public EnvironmentEndpointMiddleware(IEnvironmentEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILoggerFactory loggerFactory)
@@ -19,7 +19,7 @@ internal sealed class EnvironmentEndpointMiddleware : EndpointMiddleware<object,
     {
     }
 
-    protected override async Task<EnvironmentDescriptor> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<EnvironmentResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(null, context.RequestAborted);
     }

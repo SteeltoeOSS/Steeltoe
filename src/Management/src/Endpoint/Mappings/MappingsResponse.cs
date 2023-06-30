@@ -6,12 +6,12 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Mappings;
 
-public sealed class ApplicationMappings
+public sealed class MappingsResponse
 {
     [JsonPropertyName("contexts")]
     public IDictionary<string, ContextMappings> ContextMappings { get; }
 
-    public ApplicationMappings(ContextMappings contextMappings)
+    public MappingsResponse(ContextMappings contextMappings)
     {
         // At this point, .NET will only ever has one application => "application"
         ContextMappings = new Dictionary<string, ContextMappings>

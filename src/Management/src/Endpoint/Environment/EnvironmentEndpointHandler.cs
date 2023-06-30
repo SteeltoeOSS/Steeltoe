@@ -38,7 +38,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         _logger = loggerFactory.CreateLogger<EnvironmentEndpointHandler>();
     }
 
-    private EnvironmentDescriptor DoInvoke(IConfiguration configuration)
+    private EnvironmentResponse DoInvoke(IConfiguration configuration)
     {
         IList<string> activeProfiles = new List<string>
         {
@@ -47,7 +47,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
         _logger.LogTrace("Fetching property sources");
         IList<PropertySourceDescriptor> propertySources = GetPropertySources(configuration);
-        return new EnvironmentDescriptor(activeProfiles, propertySources);
+        return new EnvironmentResponse(activeProfiles, propertySources);
     }
 
     internal IList<PropertySourceDescriptor> GetPropertySources(IConfiguration configuration)
@@ -129,7 +129,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         return initialKeys;
     }
 
-    public async Task<EnvironmentDescriptor> InvokeAsync(object argument, CancellationToken cancellationToken)
+    public async Task<EnvironmentResponse> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         return await Task.FromResult(DoInvoke(_configuration));
     }

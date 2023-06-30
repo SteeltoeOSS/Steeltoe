@@ -18,11 +18,11 @@ public sealed class KubernetesInfoContributor : IInfoContributor
         _podUtilities = podUtilities;
     }
 
-    public void Contribute(IInfoBuilder builder)
+    public async Task ContributeAsync(IInfoBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
-        V1Pod current = _podUtilities.GetCurrentPodAsync().GetAwaiter().GetResult();
+        V1Pod current = await _podUtilities.GetCurrentPodAsync();
         var details = new Dictionary<string, object>();
 
         if (current != null)

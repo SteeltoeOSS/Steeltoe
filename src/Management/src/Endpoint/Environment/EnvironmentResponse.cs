@@ -7,7 +7,7 @@ using Steeltoe.Management.Endpoint.Environment;
 
 namespace Steeltoe.Management.Endpoint.Env;
 
-public sealed class EnvironmentDescriptor
+public sealed class EnvironmentResponse
 {
     [JsonPropertyName("activeProfiles")]
     public IList<string> ActiveProfiles { get; }
@@ -15,7 +15,7 @@ public sealed class EnvironmentDescriptor
     [JsonPropertyName("propertySources")]
     public IList<PropertySourceDescriptor> PropertySources { get; }
 
-    public EnvironmentDescriptor(IList<string> activeProfiles, IList<PropertySourceDescriptor> sources)
+    public EnvironmentResponse(IList<string> activeProfiles, IList<PropertySourceDescriptor> sources)
     {
         ActiveProfiles = activeProfiles;
         PropertySources = sources;

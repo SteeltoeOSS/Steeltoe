@@ -19,7 +19,7 @@ public class ApplicationMappingsTest : BaseTest
 
         var contextMappings = new ContextMappings(mappingDict);
 
-        var appMappings = new ApplicationMappings(contextMappings);
+        var appMappings = new MappingsResponse(contextMappings);
         IDictionary<string, ContextMappings> ctxMappings = appMappings.ContextMappings;
         Assert.Contains("application", ctxMappings.Keys);
         Assert.Single(ctxMappings.Keys);
@@ -57,7 +57,7 @@ public class ApplicationMappingsTest : BaseTest
         };
 
         var contextMappings = new ContextMappings(mappingDict);
-        var appMappings = new ApplicationMappings(contextMappings);
+        var appMappings = new MappingsResponse(contextMappings);
 
         string result = Serialize(appMappings);
 

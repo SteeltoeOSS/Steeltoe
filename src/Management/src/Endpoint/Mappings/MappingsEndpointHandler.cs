@@ -42,13 +42,13 @@ internal sealed class MappingsEndpointHandler : IMappingsEndpointHandler
         _logger = loggerFactory.CreateLogger<MappingsEndpointHandler>();
     }
 
-    public Task<ApplicationMappings> InvokeAsync(object argument, CancellationToken cancellationToken)
+    public Task<MappingsResponse> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Fetching application mappings");
         return Task.Run(() => GetApplicationMappings(), cancellationToken);
     }
 
-    internal ApplicationMappings GetApplicationMappings()
+    internal MappingsResponse GetApplicationMappings()
     {
         IDictionary<string, IList<MappingDescription>> desc = new Dictionary<string, IList<MappingDescription>>();
 
@@ -64,7 +64,7 @@ internal sealed class MappingsEndpointHandler : IMappingsEndpointHandler
         }
 
         var contextMappings = new ContextMappings(desc);
-        return new ApplicationMappings(contextMappings);
+        return new MappingsResponse(contextMappings);
     }
 
     internal IDictionary<string, IList<MappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)

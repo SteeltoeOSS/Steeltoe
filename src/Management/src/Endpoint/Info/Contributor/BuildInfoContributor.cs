@@ -19,7 +19,7 @@ public sealed class BuildInfoContributor : IInfoContributor
         _steeltoe = typeof(BuildInfoContributor).Assembly;
     }
 
-    public void Contribute(IInfoBuilder builder)
+    public Task ContributeAsync(IInfoBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
         builder.WithInfo("applicationVersionInfo", GetImportantDetails(_application));
@@ -30,6 +30,7 @@ public sealed class BuildInfoContributor : IInfoContributor
         {
             { "version", _application.GetName().Version.ToString() }
         });
+        return Task.CompletedTask;
     }
 
     private Dictionary<string, string> GetImportantDetails(Assembly assembly)

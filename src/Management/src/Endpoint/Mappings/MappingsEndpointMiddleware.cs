@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Mappings;
 /// <summary>
 /// Middleware for displaying <see cref="IRouteMappings"/> information. 
 /// </summary>
-internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<object, ApplicationMappings>
+internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<object, MappingsResponse>
 {
     public MappingsEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
         IMappingsEndpointHandler endpointHandler, ILoggerFactory loggerFactory)
@@ -21,7 +21,7 @@ internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<object, Ap
     {
     }
 
-    protected override async Task<ApplicationMappings> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<MappingsResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(null, context.RequestAborted);
     }
