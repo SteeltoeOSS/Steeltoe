@@ -36,7 +36,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         await using WebApplication app = builder.Build();
 
         await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
-        string connectionString = dbContext.Database.GetConnectionString();
+        string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("server=localhost;database=myDb;user id=steeltoe;password=steeltoe;connectiontimeout=15;Use Compression=false");
     }
@@ -60,7 +60,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         await using WebApplication app = builder.Build();
 
         await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
-        string connectionString = dbContext.Database.GetConnectionString();
+        string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("server=localhost;database=myDb;user id=steeltoe;password=steeltoe;connectiontimeout=15;Use Compression=false");
     }
