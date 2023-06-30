@@ -55,11 +55,6 @@ public static class RedisTypeLocator
         "StackExchange.Redis.ConfigurationOptions"
     };
 
-    public static string[] StackExchangeCommandFlagsNamesValue { get; internal set; } =
-    {
-        "StackExchange.Redis.CommandFlags"
-    };
-
     /// <summary>
     /// Gets IDistributedCache from a Microsoft Cache library.
     /// </summary>
@@ -91,13 +86,6 @@ public static class RedisTypeLocator
     /// </summary>
     public static Type StackExchangeImplementation =>
         ReflectionHelpers.FindTypeOrThrow(StackExchangeAssemblies, StackExchangeImplementationTypeNames, StackExchangeImplementationTypeNames[0],
-            "a Stack Exchange Redis NuGet Reference");
-
-    /// <summary>
-    /// Gets CommandFlags from StackExchange Redis library.
-    /// </summary>
-    public static Type StackExchangeCommandFlagsNames =>
-        ReflectionHelpers.FindTypeOrThrow(StackExchangeAssemblies, StackExchangeCommandFlagsNamesValue, StackExchangeCommandFlagsNamesValue[0],
             "a Stack Exchange Redis NuGet Reference");
 
     /// <summary>

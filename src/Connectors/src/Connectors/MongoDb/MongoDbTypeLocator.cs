@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
 using Steeltoe.Common.Reflection;
 
 // ReSharper disable once CheckNamespace
@@ -68,25 +67,4 @@ public static class MongoDbTypeLocator
     /// When type is not found.
     /// </exception>
     public static Type MongoUrl => ReflectionHelpers.FindTypeOrThrow(Assemblies, MongoConnectionInfo, "MongoUrl", "a MongoDB driver");
-
-    /// <summary>
-    /// Gets a method that lists databases available in a MongoClient.
-    /// </summary>
-    public static MethodInfo ListDatabasesMethod =>
-        FindMethodOrThrow(MongoClientInterface, "ListDatabases", new[]
-        {
-            typeof(CancellationToken)
-        });
-
-    private static MethodInfo FindMethodOrThrow(Type type, string methodName, Type[] parameters = null)
-    {
-        MethodInfo returnType = ReflectionHelpers.FindMethod(type, methodName, parameters);
-
-        if (returnType == null)
-        {
-            throw new ConnectorException("Unable to find required MongoDb type or method, are you missing a MongoDb Nuget package?");
-        }
-
-        return returnType;
-    }
 }

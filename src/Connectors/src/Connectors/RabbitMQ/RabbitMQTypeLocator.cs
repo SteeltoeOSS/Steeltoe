@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
 using Steeltoe.Common.Reflection;
 
 // ReSharper disable once CheckNamespace
@@ -63,26 +62,4 @@ public static class RabbitMQTypeLocator
         {
             "RabbitMQ.Client.IConnection"
         }, "IConnection", "the RabbitMQ.Client assembly");
-
-    /// <summary>
-    /// Gets the CreateConnection method of ConnectionFactory.
-    /// </summary>
-    public static MethodInfo CreateConnectionMethod => FindMethodOrThrow(ConnectionFactoryInterface, "CreateConnection", Array.Empty<Type>());
-
-    /// <summary>
-    /// Gets the Close method for IConnection.
-    /// </summary>
-    public static MethodInfo CloseConnectionMethod => FindMethodOrThrow(ConnectionInterface, "Close", Array.Empty<Type>());
-
-    private static MethodInfo FindMethodOrThrow(Type type, string methodName, Type[] parameters = null)
-    {
-        MethodInfo method = ReflectionHelpers.FindMethod(type, methodName, parameters);
-
-        if (method == null)
-        {
-            throw new ConnectorException("Unable to find required RabbitMQ method, are you missing the RabbitMQ.Client Nuget package?");
-        }
-
-        return method;
-    }
 }

@@ -32,22 +32,7 @@ public static class MySqlTypeLocator
     };
 
     /// <summary>
-    /// Gets a list of MySQL types that implement <see cref="DbConnectionStringBuilder" />.
-    /// </summary>
-    public static string[] ConnectionStringBuilderTypeNames { get; internal set; } =
-    {
-        "MySql.Data.MySqlClient.MySqlConnectionStringBuilder",
-        "MySqlConnector.MySqlConnectionStringBuilder"
-    };
-
-    /// <summary>
     /// Gets MySqlConnection type from a MySQL Library.
     /// </summary>
     public static Type MySqlConnection => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "MySqlConnection", "a MySQL ADO.NET assembly");
-
-    /// <summary>
-    /// Gets MySqlConnectionStringBuilder type from a MySQL Library.
-    /// </summary>
-    public static Type MySqlConnectionStringBuilderType =>
-        ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionStringBuilderTypeNames, "MySqlConnectionStringBuilder", "a MySQL ADO.NET assembly");
 }

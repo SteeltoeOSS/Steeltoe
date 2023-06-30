@@ -32,24 +32,8 @@ public static class SqlServerTypeLocator
     };
 
     /// <summary>
-    /// Gets a list of SQL Server types that implement <see cref="DbConnectionStringBuilder" />.
-    /// </summary>
-    public static string[] ConnectionStringBuilderTypeNames { get; internal set; } =
-    {
-        "Microsoft.Data.SqlClient.SqlConnectionStringBuilder",
-        "System.Data.SqlClient.SqlConnectionStringBuilder"
-    };
-
-    /// <summary>
     /// Gets SqlConnection type from a SQL Server Library.
     /// </summary>
     public static Type SqlConnection =>
         ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "SqlConnection", "a Microsoft SQL Server ADO.NET assembly");
-
-    /// <summary>
-    /// Gets SqlConnectionStringBuilder type from a SQL Server Library.
-    /// </summary>
-    public static Type SqlConnectionStringBuilderType =>
-        ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionStringBuilderTypeNames, "SqlConnectionStringBuilder",
-            "a Microsoft SQL Server ADO.NET assembly");
 }
