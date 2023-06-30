@@ -7,35 +7,29 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersRequest, Dictionary<string, object>>
+internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersRequest, LoggersResponse>
 {
-   // private readonly IEnumerable<IContextName> _contextNames;
     private readonly ILogger<LoggersEndpointMiddleware> _logger;
 
     public LoggersEndpointMiddleware(ILoggersEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptionsMonitor,
          ILoggerFactory loggerFactory)
         : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
-       // _contextNames = contextNames;
         _logger = loggerFactory.CreateLogger<LoggersEndpointMiddleware>();
     }
 
-    protected override async Task<Dictionary<string, object>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<LoggersResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         ILoggersRequest loggersRequest = await GetLoggersChangeRequestAsync(context);
-
-        if (loggersRequest is ErrorLoggersRequest)
-        {
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            return null;
-        }
-
-        return await EndpointHandler.InvokeAsync(loggersRequest, cancellationToken);
+        return loggersRequest is ErrorLoggersRequest
+                    ? new LoggersResponse(new Dictionary<string, object>(), true)
+                    : await EndpointHandler.InvokeAsync(loggersRequest, cancellationToken);
     }
 
     private async Task<ILoggersRequest> GetLoggersChangeRequestAsync(HttpContext context)
@@ -98,6 +92,17 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
 
         return new Dictionary<string, string>();
     }
-
-
+    protected override async Task WriteResponseAsync(LoggersResponse result, HttpContext context, CancellationToken cancellationToken)
+    {
+        if (result.HasError)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        }
+        else
+        {
+            context.HandleContentNegotiation(_logger);
+            JsonSerializerOptions options = GetSerializerOptions();
+            await JsonSerializer.SerializeAsync(context.Response.Body, result.Data, options, cancellationToken);
+        }
+    }
 }

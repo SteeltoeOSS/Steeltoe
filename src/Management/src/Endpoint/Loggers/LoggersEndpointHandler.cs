@@ -39,14 +39,14 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
         _logger = loggerFactory.CreateLogger<LoggersEndpointHandler>();
     }
 
-    public Task<Dictionary<string, object>> InvokeAsync(ILoggersRequest request, CancellationToken cancellationToken)
+    public Task<LoggersResponse> InvokeAsync(ILoggersRequest request, CancellationToken cancellationToken)
     {
         _logger.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
 
         return Task.Run(() => DoInvoke(_dynamicLoggerProvider, request), cancellationToken);
     }
 
-    private Dictionary<string, object> DoInvoke(IDynamicLoggerProvider provider, ILoggersRequest request)
+    private LoggersResponse DoInvoke(IDynamicLoggerProvider provider, ILoggersRequest request)
     {
         var result = new Dictionary<string, object>();
 
@@ -70,7 +70,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
             result.Add("loggers", loggers);
         }
 
-        return result;
+        return new LoggersResponse(result, false);
     }
 
     internal void AddLevels(Dictionary<string, object> result)

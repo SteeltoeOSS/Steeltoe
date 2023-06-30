@@ -10,7 +10,7 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
-public class GitInfoContributor : AbstractConfigurationContributor, IInfoContributor
+public sealed class GitInfoContributor : AbstractConfigurationContributor, IInfoContributor
 {
     private const string GitSettingsPrefix = "git";
     private const string GitPropertiesFile = "git.properties";
@@ -36,13 +36,13 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
         _logger = logger;
     }
 
-    public virtual void Contribute(IInfoBuilder builder)
+    public void Contribute(IInfoBuilder builder)
     {
         Configuration = ReadGitProperties(_propFile);
         Contribute(builder, GitSettingsPrefix, true);
     }
 
-    public virtual IConfiguration ReadGitProperties(string propFile)
+    public IConfiguration ReadGitProperties(string propFile)
     {
         if (File.Exists(propFile))
         {
