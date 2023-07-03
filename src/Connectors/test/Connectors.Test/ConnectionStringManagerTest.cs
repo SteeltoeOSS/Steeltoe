@@ -5,14 +5,12 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connectors.MongoDb;
 using Steeltoe.Connectors.MySql;
 using Steeltoe.Connectors.PostgreSql;
 using Steeltoe.Connectors.RabbitMQ;
 using Steeltoe.Connectors.Redis;
 using Steeltoe.Connectors.Services;
 using Steeltoe.Connectors.SqlServer;
-using Steeltoe.Connectors.Test.MongoDb;
 using Steeltoe.Connectors.Test.MySql;
 using Steeltoe.Connectors.Test.PostgreSql;
 using Steeltoe.Connectors.Test.Redis;
@@ -132,32 +130,7 @@ public class ConnectionStringManagerTest
         Assert.Equal("RabbitMQ", connInfo.Name);
     }
 
-    [Fact]
-    public void MongoDbConnectionInfo()
-    {
-        var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        Connection connInfo = cm.Get<MongoDbConnectionInfo>();
-
-        Assert.NotNull(connInfo);
-        Assert.Equal("mongodb://localhost:27017", connInfo.ConnectionString);
-        Assert.Equal("MongoDb", connInfo.Name);
-    }
-
-    [Fact]
-    public void MongoDbConnectionInfoByName()
-    {
-        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", MongoDbTestHelpers.DoubleBindingEnterpriseVcap);
-
-        var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
-        Connection connInfo = cm.Get<MongoDbConnectionInfo>("steeltoe");
-
-        Assert.NotNull(connInfo);
-        Assert.Equal("MongoDb-steeltoe", connInfo.Name);
-    }
-
     [Theory]
-    [InlineData("mongodb")]
     [InlineData("mYsql")]
     [InlineData("postgres")]
     [InlineData("rabbitmq")]
@@ -182,7 +155,6 @@ public class ConnectionStringManagerTest
     [Fact]
     public void ConnectionTypeLocatorFindsTypeFromServiceInfo()
     {
-        var mongoInfo = new MongoDbServiceInfo("id", "mongodb://host");
         var mysqlInfo = new MySqlServiceInfo("id", "mysql://host");
         var postgreSqlInfo = new PostgreSqlServiceInfo("id", "postgres://host");
         var rabbitMqInfo = new RabbitMQServiceInfo("id", "rabbitmq://host");
@@ -190,7 +162,6 @@ public class ConnectionStringManagerTest
         var sqlInfo = new SqlServerServiceInfo("id", "sqlserver://host");
         var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
 
-        Assert.StartsWith("MongoDb", manager.GetFromServiceInfo(mongoInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("MySql", manager.GetFromServiceInfo(mysqlInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("Postgres", manager.GetFromServiceInfo(postgreSqlInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("RabbitMQ", manager.GetFromServiceInfo(rabbitMqInfo).Name, StringComparison.Ordinal);
