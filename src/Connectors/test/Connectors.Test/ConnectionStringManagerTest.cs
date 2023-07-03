@@ -5,11 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connectors.MySql;
 using Steeltoe.Connectors.PostgreSql;
 using Steeltoe.Connectors.Services;
 using Steeltoe.Connectors.SqlServer;
-using Steeltoe.Connectors.Test.MySql;
 using Steeltoe.Connectors.Test.PostgreSql;
 using Steeltoe.Connectors.Test.SqlServer;
 using Xunit;
@@ -18,32 +16,6 @@ namespace Steeltoe.Connectors.Test;
 
 public class ConnectionStringManagerTest
 {
-    [Fact]
-    public void MysqlConnectionInfo()
-    {
-        var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        Connection connInfo = cm.Get<MySqlConnectionInfo>();
-
-        Assert.NotNull(connInfo);
-        Assert.Equal("Server=localhost;Port=3306", connInfo.ConnectionString);
-        Assert.Equal("MySql", connInfo.Name);
-    }
-
-    [Fact]
-    public void MysqlConnectionInfoByName()
-    {
-        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
-
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCloudFoundry().Build();
-
-        var cm = new ConnectionStringManager(configurationRoot);
-        Connection connInfo = cm.Get<MySqlConnectionInfo>("spring-cloud-broker-db");
-
-        Assert.NotNull(connInfo);
-        Assert.Equal("MySql-spring-cloud-broker-db", connInfo.Name);
-    }
-
     [Fact]
     public void PostgreSqlConnectionInfo()
     {
@@ -93,7 +65,6 @@ public class ConnectionStringManagerTest
     }
 
     [Theory]
-    [InlineData("mYsql")]
     [InlineData("postgres")]
     [InlineData("sqlserver")]
     public void ConnectionInfoTypeFoundByName(string value)
@@ -115,12 +86,10 @@ public class ConnectionStringManagerTest
     [Fact]
     public void ConnectionTypeLocatorFindsTypeFromServiceInfo()
     {
-        var mysqlInfo = new MySqlServiceInfo("id", "mysql://host");
         var postgreSqlInfo = new PostgreSqlServiceInfo("id", "postgres://host");
         var sqlInfo = new SqlServerServiceInfo("id", "sqlserver://host");
         var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
 
-        Assert.StartsWith("MySql", manager.GetFromServiceInfo(mysqlInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("Postgres", manager.GetFromServiceInfo(postgreSqlInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("SqlServer", manager.GetFromServiceInfo(sqlInfo).Name, StringComparison.Ordinal);
     }
