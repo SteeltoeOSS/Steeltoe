@@ -20,7 +20,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownListener
 {
     private const int DefaultChannelCacheSize = 25;
-    public const string DefaultServiceName = "ccFactory";
+    internal const string DefaultServiceName = "";
 
     private readonly object _connectionMonitor = new();
     private readonly Dictionary<int, AtomicInteger> _channelHighWaterMarks = new();
