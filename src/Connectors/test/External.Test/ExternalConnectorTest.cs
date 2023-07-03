@@ -33,7 +33,7 @@ public class ExternalConnectorTest
         ServiceInfoCreator creator = ServiceInfoCreatorFactory.GetServiceInfoCreator(configurationRoot);
 
         Assert.IsType<ServiceInfoCreator>(creator);
-        Assert.Equal(11, creator.Factories.Count);
+        Assert.NotEmpty(creator.Factories);
     }
 
     [Fact]

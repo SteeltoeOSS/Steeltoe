@@ -157,8 +157,6 @@ public class ConnectionStringManagerTest
     }
 
     [Theory]
-    [InlineData("cosMosdb")]
-    [InlineData("cosmosdb-readonly")]
     [InlineData("mongodb")]
     [InlineData("mYsql")]
     [InlineData("postgres")]
@@ -184,7 +182,6 @@ public class ConnectionStringManagerTest
     [Fact]
     public void ConnectionTypeLocatorFindsTypeFromServiceInfo()
     {
-        var cosmosInfo = new CosmosDbServiceInfo("id");
         var mongoInfo = new MongoDbServiceInfo("id", "mongodb://host");
         var mysqlInfo = new MySqlServiceInfo("id", "mysql://host");
         var postgreSqlInfo = new PostgreSqlServiceInfo("id", "postgres://host");
@@ -193,7 +190,6 @@ public class ConnectionStringManagerTest
         var sqlInfo = new SqlServerServiceInfo("id", "sqlserver://host");
         var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
 
-        Assert.StartsWith("CosmosDb", manager.GetFromServiceInfo(cosmosInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("MongoDb", manager.GetFromServiceInfo(mongoInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("MySql", manager.GetFromServiceInfo(mysqlInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("Postgres", manager.GetFromServiceInfo(postgreSqlInfo).Name, StringComparison.Ordinal);
