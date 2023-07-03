@@ -5,10 +5,8 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connectors.PostgreSql;
 using Steeltoe.Connectors.Services;
 using Steeltoe.Connectors.SqlServer;
-using Steeltoe.Connectors.Test.PostgreSql;
 using Steeltoe.Connectors.Test.SqlServer;
 using Xunit;
 
@@ -16,30 +14,6 @@ namespace Steeltoe.Connectors.Test;
 
 public class ConnectionStringManagerTest
 {
-    [Fact]
-    public void PostgreSqlConnectionInfo()
-    {
-        var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        Connection connInfo = cm.Get<PostgreSqlConnectionInfo>();
-
-        Assert.NotNull(connInfo);
-        Assert.Equal("Host=localhost;Port=5432;Timeout=15;Command Timeout=30", connInfo.ConnectionString);
-        Assert.Equal("Postgres", connInfo.Name);
-    }
-
-    [Fact]
-    public void PostgreSqlConnectionInfoByName()
-    {
-        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", PostgreSqlTestHelpers.TwoServerVcapEdb);
-
-        var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
-        Connection connInfo = cm.Get<PostgreSqlConnectionInfo>("myPostgres");
-
-        Assert.NotNull(connInfo);
-        Assert.Equal("Postgres-myPostgres", connInfo.Name);
-    }
-
     [Fact]
     public void SqlServerConnectionInfo()
     {
@@ -65,7 +39,6 @@ public class ConnectionStringManagerTest
     }
 
     [Theory]
-    [InlineData("postgres")]
     [InlineData("sqlserver")]
     public void ConnectionInfoTypeFoundByName(string value)
     {
@@ -86,11 +59,9 @@ public class ConnectionStringManagerTest
     [Fact]
     public void ConnectionTypeLocatorFindsTypeFromServiceInfo()
     {
-        var postgreSqlInfo = new PostgreSqlServiceInfo("id", "postgres://host");
         var sqlInfo = new SqlServerServiceInfo("id", "sqlserver://host");
         var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
 
-        Assert.StartsWith("Postgres", manager.GetFromServiceInfo(postgreSqlInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("SqlServer", manager.GetFromServiceInfo(sqlInfo).Name, StringComparison.Ordinal);
     }
 
