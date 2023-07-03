@@ -7,7 +7,6 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connectors.MySql;
 using Steeltoe.Connectors.PostgreSql;
-using Steeltoe.Connectors.RabbitMQ;
 using Steeltoe.Connectors.Services;
 using Steeltoe.Connectors.SqlServer;
 using Steeltoe.Connectors.Test.MySql;
@@ -93,21 +92,9 @@ public class ConnectionStringManagerTest
         Assert.Equal("SqlServer-mySqlServerService", connInfo.Name);
     }
 
-    [Fact]
-    public void RabbitMQConnectionInfo()
-    {
-        var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        Connection connInfo = cm.Get<RabbitMQConnectionInfo>();
-
-        Assert.NotNull(connInfo);
-        Assert.Equal("amqp://127.0.0.1:5672/", connInfo.ConnectionString);
-        Assert.Equal("RabbitMQ", connInfo.Name);
-    }
-
     [Theory]
     [InlineData("mYsql")]
     [InlineData("postgres")]
-    [InlineData("rabbitmq")]
     [InlineData("sqlserver")]
     public void ConnectionInfoTypeFoundByName(string value)
     {
@@ -130,13 +117,11 @@ public class ConnectionStringManagerTest
     {
         var mysqlInfo = new MySqlServiceInfo("id", "mysql://host");
         var postgreSqlInfo = new PostgreSqlServiceInfo("id", "postgres://host");
-        var rabbitMqInfo = new RabbitMQServiceInfo("id", "rabbitmq://host");
         var sqlInfo = new SqlServerServiceInfo("id", "sqlserver://host");
         var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
 
         Assert.StartsWith("MySql", manager.GetFromServiceInfo(mysqlInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("Postgres", manager.GetFromServiceInfo(postgreSqlInfo).Name, StringComparison.Ordinal);
-        Assert.StartsWith("RabbitMQ", manager.GetFromServiceInfo(rabbitMqInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("SqlServer", manager.GetFromServiceInfo(sqlInfo).Name, StringComparison.Ordinal);
     }
 
