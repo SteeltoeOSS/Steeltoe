@@ -20,13 +20,6 @@ public class ServiceInfoCreatorFactoryTest
     }
 
     [Fact]
-    public void FactoryReturnsDefaultType()
-    {
-        ServiceInfoCreator serviceInfoCreator = ServiceInfoCreatorFactory.GetServiceInfoCreator(new ConfigurationBuilder().AddConnectionStrings().Build());
-        Assert.IsType<ServiceInfoCreator>(serviceInfoCreator);
-    }
-
-    [Fact]
     public void Factory_ReturnsSameInstance()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Connectors.Services;
 
 namespace Steeltoe.Connectors;
@@ -173,23 +172,5 @@ public static class ConfigurationExtensions
     public static bool HasKubernetesServiceBindings(this IConfiguration configuration)
     {
         return configuration.GetSection("k8s:bindings").GetChildren().Any();
-    }
-
-    /// <summary>
-    /// Adds a configuration provider that uses Connector logic to fulfill requests for GetConnectionString("serviceType") or
-    /// GetConnectionString("serviceBindingName").
-    /// </summary>
-    /// <param name="builder">
-    /// <see cref="IConfigurationBuilder" />.
-    /// </param>
-    /// <returns>
-    /// <see cref="IConfigurationBuilder" /> with <see cref="ConnectionStringConfigurationSource" /> added.
-    /// </returns>
-    public static IConfigurationBuilder AddConnectionStrings(this IConfigurationBuilder builder)
-    {
-        ArgumentGuard.NotNull(builder);
-
-        builder.Add(new ConnectionStringConfigurationSource(builder.Sources));
-        return builder;
     }
 }
