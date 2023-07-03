@@ -165,21 +165,10 @@ public class CloudFoundryServiceInfoCreatorTest
         builder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = builder.Build();
         var creator = CloudFoundryServiceInfoCreator.Instance(configurationRoot);
-        IEnumerable<RedisServiceInfo> result = creator.GetServiceInfosOfType<RedisServiceInfo>();
-        Assert.NotNull(result);
-        Assert.Empty(result);
 
         IEnumerable<IServiceInfo> result2 = creator.GetServiceInfosOfType(typeof(MySqlServiceInfo));
         Assert.NotNull(result2);
         Assert.Empty(result2);
-
-        IEnumerable<RedisServiceInfo> result3 = creator.GetServiceInfosOfType<RedisServiceInfo>();
-        Assert.NotNull(result3);
-        Assert.Empty(result3);
-
-        IEnumerable<IServiceInfo> result4 = creator.GetServiceInfosOfType(typeof(RedisServiceInfo));
-        Assert.NotNull(result4);
-        Assert.Empty(result4);
 
         var result5 = creator.GetServiceInfo<MySqlServiceInfo>("foobar-db2");
         Assert.Null(result5);
@@ -189,9 +178,6 @@ public class CloudFoundryServiceInfoCreatorTest
 
         IServiceInfo result7 = creator.GetServiceInfo("spring-cloud-broker-db2");
         Assert.Null(result7);
-
-        var result8 = creator.GetServiceInfo<RedisServiceInfo>("spring-cloud-broker-db2");
-        Assert.Null(result8);
     }
 
     [Fact]
@@ -255,14 +241,6 @@ public class CloudFoundryServiceInfoCreatorTest
         IEnumerable<IServiceInfo> result2 = creator.GetServiceInfosOfType(typeof(MySqlServiceInfo));
         Assert.Equal(2, result2.Count(si => si is MySqlServiceInfo));
 
-        IEnumerable<RedisServiceInfo> result3 = creator.GetServiceInfosOfType<RedisServiceInfo>();
-        Assert.NotNull(result3);
-        Assert.Empty(result3);
-
-        IEnumerable<IServiceInfo> result4 = creator.GetServiceInfosOfType(typeof(RedisServiceInfo));
-        Assert.NotNull(result4);
-        Assert.Empty(result4);
-
         var result5 = creator.GetServiceInfo<MySqlServiceInfo>("foobar-db2");
         Assert.Null(result5);
 
@@ -272,8 +250,5 @@ public class CloudFoundryServiceInfoCreatorTest
         IServiceInfo result7 = creator.GetServiceInfo("spring-cloud-broker-db2");
         Assert.NotNull(result7);
         Assert.True(result7 is MySqlServiceInfo);
-
-        var result8 = creator.GetServiceInfo<RedisServiceInfo>("spring-cloud-broker-db2");
-        Assert.Null(result8);
     }
 }

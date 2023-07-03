@@ -8,12 +8,10 @@ using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connectors.MySql;
 using Steeltoe.Connectors.PostgreSql;
 using Steeltoe.Connectors.RabbitMQ;
-using Steeltoe.Connectors.Redis;
 using Steeltoe.Connectors.Services;
 using Steeltoe.Connectors.SqlServer;
 using Steeltoe.Connectors.Test.MySql;
 using Steeltoe.Connectors.Test.PostgreSql;
-using Steeltoe.Connectors.Test.Redis;
 using Steeltoe.Connectors.Test.SqlServer;
 using Xunit;
 
@@ -96,30 +94,6 @@ public class ConnectionStringManagerTest
     }
 
     [Fact]
-    public void RedisConnectionInfo()
-    {
-        var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        Connection connInfo = cm.Get<RedisConnectionInfo>();
-
-        Assert.NotNull(connInfo);
-        Assert.Equal("localhost:6379,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connInfo.ConnectionString);
-        Assert.Equal("Redis", connInfo.Name);
-    }
-
-    [Fact]
-    public void RedisConnectionInfoByName()
-    {
-        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVcap);
-
-        var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
-        Connection connInfo = cm.Get<RedisConnectionInfo>("myRedisService1");
-
-        Assert.NotNull(connInfo);
-        Assert.Equal("Redis-myRedisService1", connInfo.Name);
-    }
-
-    [Fact]
     public void RabbitMQConnectionInfo()
     {
         var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
@@ -134,7 +108,6 @@ public class ConnectionStringManagerTest
     [InlineData("mYsql")]
     [InlineData("postgres")]
     [InlineData("rabbitmq")]
-    [InlineData("redis")]
     [InlineData("sqlserver")]
     public void ConnectionInfoTypeFoundByName(string value)
     {
@@ -158,14 +131,12 @@ public class ConnectionStringManagerTest
         var mysqlInfo = new MySqlServiceInfo("id", "mysql://host");
         var postgreSqlInfo = new PostgreSqlServiceInfo("id", "postgres://host");
         var rabbitMqInfo = new RabbitMQServiceInfo("id", "rabbitmq://host");
-        var redisInfo = new RedisServiceInfo("id", "redis://host");
         var sqlInfo = new SqlServerServiceInfo("id", "sqlserver://host");
         var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
 
         Assert.StartsWith("MySql", manager.GetFromServiceInfo(mysqlInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("Postgres", manager.GetFromServiceInfo(postgreSqlInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("RabbitMQ", manager.GetFromServiceInfo(rabbitMqInfo).Name, StringComparison.Ordinal);
-        Assert.StartsWith("Redis", manager.GetFromServiceInfo(redisInfo).Name, StringComparison.Ordinal);
         Assert.StartsWith("SqlServer", manager.GetFromServiceInfo(sqlInfo).Name, StringComparison.Ordinal);
     }
 

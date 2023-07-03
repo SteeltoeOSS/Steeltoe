@@ -2,46 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connectors.Services;
 using Steeltoe.Connectors.Test.MySql;
-using Steeltoe.Connectors.Test.Redis;
 using Xunit;
 
 namespace Steeltoe.Connectors.Test;
 
 public class ConfigurationExtensionsTest
 {
-    [Fact]
-    public void GetServiceInfos_GetsCFRedisServiceInfos()
-    {
-        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcap);
-
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCloudFoundry().Build();
-
-        IEnumerable<IServiceInfo> infos = configurationRoot.GetServiceInfos(typeof(RedisServiceInfo));
-
-        Assert.NotEmpty(infos);
-    }
-
-    [Fact]
-    public void GetServiceInfos_GetsRedisServiceInfos()
-    {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(RedisCacheTestHelpers.SingleServerAsDictionary).Build();
-
-        IEnumerable<IServiceInfo> infos = configurationRoot.GetServiceInfos(typeof(RedisServiceInfo));
-
-        Assert.NotEmpty(infos);
-        var si = infos.First() as RedisServiceInfo;
-        Assert.Equal(RedisCacheTestHelpers.SingleServerAsDictionary["services:p-redis:0:credentials:host"], si.Host);
-        Assert.Equal(RedisCacheTestHelpers.SingleServerAsDictionary["services:p-redis:0:credentials:password"], si.Password);
-        Assert.Equal(RedisCacheTestHelpers.SingleServerAsDictionary["services:p-redis:0:credentials:port"], si.Port.ToString(CultureInfo.InvariantCulture));
-    }
-
     [Fact]
     public void AddConnectionStrings_AddsProvider()
     {
